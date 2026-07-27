@@ -43,10 +43,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-  uses: actions/checkout@v4
-  with:
-    fetch-depth: 0
-    persist-credentials: true
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -99,6 +99,6 @@ jobs:
 
           git commit -m "Auto update: ${{ steps.scan_mode.outputs.mode }} [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
 
-          git fetch origin scanner-v2
-          git rebase origin/scanner-v2
-          git push origin HEAD:scanner-v2
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
