@@ -19,15 +19,15 @@ on:
       mode:
         description: "Select Scan Mode"
         required: true
-        default: "all"
+        default: "channels"
         type: choice
         options:
-          - all
-          - events
           - channels
+          - events
           - movies
           - today
           - upcoming
+          - all
 
 permissions:
   contents: write
@@ -39,24 +39,19 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-
-    # কোনো scanner অস্বাভাবিকভাবে আটকে থাকলে 60 মিনিটে বন্ধ হবে
     timeout-minutes: 60
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
           persist-credentials: true
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-
-      # requirements.txt-এ কোনো third-party package নেই,
-      # তাই অপ্রয়োজনীয় pip install step রাখা হয়নি।
 
       - name: Select scan mode
         id: scan_mode
@@ -71,23 +66,41 @@ jobs:
           elif [[ "${{ github.event.schedule }}" == "27 4 */2 * *" ]]; then
             MODE="movies"
           else
-            MODE="all"
+            MODE="channels"
           fi
 
+          if [[ -z "$MODE" ]]; then
+            MODE="channels"
+          fi
+
+          echo "Event name: ${{ github.event_name }}"
+          echo "Manual input mode: ${{ inputs.mode }}"
           echo "Selected scan mode: $MODE"
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
 
       - name: Run scanner
+        shell: bash
         env:
           PYTHONUNBUFFERED: "1"
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
+          set -euo pipefail
+
+          echo "=========================================="
+          echo "LIVE SIGNAL SCANNER STARTED"
+          echo "Selected mode: ${{ steps.scan_mode.outputs.mode }}"
+          echo "Commit: $(git rev-parse --short HEAD)"
+          python --version
+          echo "=========================================="
+
           python -u scan.py "${{ steps.scan_mode.outputs.mode }}"
 
       - name: Commit and push updated data
         shell: bash
         run: |
+          set -euo pipefail
+
           git config user.name "Live Signal Scanner"
           git config user.email "scanner@users.noreply.github.com"
 
