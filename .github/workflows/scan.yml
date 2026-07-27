@@ -42,12 +42,11 @@ jobs:
     timeout-minutes: 120
 
     steps:
-      - name: Checkout scanner-v2 branch
-        uses: actions/checkout@v4
-        with:
-          ref: scanner-v2
-          fetch-depth: 0
-          persist-credentials: true
+      - name: Checkout repository
+  uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+    persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
