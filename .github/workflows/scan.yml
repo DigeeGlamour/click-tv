@@ -2,16 +2,16 @@ name: Live Signal Scanner
 
 on:
   schedule:
-    # Today Match + Upcoming: Every 30 minutes
-    - cron: "7,37 * * * *"
+    # Today Match + Upcoming: Every 2 hours
+    - cron: "7 */2 * * *"
       timezone: "Asia/Dhaka"
 
-    # Live TV Channels: Every 3 hours
-    - cron: "17 */3 * * *"
+    # Live TV Channels: Every 6 hours
+    - cron: "17 */6 * * *"
       timezone: "Asia/Dhaka"
 
-    # Movies VOD: Every day at 04:27 AM
-    - cron: "27 4 * * *"
+    # Movies VOD: Every second calendar day at 04:27 AM
+    - cron: "27 4 */2 * *"
       timezone: "Asia/Dhaka"
 
   workflow_dispatch:
@@ -39,24 +39,24 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+
+    # কোনো scanner অস্বাভাবিকভাবে আটকে থাকলে 60 মিনিটে বন্ধ হবে
+    timeout-minutes: 60
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: true
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
-      - name: Install requirements
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
+      # requirements.txt-এ কোনো third-party package নেই,
+      # তাই অপ্রয়োজনীয় pip install step রাখা হয়নি।
 
       - name: Select scan mode
         id: scan_mode
@@ -64,25 +64,26 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             MODE="${{ inputs.mode }}"
-          elif [[ "${{ github.event.schedule }}" == "7,37 * * * *" ]]; then
+          elif [[ "${{ github.event.schedule }}" == "7 */2 * * *" ]]; then
             MODE="events"
-          elif [[ "${{ github.event.schedule }}" == "17 */3 * * *" ]]; then
+          elif [[ "${{ github.event.schedule }}" == "17 */6 * * *" ]]; then
             MODE="channels"
-          elif [[ "${{ github.event.schedule }}" == "27 4 * * *" ]]; then
+          elif [[ "${{ github.event.schedule }}" == "27 4 */2 * *" ]]; then
             MODE="movies"
           else
             MODE="all"
           fi
 
-          echo "Selected mode: $MODE"
+          echo "Selected scan mode: $MODE"
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
 
       - name: Run scanner
         env:
+          PYTHONUNBUFFERED: "1"
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          python scan.py "${{ steps.scan_mode.outputs.mode }}"
+          python -u scan.py "${{ steps.scan_mode.outputs.mode }}"
 
       - name: Commit and push updated data
         shell: bash
@@ -93,12 +94,11 @@ jobs:
           git add data reports state
 
           if git diff --cached --quiet; then
-            echo "No changes found to commit."
+            echo "No updated data found. Nothing to commit."
             exit 0
           fi
 
           git commit -m "Auto update: ${{ steps.scan_mode.outputs.mode }} [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
 
-          git fetch origin main
-          git rebase origin/main
+          git pull --rebase origin main
           git push origin HEAD:main
