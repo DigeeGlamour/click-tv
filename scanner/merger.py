@@ -1,10 +1,13 @@
 """
 Stream Merger & Deduplication Engine
 
-Merges verified and protected stream candidates into unified cards with 1 Primary + max 5 Backups
-(max 6 links total). Enforces status-tiered ranking (verified_global -> verified_proxy -> stale_last_good
--> bd_protected_pending) with HTTPS priority within tiers, handles streamless Upcoming metadata,
-preserves status flags in backups, and pins T Sports in the Sports category.
+Merges verified and protected stream candidates into unified cards.
+
+Live TV keeps 1 Primary + up to 5 Backups (6 links total). Movies use a safer,
+smaller 1 Primary + up to 3 Backups (4 links total) so the player can fail over
+without carrying excessive duplicate URLs. Ranking is status-first:
+verified_global/verified_bd -> verified_proxy -> stale_last_good -> geo_pending
+-> retryable_pending -> host_deferred. HTTPS is preferred within the same tier.
 """
 
 from __future__ import annotations
@@ -72,6 +75,68 @@ def _extract_hostname(url: str) -> str:
         return (urlparse(url).hostname or "").lower()
     except Exception:
         return ""
+
+
+def _normalize_movie_title(value: Any) -> str:
+    """Build a source-independent movie title key without removing episode data."""
+    text = str(value or "").casefold()
+    text = re.sub(r"https?://\S+", " ", text)
+    text = re.sub(
+        r"\b(?:official|full\s*movie|movie|film|uncut|web[-\s]?dl|webrip|"
+        r"hdrip|bluray|brrip|dvdrip|hdtc|camrip|amzn|amazon|netflix|"
+        r"dsnp|hotstar|hoichoi|chorki|aha|esub|org|dual\s*audio|dual|"
+        r"multi\s*audio|hindi\s*dubbed|bengali\s*dubbed|bangla\s*dubbed|"
+        r"4k|2k|uhd|fhd|full\s*hd|hd|sd|2160p|1440p|1080p|720p|"
+        r"576p|480p|360p|x264|x265|h\.?264|h\.?265|hevc|aac|"
+        r"fibwatch\.?com)\b",
+        " ",
+        text,
+    )
+    text = re.sub(r"\.(?:mkv|mp4|m3u8|mov|avi|webm)\b", " ", text)
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return " ".join(text.split())
+
+
+def _movie_identity_key(item: Dict[str, Any]) -> str:
+    """Group the same title/year across different sources into one movie card."""
+    for field_name in ("imdb_id", "tmdb_id"):
+        value = str(item.get(field_name) or "").strip().casefold()
+        if value:
+            return f"{field_name}:{value}"
+
+    raw_name = str(item.get("name") or item.get("title") or "").strip()
+    explicit_year = str(item.get("year") or "").strip()
+    year_match = re.search(r"\b(?:19|20)\d{2}\b", raw_name)
+    year = explicit_year or (year_match.group(0) if year_match else "")
+    title_without_year = re.sub(r"\b(?:19|20)\d{2}\b", " ", raw_name)
+    normalized_title = _normalize_movie_title(title_without_year)
+
+    if normalized_title:
+        return f"title:{normalized_title}:{year}"
+
+    fallback_id = str(item.get("id") or "").strip().casefold()
+    if fallback_id:
+        return f"id:{fallback_id}"
+
+    return (
+        f"fallback:{str(item.get('source_id') or '').casefold()}:"
+        f"{item.get('stream_index', item.get('source_index', 0))}"
+    )
+
+
+def _verification_badge(stream: Dict[str, Any]) -> str:
+    status = str(stream.get("verification_status") or "").strip().casefold()
+    if status in {"verified_global", "verified_proxy", "verified_bd", "verified"}:
+        return "Verified"
+    if status == "stale_last_good":
+        return "Last Good"
+    if status in {"geo_pending", "bd_protected_pending"}:
+        return "Geo/BD"
+    if status == "retryable_pending":
+        return "Temporary"
+    if status == "host_deferred":
+        return "Unconfirmed"
+    return ""
 
 
 def _parse_resolution_height(res_val: Any) -> int:
@@ -291,14 +356,7 @@ def pin_configured_channels_first(
 
 
 def _verification_tier_score(stream: Dict[str, Any]) -> int:
-    """
-    Confidence hierarchy:
-    4 = verified_global / verified_bd / legacy verified
-    3 = verified_proxy
-    2 = stale_last_good
-    1 = bd_protected_pending / geo_pending / retryable_pending / host_deferred
-    0 = failed, unverified, or inconsistent data
-    """
+    """Return a strict confidence tier; higher is better."""
     status = str(stream.get("verification_status") or "").strip().lower()
     confirmed = (
         stream.get("verified") is True
@@ -314,24 +372,25 @@ def _verification_tier_score(stream: Dict[str, Any]) -> int:
     }:
         return 0
 
-    if status == "verified_proxy":
-        return 3 if confirmed else 0
-
     if status in {"verified_global", "verified_bd", "verified"}:
-        return 4 if confirmed else 0
+        return 6 if confirmed else 0
+
+    if status == "verified_proxy":
+        return 5 if confirmed else 0
 
     if confirmed and not status:
-        return 4
+        return 6
 
     if status == "stale_last_good" and publish_allowed:
+        return 4
+
+    if status in {"geo_pending", "bd_protected_pending"} and publish_allowed:
+        return 3
+
+    if status == "retryable_pending" and publish_allowed:
         return 2
 
-    if status in {
-        "bd_protected_pending",
-        "geo_pending",
-        "retryable_pending",
-        "host_deferred",
-    } and publish_allowed:
+    if status == "host_deferred" and publish_allowed:
         return 1
 
     return 0
@@ -488,7 +547,7 @@ def rank_and_select_streams(
 
     selected_streams: List[Dict[str, Any]] = []
 
-    for tier in (4, 3, 2, 1):
+    for tier in (6, 5, 4, 3, 2, 1):
         tier_streams = [
             stream
             for stream in protocol_candidates
@@ -533,8 +592,11 @@ def rank_and_select_streams(
             "headers": b_stream.get("headers", {}),
             "verification_mode": b_stream.get("verification_mode", "local"),
             "verification_status": _verification_label(b_stream),
+            "verification_badge": _verification_badge(b_stream),
             "verified": bool(b_stream.get("verified", False)),
             "publish_allowed": _effective_publish_allowed(b_stream),
+            "source_id": str(b_stream.get("source_id") or ""),
+            "host": _extract_hostname(str(b_stream.get("url") or "")),
         }
         if b_stream.get("drm"):
             backup_item["drm"] = b_stream["drm"]
@@ -560,6 +622,14 @@ def merge_candidates(
 
     max_total = _safe_int(link_policy.get("maximum_total_links", 6), 6, 1)
     max_backups = _safe_int(link_policy.get("maximum_backups", 5), 5, 0)
+    movie_max_total = _safe_int(
+        link_policy.get("movie_maximum_total_links", 4), 4, 1
+    )
+    movie_max_backups = _safe_int(
+        link_policy.get("movie_maximum_backups", 3), 3, 0
+    )
+    movie_max_total = min(movie_max_total, 4)
+    movie_max_backups = min(movie_max_backups, 3, movie_max_total - 1)
     prefer_https = bool(link_policy.get("prefer_https", True))
     allow_http_fallback = bool(link_policy.get("allow_http_fallback", True))
     prefer_different_hosts = bool(link_policy.get("prefer_different_hosts", True))
@@ -599,6 +669,8 @@ def merge_candidates(
                 or f"{c.get('source_id', 'unknown')}:{c.get('stream_index', 0)}"
             )
             group_key = f"{pipeline}:{evt_key or fallback_key}"
+        elif str(pipeline).strip().lower() == "movies":
+            group_key = f"movies:{_movie_identity_key(c)}"
         else:
             fallback_name = re.sub(
                 r"[^\w\s-]",
@@ -643,10 +715,16 @@ def merge_candidates(
             key=_stream_quality_score,
         )
 
+        group_pipeline = str(base_item.get("source_pipeline") or "").strip().lower()
+        selected_max_total = movie_max_total if group_pipeline == "movies" else max_total
+        selected_max_backups = (
+            movie_max_backups if group_pipeline == "movies" else max_backups
+        )
+
         primary, backups = rank_and_select_streams(
             stream_candidates,
-            max_total=max_total,
-            max_backups=max_backups,
+            max_total=selected_max_total,
+            max_backups=selected_max_backups,
             prefer_https=prefer_https,
             allow_http_fallback=allow_http_fallback,
             prefer_different_hosts=prefer_different_hosts,
@@ -676,10 +754,13 @@ def merge_candidates(
             "headers": card_headers,
             "verification_mode": v_mode,
             "verification_status": v_status,
+            "verification_badge": _verification_badge(primary),
             "verified": bool(primary.get("verified", False)),
             "publish_allowed": _effective_publish_allowed(primary),
             "source_pipeline": str(base_item.get("source_pipeline") or ""),
+            "source_id": str(primary.get("source_id") or base_item.get("source_id") or ""),
             "metadata_only": is_metadata_only,
+            "available_link_count": 1 + len(backups),
             "backups": backups,
         }
 
