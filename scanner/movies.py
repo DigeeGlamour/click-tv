@@ -173,12 +173,27 @@ def _resolve_category_precedence(
     return resolved
 
 
-def _movie_sort_key(movie: Dict[str, Any]) -> Tuple[str, str, str]:
+MOVIE_STATUS_PRIORITY = {
+    "verified_global": 0,
+    "verified_bd": 0,
+    "verified": 0,
+    "verified_proxy": 1,
+    "stale_last_good": 2,
+    "geo_pending": 3,
+    "bd_protected_pending": 3,
+    "retryable_pending": 4,
+    "host_deferred": 5,
+}
+
+
+def _movie_sort_key(movie: Dict[str, Any]) -> Tuple[int, str, str, str]:
+    status = str(movie.get("verification_status") or "").strip().casefold()
+    status_priority = MOVIE_STATUS_PRIORITY.get(status, 99)
     name = str(movie.get("name") or movie.get("title") or "").strip()
     normalized_name = re.sub(r"\s+", " ", name).casefold()
     year = str(movie.get("year") or "")
     movie_id = str(movie.get("id") or movie.get("tvg_id") or "")
-    return normalized_name, year, movie_id
+    return status_priority, normalized_name, year, movie_id
 
 
 def paginate_movie_list(
@@ -195,6 +210,11 @@ def paginate_movie_list(
     )
 
     total_count = len(ordered_movies)
+    status_counts: Dict[str, int] = {}
+    for movie in ordered_movies:
+        status = str(movie.get("verification_status") or "unknown").strip() or "unknown"
+        status_counts[status] = status_counts.get(status, 0) + 1
+
     total_pages = (
         (total_count + safe_page_size - 1) // safe_page_size
         if total_count
@@ -229,6 +249,8 @@ def paginate_movie_list(
             "count": len(page_items),
             "total_count": total_count,
             "total_pages": total_pages,
+            "status_counts": status_counts,
+            "status_order": list(MOVIE_STATUS_PRIORITY),
             "items": page_items,
         }
 
@@ -238,6 +260,8 @@ def paginate_movie_list(
         "count": total_count,
         "page_size": safe_page_size,
         "total_pages": total_pages,
+        "status_counts": status_counts,
+        "status_order": list(MOVIE_STATUS_PRIORITY),
         "pages": page_entries,
     }
 
