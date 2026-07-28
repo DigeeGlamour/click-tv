@@ -221,6 +221,77 @@ def _is_movie_candidate(item: Dict[str, Any], mode: str) -> bool:
     return mode in {"movies", "all"} or pipeline == "movies"
 
 
+def _normalize_priority_name(value: Any) -> str:
+    text = str(value or "").casefold()
+    text = re.sub(
+        r"\b(?:official|live|channel|4k|2k|uhd|fhd|full\s*hd|fullhd|"
+        r"hd|sd|2160p|1440p|1080p|720p|576p|480p|360p)\b",
+        " ",
+        text,
+    )
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return " ".join(text.split())
+
+
+def _is_priority_tv_candidate(
+    item: Dict[str, Any],
+    settings: Dict[str, Any],
+) -> bool:
+    """Force manual/configured priority TV candidates into the first wave."""
+    if str(item.get("source_pipeline") or "").strip().casefold() != "tv":
+        return False
+    if item.get("force_verify") is True:
+        return True
+
+    source_id = str(item.get("source_id") or "").strip().casefold()
+    original_pipeline = str(
+        item.get("original_source_pipeline") or ""
+    ).strip().casefold()
+    if (
+        source_id.startswith("manual-")
+        or original_pipeline == "manual"
+        or item.get("manual_source") is True
+    ):
+        return True
+
+    protection = settings.get("channel_protection", {})
+    if not isinstance(protection, dict):
+        protection = {}
+    if not bool(protection.get("always_verify_pinned_channels", True)):
+        return False
+
+    normalized_name = _normalize_priority_name(item.get("name"))
+    if not normalized_name:
+        return False
+
+    pinned = settings.get("pinned_channels", {})
+    if not isinstance(pinned, dict):
+        return False
+
+    for raw_entries in pinned.values():
+        if not isinstance(raw_entries, list):
+            continue
+        for entry in raw_entries:
+            if not isinstance(entry, dict):
+                continue
+            values: List[str] = []
+            canonical = str(entry.get("canonical_name") or "").strip()
+            if canonical:
+                values.append(canonical)
+            aliases = entry.get("aliases")
+            if isinstance(aliases, list):
+                values.extend(str(alias) for alias in aliases)
+            normalized_aliases = {
+                _normalize_priority_name(value)
+                for value in values
+                if _normalize_priority_name(value)
+            }
+            if normalized_name in normalized_aliases:
+                return True
+
+    return False
+
+
 def _is_uncertain_result(item: Dict[str, Any]) -> bool:
     """Return True when a cloud result cannot prove that a movie is dead."""
     http_status = _safe_int(item.get("http_status"), 0)
@@ -1014,6 +1085,7 @@ def run_fast_verification_pipeline(
 
     # Group pools retain ranked later-wave candidates for on-demand expansion.
     groups: Dict[str, Dict[str, Any]] = {}
+    priority_forced = 0
     for index, item in enumerate(items):
         item["_planner_index"] = index
         group = str(item.get("_verification_group") or f"single:{index}")
@@ -1028,7 +1100,12 @@ def run_fast_verification_pipeline(
                 "target": _safe_int(item.get("_verification_target"), 1, 1, 6),
             },
         )
-        if _safe_int(item.get("_verification_wave"), 0) == 0:
+        priority_candidate = _is_priority_tv_candidate(item, settings)
+        if priority_candidate:
+            item["_priority_forced_verification"] = True
+            priority_forced += 1
+
+        if priority_candidate or _safe_int(item.get("_verification_wave"), 0) == 0:
             state["initial"].append(item)
         else:
             state["remaining"].append(item)
@@ -1037,7 +1114,10 @@ def run_fast_verification_pipeline(
     for group in sorted(groups):
         initial = sorted(
             groups[group]["initial"],
-            key=lambda item: _safe_int(item.get("_verification_rank"), 0),
+            key=lambda item: (
+                0 if item.get("_priority_forced_verification") is True else 1,
+                _safe_int(item.get("_verification_rank"), 0),
+            ),
         )
         for item in initial:
             pending_global.append(item)
@@ -1383,6 +1463,7 @@ def run_fast_verification_pipeline(
         f"tail-per-host={tail_per_host_limit}, "
         f"host-sample={host_sample_size}/{host_sample_uncertain_threshold}, "
         f"404-path-sample={path_404_sample_size}/{path_404_threshold}/d{path_group_depth}, "
+        f"priority-forced={priority_forced}, "
         f"budget={time_budget_seconds}s",
         flush=True,
     )
@@ -1758,6 +1839,7 @@ def run_fast_verification_pipeline(
         "cloud_inconclusive_hosts": len(host_disposition.classified),
         "path_404_quarantined": path_404_quarantined,
         "path_404_groups": len(path_404_disposition.classified),
+        "priority_forced_verification": priority_forced,
         "final_global_inflight_limit": dynamic_limit,
         "workers": {
             "global_pool_count": pool_count,
