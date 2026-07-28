@@ -287,10 +287,15 @@
     "maximum_source_bytes": 26214400
   },
   "bd_verification": {
-    "workers": 6,
+    "workers": 8,
     "proxy_base": "https://channelverification.juelgrsan3679.workers.dev",
     "github_only_protection": true,
-    "proxy_timeout_seconds": 5
+    "proxy_timeout_seconds": 8,
+    "publish_uncertain_movies": true,
+    "same_run_second_pass": true,
+    "host_sample_size": 5,
+    "host_sample_uncertain_threshold": 4,
+    "host_second_pass_sample_size": 8
   },
   "link_policy": {
     "maximum_total_links": 6,
@@ -322,7 +327,11 @@
       "upcoming": 420,
       "movies": 2400,
       "all": 3600
-    }
+    },
+    "shared_total_inflight_limit": 120,
+    "bd_reserved_inflight_slots": 20,
+    "bd_per_host_limit": 8,
+    "combined_per_host_limit": 32
   },
   "content_routing": {
     "discover_movies_in_tv_sources": true,
@@ -375,9 +384,16 @@
       "minimum_total_inflight": 80,
       "per_host_limit": 24,
       "bd_pool_count": 5,
-      "bd_workers_per_pool": 6,
+      "bd_workers_per_pool": 8,
       "tail_per_host_limit": 32,
-      "tail_threshold": 700
+      "tail_threshold": 700,
+      "shared_total_inflight_limit": 120,
+      "bd_reserved_inflight_slots": 20,
+      "bd_per_host_limit": 8,
+      "combined_per_host_limit": 32,
+      "host_sample_size": 5,
+      "host_sample_uncertain_threshold": 4,
+      "host_second_pass_sample_size": 8
     },
     "all": {
       "pool_count": 5,
@@ -385,9 +401,16 @@
       "minimum_total_inflight": 80,
       "per_host_limit": 24,
       "bd_pool_count": 5,
-      "bd_workers_per_pool": 6,
+      "bd_workers_per_pool": 8,
       "tail_per_host_limit": 32,
-      "tail_threshold": 900
+      "tail_threshold": 900,
+      "shared_total_inflight_limit": 120,
+      "bd_reserved_inflight_slots": 20,
+      "bd_per_host_limit": 8,
+      "combined_per_host_limit": 32,
+      "host_sample_size": 5,
+      "host_sample_uncertain_threshold": 4,
+      "host_second_pass_sample_size": 8
     }
   }
 }
