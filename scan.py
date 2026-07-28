@@ -481,17 +481,9 @@ def run_pipeline(mode: str = "all") -> Dict[str, Any]:
 
     mode_clean = str(mode or "all").strip().lower()
     pipeline_modes = {
-        "all",
-        "full-audit",
         "channels",
-        "tv",
-        "channels-discovery",
-        "movies",
-        "movies-discovery",
         "events",
-        "today",
-        "today_match",
-        "upcoming",
+        "movies",
     }
     if mode_clean not in pipeline_modes:
         raise ValueError(f"Unsupported pipeline mode: {mode_clean}")
@@ -571,27 +563,20 @@ def run_pipeline(mode: str = "all") -> Dict[str, Any]:
     movies_data = None
     events_data = None
 
-    if mode_clean in {"all", "full-audit", "tv", "channels", "channels-discovery"}:
+    if mode_clean == "channels":
         print("\n[Step 4a/5] Processing Live TV channels...")
         from scanner.channels import process_tv_channels
 
         channels_data = process_tv_channels()
         _sanitize_channel_quarantine(channels_data)
 
-    if mode_clean in {"all", "full-audit", "movies", "movies-discovery"}:
+    if mode_clean == "movies":
         print("\n[Step 4b/5] Processing Movie VOD pagination...")
         from scanner.movies import process_movies
 
         movies_data = process_movies()
 
-    if mode_clean in {
-        "all",
-        "full-audit",
-        "events",
-        "today",
-        "today_match",
-        "upcoming",
-    }:
+    if mode_clean == "events":
         print(
             "\n[Step 4c/5] Processing Today Match and Upcoming events..."
         )
@@ -648,52 +633,20 @@ def main() -> int:
     parser.add_argument(
         "mode",
         nargs="?",
-        default="all",
+        default="channels",
         choices=[
-            "all",
-            "full-audit",
             "channels",
-            "tv",
-            "channels-discovery",
-            "movies",
-            "movies-discovery",
             "events",
-            "today",
-            "today_match",
-            "upcoming",
-            "collect",
-            "normalize",
-            "verify-global",
-            "verify-bd",
+            "movies",
         ],
-        help="Scanner operation to execute (default: all)",
+        help="Scanner mode: channels, events, or movies",
     )
 
     args = parser.parse_args()
     mode_choice = str(args.mode).lower()
 
     try:
-        if mode_choice == "collect":
-            _run_collect_command()
-        elif mode_choice == "normalize":
-            _run_normalize_command()
-        elif mode_choice == "verify-global":
-            normalize_working_candidates()
-            summary = verify_all_candidates()
-            print(
-                "Global verification completed: "
-                f"{summary.get('total_verified', 0)} verified"
-            )
-        elif mode_choice == "verify-bd":
-            _ensure_project_root()
-            summary = verify_bd_candidates()
-            print(
-                "BD verification completed: "
-                f"{summary.get('total_publishable', 0)} publishable"
-            )
-        else:
-            run_pipeline(mode_choice)
-
+        run_pipeline(mode_choice)
         return 0
     except KeyboardInterrupt:
         print("\nScanner cancelled by user.", file=sys.stderr)
