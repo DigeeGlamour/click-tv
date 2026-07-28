@@ -1,0 +1,172 @@
+name: Live Signal Scanner
+
+on:
+  schedule:
+    # Today Match + Upcoming: প্রতি ২ ঘণ্টা
+    - cron: "7 */2 * * *"
+      timezone: "Asia/Dhaka"
+
+    # Live TV Channels: প্রতি ৬ ঘণ্টা
+    - cron: "17 */6 * * *"
+      timezone: "Asia/Dhaka"
+
+    # Movies: প্রতি দ্বিতীয় calendar date ভোর ৪:২৭
+    - cron: "27 4 */2 * *"
+      timezone: "Asia/Dhaka"
+
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Select Scan Mode"
+        required: true
+        default: "channels"
+        type: choice
+        options:
+          - channels
+          - events
+          - today
+          - upcoming
+          - movies
+          - all
+
+permissions:
+  contents: write
+
+concurrency:
+  group: live-signal-data-writer
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Validate scanner files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "Checking required scanner files..."
+
+          test -f scan.py
+          test -f config/settings.json
+          test -f scanner/source_loader.py
+          test -f scanner/normalizer.py
+          test -f scanner/planner.py
+          test -f scanner/verifier.py
+          test -f scanner/bd_verifier.py
+          test -f scanner/channels.py
+          test -f scanner/movies.py
+          test -f scanner/events.py
+          test -f scanner/output.py
+
+          python -m py_compile \
+            scan.py \
+            scanner/*.py \
+            scanner/parsers/*.py
+
+          python - <<'PY'
+          from scanner.planner import plan_candidates
+          from scanner.channels import process_tv_channels
+          from scanner.movies import process_movies
+          from scanner.events import process_events
+          from scanner.output import publish_scan_outputs
+
+          print("Required scanner functions imported successfully.")
+          print("Scanner preflight validation passed.")
+          PY
+
+      - name: Select scan mode
+        id: scan_mode
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            MODE="${{ inputs.mode }}"
+          elif [[ "${{ github.event.schedule }}" == "7 */2 * * *" ]]; then
+            MODE="events"
+          elif [[ "${{ github.event.schedule }}" == "17 */6 * * *" ]]; then
+            MODE="channels"
+          elif [[ "${{ github.event.schedule }}" == "27 4 */2 * *" ]]; then
+            MODE="movies"
+          else
+            MODE="channels"
+          fi
+
+          if [[ -z "$MODE" ]]; then
+            MODE="channels"
+          fi
+
+          echo "GitHub event: ${{ github.event_name }}"
+          echo "Selected scan mode: $MODE"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+
+      - name: Run scanner
+        shell: bash
+        env:
+          PYTHONUNBUFFERED: "1"
+          PYTHONFAULTHANDLER: "1"
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          set -euo pipefail
+
+          MODE="${{ steps.scan_mode.outputs.mode }}"
+
+          echo "============================================================"
+          echo "LIVE SIGNAL SCANNER STARTED"
+          echo "Mode: $MODE"
+          echo "Commit: $(git rev-parse --short HEAD)"
+          echo "Started: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          python --version
+          echo "============================================================"
+
+          python -u scan.py "$MODE" 2>&1 | tee scanner-run.log
+
+          echo "============================================================"
+          echo "LIVE SIGNAL SCANNER FINISHED"
+          echo "Mode: $MODE"
+          echo "Finished: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo "============================================================"
+
+      - name: Commit and push updated data
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "Live Signal Scanner"
+          git config user.email "scanner@users.noreply.github.com"
+
+          git add data reports state
+
+          if git diff --cached --quiet; then
+            echo "No updated data found. Nothing to commit."
+            exit 0
+          fi
+
+          git commit -m "Auto update: ${{ steps.scan_mode.outputs.mode }} [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
+
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Upload scanner log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scanner-failure-log-${{ github.run_number }}
+          path: scanner-run.log
+          if-no-files-found: ignore
+          retention-days: 3
