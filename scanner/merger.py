@@ -141,7 +141,13 @@ def _is_publishable_stream(stream: Dict[str, Any]) -> bool:
 
     return (
         publish_allowed
-        and status in {"stale_last_good", "bd_protected_pending"}
+        and status in {
+            "stale_last_good",
+            "bd_protected_pending",
+            "geo_pending",
+            "retryable_pending",
+            "host_deferred",
+        }
     )
 
 
@@ -290,7 +296,7 @@ def _verification_tier_score(stream: Dict[str, Any]) -> int:
     4 = verified_global / verified_bd / legacy verified
     3 = verified_proxy
     2 = stale_last_good
-    1 = bd_protected_pending
+    1 = bd_protected_pending / geo_pending / retryable_pending / host_deferred
     0 = failed, unverified, or inconsistent data
     """
     status = str(stream.get("verification_status") or "").strip().lower()
@@ -320,7 +326,12 @@ def _verification_tier_score(stream: Dict[str, Any]) -> int:
     if status == "stale_last_good" and publish_allowed:
         return 2
 
-    if status == "bd_protected_pending" and publish_allowed:
+    if status in {
+        "bd_protected_pending",
+        "geo_pending",
+        "retryable_pending",
+        "host_deferred",
+    } and publish_allowed:
         return 1
 
     return 0
