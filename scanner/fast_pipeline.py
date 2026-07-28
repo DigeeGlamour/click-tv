@@ -180,22 +180,148 @@ def _publishable(item: Dict[str, Any]) -> bool:
     return item.get("verified") is True or item.get("publish_allowed") is True
 
 
+def _is_movie_candidate(item: Dict[str, Any], mode: str) -> bool:
+    pipeline = str(item.get("source_pipeline") or "").strip().casefold()
+    return mode in {"movies", "all"} or pipeline == "movies"
+
+
+def _is_uncertain_result(item: Dict[str, Any]) -> bool:
+    """Return True when a cloud result cannot prove that a movie is dead."""
+    http_status = _safe_int(item.get("http_status"), 0)
+    error_kind = _error_kind(item)
+    status = str(item.get("verification_status") or "").strip().casefold()
+
+    if http_status in {401, 403, 429, 451, 500, 502, 503, 504}:
+        return True
+
+    if error_kind in {
+        "timeout",
+        "dns",
+        "ssl",
+        "connection",
+        "network",
+        "host_circuit_open",
+    }:
+        return True
+
+    return status in {
+        "needs_bd_check",
+        "bd_protected_pending",
+        "geo_pending",
+        "retryable_pending",
+        "host_deferred",
+        "stale_last_good",
+    }
+
+
+def _pending_movie_result(
+    item: Dict[str, Any],
+    *,
+    status: Optional[str] = None,
+    note: str = "",
+    mode: str = "cloud_inconclusive",
+) -> Dict[str, Any]:
+    """Keep an uncertain movie publishable without claiming verification."""
+    result = dict(item)
+    http_status = _safe_int(result.get("http_status"), 0)
+    error_kind = _error_kind(result)
+
+    if status is None:
+        if http_status in {429, 500, 502, 503, 504}:
+            status = "retryable_pending"
+        elif error_kind == "host_circuit_open":
+            status = "host_deferred"
+        else:
+            status = "geo_pending"
+
+    result.update(
+        verified=False,
+        publish_allowed=True,
+        verification_status=status,
+        verification_mode=mode,
+        verification_checked_at=_utc_now(),
+    )
+
+    if note:
+        result["verification_note"] = note
+
+    return result
+
+
+class HostDispositionRegistry:
+    """Classify hosts from a very small same-run sample.
+
+    When a movie host repeatedly returns only 403/451/transport failures and
+    never returns a playable sample, checking thousands of URLs from the same
+    cloud location is both slow and misleading. The remaining URLs are kept as
+    host_deferred/geo_pending instead of being mass-failed.
+    """
+
+    def __init__(
+        self,
+        sample_size: int = 5,
+        uncertain_threshold: int = 4,
+    ) -> None:
+        self.sample_size = max(3, int(sample_size))
+        self.uncertain_threshold = max(
+            2,
+            min(self.sample_size, int(uncertain_threshold)),
+        )
+        self.samples: Dict[str, int] = defaultdict(int)
+        self.verified: Dict[str, int] = defaultdict(int)
+        self.uncertain: Dict[str, int] = defaultdict(int)
+        self.permanent: Dict[str, int] = defaultdict(int)
+        self.classified: Dict[str, str] = {}
+
+    def observe(self, host: str, result: Dict[str, Any]) -> None:
+        if not host or host in self.classified:
+            return
+
+        self.samples[host] += 1
+
+        if result.get("verified") is True:
+            self.verified[host] += 1
+        else:
+            http_status = _safe_int(result.get("http_status"), 0)
+            error_kind = _error_kind(result)
+
+            if http_status in {404, 410} or error_kind in {
+                "invalid_content",
+                "invalid_manifest",
+                "html",
+                "unsupported",
+                "media_signature",
+            }:
+                self.permanent[host] += 1
+            elif _is_uncertain_result(result):
+                self.uncertain[host] += 1
+
+        if (
+            self.samples[host] >= self.sample_size
+            and self.verified[host] == 0
+            and self.uncertain[host] >= self.uncertain_threshold
+        ):
+            self.classified[host] = "cloud_inconclusive"
+
+    def should_defer(self, host: str) -> bool:
+        return self.classified.get(host) == "cloud_inconclusive"
+
+    def classification(self, host: str) -> str:
+        return self.classified.get(host, "")
+
+
 def _should_submit_proxy_check(
     item: Dict[str, Any],
     protection_rules: Dict[str, Any],
     mode: str,
 ) -> bool:
-    """Return True only when a proxy/BD re-check can realistically help.
+    """Return True when an immediate same-run second pass can help.
 
-    Permanent dead responses (404/410), invalid HTML/media responses and ordinary
-    client errors are not sent to the proxy queue. This is especially important
-    for large movie scans where thousands of dead direct-file URLs can otherwise
-    create a long BD tail after global verification has already finished.
+    Movie 403/451/429/5xx/transport failures are eligible even when the host is
+    not on the trusted BD list. This prevents a cloud-only failure from being
+    treated as proof that the movie is dead.
     """
     if item.get("verified") is True:
-        return False
-
-    if not _eligible_for_github_protection(item, protection_rules):
         return False
 
     http_status = _safe_int(item.get("http_status"), 0)
@@ -203,11 +329,10 @@ def _should_submit_proxy_check(
     permanent_codes = set(
         protection_rules.get("permanent_http_status_codes", {404, 410})
     )
+
     if http_status in permanent_codes:
         return False
 
-    # A proxy cannot turn an HTML error page, malformed manifest or unsupported
-    # direct file response into a valid media stream.
     if error_kind in {
         "invalid_content",
         "invalid_manifest",
@@ -218,6 +343,12 @@ def _should_submit_proxy_check(
         return False
 
     if http_status in {400, 405, 406, 409, 415, 416, 422}:
+        return False
+
+    if _is_movie_candidate(item, mode) and _is_uncertain_result(item):
+        return True
+
+    if not _eligible_for_github_protection(item, protection_rules):
         return False
 
     protect_codes = set(
@@ -239,13 +370,19 @@ def _should_submit_proxy_check(
         "ssl",
         "connection",
         "network",
+        "host_circuit_open",
     }:
         return True
 
-    # Preserve explicit BD-pending status only when it was produced by the
-    # verifier for a trusted candidate and was not ruled out above.
     status = str(item.get("verification_status") or "").strip().casefold()
-    return status in {"needs_bd_check", "bd_protected_pending", "stale_last_good"}
+    return status in {
+        "needs_bd_check",
+        "bd_protected_pending",
+        "geo_pending",
+        "retryable_pending",
+        "host_deferred",
+        "stale_last_good",
+    }
 
 
 class HostCircuitRegistry:
@@ -460,7 +597,7 @@ def _mode_worker_profile(
             "workers_per_pool": 20,
             "minimum_total_inflight": 80,
             "bd_pool_count": 5,
-            "bd_workers_per_pool": 6,
+            "bd_workers_per_pool": 8,
             "per_host_limit": 24,
             "tail_per_host_limit": 32,
             "tail_threshold": 700,
@@ -470,7 +607,7 @@ def _mode_worker_profile(
             "workers_per_pool": 20,
             "minimum_total_inflight": 80,
             "bd_pool_count": 5,
-            "bd_workers_per_pool": 6,
+            "bd_workers_per_pool": 8,
             "per_host_limit": 24,
             "tail_per_host_limit": 32,
             "tail_threshold": 900,
@@ -577,6 +714,88 @@ def _mode_worker_profile(
         5000,
     )
 
+    shared_total_inflight_limit = _safe_int(
+        mode_config.get(
+            "shared_total_inflight_limit",
+            pipeline_cfg.get(
+                "shared_total_inflight_limit",
+                total_workers + min(total_bd_workers, 20),
+            ),
+        ),
+        total_workers + min(total_bd_workers, 20),
+        max(total_workers, total_bd_workers),
+        total_workers + total_bd_workers,
+    )
+    bd_reserved_inflight_slots = _safe_int(
+        mode_config.get(
+            "bd_reserved_inflight_slots",
+            pipeline_cfg.get("bd_reserved_inflight_slots", min(20, total_bd_workers)),
+        ),
+        min(20, total_bd_workers),
+        0,
+        total_bd_workers,
+    )
+    bd_per_host_limit = _safe_int(
+        mode_config.get(
+            "bd_per_host_limit",
+            pipeline_cfg.get("bd_per_host_limit", max(2, total_bd_workers // 5)),
+        ),
+        max(2, total_bd_workers // 5),
+        1,
+        total_bd_workers,
+    )
+    combined_per_host_limit = _safe_int(
+        mode_config.get(
+            "combined_per_host_limit",
+            pipeline_cfg.get(
+                "combined_per_host_limit",
+                per_host_limit + bd_per_host_limit,
+            ),
+        ),
+        per_host_limit + bd_per_host_limit,
+        max(per_host_limit, bd_per_host_limit),
+        per_host_limit + total_bd_workers,
+    )
+    host_sample_size = _safe_int(
+        mode_config.get(
+            "host_sample_size",
+            settings.get("bd_verification", {}).get("host_sample_size", 5)
+            if isinstance(settings.get("bd_verification"), dict)
+            else 5,
+        ),
+        5,
+        3,
+        20,
+    )
+    host_sample_uncertain_threshold = _safe_int(
+        mode_config.get(
+            "host_sample_uncertain_threshold",
+            settings.get("bd_verification", {}).get(
+                "host_sample_uncertain_threshold",
+                max(3, host_sample_size - 1),
+            )
+            if isinstance(settings.get("bd_verification"), dict)
+            else max(3, host_sample_size - 1),
+        ),
+        max(3, host_sample_size - 1),
+        2,
+        host_sample_size,
+    )
+    host_second_pass_sample_size = _safe_int(
+        mode_config.get(
+            "host_second_pass_sample_size",
+            settings.get("bd_verification", {}).get(
+                "host_second_pass_sample_size",
+                8,
+            )
+            if isinstance(settings.get("bd_verification"), dict)
+            else 8,
+        ),
+        8,
+        1,
+        40,
+    )
+
     return {
         "pool_count": pool_count,
         "workers_per_pool": workers_per_pool,
@@ -588,6 +807,13 @@ def _mode_worker_profile(
         "per_host_limit": per_host_limit,
         "tail_per_host_limit": tail_per_host_limit,
         "tail_threshold": tail_threshold,
+        "shared_total_inflight_limit": shared_total_inflight_limit,
+        "bd_reserved_inflight_slots": bd_reserved_inflight_slots,
+        "bd_per_host_limit": bd_per_host_limit,
+        "combined_per_host_limit": combined_per_host_limit,
+        "host_sample_size": host_sample_size,
+        "host_sample_uncertain_threshold": host_sample_uncertain_threshold,
+        "host_second_pass_sample_size": host_second_pass_sample_size,
     }
 
 
@@ -634,6 +860,23 @@ def run_fast_verification_pipeline(
     per_host_limit = worker_profile["per_host_limit"]
     tail_per_host_limit = worker_profile["tail_per_host_limit"]
     tail_threshold = worker_profile["tail_threshold"]
+    shared_total_inflight_limit = worker_profile[
+        "shared_total_inflight_limit"
+    ]
+    bd_reserved_inflight_slots = worker_profile[
+        "bd_reserved_inflight_slots"
+    ]
+    bd_per_host_limit = worker_profile["bd_per_host_limit"]
+    combined_per_host_limit = worker_profile[
+        "combined_per_host_limit"
+    ]
+    host_sample_size = worker_profile["host_sample_size"]
+    host_sample_uncertain_threshold = worker_profile[
+        "host_sample_uncertain_threshold"
+    ]
+    host_second_pass_sample_size = worker_profile[
+        "host_second_pass_sample_size"
+    ]
     host_failure_threshold = _safe_int(
         pipeline_cfg.get("host_failure_threshold", 3), 3, 2, 10
     )
@@ -689,6 +932,12 @@ def run_fast_verification_pipeline(
         cooldown_seconds=host_cooldown,
         per_host_limit=per_host_limit,
     )
+    host_disposition = HostDispositionRegistry(
+        sample_size=host_sample_size,
+        uncertain_threshold=host_sample_uncertain_threshold,
+    )
+    bd_inflight_by_host: Dict[str, int] = defaultdict(int)
+    host_second_pass_selected: Dict[str, int] = defaultdict(int)
 
     global_futures: Dict[
         concurrent.futures.Future,
@@ -696,7 +945,7 @@ def run_fast_verification_pipeline(
     ] = {}
     bd_futures: Dict[
         concurrent.futures.Future,
-        Tuple[Dict[str, Any], int],
+        Tuple[Dict[str, Any], int, str],
     ] = {}
     pending_bd: Deque[Dict[str, Any]] = deque()
     global_results: List[Dict[str, Any]] = []
@@ -709,6 +958,8 @@ def run_fast_verification_pipeline(
     bd_selected = 0
     bd_submitted = 0
     bd_completed = 0
+    host_sample_deferred = 0
+    circuit_deferred = 0
     next_global_progress = progress_interval
     next_bd_progress = progress_interval
     dynamic_limit = max_global_workers
@@ -738,10 +989,17 @@ def run_fast_verification_pipeline(
                 "bd_inflight": len(bd_futures),
                 "dynamic_global_limit": dynamic_limit,
                 "worker_pools": {
-                    "pool_count": pool_count,
-                    "workers_per_pool": workers_per_pool,
-                    "total_workers": max_global_workers,
+                    "global_pool_count": pool_count,
+                    "global_workers_per_pool": workers_per_pool,
+                    "global_total_workers": max_global_workers,
+                    "bd_pool_count": bd_pool_count,
+                    "bd_workers_per_pool": bd_workers_per_pool,
+                    "bd_total_workers": max_bd_workers,
+                    "shared_total_inflight_limit": shared_total_inflight_limit,
+                    "bd_reserved_inflight_slots": bd_reserved_inflight_slots,
                 },
+                "host_sample_deferred": host_sample_deferred,
+                "circuit_deferred": circuit_deferred,
             },
         )
 
@@ -775,9 +1033,37 @@ def run_fast_verification_pipeline(
 
     def route_global_result(result: Dict[str, Any]) -> None:
         nonlocal bd_selected
+        host = _hostname(result)
+
+        if _is_movie_candidate(result, mode):
+            host_disposition.observe(host, result)
+
         if _should_submit_proxy_check(result, protection_rules, mode):
+            # Once a host sample has already proved that the cloud location is
+            # inconclusive, only a small same-run second-pass sample is useful.
+            # The remaining URLs are preserved without flooding the proxy queue.
+            if (
+                _is_movie_candidate(result, mode)
+                and host_disposition.should_defer(host)
+                and host_second_pass_selected[host]
+                >= host_second_pass_sample_size
+            ):
+                finalize(
+                    _pending_movie_result(
+                        result,
+                        note=(
+                            "Host sample was cloud-inconclusive; the movie was "
+                            "kept without claiming successful verification"
+                        ),
+                        mode="same_run_host_sample",
+                    )
+                )
+                return
+
             pending_bd.append(dict(result))
             bd_selected += 1
+            if host:
+                host_second_pass_selected[host] += 1
             return
 
         processed = verify_bd_stream(
@@ -799,18 +1085,67 @@ def run_fast_verification_pipeline(
 
     def fill_bd() -> None:
         nonlocal bd_submitted
-        while pending_bd and len(bd_futures) < max_bd_workers:
+        rotations = 0
+        max_rotations = max(1, len(pending_bd))
+
+        while (
+            pending_bd
+            and len(bd_futures) < max_bd_workers
+            and (len(global_futures) + len(bd_futures))
+            < shared_total_inflight_limit
+        ):
             global_result = pending_bd.popleft()
+            host = _hostname(global_result)
+
+            if host and (
+                bd_inflight_by_host[host] >= bd_per_host_limit
+                or (
+                    host_registry.inflight.get(host, 0)
+                    + bd_inflight_by_host[host]
+                )
+                >= combined_per_host_limit
+            ):
+                pending_bd.append(global_result)
+                rotations += 1
+                if rotations >= max_rotations:
+                    break
+                continue
+
+            rotations = 0
             future, pool_index = bd_executor.submit(
                 _verify_via_proxy_workers,
                 dict(global_result),
                 settings,
             )
-            bd_futures[future] = (global_result, pool_index)
+            bd_futures[future] = (global_result, pool_index, host)
+            if host:
+                bd_inflight_by_host[host] += 1
             bd_submitted += 1
 
     def mark_circuit_skipped(item: Dict[str, Any], host: str) -> None:
+        nonlocal circuit_deferred
         host_registry.skipped_count += 1
+
+        if _is_movie_candidate(item, mode):
+            circuit_deferred += 1
+            result = _pending_movie_result(
+                item,
+                status="host_deferred",
+                note=(
+                    "Host circuit opened after repeated cloud transport "
+                    "failures; the movie was kept instead of being mass-failed"
+                ),
+                mode="same_run_host_circuit",
+            )
+            result["verification_error_kind"] = "host_circuit_open"
+            result["verification_error"] = (
+                "Host circuit temporarily open after repeated transport "
+                f"failures: {host}"
+            )
+            global_results.append(result)
+            finalize(result)
+            return
+
         result = _failure_result(
             item,
             f"Host circuit temporarily open after repeated transport failures: {host}",
@@ -820,16 +1155,57 @@ def run_fast_verification_pipeline(
         route_global_result(result)
 
     def fill_global() -> None:
-        nonlocal global_network_submitted
+        nonlocal global_network_submitted, host_sample_deferred
         if budget_exhausted:
             return
 
+        reserve_for_bd = 0
+        if pending_bd:
+            reserve_for_bd = min(
+                bd_reserved_inflight_slots,
+                max(0, max_bd_workers - len(bd_futures)),
+            )
+
+        global_capacity = min(
+            dynamic_limit,
+            max(
+                0,
+                shared_total_inflight_limit
+                - len(bd_futures)
+                - reserve_for_bd,
+            ),
+        )
+
         rotations = 0
         max_rotations = max(1, len(pending_global))
-        while pending_global and len(global_futures) < dynamic_limit:
+
+        while pending_global and len(global_futures) < global_capacity:
             item = pending_global.popleft()
-            group = str(item.get("_verification_group") or f"single:{item.get('_planner_index', 0)}")
+            group = str(
+                item.get("_verification_group")
+                or f"single:{item.get('_planner_index', 0)}"
+            )
             host = _hostname(item)
+
+            if (
+                _is_movie_candidate(item, mode)
+                and host_disposition.should_defer(host)
+            ):
+                groups[group]["pending"] += 1
+                host_sample_deferred += 1
+                result = _pending_movie_result(
+                    item,
+                    status="host_deferred",
+                    note=(
+                        "The host sample was cloud-inconclusive; remaining "
+                        "movies were kept without repeating the same failure"
+                    ),
+                    mode="same_run_host_sample",
+                )
+                global_results.append(result)
+                finalize(result)
+                rotations = 0
+                continue
 
             if host_registry.is_open(host):
                 groups[group]["pending"] += 1
@@ -861,7 +1237,12 @@ def run_fast_verification_pipeline(
         f"pool={len(items)}, groups={len(groups)}, "
         f"global-pools={pool_count}x{workers_per_pool}={max_global_workers}, "
         f"bd-pools={bd_pool_count}x{bd_workers_per_pool}={max_bd_workers}, "
-        f"per-host={per_host_limit}, tail-per-host={tail_per_host_limit}, "
+        f"shared-limit={shared_total_inflight_limit}, "
+        f"global-per-host={per_host_limit}, "
+        f"bd-per-host={bd_per_host_limit}, "
+        f"combined-per-host={combined_per_host_limit}, "
+        f"tail-per-host={tail_per_host_limit}, "
+        f"host-sample={host_sample_size}/{host_sample_uncertain_threshold}, "
         f"budget={time_budget_seconds}s",
         flush=True,
     )
@@ -1006,8 +1387,13 @@ def run_fast_verification_pipeline(
                             )
 
                 elif future in bd_futures:
-                    global_result, bd_pool_index = bd_futures.pop(future)
+                    global_result, bd_pool_index, bd_host = bd_futures.pop(future)
                     bd_executor.completed(bd_pool_index)
+                    if bd_host:
+                        bd_inflight_by_host[bd_host] = max(
+                            0,
+                            bd_inflight_by_host[bd_host] - 1,
+                        )
                     try:
                         proxy_result = future.result()
                     except Exception as error:
@@ -1029,18 +1415,37 @@ def run_fast_verification_pipeline(
                             proxy_result=proxy_result,
                         )
                     except Exception as error:
-                        processed = dict(global_result)
-                        processed.update(
-                            verified=False,
-                            publish_allowed=bool(global_result.get("previously_published")),
-                            verification_status=(
-                                "stale_last_good"
-                                if global_result.get("previously_published")
-                                else "failed_bd"
-                            ),
-                            verification_mode="pipeline_exception",
-                            verification_error=f"BD pipeline exception: {error}",
-                        )
+                        if _is_movie_candidate(global_result, mode):
+                            processed = _pending_movie_result(
+                                global_result,
+                                status="retryable_pending",
+                                note=(
+                                    "The same-run second pass raised an internal "
+                                    "exception; the movie was kept without "
+                                    "claiming successful verification"
+                                ),
+                                mode="pipeline_exception",
+                            )
+                            processed["verification_error"] = (
+                                f"BD pipeline exception: {error}"
+                            )
+                        else:
+                            processed = dict(global_result)
+                            processed.update(
+                                verified=False,
+                                publish_allowed=bool(
+                                    global_result.get("previously_published")
+                                ),
+                                verification_status=(
+                                    "stale_last_good"
+                                    if global_result.get("previously_published")
+                                    else "failed_bd"
+                                ),
+                                verification_mode="pipeline_exception",
+                                verification_error=(
+                                    f"BD pipeline exception: {error}"
+                                ),
+                            )
                     bd_completed += 1
                     finalize(processed)
 
@@ -1075,13 +1480,34 @@ def run_fast_verification_pipeline(
                         f"for final {remaining_global} global candidates",
                         flush=True,
                     )
+                fill_bd()
                 fill_global()
             fill_bd()
 
-        # Let already-running work finish, but do not create new adaptive work.
+        # Let already-running work finish, but do not create new network work.
+        # Movie scans are one-shot: an unprocessed uncertain movie is preserved
+        # in this same output instead of depending on a future scheduled retry.
         if budget_exhausted:
             for item in list(pending_global):
-                if item.get("previously_published") is True:
+                if _is_movie_candidate(item, mode):
+                    group = str(
+                        item.get("_verification_group")
+                        or f"single:{item.get('_planner_index', 0)}"
+                    )
+                    groups[group]["pending"] += 1
+                    fallback = _pending_movie_result(
+                        item,
+                        status="retryable_pending",
+                        note=(
+                            "The one-shot scan budget ended before a network "
+                            "check; the movie was kept for direct user playback"
+                        ),
+                        mode="same_run_budget_fallback",
+                    )
+                    global_results.append(fallback)
+                    budget_fallbacks.append(fallback)
+                    finalize(fallback)
+                elif item.get("previously_published") is True:
                     fallback = _budget_exhausted_result(item)
                     global_results.append(fallback)
                     processed = verify_bd_stream(
@@ -1090,7 +1516,14 @@ def run_fast_verification_pipeline(
                         stream_history=stream_history,
                         protection_state=protection_state,
                         bd_rules=protection_rules,
-                        proxy_result=(False, {"proxy_error": "Budget fallback", "proxy_http_status": 0, "proxy_name": ""}),
+                        proxy_result=(
+                            False,
+                            {
+                                "proxy_error": "Budget fallback",
+                                "proxy_http_status": 0,
+                                "proxy_name": "",
+                            },
+                        ),
                     )
                     budget_fallbacks.append(processed)
                     final_results.append(processed)
@@ -1180,6 +1613,9 @@ def run_fast_verification_pipeline(
         "budget_exhausted": budget_exhausted,
         "host_circuits_opened": host_registry.opened_count,
         "host_circuit_skips": host_registry.skipped_count,
+        "host_sample_deferred": host_sample_deferred,
+        "circuit_deferred": circuit_deferred,
+        "cloud_inconclusive_hosts": len(host_disposition.classified),
         "final_global_inflight_limit": dynamic_limit,
         "workers": {
             "global_pool_count": pool_count,
@@ -1189,8 +1625,17 @@ def run_fast_verification_pipeline(
             "bd_pool_count": bd_pool_count,
             "bd_workers_per_pool": bd_workers_per_pool,
             "bd_total_max": max_bd_workers,
-            "per_host": per_host_limit,
+            "shared_total_inflight_limit": shared_total_inflight_limit,
+            "bd_reserved_inflight_slots": bd_reserved_inflight_slots,
+            "global_per_host": per_host_limit,
+            "bd_per_host": bd_per_host_limit,
+            "combined_per_host": combined_per_host_limit,
             "tail_per_host": tail_per_host_limit,
+            "host_sample_size": host_sample_size,
+            "host_sample_uncertain_threshold": (
+                host_sample_uncertain_threshold
+            ),
+            "host_second_pass_sample_size": host_second_pass_sample_size,
         },
     }
     _atomic_write_json(pipeline_report_path, performance)
@@ -1201,6 +1646,7 @@ def run_fast_verification_pipeline(
         f"global checked={global_network_submitted}, "
         f"BD selected={bd_selected}, "
         f"BD checked={bd_submitted}, "
+        f"host deferred={host_sample_deferred + circuit_deferred}, "
         f"adaptive skipped={len(adaptive_skipped)}, "
         f"publishable={len(publishable)}, "
         f"elapsed={elapsed_seconds}s",
