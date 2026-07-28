@@ -104,6 +104,42 @@ def _hostname(item: Dict[str, Any]) -> str:
         return ""
 
 
+def _path_group(item: Dict[str, Any], depth: int = 3) -> str:
+    """Return host + a shallow path prefix, never the whole domain alone."""
+    url = str(item.get("url") or "").split("|", 1)[0].strip()
+    try:
+        parsed = urlsplit(url)
+        host = (parsed.hostname or "").casefold()
+        segments = [segment.casefold() for segment in parsed.path.split("/") if segment]
+    except Exception:
+        return ""
+    if not host:
+        return ""
+    safe_depth = max(1, min(5, int(depth)))
+    prefix = "/" + "/".join(segments[:safe_depth]) if segments else "/"
+    return f"{host}:{prefix}"
+
+
+def _quarantine_404_result(item: Dict[str, Any], path_group: str) -> Dict[str, Any]:
+    result = dict(item)
+    result.update(
+        verified=False,
+        publish_allowed=False,
+        verification_status="quarantine",
+        verification_mode="same_run_404_path_sample",
+        verification_checked_at=_utc_now(),
+        verification_error=(
+            "Path group quarantined for this scan after a 404 sample majority: "
+            f"{path_group}"
+        ),
+        verification_error_kind="path_404_quarantine",
+        quarantine_reason="path_group_404_sample_majority",
+        http_status=404,
+        response_time_ms=0,
+    )
+    return result
+
+
 def _error_kind(item: Dict[str, Any]) -> str:
     explicit = str(
         item.get("verification_error_kind")
@@ -246,6 +282,51 @@ def _pending_movie_result(
         result["verification_note"] = note
 
     return result
+
+
+class Path404DispositionRegistry:
+    """Quarantine only a host/path prefix when its small sample is mostly 404.
+
+    This intentionally does not blacklist the entire domain. A CDN can have one
+    retired folder while other folders still work.
+    """
+
+    def __init__(self, sample_size: int = 5, threshold: int = 4, depth: int = 3) -> None:
+        self.sample_size = max(3, int(sample_size))
+        self.threshold = max(2, min(self.sample_size, int(threshold)))
+        self.depth = max(1, min(5, int(depth)))
+        self.samples: Dict[str, int] = defaultdict(int)
+        self.not_found: Dict[str, int] = defaultdict(int)
+        self.verified: Dict[str, int] = defaultdict(int)
+        self.classified: Dict[str, str] = {}
+
+    def key(self, item: Dict[str, Any]) -> str:
+        return _path_group(item, self.depth)
+
+    def observe(self, item: Dict[str, Any], result: Dict[str, Any]) -> None:
+        key = self.key(item)
+        if not key or key in self.classified:
+            return
+
+        self.samples[key] += 1
+        if result.get("verified") is True:
+            self.verified[key] += 1
+        elif _safe_int(result.get("http_status"), 0) in {404, 410}:
+            self.not_found[key] += 1
+
+        if (
+            self.samples[key] >= self.sample_size
+            and self.verified[key] == 0
+            and self.not_found[key] >= self.threshold
+        ):
+            self.classified[key] = "mostly_not_found"
+
+    def should_quarantine(self, item: Dict[str, Any]) -> bool:
+        key = self.key(item)
+        return bool(key and self.classified.get(key) == "mostly_not_found")
+
+    def classification(self, item: Dict[str, Any]) -> str:
+        return self.classified.get(self.key(item), "")
 
 
 class HostDispositionRegistry:
@@ -796,6 +877,34 @@ def _mode_worker_profile(
         40,
     )
 
+    path_404_sample_size = _safe_int(
+        mode_config.get(
+            "path_404_sample_size",
+            bd_cfg.get("path_404_sample_size", 5),
+        ),
+        5,
+        3,
+        20,
+    )
+    path_404_threshold = _safe_int(
+        mode_config.get(
+            "path_404_threshold",
+            bd_cfg.get("path_404_threshold", 4),
+        ),
+        4,
+        2,
+        path_404_sample_size,
+    )
+    path_group_depth = _safe_int(
+        mode_config.get(
+            "path_group_depth",
+            bd_cfg.get("path_group_depth", 3),
+        ),
+        3,
+        1,
+        5,
+    )
+
     return {
         "pool_count": pool_count,
         "workers_per_pool": workers_per_pool,
@@ -814,6 +923,9 @@ def _mode_worker_profile(
         "host_sample_size": host_sample_size,
         "host_sample_uncertain_threshold": host_sample_uncertain_threshold,
         "host_second_pass_sample_size": host_second_pass_sample_size,
+        "path_404_sample_size": path_404_sample_size,
+        "path_404_threshold": path_404_threshold,
+        "path_group_depth": path_group_depth,
     }
 
 
@@ -877,6 +989,9 @@ def run_fast_verification_pipeline(
     host_second_pass_sample_size = worker_profile[
         "host_second_pass_sample_size"
     ]
+    path_404_sample_size = worker_profile["path_404_sample_size"]
+    path_404_threshold = worker_profile["path_404_threshold"]
+    path_group_depth = worker_profile["path_group_depth"]
     host_failure_threshold = _safe_int(
         pipeline_cfg.get("host_failure_threshold", 3), 3, 2, 10
     )
@@ -936,6 +1051,11 @@ def run_fast_verification_pipeline(
         sample_size=host_sample_size,
         uncertain_threshold=host_sample_uncertain_threshold,
     )
+    path_404_disposition = Path404DispositionRegistry(
+        sample_size=path_404_sample_size,
+        threshold=path_404_threshold,
+        depth=path_group_depth,
+    )
     bd_inflight_by_host: Dict[str, int] = defaultdict(int)
     host_second_pass_selected: Dict[str, int] = defaultdict(int)
 
@@ -960,6 +1080,7 @@ def run_fast_verification_pipeline(
     bd_completed = 0
     host_sample_deferred = 0
     circuit_deferred = 0
+    path_404_quarantined = 0
     next_global_progress = progress_interval
     next_bd_progress = progress_interval
     dynamic_limit = max_global_workers
@@ -1000,6 +1121,8 @@ def run_fast_verification_pipeline(
                 },
                 "host_sample_deferred": host_sample_deferred,
                 "circuit_deferred": circuit_deferred,
+                "path_404_quarantined": path_404_quarantined,
+                "path_404_groups": len(path_404_disposition.classified),
             },
         )
 
@@ -1036,6 +1159,7 @@ def run_fast_verification_pipeline(
         host = _hostname(result)
 
         if _is_movie_candidate(result, mode):
+            path_404_disposition.observe(result, result)
             host_disposition.observe(host, result)
 
         if _should_submit_proxy_check(result, protection_rules, mode):
@@ -1155,7 +1279,7 @@ def run_fast_verification_pipeline(
         route_global_result(result)
 
     def fill_global() -> None:
-        nonlocal global_network_submitted, host_sample_deferred
+        nonlocal global_network_submitted, host_sample_deferred, path_404_quarantined
         if budget_exhausted:
             return
 
@@ -1186,6 +1310,21 @@ def run_fast_verification_pipeline(
                 or f"single:{item.get('_planner_index', 0)}"
             )
             host = _hostname(item)
+
+            if (
+                _is_movie_candidate(item, mode)
+                and path_404_disposition.should_quarantine(item)
+            ):
+                groups[group]["pending"] += 1
+                path_404_quarantined += 1
+                result = _quarantine_404_result(
+                    item,
+                    path_404_disposition.key(item),
+                )
+                global_results.append(result)
+                finalize(result)
+                rotations = 0
+                continue
 
             if (
                 _is_movie_candidate(item, mode)
@@ -1243,6 +1382,7 @@ def run_fast_verification_pipeline(
         f"combined-per-host={combined_per_host_limit}, "
         f"tail-per-host={tail_per_host_limit}, "
         f"host-sample={host_sample_size}/{host_sample_uncertain_threshold}, "
+        f"404-path-sample={path_404_sample_size}/{path_404_threshold}/d{path_group_depth}, "
         f"budget={time_budget_seconds}s",
         flush=True,
     )
@@ -1616,6 +1756,8 @@ def run_fast_verification_pipeline(
         "host_sample_deferred": host_sample_deferred,
         "circuit_deferred": circuit_deferred,
         "cloud_inconclusive_hosts": len(host_disposition.classified),
+        "path_404_quarantined": path_404_quarantined,
+        "path_404_groups": len(path_404_disposition.classified),
         "final_global_inflight_limit": dynamic_limit,
         "workers": {
             "global_pool_count": pool_count,
@@ -1636,6 +1778,9 @@ def run_fast_verification_pipeline(
                 host_sample_uncertain_threshold
             ),
             "host_second_pass_sample_size": host_second_pass_sample_size,
+            "path_404_sample_size": path_404_sample_size,
+            "path_404_threshold": path_404_threshold,
+            "path_group_depth": path_group_depth,
         },
     }
     _atomic_write_json(pipeline_report_path, performance)
@@ -1647,6 +1792,7 @@ def run_fast_verification_pipeline(
         f"BD selected={bd_selected}, "
         f"BD checked={bd_submitted}, "
         f"host deferred={host_sample_deferred + circuit_deferred}, "
+        f"404 quarantined={path_404_quarantined}, "
         f"adaptive skipped={len(adaptive_skipped)}, "
         f"publishable={len(publishable)}, "
         f"elapsed={elapsed_seconds}s",
