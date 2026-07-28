@@ -2,16 +2,20 @@ name: Live Signal Scanner
 
 on:
   schedule:
-    # Today Match + Upcoming: প্রতি ২ ঘণ্টা
-    - cron: "7 */2 * * *"
+    # Today Match: প্রতিদিন ২ বার — সকাল ৭:০৭ এবং বিকাল ৫:০৭
+    - cron: "7 7,17 * * *"
+      timezone: "Asia/Dhaka"
+
+    # Upcoming Match: প্রতি ৬ ঘণ্টা
+    - cron: "27 3,9,15,21 * * *"
       timezone: "Asia/Dhaka"
 
     # TV Channels: প্রতি ৬ ঘণ্টা
-    - cron: "17 */6 * * *"
+    - cron: "17 0,6,12,18 * * *"
       timezone: "Asia/Dhaka"
 
-    # Movies: প্রতি দ্বিতীয় calendar date ভোর ৪:২৭
-    - cron: "27 4 */2 * *"
+    # Movies: প্রতি দ্বিতীয় calendar date ভোর ৪:৩৭
+    - cron: "37 4 */2 * *"
       timezone: "Asia/Dhaka"
 
   workflow_dispatch:
@@ -23,8 +27,10 @@ on:
         type: choice
         options:
           - channels
-          - events
+          - today
+          - upcoming
           - movies
+          - all
 
 permissions:
   contents: write
@@ -91,11 +97,13 @@ jobs:
 
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             MODE="${{ inputs.mode }}"
-          elif [[ "${{ github.event.schedule }}" == "7 */2 * * *" ]]; then
-            MODE="events"
-          elif [[ "${{ github.event.schedule }}" == "17 */6 * * *" ]]; then
+          elif [[ "${{ github.event.schedule }}" == "7 7,17 * * *" ]]; then
+            MODE="today"
+          elif [[ "${{ github.event.schedule }}" == "27 3,9,15,21 * * *" ]]; then
+            MODE="upcoming"
+          elif [[ "${{ github.event.schedule }}" == "17 0,6,12,18 * * *" ]]; then
             MODE="channels"
-          elif [[ "${{ github.event.schedule }}" == "27 4 */2 * *" ]]; then
+          elif [[ "${{ github.event.schedule }}" == "37 4 */2 * *" ]]; then
             MODE="movies"
           else
             MODE="channels"
@@ -111,8 +119,24 @@ jobs:
           PYTHONFAULTHANDLER: "1"
         run: |
           set -euo pipefail
+
           MODE="${{ steps.scan_mode.outputs.mode }}"
+
+          echo "============================================================"
+          echo "LIVE SIGNAL SCANNER STARTED"
+          echo "Mode: $MODE"
+          echo "Commit: $(git rev-parse --short HEAD)"
+          echo "Started: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          python --version
+          echo "============================================================"
+
           python -u scan.py "$MODE" 2>&1 | tee scanner-run.log
+
+          echo "============================================================"
+          echo "SCANNER FINISHED"
+          echo "Mode: $MODE"
+          echo "Finished: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo "============================================================"
 
       - name: Commit and push updated data
         id: git_push
@@ -131,13 +155,21 @@ jobs:
             git commit -m "Auto update: ${{ steps.scan_mode.outputs.mode }} [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
           fi
 
+          # Tracked temporary files আগের অবস্থায় ফেরত নেওয়া হবে।
           git restore --worktree -- working || true
+
+          # Untracked temporary checkpoint পরিষ্কার করা হবে।
           rm -f working/pipeline-checkpoint.json
-          rm -rf working/source-cache working/checkpoints
+          rm -rf working/checkpoints
+
+          # source-cache delete করা হবে না।
+          # .gitignore এটিকে Git থেকে বাদ রাখবে এবং Actions cache সংরক্ষণ করবে।
+
           find . -type d -name __pycache__ -prune -exec rm -rf {} +
           find . -type f -name '*.pyc' -delete
 
           REMAINING="$(git status --porcelain --untracked-files=normal)"
+
           if [[ -n "$REMAINING" ]]; then
             echo "Unexpected changes remain:"
             echo "$REMAINING"
@@ -151,16 +183,20 @@ jobs:
             if git push origin HEAD:main; then
               break
             fi
+
             if [[ "$ATTEMPT" == "3" ]]; then
               echo "GitHub push failed after 3 attempts."
               exit 1
             fi
+
+            echo "Push attempt $ATTEMPT failed. Retrying..."
             sleep 5
             git fetch origin main
             git rebase origin/main
           done
 
           COMMIT="$(git rev-parse --short HEAD)"
+
           echo "commit=$COMMIT" >> "$GITHUB_OUTPUT"
           echo "GitHub push successful: $COMMIT"
 
