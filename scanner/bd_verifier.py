@@ -391,6 +391,77 @@ def _is_movie_candidate(item: Dict[str, Any]) -> bool:
     )
 
 
+def _looks_like_direct_stream_candidate(item: Dict[str, Any]) -> bool:
+    """Return True for stream-like URLs and False for ordinary HTML/PHP wrappers."""
+    url = _clean_url(item.get("url"))
+    if not url:
+        return False
+
+    try:
+        parsed = urllib.parse.urlsplit(url)
+        path = (parsed.path or "").casefold()
+    except Exception:
+        return False
+
+    if path.endswith((".php", ".html", ".htm", ".asp", ".aspx", ".jsp")):
+        return False
+
+    if path.endswith((
+        ".m3u8", ".mpd", ".mp4", ".mkv", ".webm", ".ts",
+        ".m2ts", ".aac", ".mp3", ".flv",
+    )):
+        return True
+
+    manifest_type = str(item.get("manifest_type") or "").strip().casefold()
+    if manifest_type in {"hls", "dash", "direct_media", "media"}:
+        return True
+
+    content_type = str(item.get("content_type") or "").casefold()
+    if any(token in content_type for token in (
+        "mpegurl", "dash+xml", "video/", "audio/", "mp2t",
+    )):
+        return True
+
+    return any(token in path for token in (
+        "/stream/channelid/", "/live/", "/hls/", "/dash/",
+        "/playlist", "/manifest", "/chunklist",
+    ))
+
+
+def _is_uncertain_tv_result(
+    item: Dict[str, Any],
+    rules: Dict[str, Any],
+) -> bool:
+    """A cloud failure on a direct TV stream is not always proof of death."""
+    if str(item.get("source_pipeline") or "").strip().casefold() != "tv":
+        return False
+    if not _looks_like_direct_stream_candidate(item):
+        return False
+
+    error_kind = _error_kind(item)
+    if error_kind in {
+        "invalid_content", "invalid_manifest", "html", "unsupported",
+        "media_signature",
+    }:
+        return False
+
+    http_status = _safe_int(item.get("http_status"), 0)
+    if http_status in {401, 403, 451}:
+        return True
+
+    trusted = _is_trusted_bd_candidate(item, rules)
+    if not trusted:
+        return False
+
+    if http_status in {429, 500, 502, 503, 504}:
+        return True
+
+    return http_status == 0 and error_kind in {
+        "connection", "dns", "network", "ssl", "timeout",
+        "host_circuit_open",
+    }
+
+
 def _is_uncertain_movie_result(item: Dict[str, Any]) -> bool:
     if not _is_movie_candidate(item):
         return False
@@ -441,8 +512,9 @@ def _eligible_for_github_protection(
 ) -> bool:
     trusted = _is_trusted_bd_candidate(item, rules)
     movie_uncertain = _is_uncertain_movie_result(item)
+    tv_uncertain = _is_uncertain_tv_result(item, rules)
 
-    if not trusted and not movie_uncertain:
+    if not trusted and not movie_uncertain and not tv_uncertain:
         return False
 
     status = str(item.get("verification_status") or "").strip().lower()
@@ -798,6 +870,56 @@ def _verify_via_proxy_workers(
         "proxy_name": "",
     }
 
+    direct_browser_retry = _safe_bool(
+        config.get("direct_browser_second_pass", True),
+        True,
+    )
+    if direct_browser_retry and _looks_like_direct_stream_candidate(item):
+        browser_candidate = dict(item)
+        browser_headers = dict(
+            item.get("headers") if isinstance(item.get("headers"), dict) else {}
+        )
+        lower_names = {str(key).casefold() for key in browser_headers}
+        if "user-agent" not in lower_names:
+            browser_headers["User-Agent"] = (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/131.0.0.0 Safari/537.36"
+            )
+        if "accept" not in lower_names:
+            browser_headers["Accept"] = (
+                "application/vnd.apple.mpegurl,application/x-mpegURL,"
+                "application/dash+xml,video/*,audio/*,*/*;q=0.8"
+            )
+        browser_candidate.update(
+            headers=browser_headers,
+            verified=False,
+            publish_allowed=False,
+            verification_status="",
+            verification_mode="direct_browser_second_pass",
+        )
+        try:
+            checked = _global_verify_single(browser_candidate, proxy_settings, {})
+        except Exception as error:
+            checked = {
+                "verified": False,
+                "http_status": 0,
+                "verification_error": f"Direct browser retry exception: {error}",
+            }
+
+        last_detail = {
+            "proxy_error": str(checked.get("verification_error") or ""),
+            "proxy_http_status": _safe_int(checked.get("http_status"), 0),
+            "proxy_name": "direct-browser-retry",
+            "proxy_manifest_type": str(checked.get("manifest_type") or ""),
+            "proxy_segment_verified": _safe_bool(
+                checked.get("segment_verified"), False
+            ),
+        }
+        if checked.get("verified") is True:
+            last_detail["proxy_checked_at"] = _utc_now()
+            return True, last_detail
+
     for worker in _proxy_workers(settings):
         worker_name = str(worker.get("name") or "cloudflare-worker")
         proxy_url, build_error = _build_proxy_url(
@@ -899,9 +1021,10 @@ def verify_bd_stream(
 
     trusted = _is_trusted_bd_candidate(item, bd_rules)
     movie_uncertain = _is_uncertain_movie_result(item)
+    tv_uncertain = _is_uncertain_tv_result(item, bd_rules)
     eligible = _eligible_for_github_protection(item, bd_rules)
 
-    if not eligible and not movie_uncertain:
+    if not eligible and not movie_uncertain and not tv_uncertain:
         item["publish_allowed"] = False
         return item
 
@@ -1028,6 +1151,20 @@ def verify_bd_stream(
             verification_note=(
                 "The same-run cloud second pass was inconclusive; the movie "
                 "was kept without claiming Bangladesh-IP verification"
+            ),
+        )
+        return item
+
+    if tv_uncertain:
+        item.update(
+            verified=False,
+            publish_allowed=True,
+            verification_status="bd_protected_pending",
+            verification_mode="same_run_cloud_inconclusive",
+            verification_note=(
+                "The direct TV stream remained inconclusive after the same-run "
+                "browser/proxy pass; it was kept so Bangladesh users can try "
+                "the original URL without claiming confirmed verification"
             ),
         )
         return item
