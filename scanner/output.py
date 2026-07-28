@@ -374,6 +374,50 @@ def _as_dict_list(value: Any) -> List[Dict[str, Any]]:
     return [item for item in value if isinstance(item, dict)]
 
 
+def _movie_payload_count(movies_data: Dict[str, Any]) -> int:
+    total = 0
+    for payload in movies_data.values():
+        if not isinstance(payload, dict):
+            continue
+        index_payload = payload.get("index")
+        if isinstance(index_payload, dict):
+            total += _safe_int(index_payload.get("count"), 0, 0)
+    return total
+
+
+def _manifest_movie_count(manifest: Dict[str, Any]) -> int:
+    movies = manifest.get("movies")
+    if not isinstance(movies, dict):
+        return 0
+    return sum(
+        _safe_int(entry.get("count"), 0, 0)
+        for entry in movies.values()
+        if isinstance(entry, dict)
+    )
+
+
+def _movie_drop_warning(
+    previous_count: int,
+    incoming_count: int,
+    maximum_drop_percentage: int,
+    timestamp: str,
+) -> Dict[str, Any]:
+    actual_drop = _drop_percentage(previous_count, incoming_count)
+    return {
+        "type": "movie_output_safety_warning",
+        "status": "previous_output_preserved",
+        "previous_count": previous_count,
+        "incoming_count": incoming_count,
+        "drop_percentage": round(actual_drop, 2),
+        "maximum_allowed_drop_percentage": maximum_drop_percentage,
+        "timestamp": timestamp,
+        "error": (
+            "Movie output was not replaced because the new publishable total "
+            f"fell by {actual_drop:.1f}% (allowed: {maximum_drop_percentage}%)."
+        ),
+    }
+
+
 def _publish_movie_category(
     category_name: str,
     category_payload: Dict[str, Any],
@@ -550,6 +594,25 @@ def publish_scan_outputs(
         1_000_000,
     )
 
+    movie_failure_config = settings.get("movie_failure_protection", {})
+    if not isinstance(movie_failure_config, dict):
+        movie_failure_config = {}
+    movie_drop_protection_enabled = bool(
+        movie_failure_config.get("enabled", True)
+    )
+    movie_maximum_drop_percentage = _safe_int(
+        movie_failure_config.get("maximum_drop_percentage", 40),
+        40,
+        1,
+        100,
+    )
+    movie_minimum_previous_count = _safe_int(
+        movie_failure_config.get("minimum_previous_count", 100),
+        100,
+        1,
+        1_000_000,
+    )
+
     data_root = Path(data_dir)
     state_root = Path(state_dir)
     reports_root = Path(reports_dir)
@@ -605,6 +668,8 @@ def publish_scan_outputs(
     source_errors = _as_dict_list(source_error_items)
     rejected_items = _as_dict_list(rejected_low_quality_items)
     quarantine_items = _as_dict_list(extra_quarantine_items)
+    output_safety_items: List[Dict[str, Any]] = []
+    movie_output_preserved = False
 
     # 1. Live TV
     if channels_data is not None:
@@ -688,25 +753,48 @@ def publish_scan_outputs(
         if not isinstance(movies_data, dict):
             raise ValueError("movies_data must be a dictionary")
 
-        for category_name, category_payload in movies_data.items():
-            try:
-                manifest["movies"][str(category_name)] = (
-                    _publish_movie_category(
-                        category_name=str(category_name),
-                        category_payload=category_payload,
-                        movies_dir=movies_dir,
-                        timestamp=timestamp,
+        previous_movie_total = _manifest_movie_count(manifest)
+        incoming_movie_total = _movie_payload_count(movies_data)
+        movie_drop = _drop_percentage(
+            previous_movie_total,
+            incoming_movie_total,
+        )
+        protect_previous_movies = bool(
+            movie_drop_protection_enabled
+            and previous_movie_total >= movie_minimum_previous_count
+            and movie_drop > movie_maximum_drop_percentage
+        )
+
+        if protect_previous_movies:
+            movie_output_preserved = True
+            warning = _movie_drop_warning(
+                previous_count=previous_movie_total,
+                incoming_count=incoming_movie_total,
+                maximum_drop_percentage=movie_maximum_drop_percentage,
+                timestamp=timestamp,
+            )
+            output_safety_items.append(warning)
+            source_errors.append(warning)
+        else:
+            for category_name, category_payload in movies_data.items():
+                try:
+                    manifest["movies"][str(category_name)] = (
+                        _publish_movie_category(
+                            category_name=str(category_name),
+                            category_payload=category_payload,
+                            movies_dir=movies_dir,
+                            timestamp=timestamp,
+                        )
                     )
-                )
-            except Exception as error:
-                source_errors.append(
-                    {
-                        "type": "movie_publish_error",
-                        "category": str(category_name),
-                        "error": str(error),
-                        "timestamp": timestamp,
-                    }
-                )
+                except Exception as error:
+                    source_errors.append(
+                        {
+                            "type": "movie_publish_error",
+                            "category": str(category_name),
+                            "error": str(error),
+                            "timestamp": timestamp,
+                        }
+                    )
 
     # 3. Events
     if events_data is not None:
@@ -782,6 +870,16 @@ def publish_scan_outputs(
         },
     )
 
+    _atomic_write_json(
+        reports_root / "output-safety.json",
+        {
+            "timestamp": timestamp,
+            "count": len(output_safety_items),
+            "warnings": output_safety_items,
+            "movie_output_preserved": movie_output_preserved,
+        },
+    )
+
     total_channels = sum(
         _safe_int(entry.get("count"), 0, 0)
         for entry in manifest.get("channels", {}).values()
@@ -793,9 +891,28 @@ def publish_scan_outputs(
         if isinstance(entry, dict)
     )
 
+    quarantined_movie_count = sum(
+        1
+        for item in quarantine_items
+        if str(item.get("source_pipeline") or "").strip().casefold() == "movies"
+    )
+    quarantined_channel_count = max(
+        0,
+        len(quarantine_items) - quarantined_movie_count,
+    )
+
+    bd_report = _load_json_file(reports_root / "bd-verification.json")
+    movie_status_counts = bd_report.get("status_counts")
+    if not isinstance(movie_status_counts, dict):
+        movie_status_counts = {}
+
+    pipeline_performance = _load_json_file(
+        reports_root / "pipeline-performance.json"
+    )
+
     scan_status = (
         "completed_with_warnings"
-        if source_errors
+        if source_errors or output_safety_items
         else "completed"
     )
 
@@ -804,8 +921,13 @@ def publish_scan_outputs(
         "status": scan_status,
         "mode": mode_clean,
         "source_errors": len(source_errors),
-        "quarantined_channels": len(quarantine_items),
+        "quarantined_channels": quarantined_channel_count,
+        "quarantined_movies": quarantined_movie_count,
         "rejected_low_quality": len(rejected_items),
+        "output_safety_warnings": len(output_safety_items),
+        "movie_output_preserved": movie_output_preserved,
+        "movie_verification_status_counts": movie_status_counts,
+        "pipeline_performance": pipeline_performance,
         "totals": {
             "channels": total_channels,
             "movies": total_movies,
@@ -828,11 +950,155 @@ def publish_scan_outputs(
         scan_summary,
     )
 
-    # Telegram notification is intentionally NOT sent here.
-    # This function runs before Git commit/push. A separate post-push
-    # notifier sends success only after GitHub has accepted the commit.
-    scan_summary["telegram_sent"] = False
-    scan_summary["telegram_after_push"] = True
+    notifications = settings.get("notifications", {})
+    if not isinstance(notifications, dict):
+        notifications = {}
+
+    telegram_enabled = bool(
+        notifications.get("telegram_enabled", True)
+    )
+
+    telegram_sent = False
+    if telegram_enabled:
+        safe_status = html.escape(scan_status)
+        safe_mode = html.escape(mode_clean)
+
+        title_by_mode = {
+            "channels": "📺 <b>TV CHANNEL SCAN COMPLETED</b>",
+            "movies": "🎬 <b>MOVIE SCAN COMPLETED</b>",
+            "events": "⚽ <b>EVENT SCAN COMPLETED</b>",
+            "today": "⚽ <b>TODAY MATCH SCAN COMPLETED</b>",
+            "upcoming": "🗓 <b>UPCOMING MATCH SCAN COMPLETED</b>",
+            "all": "📡 <b>FULL SCAN COMPLETED</b>",
+        }
+
+        message_lines = [
+            title_by_mode.get(
+                mode_clean,
+                "📡 <b>LIVE SIGNAL SCAN COMPLETED</b>",
+            ),
+            "",
+            f"<b>Mode:</b> {safe_mode}",
+            f"<b>Status:</b> {safe_status}",
+            f"<b>Updated At:</b> {html.escape(timestamp)}",
+        ]
+
+        if mode_clean == "channels":
+            message_lines.extend(
+                [
+                    f"<b>TV Channels:</b> {total_channels}",
+                    (
+                        "<b>Quarantined Channels:</b> "
+                        f"{quarantined_channel_count}"
+                    ),
+                    (
+                        "<b>Rejected Low Quality:</b> "
+                        f"{len(rejected_items)}"
+                    ),
+                ]
+            )
+        elif mode_clean == "movies":
+            visible_movie_categories = sum(
+                1
+                for entry in manifest.get("movies", {}).values()
+                if isinstance(entry, dict)
+                and _safe_int(entry.get("count"), 0, 0) > 0
+            )
+            message_lines.extend(
+                [
+                    f"<b>Movies:</b> {total_movies}",
+                    (
+                        "<b>Visible Movie Categories:</b> "
+                        f"{visible_movie_categories}"
+                    ),
+                    (
+                        "<b>Rejected Low Quality:</b> "
+                        f"{len(rejected_items)}"
+                    ),
+                    (
+                        "<b>Verified Global:</b> "
+                        f"{_safe_int(movie_status_counts.get('verified_global'), 0, 0)}"
+                    ),
+                    (
+                        "<b>Verified Proxy:</b> "
+                        f"{_safe_int(movie_status_counts.get('verified_proxy'), 0, 0)}"
+                    ),
+                    (
+                        "<b>Geo Pending:</b> "
+                        f"{_safe_int(movie_status_counts.get('geo_pending'), 0, 0)}"
+                    ),
+                    (
+                        "<b>Retryable Pending:</b> "
+                        f"{_safe_int(movie_status_counts.get('retryable_pending'), 0, 0)}"
+                    ),
+                    (
+                        "<b>Host Deferred:</b> "
+                        f"{_safe_int(movie_status_counts.get('host_deferred'), 0, 0)}"
+                    ),
+                    (
+                        "<b>404 Quarantined:</b> "
+                        f"{quarantined_movie_count}"
+                    ),
+                    (
+                        "<b>Output Safety Warnings:</b> "
+                        f"{len(output_safety_items)}"
+                    ),
+                ]
+            )
+        elif mode_clean == "events":
+            message_lines.extend(
+                [
+                    (
+                        "<b>Today Matches:</b> "
+                        f"{scan_summary['totals']['today_match']}"
+                    ),
+                    (
+                        "<b>Upcoming Matches:</b> "
+                        f"{scan_summary['totals']['upcoming']}"
+                    ),
+                ]
+            )
+        elif mode_clean == "today":
+            message_lines.append(
+                "<b>Today Matches:</b> "
+                f"{scan_summary['totals']['today_match']}"
+            )
+        elif mode_clean == "upcoming":
+            message_lines.append(
+                "<b>Upcoming Matches:</b> "
+                f"{scan_summary['totals']['upcoming']}"
+            )
+        else:
+            message_lines.extend(
+                [
+                    f"<b>TV Channels:</b> {total_channels}",
+                    f"<b>Movies:</b> {total_movies}",
+                    (
+                        "<b>Today Matches:</b> "
+                        f"{scan_summary['totals']['today_match']}"
+                    ),
+                    (
+                        "<b>Upcoming Matches:</b> "
+                        f"{scan_summary['totals']['upcoming']}"
+                    ),
+                    (
+                        "<b>Quarantined Channels:</b> "
+                        f"{quarantined_channel_count}"
+                    ),
+                    (
+                        "<b>Rejected Low Quality:</b> "
+                        f"{len(rejected_items)}"
+                    ),
+                ]
+            )
+
+        message_lines.append(
+            f"<b>Source/Stream Warnings:</b> {len(source_errors)}"
+        )
+        message = "\n".join(message_lines)
+        telegram_sent = send_telegram_alert(message)
+
+    scan_summary["telegram_sent"] = telegram_sent
     _atomic_write_json(
         reports_root / "scan-summary.json",
         scan_summary,
