@@ -224,6 +224,66 @@ def pin_t_sports_first(channels: List[Dict[str, Any]], category: str = "Sports")
     return channels
 
 
+def _normalize_priority_name(value: Any) -> str:
+    text = str(value or "").casefold()
+    text = re.sub(
+        r"\b(?:official|live|channel|4k|2k|uhd|fhd|full\s*hd|fullhd|"
+        r"hd|sd|2160p|1440p|1080p|720p|576p|480p|360p)\b",
+        " ",
+        text,
+    )
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return " ".join(text.split())
+
+
+def _configured_priority_index(
+    card: Dict[str, Any],
+    priority_entries: List[Dict[str, Any]],
+) -> int:
+    normalized_name = _normalize_priority_name(card.get("name"))
+
+    for index, entry in enumerate(priority_entries):
+        if not isinstance(entry, dict):
+            continue
+        aliases: List[str] = []
+        canonical = str(entry.get("canonical_name") or "").strip()
+        if canonical:
+            aliases.append(canonical)
+        raw_aliases = entry.get("aliases")
+        if isinstance(raw_aliases, list):
+            aliases.extend(str(alias) for alias in raw_aliases)
+
+        normalized_aliases = {
+            _normalize_priority_name(alias)
+            for alias in aliases
+            if _normalize_priority_name(alias)
+        }
+        if normalized_name in normalized_aliases:
+            return index
+
+    return len(priority_entries)
+
+
+def pin_configured_channels_first(
+    cards: List[Dict[str, Any]],
+    category: str,
+    pinned_config: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    """Pin configured channels inside one category without fake cards."""
+    raw_entries = pinned_config.get(category)
+    if not isinstance(raw_entries, list) or not raw_entries or not cards:
+        return cards
+
+    indexed_cards = list(enumerate(cards))
+    indexed_cards.sort(
+        key=lambda pair: (
+            _configured_priority_index(pair[1], raw_entries),
+            pair[0],
+        )
+    )
+    return [card for _, card in indexed_cards]
+
+
 def _verification_tier_score(stream: Dict[str, Any]) -> int:
     """
     Confidence hierarchy:
@@ -629,11 +689,31 @@ def merge_candidates(
 
         merged_results.append(merged_card)
 
-    sports_indices = [i for i, c in enumerate(merged_results) if c.get("category") == "Sports"]
-    if sports_indices:
-        sports_cards = [merged_results[i] for i in sports_indices]
-        pinned_sports = pin_t_sports_first(sports_cards, "Sports")
-        for idx, pos in enumerate(sports_indices):
-            merged_results[pos] = pinned_sports[idx]
+    pinned_config = settings.get("pinned_channels")
+    if not isinstance(pinned_config, dict):
+        pinned_config = {}
+
+    # Reorder only inside each category. Other category/card positions stay
+    # unchanged, and missing channels do not create empty/fake cards.
+    for category_name in ("Sports", "Indian", "Cartoon"):
+        category_indices = [
+            index
+            for index, card in enumerate(merged_results)
+            if str(card.get("category") or "").strip() == category_name
+        ]
+        if not category_indices:
+            continue
+
+        category_cards = [merged_results[index] for index in category_indices]
+        ordered_cards = pin_configured_channels_first(
+            category_cards,
+            category_name,
+            pinned_config,
+        )
+        if category_name == "Sports" and not pinned_config.get("Sports"):
+            ordered_cards = pin_t_sports_first(ordered_cards, "Sports")
+
+        for card_index, original_position in enumerate(category_indices):
+            merged_results[original_position] = ordered_cards[card_index]
 
     return merged_results
