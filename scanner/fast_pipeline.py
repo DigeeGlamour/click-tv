@@ -239,6 +239,230 @@ class HostCircuitRegistry:
             self.open_until[host] = time.monotonic() + self.cooldown_seconds
 
 
+class ShardedExecutor:
+    """
+    Several independent ThreadPoolExecutor pools working on one shared queue.
+
+    Example: pool_count=5 and workers_per_pool=20 creates five separate
+    verification pools with 20 threads each (100 possible global requests).
+    Submissions go to the least-busy pool so work is distributed evenly.
+    """
+
+    def __init__(
+        self,
+        pool_count: int,
+        workers_per_pool: int,
+        thread_name_prefix: str = "global-verify",
+    ) -> None:
+        self.pool_count = max(1, int(pool_count))
+        self.workers_per_pool = max(1, int(workers_per_pool))
+        self.thread_name_prefix = thread_name_prefix
+        self.executors: List[concurrent.futures.ThreadPoolExecutor] = []
+        self.inflight: List[int] = [0 for _ in range(self.pool_count)]
+        self.cursor = 0
+
+    @property
+    def total_workers(self) -> int:
+        return self.pool_count * self.workers_per_pool
+
+    def __enter__(self) -> "ShardedExecutor":
+        self.executors = [
+            concurrent.futures.ThreadPoolExecutor(
+                max_workers=self.workers_per_pool,
+                thread_name_prefix=(
+                    f"{self.thread_name_prefix}-pool-{index + 1}"
+                ),
+            )
+            for index in range(self.pool_count)
+        ]
+        return self
+
+    def _select_pool(self) -> int:
+        minimum = min(self.inflight)
+        for offset in range(self.pool_count):
+            index = (self.cursor + offset) % self.pool_count
+            if self.inflight[index] == minimum:
+                self.cursor = (index + 1) % self.pool_count
+                return index
+        return 0
+
+    def submit(self, fn: Any, *args: Any, **kwargs: Any) -> Tuple[concurrent.futures.Future, int]:
+        if not self.executors:
+            raise RuntimeError("ShardedExecutor is not running")
+        pool_index = self._select_pool()
+        future = self.executors[pool_index].submit(fn, *args, **kwargs)
+        self.inflight[pool_index] += 1
+        return future, pool_index
+
+    def completed(self, pool_index: int) -> None:
+        if 0 <= pool_index < len(self.inflight):
+            self.inflight[pool_index] = max(0, self.inflight[pool_index] - 1)
+
+    def loads(self) -> List[int]:
+        return list(self.inflight)
+
+    def __exit__(self, exc_type: Any, exc: Any, traceback: Any) -> None:
+        for executor in self.executors:
+            executor.shutdown(wait=True, cancel_futures=False)
+        self.executors = []
+
+
+def _mode_worker_profile(
+    settings: Dict[str, Any],
+    mode: str,
+) -> Dict[str, int]:
+    """Return mode-specific sharded worker settings.
+
+    Movies and All use the user's requested five independent pools of twenty
+    workers. Smaller modes stay conservative because they finish quickly and
+    do not benefit from one hundred concurrent requests.
+    """
+    pipeline_cfg = settings.get("pipeline")
+    if not isinstance(pipeline_cfg, dict):
+        pipeline_cfg = {}
+
+    verification = settings.get("verification")
+    if not isinstance(verification, dict):
+        verification = {}
+
+    bd_cfg = settings.get("bd_verification")
+    if not isinstance(bd_cfg, dict):
+        bd_cfg = {}
+
+    configured_profiles = settings.get("worker_shards")
+    if not isinstance(configured_profiles, dict):
+        configured_profiles = {}
+
+    defaults: Dict[str, Dict[str, int]] = {
+        "channels": {
+            "pool_count": 1,
+            "workers_per_pool": 20,
+            "minimum_total_inflight": 12,
+            "bd_workers": 6,
+            "per_host_limit": 4,
+        },
+        "tv": {
+            "pool_count": 1,
+            "workers_per_pool": 20,
+            "minimum_total_inflight": 12,
+            "bd_workers": 6,
+            "per_host_limit": 4,
+        },
+        "today": {
+            "pool_count": 1,
+            "workers_per_pool": 20,
+            "minimum_total_inflight": 12,
+            "bd_workers": 4,
+            "per_host_limit": 4,
+        },
+        "today_match": {
+            "pool_count": 1,
+            "workers_per_pool": 20,
+            "minimum_total_inflight": 12,
+            "bd_workers": 4,
+            "per_host_limit": 4,
+        },
+        "upcoming": {
+            "pool_count": 1,
+            "workers_per_pool": 20,
+            "minimum_total_inflight": 12,
+            "bd_workers": 4,
+            "per_host_limit": 4,
+        },
+        "movies": {
+            "pool_count": 5,
+            "workers_per_pool": 20,
+            "minimum_total_inflight": 80,
+            "bd_workers": 8,
+            "per_host_limit": 20,
+        },
+        "all": {
+            "pool_count": 5,
+            "workers_per_pool": 20,
+            "minimum_total_inflight": 80,
+            "bd_workers": 8,
+            "per_host_limit": 20,
+        },
+    }
+
+    default_profile = defaults.get(mode, defaults["channels"])
+    mode_config = configured_profiles.get(mode)
+    if not isinstance(mode_config, dict):
+        mode_config = {}
+
+    fallback_global = _safe_int(
+        pipeline_cfg.get(
+            "global_workers",
+            verification.get(
+                "workers",
+                settings.get("verification_workers", 20),
+            ),
+        ),
+        default_profile["workers_per_pool"],
+        1,
+        160,
+    )
+
+    pool_count = _safe_int(
+        mode_config.get("pool_count", default_profile["pool_count"]),
+        default_profile["pool_count"],
+        1,
+        8,
+    )
+    workers_per_pool = _safe_int(
+        mode_config.get(
+            "workers_per_pool",
+            default_profile["workers_per_pool"] if pool_count > 1 else fallback_global,
+        ),
+        default_profile["workers_per_pool"],
+        1,
+        32,
+    )
+    total_workers = pool_count * workers_per_pool
+
+    minimum_total_inflight = _safe_int(
+        mode_config.get(
+            "minimum_total_inflight",
+            default_profile["minimum_total_inflight"],
+        ),
+        default_profile["minimum_total_inflight"],
+        1,
+        total_workers,
+    )
+
+    bd_workers = _safe_int(
+        mode_config.get(
+            "bd_workers",
+            pipeline_cfg.get(
+                "bd_workers",
+                bd_cfg.get("workers", default_profile["bd_workers"]),
+            ),
+        ),
+        default_profile["bd_workers"],
+        1,
+        32,
+    )
+
+    per_host_limit = _safe_int(
+        mode_config.get(
+            "per_host_limit",
+            pipeline_cfg.get("per_host_limit", default_profile["per_host_limit"]),
+        ),
+        default_profile["per_host_limit"],
+        1,
+        32,
+    )
+
+    return {
+        "pool_count": pool_count,
+        "workers_per_pool": workers_per_pool,
+        "total_workers": total_workers,
+        "minimum_total_inflight": minimum_total_inflight,
+        "bd_workers": bd_workers,
+        "per_host_limit": per_host_limit,
+    }
+
+
 def run_fast_verification_pipeline(
     candidates_path: str = "working/candidates.json",
     settings_path: str = "config/settings.json",
@@ -271,30 +495,13 @@ def run_fast_verification_pipeline(
     if not isinstance(pipeline_cfg, dict):
         pipeline_cfg = {}
 
-    max_global_workers = _safe_int(
-        pipeline_cfg.get(
-            "global_workers",
-            verification.get("workers", settings.get("verification_workers", 20)),
-        ),
-        20,
-        1,
-        32,
-    )
-    min_global_workers = _safe_int(
-        pipeline_cfg.get("minimum_global_inflight", 12),
-        12,
-        1,
-        max_global_workers,
-    )
-    bd_workers = _safe_int(
-        pipeline_cfg.get("bd_workers", bd_cfg.get("workers", 6)),
-        6,
-        1,
-        16,
-    )
-    per_host_limit = _safe_int(
-        pipeline_cfg.get("per_host_limit", 3), 3, 1, 8
-    )
+    worker_profile = _mode_worker_profile(settings, mode)
+    pool_count = worker_profile["pool_count"]
+    workers_per_pool = worker_profile["workers_per_pool"]
+    max_global_workers = worker_profile["total_workers"]
+    min_global_workers = worker_profile["minimum_total_inflight"]
+    bd_workers = worker_profile["bd_workers"]
+    per_host_limit = worker_profile["per_host_limit"]
     host_failure_threshold = _safe_int(
         pipeline_cfg.get("host_failure_threshold", 3), 3, 2, 10
     )
@@ -351,7 +558,10 @@ def run_fast_verification_pipeline(
         per_host_limit=per_host_limit,
     )
 
-    global_futures: Dict[concurrent.futures.Future, Tuple[Dict[str, Any], str]] = {}
+    global_futures: Dict[
+        concurrent.futures.Future,
+        Tuple[Dict[str, Any], str, int],
+    ] = {}
     bd_futures: Dict[concurrent.futures.Future, Dict[str, Any]] = {}
     global_results: List[Dict[str, Any]] = []
     final_results: List[Dict[str, Any]] = []
@@ -365,7 +575,7 @@ def run_fast_verification_pipeline(
     next_global_progress = progress_interval
     next_bd_progress = progress_interval
     dynamic_limit = max_global_workers
-    recent_outcomes: Deque[Tuple[bool, int]] = deque(maxlen=50)
+    recent_outcomes: Deque[Tuple[str, int, int]] = deque(maxlen=100)
     started = time.monotonic()
     budget_exhausted = False
 
@@ -385,6 +595,11 @@ def run_fast_verification_pipeline(
                 "global_inflight": len(global_futures),
                 "bd_inflight": len(bd_futures),
                 "dynamic_global_limit": dynamic_limit,
+                "worker_pools": {
+                    "pool_count": pool_count,
+                    "workers_per_pool": workers_per_pool,
+                    "total_workers": max_global_workers,
+                },
             },
         )
 
@@ -486,20 +701,21 @@ def run_fast_verification_pipeline(
             rotations = 0
             groups[group]["pending"] += 1
             host_registry.submitted(host)
-            future = global_executor.submit(
+            future, pool_index = global_executor.submit(
                 verify_single_stream,
                 dict(item),
                 settings,
                 global_bd_rules,
             )
-            global_futures[future] = (item, host)
+            global_futures[future] = (item, host, pool_index)
             global_network_submitted += 1
 
     print(
         "   Adaptive pipeline: "
         f"pool={len(items)}, groups={len(groups)}, "
-        f"global={max_global_workers}, bd={bd_workers}, "
-        f"per-host={per_host_limit}, budget={time_budget_seconds}s",
+        f"global-pools={pool_count}x{workers_per_pool}={max_global_workers}, "
+        f"bd={bd_workers}, per-host={per_host_limit}, "
+        f"budget={time_budget_seconds}s",
         flush=True,
     )
     print(
@@ -508,8 +724,9 @@ def run_fast_verification_pipeline(
         flush=True,
     )
 
-    with concurrent.futures.ThreadPoolExecutor(
-        max_workers=max_global_workers,
+    with ShardedExecutor(
+        pool_count=pool_count,
+        workers_per_pool=workers_per_pool,
         thread_name_prefix="global-verify",
     ) as global_executor, concurrent.futures.ThreadPoolExecutor(
         max_workers=bd_workers,
@@ -545,7 +762,8 @@ def run_fast_verification_pipeline(
 
             for future in done:
                 if future in global_futures:
-                    original, host = global_futures.pop(future)
+                    original, host, pool_index = global_futures.pop(future)
+                    global_executor.completed(pool_index)
                     try:
                         result = future.result()
                     except Exception as error:
@@ -560,8 +778,9 @@ def run_fast_verification_pipeline(
                     global_completed += 1
                     recent_outcomes.append(
                         (
-                            result.get("verified") is True,
+                            _error_kind(result),
                             _safe_int(result.get("response_time_ms"), 0),
+                            _safe_int(result.get("http_status"), 0),
                         )
                     )
                     route_global_result(result)
@@ -572,28 +791,63 @@ def run_fast_verification_pipeline(
                             "   Global progress: "
                             f"{global_completed} completed, "
                             f"{len(global_futures)} running, "
-                            f"{len(pending_global)} queued "
+                            f"{len(pending_global)} queued, "
+                            f"pool-load={global_executor.loads()} "
                             f"({elapsed_now}s elapsed)",
                             flush=True,
                         )
                         while next_global_progress <= global_completed:
                             next_global_progress += progress_interval
 
-                    # Conservative adaptive submission limit. It never exceeds
-                    # the configured worker maximum.
-                    if global_completed % 25 == 0 and len(recent_outcomes) >= 20:
-                        success_rate = sum(1 for ok, _ in recent_outcomes if ok) / len(recent_outcomes)
-                        average_ms = sum(ms for _, ms in recent_outcomes) / len(recent_outcomes)
+                    # Transport-pressure controller. Dead/404 movie links do
+                    # not reduce concurrency by themselves. Only real network
+                    # pressure (timeouts, DNS/TLS/connection failures, 429/5xx,
+                    # or very high latency) can reduce the total inflight limit.
+                    if global_completed % 50 == 0 and len(recent_outcomes) >= 40:
+                        pressure_count = 0
+                        response_values: List[int] = []
+                        for error_kind, response_ms, http_status in recent_outcomes:
+                            if response_ms > 0:
+                                response_values.append(response_ms)
+                            if (
+                                error_kind in {
+                                    "timeout",
+                                    "dns",
+                                    "ssl",
+                                    "connection",
+                                    "network",
+                                }
+                                or http_status in {429, 502, 503, 504}
+                            ):
+                                pressure_count += 1
+
+                        pressure_rate = pressure_count / len(recent_outcomes)
+                        average_ms = (
+                            sum(response_values) / len(response_values)
+                            if response_values
+                            else 0.0
+                        )
                         old_limit = dynamic_limit
-                        if success_rate < 0.35:
-                            dynamic_limit = max(min_global_workers, dynamic_limit - 2)
-                        elif success_rate > 0.70 and average_ms < 3500:
-                            dynamic_limit = min(max_global_workers, dynamic_limit + 1)
+                        decrease_step = max(5, workers_per_pool // 2)
+                        increase_step = max(2, workers_per_pool // 4)
+
+                        if pressure_rate > 0.45 or average_ms > 7000:
+                            dynamic_limit = max(
+                                min_global_workers,
+                                dynamic_limit - decrease_step,
+                            )
+                        elif pressure_rate < 0.20 and average_ms < 3500:
+                            dynamic_limit = min(
+                                max_global_workers,
+                                dynamic_limit + increase_step,
+                            )
+
                         if dynamic_limit != old_limit:
                             print(
-                                "   Adaptive global inflight limit: "
+                                "   Adaptive total inflight limit: "
                                 f"{old_limit} -> {dynamic_limit} "
-                                f"(success={success_rate:.0%}, avg={average_ms:.0f}ms)",
+                                f"(network-pressure={pressure_rate:.0%}, "
+                                f"avg={average_ms:.0f}ms)",
                                 flush=True,
                             )
 
@@ -751,7 +1005,10 @@ def run_fast_verification_pipeline(
         "host_circuit_skips": host_registry.skipped_count,
         "final_global_inflight_limit": dynamic_limit,
         "workers": {
-            "global_max": max_global_workers,
+            "global_pool_count": pool_count,
+            "global_workers_per_pool": workers_per_pool,
+            "global_total_max": max_global_workers,
+            "global_minimum_inflight": min_global_workers,
             "bd": bd_workers,
             "per_host": per_host_limit,
         },
