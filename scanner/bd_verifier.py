@@ -384,34 +384,97 @@ def _error_kind(item: Dict[str, Any]) -> str:
     return ""
 
 
+def _is_movie_candidate(item: Dict[str, Any]) -> bool:
+    return (
+        str(item.get("source_pipeline") or "").strip().casefold()
+        == "movies"
+    )
+
+
+def _is_uncertain_movie_result(item: Dict[str, Any]) -> bool:
+    if not _is_movie_candidate(item):
+        return False
+
+    http_status = _safe_int(item.get("http_status"), 0)
+    error_kind = _error_kind(item)
+    status = str(item.get("verification_status") or "").strip().casefold()
+
+    if http_status in {401, 403, 429, 451, 500, 502, 503, 504}:
+        return True
+
+    if error_kind in {
+        "timeout",
+        "dns",
+        "ssl",
+        "connection",
+        "network",
+        "host_circuit_open",
+    }:
+        return True
+
+    return status in {
+        "needs_bd_check",
+        "bd_protected_pending",
+        "geo_pending",
+        "retryable_pending",
+        "host_deferred",
+        "stale_last_good",
+    }
+
+
+def _movie_pending_status(item: Dict[str, Any]) -> str:
+    http_status = _safe_int(item.get("http_status"), 0)
+    error_kind = _error_kind(item)
+
+    if http_status in {429, 500, 502, 503, 504}:
+        return "retryable_pending"
+
+    if error_kind == "host_circuit_open":
+        return "host_deferred"
+
+    return "geo_pending"
+
+
 def _eligible_for_github_protection(
     item: Dict[str, Any],
     rules: Dict[str, Any],
 ) -> bool:
-    if not _is_trusted_bd_candidate(item, rules):
+    trusted = _is_trusted_bd_candidate(item, rules)
+    movie_uncertain = _is_uncertain_movie_result(item)
+
+    if not trusted and not movie_uncertain:
         return False
 
     status = str(item.get("verification_status") or "").strip().lower()
     if status in {
         "needs_bd_check",
         "bd_protected_pending",
+        "geo_pending",
+        "retryable_pending",
+        "host_deferred",
         "stale_last_good",
     }:
         return True
 
     http_status = _safe_int(item.get("http_status"), 0)
-    if http_status in rules.get("protect_http_status_codes", set()):
-        return True
-    if http_status in rules.get("transient_http_status_codes", set()):
-        return True
 
-    # Permanent dead responses must never enter proxy/BD protection. A proxy
-    # cannot revive a confirmed 404/410 and rechecking them creates a large
-    # end-of-scan backlog during movie scans.
     if http_status in rules.get("permanent_http_status_codes", set()):
         return False
 
-    return http_status == 0 and _error_kind(item) in DEFAULT_TRANSIENT_ERROR_KINDS
+    if http_status in rules.get("protect_http_status_codes", set()):
+        return True
+
+    if http_status in rules.get("transient_http_status_codes", set()):
+        return True
+
+    return http_status == 0 and _error_kind(item) in {
+        "connection",
+        "dns",
+        "network",
+        "ssl",
+        "timeout",
+        "host_circuit_open",
+    }
 
 
 def _history_records(history: Dict[str, Any]) -> Dict[str, Any]:
@@ -803,6 +866,12 @@ def verify_bd_stream(
     bd_rules: Dict[str, Any],
     proxy_result: Optional[Tuple[bool, Dict[str, Any]]] = None,
 ) -> Dict[str, Any]:
+    """Finish one candidate after the immediate same-run second pass.
+
+    GitHub/Colab cannot prove Bangladesh-IP playback. Therefore an uncertain
+    movie is kept publishable after the second pass without being labelled as
+    verified. Only confirmed permanent/invalid failures are removed.
+    """
     item = dict(candidate or {})
     status = str(item.get("verification_status") or "").strip().lower()
 
@@ -812,7 +881,7 @@ def verify_bd_stream(
 
     if item.get("verified") is True:
         item["publish_allowed"] = True
-        if status in {"verified_global", "verified_proxy"}:
+        if status in {"verified_global", "verified_proxy", "verified_bd"}:
             _record_success(item, stream_history, status)
             _reset_permanent_failure(item, protection_state)
         return item
@@ -823,15 +892,16 @@ def verify_bd_stream(
             verified=False,
             publish_allowed=False,
             verification_status="failed",
-            verification_mode="github_only_protection",
+            verification_mode="same_run_cloud_second_pass",
             verification_error="Stream URL is empty",
         )
         return item
 
     trusted = _is_trusted_bd_candidate(item, bd_rules)
+    movie_uncertain = _is_uncertain_movie_result(item)
     eligible = _eligible_for_github_protection(item, bd_rules)
 
-    if not eligible:
+    if not eligible and not movie_uncertain:
         item["publish_allowed"] = False
         return item
 
@@ -851,6 +921,11 @@ def verify_bd_stream(
         1,
         10,
     )
+    publish_uncertain_movies = _safe_bool(
+        bd_config.get("publish_uncertain_movies", True),
+        True,
+    )
+
     http_status = _safe_int(item.get("http_status"), 0)
     permanent_codes = bd_rules.get(
         "permanent_http_status_codes",
@@ -861,14 +936,17 @@ def verify_bd_stream(
         proxy_ok, proxy_detail = _verify_via_proxy_workers(item, settings)
     else:
         proxy_ok, proxy_detail = proxy_result
+
     item.update(proxy_detail)
+
     if proxy_ok:
         item.update(
             verified=True,
             publish_allowed=True,
             verification_status="verified_proxy",
-            verification_mode="cloudflare_proxy",
+            verification_mode="same_run_cloud_proxy",
             verification_error="",
+            verification_note="",
             last_check_success=True,
             recent_success=True,
         )
@@ -903,9 +981,9 @@ def verify_bd_stream(
                 verified=False,
                 publish_allowed=True,
                 verification_status="bd_protected_pending",
-                verification_mode="github_only_protection",
+                verification_mode="same_run_cloud_second_pass",
                 verification_note=(
-                    f"Temporary protection during permanent-failure "
+                    "Temporary protection during permanent-failure "
                     f"confirmation ({fail_count}/{permanent_confirmations})"
                 ),
             )
@@ -915,7 +993,7 @@ def verify_bd_stream(
             verified=False,
             publish_allowed=False,
             verification_status="failed_bd",
-            verification_mode="github_only_protection",
+            verification_mode="same_run_cloud_second_pass",
             verification_error=(
                 f"Confirmed permanent HTTP {http_status} after "
                 f"{fail_count} consecutive checks"
@@ -937,6 +1015,23 @@ def verify_bd_stream(
         )
         return item
 
+    # A movie that still returns 403/451/timeout/transport/429/5xx after the
+    # immediate second pass is not proven dead from GitHub/Colab. Keep it in the
+    # output so a Bangladesh user's browser can try the original URL directly.
+    if movie_uncertain and publish_uncertain_movies:
+        pending_status = _movie_pending_status(item)
+        item.update(
+            verified=False,
+            publish_allowed=True,
+            verification_status=pending_status,
+            verification_mode="same_run_cloud_inconclusive",
+            verification_note=(
+                "The same-run cloud second pass was inconclusive; the movie "
+                "was kept without claiming Bangladesh-IP verification"
+            ),
+        )
+        return item
+
     if trusted:
         item.update(
             verified=False,
@@ -944,8 +1039,8 @@ def verify_bd_stream(
             verification_status="bd_protected_pending",
             verification_mode="github_only_protection",
             verification_note=(
-                "GitHub-only check was inconclusive; trusted BD candidate "
-                "was kept without claiming Bangladesh-IP verification"
+                "GitHub/Colab verification was inconclusive; trusted BD "
+                "candidate was kept without claiming Bangladesh-IP verification"
             ),
         )
         return item
@@ -954,10 +1049,10 @@ def verify_bd_stream(
         verified=False,
         publish_allowed=False,
         verification_status="failed_bd",
-        verification_mode="github_only_protection",
+        verification_mode="same_run_cloud_second_pass",
         verification_error=(
             str(item.get("proxy_error") or "")
-            or "Candidate is not covered by trusted BD protection rules"
+            or "Candidate is not covered by protected movie rules"
         ),
     )
     return item
