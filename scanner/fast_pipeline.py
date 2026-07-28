@@ -1,0 +1,771 @@
+"""
+Adaptive Pipelined Verification Engine
+
+Runs global verification and BD/proxy verification as an overlapping pipeline.
+A completed global result is routed immediately to the BD stage when needed;
+other global workers continue without waiting. Candidate groups expand lazily
+only when they still need publishable links.
+
+Safety properties:
+- real manifest/media checks remain enabled;
+- no cache result is treated as a fresh verification;
+- public output is still published only after the whole pipeline finishes;
+- permanent HTTP failures are not treated as host-wide failures;
+- source/stream credentials stay out of reports;
+- history/protection state mutations happen in the main thread.
+"""
+
+from __future__ import annotations
+
+import concurrent.futures
+import json
+import os
+import re
+import time
+from collections import defaultdict, deque
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Deque, Dict, Iterable, List, Optional, Tuple
+from urllib.parse import urlsplit
+
+from scanner.bd_verifier import (
+    _eligible_for_github_protection,
+    _extract_bd_rules as _extract_bd_rules_for_protection,
+    _migrate_sensitive_history_keys,
+    _report_item,
+    _verify_via_proxy_workers,
+    verify_bd_stream,
+)
+from scanner.verifier import (
+    _budget_exhausted_result,
+    _extract_bd_rules as _extract_bd_rules_for_global,
+    verify_single_stream,
+)
+
+
+def _utc_now() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _safe_int(
+    value: Any,
+    default: int,
+    minimum: int = 0,
+    maximum: Optional[int] = None,
+) -> int:
+    try:
+        result = int(value)
+    except (TypeError, ValueError):
+        result = default
+    result = max(minimum, result)
+    if maximum is not None:
+        result = min(result, maximum)
+    return result
+
+
+def _load_json(path: str | Path) -> Dict[str, Any]:
+    file_path = Path(path)
+    if not file_path.exists():
+        return {}
+    try:
+        with file_path.open("r", encoding="utf-8") as handle:
+            data = json.load(handle)
+        return data if isinstance(data, dict) else {}
+    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
+        return {}
+
+
+def _atomic_write_json(path: str | Path, payload: Dict[str, Any]) -> None:
+    file_path = Path(path)
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    temp_path = file_path.with_name(
+        f".{file_path.name}.{os.getpid()}.{time.time_ns()}.tmp"
+    )
+    try:
+        with temp_path.open("w", encoding="utf-8") as handle:
+            json.dump(payload, handle, ensure_ascii=False, indent=2)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temp_path, file_path)
+    finally:
+        if temp_path.exists():
+            try:
+                temp_path.unlink()
+            except OSError:
+                pass
+
+
+def _hostname(item: Dict[str, Any]) -> str:
+    url = str(item.get("url") or "").split("|", 1)[0].strip()
+    try:
+        return (urlsplit(url).hostname or "").casefold()
+    except Exception:
+        return ""
+
+
+def _error_kind(item: Dict[str, Any]) -> str:
+    explicit = str(
+        item.get("verification_error_kind")
+        or item.get("error_kind")
+        or ""
+    ).strip().casefold()
+    if explicit:
+        return explicit
+
+    text = str(item.get("verification_error") or "").casefold()
+    if "name or service not known" in text or "dns" in text:
+        return "dns"
+    if "certificate" in text or "ssl" in text or "tls" in text:
+        return "ssl"
+    if "connection refused" in text or "connection reset" in text:
+        return "connection"
+    if "network is unreachable" in text or "no route" in text:
+        return "network"
+    if "timed out" in text or "timeout" in text:
+        return "timeout"
+    return ""
+
+
+def _pipeline_budget(settings: Dict[str, Any], mode: str) -> int:
+    cfg = settings.get("pipeline")
+    if not isinstance(cfg, dict):
+        cfg = {}
+    raw = cfg.get("time_budget_seconds")
+    defaults = {
+        "channels": 1500,
+        "tv": 1500,
+        "channels-discovery": 2100,
+        "movies": 1800,
+        "movies-discovery": 2400,
+        "events": 600,
+        "today": 420,
+        "today_match": 420,
+        "upcoming": 420,
+        "all": 3000,
+        "full-audit": 3300,
+    }
+    if isinstance(raw, dict):
+        value = raw.get(mode, defaults.get(mode, 1800))
+    else:
+        value = raw or defaults.get(mode, 1800)
+    return _safe_int(value, defaults.get(mode, 1800), 60, 6 * 60 * 60)
+
+
+def _failure_result(item: Dict[str, Any], message: str, kind: str = "") -> Dict[str, Any]:
+    result = dict(item)
+    result.update(
+        verified=False,
+        publish_allowed=False,
+        verification_status="failed",
+        verification_mode="global",
+        verification_checked_at=_utc_now(),
+        verification_error=message,
+        verification_error_kind=kind,
+        response_time_ms=0,
+        http_status=0,
+    )
+    return result
+
+
+def _status_counts(items: Iterable[Dict[str, Any]]) -> Dict[str, int]:
+    counts: Dict[str, int] = {}
+    for item in items:
+        status = str(item.get("verification_status") or "unknown")
+        counts[status] = counts.get(status, 0) + 1
+    return counts
+
+
+def _publishable(item: Dict[str, Any]) -> bool:
+    return item.get("verified") is True or item.get("publish_allowed") is True
+
+
+class HostCircuitRegistry:
+    """Conservative transport-failure circuit breaker and per-host limiter."""
+
+    def __init__(
+        self,
+        failure_threshold: int = 3,
+        cooldown_seconds: int = 90,
+        per_host_limit: int = 3,
+    ) -> None:
+        self.failure_threshold = max(2, failure_threshold)
+        self.cooldown_seconds = max(15, cooldown_seconds)
+        self.per_host_limit = max(1, per_host_limit)
+        self.failures: Dict[str, int] = defaultdict(int)
+        self.open_until: Dict[str, float] = {}
+        self.inflight: Dict[str, int] = defaultdict(int)
+        self.opened_count = 0
+        self.skipped_count = 0
+
+    def can_submit(self, host: str) -> bool:
+        if not host:
+            return True
+        now = time.monotonic()
+        until = self.open_until.get(host, 0.0)
+        if until and now >= until:
+            self.open_until.pop(host, None)
+            self.failures[host] = 0
+        return self.inflight[host] < self.per_host_limit and not self.is_open(host)
+
+    def is_open(self, host: str) -> bool:
+        return bool(host and self.open_until.get(host, 0.0) > time.monotonic())
+
+    def submitted(self, host: str) -> None:
+        if host:
+            self.inflight[host] += 1
+
+    def completed(self, host: str, result: Dict[str, Any]) -> None:
+        if host:
+            self.inflight[host] = max(0, self.inflight[host] - 1)
+        if not host:
+            return
+
+        if result.get("verified") is True:
+            self.failures[host] = 0
+            self.open_until.pop(host, None)
+            return
+
+        kind = _error_kind(result)
+        # HTTP status failures and ordinary timeouts may be URL-specific. Only
+        # strong transport failures open a host-wide circuit.
+        if kind not in {"dns", "ssl", "connection", "network"}:
+            return
+
+        self.failures[host] += 1
+        if self.failures[host] >= self.failure_threshold:
+            if not self.is_open(host):
+                self.opened_count += 1
+            self.open_until[host] = time.monotonic() + self.cooldown_seconds
+
+
+def run_fast_verification_pipeline(
+    candidates_path: str = "working/candidates.json",
+    settings_path: str = "config/settings.json",
+    global_output_path: str = "working/global-results.json",
+    bd_output_path: str = "working/bd-results.json",
+    history_path: str = "state/stream-history.json",
+    protection_state_path: str = "state/bd-protection-state.json",
+    bd_report_path: str = "reports/bd-verification.json",
+    pipeline_report_path: str = "reports/pipeline-performance.json",
+    checkpoint_path: str = "working/pipeline-checkpoint.json",
+) -> Dict[str, Any]:
+    candidates_data = _load_json(candidates_path)
+    raw_items = candidates_data.get("items")
+    if not isinstance(raw_items, list):
+        raise ValueError("working/candidates.json is missing list field 'items'")
+
+    items: List[Dict[str, Any]] = [
+        dict(item) for item in raw_items if isinstance(item, dict)
+    ]
+    settings = _load_json(settings_path)
+    mode = str(candidates_data.get("mode") or "all").strip().casefold()
+
+    verification = settings.get("verification")
+    if not isinstance(verification, dict):
+        verification = {}
+    bd_cfg = settings.get("bd_verification")
+    if not isinstance(bd_cfg, dict):
+        bd_cfg = {}
+    pipeline_cfg = settings.get("pipeline")
+    if not isinstance(pipeline_cfg, dict):
+        pipeline_cfg = {}
+
+    max_global_workers = _safe_int(
+        pipeline_cfg.get(
+            "global_workers",
+            verification.get("workers", settings.get("verification_workers", 20)),
+        ),
+        20,
+        1,
+        32,
+    )
+    min_global_workers = _safe_int(
+        pipeline_cfg.get("minimum_global_inflight", 12),
+        12,
+        1,
+        max_global_workers,
+    )
+    bd_workers = _safe_int(
+        pipeline_cfg.get("bd_workers", bd_cfg.get("workers", 6)),
+        6,
+        1,
+        16,
+    )
+    per_host_limit = _safe_int(
+        pipeline_cfg.get("per_host_limit", 3), 3, 1, 8
+    )
+    host_failure_threshold = _safe_int(
+        pipeline_cfg.get("host_failure_threshold", 3), 3, 2, 10
+    )
+    host_cooldown = _safe_int(
+        pipeline_cfg.get("host_cooldown_seconds", 90), 90, 15, 600
+    )
+    progress_interval = _safe_int(
+        verification.get("progress_interval", 25), 25, 1, 10_000
+    )
+    checkpoint_interval = _safe_int(
+        pipeline_cfg.get("checkpoint_interval", 50), 50, 10, 1000
+    )
+    time_budget_seconds = _pipeline_budget(settings, mode)
+
+    global_bd_rules = _extract_bd_rules_for_global(settings)
+    protection_rules = _extract_bd_rules_for_protection(settings)
+    stream_history = _load_json(history_path)
+    _migrate_sensitive_history_keys(stream_history)
+    protection_state = _load_json(protection_state_path)
+
+    # Group pools retain ranked later-wave candidates for on-demand expansion.
+    groups: Dict[str, Dict[str, Any]] = {}
+    for index, item in enumerate(items):
+        item["_planner_index"] = index
+        group = str(item.get("_verification_group") or f"single:{index}")
+        state = groups.setdefault(
+            group,
+            {
+                "initial": [],
+                "remaining": deque(),
+                "pending": 0,
+                "publishable": 0,
+                "checked": 0,
+                "target": _safe_int(item.get("_verification_target"), 1, 1, 6),
+            },
+        )
+        if _safe_int(item.get("_verification_wave"), 0) == 0:
+            state["initial"].append(item)
+        else:
+            state["remaining"].append(item)
+
+    pending_global: Deque[Dict[str, Any]] = deque()
+    for group in sorted(groups):
+        initial = sorted(
+            groups[group]["initial"],
+            key=lambda item: _safe_int(item.get("_verification_rank"), 0),
+        )
+        for item in initial:
+            pending_global.append(item)
+
+    host_registry = HostCircuitRegistry(
+        failure_threshold=host_failure_threshold,
+        cooldown_seconds=host_cooldown,
+        per_host_limit=per_host_limit,
+    )
+
+    global_futures: Dict[concurrent.futures.Future, Tuple[Dict[str, Any], str]] = {}
+    bd_futures: Dict[concurrent.futures.Future, Dict[str, Any]] = {}
+    global_results: List[Dict[str, Any]] = []
+    final_results: List[Dict[str, Any]] = []
+    adaptive_skipped: List[Dict[str, Any]] = []
+    budget_fallbacks: List[Dict[str, Any]] = []
+
+    global_completed = 0
+    global_network_submitted = 0
+    bd_submitted = 0
+    bd_completed = 0
+    next_global_progress = progress_interval
+    next_bd_progress = progress_interval
+    dynamic_limit = max_global_workers
+    recent_outcomes: Deque[Tuple[bool, int]] = deque(maxlen=50)
+    started = time.monotonic()
+    budget_exhausted = False
+
+    def write_checkpoint() -> None:
+        _atomic_write_json(
+            checkpoint_path,
+            {
+                "timestamp": _utc_now(),
+                "mode": mode,
+                "elapsed_seconds": int(time.monotonic() - started),
+                "global_completed": global_completed,
+                "global_submitted": global_network_submitted,
+                "bd_completed": bd_completed,
+                "bd_submitted": bd_submitted,
+                "finalized": len(final_results),
+                "pending_global": len(pending_global),
+                "global_inflight": len(global_futures),
+                "bd_inflight": len(bd_futures),
+                "dynamic_global_limit": dynamic_limit,
+            },
+        )
+
+    def enqueue_next_for_group(group: str) -> None:
+        state = groups[group]
+        if state["pending"] > 0:
+            return
+        if state["publishable"] >= state["target"]:
+            while state["remaining"]:
+                skipped = dict(state["remaining"].popleft())
+                skipped["adaptive_skip_reason"] = "group_target_satisfied"
+                adaptive_skipped.append(skipped)
+            return
+        if state["remaining"]:
+            pending_global.appendleft(state["remaining"].popleft())
+
+    def finalize(item: Dict[str, Any]) -> None:
+        nonlocal bd_completed, next_bd_progress
+        final_results.append(item)
+        group = str(item.get("_verification_group") or f"single:{item.get('_planner_index', 0)}")
+        state = groups.get(group)
+        if state is not None:
+            state["pending"] = max(0, int(state["pending"]) - 1)
+            state["checked"] += 1
+            if _publishable(item):
+                state["publishable"] += 1
+            enqueue_next_for_group(group)
+
+        if len(final_results) % checkpoint_interval == 0:
+            write_checkpoint()
+
+    def route_global_result(result: Dict[str, Any]) -> None:
+        nonlocal bd_submitted
+        if (
+            result.get("verified") is not True
+            and _eligible_for_github_protection(result, protection_rules)
+        ):
+            future = bd_executor.submit(
+                _verify_via_proxy_workers,
+                dict(result),
+                settings,
+            )
+            bd_futures[future] = result
+            bd_submitted += 1
+            return
+
+        processed = verify_bd_stream(
+            candidate=result,
+            settings=settings,
+            stream_history=stream_history,
+            protection_state=protection_state,
+            bd_rules=protection_rules,
+            proxy_result=(
+                False,
+                {
+                    "proxy_error": "Proxy check not required",
+                    "proxy_http_status": 0,
+                    "proxy_name": "",
+                },
+            ),
+        )
+        finalize(processed)
+
+    def mark_circuit_skipped(item: Dict[str, Any], host: str) -> None:
+        host_registry.skipped_count += 1
+        result = _failure_result(
+            item,
+            f"Host circuit temporarily open after repeated transport failures: {host}",
+            "host_circuit_open",
+        )
+        global_results.append(result)
+        route_global_result(result)
+
+    def fill_global() -> None:
+        nonlocal global_network_submitted
+        if budget_exhausted:
+            return
+
+        rotations = 0
+        max_rotations = max(1, len(pending_global))
+        while pending_global and len(global_futures) < dynamic_limit:
+            item = pending_global.popleft()
+            group = str(item.get("_verification_group") or f"single:{item.get('_planner_index', 0)}")
+            host = _hostname(item)
+
+            if host_registry.is_open(host):
+                groups[group]["pending"] += 1
+                mark_circuit_skipped(item, host)
+                rotations = 0
+                continue
+
+            if host and not host_registry.can_submit(host):
+                pending_global.append(item)
+                rotations += 1
+                if rotations >= max_rotations:
+                    break
+                continue
+
+            rotations = 0
+            groups[group]["pending"] += 1
+            host_registry.submitted(host)
+            future = global_executor.submit(
+                verify_single_stream,
+                dict(item),
+                settings,
+                global_bd_rules,
+            )
+            global_futures[future] = (item, host)
+            global_network_submitted += 1
+
+    print(
+        "   Adaptive pipeline: "
+        f"pool={len(items)}, groups={len(groups)}, "
+        f"global={max_global_workers}, bd={bd_workers}, "
+        f"per-host={per_host_limit}, budget={time_budget_seconds}s",
+        flush=True,
+    )
+    print(
+        f"   Initial global queue: {len(pending_global)} candidates; "
+        "later candidates will expand only when needed",
+        flush=True,
+    )
+
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=max_global_workers,
+        thread_name_prefix="global-verify",
+    ) as global_executor, concurrent.futures.ThreadPoolExecutor(
+        max_workers=bd_workers,
+        thread_name_prefix="bd-verify",
+    ) as bd_executor:
+        fill_global()
+
+        while global_futures or bd_futures or pending_global:
+            elapsed = time.monotonic() - started
+            if elapsed >= time_budget_seconds and not budget_exhausted:
+                budget_exhausted = True
+                print(
+                    "   Pipeline time budget reached; no new candidates will be scheduled",
+                    flush=True,
+                )
+
+            # Wait briefly for either stage. Short polling keeps both queues
+            # moving and allows live progress without blocking on one stage.
+            combined = list(global_futures) + list(bd_futures)
+            if not combined:
+                if budget_exhausted:
+                    break
+                fill_global()
+                if not global_futures and not bd_futures and pending_global:
+                    time.sleep(0.01)
+                continue
+
+            done, _ = concurrent.futures.wait(
+                combined,
+                timeout=0.25,
+                return_when=concurrent.futures.FIRST_COMPLETED,
+            )
+
+            for future in done:
+                if future in global_futures:
+                    original, host = global_futures.pop(future)
+                    try:
+                        result = future.result()
+                    except Exception as error:
+                        result = _failure_result(
+                            original,
+                            f"Unhandled global verifier exception: {error}",
+                            "exception",
+                        )
+
+                    host_registry.completed(host, result)
+                    global_results.append(result)
+                    global_completed += 1
+                    recent_outcomes.append(
+                        (
+                            result.get("verified") is True,
+                            _safe_int(result.get("response_time_ms"), 0),
+                        )
+                    )
+                    route_global_result(result)
+
+                    if global_completed >= next_global_progress:
+                        elapsed_now = int(time.monotonic() - started)
+                        print(
+                            "   Global progress: "
+                            f"{global_completed} completed, "
+                            f"{len(global_futures)} running, "
+                            f"{len(pending_global)} queued "
+                            f"({elapsed_now}s elapsed)",
+                            flush=True,
+                        )
+                        while next_global_progress <= global_completed:
+                            next_global_progress += progress_interval
+
+                    # Conservative adaptive submission limit. It never exceeds
+                    # the configured worker maximum.
+                    if global_completed % 25 == 0 and len(recent_outcomes) >= 20:
+                        success_rate = sum(1 for ok, _ in recent_outcomes if ok) / len(recent_outcomes)
+                        average_ms = sum(ms for _, ms in recent_outcomes) / len(recent_outcomes)
+                        old_limit = dynamic_limit
+                        if success_rate < 0.35:
+                            dynamic_limit = max(min_global_workers, dynamic_limit - 2)
+                        elif success_rate > 0.70 and average_ms < 3500:
+                            dynamic_limit = min(max_global_workers, dynamic_limit + 1)
+                        if dynamic_limit != old_limit:
+                            print(
+                                "   Adaptive global inflight limit: "
+                                f"{old_limit} -> {dynamic_limit} "
+                                f"(success={success_rate:.0%}, avg={average_ms:.0f}ms)",
+                                flush=True,
+                            )
+
+                elif future in bd_futures:
+                    global_result = bd_futures.pop(future)
+                    try:
+                        proxy_result = future.result()
+                    except Exception as error:
+                        proxy_result = (
+                            False,
+                            {
+                                "proxy_error": f"Proxy worker exception: {error}",
+                                "proxy_http_status": 0,
+                                "proxy_name": "",
+                            },
+                        )
+                    try:
+                        processed = verify_bd_stream(
+                            candidate=global_result,
+                            settings=settings,
+                            stream_history=stream_history,
+                            protection_state=protection_state,
+                            bd_rules=protection_rules,
+                            proxy_result=proxy_result,
+                        )
+                    except Exception as error:
+                        processed = dict(global_result)
+                        processed.update(
+                            verified=False,
+                            publish_allowed=bool(global_result.get("previously_published")),
+                            verification_status=(
+                                "stale_last_good"
+                                if global_result.get("previously_published")
+                                else "failed_bd"
+                            ),
+                            verification_mode="pipeline_exception",
+                            verification_error=f"BD pipeline exception: {error}",
+                        )
+                    bd_completed += 1
+                    finalize(processed)
+
+                    if bd_completed >= next_bd_progress or bd_completed == bd_submitted:
+                        elapsed_now = int(time.monotonic() - started)
+                        print(
+                            "   BD pipeline progress: "
+                            f"{bd_completed}/{bd_submitted} completed, "
+                            f"{len(bd_futures)} running "
+                            f"({elapsed_now}s elapsed)",
+                            flush=True,
+                        )
+                        while next_bd_progress <= bd_completed:
+                            next_bd_progress += progress_interval
+
+            if not budget_exhausted:
+                fill_global()
+
+        # Let already-running work finish, but do not create new adaptive work.
+        if budget_exhausted:
+            for item in list(pending_global):
+                if item.get("previously_published") is True:
+                    fallback = _budget_exhausted_result(item)
+                    global_results.append(fallback)
+                    processed = verify_bd_stream(
+                        candidate=fallback,
+                        settings=settings,
+                        stream_history=stream_history,
+                        protection_state=protection_state,
+                        bd_rules=protection_rules,
+                        proxy_result=(False, {"proxy_error": "Budget fallback", "proxy_http_status": 0, "proxy_name": ""}),
+                    )
+                    budget_fallbacks.append(processed)
+                    final_results.append(processed)
+            pending_global.clear()
+
+    # Stable deterministic order for processors and reports.
+    global_results.sort(key=lambda item: _safe_int(item.get("_planner_index"), 0))
+    final_results.sort(key=lambda item: _safe_int(item.get("_planner_index"), 0))
+
+    _atomic_write_json(history_path, stream_history)
+    _atomic_write_json(protection_state_path, protection_state)
+
+    global_counts = _status_counts(global_results)
+    final_counts = _status_counts(final_results)
+    elapsed_seconds = max(0, int(time.monotonic() - started))
+
+    global_payload: Dict[str, Any] = {
+        "timestamp": _utc_now(),
+        "mode": mode,
+        "adaptive_pipeline": True,
+        "candidate_pool": len(items),
+        "total_network_checked": global_network_submitted,
+        "total_global_completed": len(global_results),
+        "total_adaptive_skipped": len(adaptive_skipped),
+        "total_budget_fallbacks": len(budget_fallbacks),
+        "budget_exhausted": budget_exhausted,
+        "elapsed_seconds": elapsed_seconds,
+        "status_counts": global_counts,
+        "results": global_results,
+    }
+    _atomic_write_json(global_output_path, global_payload)
+
+    publishable = [item for item in final_results if _publishable(item)]
+    bd_payload: Dict[str, Any] = {
+        "timestamp": _utc_now(),
+        "mode": mode,
+        "adaptive_pipeline": True,
+        "candidate_pool": len(items),
+        "total_network_checked": global_network_submitted,
+        "total_proxy_checked": bd_submitted,
+        "total_processed": len(final_results),
+        "total_verified": sum(1 for item in final_results if item.get("verified") is True),
+        "total_publishable": len(publishable),
+        "total_adaptive_skipped": len(adaptive_skipped),
+        "total_budget_fallbacks": len(budget_fallbacks),
+        "status_counts": final_counts,
+        "results": final_results,
+    }
+    _atomic_write_json(bd_output_path, bd_payload)
+
+    report_groups: Dict[str, List[Dict[str, Any]]] = {}
+    for item in final_results:
+        status = str(item.get("verification_status") or "unknown")
+        report_groups.setdefault(status, []).append(_report_item(item))
+    _atomic_write_json(
+        bd_report_path,
+        {
+            "timestamp": _utc_now(),
+            "mode": mode,
+            "pipelined": True,
+            "total_input_pool": len(items),
+            "total_global_network_checked": global_network_submitted,
+            "total_proxy_checked": bd_submitted,
+            "total_processed": len(final_results),
+            "total_publishable": len(publishable),
+            "status_counts": final_counts,
+            "groups": report_groups,
+        },
+    )
+
+    performance = {
+        "timestamp": _utc_now(),
+        "mode": mode,
+        "elapsed_seconds": elapsed_seconds,
+        "candidate_pool": len(items),
+        "global_network_checked": global_network_submitted,
+        "global_completed": len(global_results),
+        "bd_proxy_submitted": bd_submitted,
+        "bd_proxy_completed": bd_completed,
+        "final_processed": len(final_results),
+        "final_publishable": len(publishable),
+        "adaptive_skipped": len(adaptive_skipped),
+        "budget_fallbacks": len(budget_fallbacks),
+        "budget_exhausted": budget_exhausted,
+        "host_circuits_opened": host_registry.opened_count,
+        "host_circuit_skips": host_registry.skipped_count,
+        "final_global_inflight_limit": dynamic_limit,
+        "workers": {
+            "global_max": max_global_workers,
+            "bd": bd_workers,
+            "per_host": per_host_limit,
+        },
+    }
+    _atomic_write_json(pipeline_report_path, performance)
+    write_checkpoint()
+
+    print(
+        "   Pipeline completed: "
+        f"global checked={global_network_submitted}, "
+        f"BD checked={bd_submitted}, "
+        f"adaptive skipped={len(adaptive_skipped)}, "
+        f"publishable={len(publishable)}, "
+        f"elapsed={elapsed_seconds}s",
+        flush=True,
+    )
+    return bd_payload

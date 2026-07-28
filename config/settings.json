@@ -1,0 +1,190 @@
+{
+  "timezone": "Asia/Dhaka",
+  "source_timeout_seconds": 10,
+  "stream_timeout_seconds": 6,
+  "source_workers": 8,
+  "verification_workers": 20,
+  "verification": {
+    "workers": 20,
+    "timeout_seconds": 6,
+    "retry_attempts": 1,
+    "retry_delays_seconds": [
+      0
+    ],
+    "probe_media_segments": true,
+    "maximum_hls_variant_probes": 2,
+    "media_sample_bytes": 16384,
+    "maximum_manifest_bytes": 262144,
+    "progress_interval": 25,
+    "batch_size_multiplier": 3,
+    "time_budget_seconds": {
+      "channels": 2100,
+      "tv": 2100,
+      "events": 600,
+      "today": 600,
+      "today_match": 600,
+      "upcoming": 600,
+      "movies": 2400,
+      "all": 3000
+    }
+  },
+  "minimum_live_height": 720,
+  "allow_unknown_live_resolution": false,
+  "manual_can_override_resolution": true,
+  "maximum_total_links": 6,
+  "maximum_backups": 5,
+  "prefer_https": true,
+  "allow_http_fallback": true,
+  "movie_page_size": 100,
+  "live_categories": [
+    "Bangla",
+    "Sports",
+    "Indian",
+    "Cartoon",
+    "Islamic",
+    "Foreign News"
+  ],
+  "movie_categories": [
+    "Bangla",
+    "Hindi",
+    "English",
+    "Dubbed",
+    "South Indian",
+    "Mix"
+  ],
+  "pinned_channels": {
+    "Sports": [
+      {
+        "canonical_name": "T Sports",
+        "aliases": [
+          "t sports",
+          "t sports hd",
+          "t sports fhd",
+          "tsports",
+          "tsports hd",
+          "t-sports"
+        ]
+      }
+    ]
+  },
+  "source_priority": {
+    "manual": 1000,
+    "today_match": 500,
+    "upcoming": 400,
+    "tv": 100,
+    "movies": 100
+  },
+  "output": {
+    "today_match": "data/today-match.json",
+    "upcoming": "data/upcoming.json",
+    "channels": "data/channels",
+    "movies": "data/movies",
+    "manifest": "data/manifest.json",
+    "reports": "reports"
+  },
+  "planning": {
+    "drop_unknown_tv_before_verification": true,
+    "initial_candidates_per_group": {
+      "tv": 1,
+      "movies": 1,
+      "today_match": 1,
+      "upcoming": 1
+    },
+    "maximum_candidates_per_group": {
+      "tv": 6,
+      "movies": 2,
+      "today_match": 4,
+      "upcoming": 3
+    },
+    "target_publishable_per_group": {
+      "tv": 2,
+      "movies": 1,
+      "today_match": 1,
+      "upcoming": 1
+    },
+    "maximum_total_candidate_pool": {
+      "channels": 3200,
+      "tv": 3200,
+      "channels-discovery": 5000,
+      "events": 1200,
+      "today": 800,
+      "today_match": 800,
+      "upcoming": 800,
+      "movies": 5000,
+      "movies-discovery": 7000,
+      "all": 9000,
+      "full-audit": 12000
+    }
+  },
+  "network": {
+    "retry_attempts": 2,
+    "retry_delays_seconds": [
+      0,
+      2
+    ],
+    "retry_status_codes": [
+      429,
+      500,
+      502,
+      503,
+      504
+    ],
+    "verify_ssl": true,
+    "maximum_source_bytes": 26214400
+  },
+  "bd_verification": {
+    "workers": 6,
+    "proxy_base": "https://channelverification.juelgrsan3679.workers.dev",
+    "github_only_protection": true
+  },
+  "link_policy": {
+    "maximum_total_links": 6,
+    "maximum_backups": 5,
+    "prefer_https": true,
+    "allow_http_fallback": true,
+    "prefer_different_hosts": true
+  },
+  "failure_protection": {
+    "maximum_drop_percentage": 70,
+    "minimum_previous_count": 10
+  },
+  "notifications": {
+    "telegram_enabled": true
+  },
+  "pipeline": {
+    "global_workers": 20,
+    "minimum_global_inflight": 12,
+    "bd_workers": 6,
+    "per_host_limit": 3,
+    "host_failure_threshold": 3,
+    "host_cooldown_seconds": 90,
+    "checkpoint_interval": 50,
+    "time_budget_seconds": {
+      "channels": 1500,
+      "tv": 1500,
+      "channels-discovery": 2100,
+      "events": 600,
+      "today": 420,
+      "today_match": 420,
+      "upcoming": 420,
+      "movies": 1800,
+      "movies-discovery": 2400,
+      "all": 3000,
+      "full-audit": 3300
+    }
+  },
+  "content_routing": {
+    "discover_movies_in_tv_sources": true,
+    "cleanup_polluted_tv_once": true,
+    "cleanup_migration_id": "vod-routing-v1",
+    "cleanup_polluted_tv_categories": [
+      "Bangla",
+      "Indian"
+    ],
+    "cleanup_minimum_incoming_tv": 20
+  },
+  "source_cache": {
+    "enabled": true,
+    "allow_stale_on_error": true
+  }
+}
