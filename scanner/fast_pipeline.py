@@ -180,6 +180,74 @@ def _publishable(item: Dict[str, Any]) -> bool:
     return item.get("verified") is True or item.get("publish_allowed") is True
 
 
+def _should_submit_proxy_check(
+    item: Dict[str, Any],
+    protection_rules: Dict[str, Any],
+    mode: str,
+) -> bool:
+    """Return True only when a proxy/BD re-check can realistically help.
+
+    Permanent dead responses (404/410), invalid HTML/media responses and ordinary
+    client errors are not sent to the proxy queue. This is especially important
+    for large movie scans where thousands of dead direct-file URLs can otherwise
+    create a long BD tail after global verification has already finished.
+    """
+    if item.get("verified") is True:
+        return False
+
+    if not _eligible_for_github_protection(item, protection_rules):
+        return False
+
+    http_status = _safe_int(item.get("http_status"), 0)
+    error_kind = _error_kind(item)
+    permanent_codes = set(
+        protection_rules.get("permanent_http_status_codes", {404, 410})
+    )
+    if http_status in permanent_codes:
+        return False
+
+    # A proxy cannot turn an HTML error page, malformed manifest or unsupported
+    # direct file response into a valid media stream.
+    if error_kind in {
+        "invalid_content",
+        "invalid_manifest",
+        "html",
+        "unsupported",
+        "media_signature",
+    }:
+        return False
+
+    if http_status in {400, 405, 406, 409, 415, 416, 422}:
+        return False
+
+    protect_codes = set(
+        protection_rules.get("protect_http_status_codes", {401, 403, 451})
+    )
+    transient_codes = set(
+        protection_rules.get(
+            "transient_http_status_codes",
+            {429, 500, 502, 503, 504},
+        )
+    )
+
+    if http_status in protect_codes or http_status in transient_codes:
+        return True
+
+    if http_status == 0 and error_kind in {
+        "timeout",
+        "dns",
+        "ssl",
+        "connection",
+        "network",
+    }:
+        return True
+
+    # Preserve explicit BD-pending status only when it was produced by the
+    # verifier for a trusted candidate and was not ruled out above.
+    status = str(item.get("verification_status") or "").strip().casefold()
+    return status in {"needs_bd_check", "bd_protected_pending", "stale_last_good"}
+
+
 class HostCircuitRegistry:
     """Conservative transport-failure circuit breaker and per-host limiter."""
 
@@ -207,6 +275,9 @@ class HostCircuitRegistry:
             self.open_until.pop(host, None)
             self.failures[host] = 0
         return self.inflight[host] < self.per_host_limit and not self.is_open(host)
+
+    def set_limit(self, new_limit: int) -> None:
+        self.per_host_limit = max(1, int(new_limit))
 
     def is_open(self, host: str) -> bool:
         return bool(host and self.open_until.get(host, 0.0) > time.monotonic())
@@ -311,11 +382,11 @@ def _mode_worker_profile(
     settings: Dict[str, Any],
     mode: str,
 ) -> Dict[str, int]:
-    """Return mode-specific sharded worker settings.
+    """Return mode-specific global and BD worker-pool settings.
 
-    Movies and All use the user's requested five independent pools of twenty
-    workers. Smaller modes stay conservative because they finish quickly and
-    do not benefit from one hundred concurrent requests.
+    Large movie scans use five 20-thread global pools and five smaller BD pools.
+    The BD pools remove the old end-of-scan bottleneck where global verification
+    finished quickly but hundreds of proxy checks waited behind only eight threads.
     """
     pipeline_cfg = settings.get("pipeline")
     if not isinstance(pipeline_cfg, dict):
@@ -338,50 +409,71 @@ def _mode_worker_profile(
             "pool_count": 1,
             "workers_per_pool": 20,
             "minimum_total_inflight": 12,
-            "bd_workers": 6,
+            "bd_pool_count": 1,
+            "bd_workers_per_pool": 6,
             "per_host_limit": 4,
+            "tail_per_host_limit": 6,
+            "tail_threshold": 120,
         },
         "tv": {
             "pool_count": 1,
             "workers_per_pool": 20,
             "minimum_total_inflight": 12,
-            "bd_workers": 6,
+            "bd_pool_count": 1,
+            "bd_workers_per_pool": 6,
             "per_host_limit": 4,
+            "tail_per_host_limit": 6,
+            "tail_threshold": 120,
         },
         "today": {
             "pool_count": 1,
             "workers_per_pool": 20,
             "minimum_total_inflight": 12,
-            "bd_workers": 4,
+            "bd_pool_count": 1,
+            "bd_workers_per_pool": 4,
             "per_host_limit": 4,
+            "tail_per_host_limit": 6,
+            "tail_threshold": 80,
         },
         "today_match": {
             "pool_count": 1,
             "workers_per_pool": 20,
             "minimum_total_inflight": 12,
-            "bd_workers": 4,
+            "bd_pool_count": 1,
+            "bd_workers_per_pool": 4,
             "per_host_limit": 4,
+            "tail_per_host_limit": 6,
+            "tail_threshold": 80,
         },
         "upcoming": {
             "pool_count": 1,
             "workers_per_pool": 20,
             "minimum_total_inflight": 12,
-            "bd_workers": 4,
+            "bd_pool_count": 1,
+            "bd_workers_per_pool": 4,
             "per_host_limit": 4,
+            "tail_per_host_limit": 6,
+            "tail_threshold": 80,
         },
         "movies": {
             "pool_count": 5,
             "workers_per_pool": 20,
             "minimum_total_inflight": 80,
-            "bd_workers": 8,
-            "per_host_limit": 20,
+            "bd_pool_count": 5,
+            "bd_workers_per_pool": 6,
+            "per_host_limit": 24,
+            "tail_per_host_limit": 32,
+            "tail_threshold": 700,
         },
         "all": {
             "pool_count": 5,
             "workers_per_pool": 20,
             "minimum_total_inflight": 80,
-            "bd_workers": 8,
-            "per_host_limit": 20,
+            "bd_pool_count": 5,
+            "bd_workers_per_pool": 6,
+            "per_host_limit": 24,
+            "tail_per_host_limit": 32,
+            "tail_threshold": 900,
         },
     }
 
@@ -430,18 +522,35 @@ def _mode_worker_profile(
         total_workers,
     )
 
-    bd_workers = _safe_int(
+    legacy_bd_workers = _safe_int(
         mode_config.get(
             "bd_workers",
             pipeline_cfg.get(
                 "bd_workers",
-                bd_cfg.get("workers", default_profile["bd_workers"]),
+                bd_cfg.get("workers", default_profile["bd_workers_per_pool"]),
             ),
         ),
-        default_profile["bd_workers"],
+        default_profile["bd_workers_per_pool"],
         1,
-        32,
+        64,
     )
+
+    bd_pool_count = _safe_int(
+        mode_config.get("bd_pool_count", default_profile["bd_pool_count"]),
+        default_profile["bd_pool_count"],
+        1,
+        8,
+    )
+    bd_workers_per_pool = _safe_int(
+        mode_config.get(
+            "bd_workers_per_pool",
+            legacy_bd_workers if bd_pool_count == 1 else default_profile["bd_workers_per_pool"],
+        ),
+        default_profile["bd_workers_per_pool"],
+        1,
+        16,
+    )
+    total_bd_workers = bd_pool_count * bd_workers_per_pool
 
     per_host_limit = _safe_int(
         mode_config.get(
@@ -450,7 +559,22 @@ def _mode_worker_profile(
         ),
         default_profile["per_host_limit"],
         1,
-        32,
+        48,
+    )
+    tail_per_host_limit = _safe_int(
+        mode_config.get(
+            "tail_per_host_limit",
+            default_profile["tail_per_host_limit"],
+        ),
+        default_profile["tail_per_host_limit"],
+        per_host_limit,
+        64,
+    )
+    tail_threshold = _safe_int(
+        mode_config.get("tail_threshold", default_profile["tail_threshold"]),
+        default_profile["tail_threshold"],
+        20,
+        5000,
     )
 
     return {
@@ -458,8 +582,12 @@ def _mode_worker_profile(
         "workers_per_pool": workers_per_pool,
         "total_workers": total_workers,
         "minimum_total_inflight": minimum_total_inflight,
-        "bd_workers": bd_workers,
+        "bd_pool_count": bd_pool_count,
+        "bd_workers_per_pool": bd_workers_per_pool,
+        "total_bd_workers": total_bd_workers,
         "per_host_limit": per_host_limit,
+        "tail_per_host_limit": tail_per_host_limit,
+        "tail_threshold": tail_threshold,
     }
 
 
@@ -500,8 +628,12 @@ def run_fast_verification_pipeline(
     workers_per_pool = worker_profile["workers_per_pool"]
     max_global_workers = worker_profile["total_workers"]
     min_global_workers = worker_profile["minimum_total_inflight"]
-    bd_workers = worker_profile["bd_workers"]
+    bd_pool_count = worker_profile["bd_pool_count"]
+    bd_workers_per_pool = worker_profile["bd_workers_per_pool"]
+    max_bd_workers = worker_profile["total_bd_workers"]
     per_host_limit = worker_profile["per_host_limit"]
+    tail_per_host_limit = worker_profile["tail_per_host_limit"]
+    tail_threshold = worker_profile["tail_threshold"]
     host_failure_threshold = _safe_int(
         pipeline_cfg.get("host_failure_threshold", 3), 3, 2, 10
     )
@@ -562,7 +694,11 @@ def run_fast_verification_pipeline(
         concurrent.futures.Future,
         Tuple[Dict[str, Any], str, int],
     ] = {}
-    bd_futures: Dict[concurrent.futures.Future, Dict[str, Any]] = {}
+    bd_futures: Dict[
+        concurrent.futures.Future,
+        Tuple[Dict[str, Any], int],
+    ] = {}
+    pending_bd: Deque[Dict[str, Any]] = deque()
     global_results: List[Dict[str, Any]] = []
     final_results: List[Dict[str, Any]] = []
     adaptive_skipped: List[Dict[str, Any]] = []
@@ -570,12 +706,16 @@ def run_fast_verification_pipeline(
 
     global_completed = 0
     global_network_submitted = 0
+    bd_selected = 0
     bd_submitted = 0
     bd_completed = 0
     next_global_progress = progress_interval
     next_bd_progress = progress_interval
     dynamic_limit = max_global_workers
     recent_outcomes: Deque[Tuple[str, int, int]] = deque(maxlen=100)
+    last_pressure_rate = 0.0
+    last_average_ms = 0.0
+    tail_boost_active = False
     started = time.monotonic()
     budget_exhausted = False
 
@@ -589,7 +729,9 @@ def run_fast_verification_pipeline(
                 "global_completed": global_completed,
                 "global_submitted": global_network_submitted,
                 "bd_completed": bd_completed,
+                "bd_selected": bd_selected,
                 "bd_submitted": bd_submitted,
+                "bd_queued": len(pending_bd),
                 "finalized": len(final_results),
                 "pending_global": len(pending_global),
                 "global_inflight": len(global_futures),
@@ -632,18 +774,10 @@ def run_fast_verification_pipeline(
             write_checkpoint()
 
     def route_global_result(result: Dict[str, Any]) -> None:
-        nonlocal bd_submitted
-        if (
-            result.get("verified") is not True
-            and _eligible_for_github_protection(result, protection_rules)
-        ):
-            future = bd_executor.submit(
-                _verify_via_proxy_workers,
-                dict(result),
-                settings,
-            )
-            bd_futures[future] = result
-            bd_submitted += 1
+        nonlocal bd_selected
+        if _should_submit_proxy_check(result, protection_rules, mode):
+            pending_bd.append(dict(result))
+            bd_selected += 1
             return
 
         processed = verify_bd_stream(
@@ -662,6 +796,18 @@ def run_fast_verification_pipeline(
             ),
         )
         finalize(processed)
+
+    def fill_bd() -> None:
+        nonlocal bd_submitted
+        while pending_bd and len(bd_futures) < max_bd_workers:
+            global_result = pending_bd.popleft()
+            future, pool_index = bd_executor.submit(
+                _verify_via_proxy_workers,
+                dict(global_result),
+                settings,
+            )
+            bd_futures[future] = (global_result, pool_index)
+            bd_submitted += 1
 
     def mark_circuit_skipped(item: Dict[str, Any], host: str) -> None:
         host_registry.skipped_count += 1
@@ -714,7 +860,8 @@ def run_fast_verification_pipeline(
         "   Adaptive pipeline: "
         f"pool={len(items)}, groups={len(groups)}, "
         f"global-pools={pool_count}x{workers_per_pool}={max_global_workers}, "
-        f"bd={bd_workers}, per-host={per_host_limit}, "
+        f"bd-pools={bd_pool_count}x{bd_workers_per_pool}={max_bd_workers}, "
+        f"per-host={per_host_limit}, tail-per-host={tail_per_host_limit}, "
         f"budget={time_budget_seconds}s",
         flush=True,
     )
@@ -728,13 +875,15 @@ def run_fast_verification_pipeline(
         pool_count=pool_count,
         workers_per_pool=workers_per_pool,
         thread_name_prefix="global-verify",
-    ) as global_executor, concurrent.futures.ThreadPoolExecutor(
-        max_workers=bd_workers,
+    ) as global_executor, ShardedExecutor(
+        pool_count=bd_pool_count,
+        workers_per_pool=bd_workers_per_pool,
         thread_name_prefix="bd-verify",
     ) as bd_executor:
         fill_global()
+        fill_bd()
 
-        while global_futures or bd_futures or pending_global:
+        while global_futures or bd_futures or pending_global or pending_bd:
             elapsed = time.monotonic() - started
             if elapsed >= time_budget_seconds and not budget_exhausted:
                 budget_exhausted = True
@@ -745,12 +894,15 @@ def run_fast_verification_pipeline(
 
             # Wait briefly for either stage. Short polling keeps both queues
             # moving and allows live progress without blocking on one stage.
+            fill_bd()
             combined = list(global_futures) + list(bd_futures)
             if not combined:
-                if budget_exhausted:
+                if budget_exhausted and not pending_bd:
                     break
-                fill_global()
-                if not global_futures and not bd_futures and pending_global:
+                if not budget_exhausted:
+                    fill_global()
+                fill_bd()
+                if not global_futures and not bd_futures and (pending_global or pending_bd):
                     time.sleep(0.01)
                 continue
 
@@ -827,6 +979,8 @@ def run_fast_verification_pipeline(
                             if response_values
                             else 0.0
                         )
+                        last_pressure_rate = pressure_rate
+                        last_average_ms = average_ms
                         old_limit = dynamic_limit
                         decrease_step = max(5, workers_per_pool // 2)
                         increase_step = max(2, workers_per_pool // 4)
@@ -852,7 +1006,8 @@ def run_fast_verification_pipeline(
                             )
 
                 elif future in bd_futures:
-                    global_result = bd_futures.pop(future)
+                    global_result, bd_pool_index = bd_futures.pop(future)
+                    bd_executor.completed(bd_pool_index)
                     try:
                         proxy_result = future.result()
                     except Exception as error:
@@ -889,12 +1044,14 @@ def run_fast_verification_pipeline(
                     bd_completed += 1
                     finalize(processed)
 
-                    if bd_completed >= next_bd_progress or bd_completed == bd_submitted:
+                    if bd_completed >= next_bd_progress or bd_completed == bd_selected:
                         elapsed_now = int(time.monotonic() - started)
                         print(
                             "   BD pipeline progress: "
-                            f"{bd_completed}/{bd_submitted} completed, "
-                            f"{len(bd_futures)} running "
+                            f"{bd_completed}/{bd_selected} completed, "
+                            f"{len(bd_futures)} running, "
+                            f"{len(pending_bd)} queued, "
+                            f"pool-load={bd_executor.loads()} "
                             f"({elapsed_now}s elapsed)",
                             flush=True,
                         )
@@ -902,7 +1059,24 @@ def run_fast_verification_pipeline(
                             next_bd_progress += progress_interval
 
             if not budget_exhausted:
+                remaining_global = len(pending_global) + len(global_futures)
+                if (
+                    mode in {"movies", "all"}
+                    and not tail_boost_active
+                    and 0 < remaining_global <= tail_threshold
+                    and last_pressure_rate < 0.45
+                    and (last_average_ms == 0 or last_average_ms < 5500)
+                ):
+                    host_registry.set_limit(tail_per_host_limit)
+                    tail_boost_active = True
+                    print(
+                        "   Safe tail boost enabled: "
+                        f"per-host {per_host_limit} -> {tail_per_host_limit} "
+                        f"for final {remaining_global} global candidates",
+                        flush=True,
+                    )
                 fill_global()
+            fill_bd()
 
         # Let already-running work finish, but do not create new adaptive work.
         if budget_exhausted:
@@ -956,6 +1130,7 @@ def run_fast_verification_pipeline(
         "adaptive_pipeline": True,
         "candidate_pool": len(items),
         "total_network_checked": global_network_submitted,
+        "total_proxy_selected": bd_selected,
         "total_proxy_checked": bd_submitted,
         "total_processed": len(final_results),
         "total_verified": sum(1 for item in final_results if item.get("verified") is True),
@@ -979,6 +1154,7 @@ def run_fast_verification_pipeline(
             "pipelined": True,
             "total_input_pool": len(items),
             "total_global_network_checked": global_network_submitted,
+            "total_proxy_selected": bd_selected,
             "total_proxy_checked": bd_submitted,
             "total_processed": len(final_results),
             "total_publishable": len(publishable),
@@ -994,6 +1170,7 @@ def run_fast_verification_pipeline(
         "candidate_pool": len(items),
         "global_network_checked": global_network_submitted,
         "global_completed": len(global_results),
+        "bd_proxy_selected": bd_selected,
         "bd_proxy_submitted": bd_submitted,
         "bd_proxy_completed": bd_completed,
         "final_processed": len(final_results),
@@ -1009,8 +1186,11 @@ def run_fast_verification_pipeline(
             "global_workers_per_pool": workers_per_pool,
             "global_total_max": max_global_workers,
             "global_minimum_inflight": min_global_workers,
-            "bd": bd_workers,
+            "bd_pool_count": bd_pool_count,
+            "bd_workers_per_pool": bd_workers_per_pool,
+            "bd_total_max": max_bd_workers,
             "per_host": per_host_limit,
+            "tail_per_host": tail_per_host_limit,
         },
     }
     _atomic_write_json(pipeline_report_path, performance)
@@ -1019,6 +1199,7 @@ def run_fast_verification_pipeline(
     print(
         "   Pipeline completed: "
         f"global checked={global_network_submitted}, "
+        f"BD selected={bd_selected}, "
         f"BD checked={bd_submitted}, "
         f"adaptive skipped={len(adaptive_skipped)}, "
         f"publishable={len(publishable)}, "
