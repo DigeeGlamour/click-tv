@@ -289,7 +289,8 @@
   "bd_verification": {
     "workers": 6,
     "proxy_base": "https://channelverification.juelgrsan3679.workers.dev",
-    "github_only_protection": true
+    "github_only_protection": true,
+    "proxy_timeout_seconds": 5
   },
   "link_policy": {
     "maximum_total_links": 6,
@@ -342,36 +343,51 @@
       "pool_count": 1,
       "workers_per_pool": 20,
       "minimum_total_inflight": 12,
-      "bd_workers": 6,
-      "per_host_limit": 4
+      "per_host_limit": 4,
+      "bd_pool_count": 1,
+      "bd_workers_per_pool": 6,
+      "tail_per_host_limit": 6,
+      "tail_threshold": 120
     },
     "today": {
       "pool_count": 1,
       "workers_per_pool": 20,
       "minimum_total_inflight": 12,
-      "bd_workers": 4,
-      "per_host_limit": 4
+      "per_host_limit": 4,
+      "bd_pool_count": 1,
+      "bd_workers_per_pool": 4,
+      "tail_per_host_limit": 6,
+      "tail_threshold": 80
     },
     "upcoming": {
       "pool_count": 1,
       "workers_per_pool": 20,
       "minimum_total_inflight": 12,
-      "bd_workers": 4,
-      "per_host_limit": 4
+      "per_host_limit": 4,
+      "bd_pool_count": 1,
+      "bd_workers_per_pool": 4,
+      "tail_per_host_limit": 6,
+      "tail_threshold": 80
     },
     "movies": {
       "pool_count": 5,
       "workers_per_pool": 20,
       "minimum_total_inflight": 80,
-      "bd_workers": 8,
-      "per_host_limit": 20
+      "per_host_limit": 24,
+      "bd_pool_count": 5,
+      "bd_workers_per_pool": 6,
+      "tail_per_host_limit": 32,
+      "tail_threshold": 700
     },
     "all": {
       "pool_count": 5,
       "workers_per_pool": 20,
       "minimum_total_inflight": 80,
-      "bd_workers": 8,
-      "per_host_limit": 20
+      "per_host_limit": 24,
+      "bd_pool_count": 5,
+      "bd_workers_per_pool": 6,
+      "tail_per_host_limit": 32,
+      "tail_threshold": 900
     }
   }
 }
