@@ -28,7 +28,7 @@
     }
   },
   "minimum_live_height": 720,
-  "allow_unknown_live_resolution": false,
+  "allow_unknown_live_resolution": true,
   "manual_can_override_resolution": true,
   "maximum_total_links": 6,
   "maximum_backups": 5,
@@ -298,7 +298,40 @@
     "host_second_pass_sample_size": 8,
     "path_404_sample_size": 5,
     "path_404_threshold": 4,
-    "path_group_depth": 3
+    "path_group_depth": 3,
+    "direct_browser_second_pass": true,
+    "publish_uncertain_direct_tv": true,
+    "trusted_source_ids": [
+      "livetv-collector-bd",
+      "sydul104-my-source",
+      "sm-combined-livetv",
+      "sm-aynaott-tv",
+      "sm-toffee-tv",
+      "abusaeeidx-crestsport-bd",
+      "abusaeeidx-mrgify-bdix",
+      "abusaeeidx-tsports-combine",
+      "sm-iptv-bdix",
+      "srhady-akash-live",
+      "srhady-toffee-bd"
+    ],
+    "protect_http_status_codes": [
+      401,
+      403,
+      451
+    ],
+    "transient_http_status_codes": [
+      429,
+      500,
+      502,
+      503,
+      504
+    ],
+    "permanent_http_status_codes": [
+      404,
+      410
+    ],
+    "permanent_fail_confirmations": 2,
+    "keep_pending_hours": 48
   },
   "link_policy": {
     "maximum_total_links": 6,
@@ -430,5 +463,46 @@
     "enabled": true,
     "maximum_drop_percentage": 40,
     "minimum_previous_count": 100
+  },
+  "resolution": {
+    "tv_minimum_height": 720,
+    "allow_unknown_tv_resolution": true,
+    "manual_can_override_resolution": true,
+    "preserve_working_bd_below_minimum": true,
+    "preserve_unknown_working_tv": true,
+    "event_minimum_height": 0,
+    "allow_unknown_event_resolution": true
+  },
+  "channel_protection": {
+    "preserve_working_bd_channels": true,
+    "preserve_working_bd_below_minimum": true,
+    "preserve_unknown_working_tv": true,
+    "publish_uncertain_direct_tv": true,
+    "always_verify_pinned_channels": true,
+    "always_verify_manual_channels": true,
+    "protected_categories": [
+      "Bangla"
+    ],
+    "trusted_source_ids": [
+      "livetv-collector-bd",
+      "sydul104-my-source",
+      "sm-combined-livetv",
+      "sm-aynaott-tv",
+      "sm-toffee-tv",
+      "abusaeeidx-crestsport-bd",
+      "abusaeeidx-mrgify-bdix",
+      "abusaeeidx-tsports-combine",
+      "sm-iptv-bdix",
+      "srhady-akash-live",
+      "srhady-toffee-bd"
+    ],
+    "trusted_source_id_keywords": [
+      "bdix",
+      "jagobd",
+      "toffee",
+      "ayna",
+      "bangla",
+      "akash-live"
+    ]
   }
 }
