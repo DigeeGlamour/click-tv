@@ -1381,6 +1381,60 @@ def _is_manual_candidate(item: Dict[str, Any]) -> bool:
     )
 
 
+def _protected_bd_tv_candidate(
+    item: Dict[str, Any],
+    settings: Dict[str, Any],
+) -> bool:
+    """Return True for live-TV candidates that deserve Bangladesh-safe quality protection."""
+    pipeline = str(item.get("source_pipeline") or "tv").strip().casefold()
+    if pipeline != "tv":
+        return False
+
+    if _is_manual_candidate(item):
+        return True
+
+    if _safe_bool(item.get("bd_candidate"), False):
+        return True
+
+    protection = settings.get("channel_protection", {})
+    if not isinstance(protection, dict):
+        protection = {}
+
+    category = str(item.get("category") or "").strip().casefold()
+    protected_categories = protection.get("protected_categories", ["Bangla"])
+    if isinstance(protected_categories, list):
+        protected_category_set = {
+            str(value or "").strip().casefold()
+            for value in protected_categories
+            if str(value or "").strip()
+        }
+        if category and category in protected_category_set:
+            return True
+
+    source_id = str(item.get("source_id") or "").strip().casefold()
+    trusted_ids = protection.get("trusted_source_ids", [])
+    if isinstance(trusted_ids, list):
+        trusted_id_set = {
+            str(value or "").strip().casefold()
+            for value in trusted_ids
+            if str(value or "").strip()
+        }
+        if source_id and source_id in trusted_id_set:
+            return True
+
+    keywords = protection.get(
+        "trusted_source_id_keywords",
+        ["bdix", "jagobd", "toffee", "ayna", "bangla"],
+    )
+    if isinstance(keywords, list) and source_id:
+        for raw_keyword in keywords:
+            keyword = str(raw_keyword or "").strip().casefold()
+            if keyword and keyword in source_id:
+                return True
+
+    return False
+
+
 def _resolution_policy(settings: Dict[str, Any]) -> Dict[str, Any]:
     nested = settings.get("resolution", {})
     if not isinstance(nested, dict):
@@ -1430,10 +1484,21 @@ def _resolution_policy(settings: Dict[str, Any]) -> Dict[str, Any]:
         True,
     )
 
+    preserve_working_bd_below_minimum = _safe_bool(
+        nested.get("preserve_working_bd_below_minimum", True),
+        True,
+    )
+    preserve_unknown_working_tv = _safe_bool(
+        nested.get("preserve_unknown_working_tv", True),
+        True,
+    )
+
     return {
         "tv_minimum_height": tv_minimum_height,
         "allow_unknown_tv_resolution": allow_unknown_tv,
         "manual_can_override_resolution": manual_override,
+        "preserve_working_bd_below_minimum": preserve_working_bd_below_minimum,
+        "preserve_unknown_working_tv": preserve_unknown_working_tv,
         "event_minimum_height": event_minimum_height,
         "allow_unknown_event_resolution": allow_unknown_event,
     }
@@ -1458,9 +1523,18 @@ def _apply_resolution_policy(
         allow_unknown = policy[
             "allow_unknown_tv_resolution"
         ]
+        protected_bd_tv = _protected_bd_tv_candidate(item, settings)
 
         if detected_height > 0 and detected_height < minimum:
-            if manual_override_active:
+            if manual_override_active or (
+                protected_bd_tv
+                and policy["preserve_working_bd_below_minimum"]
+            ):
+                item["quality_below_preferred"] = True
+                item["quality_policy_note"] = (
+                    f"Playable protected TV stream kept at {detected_height}p "
+                    f"below preferred {minimum}p"
+                )
                 return True, "verified_global", ""
             return (
                 False,
@@ -1471,8 +1545,18 @@ def _apply_resolution_policy(
                 ),
             )
 
-        if detected_height == 0 and not allow_unknown:
-            if manual_override_active:
+        if detected_height == 0:
+            if (
+                manual_override_active
+                or allow_unknown
+                or policy["preserve_unknown_working_tv"]
+                or protected_bd_tv
+            ):
+                item["quality_unknown"] = True
+                item["quality_policy_note"] = (
+                    "Manifest/media verification succeeded; resolution metadata "
+                    "was unavailable"
+                )
                 return True, "verified_global", ""
             return (
                 False,
@@ -1781,12 +1865,15 @@ def verify_single_stream(
         )
 
         item["verified"] = policy_ok
+        item["publish_allowed"] = policy_ok
         item["verification_status"] = status
         item["verification_error"] = policy_error
 
         if policy_ok:
             item["last_check_success"] = True
             item["recent_success"] = True
+            if item.get("quality_policy_note"):
+                item["verification_note"] = str(item.get("quality_policy_note"))
         return item
 
     status_code = _safe_int(
