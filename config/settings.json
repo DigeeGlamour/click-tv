@@ -295,21 +295,28 @@
     "same_run_second_pass": true,
     "host_sample_size": 5,
     "host_sample_uncertain_threshold": 4,
-    "host_second_pass_sample_size": 8
+    "host_second_pass_sample_size": 8,
+    "path_404_sample_size": 5,
+    "path_404_threshold": 4,
+    "path_group_depth": 3
   },
   "link_policy": {
     "maximum_total_links": 6,
     "maximum_backups": 5,
     "prefer_https": true,
     "allow_http_fallback": true,
-    "prefer_different_hosts": true
+    "prefer_different_hosts": true,
+    "movie_maximum_total_links": 4,
+    "movie_maximum_backups": 3
   },
   "failure_protection": {
     "maximum_drop_percentage": 70,
     "minimum_previous_count": 10
   },
   "notifications": {
-    "telegram_enabled": true
+    "telegram_enabled": false,
+    "detailed_movie_breakdown": true,
+    "post_push_only": true
   },
   "pipeline": {
     "global_workers": 20,
@@ -393,7 +400,10 @@
       "combined_per_host_limit": 32,
       "host_sample_size": 5,
       "host_sample_uncertain_threshold": 4,
-      "host_second_pass_sample_size": 8
+      "host_second_pass_sample_size": 8,
+      "path_404_sample_size": 5,
+      "path_404_threshold": 4,
+      "path_group_depth": 3
     },
     "all": {
       "pool_count": 5,
@@ -410,7 +420,15 @@
       "combined_per_host_limit": 32,
       "host_sample_size": 5,
       "host_sample_uncertain_threshold": 4,
-      "host_second_pass_sample_size": 8
+      "host_second_pass_sample_size": 8,
+      "path_404_sample_size": 5,
+      "path_404_threshold": 4,
+      "path_group_depth": 3
     }
+  },
+  "movie_failure_protection": {
+    "enabled": true,
+    "maximum_drop_percentage": 40,
+    "minimum_previous_count": 100
   }
 }
