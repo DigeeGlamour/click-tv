@@ -405,8 +405,11 @@ def _eligible_for_github_protection(
     if http_status in rules.get("transient_http_status_codes", set()):
         return True
 
+    # Permanent dead responses must never enter proxy/BD protection. A proxy
+    # cannot revive a confirmed 404/410 and rechecking them creates a large
+    # end-of-scan backlog during movie scans.
     if http_status in rules.get("permanent_http_status_codes", set()):
-        return True
+        return False
 
     return http_status == 0 and _error_kind(item) in DEFAULT_TRANSIENT_ERROR_KINDS
 
