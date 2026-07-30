@@ -1537,18 +1537,48 @@ async function selectMainView(view, category, options = {}) {
   }
 }
 
-function openMovieParentMode(chip) {
+async function openMovieParentMode(chip) {
   cancelDataLoading();
   clearCurrentListState();
+
   state.view = VIEW.MOVIE;
   state.selectedCategory = 'Movie';
   state.selectedMovieCategory = null;
-  setActiveMainChip(chip || activateChipByView('movie'));
+
+  setActiveMainChip(
+    chip || activateChipByView('movie')
+  );
+
   movieSubcategoryBar.style.display = 'flex';
-  qsa('.sub-chip', movieSubcategoryBar).forEach((item) => item.classList.remove('active'));
-  setSearchEnabled(false);
-  showListMessage('মুভি দেখতে একটি বিভাগ নির্বাচন করুন', 'fa-film');
-  setSidebarCount('0 Movies');
+
+  qsa(
+    '.sub-chip',
+    movieSubcategoryBar
+  ).forEach((item) => {
+    item.classList.remove('active');
+  });
+
+  const defaultMovieButton = qs(
+    '.sub-chip[data-movie-cat="bangla"]',
+    movieSubcategoryBar
+  );
+
+  if (!defaultMovieButton) {
+    setSearchEnabled(false);
+
+    showListMessage(
+      'মুভির বিভাগ পাওয়া যায়নি',
+      'fa-exclamation-triangle'
+    );
+
+    setSidebarCount('0 Movies');
+    return;
+  }
+
+  await selectMovieSubcategory(
+    'bangla',
+    defaultMovieButton
+  );
 }
 
 async function selectMovieSubcategory(slug, button) {
