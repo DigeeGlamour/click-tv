@@ -1757,6 +1757,10 @@ function applyFilterAndSort() {
 
 function renderCurrentList(reset = true) {
   applyFilterAndSort();
+    sidebarList.classList.toggle(
+    'upcoming-grid',
+    state.view === VIEW.UPCOMING
+  );
   if (reset) {
     sidebarList.replaceChildren();
     state.renderedCount = 0;
