@@ -950,6 +950,122 @@
         padding: 2px 5px !important;
       }
     }
+
+    /* Final UI corrections: clean quality menu, safe poster fallback and true mobile footer flow */
+    #streamInfoBadge,
+    #movieExtraBadges,
+    #movieRealResBadge,
+    #movieRatingMetaBadge {
+      display: none !important;
+    }
+
+    #qualityMenu {
+      min-width: 138px !important;
+      max-width: 170px !important;
+      width: max-content !important;
+    }
+    #qualityMenu .popup-menu-item {
+      min-height: 30px;
+      padding: 7px 10px !important;
+      gap: 10px;
+      white-space: nowrap;
+    }
+    #qualityMenu .popup-menu-item > span:first-child {
+      font-size: 10.5px;
+      font-weight: 800;
+    }
+    #qualityMenu .bitrate-val {
+      margin-left: 0 !important;
+      font-size: 9px !important;
+      opacity: .82 !important;
+    }
+
+    .sidebar-name {
+      overflow-wrap: anywhere !important;
+      word-break: break-word !important;
+    }
+
+    .movie-poster-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(255,42,68,.22), transparent 38%),
+        linear-gradient(145deg, #1b2434, #0e1420);
+      color: rgba(255,255,255,.78);
+      z-index: 1;
+    }
+    .movie-poster-placeholder i {
+      font-size: 28px;
+      color: var(--phosphor);
+      opacity: .9;
+    }
+    .movie-poster-placeholder span {
+      max-width: 100%;
+      font-size: 9px;
+      line-height: 1.25;
+      font-weight: 800;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+
+    @media (max-width: 1000px) {
+      html,
+      body {
+        height: auto !important;
+        min-height: 100dvh !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+      }
+      body {
+        display: flex !important;
+        flex-direction: column !important;
+      }
+      .youtube-layout {
+        flex: 0 0 auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
+      .video-section,
+      .sidebar-section {
+        flex: 0 0 auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+      }
+      .sidebar-list {
+        flex: 0 0 auto !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+        padding-bottom: 12px !important;
+      }
+      footer {
+        position: static !important;
+        order: 99;
+        margin-top: 10px;
+        padding: 12px 14px max(12px, env(safe-area-inset-bottom)) !important;
+      }
+      #qualityMenu {
+        right: 6px !important;
+        bottom: 40px !important;
+        min-width: 130px !important;
+        max-width: min(160px, calc(100vw - 20px)) !important;
+        max-height: 58dvh;
+        overflow-y: auto;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1229,7 +1345,7 @@ const DATA_FETCH_TIMEOUT_MS = 9000;
 const POSITION_SAVE_INTERVAL_MS = 10000;
 const POSITION_HISTORY_LIMIT = 200;
 const MOVIE_PROMPT_TEXT = 'মুভি দেখতে একটি বিভাগ নির্বাচন করুন';
-const MOVIE_PREVIEW_LIMIT = 8;
+const MOVIE_PREVIEW_LIMIT = 18;
 const MOBILE_SEARCH_AUTO_CLOSE_MS = 5000;
 
 const state = {
@@ -1266,6 +1382,7 @@ const state = {
   stallInterval: null,
   autoNextTimer: null,
   autoNextCount: 0,
+  autoNextFailedUids: [],
   currentQuery: '',
   lastFocusedUid: null,
   lastFocusedSelector: null,
@@ -1450,10 +1567,207 @@ function manifestMovieEntry(slug) {
   return pair ? { label: pair[0], ...pair[1] } : null;
 }
 
+
+const BANGLA_CHANNEL_PRIORITY = Object.freeze([
+  ['btv', 'bangladesh television'],
+  ['btv news'],
+  ['somoy tv', 'somoy television', 'somoy'],
+  ['jamuna tv', 'jamuna television', 'jamuna'],
+  ['channel 24', 'channel24'],
+  ['gazi tv', 'gazi television', 'gtv'],
+  ['ekattor hd', 'ekattor tv hd', 'ekattor'],
+  ['independent tv', 'independent television', 'independent'],
+  ['dbc news', 'dbc'],
+  ['news 24', 'news24'],
+  ['atn news'],
+  ['gaan bangla', 'gan bangla'],
+  ['rtv'],
+  ['banglavision', 'bangla vision'],
+  ['channel i'],
+  ['me tv', 'metv'],
+  ['deepto tv', 'deepto'],
+  ['maasranga tv', 'maasranga', 'masranga tv', 'masranga'],
+  ['srk tv', 'srk'],
+  ['boishakhi tv', 'boishakhi'],
+  ['green tv', 'green television'],
+  ['asian tv', 'asian television'],
+  ['atn bangla'],
+  ['ekhon tv', 'ekhon'],
+  ['nexus tv hd', 'nexus tv', 'nexus'],
+  ['global tv', 'global television'],
+  ['channel s'],
+  ['mohona tv', 'mohona'],
+  ['my tv', 'mytv'],
+  ['ekattor tv'],
+  ['ntv'],
+  ['satv', 'sa tv'],
+  ['ekushey tv', 'etv'],
+  ['nagorik tv hd', 'nagorik tv', 'nagorik'],
+  ['desh tv', 'desh television'],
+  ['ep tv', 'eptv'],
+  ['music bangla'],
+  ['g series', 'g-serise', 'g serise'],
+  ['movie bangla tv', 'movie bangla'],
+  ['rajdhani tv', 'rajdhani'],
+  ['khusbo bangla', 'khushbu bangla', 'khushbo bangla'],
+  ['ruposhi bangla']
+]);
+
+const FAILED_PUBLISH_STATUSES = new Set([
+  'failed',
+  'failed_bd',
+  'rejected_low_quality',
+  'quarantine',
+  '404_quarantined',
+  'dead'
+]);
+
+function cleanDisplayName(value) {
+  let text = String(value || '').replace(/\\"/g, '"').replace(/\s+/g, ' ').trim();
+  if (!text) return '';
+
+  if (/\bq[\s_-]*85\b/i.test(text) && /\bposters?\b/i.test(text)) {
+    const commaParts = text.split(',');
+    const tail = commaParts[commaParts.length - 1].replace(/^["'\s]+|["'\s]+$/g, '').trim();
+    if (tail) text = tail;
+  }
+
+  if (/\b(?:jpe?g|png|webp|gif)\b/i.test(text) && /\bgroup\s*title\b/i.test(text) && text.includes(',')) {
+    const tail = text.split(',').pop().replace(/^["'\s]+|["'\s]+$/g, '').trim();
+    if (tail) text = tail;
+  }
+
+  text = text
+    .replace(/^["'\s]+|["'\s]+$/g, '')
+    .replace(/\s*,\s*$/, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+
+  return text || 'Untitled';
+}
+
+function canonicalDisplayKey(value) {
+  return cleanDisplayName(value)
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9\u0980-\u09ff]+/g, ' ')
+    .replace(/\b(?:hd|full hd|fhd|sd)\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function banglaPriorityIndex(name) {
+  const key = canonicalDisplayKey(name);
+  for (let index = 0; index < BANGLA_CHANNEL_PRIORITY.length; index += 1) {
+    if (BANGLA_CHANNEL_PRIORITY[index].some((alias) => canonicalDisplayKey(alias) === key)) {
+      return index;
+    }
+  }
+  return Number.MAX_SAFE_INTEGER;
+}
+
+function isFailedPublishedItem(item) {
+  const status = String(item?.verification_status || item?.status || '').trim().toLowerCase();
+  return FAILED_PUBLISH_STATUSES.has(status) || item?.publish_allowed === false;
+}
+
 function isLikelyVodLeak(item) {
   const pipeline = String(item?.source_pipeline || '').toLowerCase();
+  const kind = String(item?.content_kind || item?.content_type || '').toLowerCase();
   const category = String(item?.category || '').toLowerCase();
-  return pipeline === 'movies' || pipeline === 'movie' || category === 'vod' || category === 'movies';
+  const url = String(item?.url || item?.link || item?.stream_url || '').split('|', 1)[0].toLowerCase();
+  const name = cleanDisplayName(item?.name || item?.title || '');
+  const hasMovieYear = /\((?:19|20)\d{2}\)|\b(?:19|20)\d{2}\b/.test(name);
+  const hasMovieWords = /\b(?:dubbed|movie|film|web\s*series|series|natok|telefilm|episode|s\d{1,2}e\d{1,3})\b/i.test(name);
+  const directVod = /\.(?:mp4|m4v|mkv|avi|mov|webm|flv)(?:$|\?)/i.test(url);
+  const moviePath = /\/(?:movie|movies|film|films|vod|series|webseries|web-series|natok|telefilm)\//i.test(url);
+
+  return (
+    pipeline === 'movies' ||
+    pipeline === 'movie' ||
+    ['movie', 'movies', 'vod', 'film', 'series'].includes(kind) ||
+    category === 'vod' ||
+    category === 'movies' ||
+    directVod ||
+    moviePath ||
+    (hasMovieYear && hasMovieWords)
+  );
+}
+
+function isLikelyLiveLeak(item) {
+  const pipeline = String(item?.source_pipeline || '').toLowerCase();
+  const kind = String(item?.content_kind || item?.content_type || '').toLowerCase();
+  const url = String(item?.url || item?.link || item?.stream_url || '').split('|', 1)[0].toLowerCase();
+  const name = cleanDisplayName(item?.name || item?.title || '');
+  const hasYear = /\((?:19|20)\d{2}\)|\b(?:19|20)\d{2}\b/.test(name);
+  const clearlyLivePipeline = ['tv', 'live', 'livetv', 'live_tv', 'channel'].includes(pipeline) ||
+    ['tv', 'live', 'livetv', 'live_tv', 'channel'].includes(kind);
+  const clearlyLiveUrl = /\/cdn\/live\/|\/live\/|\.stream\/playlist\.m3u8|\/playlist\.m3u8(?:$|\?)/i.test(url);
+  const liveBrandName = /\b(?:tv|television|channel|news|sports|radio|cinema|movies)\b/i.test(name);
+
+  return clearlyLivePipeline || (!hasYear && clearlyLiveUrl && liveBrandName);
+}
+
+function sourceConfidenceScore(item) {
+  const status = String(item?.verification_status || '').toLowerCase();
+  const statusScores = {
+    verified_global: 80,
+    verified_bd: 78,
+    verified: 76,
+    verified_proxy: 72,
+    stale_last_good: 55,
+    bd_protected_pending: 48,
+    geo_pending: 44,
+    retryable_pending: 32,
+    host_deferred: 20
+  };
+  let score = statusScores[status] || 0;
+  if (item?.verified === true) score += 12;
+  if (String(item?.url || '').startsWith('https://')) score += 5;
+  if (item?.logo || item?.poster || item?.image) score += 3;
+  return score;
+}
+
+function mergeDuplicateNormalizedItems(items, sourceKind) {
+  const byKey = new Map();
+
+  items.forEach((item) => {
+    const priority = sourceKind === VIEW.CHANNEL ? banglaPriorityIndex(item.name) : Number.MAX_SAFE_INTEGER;
+    const identity = priority !== Number.MAX_SAFE_INTEGER
+      ? `bangla-priority:${priority}`
+      : canonicalDisplayKey(item.name) || item.id || item.url;
+    const key = `${sourceKind}:${identity}`;
+    const existing = byKey.get(key);
+
+    if (!existing) {
+      byKey.set(key, item);
+      return;
+    }
+
+    const winner = sourceConfidenceScore(item) > sourceConfidenceScore(existing) ? item : existing;
+    const loser = winner === item ? existing : item;
+    const mergedSources = [];
+    const seenUrls = new Set();
+
+    [...(winner._sources || []), ...(loser._sources || [])].forEach((source) => {
+      const url = String(source?.url || '').trim();
+      if (!url || seenUrls.has(url) || mergedSources.length >= 6) return;
+      seenUrls.add(url);
+      mergedSources.push(source);
+    });
+
+    winner._sources = mergedSources;
+    winner.backups = mergedSources.slice(1, 6);
+    if (!winner.logo && loser.logo) winner.logo = loser.logo;
+    byKey.set(key, winner);
+  });
+
+  return [...byKey.values()].map((item, index) => ({
+    ...item,
+    seqNumber: index + 1,
+    _uid: `${sourceKind}:${item.id || slugify(item.name)}:${index}`
+  }));
 }
 
 function isPlayable(item) {
@@ -1497,9 +1811,40 @@ function inferStreamType(raw = {}) {
 function inferProxyMode(raw = {}, profile = '') {
   const explicit = String(raw.proxy_mode || '').toLowerCase();
   if (['direct_first', 'proxy_first', 'proxy_only', 'direct_only', 'auto'].includes(explicit)) return explicit;
-  if (raw.force_proxy || raw.proxy_required || profile) return 'proxy_first';
-  if (String(raw.url || raw.link || raw.stream_url || '').toLowerCase().startsWith('http://')) return 'proxy_first';
+
+  if (raw.force_proxy || raw.proxy_required) return 'proxy_only';
+
+  const url = String(raw.url || raw.link || raw.stream_url || '').toLowerCase();
+  const status = String(raw.verification_status || '').toLowerCase();
+
+  if (status === 'verified_proxy') return 'proxy_first';
+  if (url.startsWith('http://')) return 'proxy_first';
+
+  // These sources genuinely depend on Referer/Origin profiles.
+  if (['streame_center', 'fibwatch', 'crichd'].includes(profile)) return 'proxy_first';
+
+  // Many Toffee/Bangladesh CDN links play directly for local users. Keep the
+  // old reliable direct-first behaviour and use the profile only as fallback.
+  if (profile === 'toffee_okhttp') return 'direct_first';
+
+  if (profile && !['android_tv', 'android_chrome', 'default'].includes(profile)) {
+    return 'proxy_first';
+  }
+
   return 'direct_first';
+}
+
+function shouldInheritManifestQuery(raw = {}) {
+  if (typeof raw.inherit_manifest_query === 'boolean') return raw.inherit_manifest_query;
+  const url = String(raw.url || raw.link || raw.stream_url || '');
+  try {
+    const parsed = new URL(url, location.href);
+    if (!parsed.search) return false;
+    const names = [...parsed.searchParams.keys()].map((key) => key.toLowerCase());
+    return names.some((key) => /token|auth|signature|sig|expires|exp|key|session|hdnea|policy/.test(key));
+  } catch (_) {
+    return /[?&](?:token|auth|signature|sig|expires|exp|key|session|hdnea|policy)=/i.test(url);
+  }
 }
 
 function normalizeBackup(backup, parent) {
@@ -1523,7 +1868,7 @@ function normalizeBackup(backup, parent) {
     height: Number(source.height || 0),
     bitrate: Number(source.bitrate || source.bandwidth || source.average_bitrate || 0),
     source_id: source.source_id || '',
-    inherit_manifest_query: Boolean(source.inherit_manifest_query ?? parent.inherit_manifest_query)
+    inherit_manifest_query: shouldInheritManifestQuery(source) || shouldInheritManifestQuery(parent)
   };
 }
 
@@ -1544,7 +1889,7 @@ function rankSources(raw) {
     width: Number(raw.width || 0),
     height: Number(raw.height || 0),
     bitrate: Number(raw.bitrate || raw.bandwidth || raw.average_bitrate || 0),
-    inherit_manifest_query: Boolean(raw.inherit_manifest_query)
+    inherit_manifest_query: shouldInheritManifestQuery(raw)
   }] : [];
 
   const backups = Array.isArray(raw.backups)
@@ -1582,36 +1927,52 @@ function normalizeItem(raw, index, sourceKind = VIEW.CHANNEL) {
     authorization: _ignoredAuthorization,
     ...safeRaw
   } = raw;
-  const name = safeRaw.name || safeRaw.title || `Item ${index + 1}`;
+
+  const rawName = safeRaw.name || safeRaw.title || `Item ${index + 1}`;
+  const name = cleanDisplayName(rawName) || `Item ${index + 1}`;
   const id = safeRaw.id || slugify(name);
   const uid = `${sourceKind}:${id}:${index}`;
+  const sources = rankSources(raw);
+
   return {
     ...safeRaw,
     id,
     _uid: uid,
     seqNumber: index + 1,
     name,
+    title: name,
     logo: safeRaw.logo || safeRaw.poster || safeRaw.image || '',
     url: safeRaw.url || safeRaw.stream_url || safeRaw.link || '',
     category: safeRaw.category || safeRaw.group_title || state.selectedCategory || '',
-    backups: Array.isArray(safeRaw.backups) ? safeRaw.backups.slice(0, 5).map((entry) => normalizeBackup(entry, raw)).filter(Boolean) : [],
+    backups: Array.isArray(safeRaw.backups)
+      ? safeRaw.backups.slice(0, 5).map((entry) => normalizeBackup(entry, raw)).filter(Boolean)
+      : [],
     header_profile: inferSafeHeaderProfile(raw),
     proxy_mode: inferProxyMode(raw, inferSafeHeaderProfile(raw)),
     stream_type: inferStreamType(raw),
     width: Number(safeRaw.width || 0),
     height: Number(safeRaw.height || 0),
     bitrate: Number(safeRaw.bitrate || safeRaw.bandwidth || safeRaw.average_bitrate || 0),
-    _sources: rankSources(raw),
+    inherit_manifest_query: shouldInheritManifestQuery(raw),
+    _sources: sources,
     _sourceKind: sourceKind
   };
 }
 
 function normalizeList(rawList, sourceKind) {
   if (!Array.isArray(rawList)) return [];
-  return rawList
+
+  const normalized = rawList
     .filter((item) => item && item.publish_allowed !== false)
-    .filter((item) => sourceKind !== VIEW.CHANNEL || !isLikelyVodLeak(item))
-    .map((item, index) => normalizeItem(item, index, sourceKind));
+    .filter((item) => !isFailedPublishedItem(item))
+    .map((item, index) => normalizeItem(item, index, sourceKind))
+    .filter((item) => {
+      if (sourceKind === VIEW.CHANNEL) return !isLikelyVodLeak(item);
+      if (sourceKind === VIEW.MOVIE) return !isLikelyLiveLeak(item) && isPlayable(item);
+      return isPlayable(item);
+    });
+
+  return mergeDuplicateNormalizedItems(normalized, sourceKind);
 }
 
 async function loadRuntimeAndManifest() {
@@ -1849,39 +2210,85 @@ async function loadMovieParentPreview() {
   const sessionId = ++state.dataSessionId;
 
   try {
+    const perCategoryLimit = Math.max(2, Math.ceil(MOVIE_PREVIEW_LIMIT / MOVIE_ORDER.length));
+    const categoryBuckets = [];
+    const overflowPool = [];
+
     for (const [label, slug] of MOVIE_ORDER) {
       const entry = manifestMovieEntry(slug);
       if (!entry?.index) continue;
 
-      const indexData = await fetchJson(entry.index, { signal: controller.signal, cache: 'no-store' });
-      if (sessionId !== state.dataSessionId || !state.moviePreviewMode) return;
-      const pages = Array.isArray(indexData.pages) ? indexData.pages : [];
-      if (!pages.length) continue;
-      const pagePath = pages[0].path || (pages[0].file ? `data/movies/${indexData.slug || slug}/${pages[0].file}` : '');
-      if (!pagePath) continue;
+      try {
+        const indexData = await fetchJson(entry.index, {
+          signal: controller.signal,
+          cache: 'no-store'
+        });
+        if (sessionId !== state.dataSessionId || !state.moviePreviewMode) return;
 
-      const pageData = await fetchJson(pagePath, { signal: controller.signal, cache: 'no-store' });
-      if (sessionId !== state.dataSessionId || !state.moviePreviewMode) return;
-      const rawItems = pageData.items || pageData.movies || [];
-      const normalized = normalizeList(rawItems, VIEW.MOVIE);
-      const playable = normalized.filter(isPlayable);
-      const preview = (playable.length ? playable : normalized).slice(0, MOVIE_PREVIEW_LIMIT);
-      if (!preview.length) continue;
+        const pages = Array.isArray(indexData.pages) ? indexData.pages : [];
+        if (!pages.length) continue;
 
-      preview.forEach((item, index) => {
-        item.seqNumber = index + 1;
-        item._uid = `movie-preview:${slug}:${item.id}:${index}`;
-        item._previewCategory = label;
-      });
-      state.currentItems = preview;
-      state.filteredItems = preview.slice();
-      renderCurrentList(true);
-      setSidebarCount(`${preview.length} Movie Preview · বিভাগ নির্বাচন করে আরও দেখুন`);
+        const pagePath = pages[0].path ||
+          (pages[0].file ? `data/movies/${indexData.slug || slug}/${pages[0].file}` : '');
+        if (!pagePath) continue;
+
+        const pageData = await fetchJson(pagePath, {
+          signal: controller.signal,
+          cache: 'no-store'
+        });
+        if (sessionId !== state.dataSessionId || !state.moviePreviewMode) return;
+
+        const rawItems = pageData.items || pageData.movies || [];
+        const normalized = normalizeList(rawItems, VIEW.MOVIE);
+        if (!normalized.length) continue;
+
+        const bucket = normalized.slice(0, perCategoryLimit).map((item) => ({
+          ...item,
+          _previewCategory: label,
+          _previewSlug: slug
+        }));
+        categoryBuckets.push(...bucket);
+
+        normalized.slice(perCategoryLimit).forEach((item) => {
+          overflowPool.push({
+            ...item,
+            _previewCategory: label,
+            _previewSlug: slug
+          });
+        });
+      } catch (categoryError) {
+        if (categoryError?.name === 'AbortError') throw categoryError;
+        console.warn(`Movie preview category skipped: ${slug}`, categoryError);
+      }
+    }
+
+    const preview = categoryBuckets.slice(0, MOVIE_PREVIEW_LIMIT);
+    if (preview.length < MOVIE_PREVIEW_LIMIT) {
+      const used = new Set(preview.map((item) => `${canonicalDisplayKey(item.name)}:${item.url}`));
+      for (const item of overflowPool) {
+        const key = `${canonicalDisplayKey(item.name)}:${item.url}`;
+        if (used.has(key)) continue;
+        used.add(key);
+        preview.push(item);
+        if (preview.length >= MOVIE_PREVIEW_LIMIT) break;
+      }
+    }
+
+    if (!preview.length) {
+      showListMessage('মুভি দেখতে একটি বিভাগ নির্বাচন করুন', 'fa-film');
+      setSidebarCount('Movie Preview');
       return;
     }
 
-    showListMessage('মুভি আছে, একটি বিভাগ নির্বাচন করে তালিকা দেখুন', 'fa-film');
-    setSidebarCount('Movie Preview');
+    preview.forEach((item, index) => {
+      item.seqNumber = index + 1;
+      item._uid = `movie-preview:${item._previewSlug || 'mix'}:${item.id}:${index}`;
+    });
+
+    state.currentItems = preview;
+    state.filteredItems = preview.slice();
+    renderCurrentList(true);
+    setSidebarCount(`${preview.length} Movie Preview · বিভাগ নির্বাচন করে আরও দেখুন`);
   } catch (error) {
     if (error.name === 'AbortError' || sessionId !== state.dataSessionId) return;
     console.warn('Movie preview load failed:', error);
@@ -2080,17 +2487,30 @@ function applyFilterAndSort() {
   const query = currentSearchValue();
   state.currentQuery = query;
   let items = state.currentItems.slice();
+
   if (query) {
     items = items.filter((item) => {
       const haystack = `${item.name || ''} ${item.category || ''} ${item.competition || ''}`.toLowerCase();
       return haystack.includes(query);
     });
   }
+
   if (state.currentSortMode === 'az') {
     items.sort((a, b) => a.name.localeCompare(b.name));
   } else if (state.currentSortMode === 'za') {
     items.sort((a, b) => b.name.localeCompare(a.name));
+  } else if (
+    state.view === VIEW.CHANNEL &&
+    canonicalDisplayKey(state.selectedCategory).includes('bangla')
+  ) {
+    items.sort((a, b) => {
+      const aPriority = banglaPriorityIndex(a.name);
+      const bPriority = banglaPriorityIndex(b.name);
+      if (aPriority !== bPriority) return aPriority - bPriority;
+      return (a.seqNumber || 0) - (b.seqNumber || 0);
+    });
   }
+
   state.filteredItems = items;
 }
 
@@ -2148,7 +2568,10 @@ function renderCurrentList(reset = true) {
   }
 
   appendNextChunk(state.view === VIEW.MOVIE ? MOVIE_CHUNK_SIZE : CHANNEL_INITIAL_CHUNK);
-  requestAnimationFrame(restoreListFocus);
+  requestAnimationFrame(() => {
+    restoreListFocus();
+    if (window.matchMedia('(max-width: 1000px)').matches) handleSidebarScroll();
+  });
 }
 
 function appendNextChunk(limit = null) {
@@ -2170,9 +2593,17 @@ function appendNextChunk(limit = null) {
 }
 
 function createImageHtml(item, className) {
-  const logo = item.logo || '';
-  if (!logo) return `<div class="logo-placeholder">${escapeHtml(item.name.slice(0, 2).toUpperCase())}</div>`;
-  return `<img class="${className}" src="${escapeHtml(logo)}" alt="${escapeHtml(item.name)} logo" loading="lazy" decoding="async" data-name="${escapeHtml(item.name)}">`;
+  const logo = String(item.logo || '').trim();
+  const isMovie = item?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+
+  if (!logo) {
+    if (isMovie) {
+      return `<div class="movie-poster-placeholder" role="img" aria-label="${escapeHtml(item.name)} poster unavailable"><i class="fas fa-film"></i><span>Poster নেই</span></div>`;
+    }
+    return `<div class="logo-placeholder">${escapeHtml(item.name.slice(0, 2).toUpperCase())}</div>`;
+  }
+
+  return `<img class="${className}" src="${escapeHtml(logo)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-name="${escapeHtml(item.name)}">`;
 }
 
 function createChannelCard(item, visualIndex) {
@@ -2254,9 +2685,13 @@ function replaceBrokenImage(image) {
 }
 
 function replaceBrokenMovieImage(image) {
-  image.removeAttribute('src');
-  image.classList.add('movie-poster-fallback');
-  image.alt = 'Poster unavailable';
+  if (!image || !image.parentNode) return;
+  const placeholder = document.createElement('div');
+  placeholder.className = 'movie-poster-placeholder';
+  placeholder.setAttribute('role', 'img');
+  placeholder.setAttribute('aria-label', `${image.dataset.name || 'Movie'} poster unavailable`);
+  placeholder.innerHTML = '<i class="fas fa-film"></i><span>Poster নেই</span>';
+  image.replaceWith(placeholder);
 }
 
 let preconnectTimer = null;
@@ -2299,18 +2734,40 @@ sidebarList.addEventListener('scroll', () => {
   });
 }, { passive: true });
 
+window.addEventListener('scroll', () => {
+  if (!window.matchMedia('(max-width: 1000px)').matches || sidebarScrollScheduled) return;
+  sidebarScrollScheduled = true;
+  requestAnimationFrame(() => {
+    sidebarScrollScheduled = false;
+    handleSidebarScroll();
+  });
+}, { passive: true });
+
 async function handleSidebarScroll() {
-  const nearBottom = sidebarList.scrollTop + sidebarList.clientHeight >= sidebarList.scrollHeight - 260;
+  const mobileFlow = window.matchMedia('(max-width: 1000px)').matches;
+  const nearBottom = mobileFlow
+    ? sidebarList.getBoundingClientRect().bottom <= window.innerHeight + 520
+    : sidebarList.scrollTop + sidebarList.clientHeight >= sidebarList.scrollHeight - 260;
+
   if (!nearBottom) return;
 
   if (state.renderedCount < state.filteredItems.length) {
     appendNextChunk();
+    if (mobileFlow) requestAnimationFrame(handleSidebarScroll);
     return;
   }
 
-  if (state.view === VIEW.MOVIE && !state.moviePreviewMode && state.movieIndex && state.moviePageCursor < state.movieIndex.pages.length) {
+  if (
+    state.view === VIEW.MOVIE &&
+    !state.moviePreviewMode &&
+    state.movieIndex &&
+    state.moviePageCursor < state.movieIndex.pages.length
+  ) {
     const loaded = await loadNextMoviePage();
-    if (loaded && state.renderedCount < state.filteredItems.length) appendNextChunk();
+    if (loaded && state.renderedCount < state.filteredItems.length) {
+      appendNextChunk();
+      if (mobileFlow) requestAnimationFrame(handleSidebarScroll);
+    }
   }
 }
 
@@ -2459,28 +2916,45 @@ function buildAttemptPlan(item) {
   const sources = item._sources?.length ? item._sources : rankSources(item);
 
   sources.slice(0, 6).forEach((source, sourceIndex) => {
-    const isHttp = source.url.toLowerCase().startsWith('http://');
+    const sourceUrl = String(source.url || '').trim();
+    if (!sourceUrl) return;
+
+    const isHttp = sourceUrl.toLowerCase().startsWith('http://');
     const mixedContent = location.protocol === 'https:' && isHttp;
     const mode = source.proxy_mode || inferProxyMode(source, source.header_profile || '');
-    const proxies = rankHealthyProxies(source.url).slice(0, 2);
+    const proxies = rankHealthyProxies(sourceUrl).slice(0, 2);
     const canDirect = !mixedContent && mode !== 'proxy_only';
-    const canProxy = mode !== 'direct_only';
-    const proxyFirst = mode === 'proxy_first' || mode === 'proxy_only' || source.force_proxy || Boolean(source.header_profile);
+    const canProxy = mode !== 'direct_only' && proxies.length > 0;
 
-    if (proxyFirst && canProxy) {
-      proxies.forEach((proxy) => plan.push({ source, sourceIndex, route: 'proxy', proxy }));
-    }
+    const addDirect = () => {
+      if (canDirect) plan.push({ source, sourceIndex, route: 'direct', proxy: null });
+    };
+    const addProxies = () => {
+      if (canProxy) proxies.forEach((proxy) => plan.push({ source, sourceIndex, route: 'proxy', proxy }));
+    };
 
-    if (canDirect && (!proxyFirst || !proxies.length)) {
-      plan.push({ source, sourceIndex, route: 'direct', proxy: null });
-    }
-
-    if (!proxyFirst && canProxy) {
-      proxies.forEach((proxy) => plan.push({ source, sourceIndex, route: 'proxy', proxy }));
+    if (mode === 'direct_only') {
+      addDirect();
+    } else if (mode === 'proxy_only') {
+      addProxies();
+    } else if (mode === 'proxy_first' || source.force_proxy) {
+      addProxies();
+      addDirect();
+    } else {
+      // direct_first / auto: preserve the old reliable local playback path,
+      // then use at most two healthy proxies as fallback.
+      addDirect();
+      addProxies();
     }
   });
 
-  return plan;
+  const seen = new Set();
+  return plan.filter((attempt) => {
+    const key = `${attempt.route}:${attempt.proxy || ''}:${attempt.source.url}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function readNetworkMode() {
@@ -2730,18 +3204,27 @@ async function cleanupPlayerEngine() {
   clearSubtitles();
 }
 
-function sourceAttemptMessage(attempt) {
-  const sourceLabel = attempt.sourceIndex === 0 ? 'প্রাইমারি' : `ব্যাকআপ ${attempt.sourceIndex}`;
-  if (attempt.route === 'direct') return `${sourceLabel} লিংক সরাসরি লোড হচ্ছে…`;
-  const typeLabel = attempt.source.stream_type === 'dash' ? 'DASH' : attempt.source.stream_type === 'media' ? 'Media' : 'HLS';
-  const proxyNumber = playbackProxyList().indexOf(attempt.proxy) + 1;
-  return `${sourceLabel} ${typeLabel} Playback Proxy-${proxyNumber > 0 ? proxyNumber : ''} দিয়ে লোড হচ্ছে…`;
+function sourceAttemptMessage() {
+  const kind = state.currentItem?._sourceKind || state.view;
+  const isMovie = kind === VIEW.MOVIE;
+  const isMatch = kind === VIEW.EVENT;
+  const session = state.playbackSession;
+  const retrying = Number(session?.attemptsRun || 0) > 1;
+
+  if (isMovie) return retrying ? 'মুভিটি চালুর আরেকটি উপায় চেষ্টা করা হচ্ছে…' : 'মুভিটি চালু হচ্ছে…';
+  if (isMatch) return retrying ? 'লাইভ ম্যাচটি চালুর আরেকটি উপায় চেষ্টা করা হচ্ছে…' : 'লাইভ ম্যাচটি চালু হচ্ছে…';
+  return retrying ? 'চ্যানেলটি চালুর আরেকটি উপায় চেষ্টা করা হচ্ছে…' : 'চ্যানেলটি চালু হচ্ছে…';
 }
 
 async function startPlayback(item, userInitiated = true) {
   if (!item || !isPlayable(item)) return;
+
   clearAutoNextTimer();
-  if (userInitiated) state.autoNextCount = 0;
+  if (userInitiated) {
+    state.autoNextCount = 0;
+    state.autoNextFailedUids = [];
+  }
+
   state.activeLoadId += 1;
   const id = state.activeLoadId;
   await cleanupPlayerEngine();
@@ -2759,6 +3242,7 @@ async function startPlayback(item, userInitiated = true) {
     item,
     plan,
     attemptIndex: 0,
+    attemptsRun: 0,
     currentAttempt: null,
     startedAt: Date.now(),
     budgetDeadline: Date.now() + CHANNEL_ATTEMPT_BUDGET_MS,
@@ -2778,9 +3262,10 @@ async function startPlayback(item, userInitiated = true) {
   };
 
   if (!plan.length) {
-    handlePlaybackPlanExhausted('কোনো ব্যবহারযোগ্য লিংক নেই');
+    handlePlaybackPlanExhausted('no_playable_route');
     return;
   }
+
   await runCurrentAttempt();
 }
 
@@ -2789,7 +3274,7 @@ async function runCurrentAttempt() {
   if (!session || session.id !== state.activeLoadId) return;
 
   if (Date.now() >= session.budgetDeadline || session.attemptIndex >= session.plan.length) {
-    handlePlaybackPlanExhausted('সব লিংক চেষ্টা করা হয়েছে');
+    handlePlaybackPlanExhausted('attempts_exhausted');
     return;
   }
 
@@ -2800,6 +3285,7 @@ async function runCurrentAttempt() {
 
   const attempt = session.plan[session.attemptIndex];
   session.currentAttempt = attempt;
+  session.attemptsRun = Number(session.attemptsRun || 0) + 1;
   video.dataset.attemptToken = String(attemptToken);
   session.attemptStartedAt = Date.now();
   session.progressSeen = false;
@@ -2808,9 +3294,11 @@ async function runCurrentAttempt() {
   session.success = false;
   session.lastTime = 0;
   session.lastProgressAt = Date.now();
-  showPlayerMessage(sourceAttemptMessage(attempt));
+  showPlayerMessage(sourceAttemptMessage());
 
-  const finalUrl = attempt.route === 'proxy' ? buildProxyUrl(attempt.proxy, attempt.source) : attempt.source.url;
+  const finalUrl = attempt.route === 'proxy'
+    ? buildProxyUrl(attempt.proxy, attempt.source)
+    : attempt.source.url;
   const format = detectFormat(attempt.source.url, { ...session.item, ...attempt.source });
   armAttemptTimeout(attempt.sourceIndex === 0 && attempt.route === 'direct' ? 4500 : 4000);
 
@@ -2829,8 +3317,12 @@ async function runCurrentAttempt() {
     }
   } catch (error) {
     if (!isActiveAttempt(session, attemptToken)) return;
-    console.warn('Playback attempt failed', error);
-    failCurrentAttempt(error.message || 'Player initialization failed', attemptToken);
+    console.warn('Playback attempt failed', {
+      reason: error?.message || String(error),
+      route: attempt.route,
+      sourceIndex: attempt.sourceIndex
+    });
+    failCurrentAttempt(error?.message || 'Player initialization failed', attemptToken);
   }
 }
 
@@ -3061,14 +3553,18 @@ function failCurrentAttempt(reason, attemptToken = state.playbackSession?.attemp
 function handlePlaybackSuccess() {
   const session = state.playbackSession;
   if (!session || session.id !== state.activeLoadId || session.success || String(session.attemptToken) !== video.dataset.attemptToken) return;
+
   session.success = true;
   clearPlaybackTimers();
   hidePlayerMessage();
   state.autoNextCount = 0;
+  state.autoNextFailedUids = [];
+
   const elapsed = Date.now() - session.attemptStartedAt;
   if (session.currentAttempt?.route === 'proxy') {
     markProxyResult(session.currentAttempt.proxy, session.currentAttempt.source.url, true, elapsed);
   }
+
   recordPlaybackSuccess();
   updatePlayPauseUi();
   startStallDetector();
@@ -3085,35 +3581,76 @@ function recordPlaybackSuccess() {
 
 function handlePlaybackPlanExhausted(reason) {
   const session = state.playbackSession;
-  if (session) session.attemptToken += 1;
+  if (session) {
+    session.attemptToken += 1;
+    const uid = session.item?._uid;
+    if (uid && !state.autoNextFailedUids.includes(uid)) {
+      state.autoNextFailedUids.push(uid);
+    }
+  }
+
   clearPlaybackTimers();
   stopStallDetector();
   cleanupPlayerEngine().catch(() => {});
-  showPlayerMessage(reason || 'চ্যানেল চালু করা যায়নি', false);
+
+  console.warn('Playback plan exhausted', {
+    reason,
+    item: session?.item?.name || '',
+    attempts: session?.attemptsRun || 0
+  });
+
+  const kind = session?.item?._sourceKind || state.view;
+  const message = kind === VIEW.MOVIE
+    ? 'মুভিটি চালানো যায়নি।'
+    : kind === VIEW.EVENT
+      ? 'লাইভ ম্যাচটি চালানো যায়নি।'
+      : 'চ্যানেলটি চালানো যায়নি।';
+
+  showPlayerMessage(message, false);
   showFailureActions();
 }
 
 function showFailureActions() {
   clearAutoNextTimer();
-  const canAutoNext = state.autoNextCount < AUTO_NEXT_LIMIT && getNavigationItems().length > 1;
+
+  const session = state.playbackSession;
+  const allItems = getNavigationItems(false);
+  const remainingItems = getNavigationItems(true);
+  const genuinelyTried = Number(session?.attemptsRun || 0) > 0;
+  const canAutoNext =
+    genuinelyTried &&
+    state.autoNextCount < AUTO_NEXT_LIMIT &&
+    allItems.length > 1 &&
+    remainingItems.length > 0;
+
   errorCountdownBox.style.display = 'flex';
   $('retryCurrentBtn').style.display = 'inline-flex';
-  $('nextNowBtn').style.display = getNavigationItems().length > 1 ? 'inline-flex' : 'none';
+  $('nextNowBtn').style.display = allItems.length > 1 ? 'inline-flex' : 'none';
 
   if (!canAutoNext) {
     $('errorCountdownLabel').textContent = state.autoNextCount >= AUTO_NEXT_LIMIT
-      ? '৩ বার স্বয়ংক্রিয়ভাবে চ্যানেল পরিবর্তন করা হয়েছে। এখন ম্যানুয়ালি নির্বাচন করুন।'
-      : 'অন্য কোনো চ্যানেল পাওয়া যায়নি।';
+      ? '৩টি বিকল্প চেষ্টা করা হয়েছে। তালিকা থেকে অন্যটি নির্বাচন করুন।'
+      : remainingItems.length === 0 && allItems.length > 1
+        ? 'এই তালিকার উপলভ্য বিকল্পগুলো চেষ্টা করা হয়েছে।'
+        : 'অন্য কোনো চালানো যায় এমন আইটেম পাওয়া যায়নি।';
     return;
   }
 
   let seconds = AUTO_NEXT_SECONDS;
-  $('errorCountdown').textContent = String(seconds);
-  $('errorCountdownLabel').innerHTML = `পরবর্তী চ্যানেলে যাবে <strong id="errorCountdown">${seconds}</strong> সেকেন্ডে`;
+  $('errorCountdownLabel').replaceChildren(
+    document.createTextNode('পরবর্তীটি চেষ্টা হবে '),
+    Object.assign(document.createElement('strong'), {
+      id: 'errorCountdown',
+      textContent: String(seconds)
+    }),
+    document.createTextNode(' সেকেন্ডে')
+  );
+
   state.autoNextTimer = setInterval(() => {
     seconds -= 1;
     const counter = $('errorCountdown');
     if (counter) counter.textContent = String(Math.max(0, seconds));
+
     if (seconds <= 0) {
       clearAutoNextTimer();
       state.autoNextCount += 1;
@@ -3136,24 +3673,52 @@ function retryCurrentItem() {
   if (state.currentItem) startPlayback(state.currentItem, true);
 }
 
-function getNavigationItems() {
-  return state.filteredItems.filter(isPlayable);
+function getNavigationItems(excludeFailed = false) {
+  const playable = state.filteredItems.filter(isPlayable);
+  if (!excludeFailed) return playable;
+
+  const failed = new Set(state.autoNextFailedUids || []);
+  return playable.filter((item) => !failed.has(item._uid));
 }
 
 function playRelativeItem(direction, userInitiated = true) {
-  const items = getNavigationItems();
-  if (!items.length) return;
-  const currentIndex = items.findIndex((item) => item._uid === state.currentItem?._uid || item.url === state.currentItem?.url);
-  const nextIndex = currentIndex < 0
-    ? 0
-    : (currentIndex + direction + items.length) % items.length;
-  startPlayback(items[nextIndex], userInitiated);
+  const allItems = getNavigationItems(false);
+  if (!allItems.length) return;
+
+  if (userInitiated) {
+    const currentIndex = allItems.findIndex(
+      (item) => item._uid === state.currentItem?._uid || item.url === state.currentItem?.url
+    );
+    const nextIndex = currentIndex < 0
+      ? 0
+      : (currentIndex + direction + allItems.length) % allItems.length;
+    startPlayback(allItems[nextIndex], true);
+    return;
+  }
+
+  const failed = new Set(state.autoNextFailedUids || []);
+  const currentIndex = allItems.findIndex(
+    (item) => item._uid === state.currentItem?._uid || item.url === state.currentItem?.url
+  );
+
+  for (let step = 1; step <= allItems.length; step += 1) {
+    const index = currentIndex < 0
+      ? step - 1
+      : (currentIndex + direction * step + allItems.length * 2) % allItems.length;
+    const candidate = allItems[index];
+    if (!candidate || failed.has(candidate._uid)) continue;
+    startPlayback(candidate, false);
+    return;
+  }
+
+  showFailureActions();
 }
 
 function startStallDetector() {
   stopStallDetector();
   const session = state.playbackSession;
   if (!session) return;
+
   session.lastTime = video.currentTime || 0;
   session.lastProgressAt = Date.now();
   session.stallStartedAt = 0;
@@ -3174,20 +3739,25 @@ function startStallDetector() {
       return;
     }
 
-    const stalled = video.readyState < 3 || Date.now() - active.lastProgressAt > 1800;
+    const stalled = video.readyState < 3 || Date.now() - active.lastProgressAt > 2200;
     if (!stalled) return;
+
     if (!active.stallStartedAt) active.stallStartedAt = Date.now();
     const elapsed = Date.now() - active.stallStartedAt;
+    const kind = active.item?._sourceKind || state.view;
+    const finalRecoveryAt = kind === VIEW.EVENT ? 11000 : kind === VIEW.MOVIE ? 10000 : 9000;
 
-    if (elapsed >= 2500 && active.stallStep === 0) {
+    if (elapsed >= 3000 && active.stallStep === 0) {
       active.stallStep = 1;
       tryGapRecovery();
     }
-    if (elapsed >= 5000 && active.stallStep === 1) {
+
+    if (elapsed >= 6000 && active.stallStep === 1) {
       active.stallStep = 2;
       tryLiveEdgeRecovery();
     }
-    if (elapsed >= 8000 && active.stallStep === 2) {
+
+    if (elapsed >= finalRecoveryAt && active.stallStep === 2) {
       active.stallStep = 3;
       state.playbackHistory.stalls = Number(state.playbackHistory.stalls || 0) + 1;
       writeJsonStorage(STORAGE_KEYS.playbackHistory, state.playbackHistory);
@@ -3277,31 +3847,31 @@ function formatBitrate(value) {
 }
 
 function resolutionLabel(width, height) {
-  const w = Number(width || 0);
   const h = Number(height || 0);
   if (!h) return '';
-  const tier = h >= 2160 ? '2160p 4K' : h >= 1440 ? '1440p 2K' : h >= 1080 ? '1080p Full HD' : h >= 720 ? '720p HD' : `${h}p`;
-  return w ? `${w}×${h} · ${tier}` : tier;
+  return `${Math.round(h)}p`;
 }
 
 function qualityLabelForHlsLevel(level, index, totalLevels) {
-  const width = Number(level?.width || 0);
   const height = Number(level?.height || 0);
-  if (height > 0) return resolutionLabel(width, height);
+  if (height > 0) return `${Math.round(height)}p`;
 
   const attrsResolution = String(level?.attrs?.RESOLUTION || '').trim();
   const attrsMatch = attrsResolution.match(/(\d+)x(\d+)/i);
-  if (attrsMatch) return resolutionLabel(Number(attrsMatch[1]), Number(attrsMatch[2]));
+  if (attrsMatch) return `${Number(attrsMatch[2])}p`;
 
   const name = String(level?.name || level?.attrs?.NAME || '').trim();
-  if (name) return name;
+  const namedHeight = name.match(/(\d{3,4})\s*p?/i);
+  if (namedHeight) return `${Number(namedHeight[1])}p`;
 
   const measuredHeight = Number(video.videoHeight || 0);
-  if (measuredHeight > 0) return resolutionLabel(video.videoWidth, measuredHeight);
+  if (measuredHeight > 0) return `${Math.round(measuredHeight)}p`;
 
   const itemResolution = String(state.currentItem?.resolution || '').trim();
-  if (itemResolution) return itemResolution;
-  if (Number(totalLevels || 0) <= 1) return 'Original / Single Stream';
+  const itemHeight = itemResolution.match(/(\d{3,4})\s*p?|[x×](\d{3,4})/i);
+  if (itemHeight) return `${Number(itemHeight[1] || itemHeight[2])}p`;
+
+  if (Number(totalLevels || 0) <= 1) return 'Original';
   return `Stream ${index + 1}`;
 }
 
@@ -3310,80 +3880,128 @@ function currentVariantInfo() {
     const levels = state.hls.levels || [];
     const index = state.hls.currentLevel >= 0 ? state.hls.currentLevel : state.hls.loadLevel;
     const level = levels[index] || levels[0];
-    if (level) return {
-      label: qualityLabelForHlsLevel(level, Math.max(0, index), levels.length),
-      bitrate: hlsLevelBitrate(level) || numericBitrate(state.hls.bandwidthEstimate)
-    };
+    if (level) {
+      return {
+        label: qualityLabelForHlsLevel(level, Math.max(0, index), levels.length),
+        bitrate: hlsLevelBitrate(level) || numericBitrate(state.hls.bandwidthEstimate)
+      };
+    }
   }
 
   if (state.shaka) {
     const active = state.shaka.getVariantTracks().find((track) => track.active);
-    if (active) return {
-      label: resolutionLabel(active.width, active.height),
-      bitrate: numericBitrate(active.bandwidth)
-    };
+    if (active) {
+      return {
+        label: active.height ? `${Math.round(active.height)}p` : 'Original',
+        bitrate: numericBitrate(active.bandwidth)
+      };
+    }
   }
 
+  const measuredHeight = Number(video.videoHeight || 0);
+  const rawResolution = String(state.currentItem?.resolution || '');
+  const match = rawResolution.match(/(\d{3,4})\s*p?|[x×](\d{3,4})/i);
+  const label = measuredHeight > 0
+    ? `${Math.round(measuredHeight)}p`
+    : match
+      ? `${Number(match[1] || match[2])}p`
+      : 'Original';
+
   return {
-    label: resolutionLabel(video.videoWidth, video.videoHeight) || String(state.currentItem?.resolution || 'Original / Single Stream'),
-    bitrate: numericBitrate(state.currentItem?.bitrate || state.currentItem?.bandwidth || state.currentItem?.average_bitrate)
+    label,
+    bitrate: numericBitrate(
+      state.currentItem?.bitrate ||
+      state.currentItem?.bandwidth ||
+      state.currentItem?.average_bitrate
+    )
   };
 }
 
 function updateStreamInfoBadge() {
   const badge = $('streamInfoBadge');
   if (!badge) return;
-  const info = currentVariantInfo();
-  const bitrate = formatBitrate(info.bitrate);
-  const text = [info.label, bitrate].filter(Boolean).join(' · ');
-  badge.style.display = text ? 'inline-flex' : 'none';
-  if (text) badge.innerHTML = `<i class="fas fa-signal"></i> ${escapeHtml(text)}`;
+  badge.style.display = 'none';
+  badge.replaceChildren();
 }
 
 function buildQualityMenu(levels = null) {
   const menu = $('qualityMenu');
   menu.replaceChildren();
 
-  const addItem = (label, subLabel, active, handler, disabled = false) => {
+  const addItem = (label, bitrate, active, handler, disabled = false) => {
     const item = document.createElement('div');
     item.className = `popup-menu-item${active ? ' active' : ''}${disabled ? ' disabled' : ''}`;
-    item.innerHTML = `<span>${escapeHtml(label)}</span>${subLabel ? `<span class="bitrate-val">${escapeHtml(subLabel)}</span>` : ''}`;
+    const bitrateText = bitrate ? formatBitrate(bitrate) || String(bitrate) : '';
+    item.innerHTML = `<span>${escapeHtml(label)}</span>${bitrateText ? `<span class="bitrate-val">${escapeHtml(bitrateText)}</span>` : ''}`;
     if (!disabled) item.addEventListener('click', handler);
     menu.appendChild(item);
   };
 
   if (state.hls) {
     const hlsLevels = levels || state.hls.levels || [];
-    const autoInfo = currentVariantInfo();
-    addItem('Auto / Original', formatBitrate(autoInfo.bitrate) || 'Recommended', state.selectedManualQuality === -1, () => selectQuality(-1));
-    hlsLevels
-      .map((level, index) => ({ level, index }))
-      .sort((a, b) => (b.level.height || hlsLevelBitrate(b.level) || 0) - (a.level.height || hlsLevelBitrate(a.level) || 0))
-      .forEach(({ level, index }) => {
-        const label = qualityLabelForHlsLevel(level, index, hlsLevels.length);
-        addItem(label, formatBitrate(hlsLevelBitrate(level)), state.selectedManualQuality === index, () => selectQuality(index));
+    const currentInfo = currentVariantInfo();
+    addItem(
+      'Auto',
+      currentInfo.bitrate,
+      state.selectedManualQuality === -1,
+      () => selectQuality(-1)
+    );
+
+    const uniqueLevels = new Map();
+    hlsLevels.forEach((level, index) => {
+      const label = qualityLabelForHlsLevel(level, index, hlsLevels.length);
+      const key = `${label}:${hlsLevelBitrate(level) || 0}`;
+      if (!uniqueLevels.has(key)) uniqueLevels.set(key, { level, index, label });
+    });
+
+    [...uniqueLevels.values()]
+      .sort((a, b) => (Number(b.level.height || 0) - Number(a.level.height || 0)) || (hlsLevelBitrate(b.level) - hlsLevelBitrate(a.level)))
+      .forEach(({ level, index, label }) => {
+        addItem(
+          label,
+          hlsLevelBitrate(level),
+          state.selectedManualQuality === index,
+          () => selectQuality(index)
+        );
       });
+
     updateStreamInfoBadge();
     return;
   }
 
   if (state.shaka) {
     const tracks = state.shaka.getVariantTracks().filter((track) => track.type === 'variant' && track.height);
-    addItem('Auto / Original', 'Recommended', state.selectedManualQuality === -1, () => selectQuality(-1));
+    const activeTrack = tracks.find((track) => track.active);
+    addItem(
+      'Auto',
+      activeTrack?.bandwidth || 0,
+      state.selectedManualQuality === -1,
+      () => selectQuality(-1)
+    );
+
     const unique = new Map();
     tracks.forEach((track) => {
-      const key = `${track.width}-${track.height}-${track.bandwidth}`;
+      const key = `${track.height}-${track.bandwidth}`;
       if (!unique.has(key)) unique.set(key, track);
     });
-    [...unique.values()].sort((a, b) => (b.height || b.bandwidth || 0) - (a.height || a.bandwidth || 0)).forEach((track) => {
-      addItem(resolutionLabel(track.width, track.height), formatBitrate(track.bandwidth), state.selectedManualQuality === track.id, () => selectQuality(track.id));
-    });
+
+    [...unique.values()]
+      .sort((a, b) => (Number(b.height || 0) - Number(a.height || 0)) || (Number(b.bandwidth || 0) - Number(a.bandwidth || 0)))
+      .forEach((track) => {
+        addItem(
+          `${Math.round(track.height)}p`,
+          track.bandwidth,
+          state.selectedManualQuality === track.id,
+          () => selectQuality(track.id)
+        );
+      });
+
     updateStreamInfoBadge();
     return;
   }
 
   const info = currentVariantInfo();
-  addItem(info.label || 'Original / Single source', formatBitrate(info.bitrate) || 'Adaptive quality নেই', true, () => {}, true);
+  addItem(info.label || 'Original', info.bitrate, true, () => {}, true);
   updateStreamInfoBadge();
 }
 
@@ -3471,31 +4089,28 @@ function setupPlayerUi(item) {
 function updateMetadata(item) {
   $('metaTitle').textContent = item.name;
   $('metaCategory').textContent = item.category || state.selectedCategory || '';
-  $('metaWatchingCount').textContent = state.view === VIEW.EVENT ? (item.competition || 'Live Event') : 'Watching Now';
+  $('metaWatchingCount').textContent = state.view === VIEW.EVENT
+    ? (item.competition || 'Live Event')
+    : 'Watching Now';
 
-  const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
   const extras = $('movieExtraBadges');
-  extras.style.display = isMovie ? 'inline-flex' : 'none';
-  const resolutionBadge = $('movieRealResBadge');
-  const ratingBadge = $('movieRatingMetaBadge');
-  if (isMovie) {
-    if (item.resolution) {
-      resolutionBadge.style.display = 'inline-flex';
-      resolutionBadge.innerHTML = `<i class="fas fa-bolt"></i> ${escapeHtml(item.resolution)}`;
-    } else {
-      resolutionBadge.style.display = 'none';
-    }
-    if (item.rating) {
-      ratingBadge.style.display = 'inline-flex';
-      ratingBadge.innerHTML = `<i class="fas fa-star"></i> ${escapeHtml(item.rating)}`;
-    } else {
-      ratingBadge.style.display = 'none';
-    }
+  if (extras) {
+    extras.style.display = 'none';
+    extras.setAttribute('aria-hidden', 'true');
   }
+
+  ['streamInfoBadge', 'movieRealResBadge', 'movieRatingMetaBadge'].forEach((id) => {
+    const badge = $(id);
+    if (badge) {
+      badge.style.display = 'none';
+      badge.replaceChildren();
+    }
+  });
 
   const displayIndex = state.filteredItems.findIndex((entry) => entry._uid === item._uid);
   $('osdNumber').textContent = `#${displayIndex >= 0 ? displayIndex + 1 : (item.seqNumber || 1)}`;
   $('osdName').textContent = item.name;
+
   const osd = $('channelOsd');
   osd.classList.remove('show');
   clearTimeout(state.osdTimer);
@@ -3643,8 +4258,6 @@ async function probeDirectMediaInfo() {
 
 function updateResolutionBadge() {
   updateStreamInfoBadge();
-  const movieBadge = $('movieRealResBadge');
-  if (movieBadge) movieBadge.style.display = 'none';
 }
 
 function updateVodProgress() {
