@@ -176,6 +176,32 @@
     .ctrl-btn:hover { background: var(--phosphor); border-color: var(--phosphor); }
     .ctrl-btn.active-click { background: var(--phosphor) !important; border-color: var(--phosphor) !important; transform: scale(1.1); }
     .ctrl-btn i { font-size: 12px; }
+
+    #networkBtn {
+      position: relative;
+      overflow: visible;
+    }
+    .network-mode-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      min-width: 15px;
+      height: 15px;
+      padding: 0 3px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--phosphor);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      color: #ffffff;
+      font-size: 7px;
+      line-height: 1;
+      font-weight: 900;
+      box-shadow: 0 0 8px var(--phosphor-glow);
+      pointer-events: none;
+      z-index: 2;
+    }
     
     .ctrl-btn.muted-red {
       background: var(--phosphor) !important;
@@ -781,6 +807,12 @@
         padding-top: 5px !important;
         align-content: start !important;
       }
+
+      .sidebar-list.upcoming-grid .card-fav-btn {
+        top: 4px !important;
+        right: 4px !important;
+        z-index: 3 !important;
+      }
     
       .sidebar-list.upcoming-grid .sidebar-item {
         width: 100% !important;
@@ -1038,7 +1070,10 @@
               <button id="qualityBtn" class="ctrl-btn" title="Quality"><i class="fas fa-sliders-h"></i></button>
               <div class="popup-menu" id="qualityMenu"></div>
 
-              <button id="networkBtn" class="ctrl-btn" title="Network Mode"><i class="fas fa-wifi"></i></button>
+              <button id="networkBtn" class="ctrl-btn" title="Network Mode: Auto" aria-label="Network Mode: Auto">
+                <i class="fas fa-wifi"></i>
+                <span id="networkModeBadge" class="network-mode-badge">A</span>
+              </button>
               <div class="popup-menu" id="networkMenu">
                 <div class="popup-menu-item active" data-network-mode="auto" onclick="setNetworkMode('auto')"><span>✨ Auto</span><span class="bitrate-val">Recommended</span></div>
                 <div class="popup-menu-item" data-network-mode="stable" onclick="setNetworkMode('stable')"><span>📶 Stable</span></div>
@@ -1225,6 +1260,8 @@ const state = {
   drawerRenderedForSession: -1,
   hideControlsTimer: null,
   deferredInstallPrompt: null,
+  autoplayUnlockPending: false,
+  lastNonZeroVolume: 1,
   fitIndex: 0,
   currentBrightness: 1,
   touchStartX: 0,
@@ -1386,7 +1423,14 @@ function isLikelyVodLeak(item) {
 }
 
 function isPlayable(item) {
-  return Boolean(item && !item.metadata_only && (item.url || item.link || item.stream_url));
+  if (!item || item.metadata_only) return false;
+  if (item.url || item.link || item.stream_url) return true;
+  if (Array.isArray(item._sources) && item._sources.some((source) => source?.url)) return true;
+  if (Array.isArray(item.backups) && item.backups.some((source) => {
+    if (typeof source === 'string') return Boolean(source.trim());
+    return Boolean(source?.url || source?.link || source?.stream_url);
+  })) return true;
+  return false;
 }
 
 function normalizeBackup(backup, parent) {
@@ -1889,9 +1933,9 @@ function applyFilterAndSort() {
 
 function renderCurrentList(reset = true) {
   applyFilterAndSort();
-    sidebarList.classList.toggle(
+  sidebarList.classList.toggle(
     'upcoming-grid',
-    state.view === VIEW.UPCOMING
+    state.view === VIEW.UPCOMING || state.view === VIEW.EVENT
   );
   if (reset) {
     sidebarList.replaceChildren();
@@ -2325,7 +2369,9 @@ function shakaConfigFor(mode, isMovie) {
       bufferBehind: profile.backBufferLength,
       lowLatencyMode: profile.lowLatencyMode,
       jumpLargeGaps: true,
-      stallEnabled: false
+      stallEnabled: true,
+      stallThreshold: 1.5,
+      stallSkip: 0.1
     },
     abr: {
       enabled: state.selectedManualQuality === -1,
@@ -2335,15 +2381,35 @@ function shakaConfigFor(mode, isMovie) {
 }
 
 function updateNetworkMenuState(mode) {
+  const safeMode = Object.values(NETWORK_MODE).includes(mode) ? mode : NETWORK_MODE.AUTO;
   qsa('[data-network-mode]', $('networkMenu')).forEach((item) => {
-    item.classList.toggle('active', item.dataset.networkMode === mode);
+    item.classList.toggle('active', item.dataset.networkMode === safeMode);
   });
+
+  const isMovie = Boolean(state.currentItem?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE);
+  const profile = networkProfile(safeMode, isMovie);
+  const button = $('networkBtn');
+  const badge = $('networkModeBadge');
+  const icon = qs('i', button);
+
+  const visual = safeMode === NETWORK_MODE.STABLE
+    ? { badge: 'S', icon: 'fas fa-shield-alt' }
+    : safeMode === NETWORK_MODE.LOW
+      ? { badge: 'L', icon: 'fas fa-bolt' }
+      : { badge: 'A', icon: 'fas fa-wifi' };
+
+  if (badge) badge.textContent = visual.badge;
+  if (icon) icon.className = visual.icon;
+  if (button) {
+    button.title = `Network Mode: ${profile.label}`;
+    button.setAttribute('aria-label', `Network Mode: ${profile.label}`);
+    button.dataset.networkMode = safeMode;
+  }
 }
 
 function applyNetworkMode(mode, notify = true) {
   const safeMode = Object.values(NETWORK_MODE).includes(mode) ? mode : NETWORK_MODE.AUTO;
   localStorage.setItem(STORAGE_KEYS.networkMode, safeMode);
-  updateNetworkMenuState(safeMode);
 
   const isMovie = Boolean(state.currentItem?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE);
   const profile = networkProfile(safeMode, isMovie);
@@ -2360,9 +2426,33 @@ function applyNetworkMode(mode, notify = true) {
       liveSyncDurationCount: nextConfig.liveSyncDurationCount,
       liveMaxLatencyDurationCount: nextConfig.liveMaxLatencyDurationCount
     });
+
+    if (!isMovie) {
+      try {
+        state.hls.startLoad(-1);
+        if (
+          safeMode === NETWORK_MODE.LOW &&
+          Number.isFinite(state.hls.liveSyncPosition) &&
+          Math.abs(state.hls.liveSyncPosition - video.currentTime) > 2
+        ) {
+          video.currentTime = Math.max(0, state.hls.liveSyncPosition - 0.5);
+        }
+      } catch (_) {}
+    }
   }
-  if (state.shaka) state.shaka.configure(shakaConfigFor(safeMode, isMovie));
-  if (notify) showToast(`Network: ${profile.label}`);
+
+  if (state.shaka) {
+    state.shaka.configure(shakaConfigFor(safeMode, isMovie));
+  }
+
+  updateNetworkMenuState(safeMode);
+
+  if (notify) {
+    showToast(
+      `Network: ${profile.label} · Buffer ${profile.maxBufferLength}s`,
+      2600
+    );
+  }
 }
 window.setNetworkMode = applyNetworkMode;
 
@@ -2405,6 +2495,7 @@ async function cleanupPlayerEngine() {
     state.mpegts = null;
   }
   state.playerType = null;
+  state.autoplayUnlockPending = false;
   video.onerror = null;
   try { video.pause(); } catch (_) {}
   delete video.dataset.attemptToken;
@@ -2694,9 +2785,10 @@ async function safePlay(session, attemptToken) {
     if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
   } catch (error) {
     if (error?.name === 'NotAllowedError') {
+      if (video.volume > 0) state.lastNonZeroVolume = video.volume;
       video.muted = true;
+      state.autoplayUnlockPending = true;
       updateMuteUi();
-      enableUnmuteOnInteraction();
       await video.play();
       if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
       return;
@@ -2915,6 +3007,35 @@ function unlockQualitySwitchSoon() {
   }, 900);
 }
 
+function qualityLabelForHlsLevel(level, index, totalLevels) {
+  const height = Number(level?.height || 0);
+  if (height > 0) return `${height}p`;
+
+  const name = String(level?.name || level?.attrs?.NAME || '').trim();
+  if (name) return name;
+
+  const resolution = String(
+    level?.attrs?.RESOLUTION ||
+    state.currentItem?.resolution ||
+    ''
+  ).trim();
+
+  if (resolution) {
+    const match = resolution.match(/(\d{3,4})\s*[pP]?/);
+    if (match) return `${match[1]}p`;
+    if (/\bFHD\b/i.test(resolution)) return '1080p';
+    if (/\bUHD\b|\b4K\b/i.test(resolution)) return '2160p';
+    if (/\bHD\b/i.test(resolution)) return '720p';
+    return resolution;
+  }
+
+  const measuredHeight = Number(video.videoHeight || 0);
+  if (measuredHeight > 0) return `${measuredHeight}p`;
+
+  if (Number(totalLevels || 0) <= 1) return 'Single Stream';
+  return `Stream ${index + 1}`;
+}
+
 function buildQualityMenu(levels = null) {
   const menu = $('qualityMenu');
   menu.replaceChildren();
@@ -2934,7 +3055,7 @@ function buildQualityMenu(levels = null) {
       .map((level, index) => ({ level, index }))
       .sort((a, b) => (b.level.height || b.level.bitrate || 0) - (a.level.height || a.level.bitrate || 0))
       .forEach(({ level, index }) => {
-        const label = level.height ? `${level.height}p` : `Level ${index + 1}`;
+        const label = qualityLabelForHlsLevel(level, index, hlsLevels.length);
         const bitrate = level.bitrate ? `${Math.round(level.bitrate / 1000)} kbps` : '';
         addItem(label, bitrate, state.selectedManualQuality === index, () => selectQuality(index));
       });
@@ -2974,7 +3095,12 @@ function selectQuality(value) {
     } else {
       state.hls.loadLevel = value;
       state.hls.nextLevel = value;
-      showToast(`Quality: ${state.hls.levels[value]?.height || value}p`);
+      const label = qualityLabelForHlsLevel(
+        state.hls.levels[value],
+        value,
+        state.hls.levels.length
+      );
+      showToast(`Quality: ${label}`);
     }
     buildQualityMenu(state.hls.levels);
     if (video.paused) video.play().catch(() => {});
@@ -3098,18 +3224,31 @@ function updateMuteUi() {
   $('volumeSlider').value = muted ? '0' : String(video.volume);
 }
 
-function enableUnmuteOnInteraction() {
-  const events = ['click', 'touchstart', 'keydown'];
-  const handler = () => {
-    if (video.muted) {
-      video.muted = false;
-      if (video.volume === 0) video.volume = 1;
-      updateMuteUi();
-      video.play().catch(() => {});
+async function handleMuteButtonClick(event) {
+  event?.preventDefault();
+  event?.stopPropagation();
+
+  const needsUserUnlock = state.autoplayUnlockPending || video.muted || video.volume === 0;
+
+  if (needsUserUnlock) {
+    video.muted = false;
+    video.volume = Math.max(0.05, Number(state.lastNonZeroVolume || 1));
+    state.autoplayUnlockPending = false;
+    updateMuteUi();
+
+    if (video.paused) {
+      try {
+        await video.play();
+      } catch (_) {
+        showToast('Play button চাপুন');
+      }
     }
-    events.forEach((name) => document.removeEventListener(name, handler));
-  };
-  events.forEach((name) => document.addEventListener(name, handler, { once: true }));
+    return;
+  }
+
+  if (video.volume > 0) state.lastNonZeroVolume = video.volume;
+  video.muted = true;
+  updateMuteUi();
 }
 
 video.addEventListener('playing', handlePlaybackSuccess);
@@ -3544,18 +3683,17 @@ $('nextChBtn').addEventListener('click', () => playRelativeItem(1, true));
 $('prevChBtn').addEventListener('click', () => playRelativeItem(-1, true));
 $('skipBackBtn').addEventListener('click', () => { video.currentTime = Math.max(0, video.currentTime - 10); showSkip('left'); });
 $('skipFwdBtn').addEventListener('click', () => { video.currentTime = Math.min(video.duration || Infinity, video.currentTime + 10); showSkip('right'); });
-$('muteBtn').addEventListener('click', (event) => {
-  event.preventDefault();
-  event.stopPropagation();
-  video.muted = !video.muted;
-  if (!video.muted && video.volume === 0) video.volume = 1;
-  updateMuteUi();
-  if (video.paused) video.play().catch(() => {});
-});
+$('muteBtn').addEventListener('click', handleMuteButtonClick);
 $('volumeSlider').addEventListener('input', (event) => {
-  video.volume = Number(event.target.value);
-  video.muted = video.volume === 0;
+  const nextVolume = Number(event.target.value);
+  video.volume = nextVolume;
+  video.muted = nextVolume === 0;
+  if (nextVolume > 0) {
+    state.lastNonZeroVolume = nextVolume;
+    state.autoplayUnlockPending = false;
+  }
   updateMuteUi();
+  if (!video.muted && video.paused) video.play().catch(() => {});
 });
 $('favActionBtn').addEventListener('click', (event) => {
   if (state.currentItem) toggleFavorite(state.currentItem._uid, event);
