@@ -14,6 +14,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 try:
     from scanner.merger import merge_candidates
@@ -92,7 +93,10 @@ def _safe_int(value: Any, default: int, minimum: int, maximum: int) -> int:
     return max(minimum, min(maximum, number))
 
 
-def _parse_datetime(value: Any) -> Optional[datetime]:
+def _parse_datetime(
+    value: Any,
+    default_timezone: timezone | ZoneInfo = timezone.utc,
+) -> Optional[datetime]:
     text = str(value or "").strip()
     if not text:
         return None
@@ -107,8 +111,12 @@ def _parse_datetime(value: Any) -> Optional[datetime]:
         for pattern in (
             "%Y-%m-%d %H:%M:%S",
             "%Y-%m-%d %H:%M",
+            "%Y-%m-%d %I:%M:%S %p",
+            "%Y-%m-%d %I:%M %p",
             "%d-%m-%Y %H:%M:%S",
             "%d-%m-%Y %H:%M",
+            "%d-%m-%Y %I:%M:%S %p",
+            "%d-%m-%Y %I:%M %p",
         ):
             try:
                 parsed = datetime.strptime(text, pattern)
@@ -119,19 +127,25 @@ def _parse_datetime(value: Any) -> Optional[datetime]:
     if parsed is None:
         return None
     if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
+        parsed = parsed.replace(tzinfo=default_timezone)
     return parsed.astimezone(timezone.utc)
 
 
-def _sort_time(value: Any) -> str:
-    parsed = _parse_datetime(value)
+def _sort_time(
+    value: Any,
+    default_timezone: timezone | ZoneInfo = timezone.utc,
+) -> str:
+    parsed = _parse_datetime(value, default_timezone)
     if parsed is None:
         return "9999-12-31T23:59:59+00:00"
     return parsed.isoformat()
 
 
-def _event_sort_key(item: Dict[str, Any]) -> Tuple[str, str, str]:
-    start_time = _sort_time(item.get("start_time"))
+def _event_sort_key(
+    item: Dict[str, Any],
+    default_timezone: timezone | ZoneInfo = timezone.utc,
+) -> Tuple[str, str, str]:
+    start_time = _sort_time(item.get("start_time"), default_timezone)
     competition = re.sub(
         r"\s+",
         " ",
@@ -192,11 +206,17 @@ def _is_today_fresh(
     now: datetime,
     max_age_hours: int,
 ) -> bool:
-    end_time = _parse_datetime(item.get("end_time"))
+    end_time = _parse_datetime(
+        item.get("end_time"),
+        item.get("_source_timezone", timezone.utc),
+    )
     if end_time is not None and end_time < now - timedelta(hours=1):
         return False
 
-    start_time = _parse_datetime(item.get("start_time"))
+    start_time = _parse_datetime(
+        item.get("start_time"),
+        item.get("_source_timezone", timezone.utc),
+    )
     if start_time is None:
         return True
 
@@ -213,7 +233,10 @@ def _is_upcoming_fresh(
     past_grace_hours: int,
     future_days: int,
 ) -> bool:
-    start_time = _parse_datetime(item.get("start_time"))
+    start_time = _parse_datetime(
+        item.get("start_time"),
+        item.get("_source_timezone", timezone.utc),
+    )
     if start_time is None:
         return True
     if start_time < now - timedelta(hours=past_grace_hours):
@@ -228,11 +251,14 @@ def _payload(
     event_type: str,
     filtered_stale: int,
     filtered_unplayable: int,
+    source_timezone: timezone | ZoneInfo = timezone.utc,
 ) -> Dict[str, Any]:
     ordered = sorted(
         [item for item in items if isinstance(item, dict)],
-        key=_event_sort_key,
+        key=lambda item: _event_sort_key(item, source_timezone),
     )
+    for item in ordered:
+        item.pop("_source_timezone", None)
     return {
         "type": event_type,
         "updated_at": _utc_now(),
@@ -251,6 +277,16 @@ def process_events(
     results = _load_required_results(bd_results_path)
     settings = _load_optional_json(settings_path)
     event_settings = settings.get("events") if isinstance(settings.get("events"), dict) else {}
+    timezone_name = str(
+        event_settings.get("timezone")
+        or settings.get("timezone")
+        or "UTC"
+    ).strip()
+    try:
+        source_timezone: timezone | ZoneInfo = ZoneInfo(timezone_name)
+    except ZoneInfoNotFoundError:
+        source_timezone = timezone.utc
+
 
     today_max_age_hours = _safe_int(
         event_settings.get("today_max_age_hours"),
@@ -296,6 +332,7 @@ def process_events(
 
         pipeline = str(card.get("source_pipeline") or "").strip().lower()
         card_copy = dict(card)
+        card_copy["_source_timezone"] = source_timezone
 
         if pipeline == "today_match":
             if not _is_playable(card_copy):
@@ -327,12 +364,14 @@ def process_events(
             "today_match",
             filtered_stale=today_stale,
             filtered_unplayable=today_unplayable,
+            source_timezone=source_timezone,
         ),
         "upcoming": _payload(
             upcoming_items,
             "upcoming",
             filtered_stale=upcoming_stale,
             filtered_unplayable=0,
+            source_timezone=source_timezone,
         ),
     }
 
