@@ -16,6 +16,7 @@ import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
+from urllib.parse import urlparse
 
 try:
     from scanner.merger import merge_candidates
@@ -173,6 +174,162 @@ def _resolve_category_precedence(
     return resolved
 
 
+def _source_url(source: Any) -> str:
+    if isinstance(source, str):
+        return source.strip()
+    if not isinstance(source, dict):
+        return ""
+    return str(
+        source.get("url")
+        or source.get("stream_url")
+        or source.get("link")
+        or ""
+    ).strip()
+
+
+def _stream_type_from_source(source: Any) -> str:
+    if isinstance(source, dict):
+        explicit = str(
+            source.get("stream_type")
+            or source.get("type")
+            or source.get("format")
+            or ""
+        ).strip().lower()
+        if explicit in {"hls", "dash", "media", "mpegts"}:
+            return explicit
+
+    url = _source_url(source)
+    try:
+        path = (urlparse(url).path or "").lower()
+    except Exception:
+        path = url.split("?", 1)[0].lower()
+
+    if path.endswith(".m3u8"):
+        return "hls"
+    if path.endswith(".mpd"):
+        return "dash"
+    if path.endswith((".ts", ".mpegts", ".flv")):
+        return "mpegts"
+    return "media"
+
+
+def _browser_source_rank(source: Any) -> int:
+    url = _source_url(source)
+    stream_type = _stream_type_from_source(source)
+    try:
+        path = (urlparse(url).path or "").lower()
+    except Exception:
+        path = url.split("?", 1)[0].lower()
+
+    if stream_type == "hls":
+        return 0
+    if stream_type == "dash":
+        return 1
+    if path.endswith((".mp4", ".m4v", ".webm")):
+        return 2
+    if path.endswith(".mov"):
+        return 3
+    if path.endswith((".mkv", ".avi", ".wmv", ".flv")):
+        return 6
+    if stream_type == "mpegts":
+        return 5
+    return 4
+
+
+def _source_dict(source: Any, parent: Dict[str, Any]) -> Dict[str, Any]:
+    if isinstance(source, str):
+        return {
+            "url": source,
+            "header_profile": parent.get("header_profile", ""),
+            "proxy_mode": parent.get("proxy_mode", "auto"),
+            "stream_type": _stream_type_from_source(source),
+        }
+    if isinstance(source, dict):
+        copy = dict(source)
+        copy["url"] = _source_url(copy)
+        copy.setdefault("header_profile", parent.get("header_profile", ""))
+        copy.setdefault("proxy_mode", parent.get("proxy_mode", "auto"))
+        copy.setdefault("stream_type", _stream_type_from_source(copy))
+        return copy
+    return {}
+
+
+def _reorder_browser_sources(movie: Dict[str, Any]) -> Dict[str, Any]:
+    """Prefer HLS/DASH/MP4/WebM without deleting conditional MKV backups."""
+    movie_copy = dict(movie)
+    sources: List[Dict[str, Any]] = []
+
+    primary_url = _source_url(movie_copy)
+    if primary_url:
+        primary = dict(movie_copy)
+        primary["url"] = primary_url
+        sources.append(primary)
+
+    backups = movie_copy.get("backups")
+    if isinstance(backups, list):
+        for backup in backups[:5]:
+            normalized = _source_dict(backup, movie_copy)
+            if normalized.get("url"):
+                sources.append(normalized)
+
+    deduped: List[Tuple[int, Dict[str, Any]]] = []
+    seen = set()
+    for order, source in enumerate(sources):
+        url = _source_url(source)
+        if not url or url in seen:
+            continue
+        seen.add(url)
+        deduped.append((order, source))
+
+    deduped.sort(
+        key=lambda pair: (
+            _browser_source_rank(pair[1]),
+            0 if _source_url(pair[1]).lower().startswith("https://") else 1,
+            pair[0],
+        )
+    )
+
+    if not deduped:
+        movie_copy["browser_support"] = "unavailable"
+        return movie_copy
+
+    best = deduped[0][1]
+    for key in (
+        "url",
+        "header_profile",
+        "proxy_mode",
+        "stream_type",
+        "verification_mode",
+        "verification_status",
+        "resolution",
+        "width",
+        "height",
+        "bitrate",
+        "source_id",
+    ):
+        if best.get(key) not in (None, ""):
+            movie_copy[key] = best.get(key)
+
+    movie_copy["url"] = _source_url(best)
+    movie_copy["backups"] = [
+        {
+            key: value
+            for key, value in source.items()
+            if key not in {"headers", "cookie", "authorization"}
+        }
+        for _, source in deduped[1:6]
+    ]
+
+    best_rank = _browser_source_rank(best)
+    movie_copy["browser_support"] = (
+        "preferred" if best_rank <= 2
+        else "conditional" if best_rank <= 4
+        else "limited"
+    )
+    movie_copy["available_link_count"] = 1 + len(movie_copy["backups"])
+    return movie_copy
+
+
 MOVIE_STATUS_PRIORITY = {
     "verified_global": 0,
     "verified_bd": 0,
@@ -186,14 +343,20 @@ MOVIE_STATUS_PRIORITY = {
 }
 
 
-def _movie_sort_key(movie: Dict[str, Any]) -> Tuple[int, str, str, str]:
+def _movie_sort_key(movie: Dict[str, Any]) -> Tuple[int, int, str, str, str]:
     status = str(movie.get("verification_status") or "").strip().casefold()
     status_priority = MOVIE_STATUS_PRIORITY.get(status, 99)
+    browser_priority = {
+        "preferred": 0,
+        "conditional": 1,
+        "limited": 2,
+        "unavailable": 3,
+    }.get(str(movie.get("browser_support") or "").strip().lower(), 2)
     name = str(movie.get("name") or movie.get("title") or "").strip()
     normalized_name = re.sub(r"\s+", " ", name).casefold()
     year = str(movie.get("year") or "")
     movie_id = str(movie.get("id") or movie.get("tvg_id") or "")
-    return status_priority, normalized_name, year, movie_id
+    return status_priority, browser_priority, normalized_name, year, movie_id
 
 
 def paginate_movie_list(
@@ -303,6 +466,7 @@ def process_movies(
         category = _canonical_movie_category(movie.get("category"))
         movie_copy = dict(movie)
         movie_copy["category"] = category
+        movie_copy = _reorder_browser_sources(movie_copy)
         grouped_movies[category].append(movie_copy)
 
     return {
