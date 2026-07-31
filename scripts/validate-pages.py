@@ -3,6 +3,11 @@
 
 Usage:
     python3 scripts/validate-pages.py dist
+
+The validator checks the generated public build without changing any file.
+HTTPS preference is evaluated only between sources of equal or higher
+verification confidence. A lower-confidence or stale HTTPS backup must not
+replace a currently verified HTTP primary merely to satisfy the protocol rule.
 """
 
 from __future__ import annotations
@@ -15,7 +20,11 @@ from typing import Any
 from urllib.parse import urlparse
 
 
-ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else "dist").resolve()
+ROOT = Path(
+    sys.argv[1]
+    if len(sys.argv) > 1
+    else "dist"
+).resolve()
 
 ERRORS: list[str] = []
 WARNINGS: list[str] = []
@@ -105,6 +114,29 @@ SECRET_KEY_PATTERN = re.compile(
 )
 
 
+CONFIDENCE_RANK = {
+    "verified_global": 6,
+    "verified_bd": 6,
+    "verified": 6,
+    "verified_proxy": 5,
+    "stale_last_good": 4,
+    "geo_pending": 3,
+    "bd_protected_pending": 3,
+    "retryable_pending": 2,
+    "host_deferred": 1,
+    "metadata_only": 0,
+    "": 0,
+}
+
+
+FAILED_STATUSES = {
+    "failed",
+    "failed_bd",
+    "rejected_low_quality",
+    "quarantine",
+}
+
+
 def add_error(message: str) -> None:
     ERRORS.append(message)
 
@@ -115,24 +147,35 @@ def add_warning(message: str) -> None:
 
 def relative_path(path: Path) -> str:
     try:
-        return path.resolve().relative_to(ROOT).as_posix()
+        return (
+            path.resolve()
+            .relative_to(ROOT)
+            .as_posix()
+        )
+
     except ValueError:
         return str(path)
 
 
-def require_file(file_name: str) -> Path | None:
+def require_file(
+    file_name: str,
+) -> Path | None:
     path = ROOT / file_name
 
     if not path.is_file():
         add_error(
-            f"Required file পাওয়া যায়নি: {file_name}"
+            f"Required file পাওয়া যায়নি: "
+            f"{file_name}"
         )
+
         return None
 
     if path.stat().st_size == 0:
         add_error(
-            f"Required file empty: {file_name}"
+            f"Required file empty: "
+            f"{file_name}"
         )
+
         return None
 
     return path
@@ -147,7 +190,9 @@ def load_json(
 
     try:
         return json.loads(
-            path.read_text(encoding="utf-8")
+            path.read_text(
+                encoding="utf-8"
+            )
         )
 
     except UnicodeDecodeError as error:
@@ -175,23 +220,39 @@ def resolve_public_path(
     value: Any,
     label: str,
 ) -> Path | None:
-    if not isinstance(value, str) or not value.strip():
+    if (
+        not isinstance(value, str)
+        or not value.strip()
+    ):
         add_error(
             f"{label} path missing"
         )
+
         return None
 
-    raw_path = value.strip().replace("\\", "/")
-    parsed = urlparse(raw_path)
+    raw_path = (
+        value.strip()
+        .replace("\\", "/")
+    )
 
-    if parsed.scheme or parsed.netloc:
+    parsed = urlparse(
+        raw_path
+    )
+
+    if (
+        parsed.scheme
+        or parsed.netloc
+    ):
         add_error(
-            f"{label} local path হওয়া উচিত: {raw_path}"
+            f"{label} local path হওয়া উচিত: "
+            f"{raw_path}"
         )
+
         return None
 
     path = (
-        ROOT / parsed.path.lstrip("/")
+        ROOT
+        / parsed.path.lstrip("/")
     ).resolve()
 
     try:
@@ -199,9 +260,10 @@ def resolve_public_path(
 
     except ValueError:
         add_error(
-            f"{label} build root-এর বাইরে যাচ্ছে: "
-            f"{raw_path}"
+            f"{label} build root-এর বাইরে "
+            f"যাচ্ছে: {raw_path}"
         )
+
         return None
 
     return path
@@ -234,43 +296,188 @@ def get_primary_url(
     ):
         value = item.get(key)
 
-        if isinstance(value, str) and value.strip():
+        if (
+            isinstance(value, str)
+            and value.strip()
+        ):
             return value.strip()
 
     return ""
 
 
-def get_backup_urls(
+def get_backup_objects(
     item: dict[str, Any],
-) -> list[str]:
-    urls: list[str] = []
-
+) -> list[dict[str, Any]]:
     raw_backups = item.get(
         "backups",
         [],
     )
 
-    if not isinstance(raw_backups, list):
-        return urls
+    if not isinstance(
+        raw_backups,
+        list,
+    ):
+        return []
+
+    results: list[
+        dict[str, Any]
+    ] = []
 
     for backup in raw_backups:
-        if isinstance(backup, str):
-            if backup.strip():
-                urls.append(
-                    backup.strip()
-                )
+        if isinstance(
+            backup,
+            str,
+        ):
+            url = backup.strip()
 
-        elif isinstance(backup, dict):
-            backup_url = get_primary_url(
+            if url:
+                results.append({
+                    "url": url,
+                })
+
+        elif isinstance(
+            backup,
+            dict,
+        ):
+            results.append(
                 backup
             )
 
-            if backup_url:
-                urls.append(
-                    backup_url
-                )
+    return results
 
-    return urls
+
+def stream_confidence(
+    item: dict[str, Any],
+) -> int:
+    status = str(
+        item.get(
+            "verification_status"
+        )
+        or ""
+    ).strip().lower()
+
+    if status in FAILED_STATUSES:
+        return 0
+
+    rank = CONFIDENCE_RANK.get(
+        status,
+        0,
+    )
+
+    confirmed = (
+        item.get("verified") is True
+        or item.get("is_valid") is True
+    )
+
+    publish_allowed = (
+        item.get(
+            "publish_allowed"
+        )
+        is True
+    )
+
+    if status in {
+        "verified_global",
+        "verified_bd",
+        "verified",
+        "verified_proxy",
+    }:
+        return (
+            rank
+            if confirmed
+            else 0
+        )
+
+    if (
+        confirmed
+        and not status
+    ):
+        return 6
+
+    if status in {
+        "stale_last_good",
+        "geo_pending",
+        "bd_protected_pending",
+        "retryable_pending",
+        "host_deferred",
+    }:
+        return (
+            rank
+            if publish_allowed
+            else 0
+        )
+
+    return rank
+
+
+def validate_https_priority(
+    item: dict[str, Any],
+    primary_url: str,
+    backup_objects: list[
+        dict[str, Any]
+    ],
+    label: str,
+    name: str,
+) -> None:
+    """
+    HTTPS priority validation.
+
+    Verified or higher-confidence HTTP source may remain primary
+    when the only HTTPS backup is stale, pending or unverified.
+
+    Same-confidence or higher-confidence HTTPS backup must be
+    placed before an HTTP primary.
+    """
+
+    if not primary_url.lower().startswith(
+        "http://"
+    ):
+        return
+
+    https_backups = [
+        backup
+        for backup in backup_objects
+        if get_primary_url(
+            backup
+        ).lower().startswith(
+            "https://"
+        )
+    ]
+
+    if not https_backups:
+        return
+
+    primary_rank = stream_confidence(
+        item
+    )
+
+    strongest_https_rank = max(
+        stream_confidence(
+            backup
+        )
+        for backup
+        in https_backups
+    )
+
+    if (
+        strongest_https_rank > 0
+        and strongest_https_rank
+        >= primary_rank
+    ):
+        add_error(
+            f"{label} সমমান বা বেশি "
+            f"বিশ্বাসযোগ্য HTTPS backup "
+            f"থাকা সত্ত্বেও HTTP primary: "
+            f"{name}"
+        )
+
+        return
+
+    add_warning(
+        f"{label} HTTP primary রাখা হয়েছে "
+        f"কারণ HTTPS backup কম বিশ্বাসযোগ্য: "
+        f"{name}"
+    )
 
 
 def validate_stream_item(
@@ -278,26 +485,45 @@ def validate_stream_item(
     label: str,
     allow_metadata_only: bool = False,
 ) -> None:
-    if not isinstance(item, dict):
+    if not isinstance(
+        item,
+        dict,
+    ):
         add_error(
             f"{label} item object নয়"
         )
+
         return
 
-    name = item.get("name")
+    name_value = item.get(
+        "name"
+    )
 
-    if not isinstance(name, str) or not name.strip():
+    if (
+        not isinstance(
+            name_value,
+            str,
+        )
+        or not name_value.strip()
+    ):
         add_error(
             f"{label} name missing"
         )
+
         name = "<unnamed>"
+
+    else:
+        name = name_value.strip()
 
     primary_url = get_primary_url(
         item
     )
 
     metadata_only = (
-        item.get("metadata_only") is True
+        item.get(
+            "metadata_only"
+        )
+        is True
     )
 
     if (
@@ -308,7 +534,8 @@ def validate_stream_item(
         )
     ):
         add_error(
-            f"{label} primary URL missing: {name}"
+            f"{label} primary URL missing: "
+            f"{name}"
         )
 
     elif (
@@ -318,7 +545,8 @@ def validate_stream_item(
         )
     ):
         add_warning(
-            f"{label} non-HTTP(S) URL: {name}"
+            f"{label} non-HTTP(S) URL: "
+            f"{name}"
         )
 
     raw_backups = item.get(
@@ -329,21 +557,43 @@ def validate_stream_item(
     if raw_backups is None:
         raw_backups = []
 
-    if not isinstance(raw_backups, list):
+    if not isinstance(
+        raw_backups,
+        list,
+    ):
         add_error(
-            f"{label} backups array নয়: {name}"
+            f"{label} backups array নয়: "
+            f"{name}"
         )
+
         return
 
     if len(raw_backups) > 5:
         add_error(
             f"{label} ৫টির বেশি backup: "
-            f"{name} ({len(raw_backups)})"
+            f"{name} "
+            f"({len(raw_backups)})"
         )
 
-    backup_urls = get_backup_urls(
-        item
+    backup_objects = (
+        get_backup_objects(
+            item
+        )
     )
+
+    backup_urls = [
+        get_primary_url(
+            backup
+        )
+        for backup
+        in backup_objects
+    ]
+
+    backup_urls = [
+        url
+        for url in backup_urls
+        if url
+    ]
 
     all_urls = [
         url
@@ -360,40 +610,46 @@ def validate_stream_item(
             f"৬টির বেশি link: {name}"
         )
 
-    if len(set(all_urls)) != len(all_urls):
+    if (
+        len(set(all_urls))
+        != len(all_urls)
+    ):
         add_warning(
-            f"{label} duplicate primary/backup "
-            f"link: {name}"
+            f"{label} duplicate "
+            f"primary/backup link: "
+            f"{name}"
         )
 
-    if (
-        primary_url.startswith("http://")
-        and any(
-            url.startswith("https://")
-            for url in backup_urls
-        )
-    ):
-        add_error(
-            f"{label} HTTPS backup থাকা সত্ত্বেও "
-            f"HTTP primary: {name}"
-        )
+    validate_https_priority(
+        item,
+        primary_url,
+        backup_objects,
+        label,
+        name,
+    )
 
 
 def validate_public_safety() -> None:
     if not ROOT.is_dir():
         add_error(
-            f"Build folder পাওয়া যায়নি: {ROOT}"
+            f"Build folder পাওয়া যায়নি: "
+            f"{ROOT}"
         )
+
         return
 
-    for directory_name in PRIVATE_DIRECTORIES:
+    for directory_name in (
+        PRIVATE_DIRECTORIES
+    ):
         directory_path = (
-            ROOT / directory_name
+            ROOT
+            / directory_name
         )
 
         if directory_path.exists():
             add_error(
-                "Private folder public build-এ আছে: "
+                f"Private folder public "
+                f"build-এ আছে: "
                 f"{directory_name}/"
             )
 
@@ -401,15 +657,23 @@ def validate_public_safety() -> None:
         if not path.is_file():
             continue
 
-        if path.name.lower() in PRIVATE_FILES:
+        if (
+            path.name.lower()
+            in PRIVATE_FILES
+        ):
             add_error(
-                "Private file public build-এ আছে: "
+                f"Private file public "
+                f"build-এ আছে: "
                 f"{relative_path(path)}"
             )
 
-        if path.suffix.lower() in PRIVATE_SUFFIXES:
+        if (
+            path.suffix.lower()
+            in PRIVATE_SUFFIXES
+        ):
             add_error(
-                "Source/private file public build-এ আছে: "
+                f"Source/private file public "
+                f"build-এ আছে: "
                 f"{relative_path(path)}"
             )
 
@@ -419,7 +683,7 @@ def validate_public_safety() -> None:
             "Thumbs.db",
         }:
             add_warning(
-                "অপ্রয়োজনীয় file আছে: "
+                f"অপ্রয়োজনীয় file আছে: "
                 f"{relative_path(path)}"
             )
 
@@ -432,18 +696,28 @@ def validate_runtime_config() -> None:
         "runtime-config.json",
     )
 
-    if not isinstance(data, dict):
+    if not isinstance(
+        data,
+        dict,
+    ):
         if data is not None:
             add_error(
-                "runtime-config.json root object হতে হবে"
+                "runtime-config.json "
+                "root object হতে হবে"
             )
 
         return
 
-    if data.get("schema_version") != 1:
+    if (
+        data.get(
+            "schema_version"
+        )
+        != 1
+    ):
         add_error(
-            "runtime-config.json schema_version "
-            "অবশ্যই 1 হতে হবে"
+            "runtime-config.json "
+            "schema_version অবশ্যই "
+            "1 হতে হবে"
         )
 
     data_manifest = data.get(
@@ -460,21 +734,24 @@ def validate_runtime_config() -> None:
     ):
         add_error(
             "data_manifest অবশ্যই "
-            "/data/manifest.json হতে হবে"
+            "/data/manifest.json "
+            "হতে হবে"
         )
 
-    network_mode = data.get(
-        "default_network_mode"
-    )
-
-    if network_mode not in {
-        "auto",
-        "stable",
-        "low",
-    }:
+    if (
+        data.get(
+            "default_network_mode"
+        )
+        not in {
+            "auto",
+            "stable",
+            "low",
+        }
+    ):
         add_error(
-            "default_network_mode auto, stable "
-            "অথবা low হতে হবে"
+            "default_network_mode "
+            "auto, stable অথবা low "
+            "হতে হবে"
         )
 
     play_proxies = data.get(
@@ -489,40 +766,45 @@ def validate_runtime_config() -> None:
         or not play_proxies
     ):
         add_error(
-            "play_proxies non-empty array হতে হবে"
+            "play_proxies non-empty "
+            "array হতে হবে"
         )
 
     else:
-        seen_proxies: set[str] = set()
+        seen: set[str] = set()
 
         for number, proxy in enumerate(
             play_proxies,
             start=1,
         ):
             if (
-                not isinstance(proxy, str)
+                not isinstance(
+                    proxy,
+                    str,
+                )
                 or not proxy.startswith(
                     "https://"
                 )
             ):
                 add_error(
                     f"play_proxies[{number}] "
-                    "valid HTTPS URL নয়"
+                    f"valid HTTPS URL নয়"
                 )
+
                 continue
 
-            normalized_proxy = (
-                proxy.rstrip("/")
+            normalized = proxy.rstrip(
+                "/"
             )
 
-            if normalized_proxy in seen_proxies:
+            if normalized in seen:
                 add_error(
-                    "Duplicate playback proxy: "
-                    f"{normalized_proxy}"
+                    f"Duplicate playback "
+                    f"proxy: {normalized}"
                 )
 
-            seen_proxies.add(
-                normalized_proxy
+            seen.add(
+                normalized
             )
 
     for key in data:
@@ -530,8 +812,9 @@ def validate_runtime_config() -> None:
             str(key)
         ):
             add_error(
-                "runtime-config.json-এ "
-                f"sensitive key আছে: {key}"
+                f"runtime-config.json-এ "
+                f"sensitive key আছে: "
+                f"{key}"
             )
 
     serialized = json.dumps(
@@ -545,8 +828,9 @@ def validate_runtime_config() -> None:
         in serialized
     ):
         add_error(
-            "runtime-config.json-এ verification "
-            "API রাখা যাবে না"
+            "runtime-config.json-এ "
+            "verification API রাখা "
+            "যাবে না"
         )
 
 
@@ -558,10 +842,14 @@ def validate_webmanifest() -> None:
         "app.webmanifest",
     )
 
-    if not isinstance(data, dict):
+    if not isinstance(
+        data,
+        dict,
+    ):
         if data is not None:
             add_error(
-                "app.webmanifest root object হতে হবে"
+                "app.webmanifest "
+                "root object হতে হবে"
             )
 
         return
@@ -572,42 +860,61 @@ def validate_webmanifest() -> None:
         "start_url",
         "display",
     ):
-        value = data.get(field)
+        value = data.get(
+            field
+        )
 
         if (
-            not isinstance(value, str)
+            not isinstance(
+                value,
+                str,
+            )
             or not value.strip()
         ):
             add_error(
-                "app.webmanifest missing field: "
+                f"app.webmanifest "
+                f"missing field: "
                 f"{field}"
             )
 
-    icons = data.get("icons")
+    icons = data.get(
+        "icons"
+    )
 
     if (
-        not isinstance(icons, list)
+        not isinstance(
+            icons,
+            list,
+        )
         or not icons
     ):
         add_warning(
             "PWA icons নেই"
         )
+
         return
 
     for number, icon in enumerate(
         icons,
         start=1,
     ):
-        if not isinstance(icon, dict):
+        if not isinstance(
+            icon,
+            dict,
+        ):
             add_error(
-                f"app.webmanifest icons[{number}] "
-                "object নয়"
+                f"app.webmanifest "
+                f"icons[{number}] "
+                f"object নয়"
             )
+
             continue
 
-        icon_path = resolve_public_path(
-            icon.get("src"),
-            f"icons[{number}].src",
+        icon_path = (
+            resolve_public_path(
+                icon.get("src"),
+                f"icons[{number}].src",
+            )
         )
 
         if (
@@ -615,7 +922,8 @@ def validate_webmanifest() -> None:
             and not icon_path.is_file()
         ):
             add_warning(
-                "PWA icon এখনো পাওয়া যায়নি: "
+                f"PWA icon এখনো পাওয়া "
+                f"যায়নি: "
                 f"{relative_path(icon_path)}"
             )
 
@@ -625,60 +933,66 @@ def validate_frontend_files() -> None:
         "index.html"
     )
 
-    service_worker_path = require_file(
-        "sw.js"
+    service_worker_path = (
+        require_file(
+            "sw.js"
+        )
     )
 
     require_file(
         "_headers"
     )
 
-    if index_path is None:
-        return
-
-    try:
-        index_html = index_path.read_text(
-            encoding="utf-8"
-        )
-
-    except OSError as error:
-        add_error(
-            f"index.html পড়া যায়নি: {error}"
-        )
-        return
-
-    required_references = (
-        "runtime-config.json",
-        "data/manifest.json",
-        "app.webmanifest",
-        "sw.js",
-    )
-
-    for reference in required_references:
-        if reference not in index_html:
-            add_error(
-                "index.html-এ required reference নেই: "
-                f"{reference}"
+    if index_path is not None:
+        try:
+            index_html = (
+                index_path.read_text(
+                    encoding="utf-8"
+                )
             )
 
-    forbidden_markers = (
-        "API_URLS",
-        "live-checker-workerjs",
-        "live-checker-2-workerjs",
-        "VERIFY_TOKEN",
-        "const swCode =",
-        (
-            "navigator.serviceWorker.register("
-            "URL.createObjectURL"
-        ),
-    )
-
-    for marker in forbidden_markers:
-        if marker in index_html:
+        except OSError as error:
             add_error(
-                "index.html-এ নিষিদ্ধ পুরোনো "
-                f"logic আছে: {marker}"
+                f"index.html পড়া যায়নি: "
+                f"{error}"
             )
+
+            index_html = ""
+
+        for reference in (
+            "runtime-config.json",
+            "data/manifest.json",
+            "app.webmanifest",
+            "sw.js",
+        ):
+            if (
+                reference
+                not in index_html
+            ):
+                add_error(
+                    f"index.html-এ required "
+                    f"reference নেই: "
+                    f"{reference}"
+                )
+
+        for marker in (
+            "API_URLS",
+            "live-checker-workerjs",
+            "live-checker-2-workerjs",
+            "VERIFY_TOKEN",
+            "const swCode =",
+            (
+                "navigator.serviceWorker."
+                "register("
+                "URL.createObjectURL"
+            ),
+        ):
+            if marker in index_html:
+                add_error(
+                    f"index.html-এ নিষিদ্ধ "
+                    f"পুরোনো logic আছে: "
+                    f"{marker}"
+                )
 
     if service_worker_path is None:
         return
@@ -692,16 +1006,18 @@ def validate_frontend_files() -> None:
 
     except OSError as error:
         add_error(
-            f"sw.js পড়া যায়নি: {error}"
+            f"sw.js পড়া যায়নি: "
+            f"{error}"
         )
+
         return
 
     has_fetch_handler = (
-        'addEventListener("fetch"' in
-        service_worker_code
+        'addEventListener("fetch"'
+        in service_worker_code
         or
-        "addEventListener('fetch'" in
-        service_worker_code
+        "addEventListener('fetch'"
+        in service_worker_code
     )
 
     if not has_fetch_handler:
@@ -710,11 +1026,14 @@ def validate_frontend_files() -> None:
         )
 
     if (
-        ".m3u8" not in service_worker_code
-        or ".ts" not in service_worker_code
+        ".m3u8"
+        not in service_worker_code
+        or ".ts"
+        not in service_worker_code
     ):
         add_error(
-            "sw.js stream bypass rules অসম্পূর্ণ"
+            "sw.js stream bypass "
+            "rules অসম্পূর্ণ"
         )
 
 
@@ -728,36 +1047,51 @@ def validate_channel_category(
         dict,
     ):
         add_error(
-            f"manifest.channels.{category_name} "
-            "object নয়"
+            f"manifest.channels."
+            f"{category_name} "
+            f"object নয়"
         )
+
         return
 
-    channel_path = resolve_public_path(
-        manifest_entry.get("url"),
-        f"channels.{category_name}.url",
+    channel_path = (
+        resolve_public_path(
+            manifest_entry.get(
+                "url"
+            ),
+            (
+                f"channels."
+                f"{category_name}.url"
+            ),
+        )
     )
 
     if channel_path is None:
         return
 
-    expected_path = (
-        f"data/channels/{category_slug}.json"
+    expected = (
+        f"data/channels/"
+        f"{category_slug}.json"
     )
 
-    if relative_path(
-        channel_path
-    ) != expected_path:
+    if (
+        relative_path(
+            channel_path
+        )
+        != expected
+    ):
         add_error(
-            f"{category_name} channel path ভুল: "
+            f"{category_name} "
+            f"channel path ভুল: "
             f"{relative_path(channel_path)}"
         )
 
     if not channel_path.is_file():
         add_error(
-            "Channel JSON পাওয়া যায়নি: "
+            f"Channel JSON পাওয়া যায়নি: "
             f"{relative_path(channel_path)}"
         )
+
         return
 
     data = load_json(
@@ -767,43 +1101,53 @@ def validate_channel_category(
         ),
     )
 
-    channel_items = get_items(
+    items = get_items(
         data,
         "channels",
         "items",
     )
 
     if (
-        not isinstance(data, dict)
-        or channel_items is None
+        not isinstance(
+            data,
+            dict,
+        )
+        or items is None
     ):
         add_error(
             f"{relative_path(channel_path)} "
-            "valid channel object নয়"
+            f"valid channel object নয়"
         )
+
         return
 
     actual_count = len(
-        channel_items
+        items
     )
 
-    if data.get("count") != actual_count:
-        add_error(
-            f"{relative_path(channel_path)} "
-            "count mismatch"
-        )
-
     if (
-        manifest_entry.get("count")
+        data.get("count")
         != actual_count
     ):
         add_error(
-            f"manifest {category_name} "
-            "count mismatch"
+            f"{relative_path(channel_path)} "
+            f"count mismatch"
+        )
+
+    if (
+        manifest_entry.get(
+            "count"
+        )
+        != actual_count
+    ):
+        add_error(
+            f"manifest "
+            f"{category_name} "
+            f"count mismatch"
         )
 
     for number, item in enumerate(
-        channel_items,
+        items,
         start=1,
     ):
         validate_stream_item(
@@ -814,7 +1158,9 @@ def validate_channel_category(
             ),
         )
 
-    COUNTS["channels"] += actual_count
+    COUNTS[
+        "channels"
+    ] += actual_count
 
 
 def validate_event_file(
@@ -823,101 +1169,123 @@ def validate_event_file(
     expected_path: str,
     allow_metadata_only: bool,
 ) -> None:
-    manifest_entry = manifest.get(
+    entry = manifest.get(
         manifest_key
     )
 
     if not isinstance(
-        manifest_entry,
+        entry,
         dict,
     ):
         add_error(
-            f"manifest.{manifest_key} object নয়"
+            f"manifest."
+            f"{manifest_key} "
+            f"object নয়"
         )
+
         return
 
-    event_path = resolve_public_path(
-        manifest_entry.get("url"),
-        f"manifest.{manifest_key}.url",
+    event_path = (
+        resolve_public_path(
+            entry.get("url"),
+            (
+                f"manifest."
+                f"{manifest_key}.url"
+            ),
+        )
     )
 
     if event_path is None:
         return
 
-    if relative_path(
-        event_path
-    ) != expected_path:
+    if (
+        relative_path(
+            event_path
+        )
+        != expected_path
+    ):
         add_error(
-            f"manifest.{manifest_key}.url ভুল: "
+            f"manifest."
+            f"{manifest_key}.url ভুল: "
             f"{relative_path(event_path)}"
         )
 
     if not event_path.is_file():
         add_error(
-            "Event JSON পাওয়া যায়নি: "
+            f"Event JSON পাওয়া যায়নি: "
             f"{relative_path(event_path)}"
         )
+
         return
 
     data = load_json(
         event_path,
-        relative_path(event_path),
+        relative_path(
+            event_path
+        ),
     )
 
-    event_items = get_items(
+    items = get_items(
         data,
         "items",
         "events",
     )
 
     if (
-        not isinstance(data, dict)
-        or event_items is None
+        not isinstance(
+            data,
+            dict,
+        )
+        or items is None
     ):
         add_error(
             f"{relative_path(event_path)} "
-            "valid event object নয়"
+            f"valid event object নয়"
         )
+
         return
 
     actual_count = len(
-        event_items
+        items
     )
 
-    if data.get("count") != actual_count:
-        add_error(
-            f"{relative_path(event_path)} "
-            "count mismatch"
-        )
-
     if (
-        manifest_entry.get("count")
+        data.get("count")
         != actual_count
     ):
         add_error(
-            f"manifest.{manifest_key} "
-            "count mismatch"
+            f"{relative_path(event_path)} "
+            f"count mismatch"
         )
 
-    expected_visibility = (
-        actual_count > 0
-    )
+    if (
+        entry.get("count")
+        != actual_count
+    ):
+        add_error(
+            f"manifest."
+            f"{manifest_key} "
+            f"count mismatch"
+        )
 
     if (
         bool(
-            manifest_entry.get(
+            entry.get(
                 "visible"
             )
         )
-        != expected_visibility
+        != (
+            actual_count > 0
+        )
     ):
         add_warning(
-            f"manifest.{manifest_key}.visible "
-            "count-এর সঙ্গে মিলছে না"
+            f"manifest."
+            f"{manifest_key}.visible "
+            f"count-এর সঙ্গে মিলছে না"
         )
 
     for number, item in enumerate(
-        event_items,
+        items,
         start=1,
     ):
         validate_stream_item(
@@ -929,7 +1297,57 @@ def validate_event_file(
             allow_metadata_only,
         )
 
-    COUNTS["events"] += actual_count
+    COUNTS[
+        "events"
+    ] += actual_count
+
+
+def resolve_movie_page_path(
+    index_path: Path,
+    page_entry: dict[str, Any],
+    category_name: str,
+    page_number: int,
+) -> Path | None:
+    value = (
+        page_entry.get("path")
+        or page_entry.get("file")
+    )
+
+    if (
+        isinstance(
+            value,
+            str,
+        )
+        and "/" not in value
+        and "\\" not in value
+    ):
+        path = (
+            index_path.parent
+            / value
+        ).resolve()
+
+        try:
+            path.relative_to(ROOT)
+
+        except ValueError:
+            add_error(
+                f"{category_name} "
+                f"page {page_number} "
+                f"build root-এর বাইরে "
+                f"যাচ্ছে"
+            )
+
+            return None
+
+        return path
+
+    return resolve_public_path(
+        value,
+        (
+            f"{category_name} "
+            f"page {page_number}.path"
+        ),
+    )
 
 
 def validate_movie_category(
@@ -942,42 +1360,58 @@ def validate_movie_category(
         dict,
     ):
         add_error(
-            f"manifest.movies.{category_name} "
-            "object নয়"
+            f"manifest.movies."
+            f"{category_name} "
+            f"object নয়"
         )
+
         return
 
-    index_path = resolve_public_path(
-        manifest_entry.get("index"),
-        f"movies.{category_name}.index",
+    index_path = (
+        resolve_public_path(
+            manifest_entry.get(
+                "index"
+            ),
+            (
+                f"movies."
+                f"{category_name}.index"
+            ),
+        )
     )
 
     if index_path is None:
         return
 
-    expected_index_path = (
-        f"data/movies/{category_slug}/index.json"
+    expected_index = (
+        f"data/movies/"
+        f"{category_slug}/index.json"
     )
 
-    if relative_path(
-        index_path
-    ) != expected_index_path:
+    if (
+        relative_path(
+            index_path
+        )
+        != expected_index
+    ):
         add_error(
-            f"{category_name} movie index "
-            "path ভুল: "
+            f"{category_name} "
+            f"movie index path ভুল: "
             f"{relative_path(index_path)}"
         )
 
     if not index_path.is_file():
         add_error(
-            "Movie index পাওয়া যায়নি: "
+            f"Movie index পাওয়া যায়নি: "
             f"{relative_path(index_path)}"
         )
+
         return
 
     index_data = load_json(
         index_path,
-        relative_path(index_path),
+        relative_path(
+            index_path
+        ),
     )
 
     if (
@@ -992,11 +1426,14 @@ def validate_movie_category(
     ):
         add_error(
             f"{relative_path(index_path)} "
-            "valid movie index নয়"
+            f"valid movie index নয়"
         )
+
         return
 
-    pages = index_data["pages"]
+    pages = index_data[
+        "pages"
+    ]
 
     if (
         index_data.get("slug")
@@ -1004,23 +1441,38 @@ def validate_movie_category(
     ):
         add_error(
             f"{relative_path(index_path)} "
-            "slug mismatch"
+            f"slug mismatch"
         )
 
     if (
-        index_data.get("total_pages")
-        != len(pages)
-        or
-        manifest_entry.get("total_pages")
+        index_data.get(
+            "total_pages"
+        )
         != len(pages)
     ):
         add_error(
             f"{category_name} "
-            "total_pages mismatch"
+            f"index total_pages "
+            f"mismatch"
         )
 
-    total_movie_items = 0
-    seen_page_numbers: set[int] = set()
+    if (
+        manifest_entry.get(
+            "total_pages"
+        )
+        != len(pages)
+    ):
+        add_error(
+            f"{category_name} "
+            f"manifest total_pages "
+            f"mismatch"
+        )
+
+    total_items = 0
+
+    seen_numbers: set[int] = (
+        set()
+    )
 
     for position, page_entry in enumerate(
         pages,
@@ -1032,70 +1484,66 @@ def validate_movie_category(
                 dict,
             )
             or not isinstance(
-                page_entry.get("page"),
+                page_entry.get(
+                    "page"
+                ),
                 int,
             )
         ):
             add_error(
-                f"{category_name} page entry "
+                f"{category_name} "
+                f"page entry "
                 f"#{position} invalid"
             )
+
             continue
 
-        page_number = page_entry["page"]
+        page_number = page_entry[
+            "page"
+        ]
 
-        if page_number in seen_page_numbers:
+        if (
+            page_number
+            in seen_numbers
+        ):
             add_error(
-                f"{category_name} duplicate "
-                f"page number: {page_number}"
+                f"{category_name} "
+                f"duplicate page number: "
+                f"{page_number}"
             )
 
-        seen_page_numbers.add(
+        seen_numbers.add(
             page_number
         )
 
-        page_path_value = (
-            page_entry.get("path")
-            or page_entry.get("file")
+        page_path = (
+            resolve_movie_page_path(
+                index_path,
+                page_entry,
+                category_name,
+                page_number,
+            )
         )
-
-        if (
-            isinstance(
-                page_path_value,
-                str,
-            )
-            and "/" not in page_path_value
-        ):
-            page_path = (
-                index_path.parent
-                / page_path_value
-            ).resolve()
-
-        else:
-            page_path = resolve_public_path(
-                page_path_value,
-                (
-                    f"{category_name} "
-                    f"page {page_number}.path"
-                ),
-            )
 
         if page_path is None:
             continue
 
         if not page_path.is_file():
             add_error(
-                "Movie page পাওয়া যায়নি: "
+                f"Movie page পাওয়া যায়নি: "
                 f"{relative_path(page_path)}"
             )
+
             continue
 
         page_data = load_json(
             page_path,
-            relative_path(page_path),
+            relative_path(
+                page_path
+            ),
         )
 
-        movie_items = get_items(
+        items = get_items(
             page_data,
             "items",
             "movies",
@@ -1106,57 +1554,73 @@ def validate_movie_category(
                 page_data,
                 dict,
             )
-            or movie_items is None
+            or items is None
         ):
             add_error(
                 f"{relative_path(page_path)} "
-                "valid movie page নয়"
+                f"valid movie page নয়"
             )
+
             continue
 
-        actual_page_count = len(
-            movie_items
+        page_count = len(
+            items
         )
 
-        total_movie_items += (
-            actual_page_count
+        total_items += (
+            page_count
         )
 
         if (
-            page_data.get("count")
-            != actual_page_count
-            or
-            page_entry.get("count")
-            != actual_page_count
+            page_data.get(
+                "count"
+            )
+            != page_count
         ):
             add_error(
-                f"{category_name} page "
-                f"{page_number} count mismatch"
+                f"{category_name} "
+                f"page {page_number} "
+                f"payload count mismatch"
             )
 
         if (
-            page_data.get("page")
+            page_entry.get(
+                "count"
+            )
+            != page_count
+        ):
+            add_error(
+                f"{category_name} "
+                f"page {page_number} "
+                f"index count mismatch"
+            )
+
+        if (
+            page_data.get(
+                "page"
+            )
             != page_number
         ):
             add_error(
                 f"{relative_path(page_path)} "
-                "page number mismatch"
+                f"page number mismatch"
             )
 
-        for item_number, movie_item in enumerate(
-            movie_items,
+        for item_number, item in enumerate(
+            items,
             start=1,
         ):
             validate_stream_item(
-                movie_item,
+                item,
                 (
-                    f"{category_name} movie "
-                    f"page {page_number} "
+                    f"{category_name} "
+                    f"movie page "
+                    f"{page_number} "
                     f"item #{item_number}"
                 ),
             )
 
-    expected_page_numbers = set(
+    expected_numbers = set(
         range(
             1,
             len(pages) + 1,
@@ -1164,29 +1628,42 @@ def validate_movie_category(
     )
 
     if (
-        seen_page_numbers
-        != expected_page_numbers
+        seen_numbers
+        != expected_numbers
     ):
         add_error(
-            f"{category_name} movie "
-            "page numbering ধারাবাহিক নয়"
+            f"{category_name} "
+            f"movie page numbering "
+            f"ধারাবাহিক নয়"
         )
 
     if (
-        index_data.get("count")
-        != total_movie_items
-        or
-        manifest_entry.get("count")
-        != total_movie_items
+        index_data.get(
+            "count"
+        )
+        != total_items
     ):
         add_error(
-            f"{category_name} movie "
-            "total count mismatch"
+            f"{category_name} "
+            f"movie index total "
+            f"count mismatch"
         )
 
-    COUNTS["movies"] += (
-        total_movie_items
-    )
+    if (
+        manifest_entry.get(
+            "count"
+        )
+        != total_items
+    ):
+        add_error(
+            f"{category_name} "
+            f"movie manifest total "
+            f"count mismatch"
+        )
+
+    COUNTS[
+        "movies"
+    ] += total_items
 
 
 def validate_data_manifest() -> None:
@@ -1209,18 +1686,28 @@ def validate_data_manifest() -> None:
 
         return
 
-    if manifest.get("schema_version") != 1:
+    if (
+        manifest.get(
+            "schema_version"
+        )
+        != 1
+    ):
         add_error(
             "data/manifest.json "
-            "schema_version অবশ্যই 1 হতে হবে"
+            "schema_version অবশ্যই "
+            "1 হতে হবে"
         )
 
-    channel_manifest = manifest.get(
-        "channels"
+    channel_manifest = (
+        manifest.get(
+            "channels"
+        )
     )
 
-    movie_manifest = manifest.get(
-        "movies"
+    movie_manifest = (
+        manifest.get(
+            "movies"
+        )
     )
 
     if not isinstance(
@@ -1228,8 +1715,10 @@ def validate_data_manifest() -> None:
         dict,
     ):
         add_error(
-            "manifest channels object missing"
+            "manifest channels "
+            "object missing"
         )
+
         channel_manifest = {}
 
     if not isinstance(
@@ -1237,8 +1726,10 @@ def validate_data_manifest() -> None:
         dict,
     ):
         add_error(
-            "manifest movies object missing"
+            "manifest movies "
+            "object missing"
         )
+
         movie_manifest = {}
 
     for category_name in [
@@ -1256,7 +1747,8 @@ def validate_data_manifest() -> None:
             }
         ):
             add_error(
-                "নিষিদ্ধ category manifest-এ আছে: "
+                f"নিষিদ্ধ category "
+                f"manifest-এ আছে: "
                 f"{category_name}"
             )
 
@@ -1277,41 +1769,50 @@ def validate_data_manifest() -> None:
 
     if missing_channels:
         add_error(
-            "Channel category missing: "
+            f"Channel category missing: "
             f"{sorted(missing_channels)}"
         )
 
     if missing_movies:
         add_error(
-            "Movie category missing: "
+            f"Movie category missing: "
             f"{sorted(missing_movies)}"
         )
 
     if extra_movies:
         add_error(
-            "অনুমোদিত নয় এমন movie category: "
+            f"অনুমোদিত নয় এমন "
+            f"movie category: "
             f"{sorted(extra_movies)}"
         )
 
-    for category_name, category_slug in (
-        CHANNELS.items()
-    ):
-        if category_name in channel_manifest:
+    for (
+        category_name,
+        slug,
+    ) in CHANNELS.items():
+        if (
+            category_name
+            in channel_manifest
+        ):
             validate_channel_category(
                 category_name,
-                category_slug,
+                slug,
                 channel_manifest[
                     category_name
                 ],
             )
 
-    for category_name, category_slug in (
-        MOVIES.items()
-    ):
-        if category_name in movie_manifest:
+    for (
+        category_name,
+        slug,
+    ) in MOVIES.items():
+        if (
+            category_name
+            in movie_manifest
+        ):
             validate_movie_category(
                 category_name,
-                category_slug,
+                slug,
                 movie_manifest[
                     category_name
                 ],
@@ -1340,7 +1841,9 @@ def main() -> int:
 
     validate_public_safety()
 
-    for file_name in REQUIRED_FILES:
+    for file_name in (
+        REQUIRED_FILES
+    ):
         require_file(
             file_name
         )
@@ -1355,27 +1858,34 @@ def main() -> int:
     )
 
     print(
-        f"  Channels: {COUNTS['channels']}"
+        f"  Channels: "
+        f"{COUNTS['channels']}"
     )
 
     print(
-        f"  Movies: {COUNTS['movies']}"
+        f"  Movies: "
+        f"{COUNTS['movies']}"
     )
 
     print(
-        f"  Events: {COUNTS['events']}"
+        f"  Events: "
+        f"{COUNTS['events']}"
     )
 
     print(
-        f"  Warnings: {len(WARNINGS)}"
+        f"  Warnings: "
+        f"{len(WARNINGS)}"
     )
 
     print(
-        f"  Errors: {len(ERRORS)}"
+        f"  Errors: "
+        f"{len(ERRORS)}"
     )
 
     if WARNINGS:
-        print("\nWarnings:")
+        print(
+            "\nWarnings:"
+        )
 
         for message in WARNINGS:
             print(
@@ -1383,7 +1893,9 @@ def main() -> int:
             )
 
     if ERRORS:
-        print("\nErrors:")
+        print(
+            "\nErrors:"
+        )
 
         for message in ERRORS:
             print(
