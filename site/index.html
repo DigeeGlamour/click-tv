@@ -1,6 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Click TV — Live TV ও HD Movie Portal</title>
+  <meta name="description" content="Click TV — সকল ক্যাটাগরির লাইভ টিভি চ্যানেল ও HD মুভি এক জায়গায়।" />
+  <meta name="theme-color" content="#080c14" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Click TV — Live TV ও HD Movie Portal" />
+  <meta property="og:description" content="সকল ক্যাটাগরির লাইভ টিভি চ্যানেল ও HD মুভি।" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="manifest" href="/app.webmanifest" />
+
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9MQR0EXVDY"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -8,10 +19,6 @@
     gtag('js', new Date());
     gtag('config', 'G-9MQR0EXVDY', { 'cookie_domain': 'none' });
   </script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Click TV — Live Portal</title>
-  <link rel="manifest" href="/app.webmanifest" />
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +26,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.10.9/shaka-player.compiled.js"></script>
+  <!-- Shaka (DASH/DRM) শুধু প্রয়োজন হলে dynamically load হয় — initial payload হালকা রাখতে -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
 
   <style>
@@ -36,12 +43,16 @@
     }
     body { 
       background: var(--bg-dark); color: var(--text-primary); font-family: var(--font-sans); 
-      min-height: 100vh; overflow-x: hidden; display: flex; flex-direction: column; 
+      min-height: 100vh; min-height: 100dvh; overflow-x: hidden; display: flex; flex-direction: column; 
       user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; 
+    }
+    /* Text কপি করার সুযোগ পাঠ্য অংশে খোলা রাখা হয়েছে (accessibility) */
+    h1, h2, p, input, textarea, .video-meta, .meta-category, .sidebar-name, .movie-card-title, .subtitle-overlay {
+      user-select: text; -webkit-user-select: text;
     }
     
     @media (min-width: 1001px) { 
-      body { overflow: hidden; height: 100vh; display: flex; flex-direction: column; } 
+      body { overflow: hidden; height: 100vh; height: 100dvh; display: flex; flex-direction: column; } 
       .youtube-layout { 
         display: grid; 
         grid-template-columns: 68fr 32fr; 
@@ -53,11 +64,11 @@
         box-sizing: border-box;
         flex: 1;
         min-height: 0;
-        height: calc(100vh - 70px);
+        height: calc(100dvh - 70px);
       }
       .sidebar-section { height: 100% !important; box-sizing: border-box; }
       .video-section { display: flex; flex-direction: column; height: 100%; min-height: 0; justify-content: flex-start; }
-      .video-container-wrap { flex-shrink: 0; max-height: calc(100vh - 175px); aspect-ratio: 16 / 9; }
+      .video-container-wrap { flex-shrink: 0; max-height: calc(100dvh - 175px); aspect-ratio: 16 / 9; }
       .video-meta { margin-top: 8px; padding: 4px 4px 12px 4px; flex-shrink: 0; }
       footer { display: none !important; }
 
@@ -69,7 +80,8 @@
         grid-auto-rows: max-content !important;
       }
       .movie-card {
-        height: 240px !important; 
+        height: auto !important;
+        aspect-ratio: 2 / 3 !important;
       }
       .movie-card .movie-card-overlay {
         padding: 8px 10px !important;
@@ -228,8 +240,8 @@
     .mute-pointer-tooltip {
       position: absolute;
       bottom: 38px;
-      left: 16px;
-      transform: translateX(-50%);
+      left: 8px;
+      max-width: calc(100% - 16px);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -608,7 +620,7 @@
     .movie-card { 
       position: relative !important; background: #151d2c !important; border-radius: 10px !important; 
       overflow: hidden !important; cursor: pointer !important; transition: all 0.3s !important; 
-      border: 1px solid var(--border-glass) !important; width: 100% !important; height: 220px !important; 
+      border: 1px solid var(--border-glass) !important; width: 100% !important; height: auto !important; aspect-ratio: 2 / 3 !important; 
       display: flex !important; flex-direction: column !important; justify-content: flex-end !important; 
       outline: none !important;
       contain: layout paint;
@@ -616,8 +628,7 @@
     .movie-card:focus, .movie-card:hover, .movie-card.active { border-color: var(--phosphor) !important; transform: translateY(-3px) !important; box-shadow: 0 6px 20px rgba(255, 42, 68, 0.25) !important; }
     .movie-poster { 
       position: absolute !important; inset: 0 !important; width: 100% !important; height: 100% !important; 
-      object-fit: cover !important; object-position: center top !important; transition: transform 0.3s !important; 
-      aspect-ratio: 16 / 9;
+      object-fit: cover !important; object-position: center !important; transition: transform 0.3s !important; 
     }
     .movie-card:hover .movie-poster { transform: scale(1.06) !important; }
     
@@ -655,8 +666,8 @@
     @keyframes loaderSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
     @media (max-width: 1000px) {
-      body { height: 100vh; overflow: hidden; }
-      .youtube-layout { display: flex; flex-direction: column; height: calc(100vh - 55px); overflow: hidden; padding: 0; gap: 0; }
+      body { height: 100vh; height: 100dvh; overflow: hidden; }
+      .youtube-layout { display: flex; flex-direction: column; height: calc(100dvh - var(--notice-height, 0px)); overflow: hidden; padding: 0; gap: 0; }
       .video-section { flex-shrink: 0; }
       .video-container-wrap { border-radius: 0; }
       .video-meta { padding: 8px 12px; }
@@ -705,7 +716,7 @@
     }
     .movie-card {
       height: auto !important;
-      min-height: 220px;
+      min-height: 180px;
       aspect-ratio: 2 / 3;
     }
     .tv-focusable:focus-visible,
@@ -899,7 +910,7 @@
         width: 100% !important;
         height: auto !important;
         min-height: 0 !important;
-        aspect-ratio: 4 / 5 !important;
+        aspect-ratio: 2 / 3 !important;
         border-radius: 9px !important;
       }
     
@@ -937,15 +948,15 @@
     <div class="marquee-wrapper">
       <span class="marquee-text">📢 সকল ক্যাটাগরির লাইভ টিভি চ্যানেল ও এইচডি মুভি নিয়মিত আপডেট হচ্ছে। 📌 ওয়েবসাইটটি বুকমার্ক করে রাখুন!</span>
     </div>
-    <button class="close-btn" onclick="dismissNotice()">&times;</button>
+    <button class="close-btn" id="noticeCloseBtn" type="button" title="Notice বন্ধ করুন" aria-label="Notice close">&times;</button>
   </div>
 
   <header>
     <div class="header-left"><h1><span class="live-signal-dot"></span>CLICK TV</h1></div>
     <div class="header-center">
       <div class="search-wrap">
-        <input type="text" id="searchInput" placeholder="Search channel or movie..." />
-        <button class="search-btn" id="searchBtnSubmit"><i class="fas fa-search"></i></button>
+        <input type="text" id="searchInput" placeholder="Search channel or movie..." aria-label="Search channel or movie" />
+        <button class="search-btn" id="searchBtnSubmit" type="button" aria-label="Search"><i class="fas fa-search"></i></button>
       </div>
     </div>
     <div class="header-right">
@@ -958,7 +969,7 @@
     <div class="video-section">
       <div id="videoContainer" class="video-container-wrap">
         <div class="video-container" id="shakaControlsContainer">
-          <video id="videoPlayer" autoplay playsinline preload="auto"></video>
+          <video id="videoPlayer" autoplay playsinline preload="auto" crossorigin="anonymous"></video>
           
           <div class="subtitle-overlay" id="subtitleOverlay"></div>
           <div class="resume-badge" id="resumeBadge"><i class="fas fa-play"></i> Resume from <span id="resumeTime">00:00</span></div>
@@ -1046,7 +1057,6 @@
 
               <div class="live-indicator-pill" id="liveIndicator">
                 <span class="pulse-dot"></span><span class="live-indicator-pill-text">Live</span>
-                <div class="vjs-view-counter" title="Watching Now"><span id="liveViewerCount">1.8K</span></div>
               </div>
             </div>
 
@@ -1058,12 +1068,12 @@
               
               <button id="speedBtn" class="ctrl-btn" style="display:none;" title="Playback Speed"><i class="fas fa-tachometer-alt"></i></button>
               <div class="popup-menu" id="speedMenu">
-                <div class="popup-menu-item" onclick="setSpeed(0.5)">0.5x</div>
-                <div class="popup-menu-item" onclick="setSpeed(0.75)">0.75x</div>
-                <div class="popup-menu-item active" onclick="setSpeed(1.0)">1.0x Normal</div>
-                <div class="popup-menu-item" onclick="setSpeed(1.25)">1.25x</div>
-                <div class="popup-menu-item" onclick="setSpeed(1.5)">1.5x</div>
-                <div class="popup-menu-item" onclick="setSpeed(2.0)">2.0x</div>
+                <div class="popup-menu-item" data-speed="0.5">0.5x</div>
+                <div class="popup-menu-item" data-speed="0.75">0.75x</div>
+                <div class="popup-menu-item active" data-speed="1">1.0x Normal</div>
+                <div class="popup-menu-item" data-speed="1.25">1.25x</div>
+                <div class="popup-menu-item" data-speed="1.5">1.5x</div>
+                <div class="popup-menu-item" data-speed="2">2.0x</div>
               </div>
 
               <!-- Icon Buttons for Quality & Network -->
@@ -1075,9 +1085,9 @@
                 <span id="networkModeBadge" class="network-mode-badge">A</span>
               </button>
               <div class="popup-menu" id="networkMenu">
-                <div class="popup-menu-item active" data-network-mode="auto" onclick="setNetworkMode('auto')"><span>✨ Auto</span><span class="bitrate-val">Recommended</span></div>
-                <div class="popup-menu-item" data-network-mode="stable" onclick="setNetworkMode('stable')"><span>📶 Stable</span></div>
-                <div class="popup-menu-item" data-network-mode="low" onclick="setNetworkMode('low')"><span>⚡ Low Delay</span></div>
+                <div class="popup-menu-item active" data-network-mode="auto"><span>✨ Auto</span><span class="bitrate-val">Recommended</span></div>
+                <div class="popup-menu-item" data-network-mode="stable"><span>📶 Stable</span></div>
+                <div class="popup-menu-item" data-network-mode="low"><span>⚡ Low Delay</span></div>
               </div>
 
               <button id="aspectBtn" class="ctrl-btn" title="Screen Fit"><i class="fas fa-expand-alt"></i></button>
@@ -1092,20 +1102,17 @@
           <h2 id="metaTitle">Loading Channel...</h2>
           <div style="display: flex; align-items: center; gap: 8px;">
             <button class="fav-action-btn" id="mobileSearchToggleBtn" title="Search"><i class="fas fa-search"></i> Search</button>
-            <button class="fav-action-btn" id="favActionBtn"><i class="fas fa-star"></i> Bookmark</button>
+            <button class="fav-action-btn" id="favActionBtn" type="button" aria-label="Bookmark"><i class="fas fa-star"></i> Bookmark</button>
           </div>
         </div>
         
         <div class="meta-subtitle-row">
           <span id="metaCategory" class="meta-category">Category</span>
           <span>•</span>
-          <span id="metaWatchingCount">1.8K Watching Now</span>
-          <span id="tmdbRatingBadge" style="display:none;" class="movie-rating-badge"><i class="fas fa-star"></i> 8.2</span>
-          
+          <span id="metaWatchingCount">Live</span>
           <div id="movieExtraBadges" class="movie-meta-bar" style="display:none;">
-            <span class="meta-badge hd" id="movieRealResBadge"><i class="fas fa-bolt"></i> 1080p Full HD</span>
-            <span class="meta-badge star" id="movieRatingMetaBadge"><i class="fas fa-star"></i> 8.4</span>
-            <span class="meta-badge"><i class="fas fa-closed-captioning"></i> Subtitles</span>
+            <span class="meta-badge hd" id="movieRealResBadge" style="display:none;"><i class="fas fa-bolt"></i></span>
+            <span class="meta-badge star" id="movieRatingMetaBadge" style="display:none;"><i class="fas fa-star"></i></span>
           </div>
         </div>
 
@@ -1123,8 +1130,8 @@
     <div class="sidebar-section">
       <div id="mobileSearchBox" class="mobile-search-bar-wrap" style="display:none;">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="mobileSearchInput" placeholder="Search any channel or movie globally..." />
-        <button class="clear-search-btn" id="mobileSearchClearBtn" onclick="clearMobileSearch()">&times;</button>
+        <input type="text" id="mobileSearchInput" placeholder="Search any channel or movie globally..." aria-label="Search channel or movie" />
+        <button class="clear-search-btn" id="mobileSearchClearBtn" type="button" aria-label="Clear search">&times;</button>
       </div>
 
       <div class="chips-outer-wrapper">
@@ -1132,31 +1139,14 @@
         <div class="chips-container-wrap" id="chipsContainerWrap">
           
           <!-- 📌 Main Navigation Chips (Points 1 & 2: "All" Removed, Movie is Parent Button) -->
-          <div class="chips-container" id="chipsContainer">
-            <button class="chip" id="chipTodayMatch" data-cat="Today Match" style="display:none;" onclick="filterCategory('Today Match', this)"><i class="fas fa-trophy"></i> Today Match</button>
-            <button class="chip active" data-cat="Bangla" onclick="filterCategory('Bangla', this)">Bangla</button>
-            <button class="chip" data-cat="Sports" onclick="filterCategory('Sports', this)">Sports</button>
-            <button class="chip" data-cat="Movie" onclick="openMovieParentMode(this)"><i class="fas fa-film"></i> Movie</button>
-            <button class="chip" data-cat="Indian" onclick="filterCategory('Indian', this)">Indian</button>
-            <button class="chip" data-cat="Cartoon" onclick="filterCategory('Cartoon', this)">Cartoon</button>
-            <button class="chip" data-cat="Islamic" onclick="filterCategory('Islamic', this)">Islamic</button>
-            <button class="chip" data-cat="Foreign News" onclick="filterCategory('Foreign News', this)">Foreign News</button>
-            <button class="chip" data-cat="Recent" onclick="filterCategory('Recent', this)"><i class="fas fa-history"></i> Recent</button>
-          </div>
+          <div class="chips-container" id="chipsContainer"></div>
 
         </div>
         <button class="chip-nav-btn right" id="chipNextBtn"><i class="fas fa-chevron-right"></i></button>
       </div>
 
       <!-- 📌 Movie Subcategory Bar (Points 3, 14, 23: Fixed Order: Bangla | Hindi | English | Dubbed | South Indian | Mix) -->
-      <div class="movie-subcategory-bar" id="movieSubcategoryBar" style="display:none;">
-        <button class="sub-chip" data-movie-cat="bangla" onclick="selectMovieSubcategory('bangla', this)">Bangla</button>
-        <button class="sub-chip" data-movie-cat="hindi" onclick="selectMovieSubcategory('hindi', this)">Hindi</button>
-        <button class="sub-chip" data-movie-cat="english" onclick="selectMovieSubcategory('english', this)">English</button>
-        <button class="sub-chip" data-movie-cat="dubbed" onclick="selectMovieSubcategory('dubbed', this)">Dubbed</button>
-        <button class="sub-chip" data-movie-cat="south-indian" onclick="selectMovieSubcategory('south-indian', this)">South Indian</button>
-        <button class="sub-chip" data-movie-cat="mix" onclick="selectMovieSubcategory('mix', this)">Mix</button>
-      </div>
+      <div class="movie-subcategory-bar" id="movieSubcategoryBar" style="display:none;"></div>
 
       <div class="sidebar-top-bar">
         <span class="sidebar-count" id="sidebarCountText">0 Channels</span>
@@ -1171,7 +1161,7 @@
     </div>
   </div>
 
-  <footer>AUTO-REFRESH EVERY 60S · STABLE HYBRID ENGINE ENABLED</footer>
+  <footer>STABLE HYBRID ENGINE · AUTO FAILOVER ENABLED</footer>
 
   <script>
 'use strict';
@@ -1186,7 +1176,9 @@ const STORAGE_KEYS = Object.freeze({
   playbackHistory: 'clicktv_playback_history_v1',
   recentItems: 'clicktv_recent_items_v1',
   favorites: 'clicktv_favorites_v1',
-  positions: 'clicktv_positions_v1'
+  positions: 'clicktv_positions_v1',
+  favoriteItems: 'clicktv_favorite_items_v1',
+  noticeDismissed: 'clicktv_notice_dismissed_v1'
 });
 
 const VIEW = Object.freeze({
@@ -1194,7 +1186,8 @@ const VIEW = Object.freeze({
   MOVIE: 'movie',
   EVENT: 'event',
   UPCOMING: 'upcoming',
-  RECENT: 'recent'
+  RECENT: 'recent',
+  FAVORITE: 'favorite'
 });
 
 const NETWORK_MODE = Object.freeze({
@@ -1221,6 +1214,11 @@ const QUALITY_LOCK_MAX_MS = 6500;
 const AUTO_NEXT_LIMIT = 3;
 const AUTO_NEXT_SECONDS = 5;
 const MPEGTS_CDN = 'https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js';
+const SHAKA_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.10.9/shaka-player.compiled.js';
+const DATA_FETCH_TIMEOUT_MS = 9000;
+const POSITION_SAVE_INTERVAL_MS = 10000;
+const POSITION_HISTORY_LIMIT = 200;
+const MOVIE_PROMPT_TEXT = 'মুভি দেখতে একটি বিভাগ নির্বাচন করুন';
 
 const state = {
   runtime: null,
@@ -1271,8 +1269,13 @@ const state = {
   lastTapTime: 0,
   gestureTimer: null,
   subtitleItems: [],
-  subtitleFrame: null,
+  subtitleCursor: 0,
+  subtitlesEnabled: false,
+  positionSavedAt: 0,
+  userWantsSound: localStorage.getItem('clicktv_sound_on') === '1',
+  searchQuery: '',
   osdTimer: null,
+  resumeBadgeTimer: null,
   playbackPositions: readJsonStorage(STORAGE_KEYS.positions, {}),
   proxyHealth: readJsonStorage(STORAGE_KEYS.proxyHealth, {}),
   playbackHistory: readJsonStorage(STORAGE_KEYS.playbackHistory, {
@@ -1307,7 +1310,14 @@ function readJsonStorage(key, fallback) {
 function writeJsonStorage(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
-  } catch (_) {}
+  } catch (error) {
+    console.warn('Storage write failed, trimming cache:', key, error?.name);
+    try {
+      localStorage.removeItem(STORAGE_KEYS.positions);
+      localStorage.removeItem(STORAGE_KEYS.proxyHealth);
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (_) {}
+  }
 }
 
 function escapeHtml(value) {
@@ -1347,10 +1357,18 @@ function withVersion(path) {
   return url.toString();
 }
 
+function withTimeoutSignal(signal, timeoutMs = DATA_FETCH_TIMEOUT_MS) {
+  const timeoutSignal = AbortSignal.timeout ? AbortSignal.timeout(timeoutMs) : null;
+  if (!timeoutSignal) return signal;
+  if (!signal) return timeoutSignal;
+  if (AbortSignal.any) return AbortSignal.any([signal, timeoutSignal]);
+  return signal;
+}
+
 async function fetchJson(path, options = {}) {
   const response = await fetch(withVersion(path), {
     cache: options.cache || 'no-store',
-    signal: options.signal,
+    signal: withTimeoutSignal(options.signal, options.timeoutMs),
     headers: { Accept: 'application/json' }
   });
   if (!response.ok) throw new Error(`HTTP ${response.status} for ${path}`);
@@ -1375,6 +1393,7 @@ function hidePlayerMessage() {
 }
 
 function showListMessage(text, icon = 'fa-info-circle', loading = false) {
+  cancelPendingImages(sidebarList);
   sidebarList.classList.remove('movie-grid');
   sidebarList.innerHTML = `
     <div class="movie-prompt-msg">
@@ -1401,6 +1420,7 @@ function setSearchEnabled(enabled) {
   if (!enabled) {
     searchInput.value = '';
     mobileSearchInput.value = '';
+    state.searchQuery = '';
     state.currentQuery = '';
   }
 }
@@ -1587,6 +1607,7 @@ function buildNavigation() {
     chipsContainer.appendChild(createChip('Movie', 'fa-film', (event) => openMovieParentMode(event.currentTarget), { view: 'movie' }));
   }
 
+  chipsContainer.appendChild(createChip('Favorites', 'fa-star', (event) => selectMainView('favorites', null, { chip: event.currentTarget }), { view: 'favorite' }));
   chipsContainer.appendChild(createChip('Recent', 'fa-history', (event) => selectMainView('recent', null, { chip: event.currentTarget }), { view: 'recent' }));
   buildMovieSubcategories();
 }
@@ -1625,12 +1646,20 @@ function cancelDataLoading() {
   state.moviePageLoading = false;
 }
 
+function cancelPendingImages(root) {
+  qsa('img', root).forEach((image) => {
+    image.removeAttribute('src');
+    image.removeAttribute('srcset');
+  });
+}
+
 function clearCurrentListState() {
   state.currentItems = [];
   state.filteredItems = [];
   state.renderedCount = 0;
   state.movieIndex = null;
   state.moviePageCursor = 0;
+  cancelPendingImages(sidebarList);
   sidebarList.replaceChildren();
   sidebarList.classList.remove('movie-grid');
   state.drawerRenderedForSession = -1;
@@ -1639,6 +1668,8 @@ function clearCurrentListState() {
 async function selectMainView(view, category, options = {}) {
   cancelDataLoading();
   clearCurrentListState();
+  setSearchQuery('');
+  state.currentQuery = '';
   state.selectedMovieCategory = null;
   qsa('.sub-chip', movieSubcategoryBar).forEach((item) => item.classList.remove('active'));
   movieSubcategoryBar.style.display = 'none';
@@ -1654,6 +1685,15 @@ async function selectMainView(view, category, options = {}) {
     renderCurrentList(true);
     hidePlayerMessage();
     if (options.initial && !state.currentItem && state.currentItems.length) startPlayback(state.currentItems[0], false);
+    return;
+  }
+
+  if (view === 'favorites') {
+    state.view = VIEW.FAVORITE;
+    state.selectedCategory = 'Favorites';
+    state.currentItems = getFavoriteItems();
+    renderCurrentList(true);
+    hidePlayerMessage();
     return;
   }
 
@@ -1713,7 +1753,7 @@ async function selectMainView(view, category, options = {}) {
   }
 }
 
-async function openMovieParentMode(chip) {
+function openMovieParentMode(chip) {
   cancelDataLoading();
   clearCurrentListState();
 
@@ -1721,40 +1761,15 @@ async function openMovieParentMode(chip) {
   state.selectedCategory = 'Movie';
   state.selectedMovieCategory = null;
 
-  setActiveMainChip(
-    chip || activateChipByView('movie')
-  );
+  setActiveMainChip(chip || activateChipByView('movie'));
 
   movieSubcategoryBar.style.display = 'flex';
+  qsa('.sub-chip', movieSubcategoryBar).forEach((item) => item.classList.remove('active'));
 
-  qsa(
-    '.sub-chip',
-    movieSubcategoryBar
-  ).forEach((item) => {
-    item.classList.remove('active');
-  });
-
-  const defaultMovieButton = qs(
-    '.sub-chip[data-movie-cat="bangla"]',
-    movieSubcategoryBar
-  );
-
-  if (!defaultMovieButton) {
-    setSearchEnabled(false);
-
-    showListMessage(
-      'মুভির বিভাগ পাওয়া যায়নি',
-      'fa-exclamation-triangle'
-    );
-
-    setSidebarCount('0 Movies');
-    return;
-  }
-
-  await selectMovieSubcategory(
-    'bangla',
-    defaultMovieButton
-  );
+  setSearchEnabled(false);
+  hidePlayerMessage();
+  showListMessage(MOVIE_PROMPT_TEXT, 'fa-film');
+  setSidebarCount('0 Movies');
 }
 
 async function selectMovieSubcategory(slug, button) {
@@ -1763,6 +1778,8 @@ async function selectMovieSubcategory(slug, button) {
   state.view = VIEW.MOVIE;
   state.selectedCategory = 'Movie';
   state.selectedMovieCategory = slug;
+  setSearchQuery('');
+  state.currentQuery = '';
   setActiveMainChip(activateChipByView('movie'));
   movieSubcategoryBar.style.display = 'flex';
   qsa('.sub-chip', movieSubcategoryBar).forEach((item) => item.classList.toggle('active', item === button));
@@ -1788,7 +1805,7 @@ async function selectMovieSubcategory(slug, button) {
     state.movieIndex = indexData;
     state.moviePageCursor = 0;
 
-    if (!Array.isArray(indexData.pages) || !indexData.pages.length || Number(indexData.count || 0) === 0) {
+    if (!Array.isArray(indexData.pages) || !indexData.pages.length || Number(indexData.count ?? indexData.pages.length) === 0) {
       showListMessage('এই বিভাগে বর্তমানে কোনো মুভি পাওয়া যায়নি', 'fa-info-circle');
       setSidebarCount('0 Movies');
       return;
@@ -1855,9 +1872,8 @@ function getRecentItems() {
     : [];
 }
 
-function saveRecentItem(item) {
-  if (!item || !isPlayable(item)) return;
-  const compact = {
+function compactItem(item) {
+  return {
     id: item.id,
     name: item.name,
     logo: item.logo,
@@ -1874,6 +1890,11 @@ function saveRecentItem(item) {
     rating: item.rating || '',
     _sourceKind: item._sourceKind || state.view
   };
+}
+
+function saveRecentItem(item) {
+  if (!item || !isPlayable(item)) return;
+  const compact = compactItem(item);
   const old = readJsonStorage(STORAGE_KEYS.recentItems, []);
   const next = [compact, ...old.filter((entry) => entry.url !== compact.url && entry.id !== compact.id)].slice(0, 15);
   writeJsonStorage(STORAGE_KEYS.recentItems, next);
@@ -1884,15 +1905,34 @@ function favoriteIds() {
   return Array.isArray(list) ? list : [];
 }
 
+function getFavoriteItems() {
+  const stored = readJsonStorage(STORAGE_KEYS.favoriteItems, []);
+  if (!Array.isArray(stored)) return [];
+  const allowed = new Set(favoriteIds());
+  return stored
+    .filter((item) => allowed.has(item.id || item.url))
+    .map((item, index) => normalizeItem(item, index, item._sourceKind || VIEW.CHANNEL));
+}
+
 function toggleFavorite(uid, event) {
   event?.stopPropagation();
   const item = state.currentItems.find((entry) => entry._uid === uid) || (state.currentItem?._uid === uid ? state.currentItem : null);
   if (!item) return;
   const key = item.id || item.url;
-  let favorites = favoriteIds();
-  favorites = favorites.includes(key) ? favorites.filter((id) => id !== key) : [...favorites, key];
-  writeJsonStorage(STORAGE_KEYS.favorites, favorites);
+  const favorites = favoriteIds();
+  const isFavorite = favorites.includes(key);
+  writeJsonStorage(STORAGE_KEYS.favorites, isFavorite ? favorites.filter((id) => id !== key) : [...favorites, key]);
+
+  const snapshots = readJsonStorage(STORAGE_KEYS.favoriteItems, []);
+  const cleaned = (Array.isArray(snapshots) ? snapshots : []).filter((entry) => (entry.id || entry.url) !== key);
+  writeJsonStorage(STORAGE_KEYS.favoriteItems, isFavorite ? cleaned : [compactItem(item), ...cleaned].slice(0, 300));
+
   updateFavoriteUi();
+  showToast(isFavorite ? 'Bookmark সরানো হয়েছে' : 'Bookmark যোগ করা হয়েছে');
+  if (state.view === VIEW.FAVORITE) {
+    state.currentItems = getFavoriteItems();
+    renderCurrentList(true);
+  }
 }
 
 function updateFavoriteUi() {
@@ -1907,10 +1947,14 @@ function updateFavoriteUi() {
   $('favActionBtn').classList.toggle('active', Boolean(active));
 }
 
+function setSearchQuery(value, sourceInput = null) {
+  state.searchQuery = String(value || '').trim();
+  if (searchInput !== sourceInput) searchInput.value = state.searchQuery;
+  if (mobileSearchInput !== sourceInput) mobileSearchInput.value = state.searchQuery;
+}
+
 function currentSearchValue() {
-  const desktop = searchInput.value.trim();
-  const mobile = mobileSearchInput.value.trim();
-  return (desktop || mobile).toLowerCase();
+  return state.searchQuery.toLowerCase();
 }
 
 function applyFilterAndSort() {
@@ -1932,12 +1976,18 @@ function applyFilterAndSort() {
 }
 
 function renderCurrentList(reset = true) {
+  if (state.view === VIEW.MOVIE && !state.selectedMovieCategory) {
+    showListMessage(MOVIE_PROMPT_TEXT, 'fa-film');
+    setSidebarCount('0 Movies');
+    return;
+  }
   applyFilterAndSort();
   sidebarList.classList.toggle(
     'upcoming-grid',
     state.view === VIEW.UPCOMING || state.view === VIEW.EVENT
   );
   if (reset) {
+    cancelPendingImages(sidebarList);
     sidebarList.replaceChildren();
     state.renderedCount = 0;
     sidebarList.scrollTop = 0;
@@ -1953,13 +2003,23 @@ function renderCurrentList(reset = true) {
   } else if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
     sidebarList.classList.remove('movie-grid');
     setSidebarCount(`${state.filteredItems.length} Events`);
+  } else if (state.view === VIEW.FAVORITE) {
+    sidebarList.classList.remove('movie-grid');
+    setSidebarCount(`${state.filteredItems.length} Bookmarks`);
+  } else if (state.view === VIEW.RECENT) {
+    sidebarList.classList.remove('movie-grid');
+    setSidebarCount(`${state.filteredItems.length} Recent`);
   } else {
     sidebarList.classList.remove('movie-grid');
     setSidebarCount(`${state.filteredItems.length} Channels`);
   }
 
   if (!state.filteredItems.length) {
-    const message = state.currentQuery ? 'কোনো ফলাফল পাওয়া যায়নি' : (state.view === VIEW.MOVIE ? 'এই বিভাগে বর্তমানে কোনো মুভি পাওয়া যায়নি' : 'কোনো আইটেম পাওয়া যায়নি');
+    let message = 'কোনো আইটেম পাওয়া যায়নি';
+    if (state.currentQuery) message = 'কোনো ফলাফল পাওয়া যায়নি';
+    else if (state.view === VIEW.MOVIE) message = 'এই বিভাগে বর্তমানে কোনো মুভি পাওয়া যায়নি';
+    else if (state.view === VIEW.FAVORITE) message = 'কোনো Bookmark সংরক্ষিত নেই — পছন্দের চ্যানেল/মুভিতে ☆ চাপুন';
+    else if (state.view === VIEW.RECENT) message = 'সম্প্রতি দেখা কোনো আইটেম নেই';
     showListMessage(message, 'fa-info-circle');
     return;
   }
@@ -1989,13 +2049,15 @@ function appendNextChunk(limit = null) {
 function createImageHtml(item, className) {
   const logo = item.logo || '';
   if (!logo) return `<div class="logo-placeholder">${escapeHtml(item.name.slice(0, 2).toUpperCase())}</div>`;
-  return `<img class="${className}" src="${escapeHtml(logo)}" alt="" loading="lazy" decoding="async" data-name="${escapeHtml(item.name)}">`;
+  return `<img class="${className}" src="${escapeHtml(logo)}" alt="${escapeHtml(item.name)} logo" loading="lazy" decoding="async" data-name="${escapeHtml(item.name)}">`;
 }
 
 function createChannelCard(item, visualIndex) {
   const card = document.createElement('div');
   card.className = 'sidebar-item tv-focusable';
   card.tabIndex = 0;
+  card.setAttribute('role', 'button');
+  card.setAttribute('aria-label', item.name);
   card.dataset.uid = item._uid;
   card.dataset.itemIndex = String(visualIndex);
   card.addEventListener('focus', () => {
@@ -2034,6 +2096,8 @@ function createMovieCard(item, visualIndex) {
   const card = document.createElement('div');
   card.className = 'movie-card tv-focusable';
   card.tabIndex = 0;
+  card.setAttribute('role', 'button');
+  card.setAttribute('aria-label', item.name);
   card.dataset.uid = item._uid;
   card.dataset.itemIndex = String(visualIndex);
   card.addEventListener('focus', () => {
@@ -2102,7 +2166,17 @@ sidebarList.addEventListener('click', (event) => {
   startPlayback(item, true);
 });
 
-sidebarList.addEventListener('scroll', async () => {
+let sidebarScrollScheduled = false;
+sidebarList.addEventListener('scroll', () => {
+  if (sidebarScrollScheduled) return;
+  sidebarScrollScheduled = true;
+  requestAnimationFrame(() => {
+    sidebarScrollScheduled = false;
+    handleSidebarScroll();
+  });
+}, { passive: true });
+
+async function handleSidebarScroll() {
   const nearBottom = sidebarList.scrollTop + sidebarList.clientHeight >= sidebarList.scrollHeight - 260;
   if (!nearBottom) return;
 
@@ -2115,7 +2189,7 @@ sidebarList.addEventListener('scroll', async () => {
     const loaded = await loadNextMoviePage();
     if (loaded && state.renderedCount < state.filteredItems.length) appendNextChunk();
   }
-}, { passive: true });
+}
 
 function debounce(fn, wait) {
   let timer = null;
@@ -2130,20 +2204,27 @@ const handleSearch = debounce(() => {
   renderCurrentList(true);
 }, 220);
 
-searchInput.addEventListener('input', handleSearch);
-mobileSearchInput.addEventListener('input', handleSearch);
-$('searchBtnSubmit').addEventListener('click', () => renderCurrentList(true));
+searchInput.addEventListener('input', (event) => {
+  setSearchQuery(event.target.value, searchInput);
+  handleSearch();
+});
+mobileSearchInput.addEventListener('input', (event) => {
+  setSearchQuery(event.target.value, mobileSearchInput);
+  handleSearch();
+});
+$('searchBtnSubmit').addEventListener('click', () => {
+  setSearchQuery(searchInput.value, searchInput);
+  renderCurrentList(true);
+});
 $('sortSelect').addEventListener('change', (event) => {
   state.currentSortMode = event.target.value;
   renderCurrentList(true);
 });
 
 function clearMobileSearch() {
-  mobileSearchInput.value = '';
-  searchInput.value = '';
+  setSearchQuery('');
   renderCurrentList(true);
 }
-window.clearMobileSearch = clearMobileSearch;
 
 function detectFormat(url, item = state.currentItem) {
   const raw = String(url || '').toLowerCase();
@@ -2704,7 +2785,23 @@ function handleHlsError(data, session, attemptToken) {
   failCurrentAttempt(data.details || 'Fatal HLS error', attemptToken);
 }
 
+let shakaLoaderPromise = null;
+function ensureShakaLibrary() {
+  if (window.shaka?.Player) return Promise.resolve(window.shaka);
+  if (shakaLoaderPromise) return shakaLoaderPromise;
+  shakaLoaderPromise = new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = SHAKA_CDN;
+    script.async = true;
+    script.onload = () => window.shaka?.Player ? resolve(window.shaka) : reject(new Error('Shaka Player unavailable'));
+    script.onerror = () => reject(new Error('Shaka Player load failed'));
+    document.head.appendChild(script);
+  });
+  return shakaLoaderPromise;
+}
+
 async function initShaka(url, session, attemptToken) {
+  await ensureShakaLibrary();
   if (!window.shaka?.Player) throw new Error('Shaka Player load হয়নি');
   state.playerType = 'shaka';
   shaka.polyfill.installAll();
@@ -2787,7 +2884,7 @@ async function safePlay(session, attemptToken) {
     if (error?.name === 'NotAllowedError') {
       if (video.volume > 0) state.lastNonZeroVolume = video.volume;
       video.muted = true;
-      state.autoplayUnlockPending = true;
+      state.autoplayUnlockPending = state.userWantsSound;
       updateMuteUi();
       await video.play();
       if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
@@ -3169,13 +3266,25 @@ function updateMetadata(item) {
   const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
   const extras = $('movieExtraBadges');
   extras.style.display = isMovie ? 'inline-flex' : 'none';
-  $('tmdbRatingBadge').style.display = 'none';
+  const resolutionBadge = $('movieRealResBadge');
+  const ratingBadge = $('movieRatingMetaBadge');
   if (isMovie) {
-    $('movieRealResBadge').innerHTML = `<i class="fas fa-bolt"></i> ${escapeHtml(item.resolution || 'Auto Quality')}`;
-    $('movieRatingMetaBadge').innerHTML = `<i class="fas fa-star"></i> ${escapeHtml(item.rating || 'N/A')}`;
+    if (item.resolution) {
+      resolutionBadge.style.display = 'inline-flex';
+      resolutionBadge.innerHTML = `<i class="fas fa-bolt"></i> ${escapeHtml(item.resolution)}`;
+    } else {
+      resolutionBadge.style.display = 'none';
+    }
+    if (item.rating) {
+      ratingBadge.style.display = 'inline-flex';
+      ratingBadge.innerHTML = `<i class="fas fa-star"></i> ${escapeHtml(item.rating)}`;
+    } else {
+      ratingBadge.style.display = 'none';
+    }
   }
 
-  $('osdNumber').textContent = `#${item.seqNumber || 1}`;
+  const displayIndex = state.filteredItems.findIndex((entry) => entry._uid === item._uid);
+  $('osdNumber').textContent = `#${displayIndex >= 0 ? displayIndex + 1 : (item.seqNumber || 1)}`;
   $('osdName').textContent = item.name;
   const osd = $('channelOsd');
   osd.classList.remove('show');
@@ -3234,6 +3343,8 @@ async function handleMuteButtonClick(event) {
     video.muted = false;
     video.volume = Math.max(0.05, Number(state.lastNonZeroVolume || 1));
     state.autoplayUnlockPending = false;
+    state.userWantsSound = true;
+    localStorage.setItem('clicktv_sound_on', '1');
     updateMuteUi();
 
     if (video.paused) {
@@ -3248,6 +3359,8 @@ async function handleMuteButtonClick(event) {
 
   if (video.volume > 0) state.lastNonZeroVolume = video.volume;
   video.muted = true;
+  state.userWantsSound = false;
+  localStorage.setItem('clicktv_sound_on', '0');
   updateMuteUi();
 }
 
@@ -3281,6 +3394,12 @@ video.addEventListener('timeupdate', () => {
 
 function updateResolutionBadge() {
   const height = video.videoHeight || 0;
+  const badge = $('movieRealResBadge');
+  if (!height) {
+    badge.style.display = 'none';
+    return;
+  }
+  badge.style.display = 'inline-flex';
   let label = 'Auto Quality';
   if (height >= 2160) label = '2160p 4K';
   else if (height >= 1440) label = '1440p 2K';
@@ -3298,20 +3417,36 @@ function updateVodProgress() {
   $('progressFill').style.width = `${Math.max(0, Math.min(100, percent))}%`;
   $('currentTime').textContent = formatTime(video.currentTime);
   $('durationTime').textContent = formatTime(video.duration);
-  if (state.currentItem && Math.floor(video.currentTime) % 5 === 0) {
-    state.playbackPositions[state.currentItem.url] = { position: video.currentTime, duration: video.duration };
+  const now = Date.now();
+  if (state.currentItem?.url && now - state.positionSavedAt >= POSITION_SAVE_INTERVAL_MS) {
+    state.positionSavedAt = now;
+    state.playbackPositions[state.currentItem.url] = {
+      position: video.currentTime,
+      duration: video.duration,
+      savedAt: now
+    };
+    const entries = Object.entries(state.playbackPositions);
+    if (entries.length > POSITION_HISTORY_LIMIT) {
+      state.playbackPositions = Object.fromEntries(
+        entries
+          .sort((a, b) => Number(b[1]?.savedAt || 0) - Number(a[1]?.savedAt || 0))
+          .slice(0, POSITION_HISTORY_LIMIT)
+      );
+    }
     writeJsonStorage(STORAGE_KEYS.positions, state.playbackPositions);
   }
 }
 
-function formatTime(seconds) {
-  if (!Number.isFinite(seconds) || seconds < 0) return '00:00:00';
-  const hours = Math.floor(seconds / 3600);
-  const minutes = Math.floor((seconds % 3600) / 60);
-  const secs = Math.floor(seconds % 60);
-  return hours > 0
-    ? `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-    : `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+function formatTime(seconds, referenceDuration = video.duration) {
+  const safeSeconds = Number.isFinite(seconds) && seconds > 0 ? seconds : 0;
+  const reference = Number.isFinite(referenceDuration) && referenceDuration > 0 ? referenceDuration : safeSeconds;
+  const hours = Math.floor(safeSeconds / 3600);
+  const minutes = Math.floor((safeSeconds % 3600) / 60);
+  const secs = Math.floor(safeSeconds % 60);
+  const pad = (value) => String(value).padStart(2, '0');
+  return reference >= 3600
+    ? `${pad(hours)}:${pad(minutes)}:${pad(secs)}`
+    : `${pad(minutes)}:${pad(secs)}`;
 }
 
 $('progressWrapper').addEventListener('mousemove', (event) => {
@@ -3332,25 +3467,36 @@ $('progressWrapper').addEventListener('click', (event) => {
 function populateFullscreenDrawer(query = '') {
   const list = $('fsDrawerList');
   list.replaceChildren();
-  const items = state.filteredItems.filter((item) => item.name.toLowerCase().includes(query.toLowerCase()));
+  const normalized = query.toLowerCase();
+  const items = state.filteredItems.filter((item) => item.name.toLowerCase().includes(normalized));
+  const fragment = document.createDocumentFragment();
   items.forEach((item, index) => {
     const row = document.createElement('div');
     row.className = `fs-drawer-item tv-focusable${item._uid === state.currentItem?._uid ? ' active' : ''}`;
     row.tabIndex = 0;
+    row.setAttribute('role', 'button');
     row.dataset.uid = item._uid;
     row.innerHTML = `
       <div class="fs-drawer-logo-wrap">${createImageHtml(item, '')}</div>
       <span style="font-size:11px;font-weight:700;color:#fff">#${index + 1} ${escapeHtml(item.name)}</span>`;
-    const image = qs('img', row);
-    image?.addEventListener('error', () => replaceBrokenImage(image));
-    row.addEventListener('click', () => {
-      if (isPlayable(item)) startPlayback(item, true);
-      $('fsDrawer').classList.remove('open');
-    });
-    list.appendChild(row);
+    fragment.appendChild(row);
   });
+  list.appendChild(fragment);
   state.drawerRenderedForSession = state.dataSessionId;
 }
+
+// একটি delegated listener — প্রতি row-এ আলাদা listener লাগে না
+$('fsDrawerList').addEventListener('click', (event) => {
+  const row = event.target.closest('.fs-drawer-item');
+  if (!row) return;
+  const item = state.filteredItems.find((entry) => entry._uid === row.dataset.uid);
+  if (item && isPlayable(item)) startPlayback(item, true);
+  $('fsDrawer').classList.remove('open');
+});
+$('fsDrawerList').addEventListener('error', (event) => {
+  const image = event.target;
+  if (image?.tagName === 'IMG') replaceBrokenImage(image);
+}, true);
 
 function togglePopupMenu(menuId) {
   const menu = $(menuId);
@@ -3364,27 +3510,45 @@ function hideAllPopups() {
 }
 
 function setSpeed(speed) {
-  video.playbackRate = speed;
+  const rate = Number(speed) || 1;
+  video.playbackRate = rate;
+  localStorage.setItem('clicktv_speed', String(rate));
   qsa('.popup-menu-item', $('speedMenu')).forEach((item) => {
-    item.classList.toggle('active', item.textContent.includes(speed === 1 ? 'Normal' : `${speed}x`));
+    item.classList.toggle('active', Number(item.dataset.speed) === rate);
   });
   hideAllPopups();
-  showToast(`Speed: ${speed}x`);
+  showToast(`Speed: ${rate}x`);
 }
-window.setSpeed = setSpeed;
+
+function sanitizeSubtitleLine(line) {
+  return escapeHtml(
+    String(line)
+      .replace(/<[^>]*>/g, '')
+      .replace(/\{[^}]*\}/g, '')
+      .trim()
+  );
+}
 
 function parseSubtitleContent(text) {
   state.subtitleItems = [];
-  text.replace(/\r/g, '').split('\n\n').forEach((block) => {
+  state.subtitleCursor = 0;
+  text.replace(/\r/g, '').split(/\n{2,}/).forEach((block) => {
     const lines = block.split('\n');
-    const timeLine = lines.find((line) => line.includes('-->'));
-    if (!timeLine) return;
-    const [startRaw, endRaw] = timeLine.split('-->');
+    const timeIndex = lines.findIndex((line) => line.includes('-->'));
+    if (timeIndex === -1) return;
+    const [startRaw, endRaw] = lines[timeIndex].split('-->');
     const start = parseSubtitleTime(startRaw.trim());
-    const end = parseSubtitleTime(endRaw.trim());
-    const content = lines.slice(lines.indexOf(timeLine) + 1).join('<br>');
+    const end = parseSubtitleTime(endRaw.trim().split(/\s+/)[0]);
+    const content = lines
+      .slice(timeIndex + 1)
+      .map(sanitizeSubtitleLine)
+      .filter(Boolean)
+      .join('<br>');
     if (Number.isFinite(start) && Number.isFinite(end) && content) state.subtitleItems.push({ start, end, content });
   });
+  state.subtitleItems.sort((a, b) => a.start - b.start);
+  state.subtitlesEnabled = state.subtitleItems.length > 0;
+  updateSubtitleButtonUi();
   startSubtitleLoop();
 }
 
@@ -3395,22 +3559,55 @@ function parseSubtitleTime(value) {
   return NaN;
 }
 
+function renderSubtitleFrame() {
+  const overlay = $('subtitleOverlay');
+  if (!state.subtitlesEnabled || !state.subtitleItems.length) {
+    if (overlay.innerHTML) overlay.innerHTML = '';
+    return;
+  }
+  const current = video.currentTime;
+  const items = state.subtitleItems;
+  let cursor = Math.min(state.subtitleCursor, items.length - 1);
+  while (cursor > 0 && items[cursor].start > current) cursor -= 1;
+  while (cursor < items.length - 1 && items[cursor].end < current) cursor += 1;
+  state.subtitleCursor = cursor;
+  const active = items[cursor];
+  const html = active && current >= active.start && current <= active.end ? `<span>${active.content}</span>` : '';
+  if (overlay.innerHTML !== html) overlay.innerHTML = html;
+}
+
 function startSubtitleLoop() {
-  cancelAnimationFrame(state.subtitleFrame);
-  const render = () => {
-    const current = video.currentTime;
-    const active = state.subtitleItems.find((item) => current >= item.start && current <= item.end);
-    $('subtitleOverlay').innerHTML = active ? `<span>${active.content}</span>` : '';
-    state.subtitleFrame = requestAnimationFrame(render);
-  };
-  render();
+  video.removeEventListener('timeupdate', renderSubtitleFrame);
+  video.addEventListener('timeupdate', renderSubtitleFrame);
+  renderSubtitleFrame();
+}
+
+function updateSubtitleButtonUi() {
+  const button = $('subToggleBtn');
+  const hasSubtitles = state.subtitleItems.length > 0;
+  button.classList.toggle('active', hasSubtitles && state.subtitlesEnabled);
+  button.title = hasSubtitles
+    ? (state.subtitlesEnabled ? 'Subtitle off' : 'Subtitle on')
+    : 'Subtitle add';
+  button.setAttribute('aria-label', button.title);
+}
+
+function toggleSubtitles() {
+  if (!state.subtitleItems.length) return false;
+  state.subtitlesEnabled = !state.subtitlesEnabled;
+  updateSubtitleButtonUi();
+  renderSubtitleFrame();
+  showToast(state.subtitlesEnabled ? 'Subtitle চালু' : 'Subtitle বন্ধ');
+  return true;
 }
 
 function clearSubtitles() {
-  cancelAnimationFrame(state.subtitleFrame);
-  state.subtitleFrame = null;
+  video.removeEventListener('timeupdate', renderSubtitleFrame);
   state.subtitleItems = [];
+  state.subtitleCursor = 0;
+  state.subtitlesEnabled = false;
   $('subtitleOverlay').replaceChildren();
+  updateSubtitleButtonUi();
 }
 
 function focusCard(uid = state.currentItem?._uid || state.lastFocusedUid) {
@@ -3512,7 +3709,6 @@ function handleRemoteNavigation(event) {
   }
 
   if (!document.fullscreenElement && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key)) {
-    const controls = qsa('.chip:visible, .sub-chip:visible');
     if (!card && focusCard()) event.preventDefault();
     return;
   }
@@ -3542,7 +3738,8 @@ function handleRemoteNavigation(event) {
     }
   }
 
-  if (key === ' ' || key === 'MediaPlayPause') {
+  const focusedButton = active?.closest?.('button, [role="button"], .popup-menu-item');
+  if ((key === ' ' && !focusedButton) || key === 'MediaPlayPause') {
     event.preventDefault();
     video.paused ? video.play().catch(() => {}) : video.pause();
   }
@@ -3673,8 +3870,35 @@ function updateClock() {
 
 function dismissNotice() {
   $('sticky-header-notice').style.display = 'none';
+  syncNoticeHeight();
+  try { localStorage.setItem(STORAGE_KEYS.noticeDismissed, '1'); } catch (_) {}
 }
-window.dismissNotice = dismissNotice;
+
+function syncNoticeHeight() {
+  const notice = $('sticky-header-notice');
+  const height = notice.style.display === 'none' ? 0 : notice.offsetHeight;
+  document.documentElement.style.setProperty('--notice-height', `${height}px`);
+}
+
+function restoreNoticeState() {
+  if (localStorage.getItem(STORAGE_KEYS.noticeDismissed) === '1') {
+    $('sticky-header-notice').style.display = 'none';
+  }
+  syncNoticeHeight();
+}
+
+window.addEventListener('resize', syncNoticeHeight);
+window.addEventListener('orientationchange', syncNoticeHeight);
+
+$('noticeCloseBtn').addEventListener('click', dismissNotice);
+
+qsa('.popup-menu-item[data-speed]', $('speedMenu')).forEach((item) => {
+  item.addEventListener('click', () => setSpeed(Number(item.dataset.speed)));
+});
+qsa('.popup-menu-item[data-network-mode]', $('networkMenu')).forEach((item) => {
+  item.addEventListener('click', () => applyNetworkMode(item.dataset.networkMode));
+});
+$('mobileSearchClearBtn').addEventListener('click', clearMobileSearch);
 
 $('chipPrevBtn').addEventListener('click', () => $('chipsContainerWrap').scrollBy({ left: -220, behavior: 'smooth' }));
 $('chipNextBtn').addEventListener('click', () => $('chipsContainerWrap').scrollBy({ left: 220, behavior: 'smooth' }));
@@ -3708,15 +3932,26 @@ $('aspectBtn').addEventListener('click', () => {
   video.style.setProperty('object-fit', modes[state.fitIndex], 'important');
   showToast(`Screen Fit: ${labels[state.fitIndex]}`);
 });
-$('fullscreenBtn').addEventListener('click', async () => {
-  if (!document.fullscreenElement) {
-    await videoContainer.requestFullscreen().catch(() => {});
+async function toggleFullscreen() {
+  const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+  if (!isFullscreen) {
+    if (videoContainer.requestFullscreen) {
+      await videoContainer.requestFullscreen().catch(() => {});
+    } else if (videoContainer.webkitRequestFullscreen) {
+      videoContainer.webkitRequestFullscreen();
+    } else if (video.webkitEnterFullscreen) {
+      video.webkitEnterFullscreen();
+      return;
+    }
     screen.orientation?.lock?.('landscape').catch(() => {});
-  } else {
+  } else if (document.exitFullscreen) {
     await document.exitFullscreen().catch(() => {});
     screen.orientation?.unlock?.();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
   }
-});
+}
+$('fullscreenBtn').addEventListener('click', toggleFullscreen);
 $('fsDrawerToggle').addEventListener('click', (event) => {
   event.stopPropagation();
   const drawer = $('fsDrawer');
@@ -3741,7 +3976,8 @@ $('refreshBtn').addEventListener('click', async () => {
     }
     return;
   }
-  if (state.view === VIEW.EVENT) await selectMainView('today-match', null, { chip: activateChipByView('today-match') });
+  if (state.view === VIEW.FAVORITE) await selectMainView('favorites', null, { chip: activateChipByView('favorite') });
+  else if (state.view === VIEW.EVENT) await selectMainView('today-match', null, { chip: activateChipByView('today-match') });
   else if (state.view === VIEW.UPCOMING) await selectMainView('upcoming', null, { chip: activateChipByView('upcoming') });
   else if (state.view === VIEW.RECENT) await selectMainView('recent', null, { chip: activateChipByView('recent') });
   else await selectMainView('channel', state.selectedCategory, { chip: activateChipByView('channel', state.selectedCategory) });
@@ -3753,7 +3989,14 @@ $('nextNowBtn').addEventListener('click', () => {
   playRelativeItem(1, true);
 });
 $('centerPlayBtn').addEventListener('click', () => video.play().catch(() => {}));
-$('subToggleBtn').addEventListener('click', () => $('subtitleInputBox').classList.toggle('show'));
+$('subToggleBtn').addEventListener('click', () => {
+  if (toggleSubtitles()) return;
+  if (document.fullscreenElement) {
+    showToast('Fullscreen থেকে বের হয়ে subtitle যোগ করুন');
+    return;
+  }
+  $('subtitleInputBox').classList.toggle('show');
+});
 $('subFileInput').addEventListener('change', (event) => {
   const file = event.target.files?.[0];
   if (!file) return;
@@ -3790,10 +4033,64 @@ $('snapBtn').addEventListener('click', () => {
     showToast('এই stream থেকে snapshot নেওয়া যায়নি');
   }
 });
+function hideResumeBadge() {
+  $('resumeBadge').classList.remove('show');
+  clearTimeout(state.resumeBadgeTimer);
+}
+
+function maybeOfferResume() {
+  hideResumeBadge();
+  const item = state.currentItem;
+  const isMovie = item?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+  if (!isMovie || !item?.url) return;
+  const saved = state.playbackPositions[item.url];
+  const duration = Number(saved?.duration || video.duration || 0);
+  const position = Number(saved?.position || 0);
+  if (position < 60 || (duration && position > duration - 60)) return;
+  $('resumeTime').textContent = formatTime(position, duration);
+  $('resumeBadge').classList.add('show');
+  state.resumeBadgeTimer = setTimeout(hideResumeBadge, 12000);
+}
+
 $('resumeBadge').addEventListener('click', () => {
   const saved = state.currentItem && state.playbackPositions[state.currentItem.url];
   if (saved?.position) video.currentTime = saved.position;
-  $('resumeBadge').classList.remove('show');
+  hideResumeBadge();
+});
+
+video.addEventListener('loadedmetadata', maybeOfferResume);
+
+video.addEventListener('click', (event) => {
+  if (event.target.closest('#playerControls, .fs-drawer, #fsDrawerToggle, .popup-menu')) return;
+  video.paused ? video.play().catch(() => {}) : video.pause();
+});
+
+video.addEventListener('pause', () => {
+  const isMovie = state.currentItem?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+  $('centerPlayBtn').style.display = isMovie && video.paused ? 'flex' : 'none';
+});
+video.addEventListener('play', () => { $('centerPlayBtn').style.display = 'none'; });
+
+function seekFromPointer(clientX) {
+  if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+  const rect = $('progressWrapper').getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  video.currentTime = ratio * video.duration;
+  $('progressFill').style.width = `${ratio * 100}%`;
+}
+
+$('progressWrapper').addEventListener('touchstart', (event) => {
+  seekFromPointer(event.touches[0].clientX);
+}, { passive: true });
+$('progressWrapper').addEventListener('touchmove', (event) => {
+  seekFromPointer(event.touches[0].clientX);
+}, { passive: true });
+
+window.addEventListener('error', (event) => {
+  console.error('Runtime error:', event.message, event.filename, event.lineno);
+});
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('Unhandled promise rejection:', event.reason);
 });
 
 document.addEventListener('click', (event) => {
@@ -3815,7 +4112,16 @@ window.addEventListener('beforeunload', () => {
   stopStallDetector();
 });
 
+function restorePlayerPreferences() {
+  const savedSpeed = Number(localStorage.getItem('clicktv_speed'));
+  if (savedSpeed > 0) setSpeed(savedSpeed);
+  hideAllPopups();
+}
+
 async function bootstrap() {
+  restoreNoticeState();
+  restorePlayerPreferences();
+  updateSubtitleButtonUi();
   updateMuteUi();
   updateClock();
   setInterval(updateClock, 1000);
