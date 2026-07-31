@@ -445,7 +445,12 @@ def _stream_quality_score(
     )
     stability_score = int(max(0.0, _safe_float(stability_raw, 0.0)) * 1000)
 
-    has_request_metadata = 1 if (stream.get("drm") or stream.get("headers")) else 0
+    has_request_metadata = 1 if (
+        stream.get("drm")
+        or stream.get("headers")
+        or stream.get("header_profile")
+        or stream.get("requires_headers")
+    ) else 0
 
     return (
         tier_score,
@@ -590,6 +595,13 @@ def rank_and_select_streams(
             "name": f"Backup-{index}",
             "url": b_stream.get("url", ""),
             "headers": b_stream.get("headers", {}),
+            "header_profile": str(b_stream.get("header_profile") or ""),
+            "proxy_mode": str(b_stream.get("proxy_mode") or "auto"),
+            "stream_type": str(b_stream.get("stream_type") or ""),
+            "requires_headers": bool(b_stream.get("requires_headers", False)),
+            "inherit_manifest_query": bool(
+                b_stream.get("inherit_manifest_query", False)
+            ),
             "verification_mode": b_stream.get("verification_mode", "local"),
             "verification_status": _verification_label(b_stream),
             "verification_badge": _verification_badge(b_stream),
@@ -752,12 +764,24 @@ def merge_candidates(
             "category": base_item.get("category", ""),
             "url": card_url,
             "headers": card_headers,
+            "header_profile": str(primary.get("header_profile") or ""),
+            "proxy_mode": str(primary.get("proxy_mode") or "auto"),
+            "stream_type": str(primary.get("stream_type") or ""),
+            "requires_headers": bool(primary.get("requires_headers", False)),
+            "inherit_manifest_query": bool(
+                primary.get("inherit_manifest_query", False)
+            ),
             "verification_mode": v_mode,
             "verification_status": v_status,
             "verification_badge": _verification_badge(primary),
             "verified": bool(primary.get("verified", False)),
             "publish_allowed": _effective_publish_allowed(primary),
             "source_pipeline": str(base_item.get("source_pipeline") or ""),
+            "original_source_pipeline": str(
+                base_item.get("original_source_pipeline") or ""
+            ),
+            "content_kind": str(base_item.get("content_kind") or ""),
+            "routing_reason": str(base_item.get("routing_reason") or ""),
             "source_id": str(primary.get("source_id") or base_item.get("source_id") or ""),
             "metadata_only": is_metadata_only,
             "available_link_count": 1 + len(backups),
