@@ -14,12 +14,14 @@ Responsibilities:
 from __future__ import annotations
 
 import html
+import ipaddress
 import json
 import os
 import re
 import shutil
 import time
 import urllib.request
+from urllib.parse import urlparse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -91,6 +93,148 @@ def _fsync_directory(directory: Path) -> None:
         pass
     finally:
         os.close(fd)
+
+
+PUBLIC_PRIVATE_FIELDS = {
+    "headers",
+    "request_headers",
+    "raw_headers",
+    "source_headers",
+    "cookie",
+    "authorization",
+    "user_agent",
+    "verify_token",
+    "api_token",
+    "password",
+    "secret",
+}
+
+
+def _sanitize_public_item(item: Dict[str, Any]) -> Dict[str, Any]:
+    """Remove raw credentials/headers while preserving safe playback metadata."""
+    clean: Dict[str, Any] = {}
+    for key, value in item.items():
+        key_lower = str(key).strip().lower()
+        if key_lower in PUBLIC_PRIVATE_FIELDS:
+            continue
+        if key_lower == "backups" and isinstance(value, list):
+            clean_backups: List[Any] = []
+            for backup in value[:5]:
+                if isinstance(backup, dict):
+                    clean_backups.append(_sanitize_public_item(backup))
+                elif isinstance(backup, str):
+                    clean_backups.append(backup)
+            clean[key] = clean_backups
+            continue
+        if key_lower == "links" and isinstance(value, list):
+            clean_links: List[Any] = []
+            for source in value[:6]:
+                if isinstance(source, dict):
+                    clean_links.append(_sanitize_public_item(source))
+                elif isinstance(source, str):
+                    clean_links.append(source)
+            clean[key] = clean_links
+            continue
+        clean[key] = value
+    return clean
+
+
+def _sanitize_public_items(value: Any) -> List[Dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    return [
+        _sanitize_public_item(item)
+        for item in value
+        if isinstance(item, dict)
+    ]
+
+
+
+
+def _iter_public_source_urls(value: Any) -> Iterable[str]:
+    """Yield primary and backup URLs from one public item recursively."""
+    if not isinstance(value, dict):
+        return
+
+    for key in ("url", "stream_url", "link"):
+        url = str(value.get(key) or "").strip()
+        if url:
+            yield url
+
+    for key in ("backups", "links", "sources"):
+        children = value.get(key)
+        if not isinstance(children, list):
+            continue
+        for child in children:
+            if isinstance(child, str):
+                child_url = child.strip()
+                if child_url:
+                    yield child_url
+            elif isinstance(child, dict):
+                yield from _iter_public_source_urls(child)
+
+
+def _collect_allowed_hosts_from_data(data_root: Path) -> List[str]:
+    """Build the playback proxy initial-host allowlist from published JSON."""
+    hosts: set[str] = set()
+
+    json_files: List[Path] = []
+    channels_dir = data_root / "channels"
+    movies_dir = data_root / "movies"
+    if channels_dir.exists():
+        json_files.extend(channels_dir.glob("*.json"))
+    if movies_dir.exists():
+        json_files.extend(movies_dir.glob("*/page-*.json"))
+    json_files.extend([data_root / "today-match.json", data_root / "upcoming.json"])
+
+    for file_path in json_files:
+        payload = _load_json_file(file_path)
+        candidate_lists: List[Any] = []
+        for key in ("channels", "items", "movies", "events", "matches"):
+            if isinstance(payload.get(key), list):
+                candidate_lists.append(payload.get(key))
+        if isinstance(payload, list):
+            candidate_lists.append(payload)
+
+        for candidate_list in candidate_lists:
+            for item in candidate_list:
+                if not isinstance(item, dict):
+                    continue
+                for source_url in _iter_public_source_urls(item):
+                    try:
+                        parsed = urlparse(source_url)
+                    except ValueError:
+                        continue
+                    hostname = str(parsed.hostname or "").strip().lower().rstrip(".")
+                    if parsed.scheme not in {"http", "https"} or not hostname:
+                        continue
+                    try:
+                        ip_value = ipaddress.ip_address(hostname)
+                    except ValueError:
+                        ip_value = None
+                    if ip_value is not None and (
+                        ip_value.is_private
+                        or ip_value.is_loopback
+                        or ip_value.is_link_local
+                        or ip_value.is_multicast
+                        or ip_value.is_reserved
+                        or ip_value.is_unspecified
+                    ):
+                        continue
+                    hosts.add(hostname)
+
+    return sorted(hosts)
+
+
+def _write_allowed_hosts_file(data_root: Path, timestamp: str) -> Dict[str, Any]:
+    hosts = _collect_allowed_hosts_from_data(data_root)
+    payload = {
+        "updated_at": timestamp,
+        "count": len(hosts),
+        "hosts": hosts,
+    }
+    _atomic_write_json(data_root / "allowed-hosts.json", payload)
+    return payload
 
 
 def _atomic_write_json(file_path: str | Path, data: Any) -> None:
@@ -289,8 +433,9 @@ def _publish_channel_category(
         target_file,
         last_good_file,
     )
+    public_cards = _sanitize_public_items(card_list)
     previous_count = _channel_count(previous_payload)
-    current_count = len(card_list)
+    current_count = len(public_cards)
     drop_pct = _drop_percentage(previous_count, current_count)
 
     # A migration bypass is allowed only when the previous category actually
@@ -337,7 +482,7 @@ def _publish_channel_category(
         "category": category_name,
         "updated_at": timestamp,
         "count": current_count,
-        "channels": card_list,
+        "channels": public_cards,
     }
 
     _atomic_write_json(target_file, payload)
@@ -471,7 +616,18 @@ def _publish_movie_category(
                 f"{category_name}/{filename}"
             )
 
-        staged_files[filename] = page_payload
+        final_page_payload = dict(page_payload)
+        if isinstance(final_page_payload.get("items"), list):
+            final_page_payload["items"] = _sanitize_public_items(
+                final_page_payload.get("items")
+            )
+            final_page_payload["count"] = len(final_page_payload["items"])
+        if isinstance(final_page_payload.get("movies"), list):
+            final_page_payload["movies"] = _sanitize_public_items(
+                final_page_payload.get("movies")
+            )
+            final_page_payload["count"] = len(final_page_payload["movies"])
+        staged_files[filename] = final_page_payload
 
     _atomic_replace_directory(
         movies_dir / slug,
@@ -832,6 +988,13 @@ def publish_scan_outputs(
                 continue
 
             final_payload = dict(payload)
+            for item_key in ("items", "events", "matches"):
+                if isinstance(final_payload.get(item_key), list):
+                    final_payload[item_key] = _sanitize_public_items(
+                        final_payload.get(item_key)
+                    )
+                    final_payload["count"] = len(final_payload[item_key])
+                    break
             final_payload.setdefault("updated_at", timestamp)
             _atomic_write_json(target_file, final_payload)
 
@@ -842,8 +1005,9 @@ def publish_scan_outputs(
                 "url": public_url,
             }
 
-    # 4. Manifest and reports
+    # 4. Manifest, playback-proxy host allowlist, and reports
     _atomic_write_json(manifest_file, manifest)
+    allowed_hosts_payload = _write_allowed_hosts_file(data_root, timestamp)
 
     _atomic_write_json(
         reports_root / "source-errors.json",
@@ -926,6 +1090,7 @@ def publish_scan_outputs(
         "rejected_low_quality": len(rejected_items),
         "output_safety_warnings": len(output_safety_items),
         "movie_output_preserved": movie_output_preserved,
+        "allowed_playback_hosts": _safe_int(allowed_hosts_payload.get("count"), 0, 0),
         "movie_verification_status_counts": movie_status_counts,
         "pipeline_performance": pipeline_performance,
         "totals": {
