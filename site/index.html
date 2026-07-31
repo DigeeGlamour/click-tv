@@ -775,14 +775,14 @@
        * Upcoming event cards
        * Long title এবং event information card-এর বাইরে যেতে পারবে না।
        */
-      .sidebar-list.upcoming-grid {
+      .sidebar-list.event-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         gap: 7px !important;
         padding-top: 5px !important;
         align-content: start !important;
       }
     
-      .sidebar-list.upcoming-grid .sidebar-item {
+      .sidebar-list.event-grid .sidebar-item {
         width: 100% !important;
         height: auto !important;
         min-height: 98px !important;
@@ -792,19 +792,19 @@
         overflow: hidden !important;
       }
     
-      .sidebar-list.upcoming-grid .sidebar-channel-num {
+      .sidebar-list.event-grid .sidebar-channel-num {
         flex: 0 0 18px !important;
         align-self: center !important;
       }
     
-      .sidebar-list.upcoming-grid .sidebar-logo-wrap {
+      .sidebar-list.event-grid .sidebar-logo-wrap {
         width: 42px !important;
         height: 42px !important;
         margin-top: 4px !important;
         flex: 0 0 42px !important;
       }
     
-      .sidebar-list.upcoming-grid .sidebar-details {
+      .sidebar-list.event-grid .sidebar-details {
         min-width: 0 !important;
         overflow: hidden !important;
         justify-content: flex-start !important;
@@ -812,7 +812,7 @@
         gap: 3px !important;
       }
     
-      .sidebar-list.upcoming-grid .sidebar-name {
+      .sidebar-list.event-grid .sidebar-name {
         width: 100% !important;
         min-height: 30px !important;
         max-height: 30px !important;
@@ -825,7 +825,7 @@
         -webkit-line-clamp: 2 !important;
       }
     
-      .sidebar-list.upcoming-grid .sidebar-sub-info {
+      .sidebar-list.event-grid .sidebar-sub-info {
         width: 100% !important;
         min-width: 0 !important;
         display: flex !important;
@@ -835,14 +835,14 @@
         overflow: hidden !important;
       }
     
-      .sidebar-list.upcoming-grid .upcoming-badge {
+      .sidebar-list.event-grid .upcoming-badge {
         max-width: 100% !important;
         font-size: 7.5px !important;
         padding: 1px 5px !important;
         flex-shrink: 0 !important;
       }
     
-      .sidebar-list.upcoming-grid .sidebar-meta-row {
+      .sidebar-list.event-grid .sidebar-meta-row {
         width: 100% !important;
         max-height: 22px !important;
         font-size: 7.5px !important;
@@ -1227,6 +1227,8 @@ const state = {
   deferredInstallPrompt: null,
   fitIndex: 0,
   currentBrightness: 1,
+  autoplayUnlockPending: false,
+  lastAudibleVolume: 1,
   touchStartX: 0,
   touchStartY: 0,
   touchInitialVolume: 1,
@@ -1338,7 +1340,7 @@ function hidePlayerMessage() {
 }
 
 function showListMessage(text, icon = 'fa-info-circle', loading = false) {
-  sidebarList.classList.remove('movie-grid');
+  sidebarList.classList.remove('movie-grid', 'event-grid');
   sidebarList.innerHTML = `
     <div class="movie-prompt-msg">
       ${loading ? '<div class="premium-loader" style="margin-bottom:12px"><div class="loader-ring"></div></div>' : `<i class="fas ${escapeHtml(icon)}"></i>`}
@@ -1385,8 +1387,107 @@ function isLikelyVodLeak(item) {
   return pipeline === 'movies' || pipeline === 'movie' || category === 'vod' || category === 'movies';
 }
 
+const PUBLIC_MOVIE_STATUSES = new Set([
+  'verified_global',
+  'verified_bd',
+  'verified',
+  'verified_proxy',
+  'stale_last_good'
+]);
+
+const BROWSER_MOVIE_EXTENSIONS = new Set([
+  'm3u8',
+  'mpd',
+  'mp4',
+  'm4v',
+  'webm'
+]);
+
+function itemUrl(item) {
+  return String(item?.url || item?.stream_url || item?.link || '').trim();
+}
+
+function sourceExtension(url) {
+  try {
+    const pathname = new URL(url, location.href).pathname.toLowerCase();
+    const match = pathname.match(/\.([a-z0-9]+)$/i);
+    return match ? match[1] : '';
+  } catch (_) {
+    const clean = String(url || '').split(/[?#]/, 1)[0].toLowerCase();
+    const match = clean.match(/\.([a-z0-9]+)$/i);
+    return match ? match[1] : '';
+  }
+}
+
+function isBrowserPlayableMovieSource(item) {
+  const url = itemUrl(item);
+  if (!url) return false;
+
+  const mime = String(item?.mime_type || item?.content_type || '').toLowerCase();
+  if (mime.includes('mpegurl') || mime.includes('dash+xml')) return true;
+  if (mime === 'video/mp4' || mime === 'video/webm' || mime === 'video/x-m4v') return true;
+
+  const extension = sourceExtension(url);
+  if (BROWSER_MOVIE_EXTENSIONS.has(extension)) return true;
+
+  const declaredFormat = String(item?.format || item?.container || '').toLowerCase().replace(/^\./, '');
+  if (BROWSER_MOVIE_EXTENSIONS.has(declaredFormat)) return true;
+
+  return false;
+}
+
+function isPublishedMovie(item) {
+  if (!item || item.publish_allowed === false || item.metadata_only) return false;
+
+  const status = String(item.verification_status || '').trim().toLowerCase();
+  const verified = item.verified === true || item.is_valid === true;
+  const statusAllowed = PUBLIC_MOVIE_STATUSES.has(status) || (verified && !status);
+  if (!statusAllowed) return false;
+
+  const primaryPlayable = isBrowserPlayableMovieSource(item);
+  const backupPlayable = Array.isArray(item.backups)
+    && item.backups.some((backup) => isBrowserPlayableMovieSource(
+      typeof backup === 'string' ? { url: backup } : backup
+    ));
+
+  return primaryPlayable || backupPlayable;
+}
+
 function isPlayable(item) {
-  return Boolean(item && !item.metadata_only && (item.url || item.link || item.stream_url));
+  if (!item || item.metadata_only) return false;
+  if (item._sourceKind === VIEW.MOVIE && !isPublishedMovie(item)) return false;
+  return Boolean(itemUrl(item));
+}
+
+function rawHeaderValue(headers, name) {
+  if (!headers || typeof headers !== 'object' || Array.isArray(headers)) return '';
+  const found = Object.entries(headers).find(([key]) => key.toLowerCase() === name.toLowerCase());
+  return found ? String(found[1] || '').trim() : '';
+}
+
+function inferHeaderProfile(source, parent = {}) {
+  const explicit = String(
+    source?.header_profile
+    || source?.profile
+    || parent?.header_profile
+    || parent?.profile
+    || ''
+  ).trim();
+  if (explicit) return explicit;
+
+  const headers = source?.headers || parent?.headers || {};
+  const referer = rawHeaderValue(headers, 'referer');
+  const origin = rawHeaderValue(headers, 'origin');
+  const combined = `${itemUrl(source)} ${referer} ${origin}`.toLowerCase();
+
+  if (combined.includes('toffee')) return 'toffee';
+  if (combined.includes('binge.buzz')) return 'binge';
+  if (combined.includes('jagobd')) return 'jagobd';
+  if (combined.includes('gpcdn')) return 'gpcdn';
+  if (combined.includes('lktv')) return 'lktv';
+  if (combined.includes('streame.center')) return 'streame';
+  if (combined.includes('executeandship') || combined.includes('crichd')) return 'crichd';
+  return 'default';
 }
 
 function normalizeBackup(backup, parent) {
@@ -1396,30 +1497,45 @@ function normalizeBackup(backup, parent) {
       url: backup,
       name: 'Backup',
       verification_mode: parent.verification_mode || '',
-      header_profile: parent.header_profile || parent.profile || ''
+      verification_status: parent.verification_status || '',
+      verified: parent.verified === true,
+      publish_allowed: parent.publish_allowed !== false,
+      header_profile: inferHeaderProfile({ url: backup }, parent),
+      force_proxy: Boolean(parent.force_proxy || parent.proxy_required || inferHeaderProfile({ url: backup }, parent) !== 'default'),
+      resolution: parent.resolution || '',
+      source_id: ''
     };
   }
-  const url = backup.url || backup.link || backup.stream_url;
+  const url = itemUrl(backup);
   if (!url) return null;
   return {
     url,
     name: backup.name || 'Backup',
     verification_mode: backup.verification_mode || parent.verification_mode || '',
-    header_profile: backup.header_profile || backup.profile || parent.header_profile || parent.profile || '',
-    force_proxy: Boolean(backup.force_proxy || backup.proxy_required),
-    resolution: backup.resolution || '',
+    verification_status: backup.verification_status || parent.verification_status || '',
+    verified: backup.verified === true || backup.is_valid === true,
+    publish_allowed: backup.publish_allowed !== false,
+    header_profile: inferHeaderProfile(backup, parent),
+    force_proxy: Boolean(backup.force_proxy || backup.proxy_required || parent.force_proxy || parent.proxy_required || inferHeaderProfile(backup, parent) !== 'default'),
+    resolution: backup.resolution || parent.resolution || '',
     source_id: backup.source_id || ''
   };
 }
 
 function rankSources(raw) {
-  const primaryUrl = raw.url || raw.stream_url || raw.link || '';
+  const primaryUrl = itemUrl(raw);
   const primary = primaryUrl ? [{
     url: primaryUrl,
     name: 'Primary',
     verification_mode: raw.verification_mode || '',
-    header_profile: raw.header_profile || raw.profile || '',
-    force_proxy: Boolean(raw.force_proxy || raw.proxy_required)
+    verification_status: raw.verification_status || '',
+    verified: raw.verified === true || raw.is_valid === true,
+    publish_allowed: raw.publish_allowed !== false,
+    header_profile: inferHeaderProfile(raw),
+    force_proxy: Boolean(raw.force_proxy || raw.proxy_required || inferHeaderProfile(raw) !== 'default'),
+    resolution: raw.resolution || '',
+    mime_type: raw.mime_type || raw.content_type || '',
+    format: raw.format || raw.container || ''
   }] : [];
 
   const backups = Array.isArray(raw.backups)
@@ -1467,9 +1583,12 @@ function normalizeItem(raw, index, sourceKind = VIEW.CHANNEL) {
     seqNumber: index + 1,
     name,
     logo: safeRaw.logo || safeRaw.poster || safeRaw.image || '',
-    url: safeRaw.url || safeRaw.stream_url || safeRaw.link || '',
+    url: itemUrl(safeRaw),
     category: safeRaw.category || safeRaw.group_title || state.selectedCategory || '',
-    backups: Array.isArray(safeRaw.backups) ? safeRaw.backups.slice(0, 5).map((entry) => normalizeBackup(entry, safeRaw)).filter(Boolean) : [],
+    header_profile: inferHeaderProfile(raw),
+    backups: Array.isArray(safeRaw.backups)
+      ? safeRaw.backups.slice(0, 5).map((entry) => normalizeBackup(entry, raw)).filter(Boolean)
+      : [],
     _sources: rankSources(raw),
     _sourceKind: sourceKind
   };
@@ -1477,9 +1596,11 @@ function normalizeItem(raw, index, sourceKind = VIEW.CHANNEL) {
 
 function normalizeList(rawList, sourceKind) {
   if (!Array.isArray(rawList)) return [];
+
   return rawList
     .filter((item) => item && item.publish_allowed !== false)
     .filter((item) => sourceKind !== VIEW.CHANNEL || !isLikelyVodLeak(item))
+    .filter((item) => sourceKind !== VIEW.MOVIE || isPublishedMovie(item))
     .map((item, index) => normalizeItem(item, index, sourceKind));
 }
 
@@ -1588,7 +1709,7 @@ function clearCurrentListState() {
   state.movieIndex = null;
   state.moviePageCursor = 0;
   sidebarList.replaceChildren();
-  sidebarList.classList.remove('movie-grid');
+  sidebarList.classList.remove('movie-grid', 'event-grid');
   state.drawerRenderedForSession = -1;
 }
 
@@ -1889,9 +2010,9 @@ function applyFilterAndSort() {
 
 function renderCurrentList(reset = true) {
   applyFilterAndSort();
-    sidebarList.classList.toggle(
-    'upcoming-grid',
-    state.view === VIEW.UPCOMING
+  sidebarList.classList.toggle(
+    'event-grid',
+    state.view === VIEW.UPCOMING || state.view === VIEW.EVENT
   );
   if (reset) {
     sidebarList.replaceChildren();
@@ -2192,8 +2313,22 @@ function markProxyResult(proxy, targetUrl, success, elapsedMs) {
 function buildProxyUrl(proxy, source) {
   const route = state.runtime?.playback_proxy_route || '/hls?url=';
   let output = `${String(proxy).replace(/\/$/, '')}${route}${encodeURIComponent(source.url)}`;
-  const profile = source.header_profile || '';
-  if (profile) output += `&profile=${encodeURIComponent(profile)}`;
+  const profile = source.header_profile || 'default';
+  const detected = detectFormat(source.url, state.currentItem);
+  const proxyType = detected === 'dash'
+    ? 'dash'
+    : detected === 'hls'
+      ? 'hls'
+      : detected === 'mpegts'
+        ? 'media'
+        : 'media';
+  const proxyMode = state.currentItem?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE
+    ? 'vod'
+    : 'live';
+
+  output += `&profile=${encodeURIComponent(profile)}`;
+  output += `&type=${encodeURIComponent(proxyType)}`;
+  output += `&mode=${encodeURIComponent(proxyMode)}`;
   return output;
 }
 
@@ -2325,7 +2460,9 @@ function shakaConfigFor(mode, isMovie) {
       bufferBehind: profile.backBufferLength,
       lowLatencyMode: profile.lowLatencyMode,
       jumpLargeGaps: true,
-      stallEnabled: false
+      stallEnabled: true,
+      stallThreshold: 2,
+      stallSkip: 0.1
     },
     abr: {
       enabled: state.selectedManualQuality === -1,
@@ -2337,7 +2474,25 @@ function shakaConfigFor(mode, isMovie) {
 function updateNetworkMenuState(mode) {
   qsa('[data-network-mode]', $('networkMenu')).forEach((item) => {
     item.classList.toggle('active', item.dataset.networkMode === mode);
+    item.setAttribute('aria-checked', item.dataset.networkMode === mode ? 'true' : 'false');
   });
+}
+
+function updateNetworkButtonUi(profile) {
+  const button = $('networkBtn');
+  if (!button || !profile) return;
+  const label = `Network Mode: ${profile.label}`;
+  button.title = label;
+  button.setAttribute('aria-label', label);
+  button.dataset.networkLabel = profile.label;
+  const icon = qs('i', button);
+  if (icon) {
+    icon.className = profile.label === 'Stable'
+      ? 'fas fa-signal'
+      : profile.label === 'Low Delay'
+        ? 'fas fa-bolt'
+        : 'fas fa-wifi';
+  }
 }
 
 function applyNetworkMode(mode, notify = true) {
@@ -2347,6 +2502,7 @@ function applyNetworkMode(mode, notify = true) {
 
   const isMovie = Boolean(state.currentItem?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE);
   const profile = networkProfile(safeMode, isMovie);
+  updateNetworkButtonUi(profile);
   document.documentElement.classList.toggle('performance-mode', resolveAutoProfile() === 'lite');
 
   if (state.hls) {
@@ -2360,9 +2516,23 @@ function applyNetworkMode(mode, notify = true) {
       liveSyncDurationCount: nextConfig.liveSyncDurationCount,
       liveMaxLatencyDurationCount: nextConfig.liveMaxLatencyDurationCount
     });
+
+    if (!isMovie && safeMode === NETWORK_MODE.LOW) {
+      const livePosition = state.hls.liveSyncPosition;
+      if (Number.isFinite(livePosition) && Math.abs(livePosition - video.currentTime) > 2) {
+        video.currentTime = Math.max(0, livePosition - 0.5);
+      }
+    }
   }
-  if (state.shaka) state.shaka.configure(shakaConfigFor(safeMode, isMovie));
-  if (notify) showToast(`Network: ${profile.label}`);
+
+  if (state.shaka) {
+    state.shaka.configure(shakaConfigFor(safeMode, isMovie));
+  }
+
+  if (notify) {
+    hideAllPopups();
+    showToast(`Network: ${profile.label}`);
+  }
 }
 window.setNetworkMode = applyNetworkMode;
 
@@ -2381,6 +2551,7 @@ async function cleanupPlayerEngine() {
   stopStallDetector();
   state.qualitySwitchLockUntil = 0;
   state.manualQualityChangePending = false;
+  state.autoplayUnlockPending = false;
   clearTimeout(state.qualityUnlockTimer);
 
   if (state.hls) {
@@ -2694,9 +2865,10 @@ async function safePlay(session, attemptToken) {
     if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
   } catch (error) {
     if (error?.name === 'NotAllowedError') {
+      state.autoplayUnlockPending = true;
+      state.lastAudibleVolume = video.volume > 0 ? video.volume : 1;
       video.muted = true;
       updateMuteUi();
-      enableUnmuteOnInteraction();
       await video.play();
       if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
       return;
@@ -2723,6 +2895,7 @@ function handlePlaybackSuccess() {
   const session = state.playbackSession;
   if (!session || session.id !== state.activeLoadId || session.success || String(session.attemptToken) !== video.dataset.attemptToken) return;
   session.success = true;
+  if (!video.muted && video.volume > 0) state.autoplayUnlockPending = false;
   clearPlaybackTimers();
   hidePlayerMessage();
   state.autoNextCount = 0;
@@ -2915,6 +3088,22 @@ function unlockQualitySwitchSoon() {
   }, 900);
 }
 
+function hlsLevelLabel(level, index, totalLevels) {
+  const height = Number(level?.height || 0);
+  if (height > 0) return `${height}p`;
+
+  const named = String(level?.name || level?.attrs?.NAME || '').trim();
+  if (named) return named;
+
+  const currentHeight = Number(video.videoHeight || 0);
+  if (currentHeight > 0 && totalLevels === 1) return `${currentHeight}p`;
+
+  const declared = String(state.currentItem?.resolution || '').trim();
+  if (declared && !/^auto(?:\s+quality)?$/i.test(declared)) return declared;
+
+  return totalLevels === 1 ? 'Single Stream' : `Stream ${index + 1}`;
+}
+
 function buildQualityMenu(levels = null) {
   const menu = $('qualityMenu');
   menu.replaceChildren();
@@ -2934,7 +3123,7 @@ function buildQualityMenu(levels = null) {
       .map((level, index) => ({ level, index }))
       .sort((a, b) => (b.level.height || b.level.bitrate || 0) - (a.level.height || a.level.bitrate || 0))
       .forEach(({ level, index }) => {
-        const label = level.height ? `${level.height}p` : `Level ${index + 1}`;
+        const label = hlsLevelLabel(level, index, hlsLevels.length);
         const bitrate = level.bitrate ? `${Math.round(level.bitrate / 1000)} kbps` : '';
         addItem(label, bitrate, state.selectedManualQuality === index, () => selectQuality(index));
       });
@@ -2974,7 +3163,8 @@ function selectQuality(value) {
     } else {
       state.hls.loadLevel = value;
       state.hls.nextLevel = value;
-      showToast(`Quality: ${state.hls.levels[value]?.height || value}p`);
+      const selectedLevel = state.hls.levels[value] || {};
+      showToast(`Quality: ${hlsLevelLabel(selectedLevel, value, state.hls.levels.length)}`);
     }
     buildQualityMenu(state.hls.levels);
     if (video.paused) video.play().catch(() => {});
@@ -3032,6 +3222,7 @@ function setupPlayerUi(item) {
   $('speedBtn').style.display = isMovie ? 'inline-flex' : 'none';
   $('snapBtn').style.display = isMovie ? 'inline-flex' : 'none';
   $('networkBtn').style.display = 'inline-flex';
+  updateNetworkButtonUi(networkProfile(currentNetworkMode(), isMovie));
   video.poster = isMovie ? (item.logo || '') : '';
 }
 
@@ -3092,24 +3283,23 @@ function updatePlayPauseUi() {
 
 function updateMuteUi() {
   const muted = video.muted || video.volume === 0;
-  $('muteNoticeText').style.display = muted ? 'flex' : 'none';
+  $('muteNoticeText').style.display = (muted && state.autoplayUnlockPending) ? 'flex' : 'none';
   $('muteBtn').classList.toggle('muted-red', muted);
   $('volumeIcon').className = muted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
   $('volumeSlider').value = muted ? '0' : String(video.volume);
 }
 
-function enableUnmuteOnInteraction() {
-  const events = ['click', 'touchstart', 'keydown'];
-  const handler = () => {
-    if (video.muted) {
-      video.muted = false;
-      if (video.volume === 0) video.volume = 1;
-      updateMuteUi();
-      video.play().catch(() => {});
-    }
-    events.forEach((name) => document.removeEventListener(name, handler));
-  };
-  events.forEach((name) => document.addEventListener(name, handler, { once: true }));
+function consumeAutoplayUnlock() {
+  if (!state.autoplayUnlockPending) return false;
+
+  state.autoplayUnlockPending = false;
+  video.muted = false;
+  if (video.volume === 0) {
+    video.volume = state.lastAudibleVolume > 0 ? state.lastAudibleVolume : 1;
+  }
+  updateMuteUi();
+  video.play().catch(() => {});
+  return true;
 }
 
 video.addEventListener('playing', handlePlaybackSuccess);
@@ -3373,7 +3563,6 @@ function handleRemoteNavigation(event) {
   }
 
   if (!document.fullscreenElement && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(key)) {
-    const controls = qsa('.chip:visible, .sub-chip:visible');
     if (!card && focusCard()) event.preventDefault();
     return;
   }
@@ -3547,14 +3736,28 @@ $('skipFwdBtn').addEventListener('click', () => { video.currentTime = Math.min(v
 $('muteBtn').addEventListener('click', (event) => {
   event.preventDefault();
   event.stopPropagation();
+
+  if (consumeAutoplayUnlock()) return;
+
+  if (!video.muted && video.volume > 0) {
+    state.lastAudibleVolume = video.volume;
+  }
+
   video.muted = !video.muted;
-  if (!video.muted && video.volume === 0) video.volume = 1;
+  if (!video.muted && video.volume === 0) {
+    video.volume = state.lastAudibleVolume > 0 ? state.lastAudibleVolume : 1;
+  }
   updateMuteUi();
   if (video.paused) video.play().catch(() => {});
 });
 $('volumeSlider').addEventListener('input', (event) => {
-  video.volume = Number(event.target.value);
-  video.muted = video.volume === 0;
+  const nextVolume = Number(event.target.value);
+  video.volume = nextVolume;
+  video.muted = nextVolume === 0;
+  if (nextVolume > 0) {
+    state.autoplayUnlockPending = false;
+    state.lastAudibleVolume = nextVolume;
+  }
   updateMuteUi();
 });
 $('favActionBtn').addEventListener('click', (event) => {
