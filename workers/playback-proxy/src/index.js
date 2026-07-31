@@ -14,9 +14,11 @@
  *   ALLOWED_ORIGINS       comma separated website origins
  *   ALLOWED_HOSTS_URL     public Click TV data/allowed-hosts.json URL
  *   HEADER_SIGNING_SECRET Cloudflare secret, identical on all four workers
+ * Optional encrypted secret:
+ *   TOFFEE_EDGE_COOKIE    current Toffee Edge-Cache cookie, when required
  */
 
-const DEFAULT_VERSION = "3.0.0";
+const DEFAULT_VERSION = "3.1.0";
 const HOST_CACHE_MS = 5 * 60 * 1000;
 const MAX_REDIRECTS = 5;
 const MAX_TEXT_BYTES = 2 * 1024 * 1024;
@@ -124,9 +126,9 @@ const HEADER_PROFILES = Object.freeze({
     Accept: "*/*",
   },
   toffee_okhttp: {
+    // The Android app profile normally sends neither browser Origin nor
+    // Referer. Injecting them can make some Toffee CDN edges reject requests.
     "User-Agent": "okhttp/4.12.0",
-    Referer: "https://toffeelive.com/",
-    Origin: "https://toffeelive.com",
     Accept: "*/*",
   },
   toffee: {
@@ -296,6 +298,7 @@ async function proxyTarget({
     request,
     profileName,
     requestedType,
+    env,
   );
   const upstream = await fetchWithValidatedRedirects(
     targetUrl,
@@ -605,17 +608,26 @@ async function buildSignedProxyUrl({
   const expires = Math.floor(Date.now() / 1000) + CHILD_LINK_TTL_SECONDS;
   const normalizedType = normalizeStreamType(type, targetUrl);
   const normalizedProfile = normalizeProfileName(profileName);
-  const signature = await createChildSignature({
-    targetUrl,
-    requestedType: normalizedType,
-    profileName: normalizedProfile,
-    inheritQuery,
-    expires,
-    secret: env.HEADER_SIGNING_SECRET,
-  });
+  const targetText = targetUrl.toString();
+  const hasDashTemplate = containsDashTemplateToken(targetText);
+
+  // DASH SegmentTemplate URLs change after the MPD is parsed. A signature made
+  // for "$Number$" cannot validate after Shaka replaces it with an actual
+  // segment number. These template children therefore use the normal dynamic
+  // host allowlist instead of a stale signature.
+  const signature = hasDashTemplate
+    ? ""
+    : await createChildSignature({
+        targetUrl,
+        requestedType: normalizedType,
+        profileName: normalizedProfile,
+        inheritQuery,
+        expires,
+        secret: env.HEADER_SIGNING_SECRET,
+      });
 
   const output = new URL("/hls", proxyOrigin);
-  output.searchParams.set("url", targetUrl.toString());
+  output.searchParams.set("url", targetText);
   output.searchParams.set("type", normalizedType);
   if (normalizedProfile !== "default") {
     output.searchParams.set("profile", normalizedProfile);
@@ -625,7 +637,21 @@ async function buildSignedProxyUrl({
     output.searchParams.set("exp", String(expires));
     output.searchParams.set("sig", signature);
   }
-  return output.toString();
+
+  return restoreDashTemplateTokens(output.toString());
+}
+
+function containsDashTemplateToken(value) {
+  return /\$(?:RepresentationID|Bandwidth|Time|Number(?:%0\d+d)?)\$/i.test(
+    String(value || ""),
+  );
+}
+
+function restoreDashTemplateTokens(value) {
+  return String(value).replace(
+    /%24(RepresentationID|Bandwidth|Time|Number(?:%25\d+d)?)%24/gi,
+    (_, token) => `$${String(token).replace(/%25/gi, "%")}$`,
+  );
 }
 
 function resolveChildUrl(rawValue, baseUrl, inheritQuery) {
@@ -678,11 +704,21 @@ function cloudflareFetchOptions(type, headers) {
   return { cacheEverything: true, cacheTtl: 300 };
 }
 
-function buildUpstreamHeaders(request, profileName, type) {
-  const profile = HEADER_PROFILES[normalizeProfileName(profileName)] || HEADER_PROFILES.default;
+function buildUpstreamHeaders(request, profileName, type, env) {
+  const normalizedProfile = normalizeProfileName(profileName);
+  const profile = HEADER_PROFILES[normalizedProfile] || HEADER_PROFILES.default;
   const headers = new Headers();
   for (const [name, value] of Object.entries(profile)) {
     headers.set(name, value);
+  }
+
+  // Optional protected Toffee cookie. It is never accepted from viewers and
+  // never stored in public JSON. Add it only as a Cloudflare encrypted secret.
+  if (
+    (normalizedProfile === "toffee_okhttp" || normalizedProfile === "toffee") &&
+    String(env?.TOFFEE_EDGE_COOKIE || "").trim()
+  ) {
+    headers.set("Cookie", String(env.TOFFEE_EDGE_COOKIE).trim());
   }
 
   const range = request.headers.get("Range");
