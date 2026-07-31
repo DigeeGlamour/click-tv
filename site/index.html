@@ -1020,27 +1020,37 @@
     @media (max-width: 1000px) {
       html,
       body {
-        height: auto !important;
+        width: 100% !important;
+        height: 100dvh !important;
         min-height: 100dvh !important;
-        overflow-x: hidden !important;
-        overflow-y: auto !important;
+        overflow: hidden !important;
+        overscroll-behavior: none;
       }
       body {
         display: flex !important;
         flex-direction: column !important;
       }
       .youtube-layout {
+        flex: 1 1 auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+      }
+      .video-section {
         flex: 0 0 auto !important;
         height: auto !important;
         min-height: 0 !important;
         overflow: visible !important;
       }
-      .video-section,
       .sidebar-section {
-        flex: 0 0 auto !important;
+        flex: 1 1 auto !important;
         height: auto !important;
         min-height: 0 !important;
-        overflow: visible !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
       }
       .sidebar-list {
         flex: 0 0 auto !important;
@@ -1051,8 +1061,8 @@
         padding-bottom: 12px !important;
       }
       footer {
+        display: block !important;
         position: static !important;
-        order: 99;
         margin-top: 10px;
         padding: 12px 14px max(12px, env(safe-area-inset-bottom)) !important;
       }
@@ -1063,6 +1073,36 @@
         max-width: min(160px, calc(100vw - 20px)) !important;
         max-height: 58dvh;
         overflow-y: auto;
+      }
+    }
+
+    /* Mobile playback performance: keep decoding smooth and reduce heat. */
+    @media (max-width: 1000px), (pointer: coarse) {
+      .mobile-playback-performance .marquee-text,
+      .mobile-playback-performance .chip-nav-btn i,
+      .mobile-playback-performance .card-live-badge .pulse-dot,
+      .mobile-playback-performance .playing-equalizer span,
+      .mobile-playback-performance .movie-playing-eq span,
+      .mobile-playback-performance .loader-ring {
+        animation: none !important;
+      }
+      .mobile-playback-performance .popup-menu,
+      .mobile-playback-performance .player-controls,
+      .mobile-playback-performance .ctrl-btn,
+      .mobile-playback-performance .header-glow-btn,
+      .mobile-playback-performance .sidebar-section,
+      .mobile-playback-performance .sidebar-item,
+      .mobile-playback-performance .movie-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: none !important;
+        transition: none !important;
+      }
+      .mobile-playback-performance #videoPlayer {
+        transform: none !important;
+        filter: none !important;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
       }
     }
 
@@ -1284,10 +1324,9 @@
       </div>
 
       <div class="sidebar-list" id="sidebarList" tabindex="0"></div>
+      <footer>STABLE HYBRID ENGINE · AUTO FAILOVER ENABLED</footer>
     </div>
   </div>
-
-  <footer>STABLE HYBRID ENGINE · AUTO FAILOVER ENABLED</footer>
 
   <script>
 'use strict';
@@ -1409,6 +1448,13 @@ const state = {
   resumeBadgeTimer: null,
   playbackPositions: readJsonStorage(STORAGE_KEYS.positions, {}),
   proxyHealth: readJsonStorage(STORAGE_KEYS.proxyHealth, {}),
+  mobileNativeFullscreen: false,
+  performanceMonitorTimer: null,
+  performanceSample: null,
+  performanceStressStreak: 0,
+  performanceStableStreak: 0,
+  adaptiveDecodeCapHeight: 0,
+  performanceNoticeShown: false,
   playbackHistory: readJsonStorage(STORAGE_KEYS.playbackHistory, {
     lastBandwidth: 0,
     successfulStarts: 0,
@@ -1419,6 +1465,7 @@ const state = {
 
 const video = $('videoPlayer');
 const sidebarList = $('sidebarList');
+const sidebarSection = qs('.sidebar-section');
 const searchInput = $('searchInput');
 const mobileSearchInput = $('mobileSearchInput');
 const playerMessage = $('playerMsg');
@@ -1795,6 +1842,7 @@ function inferSafeHeaderProfile(raw = {}) {
   if (hint.includes('fibwatch.art')) return 'fibwatch';
   if (hint.includes('executeandship.com')) return 'crichd';
   if (hint.includes('toffee') || hint.includes('toffeelive')) return 'toffee_okhttp';
+  if (hint.includes('aiv-cdn.net') || hint.includes('akamaized.net')) return 'android_chrome';
   return '';
 }
 
@@ -2184,24 +2232,10 @@ async function selectMainView(view, category, options = {}) {
 }
 
 async function openMovieParentMode(chip) {
-  cancelDataLoading();
-  clearCurrentListState();
-
-  state.view = VIEW.MOVIE;
-  state.selectedCategory = 'Movie';
-  state.selectedMovieCategory = null;
-  state.moviePreviewMode = true;
-
   setActiveMainChip(chip || activateChipByView('movie'));
-
   movieSubcategoryBar.style.display = 'flex';
-  qsa('.sub-chip', movieSubcategoryBar).forEach((item) => item.classList.remove('active'));
-
-  setSearchEnabled(false);
-  hidePlayerMessage();
-  showListMessage('মুভির নমুনা লোড হচ্ছে…', 'fa-film', true);
-  setSidebarCount('Movie Preview');
-  await loadMovieParentPreview();
+  const banglaButton = qs('.sub-chip[data-movie-cat="bangla"]', movieSubcategoryBar);
+  await selectMovieSubcategory('bangla', banglaButton);
 }
 
 async function loadMovieParentPreview() {
@@ -2725,29 +2759,21 @@ sidebarList.addEventListener('click', (event) => {
 });
 
 let sidebarScrollScheduled = false;
-sidebarList.addEventListener('scroll', () => {
+function scheduleSidebarScrollCheck() {
   if (sidebarScrollScheduled) return;
   sidebarScrollScheduled = true;
   requestAnimationFrame(() => {
     sidebarScrollScheduled = false;
     handleSidebarScroll();
   });
-}, { passive: true });
-
-window.addEventListener('scroll', () => {
-  if (!window.matchMedia('(max-width: 1000px)').matches || sidebarScrollScheduled) return;
-  sidebarScrollScheduled = true;
-  requestAnimationFrame(() => {
-    sidebarScrollScheduled = false;
-    handleSidebarScroll();
-  });
-}, { passive: true });
+}
+sidebarList.addEventListener('scroll', scheduleSidebarScrollCheck, { passive: true });
+sidebarSection.addEventListener('scroll', scheduleSidebarScrollCheck, { passive: true });
 
 async function handleSidebarScroll() {
   const mobileFlow = window.matchMedia('(max-width: 1000px)').matches;
-  const nearBottom = mobileFlow
-    ? sidebarList.getBoundingClientRect().bottom <= window.innerHeight + 520
-    : sidebarList.scrollTop + sidebarList.clientHeight >= sidebarList.scrollHeight - 260;
+  const scrollHost = mobileFlow ? sidebarSection : sidebarList;
+  const nearBottom = scrollHost.scrollTop + scrollHost.clientHeight >= scrollHost.scrollHeight - (mobileFlow ? 520 : 260);
 
   if (!nearBottom) return;
 
@@ -2921,7 +2947,12 @@ function buildAttemptPlan(item) {
 
     const isHttp = sourceUrl.toLowerCase().startsWith('http://');
     const mixedContent = location.protocol === 'https:' && isHttp;
-    const mode = source.proxy_mode || inferProxyMode(source, source.header_profile || '');
+    const configuredMode = source.proxy_mode || inferProxyMode(source, source.header_profile || '');
+    const sourceType = source.stream_type || inferStreamType(source);
+    const isTodayMatchDrmDash = item?._sourceKind === VIEW.EVENT && sourceType === 'dash' && Boolean(item?.drm);
+    const mode = isTodayMatchDrmDash && !['direct_only', 'proxy_only'].includes(configuredMode)
+      ? 'proxy_first'
+      : configuredMode;
     const proxies = rankHealthyProxies(sourceUrl).slice(0, 2);
     const canDirect = !mixedContent && mode !== 'proxy_only';
     const canProxy = mode !== 'direct_only' && proxies.length > 0;
@@ -3169,6 +3200,7 @@ function clearPlaybackTimers() {
 async function cleanupPlayerEngine() {
   clearPlaybackTimers();
   stopStallDetector();
+  stopPlaybackPerformanceMonitor(true);
   state.qualitySwitchLockUntil = 0;
   state.manualQualityChangePending = false;
   clearTimeout(state.qualityUnlockTimer);
@@ -3245,7 +3277,7 @@ async function startPlayback(item, userInitiated = true) {
     attemptsRun: 0,
     currentAttempt: null,
     startedAt: Date.now(),
-    budgetDeadline: Date.now() + CHANNEL_ATTEMPT_BUDGET_MS,
+    budgetDeadline: Date.now() + ((item._sourceKind === VIEW.EVENT || state.view === VIEW.EVENT) ? 15000 : CHANNEL_ATTEMPT_BUDGET_MS),
     attemptStartedAt: 0,
     attemptTimer: null,
     success: false,
@@ -3300,7 +3332,7 @@ async function runCurrentAttempt() {
     ? buildProxyUrl(attempt.proxy, attempt.source)
     : attempt.source.url;
   const format = detectFormat(attempt.source.url, { ...session.item, ...attempt.source });
-  armAttemptTimeout(attempt.sourceIndex === 0 && attempt.route === 'direct' ? 4500 : 4000);
+  armAttemptTimeout(attemptTimeoutFor(attempt, format, session.item));
 
   try {
     if (format === 'dash') {
@@ -3454,6 +3486,13 @@ async function initShaka(url, session, attemptToken) {
   const isMovie = session.item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
   player.configure(shakaConfigFor(currentNetworkMode(), isMovie));
 
+  ['loading', 'trackschanged', 'adaptation', 'streaming'].forEach((eventName) => {
+    player.addEventListener(eventName, () => markAttemptProgress(`DASH ${eventName}`, attemptToken));
+  });
+  player.addEventListener('buffering', (event) => {
+    if (event.buffering) markAttemptProgress('DASH buffering', attemptToken);
+  });
+
   const clearKeys = parseClearKeys(session.item.drm?.license_key);
   if (clearKeys) player.configure({ drm: { clearKeys } });
   player.addEventListener('error', (event) => {
@@ -3550,6 +3589,142 @@ function failCurrentAttempt(reason, attemptToken = state.playbackSession?.attemp
   runCurrentAttempt();
 }
 
+function isMobilePlaybackDevice() {
+  return window.matchMedia('(max-width: 1000px), (pointer: coarse)').matches;
+}
+
+function updateMobilePlaybackPerformance() {
+  const active = isMobilePlaybackDevice() && !video.paused && !video.ended;
+  document.documentElement.classList.toggle('mobile-playback-performance', active);
+  if (active) startPlaybackPerformanceMonitor();
+  else stopPlaybackPerformanceMonitor(false);
+}
+
+function readVideoFrameStats() {
+  try {
+    if (typeof video.getVideoPlaybackQuality === 'function') {
+      const quality = video.getVideoPlaybackQuality();
+      return {
+        total: Number(quality.totalVideoFrames || 0),
+        dropped: Number(quality.droppedVideoFrames || 0)
+      };
+    }
+  } catch (_) {}
+
+  const total = Number(video.webkitDecodedFrameCount || video.mozDecodedFrames || 0);
+  const dropped = Number(video.webkitDroppedFrameCount || video.mozDroppedFrames || 0);
+  return { total, dropped };
+}
+
+function findHlsCapLevel(maxHeight) {
+  const levels = Array.isArray(state.hls?.levels) ? state.hls.levels : [];
+  let bestIndex = -1;
+  let bestHeight = -1;
+  levels.forEach((level, index) => {
+    const height = Number(level?.height || 0);
+    if (height > 0 && height <= maxHeight && height > bestHeight) {
+      bestHeight = height;
+      bestIndex = index;
+    }
+  });
+  return bestIndex;
+}
+
+function applyAdaptiveDecodeCap(maxHeight) {
+  if (state.selectedManualQuality !== -1) return;
+  const height = Number(maxHeight || 0);
+  state.adaptiveDecodeCapHeight = height;
+
+  if (state.hls) {
+    state.hls.autoLevelCapping = height > 0 ? findHlsCapLevel(height) : -1;
+  }
+
+  if (state.shaka) {
+    const isMovie = Boolean(state.currentItem?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE);
+    const baseConfig = shakaConfigFor(currentNetworkMode(), isMovie);
+    state.shaka.configure({
+      ...baseConfig,
+      abr: {
+        ...baseConfig.abr,
+        restrictions: height > 0 ? { maxHeight: height } : {}
+      }
+    });
+  }
+}
+
+function stopPlaybackPerformanceMonitor(resetCap = false) {
+  if (state.performanceMonitorTimer) clearInterval(state.performanceMonitorTimer);
+  state.performanceMonitorTimer = null;
+  state.performanceSample = null;
+  state.performanceStressStreak = 0;
+  state.performanceStableStreak = 0;
+  if (resetCap && state.adaptiveDecodeCapHeight > 0) applyAdaptiveDecodeCap(0);
+  if (resetCap) {
+    state.adaptiveDecodeCapHeight = 0;
+    state.performanceNoticeShown = false;
+  }
+}
+
+function startPlaybackPerformanceMonitor() {
+  if (!isMobilePlaybackDevice() || state.performanceMonitorTimer || video.paused || video.ended) return;
+  state.performanceSample = readVideoFrameStats();
+
+  state.performanceMonitorTimer = setInterval(() => {
+    if (document.hidden || video.paused || video.ended || !state.playbackSession?.success) return;
+    const next = readVideoFrameStats();
+    const previous = state.performanceSample;
+    state.performanceSample = next;
+    if (!previous || next.total <= previous.total) return;
+
+    const decodedDelta = next.total - previous.total;
+    const droppedDelta = Math.max(0, next.dropped - previous.dropped);
+    const dropRatio = decodedDelta > 0 ? droppedDelta / decodedDelta : 0;
+    const stressed = decodedDelta >= 24 && (droppedDelta >= 6 || dropRatio >= 0.055);
+
+    if (stressed) {
+      state.performanceStressStreak += 1;
+      state.performanceStableStreak = 0;
+    } else {
+      state.performanceStressStreak = 0;
+      state.performanceStableStreak += 1;
+    }
+
+    if (state.performanceStressStreak >= 2 && state.selectedManualQuality === -1) {
+      const nextCap = state.adaptiveDecodeCapHeight > 720 ? 720
+        : state.adaptiveDecodeCapHeight === 720 ? 480
+          : state.adaptiveDecodeCapHeight === 480 ? 360
+            : 720;
+      if (nextCap !== state.adaptiveDecodeCapHeight) {
+        applyAdaptiveDecodeCap(nextCap);
+        if (!state.performanceNoticeShown) {
+          state.performanceNoticeShown = true;
+          showToast('Smooth playback-এর জন্য quality সাময়িকভাবে কমানো হয়েছে', 3200);
+        }
+      }
+      state.performanceStressStreak = 0;
+    }
+
+    if (state.adaptiveDecodeCapHeight > 0 && state.performanceStableStreak >= 10) {
+      applyAdaptiveDecodeCap(0);
+      state.performanceStableStreak = 0;
+      state.performanceNoticeShown = false;
+    }
+  }, 4000);
+}
+
+function attemptTimeoutFor(attempt, format, item) {
+  const kind = item?._sourceKind || state.view;
+  const isEvent = kind === VIEW.EVENT;
+  const isDrmDash = format === 'dash' && Boolean(item?.drm || attempt?.source?.drm);
+  if (attempt?.route === 'direct') {
+    if (isEvent && isDrmDash) return 7000;
+    if (isEvent || format === 'dash') return 6200;
+    return attempt?.sourceIndex === 0 ? 4500 : 5000;
+  }
+  if (isEvent && format === 'dash') return 5500;
+  return 4500;
+}
+
 function handlePlaybackSuccess() {
   const session = state.playbackSession;
   if (!session || session.id !== state.activeLoadId || session.success || String(session.attemptToken) !== video.dataset.attemptToken) return;
@@ -3568,6 +3743,7 @@ function handlePlaybackSuccess() {
   recordPlaybackSuccess();
   updatePlayPauseUi();
   startStallDetector();
+  updateMobilePlaybackPerformance();
   buildQualityMenu();
 }
 
@@ -3766,7 +3942,7 @@ function startStallDetector() {
       active.budgetDeadline = Date.now() + MIDPLAY_RECOVERY_BUDGET_MS;
       failCurrentAttempt('Playback stalled');
     }
-  }, 500);
+  }, isMobilePlaybackDevice() ? 1000 : 500);
 }
 
 function stopStallDetector() {
@@ -4190,6 +4366,7 @@ async function handleMuteButtonClick(event) {
 }
 
 video.addEventListener('playing', handlePlaybackSuccess);
+video.addEventListener('playing', updateMobilePlaybackPerformance);
 video.addEventListener('loadedmetadata', () => {
   markAttemptProgress('metadata loaded');
   updateResolutionBadge();
@@ -4197,8 +4374,9 @@ video.addEventListener('loadedmetadata', () => {
 });
 video.addEventListener('loadeddata', () => markAttemptProgress('data loaded'));
 video.addEventListener('canplay', () => markAttemptProgress('can play'));
-video.addEventListener('pause', updatePlayPauseUi);
-video.addEventListener('play', updatePlayPauseUi);
+video.addEventListener('pause', () => { updatePlayPauseUi(); updateMobilePlaybackPerformance(); });
+video.addEventListener('play', () => { updatePlayPauseUi(); updateMobilePlaybackPerformance(); });
+video.addEventListener('ended', updateMobilePlaybackPerformance);
 video.addEventListener('waiting', () => {
   const session = state.playbackSession;
   if (session?.success && !session.stallStartedAt) session.stallStartedAt = Date.now();
@@ -4785,13 +4963,22 @@ $('aspectBtn').addEventListener('click', () => {
 async function toggleFullscreen() {
   const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
   if (!isFullscreen) {
-    if (videoContainer.requestFullscreen) {
+    if (isMobilePlaybackDevice()) {
+      state.mobileNativeFullscreen = true;
+      video.controls = true;
+      if (video.requestFullscreen) {
+        await video.requestFullscreen().catch(() => {});
+      } else if (video.webkitRequestFullscreen) {
+        video.webkitRequestFullscreen();
+      } else if (video.webkitEnterFullscreen) {
+        video.webkitEnterFullscreen();
+      } else if (videoContainer.requestFullscreen) {
+        await videoContainer.requestFullscreen().catch(() => {});
+      }
+    } else if (videoContainer.requestFullscreen) {
       await videoContainer.requestFullscreen().catch(() => {});
     } else if (videoContainer.webkitRequestFullscreen) {
       videoContainer.webkitRequestFullscreen();
-    } else if (video.webkitEnterFullscreen) {
-      video.webkitEnterFullscreen();
-      return;
     }
     screen.orientation?.lock?.('landscape').catch(() => {});
   } else if (document.exitFullscreen) {
@@ -4801,6 +4988,19 @@ async function toggleFullscreen() {
     document.webkitExitFullscreen();
   }
 }
+
+function restoreCustomControlsAfterFullscreen() {
+  const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+  if (!isFullscreen && state.mobileNativeFullscreen) {
+    state.mobileNativeFullscreen = false;
+    video.controls = false;
+    screen.orientation?.unlock?.();
+  }
+  updateMobilePlaybackPerformance();
+}
+document.addEventListener('fullscreenchange', restoreCustomControlsAfterFullscreen);
+document.addEventListener('webkitfullscreenchange', restoreCustomControlsAfterFullscreen);
+video.addEventListener('webkitendfullscreen', restoreCustomControlsAfterFullscreen);
 $('fullscreenBtn').addEventListener('click', toggleFullscreen);
 $('fsDrawerToggle').addEventListener('click', (event) => {
   event.stopPropagation();
