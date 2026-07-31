@@ -243,6 +243,104 @@ class Normalizer:
 
         return url
 
+    def resolve_header_profile_name(self, stream_url: str) -> str:
+        domain = ""
+        try:
+            domain = (urlparse(stream_url).hostname or "").lower()
+        except Exception:
+            pass
+
+        if domain:
+            for rule in self.domain_rules:
+                if not isinstance(rule, dict):
+                    continue
+                patterns = rule.get("patterns", [])
+                if any(_match_domain_pattern(domain, str(pattern)) for pattern in patterns):
+                    profile = str(rule.get("profile") or "").strip()
+                    if profile:
+                        return profile
+
+        return str(self.default_profile or "android_tv").strip()
+
+    @staticmethod
+    def _stream_type(stream_url: str, candidate: Dict[str, Any]) -> str:
+        explicit = str(
+            candidate.get("stream_type")
+            or candidate.get("type")
+            or candidate.get("format")
+            or ""
+        ).strip().lower()
+        if explicit in {"hls", "dash", "media", "mpegts", "key", "subtitle"}:
+            return explicit
+
+        path = ""
+        try:
+            path = (urlparse(stream_url).path or "").lower()
+        except Exception:
+            path = str(stream_url or "").split("?", 1)[0].lower()
+
+        if path.endswith(".mpd"):
+            return "dash"
+        if path.endswith(".m3u8"):
+            return "hls"
+        if path.endswith((".ts", ".mpegts", ".flv")):
+            return "mpegts"
+        return "media"
+
+    @staticmethod
+    def _headers_require_proxy(existing_headers: Dict[str, str]) -> bool:
+        if not isinstance(existing_headers, dict):
+            return False
+        sensitive_or_browser_forbidden = {
+            "cookie",
+            "authorization",
+            "referer",
+            "referrer",
+            "origin",
+            "user-agent",
+        }
+        return any(
+            str(key).strip().lower().replace("_", "-")
+            in sensitive_or_browser_forbidden
+            and str(value or "").strip()
+            for key, value in existing_headers.items()
+        )
+
+    @staticmethod
+    def _proxy_mode(
+        stream_url: str,
+        candidate: Dict[str, Any],
+        header_profile: str,
+        headers_required: bool,
+    ) -> str:
+        explicit = str(candidate.get("proxy_mode") or "").strip().lower()
+        if explicit in {
+            "direct_first",
+            "proxy_first",
+            "proxy_only",
+            "direct_only",
+            "auto",
+        }:
+            return explicit
+
+        if bool(candidate.get("force_proxy") or candidate.get("proxy_required")):
+            return "proxy_only"
+
+        status = str(candidate.get("verification_status") or "").strip().lower()
+        if status == "verified_proxy":
+            return "proxy_first"
+
+        if str(stream_url or "").lower().startswith("http://"):
+            return "proxy_first"
+
+        if headers_required:
+            return "proxy_first"
+
+        if header_profile and header_profile not in {"android_tv", "android_chrome"}:
+            return "proxy_first"
+
+        return "direct_first"
+
     def resolve_headers(self, stream_url: str, existing_headers: Dict[str, str]) -> Dict[str, str]:
         final_headers: Dict[str, str] = {}
         domain = ""
@@ -437,7 +535,17 @@ class Normalizer:
                 force_cat=routed_input.get("force_category", ""),
             )
 
-        headers = self.resolve_headers(url, routed_input.get("headers", {}))
+        source_headers = routed_input.get("headers", {})
+        headers = self.resolve_headers(url, source_headers)
+        header_profile = self.resolve_header_profile_name(url)
+        headers_required = self._headers_require_proxy(source_headers)
+        stream_type = self._stream_type(url, routed_input)
+        proxy_mode = self._proxy_mode(
+            url,
+            routed_input,
+            header_profile,
+            headers_required,
+        )
         logo = self.normalize_logo(routed_input.get("logo", ""))
 
         normalized_item = dict(routed_input)
@@ -446,6 +554,10 @@ class Normalizer:
         normalized_item["logo"] = logo
         normalized_item["category"] = category
         normalized_item["headers"] = headers
+        normalized_item["header_profile"] = header_profile
+        normalized_item["proxy_mode"] = proxy_mode
+        normalized_item["stream_type"] = stream_type
+        normalized_item["requires_headers"] = headers_required
         normalized_item["source_pipeline"] = pipeline
 
         return normalized_item
