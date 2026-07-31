@@ -173,6 +173,24 @@ class Normalizer:
 
         text = name.strip()
 
+        # Some source collectors accidentally prepend poster-query fragments to
+        # the real channel name, for example:
+        #   q 85 ... posters ... png", Independent TV
+        # Keep only the human-readable tail before alias/category detection.
+        if re.search(r"\bq[\s_-]*85\b", text, re.IGNORECASE) and re.search(
+            r"\bposters?\b", text, re.IGNORECASE
+        ):
+            tail = re.split(r"[,|]", text)[-1].strip(" \"'")
+            if tail:
+                text = tail
+
+        if re.search(r"\b(?:jpe?g|png|webp|gif)\b", text, re.IGNORECASE) and re.search(
+            r"\bgroup\s*title\b", text, re.IGNORECASE
+        ) and "," in text:
+            tail = text.rsplit(",", 1)[-1].strip(" \"'")
+            if tail:
+                text = tail
+
         text = re.sub(
             r"^(?:Live Match\s*-\s*|Match\s*-\s*|Live Coverage\s*-\s*)",
             "",
@@ -335,6 +353,11 @@ class Normalizer:
 
         if headers_required:
             return "proxy_first"
+
+        # Toffee's Bangladesh CDN often performs best directly for local users;
+        # the same profile remains available to the playback proxy as fallback.
+        if header_profile in {"toffee_okhttp", "toffee"}:
+            return "direct_first"
 
         if header_profile and header_profile not in {"android_tv", "android_chrome"}:
             return "proxy_first"
