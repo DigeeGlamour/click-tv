@@ -343,7 +343,23 @@ MOVIE_STATUS_PRIORITY = {
 }
 
 
-def _movie_sort_key(movie: Dict[str, Any]) -> Tuple[int, int, str, str, str]:
+def _movie_year(movie: Dict[str, Any]) -> int:
+    """Return a reliable four-digit year; undated items sort last."""
+    for value in (
+        movie.get("year"),
+        movie.get("release_year"),
+        movie.get("release_date"),
+        movie.get("released"),
+        movie.get("name"),
+        movie.get("title"),
+    ):
+        match = re.search(r"(?<!\d)((?:19|20)\d{2})(?!\d)", str(value or ""))
+        if match:
+            return int(match.group(1))
+    return 0
+
+
+def _movie_sort_key(movie: Dict[str, Any]) -> Tuple[int, int, int, str, str]:
     status = str(movie.get("verification_status") or "").strip().casefold()
     status_priority = MOVIE_STATUS_PRIORITY.get(status, 99)
     browser_priority = {
@@ -354,9 +370,11 @@ def _movie_sort_key(movie: Dict[str, Any]) -> Tuple[int, int, str, str, str]:
     }.get(str(movie.get("browser_support") or "").strip().lower(), 2)
     name = str(movie.get("name") or movie.get("title") or "").strip()
     normalized_name = re.sub(r"\s+", " ", name).casefold()
-    year = str(movie.get("year") or "")
     movie_id = str(movie.get("id") or movie.get("tvg_id") or "")
-    return status_priority, browser_priority, normalized_name, year, movie_id
+
+    # User-facing order: newest year first. Within the same year, keep the
+    # verified/browser-friendly source preference and deterministic title order.
+    return -_movie_year(movie), status_priority, browser_priority, normalized_name, movie_id
 
 
 def paginate_movie_list(
