@@ -267,6 +267,50 @@ def _published_urls(data_root: str | Path = "data") -> Set[str]:
 
 
 # ---------------------------------------------------------------------------
+# Telemetry-guided recheck priority
+# ---------------------------------------------------------------------------
+
+
+def _feedback_priority_keys(
+    path: str | Path = "reports/playback-feedback.json",
+) -> Set[str]:
+    payload = _load_json(path)
+    items = payload.get("items")
+    if not isinstance(items, list):
+        return set()
+
+    keys: Set[str] = set()
+    for item in items:
+        if not isinstance(item, dict) or item.get("suspected_dead") is not True:
+            continue
+        item_id = str(item.get("item_id") or "").strip()
+        if not item_id:
+            continue
+        keys.add(_slug(item_id))
+        # Frontend UIDs may carry pipeline/index prefixes. Preserve useful parts.
+        for part in re.split(r"[:|/]", item_id):
+            normalized = _slug(part)
+            if normalized and normalized not in {"channel", "movie", "event", "upcoming"}:
+                keys.add(normalized)
+    return keys
+
+
+def _is_feedback_priority(
+    item: Dict[str, Any],
+    priority_keys: Set[str],
+) -> bool:
+    if not priority_keys:
+        return False
+    identities = {
+        _slug(item.get("id")),
+        _slug(item.get("tvg_id")),
+        _slug(item.get("name")),
+    }
+    identities.discard("")
+    return bool(identities & priority_keys)
+
+
+# ---------------------------------------------------------------------------
 # Ranking and diversity
 # ---------------------------------------------------------------------------
 
@@ -303,12 +347,14 @@ def _resolution_height(item: Dict[str, Any]) -> int:
 def _candidate_rank(
     item: Dict[str, Any],
     published: Set[str],
-) -> Tuple[int, int, int, int, int, int, str]:
+    feedback_priority_keys: Set[str],
+) -> Tuple[int, int, int, int, int, int, int, str]:
     url = _clean_url(item.get("url"))
     pipeline = str(item.get("source_pipeline") or "").lower()
     source_id = str(item.get("source_id") or "").lower()
 
     previously_published = int(bool(url and url in published))
+    feedback_priority = int(_is_feedback_priority(item, feedback_priority_keys))
     manual = int(
         item.get("manual_source") is True
         or pipeline == "manual"
@@ -322,6 +368,7 @@ def _candidate_rank(
     # The final lexical component makes ordering stable across runs.
     stable = f"{source_id}:{url}:{item.get('stream_index', 0)}"
     return (
+        feedback_priority,
         previously_published,
         manual,
         priority,
@@ -509,6 +556,7 @@ def plan_candidates(
         planning.get("drop_unknown_tv_before_verification", True)
     )
     published = _published_urls()
+    feedback_priority_keys = _feedback_priority_keys()
 
     input_count = len(candidates)
     mode_filtered: List[Dict[str, Any]] = []
@@ -565,6 +613,7 @@ def plan_candidates(
         item["_verification_group"] = group
         url = _clean_url(item.get("url"))
         item["previously_published"] = bool(url and url in published)
+        item["telemetry_priority"] = _is_feedback_priority(item, feedback_priority_keys)
         mode_filtered.append(item)
 
     # Exact playback dedupe across all normalized candidates. Signed query
@@ -579,7 +628,7 @@ def plan_candidates(
             continue
 
         duplicate_exact += 1
-        if _candidate_rank(item, published) > _candidate_rank(current, published):
+        if _candidate_rank(item, published, feedback_priority_keys) > _candidate_rank(current, published, feedback_priority_keys):
             unique_map[key] = item
 
     unique_items = list(unique_map.values())
@@ -596,6 +645,7 @@ def plan_candidates(
     ordered_groups = sorted(
         grouped.items(),
         key=lambda pair: (
+            -int(any(item.get("telemetry_priority") for item in pair[1])),
             -int(any(item.get("previously_published") for item in pair[1])),
             pair[0],
         ),
@@ -609,7 +659,7 @@ def plan_candidates(
 
         ranked = sorted(
             group_items,
-            key=lambda item: _candidate_rank(item, published),
+            key=lambda item: _candidate_rank(item, published, feedback_priority_keys),
             reverse=True,
         )
         selected = _diverse_take(ranked, pool_limit)
@@ -679,6 +729,7 @@ def plan_candidates(
         "initial_wave_candidates": actual_initial_count,
         "unique_groups": len(final_group_sizes),
         "previously_published_urls_found": len(published),
+        "telemetry_priority_key_count": len(feedback_priority_keys),
         "pipeline_counts": pipeline_counts,
         "initial_pipeline_counts": initial_pipeline_counts,
         "rerouted_counts": rerouted_counts,
