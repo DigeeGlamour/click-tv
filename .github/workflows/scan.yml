@@ -82,6 +82,15 @@ jobs:
           test -f scanner/bd_verifier.py
           test -f scanner/channels.py
           test -f scanner/movies.py
+          test -f manual/movies.txt
+          test -f manual/movies.json
+          test -f manual/movie-sources.json
+          test -f manual/movies-template.txt
+          test -f manual/movies-template.json
+          test -f state/manual-movie-posters.json
+          test -f state/manual-movie-remote-cache.json
+          test -f tests/test_manual_movies.py
+          test -f tests/test_manual_movie_sources.py
           test -f scanner/events.py
           test -f scanner/output.py
           test -f scanner/telegram_notify.py
@@ -117,6 +126,8 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
           PYTHONFAULTHANDLER: "1"
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
         run: |
           set -euo pipefail
 
