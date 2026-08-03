@@ -34,24 +34,39 @@ class MoviePlaybackPolicyTests(unittest.TestCase):
         self.assertFalse(item["backups"][0]["force_proxy"])
         self.assertFalse(item["backups"][0]["proxy_required"])
 
-    def test_frontend_contains_requested_quality_and_audio_behavior(self) -> None:
+    def test_frontend_contains_only_requested_player_corrections(self) -> None:
         index_html = (Path(__file__).resolve().parents[1] / "site/index.html").read_text(encoding="utf-8")
 
-        self.assertIn("qualityAvailabilityBadge", index_html)
-        self.assertIn("৪কে আছে, কোয়ালিটি থেকে বেছে নিন", index_html)
-        self.assertIn("setTimeout(() => show4KAvailabilityReminder(item), 10000)", index_html)
-        self.assertIn("setInterval(() => show4KAvailabilityReminder(item), 5 * 60 * 1000)", index_html)
-        self.assertIn("setTimeout(hide4KAvailabilityReminder, 45000)", index_html)
+        # Selected direct 4K stays selected; audio probing must not force FHD downgrade.
+        self.assertIn("movie4kAudioTriedKeys", index_html)
+        self.assertIn("অন্য ৪কে সংস্করণের অডিও চেষ্টা করা হচ্ছে", index_html)
+        self.assertIn("এই ৪কে ফাইলে সমর্থিত অডিও নেই। অডিওর জন্য FHD বেছে নিন।", index_html)
+        self.assertNotIn("decodedNothing", index_html)
+        self.assertNotIn("অডিওসহ চালু হচ্ছে", index_html)
 
-        self.assertIn("scheduleMovieAudioCompatibilityCheck", index_html)
-        self.assertIn("movie4kAudioBlockedQualityKeys", index_html)
-        self.assertIn("অডিওসহ চালু হচ্ছে", index_html)
-        self.assertIn("selectedSources.slice(0, 6)", index_html)
+        # Live/event playback starts with a small buffer and later returns to automatic ABR.
+        self.assertIn("LIVE_FAST_START_RAMP_MS = 8000", index_html)
+        self.assertIn("liveFastStartProfile", index_html)
+        self.assertIn("findFastStartHlsLevel", index_html)
+        self.assertIn("scheduleLiveStartupRamp", index_html)
+        self.assertIn("state.hls.loadLevel = -1", index_html)
 
-        self.assertIn("quality-menu-channel", index_html)
-        self.assertIn("quality-menu-movie", index_html)
-        self.assertIn("formatCompactElapsedTime", index_html)
-        self.assertIn("mode = mixedContent ? 'proxy_only' : 'direct_first';", index_html)
+        # User pause freezes live loading until the user resumes.
+        self.assertIn("pausePlaybackByUser", index_html)
+        self.assertIn("state.hls?.stopLoad()", index_html)
+        self.assertIn("resumePlaybackByUser", index_html)
+        self.assertIn("toggleUserPlayback", index_html)
+
+        # Quality/network/speed popups close automatically and the redundant header is absent.
+        self.assertIn("POPUP_AUTO_HIDE_MS = 3000", index_html)
+        self.assertIn("schedulePopupAutoHide", index_html)
+        self.assertNotIn("header.className = 'quality-menu-header'", index_html)
+
+        # Requested mobile layout corrections.
+        self.assertIn("2026-08 issue-only corrections", index_html)
+        self.assertIn("height: 4px !important", index_html)
+        self.assertIn("gap: 4px !important", index_html)
+        self.assertIn("max-height: 158px !important", index_html)
 
         self.assertNotIn("✨ Auto", index_html)
         self.assertNotIn("📶 Stable", index_html)
