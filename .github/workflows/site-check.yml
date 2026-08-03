@@ -1,274 +1,238 @@
-name: Click TV Site Check
+name: Live Signal Scanner
 
 on:
+  schedule:
+    # Today Match: প্রতিদিন ২ বার — সকাল ৭:০৭ এবং বিকাল ৫:০৭
+    - cron: "7 7,17 * * *"
+      timezone: "Asia/Dhaka"
+
+    # Upcoming Match: প্রতি ৬ ঘণ্টা
+    - cron: "27 3,9,15,21 * * *"
+      timezone: "Asia/Dhaka"
+
+    # TV Channels: প্রতি ৬ ঘণ্টা
+    - cron: "17 0,6,12,18 * * *"
+      timezone: "Asia/Dhaka"
+
+    # Movies: প্রতি দ্বিতীয় calendar date ভোর ৪:৩৭
+    - cron: "37 4 */2 * *"
+      timezone: "Asia/Dhaka"
+
   workflow_dispatch:
-
-  push:
-    branches:
-      - main
-
-  pull_request:
-    branches:
-      - main
+    inputs:
+      mode:
+        description: "Select Scan Mode"
+        required: true
+        default: "channels"
+        type: choice
+        options:
+          - channels
+          - today
+          - upcoming
+          - movies
+          - all
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: click-tv-site-check-${{ github.ref }}
-  cancel-in-progress: true
+  group: live-signal-data-writer
+  cancel-in-progress: false
 
 jobs:
-  validate-site:
-    name: Validate Click TV
+  scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 55
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: requirements.txt
+          python-version: "3.12"
 
-      - name: Upgrade pip
-        run: |
-          python -m pip install --upgrade pip
+      - name: Restore scanner source cache
+        uses: actions/cache@v4
+        with:
+          path: working/source-cache
+          key: live-signal-source-cache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            live-signal-source-cache-${{ runner.os }}-${{ github.ref_name }}-
+            live-signal-source-cache-${{ runner.os }}-
 
-      - name: Install project requirements
+      - name: Validate scanner files
+        shell: bash
         run: |
-          if [ -s requirements.txt ]; then
-            python -m pip install -r requirements.txt
+          set -euo pipefail
+
+          test -f scan.py
+          test -f config/settings.json
+          test -f config/sources.json
+          test -f scanner/content_router.py
+          test -f scanner/channel_logos.py
+          test -f scanner/fast_pipeline.py
+          test -f scanner/source_loader.py
+          test -f scanner/normalizer.py
+          test -f scanner/planner.py
+          test -f scanner/verifier.py
+          test -f scanner/bd_verifier.py
+          test -f scanner/channels.py
+          test -f scanner/movies.py
+          test -f manual/movies.txt
+          test -f manual/movies.json
+          test -f manual/channel-logos.json
+          test -f manual/movie-sources.json
+          test -f manual/movies-template.txt
+          test -f manual/movies-template.json
+          test -f state/manual-movie-posters.json
+          test -f state/manual-movie-remote-cache.json
+          test -f state/channel-logo-cache.json
+          test -f tests/test_manual_movies.py
+          test -f tests/test_manual_movie_sources.py
+          test -f tests/test_channel_logos.py
+          test -f scanner/events.py
+          test -f scanner/output.py
+          test -f scanner/telegram_notify.py
+
+          python -m py_compile scan.py scanner/*.py scanner/parsers/*.py
+          python -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Select scan mode
+        id: scan_mode
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            MODE="${{ inputs.mode }}"
+          elif [[ "${{ github.event.schedule }}" == "7 7,17 * * *" ]]; then
+            MODE="today"
+          elif [[ "${{ github.event.schedule }}" == "27 3,9,15,21 * * *" ]]; then
+            MODE="upcoming"
+          elif [[ "${{ github.event.schedule }}" == "17 0,6,12,18 * * *" ]]; then
+            MODE="channels"
+          elif [[ "${{ github.event.schedule }}" == "37 4 */2 * *" ]]; then
+            MODE="movies"
+          else
+            MODE="channels"
           fi
 
-          python -m pip install pytest
+          echo "Selected scan mode: $MODE"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
 
-      - name: Show repository structure
+      - name: Run scanner
+        shell: bash
+        env:
+          PYTHONUNBUFFERED: "1"
+          PYTHONFAULTHANDLER: "1"
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          PRIVATE_MOVIE_SOURCE_TOKEN: ${{ secrets.PRIVATE_MOVIE_SOURCE_TOKEN }}
         run: |
-          echo "Repository root:"
-          find . -maxdepth 3 -type f \
-            ! -path "./.git/*" \
-            | sort
+          set -euo pipefail
 
-      - name: Check required source files
+          MODE="${{ steps.scan_mode.outputs.mode }}"
+
+          echo "============================================================"
+          echo "LIVE SIGNAL SCANNER STARTED"
+          echo "Mode: $MODE"
+          echo "Commit: $(git rev-parse --short HEAD)"
+          echo "Started: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          python --version
+          echo "============================================================"
+
+          python -u scan.py "$MODE" 2>&1 | tee scanner-run.log
+
+          echo "============================================================"
+          echo "SCANNER FINISHED"
+          echo "Mode: $MODE"
+          echo "Finished: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo "============================================================"
+
+      - name: Commit and push updated data
+        id: git_push
         shell: bash
         run: |
-          set -Eeuo pipefail
+          set -euo pipefail
 
-          required_files=(
-            "scan.py"
-            "requirements.txt"
-            "site/index.html"
-            "site/runtime-config.json"
-            "site/app.webmanifest"
-            "site/sw.js"
-            "site/_headers"
-            "scripts/build-pages.sh"
-            "scripts/validate-pages.py"
-            "data/manifest.json"
-            "data/today-match.json"
-            "data/upcoming.json"
-          )
+          git config user.name "Live Signal Scanner"
+          git config user.email "scanner@users.noreply.github.com"
 
-          for file in "${required_files[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "::error file=$file::Required file পাওয়া যায়নি"
-              exit 1
-            fi
+          git add data reports state
 
-            if [ ! -s "$file" ]; then
-              echo "::error file=$file::Required file empty"
-              exit 1
-            fi
-          done
+          if git diff --cached --quiet; then
+            echo "No updated output found."
+          else
+            git commit -m "Auto update: ${{ steps.scan_mode.outputs.mode }} [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
+          fi
 
-          echo "All required source files are present."
+          # Tracked temporary files আগের অবস্থায় ফেরত নেওয়া হবে।
+          git restore --worktree -- working || true
 
-      - name: Validate JSON syntax
-        shell: bash
-        run: |
-          set -Eeuo pipefail
+          # Untracked temporary checkpoint পরিষ্কার করা হবে।
+          rm -f working/pipeline-checkpoint.json
+          rm -rf working/checkpoints
 
-          python - <<'PY'
-          import json
-          from pathlib import Path
+          # source-cache delete করা হবে না।
+          # .gitignore এটিকে Git থেকে বাদ রাখবে এবং Actions cache সংরক্ষণ করবে।
 
-          json_files = [
-              Path("site/runtime-config.json"),
-              Path("site/app.webmanifest"),
-              Path("data/manifest.json"),
-              Path("data/today-match.json"),
-              Path("data/upcoming.json"),
-          ]
+          find . -type d -name __pycache__ -prune -exec rm -rf {} +
+          find . -type f -name '*.pyc' -delete
 
-          json_files.extend(
-              sorted(Path("data/channels").glob("*.json"))
-          )
+          REMAINING="$(git status --porcelain --untracked-files=normal)"
 
-          json_files.extend(
-              sorted(Path("data/movies").glob("*/index.json"))
-          )
-
-          json_files.extend(
-              sorted(Path("data/movies").glob("*/page-*.json"))
-          )
-
-          failed = False
-
-          for path in json_files:
-              try:
-                  with path.open(
-                      "r",
-                      encoding="utf-8",
-                  ) as file:
-                      json.load(file)
-
-                  print(f"[OK] {path}")
-
-              except Exception as error:
-                  failed = True
-                  print(f"::error file={path}::{error}")
-
-          if failed:
-              raise SystemExit(1)
-
-          print(
-              f"Validated {len(json_files)} JSON files."
-          )
-          PY
-
-      - name: Compile Python files
-        run: |
-          python -m compileall \
-            -q \
-            scan.py \
-            scanner \
-            tests \
-            scripts/validate-pages.py
-
-      - name: Run scanner tests
-        run: |
-          python -m pytest -q
-
-      - name: Build Cloudflare Pages output
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-
-          chmod +x scripts/build-pages.sh
-          bash scripts/build-pages.sh
-
-      - name: Check generated dist structure
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-
-          required_dist_files=(
-            "dist/index.html"
-            "dist/runtime-config.json"
-            "dist/app.webmanifest"
-            "dist/sw.js"
-            "dist/_headers"
-            "dist/data/manifest.json"
-            "dist/data/today-match.json"
-            "dist/data/upcoming.json"
-          )
-
-          for file in "${required_dist_files[@]}"; do
-            if [ ! -f "$file" ]; then
-              echo "::error file=$file::Build output file পাওয়া যায়নি"
-              exit 1
-            fi
-
-            if [ ! -s "$file" ]; then
-              echo "::error file=$file::Build output file empty"
-              exit 1
-            fi
-          done
-
-          echo "Generated dist structure is complete."
-
-      - name: Check public build safety
-        shell: bash
-        run: |
-          set -Eeuo pipefail
-
-          forbidden_directories=(
-            ".github"
-            "config"
-            "manual"
-            "reports"
-            "scanner"
-            "state"
-            "tests"
-            "working"
-            "workers"
-          )
-
-          for directory in "${forbidden_directories[@]}"; do
-            if [ -d "dist/$directory" ]; then
-              echo "::error::Private folder found in dist: $directory/"
-              exit 1
-            fi
-          done
-
-          forbidden_files=(
-            ".env"
-            ".dev.vars"
-            "requirements.txt"
-            "scan.py"
-            "wrangler.toml"
-          )
-
-          for file_name in "${forbidden_files[@]}"; do
-            if find dist -type f -name "$file_name" | grep -q .; then
-              echo "::error::Private file found in dist: $file_name"
-              exit 1
-            fi
-          done
-
-          if find dist -type f \
-            \( \
-              -name "*.py" \
-              -o -name "*.pyc" \
-              -o -name "*.pem" \
-              -o -name "*.p12" \
-              -o -name "*.pfx" \
-            \) \
-            | grep -q .; then
-            echo "::error::Private source or secret file found in dist"
+          if [[ -n "$REMAINING" ]]; then
+            echo "Unexpected changes remain:"
+            echo "$REMAINING"
             exit 1
           fi
 
-          echo "Public build safety check passed."
+          git fetch origin main
+          git rebase origin/main
 
-      - name: Run final Pages validator
-        run: |
-          python scripts/validate-pages.py dist
+          for ATTEMPT in 1 2 3; do
+            if git push origin HEAD:main; then
+              break
+            fi
 
-      - name: Show final build summary
-        shell: bash
-        run: |
-          echo "Final dist files:"
-          find dist -type f | sort
+            if [[ "$ATTEMPT" == "3" ]]; then
+              echo "GitHub push failed after 3 attempts."
+              exit 1
+            fi
 
-          echo
-          echo "Total files:"
-          find dist -type f | wc -l
+            echo "Push attempt $ATTEMPT failed. Retrying..."
+            sleep 5
+            git fetch origin main
+            git rebase origin/main
+          done
 
-          echo
-          echo "Total build size:"
-          du -sh dist
+          COMMIT="$(git rev-parse --short HEAD)"
 
-      - name: Upload Pages build artifact
+          echo "commit=$COMMIT" >> "$GITHUB_OUTPUT"
+          echo "GitHub push successful: $COMMIT"
+
+      - name: Send Telegram after successful GitHub push
         if: success()
+        shell: bash
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -u scanner/telegram_notify.py \
+            "${{ steps.scan_mode.outputs.mode }}" \
+            "${{ steps.git_push.outputs.commit }}" \
+            "main"
+
+      - name: Upload scanner log on failure
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: click-tv-pages-dist
-          path: dist
-          if-no-files-found: error
-          retention-days: 7
+          name: scanner-failure-log-${{ github.run_number }}
+          path: scanner-run.log
+          if-no-files-found: ignore
+          retention-days: 3
