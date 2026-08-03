@@ -136,16 +136,38 @@ jobs:
           persist-credentials: false
           token: ${{ secrets.PRIVATE_MOVIE_SOURCE_TOKEN }}
 
-      - name: Validate private movie source files
+      - name: Validate private movie source repository
         if: steps.scan_mode.outputs.mode == 'movies' || steps.scan_mode.outputs.mode == 'all'
         shell: bash
         run: |
           set -euo pipefail
 
-          test -f working/private-movie-source/categories/Bangla_Movies/bangla_movies.txt
-          test -f working/private-movie-source/categories/Hindi_Movies/hindi_movies.txt
-          test -f working/private-movie-source/categories/English_Movies/english_movies.txt
-          test -f working/private-movie-source/categories/Dubbed/Hindi_Dubbed/hindi_dubbed_movies.txt
+          SOURCE_ROOT="working/private-movie-source/categories"
+          test -d "$SOURCE_ROOT"
+
+          FILE_COUNT="$(find "$SOURCE_ROOT" -type f \
+            \( -iname '*.txt' -o -iname '*.json' \) \
+            ! -iname 'history.txt' \
+            ! -iname 'history.json' \
+            ! -iname 'readme.txt' \
+            ! -iname 'readme.json' \
+            ! -name '.*' \
+            ! -name '_*' | wc -l | tr -d ' ')"
+
+          if [[ "$FILE_COUNT" -lt 1 ]]; then
+            echo "No supported movie source files found under $SOURCE_ROOT"
+            exit 1
+          fi
+
+          echo "Dynamic movie source discovery found $FILE_COUNT supported file(s)."
+          find "$SOURCE_ROOT" -type f \
+            \( -iname '*.txt' -o -iname '*.json' \) \
+            ! -iname 'history.txt' \
+            ! -iname 'history.json' \
+            ! -iname 'readme.txt' \
+            ! -iname 'readme.json' \
+            ! -name '.*' \
+            ! -name '_*' | sort
 
       - name: Run scanner
         shell: bash
@@ -158,37 +180,6 @@ jobs:
           set -euo pipefail
 
           MODE="${{ steps.scan_mode.outputs.mode }}"
-          PRIVATE_MOVIE_SERVER_PID=""
-
-          cleanup_private_movie_server() {
-            if [[ -n "$PRIVATE_MOVIE_SERVER_PID" ]]; then
-              kill "$PRIVATE_MOVIE_SERVER_PID" 2>/dev/null || true
-              wait "$PRIVATE_MOVIE_SERVER_PID" 2>/dev/null || true
-            fi
-          }
-
-          trap cleanup_private_movie_server EXIT
-
-          if [[ "$MODE" == "movies" || "$MODE" == "all" ]]; then
-            python -m http.server 8765 \
-              --bind 127.0.0.1 \
-              --directory working/private-movie-source \
-              >/tmp/click-tv-private-movie-source.log 2>&1 &
-            PRIVATE_MOVIE_SERVER_PID="$!"
-
-            for ATTEMPT in {1..15}; do
-              if curl --fail --silent \
-                http://127.0.0.1:8765/categories/Bangla_Movies/bangla_movies.txt \
-                >/dev/null; then
-                break
-              fi
-              sleep 1
-            done
-
-            curl --fail --silent --show-error \
-              http://127.0.0.1:8765/categories/Bangla_Movies/bangla_movies.txt \
-              >/dev/null
-          fi
 
           echo "============================================================"
           echo "LIVE SIGNAL SCANNER STARTED"
