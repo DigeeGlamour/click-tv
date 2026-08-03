@@ -5,7 +5,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scanner.movies import load_manual_movies, paginate_movie_list
+from scanner.movies import (
+    _merge_manual_over_discovered,
+    load_manual_movies,
+    paginate_movie_list,
+)
 
 
 class ManualMovieTests(unittest.TestCase):
@@ -49,19 +53,67 @@ STREAM Link 1: https://example.com/different-name-2025-720p.mkv
             self.assertTrue(card["skip_verification"])
             self.assertEqual(card["verification_status"], "manual_trusted")
 
-    def test_manual_movies_are_first_and_latest_year_first(self) -> None:
+    def test_movies_are_year_grouped_with_manual_first_inside_each_year(self) -> None:
         movies = [
-            {"id": "auto-2026", "name": "Auto", "year": 2026, "verification_status": "verified_global"},
-            {"id": "remote-2025", "name": "Remote", "year": 2025, "manual_source": True, "manual_source_tier": 2, "manual_position": 1, "verification_status": "manual_trusted"},
-            {"id": "local-2024", "name": "Local Older", "year": 2024, "manual_source": True, "manual_source_tier": 0, "manual_position": 2, "verification_status": "manual_trusted"},
-            {"id": "local-2026", "name": "Local Newer", "year": 2026, "manual_source": True, "manual_source_tier": 0, "manual_position": 1, "verification_status": "manual_trusted"},
+            {"id": "auto-2026", "name": "Auto 2026", "year": 2026, "verification_status": "verified_global"},
+            {"id": "remote-2025", "name": "Remote 2025", "year": 2025, "manual_source": True, "manual_source_tier": 2, "manual_position": 1, "verification_status": "manual_trusted"},
+            {"id": "auto-2025", "name": "Auto 2025", "year": 2025, "verification_status": "verified_global"},
+            {"id": "local-2024", "name": "Local 2024", "year": 2024, "manual_source": True, "manual_source_tier": 0, "manual_position": 2, "verification_status": "manual_trusted"},
+            {"id": "local-2026", "name": "Local 2026", "year": 2026, "manual_source": True, "manual_source_tier": 0, "manual_position": 1, "verification_status": "manual_trusted"},
         ]
         payload = paginate_movie_list(movies, "Bangla", page_size=100)
         items = payload["page_contents"]["page-001.json"]["items"]
         self.assertEqual(
             [item["id"] for item in items],
-            ["local-2026", "remote-2025", "local-2024", "auto-2026"],
+            ["local-2026", "auto-2026", "remote-2025", "auto-2025", "local-2024"],
         )
+
+    def test_manual_name_match_removes_discovered_movie_links(self) -> None:
+        discovered = [
+            {
+                "id": "provider-priority-2025",
+                "name": "Priority Movie Full HD",
+                "year": 2025,
+                "url": "https://provider.example/priority-2025.mkv",
+                "backups": [{"url": "https://provider2.example/priority-2025.mkv"}],
+                "logo": "https://image.tmdb.org/t/p/w500/priority.jpg",
+                "verification_status": "verified_global",
+            },
+            {
+                "id": "other-movie",
+                "name": "Other Movie",
+                "year": 2026,
+                "url": "https://provider.example/other.mkv",
+                "verification_status": "verified_global",
+            },
+        ]
+        manual = [
+            {
+                "id": "manual-priority-2026",
+                "name": "Priority Movie",
+                "year": 2026,
+                "url": "https://manual.example/priority-1080p.mkv",
+                "backups": [{"url": "https://manual.example/priority-4k.mkv"}],
+                "logo": "",
+                "manual_source": True,
+                "verification_status": "manual_trusted",
+            }
+        ]
+
+        merged = _merge_manual_over_discovered(discovered, manual)
+        by_name = {item["name"]: item for item in merged}
+
+        self.assertEqual(set(by_name), {"Other Movie", "Priority Movie"})
+        priority = by_name["Priority Movie"]
+        self.assertEqual(priority["url"], "https://manual.example/priority-1080p.mkv")
+        self.assertEqual(
+            [item["url"] for item in priority["backups"]],
+            ["https://manual.example/priority-4k.mkv"],
+        )
+        self.assertEqual(priority["logo"], "https://image.tmdb.org/t/p/w500/priority.jpg")
+        all_urls = [priority["url"], *[item["url"] for item in priority["backups"]]]
+        self.assertNotIn("https://provider.example/priority-2025.mkv", all_urls)
+        self.assertNotIn("https://provider2.example/priority-2025.mkv", all_urls)
 
     def test_compatible_manual_link_becomes_primary(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
