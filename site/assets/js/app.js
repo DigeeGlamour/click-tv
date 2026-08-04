@@ -2065,7 +2065,6 @@ function shakaConfigFor(mode, isMovie, _fastStart = false) {
       bufferingGoal: profile.maxBufferLength,
       bufferBehind: profile.backBufferLength,
       lowLatencyMode: profile.lowLatencyMode || (isEvent && mode === NETWORK_MODE.BALANCED),
-      jumpLargeGaps: true,
       stallEnabled: true,
       stallThreshold: isEvent ? 1.25 : 1.5,
       stallSkip: 0.1,
@@ -2579,8 +2578,14 @@ async function initShaka(url, session, attemptToken) {
   shaka.polyfill.installAll();
   if (!shaka.Player.isBrowserSupported()) throw new Error('DASH playback supported নয়');
 
-  const player = new shaka.Player(video);
+  const player = new shaka.Player();
   state.shaka = player;
+  await player.attach(video);
+  if (!isActiveAttempt(session, attemptToken)) {
+    try { await player.destroy(); } catch (_) {}
+    if (state.shaka === player) state.shaka = null;
+    return;
+  }
   const isMovie = session.item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
   player.configure(shakaConfigFor(currentNetworkMode(), isMovie));
 
@@ -3134,11 +3139,21 @@ function sendPlaybackTelemetry(result, reason = '') {
 
   try {
     const body = JSON.stringify(payload);
+    const contentType = 'text/plain;charset=UTF-8';
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(endpoint, new Blob([body], { type: 'application/json' }));
-    } else {
-      fetch(endpoint, { method: 'POST', mode: 'cors', keepalive: true, headers: { 'Content-Type': 'application/json' }, body }).catch(() => {});
+      const queued = navigator.sendBeacon(
+        endpoint,
+        new Blob([body], { type: contentType })
+      );
+      if (queued) return;
     }
+    fetch(endpoint, {
+      method: 'POST',
+      mode: 'no-cors',
+      keepalive: true,
+      headers: { 'Content-Type': contentType },
+      body
+    }).catch(() => {});
   } catch (_) {}
 }
 
