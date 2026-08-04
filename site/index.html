@@ -3702,12 +3702,12 @@ function networkProfile(mode, isMovie, _fastStart = false) {
   if (mode === NETWORK_MODE.AUTO) {
     return {
       label: 'Auto · Lowest Buffer', lowLatencyMode: true,
-      maxBufferLength: isEvent ? 4 : 6,
-      maxMaxBufferLength: isEvent ? 9 : 12,
-      maxBufferSize: 12 * 1024 * 1024,
-      backBufferLength: 6,
+      maxBufferLength: isEvent ? 5 : 7,
+      maxMaxBufferLength: isEvent ? 12 : 15,
+      maxBufferSize: 14 * 1024 * 1024,
+      backBufferLength: 7,
       liveSyncDurationCount: 2,
-      liveMaxLatencyDurationCount: 4
+      liveMaxLatencyDurationCount: 5
     };
   }
 
@@ -3786,8 +3786,8 @@ function hlsConfigFor(mode, isMovie, _fastStart = false) {
     startLevel: -1,
     capLevelToPlayerSize: true,
     capLevelOnFPSDrop: true,
-    maxStarvationDelay: 2,
-    maxLoadingDelay: 3,
+    maxStarvationDelay: 2.5,
+    maxLoadingDelay: 3.5,
     testBandwidth: true,
     abrEwmaDefaultEstimate: bandwidthEstimate > 0 ? bandwidthEstimate : (effectivePerformanceClass() === 'normal' ? 2500000 : 1200000),
     abrBandwidthFactor: 0.86,
@@ -3808,8 +3808,8 @@ function shakaConfigFor(mode, isMovie, _fastStart = false) {
   const rebufferingGoal = isMovie
     ? (mode === NETWORK_MODE.LOW ? 1.2 : 2)
     : isEvent
-      ? (mode === NETWORK_MODE.STABLE ? 1.8 : mode === NETWORK_MODE.AUTO ? 0.6 : 0.9)
-      : (mode === NETWORK_MODE.STABLE ? 2 : mode === NETWORK_MODE.AUTO ? 0.7 : 1);
+      ? (mode === NETWORK_MODE.STABLE ? 1.8 : mode === NETWORK_MODE.AUTO ? 0.9 : 0.9)
+      : (mode === NETWORK_MODE.STABLE ? 2 : mode === NETWORK_MODE.AUTO ? 0.9 : 1);
 
   return {
     manifest: { retryParameters: { ...retryParameters } },
@@ -3951,7 +3951,7 @@ function applyNetworkMode(mode, notify = true) {
           Number.isFinite(state.hls.liveSyncPosition) &&
           Math.abs(state.hls.liveSyncPosition - video.currentTime) > 2
         ) {
-          video.currentTime = Math.max(0, state.hls.liveSyncPosition - 0.5);
+          video.currentTime = Math.max(0, state.hls.liveSyncPosition - 1.0);
         }
       } catch (_) {}
     }
@@ -4250,7 +4250,7 @@ function initHls(url, session, attemptToken) {
       requestAnimationFrame(() => {
         try {
           const livePosition = Number(hls.liveSyncPosition || 0);
-          const targetLag = currentNetworkMode() === NETWORK_MODE.AUTO ? 0.5 : currentNetworkMode() === NETWORK_MODE.STABLE ? 2.5 : 1.2;
+          const targetLag = currentNetworkMode() === NETWORK_MODE.AUTO ? 1.0 : currentNetworkMode() === NETWORK_MODE.STABLE ? 2.5 : 1.2;
           if (livePosition > 0 && (!Number.isFinite(video.currentTime) || Math.abs(livePosition - video.currentTime) > 3)) {
             video.currentTime = Math.max(0, livePosition - targetLag);
           }
@@ -4351,7 +4351,7 @@ async function initShaka(url, session, attemptToken) {
       const end = Number(range?.end || 0);
       const start = Number(range?.start || 0);
       const mode = currentNetworkMode();
-      const targetLatency = mode === NETWORK_MODE.AUTO ? 1.2 : mode === NETWORK_MODE.STABLE ? 5 : 2.5;
+      const targetLatency = mode === NETWORK_MODE.AUTO ? 1.8 : mode === NETWORK_MODE.STABLE ? 5 : 2.5;
       if (end > start) video.currentTime = Math.max(start, end - targetLatency);
     }
   } catch (_) {}
