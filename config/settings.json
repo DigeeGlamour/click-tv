@@ -1,0 +1,510 @@
+{
+  "timezone": "Asia/Dhaka",
+  "source_timeout_seconds": 10,
+  "stream_timeout_seconds": 6,
+  "source_workers": 12,
+  "verification_workers": 20,
+  "verification": {
+    "workers": 20,
+    "timeout_seconds": 6,
+    "retry_attempts": 1,
+    "retry_delays_seconds": [
+      0
+    ],
+    "probe_media_segments": true,
+    "maximum_hls_variant_probes": 2,
+    "media_sample_bytes": 16384,
+    "maximum_manifest_bytes": 262144,
+    "progress_interval": 25,
+    "batch_size_multiplier": 3,
+    "time_budget_seconds": {
+      "channels": 1500,
+      "tv": 1500,
+      "today": 420,
+      "today_match": 420,
+      "upcoming": 420,
+      "movies": 2400,
+      "all": 3600
+    }
+  },
+  "minimum_live_height": 720,
+  "allow_unknown_live_resolution": true,
+  "manual_can_override_resolution": true,
+  "maximum_total_links": 6,
+  "maximum_backups": 5,
+  "prefer_https": true,
+  "allow_http_fallback": true,
+  "movie_page_size": 100,
+  "live_categories": [
+    "Bangla",
+    "Sports",
+    "Indian",
+    "Cartoon",
+    "Islamic",
+    "Foreign News",
+    "Other"
+  ],
+  "movie_categories": [
+    "Bangla",
+    "Hindi",
+    "English",
+    "Dubbed",
+    "South Indian",
+    "Premium",
+    "Mix"
+  ],
+  "pinned_channels": {
+    "Sports": [
+      {
+        "canonical_name": "T Sports",
+        "aliases": [
+          "t sports",
+          "t sports hd",
+          "t sports fhd",
+          "tsports",
+          "tsports hd",
+          "t-sports"
+        ]
+      }
+    ],
+    "Indian": [
+      {
+        "canonical_name": "Star Jalsha",
+        "aliases": [
+          "star jalsha",
+          "star jalsha tv"
+        ]
+      },
+      {
+        "canonical_name": "Zee Bangla",
+        "aliases": [
+          "zee bangla",
+          "zee bangla tv"
+        ]
+      },
+      {
+        "canonical_name": "Sony Aath",
+        "aliases": [
+          "sony aath",
+          "sony aath tv",
+          "sony 8"
+        ]
+      },
+      {
+        "canonical_name": "Colors Bangla",
+        "aliases": [
+          "colors bangla",
+          "colour bangla",
+          "colours bangla"
+        ]
+      },
+      {
+        "canonical_name": "Jalsha Movies",
+        "aliases": [
+          "jalsha movies",
+          "star jalsha movies"
+        ]
+      },
+      {
+        "canonical_name": "Zee Bangla Cinema",
+        "aliases": [
+          "zee bangla cinema",
+          "zee cinema bangla"
+        ]
+      },
+      {
+        "canonical_name": "Sun Bangla",
+        "aliases": [
+          "sun bangla",
+          "sun bangla tv"
+        ]
+      },
+      {
+        "canonical_name": "Republic Bangla",
+        "aliases": [
+          "republic bangla",
+          "republic tv bangla"
+        ]
+      },
+      {
+        "canonical_name": "Zee 24 Ghanta",
+        "aliases": [
+          "zee 24 ghanta",
+          "zee 24 ghonta",
+          "24 ghanta",
+          "24 ghonta"
+        ]
+      }
+    ],
+    "Cartoon": [
+      {
+        "canonical_name": "Duronto TV",
+        "aliases": [
+          "duronto tv",
+          "duronto"
+        ]
+      },
+      {
+        "canonical_name": "Sony YAY!",
+        "aliases": [
+          "sony yay",
+          "sony yay tv"
+        ]
+      },
+      {
+        "canonical_name": "Ssoftoons",
+        "aliases": [
+          "ssoftoons",
+          "ssoftoons tv",
+          "ssoftoons channel"
+        ]
+      },
+      {
+        "canonical_name": "Gopal Bhar",
+        "aliases": [
+          "gopal bhar",
+          "gopal bhar bangla",
+          "gopal bhar tv"
+        ]
+      },
+      {
+        "canonical_name": "Bantul the Great",
+        "aliases": [
+          "bantul the great",
+          "batul the great",
+          "bantul"
+        ]
+      },
+      {
+        "canonical_name": "Wow Kidz Bangla",
+        "aliases": [
+          "wow kidz bangla",
+          "wow kids bangla",
+          "wow kidz bengali"
+        ]
+      },
+      {
+        "canonical_name": "Kids TV Bangla",
+        "aliases": [
+          "kids tv bangla",
+          "kids bangla tv",
+          "bangla kids tv"
+        ]
+      },
+      {
+        "canonical_name": "Motu Patlu Bangla",
+        "aliases": [
+          "motu patlu bangla",
+          "motu patlu bengali",
+          "motu patlu tv bangla"
+        ]
+      },
+      {
+        "canonical_name": "Maasranga Kids",
+        "aliases": [
+          "maasranga kids",
+          "maasranga kids tv",
+          "masranga kids",
+          "mashranga kids",
+          "machranga kids"
+        ]
+      },
+      {
+        "canonical_name": "Bengali Fairy Tales",
+        "aliases": [
+          "bengali fairy tales",
+          "bangla fairy tales",
+          "bengali fairy tale"
+        ]
+      },
+      {
+        "canonical_name": "Ssoftoons Animation Bangla",
+        "aliases": [
+          "ssoftoons animation bangla",
+          "ssoftoons bangla animation",
+          "ssoftoons animation"
+        ]
+      }
+    ]
+  },
+  "source_priority": {
+    "manual": 1000,
+    "today_match": 500,
+    "upcoming": 400,
+    "tv": 100,
+    "movies": 100
+  },
+  "output": {
+    "today_match": "data/today-match.json",
+    "upcoming": "data/upcoming.json",
+    "channels": "data/channels",
+    "movies": "data/movies",
+    "manifest": "data/manifest.json",
+    "reports": "reports"
+  },
+  "planning": {
+    "drop_unknown_tv_before_verification": true,
+    "initial_candidates_per_group": {
+      "tv": 1,
+      "movies": 1,
+      "today_match": 1,
+      "upcoming": 1
+    },
+    "maximum_candidates_per_group": {
+      "tv": 6,
+      "movies": 2,
+      "today_match": 4,
+      "upcoming": 3
+    },
+    "target_publishable_per_group": {
+      "tv": 2,
+      "movies": 1,
+      "today_match": 1,
+      "upcoming": 1
+    },
+    "maximum_total_candidate_pool": {
+      "channels": 3200,
+      "tv": 3200,
+      "today": 800,
+      "today_match": 800,
+      "upcoming": 800,
+      "movies": 5000,
+      "all": 9000
+    }
+  },
+  "network": {
+    "retry_attempts": 2,
+    "retry_delays_seconds": [
+      0,
+      2
+    ],
+    "retry_status_codes": [
+      429,
+      500,
+      502,
+      503,
+      504
+    ],
+    "verify_ssl": true,
+    "maximum_source_bytes": 26214400
+  },
+  "bd_verification": {
+    "workers": 8,
+    "proxy_base": "https://channelverification.juelgrsan3679.workers.dev",
+    "github_only_protection": true,
+    "proxy_timeout_seconds": 8,
+    "publish_uncertain_movies": true,
+    "same_run_second_pass": true,
+    "host_sample_size": 5,
+    "host_sample_uncertain_threshold": 4,
+    "host_second_pass_sample_size": 8,
+    "path_404_sample_size": 5,
+    "path_404_threshold": 4,
+    "path_group_depth": 3,
+    "direct_browser_second_pass": true,
+    "publish_uncertain_direct_tv": true,
+    "trusted_source_ids": [
+      "livetv-collector-bd",
+      "sydul104-my-source",
+      "sm-combined-livetv",
+      "sm-aynaott-tv",
+      "sm-toffee-tv",
+      "abusaeeidx-crestsport-bd",
+      "abusaeeidx-mrgify-bdix",
+      "abusaeeidx-tsports-combine",
+      "sm-iptv-bdix",
+      "srhady-akash-live",
+      "srhady-toffee-bd"
+    ],
+    "protect_http_status_codes": [
+      401,
+      403,
+      451
+    ],
+    "transient_http_status_codes": [
+      429,
+      500,
+      502,
+      503,
+      504
+    ],
+    "permanent_http_status_codes": [
+      404,
+      410
+    ],
+    "permanent_fail_confirmations": 2,
+    "keep_pending_hours": 48
+  },
+  "link_policy": {
+    "maximum_total_links": 6,
+    "maximum_backups": 5,
+    "prefer_https": true,
+    "allow_http_fallback": true,
+    "prefer_different_hosts": true,
+    "movie_maximum_total_links": 4,
+    "movie_maximum_backups": 3
+  },
+  "failure_protection": {
+    "maximum_drop_percentage": 70,
+    "minimum_previous_count": 10
+  },
+  "notifications": {
+    "telegram_enabled": false,
+    "detailed_movie_breakdown": true,
+    "post_push_only": true
+  },
+  "pipeline": {
+    "global_workers": 20,
+    "minimum_global_inflight": 12,
+    "bd_workers": 6,
+    "per_host_limit": 4,
+    "host_failure_threshold": 5,
+    "host_cooldown_seconds": 60,
+    "checkpoint_interval": 100,
+    "time_budget_seconds": {
+      "channels": 1500,
+      "tv": 1500,
+      "today": 420,
+      "today_match": 420,
+      "upcoming": 420,
+      "movies": 2400,
+      "all": 3600
+    },
+    "shared_total_inflight_limit": 120,
+    "bd_reserved_inflight_slots": 20,
+    "bd_per_host_limit": 8,
+    "combined_per_host_limit": 32
+  },
+  "content_routing": {
+    "discover_movies_in_tv_sources": true,
+    "cleanup_polluted_tv_once": true,
+    "cleanup_migration_id": "vod-routing-v1",
+    "cleanup_polluted_tv_categories": [
+      "Bangla",
+      "Indian"
+    ],
+    "cleanup_minimum_incoming_tv": 20
+  },
+  "source_cache": {
+    "enabled": true,
+    "allow_stale_on_error": true
+  },
+  "worker_shards": {
+    "channels": {
+      "pool_count": 1,
+      "workers_per_pool": 20,
+      "minimum_total_inflight": 12,
+      "per_host_limit": 4,
+      "bd_pool_count": 1,
+      "bd_workers_per_pool": 6,
+      "tail_per_host_limit": 6,
+      "tail_threshold": 120
+    },
+    "today": {
+      "pool_count": 1,
+      "workers_per_pool": 20,
+      "minimum_total_inflight": 12,
+      "per_host_limit": 4,
+      "bd_pool_count": 1,
+      "bd_workers_per_pool": 4,
+      "tail_per_host_limit": 6,
+      "tail_threshold": 80
+    },
+    "upcoming": {
+      "pool_count": 1,
+      "workers_per_pool": 20,
+      "minimum_total_inflight": 12,
+      "per_host_limit": 4,
+      "bd_pool_count": 1,
+      "bd_workers_per_pool": 4,
+      "tail_per_host_limit": 6,
+      "tail_threshold": 80
+    },
+    "movies": {
+      "pool_count": 5,
+      "workers_per_pool": 20,
+      "minimum_total_inflight": 80,
+      "per_host_limit": 24,
+      "bd_pool_count": 5,
+      "bd_workers_per_pool": 8,
+      "tail_per_host_limit": 32,
+      "tail_threshold": 700,
+      "shared_total_inflight_limit": 120,
+      "bd_reserved_inflight_slots": 20,
+      "bd_per_host_limit": 8,
+      "combined_per_host_limit": 32,
+      "host_sample_size": 5,
+      "host_sample_uncertain_threshold": 4,
+      "host_second_pass_sample_size": 8,
+      "path_404_sample_size": 5,
+      "path_404_threshold": 4,
+      "path_group_depth": 3
+    },
+    "all": {
+      "pool_count": 5,
+      "workers_per_pool": 20,
+      "minimum_total_inflight": 80,
+      "per_host_limit": 24,
+      "bd_pool_count": 5,
+      "bd_workers_per_pool": 8,
+      "tail_per_host_limit": 32,
+      "tail_threshold": 900,
+      "shared_total_inflight_limit": 120,
+      "bd_reserved_inflight_slots": 20,
+      "bd_per_host_limit": 8,
+      "combined_per_host_limit": 32,
+      "host_sample_size": 5,
+      "host_sample_uncertain_threshold": 4,
+      "host_second_pass_sample_size": 8,
+      "path_404_sample_size": 5,
+      "path_404_threshold": 4,
+      "path_group_depth": 3
+    }
+  },
+  "movie_failure_protection": {
+    "enabled": true,
+    "maximum_drop_percentage": 40,
+    "minimum_previous_count": 100
+  },
+  "resolution": {
+    "tv_minimum_height": 720,
+    "allow_unknown_tv_resolution": true,
+    "manual_can_override_resolution": true,
+    "preserve_working_bd_below_minimum": true,
+    "preserve_unknown_working_tv": true,
+    "event_minimum_height": 0,
+    "allow_unknown_event_resolution": true
+  },
+  "channel_protection": {
+    "preserve_working_bd_channels": true,
+    "preserve_working_bd_below_minimum": true,
+    "preserve_unknown_working_tv": true,
+    "publish_uncertain_direct_tv": true,
+    "always_verify_pinned_channels": true,
+    "always_verify_manual_channels": true,
+    "protected_categories": [
+      "Bangla"
+    ],
+    "trusted_source_ids": [
+      "livetv-collector-bd",
+      "sydul104-my-source",
+      "sm-combined-livetv",
+      "sm-aynaott-tv",
+      "sm-toffee-tv",
+      "abusaeeidx-crestsport-bd",
+      "abusaeeidx-mrgify-bdix",
+      "abusaeeidx-tsports-combine",
+      "sm-iptv-bdix",
+      "srhady-akash-live",
+      "srhady-toffee-bd"
+    ],
+    "trusted_source_id_keywords": [
+      "bdix",
+      "jagobd",
+      "toffee",
+      "ayna",
+      "bangla",
+      "akash-live"
+    ]
+  }
+}
