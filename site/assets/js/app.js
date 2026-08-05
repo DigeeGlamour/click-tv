@@ -70,7 +70,6 @@ const LIVE_FULLSCREEN_GRACE_MS = 14000;
 const MOVIE_STALL_FAILOVER_MS = 16000;
 const MOVIE_4K_STALL_FAILOVER_MS = 22000;
 const FULLSCREEN_DRAWER_RENDER_LIMIT = 80;
-const SERIES_ASSET_VERSION = '20260805-series-live-fix5';
 
 const state = {
   runtime: null,
@@ -171,7 +170,6 @@ const state = {
   performanceStableStreak: 0,
   adaptiveDecodeCapHeight: 0,
   performanceNoticeShown: false,
-  seriesModulePromise: null,
   playbackHistory: readJsonStorage(STORAGE_KEYS.playbackHistory, {
     lastBandwidth: 0,
     successfulStarts: 0,
@@ -206,83 +204,6 @@ const movieSubcategoryBar = $('movieSubcategoryBar');
 const chipsContainer = $('chipsContainer');
 const videoContainer = $('videoContainer');
 const playerControls = $('playerControls');
-
-function createSeriesBridge() {
-  return {
-    state,
-    VIEW,
-    STORAGE_KEYS,
-    movieOrder: MOVIE_ORDER,
-    video,
-    videoContainer,
-    sidebarList,
-    fsDrawerList: $('fsDrawerList'),
-    fetchJson,
-    escapeHtml,
-    normalizeItem,
-    startPlayback,
-    renderCurrentList,
-    updateActiveCards,
-    updateFavoriteUi,
-    showToast,
-    showListMessage,
-    setSidebarCount,
-    scrollSidebarToTop,
-    populateDefaultFullscreenDrawer: (query = '') => populateFullscreenDrawer(query, { skipSeries: true })
-  };
-}
-
-function ensureSeriesModule() {
-  if (window.ClickTvSeries?.init) {
-    window.ClickTvSeries.init(createSeriesBridge());
-    return Promise.resolve(window.ClickTvSeries);
-  }
-  if (state.seriesModulePromise) return state.seriesModulePromise;
-
-  state.seriesModulePromise = new Promise((resolve, reject) => {
-    let stylesheet = document.getElementById('clicktv-series-css');
-    if (!stylesheet) {
-      stylesheet = document.createElement('link');
-      stylesheet.id = 'clicktv-series-css';
-      stylesheet.rel = 'stylesheet';
-      stylesheet.href = `assets/css/series.css?v=${SERIES_ASSET_VERSION}`;
-      document.head.appendChild(stylesheet);
-    }
-
-    const finish = () => {
-      if (!window.ClickTvSeries?.init) {
-        reject(new Error('Series module did not register'));
-        return;
-      }
-      window.ClickTvSeries.init(createSeriesBridge());
-      resolve(window.ClickTvSeries);
-    };
-
-    const existing = document.getElementById('clicktv-series-js');
-    if (existing) {
-      if (window.ClickTvSeries?.init) finish();
-      else {
-        existing.addEventListener('load', finish, { once: true });
-        existing.addEventListener('error', () => reject(new Error('Series module failed to load')), { once: true });
-      }
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.id = 'clicktv-series-js';
-    script.src = `assets/js/series.js?v=${SERIES_ASSET_VERSION}`;
-    script.defer = true;
-    script.addEventListener('load', finish, { once: true });
-    script.addEventListener('error', () => reject(new Error('Series module failed to load')), { once: true });
-    document.head.appendChild(script);
-  }).catch((error) => {
-    state.seriesModulePromise = null;
-    console.warn('Series module unavailable; Movie playback remains available.', error);
-    return null;
-  });
-
-  return state.seriesModulePromise;
-}
 
 function readJsonStorage(key, fallback) {
   try {
@@ -976,7 +897,6 @@ function clearCurrentListState() {
 
 async function selectMainView(view, category, options = {}) {
   cancelDataLoading();
-  if (view !== 'movie') window.ClickTvSeries?.resetDetail?.();
   clearCurrentListState();
   closeMobileSearch(true);
   setSearchQuery('');
@@ -992,11 +912,7 @@ async function selectMainView(view, category, options = {}) {
   if (view === 'recent') {
     state.view = VIEW.RECENT;
     state.selectedCategory = 'Recent';
-    const recentItems = getRecentItems();
-    if (recentItems.some((item) => ['series', 'episode'].includes(String(item?.content_kind || '').toLowerCase()))) {
-      await ensureSeriesModule();
-    }
-    state.currentItems = recentItems;
+    state.currentItems = getRecentItems();
     renderCurrentList(true);
     hidePlayerMessage();
     if (options.initial && !state.currentItem && state.currentItems.length) startPlayback(state.currentItems[0], false);
@@ -1006,11 +922,7 @@ async function selectMainView(view, category, options = {}) {
   if (view === 'favorites') {
     state.view = VIEW.FAVORITE;
     state.selectedCategory = 'Favorites';
-    const favoriteItems = getFavoriteItems();
-    if (favoriteItems.some((item) => ['series', 'episode'].includes(String(item?.content_kind || '').toLowerCase()))) {
-      await ensureSeriesModule();
-    }
-    state.currentItems = favoriteItems;
+    state.currentItems = getFavoriteItems();
     renderCurrentList(true);
     hidePlayerMessage();
     return;
@@ -1073,7 +985,6 @@ async function selectMainView(view, category, options = {}) {
 }
 
 async function openMovieParentMode(chip) {
-  await ensureSeriesModule();
   state.currentSortMode = 'default';
   $('sortSelect').value = 'default';
   setActiveMainChip(chip || activateChipByView('movie'));
@@ -1183,7 +1094,6 @@ async function loadMovieParentPreview() {
 
 async function selectMovieSubcategory(slug, button) {
   cancelDataLoading();
-  window.ClickTvSeries?.resetDetail?.();
   clearCurrentListState();
   state.view = VIEW.MOVIE;
   state.selectedCategory = 'Movie';
@@ -1197,55 +1107,44 @@ async function selectMovieSubcategory(slug, button) {
   scrollSidebarToTop();
   button?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
   setSearchEnabled(true);
-  showListMessage('মুভি ও Series তালিকা লোড হচ্ছে…', 'fa-spinner', true);
+  showListMessage('মুভির তালিকা লোড হচ্ছে…', 'fa-spinner', true);
   setSidebarCount('Loading...');
 
-  const seriesModule = await ensureSeriesModule();
-  const seriesPromise = seriesModule?.loadCategory?.(slug) || Promise.resolve([]);
   const movieEntry = manifestMovieEntry(slug);
+  if (!movieEntry?.index) {
+    showListMessage('এই বিভাগে বর্তমানে কোনো মুভি পাওয়া যায়নি', 'fa-info-circle');
+    setSidebarCount('0 Movies');
+    return;
+  }
+
   const sessionId = ++state.movieCategorySessionId;
   const dataSessionId = ++state.dataSessionId;
   const controller = new AbortController();
   state.dataAbortController = controller;
 
   try {
-    let seriesItems = [];
-    if (movieEntry?.index) {
-      const indexData = await fetchJson(movieEntry.index, { signal: controller.signal, cache: 'no-store' });
-      if (sessionId !== state.movieCategorySessionId || dataSessionId !== state.dataSessionId) return;
-      state.movieIndex = indexData;
-      state.moviePageCursor = 0;
-
-      if (Array.isArray(indexData.pages) && indexData.pages.length && Number(indexData.count ?? indexData.pages.length) > 0) {
-        await loadNextMoviePage({ initial: true, sessionId, dataSessionId, signal: controller.signal });
-        await preloadRemainingManualMoviePages({ sessionId, dataSessionId, signal: controller.signal });
-      }
-    } else {
-      state.movieIndex = null;
-      state.moviePageCursor = 0;
-    }
-
-    seriesItems = await seriesPromise;
+    const indexData = await fetchJson(movieEntry.index, { signal: controller.signal, cache: 'no-store' });
     if (sessionId !== state.movieCategorySessionId || dataSessionId !== state.dataSessionId) return;
-    seriesModule?.mergeCategoryItems?.(seriesItems);
+    state.movieIndex = indexData;
+    state.moviePageCursor = 0;
 
-    if (!state.currentItems.length) {
-      showListMessage('এই বিভাগে বর্তমানে কোনো মুভি বা Series পাওয়া যায়নি', 'fa-info-circle');
-      setSidebarCount('0 Movies · 0 Series');
+    if (!Array.isArray(indexData.pages) || !indexData.pages.length || Number(indexData.count ?? indexData.pages.length) === 0) {
+      showListMessage('এই বিভাগে বর্তমানে কোনো মুভি পাওয়া যায়নি', 'fa-info-circle');
+      setSidebarCount('0 Movies');
       return;
     }
-    renderCurrentList(true);
+
+    await loadNextMoviePage({ initial: true, sessionId, dataSessionId, signal: controller.signal });
+    await preloadRemainingManualMoviePages({
+      sessionId,
+      dataSessionId,
+      signal: controller.signal
+    });
   } catch (error) {
     if (error.name === 'AbortError' || sessionId !== state.movieCategorySessionId || dataSessionId !== state.dataSessionId) return;
     console.error(error);
-    const seriesItems = await seriesPromise.catch(() => []);
-    seriesModule?.mergeCategoryItems?.(seriesItems);
-    if (state.currentItems.length) {
-      renderCurrentList(true);
-      return;
-    }
-    showListMessage('মুভি ও Series তালিকা লোড করা যায়নি। আবার চেষ্টা করুন।', 'fa-exclamation-triangle');
-    setSidebarCount('0 Movies · 0 Series');
+    showListMessage('মুভির তালিকা লোড করা যায়নি। আবার চেষ্টা করুন।', 'fa-exclamation-triangle');
+    setSidebarCount('0 Movies');
   }
 }
 
@@ -1357,18 +1256,6 @@ function compactItem(item) {
     audio_codec: item.audio_codec || item.audioCodec || item.audio || '',
     year: item.year || '',
     rating: item.rating || '',
-    content_kind: item.content_kind || '',
-    series_id: item.series_id || '',
-    series_name: item.series_name || '',
-    series_manifest: item.series_manifest || '',
-    series_logo: item.series_logo || '',
-    season_number: Number(item.season_number || 0),
-    episode_number: Number(item.episode_number || 0),
-    episode_title: item.episode_title || '',
-    total_seasons: Number(item.total_seasons || 0),
-    total_episodes: Number(item.total_episodes || 0),
-    latest_episode: item.latest_episode || '',
-    status: item.status || '',
     _sourceKind: item._sourceKind || state.view
   };
 }
@@ -1397,7 +1284,6 @@ function getFavoriteItems() {
 
 function toggleFavorite(uid, event) {
   event?.stopPropagation();
-  if (window.ClickTvSeries?.handleFavorite?.(uid, event)) return;
   const item = state.currentItems.find((entry) => entry._uid === uid) || (state.currentItem?._uid === uid ? state.currentItem : null);
   if (!item) return;
   const key = item.id || item.url;
@@ -1455,7 +1341,7 @@ function applyFilterAndSort() {
 
   if (query) {
     items = items.filter((item) => {
-      const haystack = `${item.name || ''} ${item.category || ''} ${item.competition || ''} ${item.series_name || ''} ${item.episode_title || ''} ${item.latest_episode || ''}`.toLowerCase();
+      const haystack = `${item.name || ''} ${item.category || ''} ${item.competition || ''}`.toLowerCase();
       return haystack.includes(query);
     });
   }
@@ -1518,10 +1404,7 @@ function renderCurrentList(reset = true) {
         manualTrustedItemCount()
       );
       const manualText = manualTotal > 0 ? `${manualTotal} Manual · ` : '';
-      const seriesTotal = Number(window.ClickTvSeries?.countCurrentSeries?.() || 0);
-      const loadedMovies = Math.max(0, state.currentItems.length - seriesTotal);
-      const seriesText = seriesTotal > 0 ? `${seriesTotal} Series · ` : '';
-      setSidebarCount(`${manualText}${seriesText}${loadedMovies}/${totalKnown} Movies loaded`);
+      setSidebarCount(`${manualText}${state.currentItems.length}/${totalKnown} Movies loaded`);
     }
   } else if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
     sidebarList.classList.remove('movie-grid');
@@ -1550,10 +1433,8 @@ function renderCurrentList(reset = true) {
   let initialLimit = state.view === VIEW.MOVIE ? MOVIE_CHUNK_SIZE : CHANNEL_INITIAL_CHUNK;
   if (state.view === VIEW.MOVIE && !state.moviePreviewMode) {
     const lastManualIndex = state.filteredItems.reduce((lastIndex, item, index) => {
-      const manual = !window.ClickTvSeries?.isSeriesItem?.(item) && (
-        item?.manual_source === true ||
-        String(item?.verification_status || '').toLowerCase() === 'manual_trusted'
-      );
+      const manual = item?.manual_source === true ||
+        String(item?.verification_status || '').toLowerCase() === 'manual_trusted';
       return manual ? index : lastIndex;
     }, -1);
     if (lastManualIndex >= 0) initialLimit = Math.max(initialLimit, lastManualIndex + 1);
@@ -1638,9 +1519,6 @@ function createChannelCard(item, visualIndex) {
 }
 
 function createMovieCard(item, visualIndex) {
-  if (window.ClickTvSeries?.isSeriesItem?.(item)) {
-    return window.ClickTvSeries.createSeriesCard(item, visualIndex);
-  }
   const card = document.createElement('div');
   card.className = 'movie-card tv-focusable';
   card.tabIndex = 0;
@@ -1709,9 +1587,8 @@ function maybePreconnect(url) {
 sidebarList.addEventListener('click', (event) => {
   const card = event.target.closest('[data-uid]');
   if (!card || event.target.closest('.card-fav-btn')) return;
-  const item = state.currentItems.find((entry) => entry._uid === card.dataset.uid) || window.ClickTvSeries?.episodeByUid?.(card.dataset.uid);
+  const item = state.currentItems.find((entry) => entry._uid === card.dataset.uid);
   if (!item) return;
-  if (window.ClickTvSeries?.handleCatalogClick?.(item)) return;
   if (!isPlayable(item)) {
     showToast(item.start_time ? `শুরু হবে: ${item.start_time}` : 'এই ইভেন্ট এখনো শুরু হয়নি');
     return;
@@ -2491,7 +2368,6 @@ async function startPlayback(item, userInitiated = true) {
   state.seekPendingTime = null;
   state.seekWasPlaying = false;
   state.userPaused = false;
-  window.ClickTvSeries?.handlePlaybackSelection?.(item);
   state.currentItem = item;
   state.selectedManualQuality = item._selectedDirectQualityKey || -1;
   saveRecentItem(item);
@@ -3255,19 +3131,18 @@ function startLiveAdaptiveQualityRamp(
     const currentlyStalling = Boolean(session.stallStartedAt);
 
     if (!progressIsFresh || currentlyStalling) return;
-    if (state.performanceStressStreak > 0) return;
-    if (totalElapsed < 8000 || sinceLastStep < 8000) return;
+    if (totalElapsed < 10000 || sinceLastStep < 10000) return;
 
     const profile = networkProfile(currentNetworkMode(), false);
     const requiredBuffer = Math.max(
       3,
-      Math.min(6, Number(profile.maxBufferLength || 0) * 0.55)
+      Math.min(7, Number(profile.maxBufferLength || 0) * 0.8)
     );
     const currentBuffer = bufferedAheadSeconds();
     const enoughBuffer = currentBuffer >= requiredBuffer;
-    const maximumWaitReached = totalElapsed >= 28000;
+    const maximumWaitReached = totalElapsed >= 36000;
 
-    if (!enoughBuffer && (!maximumWaitReached || currentBuffer < 3.0)) return;
+    if (!enoughBuffer && (!maximumWaitReached || currentBuffer < 3.5)) return;
 
     if (state.liveAdaptiveQualityStage < stages.length - 1) {
       state.liveAdaptiveQualityStage += 1;
@@ -3336,8 +3211,7 @@ function stopPlaybackPerformanceMonitor(resetCap = false) {
 }
 
 function startPlaybackPerformanceMonitor() {
-  const fullscreenLive = wrapperFullscreenElement() === videoContainer && !isMoviePlaybackContext();
-  if ((!isMobilePlaybackDevice() && !fullscreenLive) || state.performanceMonitorTimer || video.paused || video.ended) return;
+  if (!isMobilePlaybackDevice() || state.performanceMonitorTimer || video.paused || video.ended) return;
   state.performanceSample = readVideoFrameStats();
 
   state.performanceMonitorTimer = setInterval(() => {
@@ -3623,10 +3497,6 @@ function getNavigationItems(excludeFailed = false) {
 }
 
 function playRelativeItem(direction, userInitiated = true) {
-  if (window.ClickTvSeries?.isEpisodeItem?.(state.currentItem)) {
-    window.ClickTvSeries.playRelativeEpisode(direction);
-    return;
-  }
   const allItems = getNavigationItems(false);
   if (!allItems.length) return;
 
@@ -4993,7 +4863,6 @@ function updateMetadata(item) {
   const displayIndex = state.filteredItems.findIndex((entry) => entry._uid === item._uid);
   $('osdNumber').textContent = `#${displayIndex >= 0 ? displayIndex + 1 : (item.seqNumber || 1)}`;
   $('osdName').textContent = item.name;
-  window.ClickTvSeries?.decorateMetadata?.(item);
 
   const osd = $('channelOsd');
   osd.classList.remove('show');
@@ -5026,7 +4895,6 @@ function updateActiveCards() {
       card.appendChild(eq);
     }
   });
-  window.ClickTvSeries?.updateActiveCards?.();
 }
 
 function updatePlayPauseUi() {
@@ -5133,7 +5001,6 @@ video.addEventListener('ended', () => {
   updateMobilePlaybackPerformance();
   clearMovieQualityGuidance();
   clearMovieAudioCompatibilityCheck();
-  window.ClickTvSeries?.handleEnded?.();
 });
 video.addEventListener('waiting', () => {
   holdMovieAudioForVideoBuffering();
@@ -5242,7 +5109,6 @@ function updatePlaybackProgress() {
       );
     }
     writeJsonStorage(STORAGE_KEYS.positions, state.playbackPositions);
-    window.ClickTvSeries?.updateProgress?.(state.currentItem, video.currentTime, video.duration);
   }
 }
 
@@ -5275,8 +5141,7 @@ $('progressWrapper').addEventListener('click', (event) => {
   commitMovieSeek(targetTime);
 });
 
-function populateFullscreenDrawer(query = '', options = {}) {
-  if (!options.skipSeries && window.ClickTvSeries?.populateFullscreenDrawer?.(query)) return;
+function populateFullscreenDrawer(query = '') {
   const list = $('fsDrawerList');
   list.replaceChildren();
   const normalized = query.toLowerCase();
@@ -5314,8 +5179,7 @@ function populateFullscreenDrawer(query = '', options = {}) {
 $('fsDrawerList').addEventListener('click', (event) => {
   const row = event.target.closest('.fs-drawer-item');
   if (!row) return;
-  const item = state.filteredItems.find((entry) => entry._uid === row.dataset.uid) || window.ClickTvSeries?.episodeByUid?.(row.dataset.uid);
-  if (item && window.ClickTvSeries?.handleDrawerClick?.(item)) return;
+  const item = state.filteredItems.find((entry) => entry._uid === row.dataset.uid);
   if (item && isPlayable(item)) startPlayback(item, true);
   $('fsDrawer').classList.remove('open');
 });
@@ -5499,7 +5363,8 @@ function showControlsTemporarily() {
     state.hideControlsTimer = setTimeout(() => {
       if ($('fsDrawer')?.classList.contains('open')) return;
       playerControls.classList.add('hide');
-      $('fsDrawerToggle').classList.add('hide');
+      // The fullscreen channel drawer remains available even while controls fade.
+      $('fsDrawerToggle').classList.remove('hide');
       videoContainer.classList.add('hide-cursor');
     }, 4000);
   }
@@ -5745,22 +5610,15 @@ function protectLivePlaybackDuringFullscreenTransition() {
   const guardHeight = Math.max(360, currentHeight > 0 ? currentHeight : (previousCap || stageFallback));
   applyLiveAdaptiveQualityCap(guardHeight, false);
 
-  const keepCurrentRouteAlive = () => {
+  const recover = () => {
     if (!isActiveAttempt(session, session.attemptToken) || state.userPaused) return;
-    try { state.hls?.startLoad(-1); } catch (_) {}
-    try { state.shaka?.retryStreaming?.(); } catch (_) {}
-    try { state.mpegts?.play?.(); } catch (_) {}
-    if (video.paused) video.play().catch(() => {});
+    tryLiveNetworkRecovery(true);
+    video.play().catch(() => {});
   };
+  recover();
+  state.fullscreenLiveRecoveryTimer = setTimeout(recover, 650);
+  setTimeout(recover, 1800);
 
-  keepCurrentRouteAlive();
-  state.fullscreenLiveRecoveryTimer = setTimeout(keepCurrentRouteAlive, 900);
-  setTimeout(() => {
-    if (!isActiveAttempt(session, session.attemptToken)) return;
-    if (Date.now() - Number(session.lastProgressAt || 0) > 2800) tryGapRecovery();
-  }, 3000);
-
-  startPlaybackPerformanceMonitor();
   const startedAt = Date.now();
   state.fullscreenLiveQualityGuardTimer = setInterval(() => {
     if (!isActiveAttempt(session, session.attemptToken) || isMoviePlaybackContext(session.item)) {
@@ -5769,8 +5627,7 @@ function protectLivePlaybackDuringFullscreenTransition() {
     }
     const elapsed = Date.now() - startedAt;
     const reserve = bufferedAheadSeconds();
-    const progressFresh = Date.now() - Number(session.lastProgressAt || 0) < 2200;
-    if ((elapsed >= 8000 && reserve >= 3.0 && progressFresh) || elapsed >= LIVE_FULLSCREEN_GRACE_MS) {
+    if ((elapsed >= 6500 && reserve >= 3.0) || elapsed >= LIVE_FULLSCREEN_GRACE_MS) {
       clearLiveFullscreenRecovery();
       const restoreCap = Number(state.fullscreenLiveQualityPreviousCap || 0);
       state.fullscreenLiveQualityPreviousCap = 0;
