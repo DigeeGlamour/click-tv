@@ -1,0 +1,83 @@
+name: Click TV Site Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "site/**"
+      - "data/**"
+      - "scanner/**"
+      - "scripts/**"
+      - "tests/**"
+      - "config/settings.json"
+      - "manual/movie-sources.json"
+      - "scan.py"
+      - ".github/workflows/site-check.yml"
+  pull_request:
+    paths:
+      - "site/**"
+      - "data/**"
+      - "scanner/**"
+      - "scripts/**"
+      - "tests/**"
+      - "config/settings.json"
+      - "manual/movie-sources.json"
+      - "scan.py"
+      - ".github/workflows/site-check.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: click-tv-site-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate source and tests
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f site/index.html
+          test -f site/assets/css/app.css
+          test -f site/assets/css/series.css
+          test -f site/assets/js/app.js
+          test -f site/assets/js/series.js
+          test -f data/manifest.json
+          test -f data/series/manifest.json
+          test -f scanner/series.py
+
+          node --check site/assets/js/app.js
+          node --check site/assets/js/series.js
+          python -m py_compile scan.py scanner/*.py scanner/parsers/*.py scripts/validate-pages.py
+          python -m unittest discover -s tests -p "test_*.py" -v
+          bash -n scripts/build-pages.sh
+
+      - name: Build and validate Cloudflare Pages output
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/build-pages.sh
+
+      - name: Upload validated Pages build
+        uses: actions/upload-artifact@v4
+        with:
+          name: click-tv-pages-${{ github.run_number }}
+          path: dist
+          if-no-files-found: error
+          retention-days: 3
