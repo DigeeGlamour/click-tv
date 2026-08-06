@@ -1,0 +1,948 @@
+/* Click TV demo-shell design integration
+   Visual source: preview (1).html
+   Existing playback controls, notices and fullscreen runtime are intentionally preserved. */
+
+:root {
+  --demo-bg: #080c14;
+  --demo-panel: #0f1626;
+  --demo-panel-2: #151f33;
+  --demo-line: rgba(255, 255, 255, 0.10);
+  --demo-text: #f7f9fc;
+  --demo-muted: #93a0b4;
+  --demo-red: #ff2a4a;
+  --demo-green: #19c987;
+  --demo-radius: 16px;
+}
+
+html,
+body {
+  background: var(--demo-bg) !important;
+  color: var(--demo-text);
+}
+
+body {
+  background:
+    radial-gradient(circle at 10% 0, rgba(255, 42, 74, 0.08), transparent 26%),
+    var(--demo-bg) !important;
+}
+
+/* Header copied from the selected demo design language. */
+header {
+  min-height: 70px;
+  padding: 0 22px !important;
+  display: grid !important;
+  grid-template-columns: 240px minmax(260px, 560px) 240px;
+  align-items: center;
+  gap: 18px;
+  border-bottom: 1px solid var(--demo-line) !important;
+  background: #080c14 !important;
+}
+
+.header-left h1 {
+  font-size: 24px !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.6px !important;
+}
+
+.live-signal-dot {
+  width: 22px !important;
+  height: 22px !important;
+  background: transparent !important;
+  border: 3px solid var(--demo-red) !important;
+  box-shadow: 0 0 15px rgba(255, 42, 74, 0.5) !important;
+}
+
+.live-signal-dot::before {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--demo-red);
+  left: 5px;
+  top: 5px;
+}
+
+.live-signal-dot::after {
+  display: none !important;
+}
+
+.header-center {
+  max-width: none !important;
+  margin: 0 !important;
+}
+
+.search-wrap {
+  height: 42px;
+  border: 1px solid var(--demo-line) !important;
+  border-radius: 999px !important;
+  background: #0d1423 !important;
+}
+
+.search-wrap input {
+  padding: 0 17px !important;
+  font-size: 14px !important;
+}
+
+.search-btn {
+  width: 58px;
+  height: 100%;
+  padding: 0 !important;
+  border-left: 1px solid var(--demo-line) !important;
+  color: #fff !important;
+}
+
+.header-right {
+  justify-content: flex-end;
+  gap: 9px !important;
+}
+
+.header-glow-btn {
+  height: 40px;
+  padding: 0 15px !important;
+  border: 1px solid rgba(255, 42, 74, 0.55) !important;
+  border-radius: 999px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+.header-glow-btn:hover,
+.header-glow-btn:focus-visible {
+  background: rgba(255, 42, 74, 0.12) !important;
+  transform: none !important;
+}
+
+/* Selected demo shell: player left, catalogue/sidebar right. */
+.youtube-layout {
+  display: grid !important;
+  grid-template-columns: minmax(0, 2.1fr) minmax(340px, 0.92fr) !important;
+  gap: 16px !important;
+  padding: 16px 24px 24px !important;
+  max-width: none !important;
+  width: 100% !important;
+  min-height: 0;
+  height: calc(100dvh - 70px - var(--notice-height, 0px)) !important;
+}
+
+.video-section {
+  min-width: 0;
+  min-height: 0;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* Main category row is above the player exactly as requested. */
+.content-main-nav {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 52px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.content-main-nav .chips-container-wrap {
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  padding: 0 2px;
+}
+
+.content-main-nav .chips-container-wrap::-webkit-scrollbar,
+.context-subcategory-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.content-main-nav .chips-container {
+  display: inline-flex;
+  min-width: max-content;
+  gap: 9px;
+}
+
+.chip,
+.sub-chip {
+  min-height: 40px !important;
+  border: 1px solid var(--demo-line) !important;
+  background: #101827 !important;
+  color: #d6dce8 !important;
+  padding: 9px 15px !important;
+  border-radius: 999px !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  white-space: nowrap;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.chip:hover,
+.sub-chip:hover,
+.chip:focus-visible,
+.sub-chip:focus-visible {
+  border-color: rgba(255, 42, 74, 0.62) !important;
+  color: #fff !important;
+}
+
+.chip.active,
+.sub-chip.active {
+  background: var(--demo-red) !important;
+  border-color: var(--demo-red) !important;
+  color: #fff !important;
+}
+
+.chip-nav-btn {
+  position: static !important;
+  flex: 0 0 42px;
+  width: 42px !important;
+  height: 42px !important;
+  border: 1px solid var(--demo-line) !important;
+  border-radius: 50% !important;
+  background: #101827 !important;
+  color: #fff !important;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  z-index: 1 !important;
+}
+
+/* Existing real player is kept, only its frame follows the demo. */
+.video-container-wrap {
+  border: 1px solid var(--demo-line) !important;
+  border-radius: 18px !important;
+  background: #03060b !important;
+  box-shadow: none !important;
+  max-height: none !important;
+}
+
+.video-meta {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0 !important;
+  padding: 15px 4px 0 !important;
+}
+
+.meta-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.meta-title-row h2 {
+  font-size: 23px !important;
+  line-height: 1.25 !important;
+  margin: 0 0 6px !important;
+}
+
+.meta-subtitle-row {
+  color: var(--demo-muted) !important;
+  font-weight: 700;
+}
+
+.meta-category {
+  color: var(--demo-red) !important;
+}
+
+.fav-action-btn {
+  min-height: 38px;
+  border: 1px solid var(--demo-line) !important;
+  border-radius: 999px !important;
+  background: #0e1523 !important;
+  color: #fff !important;
+  padding: 8px 13px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+
+.mobile-search-icon-btn {
+  display: none !important;
+  width: 40px;
+  min-width: 40px;
+  padding: 0 !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The former demo-rule region is now the contextual subcategory row. */
+.context-subcategory-shell {
+  margin-top: 14px;
+  border: 1px solid var(--demo-line);
+  border-radius: 14px;
+  background: rgba(15, 22, 38, 0.72);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.context-subcategory-bar,
+.movie-subcategory-bar {
+  display: flex !important;
+  gap: 8px !important;
+  width: 100%;
+  min-height: 54px;
+  padding: 8px 10px !important;
+  margin: 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.context-empty-chip {
+  cursor: default;
+  color: var(--demo-muted) !important;
+  border-style: dashed !important;
+}
+
+/* Right sidebar copied from the demo panel. */
+.sidebar-section {
+  min-width: 0;
+  min-height: 0;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  border: 1px solid var(--demo-line) !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  background: var(--demo-panel) !important;
+  box-shadow: none !important;
+}
+
+.demo-sidebar-heading {
+  flex: 0 0 auto;
+  min-height: 76px;
+  padding: 13px 15px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px;
+  border-bottom: 1px solid var(--demo-line) !important;
+  background: transparent !important;
+}
+
+.sidebar-heading-copy {
+  min-width: 0;
+}
+
+.sidebar-heading-copy h2 {
+  margin: 0 0 4px;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-count {
+  display: block;
+  color: var(--demo-muted) !important;
+  font-size: 12px !important;
+  line-height: 1.3;
+}
+
+.sort-select {
+  max-width: 122px;
+  height: 36px;
+  padding: 0 28px 0 10px !important;
+  border: 1px solid var(--demo-line) !important;
+  border-radius: 10px !important;
+  background: #111a2a !important;
+  color: #d6dce8 !important;
+  font-size: 10px !important;
+}
+
+.sidebar-scroll-area {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  padding: 12px !important;
+  scrollbar-color: rgba(255,255,255,.42) transparent;
+  scrollbar-width: thin;
+}
+
+.sidebar-list {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  padding: 0 0 20px !important;
+}
+
+/* Live channel/event rows use the same compact demo panel language. */
+.sidebar-item {
+  position: relative;
+  display: grid !important;
+  grid-template-columns: 42px 54px minmax(0, 1fr) 34px !important;
+  align-items: center !important;
+  gap: 9px !important;
+  min-height: 72px !important;
+  padding: 8px !important;
+  border: 1px solid var(--demo-line) !important;
+  border-radius: 11px !important;
+  background: var(--demo-panel-2) !important;
+  color: #fff;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.sidebar-item:hover,
+.sidebar-item:focus-visible,
+.sidebar-item.active {
+  border-color: var(--demo-red) !important;
+  background: rgba(255, 42, 74, 0.08) !important;
+  box-shadow: inset 3px 0 0 var(--demo-red) !important;
+}
+
+.sidebar-channel-num {
+  position: static !important;
+  display: grid !important;
+  place-items: center;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  background: #111a2a !important;
+  color: #fff !important;
+  font-size: 11px !important;
+}
+
+.sidebar-logo-wrap {
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 9px !important;
+  overflow: hidden;
+  background: #0b111d !important;
+}
+
+.sidebar-logo-wrap img,
+.sidebar-logo-wrap .logo-placeholder {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+.sidebar-details {
+  min-width: 0;
+}
+
+.sidebar-name {
+  font-size: 13px !important;
+  line-height: 1.25 !important;
+  margin-bottom: 5px !important;
+}
+
+.sidebar-sub-info {
+  display: flex !important;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sidebar-meta-row {
+  color: var(--demo-muted) !important;
+  font-size: 10px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-fav-btn {
+  position: static !important;
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--demo-line) !important;
+  background: rgba(255,255,255,.04) !important;
+}
+
+/* Movie/Series catalogue matches the selected two-column demo. */
+.sidebar-list.movie-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 11px !important;
+  align-content: start !important;
+}
+
+.movie-card {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: clamp(205px, 27vh, 260px) !important;
+  min-height: 205px !important;
+  max-height: 260px !important;
+  aspect-ratio: auto !important;
+  border: 1px solid var(--demo-line) !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  background: var(--demo-panel-2) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.movie-card:hover,
+.movie-card:focus-visible,
+.movie-card.active {
+  transform: translateY(-2px) !important;
+  border-color: rgba(255, 42, 74, 0.70) !important;
+  box-shadow: none !important;
+}
+
+.movie-poster,
+.movie-poster-placeholder {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+  min-height: 0 !important;
+  object-fit: cover !important;
+  transform: none !important;
+}
+
+.movie-card-overlay {
+  position: relative !important;
+  flex: 0 0 auto !important;
+  min-height: 62px;
+  padding: 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  background: var(--demo-panel-2) !important;
+}
+
+.movie-card-title {
+  color: #fff !important;
+  font-size: 13px !important;
+  line-height: 1.25 !important;
+  font-weight: 800 !important;
+  text-shadow: none !important;
+}
+
+.movie-card-year {
+  color: var(--demo-muted) !important;
+  font-size: 10px !important;
+}
+
+.movie-rank-badge {
+  display: none !important;
+}
+
+.movie-rating-badge {
+  top: 8px !important;
+  right: 8px !important;
+}
+
+.movie-hover-play {
+  width: 42px !important;
+  height: 42px !important;
+}
+
+.movie-prompt-msg {
+  min-height: 220px;
+  border: 1px dashed var(--demo-line);
+  border-radius: 14px;
+  background: rgba(255,255,255,.02);
+}
+
+.mobile-search-bar-wrap {
+  flex: 0 0 auto;
+  margin: 10px 12px 0 !important;
+  height: 44px;
+  border: 1px solid var(--demo-line) !important;
+  border-radius: 999px !important;
+  background: #0d1423 !important;
+}
+
+/* Tablet and phone: exact demo flow, with compact old-size posters. */
+@media (max-width: 1000px) {
+  body {
+    overflow-y: auto !important;
+    height: auto !important;
+  }
+
+  header {
+    min-height: 68px;
+    padding: 10px 12px !important;
+    grid-template-columns: 1fr auto !important;
+    gap: 10px !important;
+  }
+
+  .header-left h1 {
+    font-size: 21px !important;
+  }
+
+  .header-center {
+    display: none !important;
+  }
+
+  .header-right {
+    grid-column: 2;
+  }
+
+  .header-glow-btn {
+    height: 38px;
+    padding: 0 12px !important;
+    font-size: 11px !important;
+  }
+
+  .youtube-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 10px !important;
+    gap: 12px !important;
+  }
+
+  .content-main-nav {
+    order: -1;
+    min-height: 50px;
+    margin: 0;
+  }
+
+  .content-main-nav .chip-nav-btn {
+    display: none !important;
+  }
+
+  .content-main-nav .chips-container-wrap {
+    padding: 0 !important;
+  }
+
+  .chip,
+  .sub-chip {
+    min-height: 42px !important;
+    padding: 9px 16px !important;
+    font-size: 13px !important;
+  }
+
+  .video-container-wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px !important;
+  }
+
+  .video-meta {
+    padding: 12px 5px 0 !important;
+  }
+
+  .meta-title-row h2 {
+    font-size: 20px !important;
+  }
+
+  .mobile-search-icon-btn {
+    display: inline-flex !important;
+  }
+
+  .context-subcategory-shell {
+    margin-top: 10px;
+    border-radius: 13px;
+  }
+
+  .context-subcategory-bar {
+    min-height: 56px;
+    padding: 7px 8px !important;
+  }
+
+  .sidebar-section {
+    height: auto !important;
+    max-height: none !important;
+    min-height: 520px !important;
+    overflow: visible !important;
+  }
+
+  .demo-sidebar-heading {
+    min-height: 72px;
+  }
+
+  .sidebar-scroll-area {
+    overflow: visible !important;
+    padding: 12px !important;
+  }
+
+  .sidebar-list {
+    overflow: visible !important;
+  }
+
+  .sidebar-list.movie-grid {
+    grid-template-columns: 1fr !important;
+    gap: 11px !important;
+  }
+
+  .movie-card,
+  .sidebar-list.movie-grid .movie-card {
+    display: grid !important;
+    grid-template-columns: 108px minmax(0, 1fr) !important;
+    grid-template-rows: minmax(145px, auto) !important;
+    height: 148px !important;
+    min-height: 148px !important;
+    max-height: 148px !important;
+    border-radius: 14px !important;
+  }
+
+  .movie-poster,
+  .movie-poster-placeholder {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 108px !important;
+    height: 148px !important;
+    min-height: 148px !important;
+    max-height: 148px !important;
+    object-fit: cover !important;
+  }
+
+  .movie-card-overlay {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    min-height: 148px !important;
+    height: 148px !important;
+    padding: 12px !important;
+    justify-content: center !important;
+  }
+
+  .movie-card-title {
+    font-size: 14px !important;
+  }
+
+  .movie-card-year {
+    font-size: 11px !important;
+  }
+
+  .movie-hover-play {
+    display: none !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .sticky-notice {
+    font-size: 11px !important;
+  }
+
+  header {
+    min-height: 64px;
+  }
+
+  .header-left h1 {
+    font-size: 19px !important;
+  }
+
+  .live-signal-dot {
+    width: 19px !important;
+    height: 19px !important;
+  }
+
+  .live-signal-dot::before {
+    left: 4px;
+    top: 4px;
+  }
+
+  #pwaInstallBtn {
+    display: none !important;
+  }
+
+  .header-glow-btn {
+    padding: 0 11px !important;
+  }
+
+  .youtube-layout {
+    padding: 8px !important;
+  }
+
+  .chip,
+  .sub-chip {
+    font-size: 12px !important;
+    padding: 8px 14px !important;
+  }
+
+  .meta-title-row {
+    gap: 8px;
+  }
+
+  .meta-title-row h2 {
+    font-size: 18px !important;
+  }
+
+  .fav-action-btn {
+    min-height: 36px;
+    padding: 7px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .mobile-search-icon-btn {
+    width: 36px;
+    min-width: 36px;
+    padding: 0 !important;
+  }
+
+  .sidebar-heading-copy h2 {
+    font-size: 17px;
+  }
+
+  .sort-select {
+    display: none !important;
+  }
+
+  .sidebar-item {
+    grid-template-columns: 34px 48px minmax(0, 1fr) 32px !important;
+    min-height: 66px !important;
+    padding: 7px !important;
+  }
+
+  .sidebar-logo-wrap {
+    width: 48px !important;
+    height: 48px !important;
+  }
+
+  .movie-card,
+  .sidebar-list.movie-grid .movie-card {
+    grid-template-columns: 102px minmax(0, 1fr) !important;
+    height: 142px !important;
+    min-height: 142px !important;
+    max-height: 142px !important;
+  }
+
+  .movie-poster,
+  .movie-poster-placeholder {
+    width: 102px !important;
+    height: 142px !important;
+    min-height: 142px !important;
+    max-height: 142px !important;
+  }
+
+  .movie-card-overlay {
+    height: 142px !important;
+    min-height: 142px !important;
+  }
+}
+
+/* On-demand universal search results. The 2.2 MB index is fetched only after a
+   user types, so normal Live TV startup stays lightweight. */
+.sidebar-section.search-mode .sort-select {
+  display: none !important;
+}
+
+.sidebar-list.global-search-list {
+  display: grid !important;
+  grid-template-columns: 1fr !important;
+  gap: 8px !important;
+}
+
+.global-search-card {
+  width: 100%;
+  min-height: 78px;
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) 28px;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid var(--demo-line);
+  border-radius: 12px;
+  background: var(--demo-panel-2);
+  color: #fff;
+  text-align: left;
+}
+
+.global-search-card:hover,
+.global-search-card:focus-visible {
+  border-color: var(--demo-red);
+  background: rgba(255, 42, 74, 0.08);
+  box-shadow: inset 3px 0 0 var(--demo-red);
+}
+
+.global-search-art {
+  width: 74px;
+  height: 58px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #0a101b;
+}
+
+.global-search-art img,
+.global-search-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+.global-search-art img {
+  object-fit: cover;
+}
+
+.global-search-placeholder {
+  display: grid;
+  place-items: center;
+  color: var(--demo-muted);
+  font-size: 20px;
+  background: linear-gradient(145deg, #273653, #0b101b);
+}
+
+.global-search-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.global-search-copy strong,
+.global-search-copy small {
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.global-search-copy strong {
+  font-size: 13px;
+  line-height: 1.25;
+}
+
+.global-search-copy small {
+  color: var(--demo-muted);
+  font-size: 10px;
+}
+
+.global-search-kind {
+  padding: 3px 6px;
+  border: 1px solid rgba(255, 42, 74, 0.45);
+  border-radius: 999px;
+  color: #ff8ea0;
+  font-size: 8px;
+  font-style: normal;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.global-search-kind.channel,
+.global-search-kind.match {
+  color: #5ce0aa;
+  border-color: rgba(25, 201, 135, 0.42);
+}
+
+.global-search-kind.episode {
+  color: #9db7ff;
+  border-color: rgba(110, 168, 255, 0.45);
+}
+
+.global-search-arrow {
+  color: var(--demo-muted);
+  font-size: 12px;
+}
+
+@media (max-width: 520px) {
+  .global-search-card {
+    grid-template-columns: 68px minmax(0, 1fr) 24px;
+    min-height: 72px;
+    padding: 7px;
+  }
+
+  .global-search-art {
+    width: 68px;
+    height: 54px;
+  }
+}
