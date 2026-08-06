@@ -43,9 +43,7 @@
   <!-- Shaka (DASH/DRM) শুধু প্রয়োজন হলে dynamically load হয় — initial payload হালকা রাখতে -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
 
-  <link rel="stylesheet" href="assets/css/app.css?v=20260806-demo-design-fix8">
-  <link rel="stylesheet" href="assets/css/series.css?v=20260806-demo-design-fix8">
-  <link rel="stylesheet" href="assets/css/content-shell.css?v=20260806-demo-design-fix8">
+  <link rel="stylesheet" href="assets/css/app.css?v=20260805-live-stability-ui-fix4">
 </head>
 <body translate="no" class="notranslate">
   <div id="sticky-header-notice" class="sticky-notice">
@@ -71,13 +69,6 @@
 
   <div class="youtube-layout">
     <div class="video-section">
-      <nav class="content-main-nav" aria-label="Main content categories">
-        <button class="chip-nav-btn left" id="chipPrevBtn" type="button" aria-label="Previous category"><i class="fas fa-chevron-left"></i></button>
-        <div class="chips-container-wrap" id="chipsContainerWrap">
-          <div class="chips-container" id="chipsContainer"></div>
-        </div>
-        <button class="chip-nav-btn right" id="chipNextBtn" type="button" aria-label="Next category"><i class="fas fa-chevron-right"></i></button>
-      </nav>
       <div id="videoContainer" class="video-container-wrap">
         <div class="video-container" id="shakaControlsContainer">
           <video id="videoPlayer" autoplay playsinline preload="auto"></video>
@@ -104,7 +95,7 @@
           <div class="player-clock" id="playerClock"><i class="fas fa-clock"></i> <span id="clockTime">03:16 PM</span></div>
 
           <!-- Fullscreen Channel Drawer Toggle -->
-          <button class="fs-drawer-toggle" id="fsDrawerToggle" aria-label="Channel, movie, season or episode list" title="Channel, movie, season or episode list"><i class="fas fa-bars"></i></button>
+          <button class="fs-drawer-toggle" id="fsDrawerToggle" aria-label="Channel or movie list" title="Channel or movie list"><i class="fas fa-bars"></i></button>
           
           <!-- Fullscreen Channel Drawer -->
           <div class="fs-drawer" id="fsDrawer">
@@ -212,7 +203,7 @@
         <div class="meta-title-row">
           <h2 id="metaTitle">Loading Channel...</h2>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <button class="fav-action-btn mobile-search-icon-btn" id="mobileSearchToggleBtn" title="Search" aria-label="Search"><i class="fas fa-search"></i></button>
+            <button class="fav-action-btn" id="mobileSearchToggleBtn" title="Search"><i class="fas fa-search"></i> Search</button>
             <button class="fav-action-btn" id="favActionBtn" type="button" aria-label="Bookmark"><i class="fas fa-star"></i> Bookmark</button>
           </div>
         </div>
@@ -228,27 +219,33 @@
           </div>
         </div>
       </div>
-
-      <div class="context-subcategory-shell" id="contextSubcategoryShell">
-        <div class="movie-subcategory-bar context-subcategory-bar" id="movieSubcategoryBar" aria-label="Selected section categories"></div>
-      </div>
     </div>
 
     <!-- Sidebar Section -->
     <div class="sidebar-section">
       <div id="mobileSearchBox" class="mobile-search-bar-wrap" style="display:none;">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="mobileSearchInput" placeholder="Search channel, match, movie or series..." aria-label="Search channel or movie" />
+        <input type="text" id="mobileSearchInput" placeholder="Search any channel or movie globally..." aria-label="Search channel or movie" />
         <button class="clear-search-btn" id="mobileSearchClearBtn" type="button" aria-label="Clear search">&times;</button>
       </div>
 
+      <div class="chips-outer-wrapper">
+        <button class="chip-nav-btn left" id="chipPrevBtn"><i class="fas fa-chevron-left"></i></button>
+        <div class="chips-container-wrap" id="chipsContainerWrap">
+          
+          <!-- 📌 Main Navigation Chips (Points 1 & 2: "All" Removed, Movie is Parent Button) -->
+          <div class="chips-container" id="chipsContainer"></div>
 
-      <div class="sidebar-top-bar demo-sidebar-heading">
-        <div class="sidebar-heading-copy">
-          <h2 id="sidebarTitle">Live Sports</h2>
-          <span class="sidebar-count" id="sidebarCountText">Loading...</span>
         </div>
-        <select class="sort-select" id="sortSelect" aria-label="Sort content">
+        <button class="chip-nav-btn right" id="chipNextBtn"><i class="fas fa-chevron-right"></i></button>
+      </div>
+
+      <!-- 📌 Movie Subcategory Bar (Points 3, 14, 23: Fixed Order: Bangla | Hindi | English | Dubbed | South Indian | Mix) -->
+      <div class="movie-subcategory-bar" id="movieSubcategoryBar" style="display:none;"></div>
+
+      <div class="sidebar-top-bar">
+        <span class="sidebar-count" id="sidebarCountText">0 Channels</span>
+        <select class="sort-select" id="sortSelect">
           <option value="default">Default Sort</option>
           <option value="az">A-Z Name</option>
           <option value="za">Z-A Name</option>
@@ -261,6 +258,6 @@
     </div>
   </div>
 
-  <script src="assets/js/app.js?v=20260806-demo-design-fix8"></script>
+  <script src="assets/js/app.js?v=20260805-live-stability-ui-fix4"></script>
 </body>
 </html>
