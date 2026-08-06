@@ -43,7 +43,9 @@
   <!-- Shaka (DASH/DRM) শুধু প্রয়োজন হলে dynamically load হয় — initial payload হালকা রাখতে -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
 
-  <link rel="stylesheet" href="assets/css/app.css?v=20260805-live-stability-ui-fix4">
+  <link rel="stylesheet" href="assets/css/app.css?v=20260806-final-design-lock-1">
+  <link rel="stylesheet" href="assets/css/series.css?v=20260806-final-design-lock-1">
+  <link rel="stylesheet" href="assets/css/final-design.css?v=20260806-final-design-lock-1">
 </head>
 <body translate="no" class="notranslate">
   <div id="sticky-header-notice" class="sticky-notice">
@@ -53,22 +55,28 @@
     <button class="close-btn" id="noticeCloseBtn" type="button" title="Notice বন্ধ করুন" aria-label="Notice close">&times;</button>
   </div>
 
-  <header>
-    <div class="header-left"><h1><span class="live-signal-dot"></span>CLICK TV</h1></div>
+  <header class="app-header">
+    <div class="header-left brand"><h1><span class="live-signal-dot brand-mark"></span>CLICK TV</h1></div>
     <div class="header-center">
-      <div class="search-wrap">
-        <input type="text" id="searchInput" placeholder="Search channel or movie..." aria-label="Search channel or movie" />
+      <div class="search-wrap desktop-search">
+        <input type="text" id="searchInput" placeholder="Search live TV, movies or series..." aria-label="Search live TV, movies or series" />
         <button class="search-btn" id="searchBtnSubmit" type="button" aria-label="Search"><i class="fas fa-search"></i></button>
       </div>
     </div>
-    <div class="header-right">
-      <button class="header-glow-btn" id="pwaInstallBtn"><i class="fas fa-mobile-alt"></i> Install</button>
-      <button class="header-glow-btn" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+    <div class="header-right header-actions">
+      <button class="header-glow-btn" id="pwaInstallBtn" type="button"><i class="fas fa-mobile-alt"></i> Install</button>
+      <button class="header-glow-btn" id="subscribeBtn" type="button"><i class="fas fa-star"></i> Subscribe</button>
+      <button class="header-glow-btn final-hidden-control" id="refreshBtn" type="button" aria-hidden="true" tabindex="-1"><i class="fas fa-sync-alt"></i> Refresh</button>
     </div>
   </header>
 
-  <div class="youtube-layout">
-    <div class="video-section">
+  <div class="youtube-layout final-shell">
+    <div class="video-section left-column">
+      <div class="mobile-main-navigation final-nav-shell" id="mobileMainNavigation">
+        <button class="final-nav-arrow" id="mobileMainPrevBtn" type="button" aria-label="Previous main category"><i class="fas fa-chevron-left"></i></button>
+        <div class="final-main-nav" id="mobileMainNav"></div>
+        <button class="final-nav-arrow" id="mobileMainNextBtn" type="button" aria-label="Next main category"><i class="fas fa-chevron-right"></i></button>
+      </div>
       <div id="videoContainer" class="video-container-wrap">
         <div class="video-container" id="shakaControlsContainer">
           <video id="videoPlayer" autoplay playsinline preload="auto"></video>
@@ -219,45 +227,57 @@
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Sidebar Section -->
-    <div class="sidebar-section">
-      <div id="mobileSearchBox" class="mobile-search-bar-wrap" style="display:none;">
+      <div id="mobileSearchBox" class="mobile-search-bar-wrap final-mobile-search" style="display:none;">
         <i class="fas fa-search search-icon"></i>
-        <input type="text" id="mobileSearchInput" placeholder="Search any channel or movie globally..." aria-label="Search channel or movie" />
+        <input type="text" id="mobileSearchInput" placeholder="Search any channel, movie or series..." aria-label="Search channel, movie or series" />
         <button class="clear-search-btn" id="mobileSearchClearBtn" type="button" aria-label="Clear search">&times;</button>
       </div>
 
-      <div class="chips-outer-wrapper">
-        <button class="chip-nav-btn left" id="chipPrevBtn"><i class="fas fa-chevron-left"></i></button>
-        <div class="chips-container-wrap" id="chipsContainerWrap">
-          
-          <!-- 📌 Main Navigation Chips (Points 1 & 2: "All" Removed, Movie is Parent Button) -->
-          <div class="chips-container" id="chipsContainer"></div>
+      <div class="mobile-sub-navigation final-sub-shell" id="mobileSubNavigation">
+        <button class="final-nav-arrow" id="mobileSubPrevBtn" type="button" aria-label="Previous subcategory"><i class="fas fa-chevron-left"></i></button>
+        <div class="final-sub-nav" id="mobileSubNav"></div>
+        <button class="final-nav-arrow" id="mobileSubNextBtn" type="button" aria-label="Next subcategory"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
 
-        </div>
-        <button class="chip-nav-btn right" id="chipNextBtn"><i class="fas fa-chevron-right"></i></button>
+    <!-- Sidebar Section -->
+    <div class="sidebar-section side-panel">
+      <div class="desktop-main-navigation final-nav-shell" id="desktopMainNavigation">
+        <button class="final-nav-arrow" id="desktopMainPrevBtn" type="button" aria-label="Previous main category"><i class="fas fa-chevron-left"></i></button>
+        <div class="final-main-nav" id="desktopMainNav"></div>
+        <button class="final-nav-arrow" id="desktopMainNextBtn" type="button" aria-label="Next main category"><i class="fas fa-chevron-right"></i></button>
       </div>
 
-      <!-- 📌 Movie Subcategory Bar (Points 3, 14, 23: Fixed Order: Bangla | Hindi | English | Dubbed | South Indian | Mix) -->
-      <div class="movie-subcategory-bar" id="movieSubcategoryBar" style="display:none;"></div>
+      <div class="desktop-sub-navigation final-sub-shell" id="desktopSubNavigation">
+        <button class="final-nav-arrow" id="desktopSubPrevBtn" type="button" aria-label="Previous subcategory"><i class="fas fa-chevron-left"></i></button>
+        <div class="final-sub-nav" id="desktopSubNav"></div>
+        <button class="final-nav-arrow" id="desktopSubNextBtn" type="button" aria-label="Next subcategory"><i class="fas fa-chevron-right"></i></button>
+      </div>
 
-      <div class="sidebar-top-bar">
-        <span class="sidebar-count" id="sidebarCountText">0 Channels</span>
-        <select class="sort-select" id="sortSelect">
-          <option value="default">Default Sort</option>
-          <option value="az">A-Z Name</option>
-          <option value="za">Z-A Name</option>
-        </select>
+      <div class="final-hidden-control" aria-hidden="true">
+        <button id="chipPrevBtn" type="button" tabindex="-1">Previous</button>
+        <div id="chipsContainerWrap"><div id="chipsContainer"></div></div>
+        <button id="chipNextBtn" type="button" tabindex="-1">Next</button>
+        <span id="liteModeState"></span>
+        <div id="movieSubcategoryBar"></div>
       </div>
 
       <div class="sidebar-scroll-area" id="sidebarScrollArea">
+        <div class="sidebar-top-bar card-list-meta">
+          <span class="sidebar-count" id="sidebarCountText">0 Items</span>
+          <select class="sort-select sort-text" id="sortSelect" aria-label="Sort content">
+            <option value="default">Default Sort</option>
+            <option value="az">A-Z Name</option>
+            <option value="za">Z-A Name</option>
+          </select>
+        </div>
         <div class="sidebar-list" id="sidebarList" tabindex="0"></div>
       </div>
     </div>
   </div>
 
-  <script src="assets/js/app.js?v=20260805-live-stability-ui-fix4"></script>
+  <script src="assets/js/series.js?v=20260806-final-design-lock-1"></script>
+  <script src="assets/js/app.js?v=20260806-final-design-lock-1"></script>
 </body>
 </html>

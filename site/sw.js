@@ -3,7 +3,7 @@
  * Live stream, video segment ও playback proxy request স্পর্শ করবে না।
  */
 
-const CACHE_VERSION = "click-tv-20260806-demo-design-fix8";
+const CACHE_VERSION = "click-tv-final-design-20260806-v1";
 const APP_CACHE = `${CACHE_VERSION}-app`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 
@@ -11,7 +11,12 @@ const APP_SHELL = [
   "/",
   "/index.html",
   "/app.webmanifest",
-  "/runtime-config.json"
+  "/runtime-config.json",
+  "/assets/css/app.css",
+  "/assets/css/series.css",
+  "/assets/css/final-design.css",
+  "/assets/js/series.js",
+  "/assets/js/app.js"
 ];
 
 const STREAM_EXTENSIONS = [

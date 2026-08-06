@@ -42,6 +42,7 @@ const MOVIE_ORDER = Object.freeze([
   ['English', 'english'],
   ['Dubbed', 'dubbed'],
   ['South Indian', 'south-indian'],
+  ['Premium', 'premium'],
   ['Mix', 'mix']
 ]);
 
@@ -80,6 +81,8 @@ const state = {
   view: VIEW.CHANNEL,
   selectedCategory: null,
   selectedMovieCategory: null,
+  activeMainGroup: 'sports',
+  activeFinalSub: 'today-match',
   currentItems: [],
   filteredItems: [],
   renderedCount: 0,
@@ -204,6 +207,15 @@ const movieSubcategoryBar = $('movieSubcategoryBar');
 const chipsContainer = $('chipsContainer');
 const videoContainer = $('videoContainer');
 const playerControls = $('playerControls');
+const desktopMainNav = $('desktopMainNav');
+const mobileMainNav = $('mobileMainNav');
+const desktopSubNav = $('desktopSubNav');
+const mobileSubNav = $('mobileSubNav');
+const desktopMainNavigation = $('desktopMainNavigation');
+const desktopSubNavigation = $('desktopSubNavigation');
+const mobileMainNavigation = $('mobileMainNavigation');
+const mobileSubNavigation = $('mobileSubNavigation');
+const seriesModule = window.ClickTvSeries || null;
 
 function readJsonStorage(key, fallback) {
   try {
@@ -322,7 +334,8 @@ function showToast(message, duration = 2200, variant = '') {
 }
 
 function setSidebarCount(text) {
-  $('sidebarCountText').textContent = text;
+  const count = $('sidebarCountText');
+  if (count) count.textContent = text;
 }
 
 function setSearchEnabled(enabled) {
@@ -831,6 +844,7 @@ function buildNavigation() {
   chipsContainer.appendChild(createChip('Favorites', 'fa-star', (event) => selectMainView('favorites', null, { chip: event.currentTarget }), { view: 'favorite' }));
   chipsContainer.appendChild(createChip('Recent', 'fa-history', (event) => selectMainView('recent', null, { chip: event.currentTarget }), { view: 'recent' }));
   buildMovieSubcategories();
+  renderFinalNavigation();
 }
 
 function buildMovieSubcategories() {
@@ -844,6 +858,208 @@ function buildMovieSubcategories() {
     button.addEventListener('click', () => selectMovieSubcategory(slug, button));
     movieSubcategoryBar.appendChild(button);
   });
+}
+
+
+const FINAL_MAIN_GROUPS = Object.freeze([
+  ['sports', 'Live Sports'],
+  ['live-tv', 'Live TV'],
+  ['movies', 'Movies'],
+  ['drama', 'Drama'],
+  ['favorites', 'Favorites']
+]);
+
+const FINAL_LIVE_TV_CATEGORIES = Object.freeze([
+  ['bangla', 'Bangla', ['Bangla']],
+  ['indian', 'Indian', ['Indian']],
+  ['cartoon', 'Cartoon', ['Cartoon']],
+  ['islamic', 'Islamic', ['Islamic']],
+  ['infotainments', 'Infotainments', ['Infotainments', 'Infotainment']],
+  ['foreign-news', 'Foreign News', ['Foreign News', 'Foreign']],
+  ['others', 'Others', ['Others', 'Other']]
+]);
+
+function finalButton(label, className, active, handler, key) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `${className}${active ? ' active' : ''}`;
+  button.textContent = label;
+  if (key) button.dataset.finalKey = key;
+  button.addEventListener('click', handler);
+  return button;
+}
+
+function finalChannelLabel(candidates = []) {
+  const entries = Object.keys(state.manifest?.channels || {});
+  const wanted = candidates.map((value) => canonicalDisplayKey(value));
+  return entries.find((label) => wanted.includes(canonicalDisplayKey(label))) || '';
+}
+
+function finalSubItems(group = state.activeMainGroup) {
+  if (group === 'sports') {
+    return [
+      ['today-match', 'Today Match'],
+      ['upcoming', 'Upcoming Match'],
+      ['sports-channel', 'Sports']
+    ];
+  }
+  if (group === 'live-tv') {
+    return FINAL_LIVE_TV_CATEGORIES.map(([key, label]) => [key, label]);
+  }
+  if (group === 'movies') return MOVIE_ORDER.map(([label, slug]) => [`movie:${slug}`, label]);
+  return [];
+}
+
+function renderFinalMainNavigation() {
+  [desktopMainNav, mobileMainNav].forEach((root) => {
+    if (!root) return;
+    root.replaceChildren();
+    FINAL_MAIN_GROUPS.forEach(([key, label]) => {
+      root.appendChild(finalButton(
+        label,
+        'final-main-button tv-focusable',
+        state.activeMainGroup === key,
+        () => selectFinalMainGroup(key),
+        key
+      ));
+    });
+  });
+}
+
+function renderFinalSubNavigation() {
+  const items = finalSubItems();
+  [desktopSubNav, mobileSubNav].forEach((root) => {
+    if (!root) return;
+    root.replaceChildren();
+    items.forEach(([key, label]) => {
+      root.appendChild(finalButton(
+        label,
+        'final-sub-button tv-focusable',
+        state.activeFinalSub === key,
+        () => selectFinalSubcategory(key),
+        key
+      ));
+    });
+  });
+  const visible = items.length > 0;
+  if (desktopSubNavigation) desktopSubNavigation.style.display = visible ? '' : 'none';
+  if (mobileSubNavigation) mobileSubNavigation.style.display = visible ? '' : 'none';
+}
+
+function renderFinalNavigation() {
+  renderFinalMainNavigation();
+  renderFinalSubNavigation();
+}
+
+function showFinalEmpty(label, kind = 'Items') {
+  cancelDataLoading();
+  clearCurrentListState();
+  closeMobileSearch(true);
+  setSearchQuery('');
+  state.selectedCategory = label;
+  state.selectedMovieCategory = null;
+  state.currentItems = [];
+  state.filteredItems = [];
+  setSidebarCount(`0 ${kind}`);
+  showListMessage(`${label} content এখনো যোগ করা হয়নি`, 'fa-info-circle');
+  hidePlayerMessage();
+  renderFinalNavigation();
+}
+
+async function selectFinalMainGroup(group) {
+  state.activeMainGroup = group;
+  if (group === 'sports') state.activeFinalSub = 'today-match';
+  else if (group === 'live-tv') state.activeFinalSub = 'bangla';
+  else if (group === 'movies') state.activeFinalSub = 'movie:bangla';
+  else state.activeFinalSub = '';
+  renderFinalNavigation();
+
+  if (group === 'favorites') {
+    await selectMainView('favorites', null, { chip: activateChipByView('favorite'), preserveFinalGroup: true });
+    return;
+  }
+  if (group === 'drama') {
+    showFinalEmpty('Drama', 'Items');
+    return;
+  }
+  await selectFinalSubcategory(state.activeFinalSub);
+}
+
+async function selectFinalSubcategory(key) {
+  state.activeFinalSub = key;
+  renderFinalNavigation();
+
+  if (key === 'today-match') {
+    await selectMainView('today-match', null, { chip: activateChipByView('today-match'), preserveFinalGroup: true });
+    return;
+  }
+  if (key === 'upcoming') {
+    await selectMainView('upcoming', null, { chip: activateChipByView('upcoming'), preserveFinalGroup: true });
+    return;
+  }
+  if (key === 'sports-channel') {
+    const category = finalChannelLabel(['Sports']);
+    if (!category) return showFinalEmpty('Sports', 'Channels');
+    await selectMainView('channel', category, { chip: activateChipByView('channel', category), preserveFinalGroup: true });
+    return;
+  }
+  if (key.startsWith('movie:')) {
+    const slug = key.slice(6);
+    const legacy = qs(`.sub-chip[data-movie-cat="${cssEscape(slug)}"]`, movieSubcategoryBar);
+    await selectMovieSubcategory(slug, legacy, { preserveFinalGroup: true });
+    return;
+  }
+
+  const config = FINAL_LIVE_TV_CATEGORIES.find(([entryKey]) => entryKey === key);
+  if (config) {
+    const category = finalChannelLabel(config[2]);
+    if (!category) return showFinalEmpty(config[1], 'Channels');
+    await selectMainView('channel', category, { chip: activateChipByView('channel', category), preserveFinalGroup: true });
+  }
+}
+
+function adoptFinalNavigationFromLegacy(view, category = '') {
+  if (view === 'today-match') {
+    state.activeMainGroup = 'sports';
+    state.activeFinalSub = 'today-match';
+  } else if (view === 'upcoming') {
+    state.activeMainGroup = 'sports';
+    state.activeFinalSub = 'upcoming';
+  } else if (view === 'favorites') {
+    state.activeMainGroup = 'favorites';
+    state.activeFinalSub = '';
+  } else if (view === 'movie') {
+    state.activeMainGroup = 'movies';
+    state.activeFinalSub = `movie:${state.selectedMovieCategory || 'bangla'}`;
+  } else if (view === 'channel') {
+    const key = canonicalDisplayKey(category);
+    if (key.includes('sports')) {
+      state.activeMainGroup = 'sports';
+      state.activeFinalSub = 'sports-channel';
+    } else {
+      state.activeMainGroup = 'live-tv';
+      const match = FINAL_LIVE_TV_CATEGORIES.find(([, , candidates]) =>
+        candidates.some((candidate) => canonicalDisplayKey(candidate) === key)
+      );
+      state.activeFinalSub = match?.[0] || 'others';
+    }
+  }
+  renderFinalNavigation();
+}
+
+function setupFinalNavigationControls() {
+  const scroll = (root, direction) => {
+    if (!root) return;
+    root.scrollBy({ left: direction * Math.max(150, root.clientWidth * .72), behavior: 'smooth' });
+  };
+  $('desktopMainPrevBtn')?.addEventListener('click', () => scroll(desktopMainNav, -1));
+  $('desktopMainNextBtn')?.addEventListener('click', () => scroll(desktopMainNav, 1));
+  $('desktopSubPrevBtn')?.addEventListener('click', () => scroll(desktopSubNav, -1));
+  $('desktopSubNextBtn')?.addEventListener('click', () => scroll(desktopSubNav, 1));
+  $('mobileMainPrevBtn')?.addEventListener('click', () => scroll(mobileMainNav, -1));
+  $('mobileMainNextBtn')?.addEventListener('click', () => scroll(mobileMainNav, 1));
+  $('mobileSubPrevBtn')?.addEventListener('click', () => scroll(mobileSubNav, -1));
+  $('mobileSubNextBtn')?.addEventListener('click', () => scroll(mobileSubNav, 1));
 }
 
 function setActiveMainChip(chip) {
@@ -905,6 +1121,8 @@ async function selectMainView(view, category, options = {}) {
   qsa('.sub-chip', movieSubcategoryBar).forEach((item) => item.classList.remove('active'));
   movieSubcategoryBar.style.display = 'none';
   setSearchEnabled(true);
+  if (!options.preserveFinalGroup) adoptFinalNavigationFromLegacy(view, category || '');
+  else renderFinalNavigation();
 
   const chip = options.chip || activateChipByView(view === 'today-match' ? 'today-match' : view, category);
   if (chip) setActiveMainChip(chip);
@@ -985,6 +1203,9 @@ async function selectMainView(view, category, options = {}) {
 }
 
 async function openMovieParentMode(chip) {
+  state.activeMainGroup = 'movies';
+  state.activeFinalSub = 'movie:bangla';
+  renderFinalNavigation();
   state.currentSortMode = 'default';
   $('sortSelect').value = 'default';
   setActiveMainChip(chip || activateChipByView('movie'));
@@ -1092,12 +1313,15 @@ async function loadMovieParentPreview() {
   }
 }
 
-async function selectMovieSubcategory(slug, button) {
+async function selectMovieSubcategory(slug, button, options = {}) {
   cancelDataLoading();
   clearCurrentListState();
   state.view = VIEW.MOVIE;
   state.selectedCategory = 'Movie';
   state.selectedMovieCategory = slug;
+  state.activeMainGroup = 'movies';
+  state.activeFinalSub = `movie:${slug}`;
+  renderFinalNavigation();
   state.moviePreviewMode = false;
   setSearchQuery('');
   state.currentQuery = '';
@@ -1112,8 +1336,17 @@ async function selectMovieSubcategory(slug, button) {
 
   const movieEntry = manifestMovieEntry(slug);
   if (!movieEntry?.index) {
-    showListMessage('এই বিভাগে বর্তমানে কোনো মুভি পাওয়া যায়নি', 'fa-info-circle');
-    setSidebarCount('0 Movies');
+    if (seriesModule) {
+      const seriesItems = await seriesModule.loadCategory(slug);
+      state.currentItems = [];
+      seriesModule.mergeCategoryItems(seriesItems);
+      if (state.currentItems.length) {
+        renderCurrentList(true);
+        return;
+      }
+    }
+    showListMessage('এই বিভাগে বর্তমানে কোনো মুভি বা Series পাওয়া যায়নি', 'fa-info-circle');
+    setSidebarCount('0 Titles');
     return;
   }
 
@@ -1140,6 +1373,12 @@ async function selectMovieSubcategory(slug, button) {
       dataSessionId,
       signal: controller.signal
     });
+    if (seriesModule) {
+      const seriesItems = await seriesModule.loadCategory(slug);
+      if (sessionId !== state.movieCategorySessionId || dataSessionId !== state.dataSessionId) return;
+      seriesModule.mergeCategoryItems(seriesItems);
+      renderCurrentList(true);
+    }
   } catch (error) {
     if (error.name === 'AbortError' || sessionId !== state.movieCategorySessionId || dataSessionId !== state.dataSessionId) return;
     console.error(error);
@@ -1286,6 +1525,7 @@ function toggleFavorite(uid, event) {
   event?.stopPropagation();
   const item = state.currentItems.find((entry) => entry._uid === uid) || (state.currentItem?._uid === uid ? state.currentItem : null);
   if (!item) return;
+  if (seriesModule?.handleFavorite(uid, event)) return;
   const key = item.id || item.url;
   const favorites = favoriteIds();
   const isFavorite = favorites.includes(key);
@@ -1313,6 +1553,7 @@ function updateFavoriteUi() {
   });
   const active = state.currentItem && favorites.includes(state.currentItem.id || state.currentItem.url);
   $('favActionBtn').classList.toggle('active', Boolean(active));
+  seriesModule?.updateActiveCards?.();
 }
 
 function setSearchQuery(value, sourceInput = null) {
@@ -1454,7 +1695,9 @@ function appendNextChunk(limit = null) {
   const fragment = document.createDocumentFragment();
   chunk.forEach((item, offset) => {
     const card = state.view === VIEW.MOVIE
-      ? createMovieCard(item, start + offset)
+      ? (seriesModule?.isSeriesItem(item)
+        ? seriesModule.createSeriesCard(item, start + offset)
+        : createMovieCard(item, start + offset))
       : createChannelCard(item, start + offset);
     fragment.appendChild(card);
   });
@@ -1589,6 +1832,7 @@ sidebarList.addEventListener('click', (event) => {
   if (!card || event.target.closest('.card-fav-btn')) return;
   const item = state.currentItems.find((entry) => entry._uid === card.dataset.uid);
   if (!item) return;
+  if (seriesModule?.handleCatalogClick(item)) return;
   if (!isPlayable(item)) {
     showToast(item.start_time ? `শুরু হবে: ${item.start_time}` : 'এই ইভেন্ট এখনো শুরু হয়নি');
     return;
@@ -1611,8 +1855,8 @@ sidebarScrollArea?.addEventListener('scroll', scheduleSidebarScrollCheck, { pass
 
 async function handleSidebarScroll() {
   const mobileFlow = window.matchMedia('(max-width: 1000px)').matches;
-  const scrollHost = mobileFlow ? sidebarSection : (sidebarScrollArea || sidebarList);
-  const nearBottom = scrollHost.scrollTop + scrollHost.clientHeight >= scrollHost.scrollHeight - (mobileFlow ? 520 : 260);
+  const scrollHost = sidebarScrollArea || sidebarList;
+  const nearBottom = scrollHost.scrollTop + scrollHost.clientHeight >= scrollHost.scrollHeight - (mobileFlow ? 360 : 260);
 
   if (!nearBottom) return;
 
@@ -2351,6 +2595,7 @@ function playbackAttemptBudgetMs(item) {
 
 async function startPlayback(item, userInitiated = true) {
   if (!item || !isPlayable(item)) return;
+  seriesModule?.handlePlaybackSelection?.(item);
 
   clearAutoNextTimer();
   if (userInitiated) resetManualRetryState(item);
@@ -3497,6 +3742,10 @@ function getNavigationItems(excludeFailed = false) {
 }
 
 function playRelativeItem(direction, userInitiated = true) {
+  if (userInitiated && seriesModule?.isEpisodeItem(state.currentItem)) {
+    seriesModule.playRelativeEpisode(direction);
+    return;
+  }
   const allItems = getNavigationItems(false);
   if (!allItems.length) return;
 
@@ -4870,6 +5119,7 @@ function updateMetadata(item) {
   void osd.offsetWidth;
   osd.classList.add('show');
   state.osdTimer = setTimeout(() => osd.classList.remove('show'), 3500);
+  seriesModule?.decorateMetadata?.(item);
   updateFavoriteUi();
 }
 
@@ -4895,6 +5145,7 @@ function updateActiveCards() {
       card.appendChild(eq);
     }
   });
+  seriesModule?.updateActiveCards?.();
 }
 
 function updatePlayPauseUi() {
@@ -4998,6 +5249,7 @@ video.addEventListener('play', () => {
   }
 });
 video.addEventListener('ended', () => {
+  if (seriesModule?.handleEnded?.()) return;
   updateMobilePlaybackPerformance();
   clearMovieQualityGuidance();
   clearMovieAudioCompatibilityCheck();
@@ -5021,6 +5273,9 @@ video.addEventListener('timeupdate', () => {
     session.stallStep = 0;
   }
   updatePlaybackProgress();
+  if (seriesModule?.isEpisodeItem(state.currentItem)) {
+    seriesModule.updateProgress(state.currentItem, video.currentTime, video.duration);
+  }
 });
 
 async function probeDirectMediaInfo() {
@@ -5142,6 +5397,7 @@ $('progressWrapper').addEventListener('click', (event) => {
 });
 
 function populateFullscreenDrawer(query = '') {
+  if (seriesModule?.populateFullscreenDrawer?.(query)) return;
   const list = $('fsDrawerList');
   list.replaceChildren();
   const normalized = query.toLowerCase();
@@ -5179,7 +5435,12 @@ function populateFullscreenDrawer(query = '') {
 $('fsDrawerList').addEventListener('click', (event) => {
   const row = event.target.closest('.fs-drawer-item');
   if (!row) return;
-  const item = state.filteredItems.find((entry) => entry._uid === row.dataset.uid);
+  let item = state.filteredItems.find((entry) => entry._uid === row.dataset.uid);
+  if (!item && seriesModule) item = seriesModule.episodeByUid?.(row.dataset.uid);
+  if (item && seriesModule?.handleDrawerClick?.(item)) {
+    $('fsDrawer').classList.remove('open');
+    return;
+  }
   if (item && isPlayable(item)) startPlayback(item, true);
   $('fsDrawer').classList.remove('open');
 });
@@ -5753,6 +6014,16 @@ mobileSearchInput.addEventListener('input', () => {
   if (state.searchQuery) clearMobileSearchAutoClose();
   else scheduleMobileSearchAutoClose();
 });
+$('subscribeBtn')?.addEventListener('click', () => {
+  const button = $('subscribeBtn');
+  const active = localStorage.getItem('clicktv_subscribed_v1') === '1';
+  localStorage.setItem('clicktv_subscribed_v1', active ? '0' : '1');
+  button.innerHTML = active
+    ? '<i class="fas fa-star"></i> Subscribe'
+    : '<i class="fas fa-check"></i> Subscribed';
+  showToast(active ? 'Subscription সরানো হয়েছে' : 'Click TV subscription চালু হয়েছে');
+});
+
 $('refreshBtn').addEventListener('click', async () => {
   if (state.view === VIEW.MOVIE) {
     if (state.selectedMovieCategory) {
@@ -5928,7 +6199,37 @@ function restorePlayerPreferences() {
   hideAllPopups();
 }
 
+function initializeSeriesModule() {
+  if (!seriesModule) return;
+  seriesModule.init({
+    state,
+    VIEW,
+    STORAGE_KEYS,
+    movieOrder: MOVIE_ORDER,
+    fetchJson,
+    normalizeItem,
+    escapeHtml,
+    sidebarList,
+    videoContainer,
+    fsDrawerList: $('fsDrawerList'),
+    showToast,
+    showListMessage,
+    setSidebarCount,
+    scrollSidebarToTop,
+    renderCurrentList,
+    startPlayback,
+    updateFavoriteUi,
+    populateDefaultFullscreenDrawer: (query = '') => {
+      const temporarily = window.ClickTvSeries;
+      if (temporarily?.detailActive) temporarily.resetDetail({ preservePlaybackContext: true });
+      populateFullscreenDrawer(query);
+    }
+  });
+}
+
 async function bootstrap() {
+  setupFinalNavigationControls();
+  initializeSeriesModule();
   setupMobileZoomGuard();
   updatePerformanceClasses();
   restoreNoticeState();

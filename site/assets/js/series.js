@@ -85,36 +85,8 @@
     return seriesProgressMap()[seriesId] || null;
   }
 
-  function episodeProgressKey(seriesId, seasonNumber, episodeNumber, episodeKey = '') {
-    const key = safeText(episodeKey);
-    return key
-      ? `${safeText(seriesId)}:s${twoDigits(seasonNumber)}:${key}`
-      : `${safeText(seriesId)}:s${twoDigits(seasonNumber)}:e${twoDigits(episodeNumber)}`;
-  }
-
-  function episodeDisplayLabel(episode) {
-    const explicit = safeText(episode?.episode_label);
-    if (explicit) return explicit;
-    return `Episode ${twoDigits(episode?.episode_number)}`;
-  }
-
-  function canonicalEpisodeText(value) {
-    return safeText(value)
-      .toLowerCase()
-      .replace(/[–—]/g, '-')
-      .replace(/[^a-z0-9]+/g, ' ')
-      .trim();
-  }
-
-  function episodePresentationTitle(episode) {
-    const label = episodeDisplayLabel(episode);
-    const title = safeText(episode?.episode_title || episode?.title);
-    if (!title) return label;
-    const labelKey = canonicalEpisodeText(label);
-    const titleKey = canonicalEpisodeText(title);
-    if (!titleKey || titleKey === labelKey || titleKey === 'episode' || titleKey === `${labelKey} episode`) return label;
-    if (/^episode\s*\d+(?:\s*[-–]\s*\d+)?$/i.test(title) && labelKey.startsWith('episode ')) return label;
-    return `${label} · ${title}`;
+  function episodeProgressKey(seriesId, seasonNumber, episodeNumber) {
+    return `${safeText(seriesId)}:s${twoDigits(seasonNumber)}:e${twoDigits(episodeNumber)}`;
   }
 
   function episodeProgressMap() {
@@ -124,13 +96,13 @@
 
   function episodeProgress(episode) {
     if (!episode) return null;
-    return episodeProgressMap()[episodeProgressKey(episode.series_id, episode.season_number, episode.episode_number, episode.episode_key)] || null;
+    return episodeProgressMap()[episodeProgressKey(episode.series_id, episode.season_number, episode.episode_number)] || null;
   }
 
   function persistEpisodeProgress(episode, progress) {
     if (!episode || !progress) return;
     const all = episodeProgressMap();
-    const key = episodeProgressKey(episode.series_id, episode.season_number, episode.episode_number, episode.episode_key);
+    const key = episodeProgressKey(episode.series_id, episode.season_number, episode.episode_number);
     all[key] = progress;
     const entries = Object.entries(all)
       .sort((a, b) => numberValue(b[1]?.updated_at) - numberValue(a[1]?.updated_at))
@@ -158,7 +130,7 @@
   function continueText(item) {
     const progress = seriesProgress(item.id);
     if (!progress) return 'Start Series';
-    return `Continue S${twoDigits(progress.season_number)} · ${safeText(progress.episode_label, `Episode ${twoDigits(progress.episode_number)}`)}`;
+    return `Continue S${twoDigits(progress.season_number)} E${twoDigits(progress.episode_number)}`;
   }
 
   function normalizeSeriesSummary(raw, index, slug) {
@@ -245,15 +217,9 @@
   function mergeCategoryItems(seriesItems = catalogItems) {
     if (!bridge?.state || !Array.isArray(seriesItems)) return;
     const existing = bridge.state.currentItems.filter((item) => !isSeriesItem(item));
-    const merged = [...existing, ...seriesItems].sort((a, b) => {
-      const yearA = numberValue(a?.year);
-      const yearB = numberValue(b?.year);
-      if (yearA !== yearB) return yearB - yearA;
-      const manualA = a?.manual_source === true || String(a?.verification_status || '').toLowerCase() === 'manual_trusted';
-      const manualB = b?.manual_source === true || String(b?.verification_status || '').toLowerCase() === 'manual_trusted';
-      if (manualA !== manualB) return manualA ? -1 : 1;
-      return numberValue(a?.seqNumber, 999999) - numberValue(b?.seqNumber, 999999) || safeText(a?.name).localeCompare(safeText(b?.name));
-    });
+    const manualMovies = existing.filter((item) => item?.manual_source === true || String(item?.verification_status || '').toLowerCase() === 'manual_trusted');
+    const otherMovies = existing.filter((item) => !manualMovies.includes(item));
+    const merged = [...manualMovies, ...seriesItems, ...otherMovies];
     merged.forEach((item, index) => {
       item.seqNumber = index + 1;
       if (isSeriesItem(item)) item._uid = `series:${activeCategorySlug}:${item.id}`;
@@ -320,7 +286,7 @@
         </div>
         <div class="series-continue-row">
           <i class="fas ${progress ? 'fa-play-circle' : 'fa-list-ul'}"></i>
-          <span>${escapeHtml(playing ? `PLAYING · S${twoDigits(bridge.state.currentItem.season_number)} · ${episodeDisplayLabel(bridge.state.currentItem)}` : resumeLabel)}</span>
+          <span>${escapeHtml(playing ? `PLAYING · S${twoDigits(bridge.state.currentItem.season_number)} E${twoDigits(bridge.state.currentItem.episode_number)}` : resumeLabel)}</span>
         </div>
         <div class="series-progress-track" aria-hidden="true"><span style="width:${progressWidth.toFixed(2)}%"></span></div>
       </div>`;
@@ -385,13 +351,11 @@
     const episodeNumber = Math.max(1, numberValue(raw.episode_number || raw.number, index + 1));
     const seriesId = safeText(activeSeriesItem?.id || activeSeriesData?.id || raw.series_id);
     const seriesName = safeText(activeSeriesData?.name || activeSeriesItem?.name || raw.series_name, 'Series');
-    const episodeLabel = safeText(raw.episode_label, `Episode ${twoDigits(episodeNumber)}`);
-    const episodeKey = safeText(raw.episode_key, `episode-${twoDigits(episodeNumber)}`);
-    const episodeTitle = safeText(raw.episode_title || raw.title || raw.name, episodeLabel);
+    const episodeTitle = safeText(raw.episode_title || raw.title || raw.name, `Episode ${episodeNumber}`);
     const playbackRaw = {
       ...raw,
       id: safeText(raw.id, `${seriesId}-s${twoDigits(seasonNumber)}e${twoDigits(episodeNumber)}`),
-      name: `${seriesName} — S${twoDigits(seasonNumber)} — ${episodeLabel} — ${episodeTitle}`,
+      name: `${seriesName} — S${twoDigits(seasonNumber)} E${twoDigits(episodeNumber)} — ${episodeTitle}`,
       title: episodeTitle,
       category: safeText(activeSeriesItem?.category || raw.category),
       logo: safeText(raw.thumbnail || raw.logo || activeSeriesItem?.logo),
@@ -402,8 +366,6 @@
       series_logo: safeText(activeSeriesItem?.logo || activeSeriesData?.poster || activeSeriesData?.logo),
       season_number: seasonNumber,
       episode_number: episodeNumber,
-      episode_label: episodeLabel,
-      episode_key: episodeKey,
       episode_title: episodeTitle,
       manual_source: raw.manual_source !== false,
       verification_status: safeText(raw.verification_status, 'manual_trusted'),
@@ -423,13 +385,11 @@
     normalized.series_logo = playbackRaw.series_logo;
     normalized.season_number = seasonNumber;
     normalized.episode_number = episodeNumber;
-    normalized.episode_label = episodeLabel;
-    normalized.episode_key = episodeKey;
     normalized.episode_title = episodeTitle;
     normalized.duration_seconds = numberValue(raw.duration_seconds || raw.duration);
     normalized.release_date = safeText(raw.release_date);
     normalized.thumbnail = safeText(raw.thumbnail || raw.logo);
-    normalized._uid = `episode:${seriesId}:s${twoDigits(seasonNumber)}:${episodeKey}`;
+    normalized._uid = `episode:${seriesId}:s${twoDigits(seasonNumber)}e${twoDigits(episodeNumber)}`;
     normalized._sourceKind = bridge?.VIEW?.MOVIE || 'movie';
     normalized.seqNumber = index + 1;
     return normalized;
@@ -490,7 +450,6 @@
     activeCategorySlug = safeText(item._seriesCategorySlug || activeCategorySlug || bridge?.state?.selectedMovieCategory);
     bridge?.scrollSidebarToTop?.();
     bridge?.showListMessage?.('Series তথ্য লোড হচ্ছে…', 'fa-spinner', true);
-    bridge?.setSidebarTitle?.(item.name);
     bridge?.setSidebarCount?.('Loading Series...');
 
     try {
@@ -534,11 +493,7 @@
       const minutes = Math.round(seconds / 60);
       return `${minutes} min`;
     }
-    return safeText(episode.duration_label || episode.duration_text);
-  }
-
-  function episodeMetaText(episode) {
-    return [episodeDurationLabel(episode), safeText(episode?.resolution)].filter(Boolean).join(' · ');
+    return safeText(episode.duration_label || episode.duration_text, 'Episode');
   }
 
   function episodeThumbnailHtml(episode) {
@@ -556,7 +511,7 @@
 
     const progress = seriesProgress(activeSeriesItem.id);
     const continueLabel = progress
-      ? `Continue S${twoDigits(progress.season_number)} · ${safeText(progress.episode_label, `Episode ${twoDigits(progress.episode_number)}`)}`
+      ? `Continue S${twoDigits(progress.season_number)} E${twoDigits(progress.episode_number)}`
       : 'Start Series';
     const hero = document.createElement('section');
     hero.className = 'series-detail-hero';
@@ -628,9 +583,8 @@
         row.innerHTML = `
           <span class="series-episode-thumb">${episodeThumbnailHtml(episode)}</span>
           <span class="series-episode-copy">
-            <strong>${escapeHtml(episodePresentationTitle(episode))}</strong>
-            <small>${escapeHtml(episodeMetaText(episode) || 'Quality information unavailable')}</small>
-            ${episodeProgress(episode) && progressPercent(episodeProgress(episode)) < 92 ? `<span class="series-episode-progress"><span style="width:${progressPercent(episodeProgress(episode)).toFixed(2)}%"></span></span>` : ''}
+            <strong>E${twoDigits(episode.episode_number)} · ${escapeHtml(episode.episode_title)}</strong>
+            <small>${escapeHtml(episodeDurationLabel(episode))}${episode.resolution ? ` · ${escapeHtml(episode.resolution)}` : ''}</small>
             ${state.label ? `<em class="series-episode-state ${state.className}">${escapeHtml(state.label)}</em>` : ''}
           </span>
           <span class="series-episode-arrow"><i class="fas fa-chevron-right"></i></span>`;
@@ -647,8 +601,6 @@
 
   function closeDetail() {
     detailActive = false;
-    const label = bridge?.movieOrder?.find((entry) => entry[1] === activeCategorySlug)?.[0] || 'Movies';
-    bridge?.setSidebarTitle?.(`${label} Series & Movies`);
     seasonRequestId += 1;
     if (bridge?.sidebarList) bridge.sidebarList.classList.remove('series-detail-list');
     bridge?.renderCurrentList?.(true);
@@ -766,7 +718,7 @@
     header.className = 'series-drawer-context';
     header.innerHTML = `
       <button type="button" class="series-drawer-back"><i class="fas fa-arrow-left"></i></button>
-      <span><strong>${escapeHtml(activeSeriesData.name || activeSeriesItem.name)}</strong><small>${isEpisodeItem(current) ? `Playing · S${twoDigits(current.season_number)} · ${episodeDisplayLabel(current)}` : seriesSummaryText()}</small></span>
+      <span><strong>${escapeHtml(activeSeriesData.name || activeSeriesItem.name)}</strong><small>${isEpisodeItem(current) ? `Playing · S${twoDigits(current.season_number)} E${twoDigits(current.episode_number)}` : seriesSummaryText()}</small></span>
       <div class="series-drawer-seasons"></div>`;
     header.querySelector('.series-drawer-back').addEventListener('click', () => {
       detailActive = false;
@@ -799,9 +751,9 @@
       row.className = `fs-drawer-item series-drawer-episode tv-focusable${state.className === 'playing' ? ' active' : ''}`;
       row.dataset.uid = episode._uid;
       row.innerHTML = `
-        <span class="fs-drawer-rank">${escapeHtml(episodeDisplayLabel(episode))}</span>
+        <span class="fs-drawer-rank">E${twoDigits(episode.episode_number)}</span>
         <span class="fs-drawer-logo-wrap">${episodeThumbnailHtml(episode)}</span>
-        <span class="fs-drawer-title">${escapeHtml(episodePresentationTitle(episode))}</span>
+        <span class="fs-drawer-title">${escapeHtml(episode.episode_title)}</span>
         ${state.label ? `<span class="series-drawer-state ${state.className}">${escapeHtml(state.label)}</span>` : ''}`;
       list.appendChild(row);
     });
@@ -823,10 +775,10 @@
     if (category) category.textContent = 'SERIES';
     if (watching) {
       watching.style.display = 'inline';
-      watching.textContent = `S${twoDigits(item.season_number)} · ${episodePresentationTitle(item)}`;
+      watching.textContent = `S${twoDigits(item.season_number)} E${twoDigits(item.episode_number)} · ${item.episode_title}`;
     }
     const osdName = document.getElementById('osdName');
-    if (osdName) osdName.textContent = `${item.series_name} — S${twoDigits(item.season_number)} · ${episodeDisplayLabel(item)}`;
+    if (osdName) osdName.textContent = `${item.series_name} — S${twoDigits(item.season_number)} E${twoDigits(item.episode_number)}`;
     return true;
   }
 
@@ -852,8 +804,6 @@
       series_id: item.series_id,
       season_number: numberValue(item.season_number),
       episode_number: numberValue(item.episode_number),
-      episode_label: safeText(item.episode_label, `Episode ${twoDigits(item.episode_number)}`),
-      episode_key: safeText(item.episode_key),
       episode_id: item.id,
       episode_uid: item._uid,
       episode_title: item.episode_title,
@@ -951,7 +901,7 @@
     const prompt = document.createElement('div');
     prompt.className = 'series-next-episode-prompt';
     prompt.innerHTML = `
-      <div><small>Next Episode</small><strong>${escapeHtml(episodePresentationTitle(next))}</strong></div>
+      <div><small>Next Episode</small><strong>E${twoDigits(next.episode_number)} · ${escapeHtml(next.episode_title)}</strong></div>
       <button type="button" class="series-next-play">Play in <span>${nextEpisodeCountdown}</span>s</button>
       <button type="button" class="series-next-cancel">Cancel</button>`;
     prompt.querySelector('.series-next-play').addEventListener('click', () => playEpisode(next));
@@ -1023,7 +973,6 @@
     handleEnded,
     handlePlaybackSelection,
     episodeByUid,
-    episodePresentationTitle,
     get detailActive() { return detailActive; },
     get activeSeriesItem() { return activeSeriesItem; },
     get activeEpisodes() { return activeEpisodes.slice(); }
