@@ -1,4 +1,7 @@
 'use strict';
+// CLICKTV_RUNTIME_STABILITY_20260806_V3
+
+// CLICKTV_FINAL_FIX_20260806_V2
 
 const $ = (id) => document.getElementById(id);
 const qs = (selector, root = document) => root.querySelector(selector);
@@ -50,7 +53,7 @@ const CHANNEL_INITIAL_CHUNK = 30;
 const CHANNEL_NEXT_CHUNK = 20;
 const MOVIE_CHUNK_SIZE = 20;
 const CHANNEL_ATTEMPT_BUDGET_MS = 16000;
-const MOVIE_ATTEMPT_BUDGET_MS = 60000;
+const MOVIE_ATTEMPT_BUDGET_MS = 75000;
 const EVENT_ATTEMPT_BUDGET_MS = 38000;
 const MIDPLAY_RECOVERY_BUDGET_MS = 16000;
 const QUALITY_LOCK_MAX_MS = 6500;
@@ -88,6 +91,7 @@ const state = {
   filteredItems: [],
   renderedCount: 0,
   currentSortMode: 'default',
+  seriesDetailMode: false,
   dataSessionId: 0,
   dataAbortController: null,
   movieIndex: null,
@@ -1100,7 +1104,36 @@ function scrollSidebarToTop() {
   }
 }
 
+function getSidebarScrollTop() {
+  if (sidebarScrollArea && sidebarScrollArea.scrollHeight > sidebarScrollArea.clientHeight) {
+    return Number(sidebarScrollArea.scrollTop || 0);
+  }
+  if (sidebarList && sidebarList.scrollHeight > sidebarList.clientHeight) {
+    return Number(sidebarList.scrollTop || 0);
+  }
+  return Number(sidebarSection?.scrollTop || 0);
+}
+
+function restoreSidebarScroll(top = 0) {
+  const value = Math.max(0, Number(top || 0));
+  requestAnimationFrame(() => {
+    if (sidebarScrollArea) sidebarScrollArea.scrollTop = value;
+    if (sidebarList) sidebarList.scrollTop = value;
+    if (window.matchMedia('(max-width: 1000px)').matches && sidebarSection) {
+      sidebarSection.scrollTop = value;
+    }
+  });
+}
+
+function setSeriesDetailMode(active) {
+  state.seriesDetailMode = Boolean(active);
+  sidebarSection?.classList.toggle('series-mode', state.seriesDetailMode);
+  sidebarList?.classList.toggle('series-detail-list', state.seriesDetailMode);
+}
+
 function clearCurrentListState() {
+  seriesModule?.resetDetail?.({ preservePlaybackContext: true, preserveCatalogSnapshot: false });
+  setSeriesDetailMode(false);
   state.currentItems = [];
   state.filteredItems = [];
   state.renderedCount = 0;
@@ -1109,7 +1142,7 @@ function clearCurrentListState() {
   state.moviePreviewMode = false;
   cancelPendingImages(sidebarList);
   sidebarList.replaceChildren();
-  sidebarList.classList.remove('movie-grid');
+  sidebarList.classList.remove('movie-grid', 'upcoming-grid', 'series-detail-list');
   state.drawerRenderedForSession = -1;
 }
 
@@ -1391,6 +1424,7 @@ function moviePagePath(pageEntry) {
 }
 
 async function loadNextMoviePage(options = {}) {
+  if (state.seriesDetailMode || seriesModule?.detailActive) return false;
   if (state.moviePageLoading || !state.movieIndex?.pages) return false;
   if (state.moviePageCursor >= state.movieIndex.pages.length) return false;
 
@@ -1406,7 +1440,12 @@ async function loadNextMoviePage(options = {}) {
       signal: options.signal || state.dataAbortController?.signal,
       cache: 'no-store'
     });
-    if (sessionId !== state.movieCategorySessionId || dataSessionId !== state.dataSessionId) return false;
+    if (
+      sessionId !== state.movieCategorySessionId ||
+      dataSessionId !== state.dataSessionId ||
+      state.seriesDetailMode ||
+      seriesModule?.detailActive
+    ) return false;
     const items = normalizeList(pageData.items || pageData.movies || pageData.channels || [], VIEW.MOVIE);
     const startIndex = state.currentItems.length;
     items.forEach((item, offset) => {
@@ -1609,7 +1648,8 @@ function applyFilterAndSort() {
   state.filteredItems = items;
 }
 
-function renderCurrentList(reset = true) {
+function renderCurrentList(reset = true, options = {}) {
+  if (state.seriesDetailMode || seriesModule?.detailActive) return;
   if (state.view === VIEW.MOVIE && !state.selectedMovieCategory && !state.moviePreviewMode) {
     showListMessage(MOVIE_PROMPT_TEXT, 'fa-film');
     setSidebarCount('0 Movies');
@@ -1624,7 +1664,7 @@ function renderCurrentList(reset = true) {
     cancelPendingImages(sidebarList);
     sidebarList.replaceChildren();
     state.renderedCount = 0;
-    scrollSidebarToTop();
+    if (!options.preserveScroll) scrollSidebarToTop();
   }
 
   const totalKnown = state.view === VIEW.MOVIE && state.movieIndex
@@ -1668,7 +1708,7 @@ function renderCurrentList(reset = true) {
     return;
   }
 
-  let initialLimit = state.view === VIEW.MOVIE ? MOVIE_CHUNK_SIZE : CHANNEL_INITIAL_CHUNK;
+  let initialLimit = Number(options.initialLimit || 0) || (state.view === VIEW.MOVIE ? MOVIE_CHUNK_SIZE : CHANNEL_INITIAL_CHUNK);
   if (state.view === VIEW.MOVIE && !state.moviePreviewMode) {
     const lastManualIndex = state.filteredItems.reduce((lastIndex, item, index) => {
       const manual = item?.manual_source === true ||
@@ -1685,6 +1725,7 @@ function renderCurrentList(reset = true) {
 }
 
 function appendNextChunk(limit = null) {
+  if (state.seriesDetailMode || seriesModule?.detailActive) return;
   if (!state.filteredItems.length) return;
   const chunkSize = limit ?? (state.view === VIEW.MOVIE ? MOVIE_CHUNK_SIZE : CHANNEL_NEXT_CHUNK);
   const start = state.renderedCount;
@@ -1851,6 +1892,7 @@ sidebarSection.addEventListener('scroll', scheduleSidebarScrollCheck, { passive:
 sidebarScrollArea?.addEventListener('scroll', scheduleSidebarScrollCheck, { passive: true });
 
 async function handleSidebarScroll() {
+  if (state.seriesDetailMode || seriesModule?.detailActive) return;
   const mobileFlow = window.matchMedia('(max-width: 1000px)').matches;
   const scrollHost = sidebarScrollArea || sidebarList;
   const nearBottom = scrollHost.scrollTop + scrollHost.clientHeight >= scrollHost.scrollHeight - (mobileFlow ? 360 : 260);
@@ -2600,6 +2642,7 @@ async function startPlayback(item, userInitiated = true) {
   state.activeLoadId += 1;
   const id = state.activeLoadId;
   await cleanupPlayerEngine();
+  if (id !== state.activeLoadId) return;
 
   clearMovieQualityGuidance();
   clearMovieAudioCompatibilityCheck();
@@ -2760,8 +2803,8 @@ function markAttemptProgress(reason = '', attemptToken = state.playbackSession?.
   const isMovie = isMoviePlaybackContext(session.item);
   const maxTotal = isMovie
     ? (format === 'direct'
-      ? (session.currentAttempt?.route === 'direct' ? 30000 : 22000)
-      : (session.currentAttempt?.route === 'direct' ? 22000 : 18000))
+      ? (session.currentAttempt?.route === 'direct' ? 42000 : 30000)
+      : (session.currentAttempt?.route === 'direct' ? 30000 : 24000))
     : isEvent && format === 'dash'
       ? 15000
       : format === 'dash'
@@ -3011,20 +3054,47 @@ async function initMpegTs(url, session, attemptToken) {
 
 async function safePlay(session, attemptToken) {
   state.userPaused = false;
-  try {
+  const playOnce = async () => {
     await video.play();
     if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
+  };
+
+  try {
+    await playOnce();
   } catch (error) {
+    if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
+
     if (error?.name === 'NotAllowedError') {
       if (video.volume > 0) state.lastNonZeroVolume = video.volume;
       video.muted = true;
       state.autoplayUnlockPending = state.userWantsSound;
       updateMuteUi();
-      await video.play();
-      if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
+      await playOnce();
       return;
     }
+
+    // Some browsers raise AbortError while metadata/source attachment is still settling.
+    // Retry once only for the still-active playback session instead of declaring a valid URL dead.
+    if (error?.name === 'AbortError') {
+      await new Promise((resolve) => setTimeout(resolve, 260));
+      if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
+      await playOnce();
+      return;
+    }
+
     throw error;
+  }
+}
+
+async function resumeVideoSafely(reason = 'resume', notifyUser = false) {
+  if (state.userPaused || video.ended) return false;
+  try {
+    await video.play();
+    return true;
+  } catch (error) {
+    console.info(`Video ${reason} deferred:`, error?.name || error?.message || error);
+    if (notifyUser && error?.name !== 'AbortError') showToast('Play button চাপুন');
+    return false;
   }
 }
 
@@ -3520,11 +3590,11 @@ function attemptTimeoutFor(attempt, format, item) {
 
   if (isMovie) {
     if (format === 'direct') {
-      if (attempt?.route === 'direct') return attempt?.sourceIndex === 0 ? 18000 : 16000;
-      return 14000;
+      if (attempt?.route === 'direct') return attempt?.sourceIndex === 0 ? 24000 : 21000;
+      return 18000;
     }
-    if (format === 'dash' || format === 'hls') return attempt?.route === 'proxy' ? 16000 : 14000;
-    return attempt?.route === 'proxy' ? 14000 : 16000;
+    if (format === 'dash' || format === 'hls') return attempt?.route === 'proxy' ? 19000 : 17000;
+    return attempt?.route === 'proxy' ? 18000 : 21000;
   }
 
   if (isEvent && isDrmDash) return attempt?.route === 'proxy' ? 12000 : 9500;
@@ -3574,7 +3644,8 @@ function handlePlaybackSuccess() {
   if (!session || session.id !== state.activeLoadId || String(session.attemptToken) !== video.dataset.attemptToken) return;
 
   acceptPlaybackRoute(session);
-  if (startLiveStartupBufferGate(session, session.attemptToken)) return;
+  session.startupBufferGateActive = false;
+  session.startupBufferGateReleased = true;
   finalizePlaybackSuccess(session);
 }
 
@@ -3834,7 +3905,7 @@ function tryLiveNetworkRecovery(force = false) {
       state.mpegts.play();
     }
   } catch (_) {}
-  try { video.play().catch(() => {}); } catch (_) {}
+  void resumeVideoSafely('network recovery');
 }
 
 function startStallDetector() {
@@ -3922,7 +3993,7 @@ function stopStallDetector() {
 }
 
 function tryGapRecovery() {
-  try { video.play().catch(() => {}); } catch (_) {}
+  void resumeVideoSafely('gap recovery');
   try {
     if (video.buffered.length) {
       const current = video.currentTime;
@@ -3954,7 +4025,7 @@ function tryLiveEdgeRecovery() {
       if (end > 0 && Math.abs(end - video.currentTime) > 2.5) {
         video.currentTime = Math.max(0, end - 1.2);
       }
-      video.play().catch(() => {});
+      void resumeVideoSafely('live-edge recovery');
     }
   } catch (_) {}
 }
@@ -4401,8 +4472,9 @@ function syncMovieAudioCompanion(force = false) {
   }
 
   if (movieAudioCompanion.paused) {
-    movieAudioCompanion.play().catch(() => {
-      if (!video.paused && !video.ended) scheduleMovieAudioResync(260, true);
+    movieAudioCompanion.play().catch((error) => {
+      console.info('Companion audio resume deferred:', error?.name || error?.message || error);
+      if (!video.paused && !video.ended) scheduleMovieAudioResync(320, true);
     });
   }
 }
@@ -5049,7 +5121,7 @@ function selectQuality(value) {
       showToast(`Quality: ${label}`);
     }
     buildQualityMenu(state.hls.levels);
-    if (video.paused) video.play().catch(() => {});
+    if (video.paused) void resumeVideoSafely('quality change');
     return;
   }
 
@@ -5644,7 +5716,7 @@ function handleRemoteNavigation(event) {
   const focusedButton = active?.closest?.('button, [role="button"], .popup-menu-item');
   if ((key === ' ' && !focusedButton) || key === 'MediaPlayPause') {
     event.preventDefault();
-    video.paused ? video.play().catch(() => {}) : video.pause();
+    video.paused ? void resumeVideoSafely('remote play', true) : video.pause();
   }
 }
 
@@ -5830,7 +5902,7 @@ $('playPauseBtn').addEventListener('click', () => {
     state.userPaused = false;
     try { state.hls?.startLoad(-1); } catch (_) {}
     try { state.mpegts?.load(); } catch (_) {}
-    video.play().catch(() => {});
+    void resumeVideoSafely('play button', true);
   } else {
     state.userPaused = true;
     try { state.hls?.stopLoad(); } catch (_) {}
@@ -5852,7 +5924,7 @@ $('volumeSlider').addEventListener('input', (event) => {
     state.autoplayUnlockPending = false;
   }
   updateMuteUi();
-  if (!video.muted && video.paused) video.play().catch(() => {});
+  if (!video.muted && video.paused) void resumeVideoSafely('volume unlock', true);
 });
 $('favActionBtn').addEventListener('click', (event) => {
   if (state.currentItem) toggleFavorite(state.currentItem._uid, event);
@@ -5890,7 +5962,7 @@ function protectLivePlaybackDuringFullscreenTransition() {
   clearLiveFullscreenRecovery();
   state.mediaOperationGraceUntil = Math.max(
     Number(state.mediaOperationGraceUntil || 0),
-    Date.now() + LIVE_FULLSCREEN_GRACE_MS
+    Date.now() + 8000
   );
   session.success = true;
   session.allowRouteFailover = false;
@@ -5898,37 +5970,13 @@ function protectLivePlaybackDuringFullscreenTransition() {
   session.stallStartedAt = 0;
   session.stallStep = 0;
 
-  const previousCap = Number(state.liveStartupQualityCapHeight || 0);
-  state.fullscreenLiveQualityPreviousCap = previousCap;
-  const currentHeight = Number(video.videoHeight || 0);
-  const stageFallback = Number(liveStartupQualityStages(session.item)[0] || 480);
-  const guardHeight = Math.max(360, currentHeight > 0 ? currentHeight : (previousCap || stageFallback));
-  applyLiveAdaptiveQualityCap(guardHeight, false);
-
-  const recover = () => {
-    if (!isActiveAttempt(session, session.attemptToken) || state.userPaused) return;
-    tryLiveNetworkRecovery(true);
-    video.play().catch(() => {});
-  };
-  recover();
-  state.fullscreenLiveRecoveryTimer = setTimeout(recover, 650);
-  setTimeout(recover, 1800);
-
-  const startedAt = Date.now();
-  state.fullscreenLiveQualityGuardTimer = setInterval(() => {
-    if (!isActiveAttempt(session, session.attemptToken) || isMoviePlaybackContext(session.item)) {
-      clearLiveFullscreenRecovery();
-      return;
-    }
-    const elapsed = Date.now() - startedAt;
-    const reserve = bufferedAheadSeconds();
-    if ((elapsed >= 6500 && reserve >= 3.0) || elapsed >= LIVE_FULLSCREEN_GRACE_MS) {
-      clearLiveFullscreenRecovery();
-      const restoreCap = Number(state.fullscreenLiveQualityPreviousCap || 0);
-      state.fullscreenLiveQualityPreviousCap = 0;
-      applyLiveAdaptiveQualityCap(restoreCap, false);
-    }
-  }, 700);
+  if (video.paused && !state.userPaused) {
+    requestAnimationFrame(() => {
+      video.play().catch((error) => {
+        console.info('Fullscreen resume deferred:', error?.name || error?.message || error);
+      });
+    });
+  }
 }
 
 function updateFullscreen4KPerformanceClass() {
@@ -6085,7 +6133,7 @@ $('nextNowBtn').addEventListener('click', () => {
   state.autoNextCount = 0;
   playRelativeItem(1, true);
 });
-$('centerPlayBtn').addEventListener('click', () => video.play().catch(() => {}));
+$('centerPlayBtn').addEventListener('click', () => { state.userPaused = false; void resumeVideoSafely('center play', true); });
 function hideResumeBadge() {
   $('resumeBadge').classList.remove('show');
   clearTimeout(state.resumeBadgeTimer);
@@ -6144,7 +6192,7 @@ function commitMovieSeek(targetTime) {
   state.seekWasPlaying = !video.paused;
   holdMovieAudioForVideoBuffering();
   try { video.currentTime = Math.max(0, Math.min(video.duration || targetTime, targetTime)); } catch (_) {}
-  if (state.seekWasPlaying) video.play().catch(() => {});
+  if (state.seekWasPlaying) void resumeVideoSafely('seek resume');
 }
 
 $('progressWrapper').addEventListener('touchstart', (event) => {
@@ -6255,6 +6303,9 @@ function initializeSeriesModule() {
     showListMessage,
     setSidebarCount,
     scrollSidebarToTop,
+    getSidebarScrollTop,
+    restoreSidebarScroll,
+    setSeriesDetailMode,
     renderCurrentList,
     startPlayback,
     updateFavoriteUi,

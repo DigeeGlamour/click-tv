@@ -1,5 +1,7 @@
 'use strict';
 
+// CLICKTV_SERIES_FINAL_DESIGN_20260806_V2
+
 (() => {
   const SERIES_PROGRESS_KEY = 'clicktv_series_progress_v1';
   const EPISODE_PROGRESS_KEY = 'clicktv_series_episode_progress_v1';
@@ -19,6 +21,8 @@
   let activeSeasonNumber = 0;
   let activeEpisodes = [];
   let seasonRequestId = 0;
+  let detailRequestId = 0;
+  let catalogSnapshot = null;
   let nextEpisodeTimer = null;
   let nextEpisodeCountdown = 0;
   const seriesCache = new Map();
@@ -257,7 +261,7 @@
 
   function createSeriesCard(item, visualIndex) {
     const card = document.createElement('div');
-    card.className = 'movie-card series-card tv-focusable';
+    card.className = 'catalog-series-card series-card tv-focusable';
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', `${item.name}, ${item.total_seasons} seasons, ${item.total_episodes} episodes`);
@@ -274,19 +278,15 @@
 
     card.innerHTML = `
       <span class="movie-rank-badge">#${visualIndex + 1}</span>
-      <span class="series-type-badge">SERIES</span>
-      <span class="series-season-badge">${escapeHtml(seasonBadge)}</span>
-      ${createPosterHtml(item)}
-      <div class="series-card-overlay">
-        <div class="movie-card-title">${escapeHtml(item.name)}</div>
-        <div class="series-card-summary">${escapeHtml(summary)}</div>
-        <div class="series-card-status-row" aria-hidden="true">
-          <span class="series-status ${statusLabel(item).toLowerCase()}">${statusLabel(item)}</span>
-          ${item.latest_episode ? `<span class="series-latest">${escapeHtml(item.latest_episode)}</span>` : ''}
-        </div>
-        <div class="series-continue-row">
-          <span>${escapeHtml(playing ? `PLAYING · S${twoDigits(bridge.state.currentItem.season_number)} E${twoDigits(bridge.state.currentItem.episode_number)}` : resumeLabel)}</span>
-        </div>
+      <div class="series-catalog-poster">
+        <span class="series-type-badge">SERIES</span>
+        <span class="series-season-badge">${escapeHtml(seasonBadge)}</span>
+        ${createPosterHtml(item)}
+      </div>
+      <div class="series-catalog-copy">
+        <h3>${escapeHtml(item.name)}</h3>
+        <p>${escapeHtml(summary)}</p>
+        <button type="button" class="series-catalog-continue" tabindex="-1">${escapeHtml(playing ? `PLAYING · S${twoDigits(bridge.state.currentItem.season_number)} E${twoDigits(bridge.state.currentItem.episode_number)}` : resumeLabel)}</button>
         <div class="series-progress-track" aria-hidden="true"><span style="width:${progressWidth.toFixed(2)}%"></span></div>
       </div>`;
 
@@ -441,24 +441,57 @@
     return numberValue(activeSeriesData?.default_season || available[0]?.number, 1);
   }
 
+  function captureCatalogSnapshot() {
+    if (!bridge?.state) return null;
+    return {
+      renderedCount: Math.max(1, numberValue(bridge.state.renderedCount, 20)),
+      scrollTop: Math.max(0, numberValue(bridge.getSidebarScrollTop?.(), 0)),
+      selectedMovieCategory: safeText(bridge.state.selectedMovieCategory),
+      searchQuery: safeText(bridge.state.searchQuery),
+      sortMode: safeText(bridge.state.currentSortMode, 'default')
+    };
+  }
+
+  function restoreCatalogSnapshot(snapshot = catalogSnapshot) {
+    bridge?.setSeriesDetailMode?.(false);
+    if (!snapshot) {
+      bridge?.renderCurrentList?.(true);
+      return;
+    }
+    bridge?.renderCurrentList?.(true, {
+      initialLimit: snapshot.renderedCount,
+      preserveScroll: true
+    });
+    bridge?.restoreSidebarScroll?.(snapshot.scrollTop);
+  }
+
   async function openSeries(item, options = {}) {
     if (!isSeriesItem(item)) return false;
     clearNextEpisodePrompt();
+    const requestId = ++detailRequestId;
+    if (!detailActive) catalogSnapshot = captureCatalogSnapshot();
     detailActive = true;
+    bridge?.setSeriesDetailMode?.(true);
     activeSeriesItem = item;
+    activeSeriesData = null;
+    activeEpisodes = [];
     activeCategorySlug = safeText(item._seriesCategorySlug || activeCategorySlug || bridge?.state?.selectedMovieCategory);
     bridge?.scrollSidebarToTop?.();
     bridge?.showListMessage?.('Series তথ্য লোড হচ্ছে…', 'fa-spinner', true);
-    bridge?.setSidebarCount?.('Loading Series...');
+    bridge?.setSidebarCount?.('');
 
     try {
-      activeSeriesData = await loadSeriesData(item);
+      const loaded = await loadSeriesData(item);
+      if (requestId !== detailRequestId || !detailActive || activeSeriesItem?.id !== item.id) return false;
+      activeSeriesData = loaded;
       activeSeasonNumber = numberValue(options.season || defaultSeasonNumber(), 1);
       await loadSeason(activeSeasonNumber, { playEpisode: options.episode || 0 });
-      return true;
+      return requestId === detailRequestId && detailActive;
     } catch (error) {
+      if (requestId !== detailRequestId) return false;
       console.error('Series open failed:', error);
       detailActive = false;
+      bridge?.setSeriesDetailMode?.(false);
       bridge?.showListMessage?.('Series তথ্য লোড করা যায়নি', 'fa-exclamation-triangle');
       bridge?.setSidebarCount?.('Series unavailable');
       return false;
@@ -504,6 +537,7 @@
   function renderSeriesDetail(options = {}) {
     if (!detailActive || !activeSeriesItem || !bridge?.sidebarList) return;
     const list = bridge.sidebarList;
+    bridge?.setSeriesDetailMode?.(true);
     list.classList.remove('movie-grid', 'upcoming-grid');
     list.classList.add('series-detail-list');
     list.replaceChildren();
@@ -512,29 +546,27 @@
     const continueLabel = progress
       ? `Continue S${twoDigits(progress.season_number)} E${twoDigits(progress.episode_number)}`
       : 'Start Series';
-    const hero = document.createElement('section');
-    hero.className = 'series-detail-hero';
-    hero.innerHTML = `
-      <div class="series-detail-toolbar">
-        <button type="button" class="series-back-button tv-focusable"><i class="fas fa-arrow-left"></i><span>Back to Movies</span></button>
-        <button type="button" class="series-bookmark-button tv-focusable"><i class="fas fa-star"></i><span>Bookmark</span></button>
-      </div>
+
+    const detail = document.createElement('section');
+    detail.className = 'series-detail-shell';
+    detail.innerHTML = `
+      <button type="button" class="series-back-button tv-focusable"><i class="fas fa-arrow-left"></i><span>Back to Movies</span></button>
       <div class="series-detail-main">
         <div class="series-detail-poster">${createPosterHtml(activeSeriesItem)}</div>
         <div class="series-detail-copy">
-          <div class="series-detail-badges"><span>SERIES</span><span>${escapeHtml(safeText(activeSeriesItem.category))}</span></div>
           <h3>${escapeHtml(activeSeriesData?.name || activeSeriesItem.name)}</h3>
           <p class="series-detail-summary">${escapeHtml(seriesSummaryText())}</p>
           <p class="series-detail-description">${escapeHtml(safeText(activeSeriesData?.description || activeSeriesItem.description, 'Season নির্বাচন করে Episode দেখুন।'))}</p>
-          <button type="button" class="series-continue-button tv-focusable"><i class="fas fa-play"></i><span>${escapeHtml(continueLabel)}</span></button>
+          <button type="button" class="series-continue-button tv-focusable">${escapeHtml(continueLabel)}</button>
         </div>
       </div>
-      <div class="series-season-strip" role="tablist"></div>`;
+      <div class="series-season-strip" role="tablist"></div>
+      <div class="series-episode-region"></div>`;
 
-    hero.querySelector('.series-back-button').addEventListener('click', closeDetail);
-    hero.querySelector('.series-bookmark-button').addEventListener('click', (event) => toggleSeriesFavorite(event));
-    hero.querySelector('.series-continue-button').addEventListener('click', () => continueSeries());
-    const strip = hero.querySelector('.series-season-strip');
+    detail.querySelector('.series-back-button').addEventListener('click', closeDetail);
+    detail.querySelector('.series-continue-button').addEventListener('click', () => continueSeries());
+
+    const strip = detail.querySelector('.series-season-strip');
     seasonList().forEach((season) => {
       const number = numberValue(season.number);
       const button = document.createElement('button');
@@ -546,29 +578,14 @@
       button.addEventListener('click', () => loadSeason(number));
       strip.appendChild(button);
     });
-    list.appendChild(hero);
 
-    const heading = document.createElement('div');
-    heading.className = 'series-episode-heading';
-    const currentSeason = findSeason(activeSeasonNumber);
-    heading.innerHTML = `<strong>${activeSeasonNumber === 0 ? 'Specials' : `Season ${activeSeasonNumber}`}</strong><span>${numberValue(currentSeason?.episode_count || activeEpisodes.length)} Episodes</span>`;
-    list.appendChild(heading);
-
+    const region = detail.querySelector('.series-episode-region');
     if (options.loading) {
-      const loading = document.createElement('div');
-      loading.className = 'series-detail-message';
-      loading.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Episode তালিকা লোড হচ্ছে…</span>';
-      list.appendChild(loading);
+      region.innerHTML = '<div class="series-detail-message"><i class="fas fa-spinner fa-spin"></i><span>Episode তালিকা লোড হচ্ছে…</span></div>';
     } else if (options.error) {
-      const error = document.createElement('div');
-      error.className = 'series-detail-message error';
-      error.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>${escapeHtml(options.error)}</span>`;
-      list.appendChild(error);
+      region.innerHTML = `<div class="series-detail-message error"><i class="fas fa-exclamation-triangle"></i><span>${escapeHtml(options.error)}</span></div>`;
     } else if (!activeEpisodes.length) {
-      const empty = document.createElement('div');
-      empty.className = 'series-detail-message';
-      empty.innerHTML = '<i class="fas fa-info-circle"></i><span>এই Season-এ কোনো Episode পাওয়া যায়নি</span>';
-      list.appendChild(empty);
+      region.innerHTML = '<div class="series-detail-message"><i class="fas fa-info-circle"></i><span>এই Season-এ কোনো Episode পাওয়া যায়নি</span></div>';
     } else {
       const episodeList = document.createElement('div');
       episodeList.className = 'series-episode-list';
@@ -580,29 +597,32 @@
         row.dataset.uid = episode._uid;
         row.dataset.episodeUid = episode._uid;
         row.innerHTML = `
-          <span class="series-episode-thumb">${episodeThumbnailHtml(episode)}</span>
+          <span class="series-episode-number">E${twoDigits(episode.episode_number)}</span>
           <span class="series-episode-copy">
             <strong>E${twoDigits(episode.episode_number)} · ${escapeHtml(episode.episode_title)}</strong>
             <small>${escapeHtml(episodeDurationLabel(episode))}${episode.resolution ? ` · ${escapeHtml(episode.resolution)}` : ''}</small>
-            ${state.label ? `<em class="series-episode-state ${state.className}">${escapeHtml(state.label)}</em>` : ''}
           </span>
-          <span class="series-episode-arrow"><i class="fas fa-chevron-right"></i></span>`;
+          ${state.label ? `<em class="series-episode-state ${state.className}">${escapeHtml(state.label)}</em>` : '<span class="series-episode-state-placeholder" aria-hidden="true"></span>'}`;
         row.addEventListener('click', (event) => { event.stopPropagation(); playEpisode(episode); });
         episodeList.appendChild(row);
       });
-      list.appendChild(episodeList);
+      region.appendChild(episodeList);
     }
 
-    bridge.setSidebarCount?.(seriesSummaryText());
-    bridge.scrollSidebarToTop?.();
+    list.appendChild(detail);
+    bridge.setSidebarCount?.('');
     updateSeriesFavoriteButton();
   }
 
   function closeDetail() {
+    if (!detailActive) return;
     detailActive = false;
+    detailRequestId += 1;
     seasonRequestId += 1;
-    if (bridge?.sidebarList) bridge.sidebarList.classList.remove('series-detail-list');
-    bridge?.renderCurrentList?.(true);
+    bridge?.sidebarList?.classList.remove('series-detail-list');
+    const snapshot = catalogSnapshot;
+    catalogSnapshot = null;
+    restoreCatalogSnapshot(snapshot);
   }
 
   async function continueSeries() {
@@ -620,8 +640,8 @@
   function playEpisode(episode) {
     if (!episode || !bridge?.startPlayback) return;
     clearNextEpisodePrompt();
-    bridge.startPlayback(episode, true);
-    renderSeriesDetail();
+    const result = bridge.startPlayback(episode, true);
+    Promise.resolve(result).finally(() => updateActiveCards());
     if (bridge?.state) bridge.state.drawerRenderedForSession = -1;
   }
 
@@ -874,8 +894,6 @@
     const id = currentSeriesId();
     if (!id) return;
     button.classList.toggle('active', favoriteIds().includes(id));
-    const localButton = bridge?.sidebarList?.querySelector('.series-bookmark-button');
-    if (localButton) localButton.classList.toggle('active', favoriteIds().includes(id));
   }
 
   function clearNextEpisodePrompt() {
@@ -920,9 +938,12 @@
 
   function resetDetail(options = {}) {
     detailActive = false;
+    detailRequestId += 1;
     seasonRequestId += 1;
     clearNextEpisodePrompt();
     bridge?.sidebarList?.classList.remove('series-detail-list');
+    bridge?.setSeriesDetailMode?.(false);
+    if (options.preserveCatalogSnapshot !== true) catalogSnapshot = null;
     const preservePlaybackContext = options.preservePlaybackContext !== false && isEpisodeItem(bridge?.state?.currentItem);
     if (preservePlaybackContext) return;
     activeSeriesItem = null;
