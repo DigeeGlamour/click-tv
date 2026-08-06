@@ -34,34 +34,71 @@ class MoviePlaybackPolicyTests(unittest.TestCase):
         self.assertFalse(item["backups"][0]["force_proxy"])
         self.assertFalse(item["backups"][0]["proxy_required"])
 
-    def test_modular_frontend_contains_latest_series_and_live_guards(self) -> None:
+    def test_modular_frontend_preserves_player_mechanisms_and_final_design(self) -> None:
         root = Path(__file__).resolve().parents[1]
-        app = (root / "site/assets/js/app.js").read_text(encoding="utf-8")
-        index = (root / "site/index.html").read_text(encoding="utf-8")
-        css = (root / "site/assets/css/app.css").read_text(encoding="utf-8")
+        index_html = (root / "site/index.html").read_text(encoding="utf-8")
+        app_js = (root / "site/assets/js/app.js").read_text(encoding="utf-8")
+        final_css = (root / "site/assets/css/final-design.css").read_text(encoding="utf-8")
+        series_js = (root / "site/assets/js/series.js").read_text(encoding="utf-8")
 
-        self.assertIn("['Premium', 'premium']", app)
-        self.assertIn("SERIES_ASSET_VERSION = '20260806-manual-series-live-fix6'", app)
-        self.assertIn("function ensureSeriesModule()", app)
-        self.assertIn("startLiveAdaptiveQualityRamp", app)
-        self.assertIn("LIVE_FAST_START_RAMP_MS = 4500", app)
-        self.assertIn("LIVE_CHANNEL_STALL_FAILOVER_MS = 11000", app)
-        self.assertIn("abrBandWidthFactor", app)
-        self.assertIn("abrBandWidthUpFactor", app)
-        self.assertIn("protectLivePlaybackDuringFullscreenTransition", app)
-        self.assertIn("window.ClickTvSeries?.handleEnded?.()", app)
+        # Modular design files are loaded explicitly and the approved design is locked.
+        self.assertIn("assets/css/final-design.css", index_html)
+        self.assertIn("assets/js/series.js", index_html)
+        self.assertIn("assets/js/app.js", index_html)
+        self.assertIn("Click TV Final Design Lock", final_css)
+        self.assertIn("mobile main category text is slightly larger", final_css)
 
-        # Existing Movie 4K system remains present.
-        self.assertIn("directMovieQualityGroups", app)
-        self.assertIn("show4KAvailabilityReminder", app)
-        self.assertIn("startMovieAudioCompanion", app)
-        self.assertIn("selectDirectMovieQuality", app)
+        # Existing playback routing and fallback mechanisms remain in app.js.
+        for marker in (
+            "direct_first",
+            "buildAttemptPlan",
+            "failCurrentAttempt",
+            "initHls",
+            "initShaka",
+            "initMpegTs",
+            "tryLiveNetworkRecovery",
+            "protectLivePlaybackDuringFullscreenTransition",
+        ):
+            self.assertIn(marker, app_js)
 
-        self.assertIn("20260806-manual-series-live-fix6", index)
-        self.assertIn("qualityAvailabilityBadge", index)
-        self.assertIn("fsDrawerToggle", index)
-        self.assertIn(".fs-drawer-toggle", css)
-        self.assertIn(".quality-availability-note", css)
+        # Fast startup, staged live quality ramp and eventual Auto/ABR release remain.
+        for marker in (
+            "startLiveStartupBufferGate",
+            "liveStartupQualityStages",
+            "startLiveAdaptiveQualityRamp",
+            "applyLiveAdaptiveQualityCap",
+            "state.hls.loadLevel = -1",
+        ):
+            self.assertIn(marker, app_js)
+
+        # 4K reminder, alternate audio and companion-audio mechanisms remain.
+        for marker in (
+            "schedule4KAvailabilityNotice",
+            "movieAudioCompanionCandidate",
+            "fallbackFromUnsupported4KAudio",
+            "Compatible 4K audio source",
+        ):
+            self.assertIn(marker, app_js)
+
+        # User pause stops live loading; resume restarts it without losing the route.
+        self.assertIn("state.hls?.stopLoad()", app_js)
+        self.assertIn("state.hls?.startLoad(-1)", app_js)
+        self.assertIn("state.userPaused", app_js)
+
+        # Popup auto-close and Series/Season/Episode mechanisms remain modular.
+        self.assertIn("setTimeout(hideAllPopups, 3000)", app_js)
+        for marker in (
+            "SERIES_MANIFEST_URL",
+            "loadSeason",
+            "playRelativeEpisode",
+            "populateFullscreenDrawer",
+            "NEXT_EPISODE_SECONDS = 8",
+        ):
+            self.assertIn(marker, series_js)
+
+        self.assertNotIn("✨ Auto", app_js)
+        self.assertNotIn("📶 Stable", app_js)
+        self.assertNotIn("⚡ Low Delay", app_js)
 
 
 if __name__ == "__main__":
