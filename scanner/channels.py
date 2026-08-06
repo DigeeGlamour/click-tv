@@ -33,6 +33,7 @@ VALID_TV_CATEGORIES = (
     "Indian",
     "Cartoon",
     "Islamic",
+    "Infotainments",
     "Foreign News",
     "Other",
 )

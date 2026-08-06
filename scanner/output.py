@@ -36,6 +36,7 @@ CHANNEL_SLUGS = {
     "Indian": "indian",
     "Cartoon": "cartoon",
     "Islamic": "islamic",
+    "Infotainments": "infotainments",
     "Foreign News": "foreign-news",
     "Other": "other",
 }

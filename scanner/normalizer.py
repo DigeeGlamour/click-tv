@@ -500,6 +500,21 @@ class Normalizer:
         if any(kw in name_tokens for kw in cartoon_kw):
             return "Cartoon"
 
+        infotainment_kw = [
+            "discovery", "nationalgeographic", "natgeo", "animalplanet",
+            "history", "science", "documentary", "knowledge", "nature",
+            "wild", "travel", "investigation", "geographic", "lifestyle"
+        ]
+        compact_name = re.sub(r"[^a-z0-9]+", "", name_norm)
+        if (
+            any(kw in name_tokens for kw in infotainment_kw)
+            or any(kw in compact_name for kw in infotainment_kw)
+            or "national geographic" in name_norm
+            or "animal planet" in name_norm
+            or "discovery channel" in name_norm
+        ):
+            return "Infotainments"
+
         sports_kw = ["sport", "sports", "cricket", "football", "tsports", "bein", "fox", "tsn", "willow", "eurosport", "fifa", "fancode", "espn", "dazn"]
         if any(kw in name_tokens for kw in sports_kw) or "t sports" in name_norm or "star sports" in name_norm or "a sports" in name_norm:
             return "Sports"
@@ -519,6 +534,15 @@ class Normalizer:
             return "Islamic"
         if "cartoon" in group_norm or "kids" in group_norm:
             return "Cartoon"
+        if (
+            "documentary" in group_norm
+            or "infotainment" in group_norm
+            or "knowledge" in group_norm
+            or "nature" in group_norm
+            or "science" in group_norm
+            or "travel" in group_norm
+        ):
+            return "Infotainments"
         if "sports" in group_norm or "sport" in group_norm:
             return "Sports"
         if "bangla" in group_norm or group_norm in ["bd", "bangladeshi"]:
