@@ -1,5 +1,5 @@
 'use strict';
-// CLICKTV_RUNTIME_STABILITY_20260806_V3
+// CLICKTV_RUNTIME_STABILITY_20260806_USER_LIST_FINAL_V1
 
 // CLICKTV_FINAL_FIX_20260806_V2
 
@@ -53,7 +53,7 @@ const CHANNEL_INITIAL_CHUNK = 30;
 const CHANNEL_NEXT_CHUNK = 20;
 const MOVIE_CHUNK_SIZE = 20;
 const CHANNEL_ATTEMPT_BUDGET_MS = 16000;
-const MOVIE_ATTEMPT_BUDGET_MS = 75000;
+const MOVIE_ATTEMPT_BUDGET_MS = 110000;
 const EVENT_ATTEMPT_BUDGET_MS = 38000;
 const MIDPLAY_RECOVERY_BUDGET_MS = 16000;
 const QUALITY_LOCK_MAX_MS = 6500;
@@ -143,6 +143,7 @@ const state = {
   lastFocusedUid: null,
   lastFocusedSelector: null,
   drawerRenderedForSession: -1,
+  drawerScrollPositions: Object.create(null),
   hideControlsTimer: null,
   deferredInstallPrompt: null,
   autoplayUnlockPending: false,
@@ -2547,10 +2548,12 @@ function clearPlaybackTimers() {
   if (session?.attemptTimer) clearTimeout(session.attemptTimer);
   if (session?.progressExtensionTimer) clearTimeout(session.progressExtensionTimer);
   if (session?.startupBufferGateTimer) clearInterval(session.startupBufferGateTimer);
+  if (session?.nativeErrorTimer) clearTimeout(session.nativeErrorTimer);
   if (session) {
     session.attemptTimer = null;
     session.progressExtensionTimer = null;
     session.startupBufferGateTimer = null;
+    session.nativeErrorTimer = null;
     session.startupBufferGateActive = false;
   }
 }
@@ -2690,7 +2693,8 @@ async function startPlayback(item, userInitiated = true) {
     routeAccepted: false,
     routeAcceptedAt: 0,
     playbackFinalized: false,
-    allowRouteFailover: false
+    allowRouteFailover: false,
+    nativeErrorTimer: null
   };
 
   if (!plan.length) {
@@ -2818,13 +2822,45 @@ function markAttemptProgress(reason = '', attemptToken = state.playbackSession?.
   }, Math.min(extension, remaining));
 }
 
+async function waitForNativeStartupSignal(session, attemptToken, waitMs = 1400) {
+  if (!isActiveAttempt(session, attemptToken)) return;
+  await new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      ['loadedmetadata', 'loadeddata', 'canplay', 'progress', 'error'].forEach((name) => video.removeEventListener(name, finish));
+      clearTimeout(timer);
+      resolve();
+    };
+    ['loadedmetadata', 'loadeddata', 'canplay', 'progress', 'error'].forEach((name) => video.addEventListener(name, finish, { once: true }));
+    const timer = setTimeout(finish, waitMs);
+  });
+}
+
 async function initNative(url, session, attemptToken, type) {
   video.removeAttribute('crossorigin');
   state.playerType = type === 'hls' ? 'native-hls' : 'native';
+  video.preload = 'auto';
   video.src = url;
+  markAttemptProgress('native source assigned', attemptToken);
+
   video.onerror = () => {
-    if (isActiveAttempt(session, attemptToken) && !isQualityLocked()) failCurrentAttempt('Native media error', attemptToken);
+    if (!isActiveAttempt(session, attemptToken) || isQualityLocked()) return;
+    clearTimeout(session.nativeErrorTimer);
+    const isMovie = session.item?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+    const graceMs = isMovie ? 1800 : 600;
+    session.nativeErrorTimer = setTimeout(() => {
+      session.nativeErrorTimer = null;
+      if (!isActiveAttempt(session, attemptToken) || session.success || video.readyState >= 2) return;
+      const code = Number(video.error?.code || 0);
+      failCurrentAttempt(code ? `Native media error ${code}` : 'Native media error', attemptToken);
+    }, graceMs);
   };
+
+  try { video.load(); } catch (_) {}
+  await waitForNativeStartupSignal(session, attemptToken, type === 'direct' ? 1600 : 900);
+  if (!isActiveAttempt(session, attemptToken)) return;
   await safePlay(session, attemptToken);
   buildQualityMenu();
   updateStreamInfoBadge();
@@ -3073,10 +3109,14 @@ async function safePlay(session, attemptToken) {
       return;
     }
 
-    // Some browsers raise AbortError while metadata/source attachment is still settling.
-    // Retry once only for the still-active playback session instead of declaring a valid URL dead.
-    if (error?.name === 'AbortError') {
-      await new Promise((resolve) => setTimeout(resolve, 260));
+    // Slow progressive files (including trusted manual media) can reject play while
+    // the browser is still attaching the source. Give the active route one real retry.
+    const movieAttempt = session.item?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+    if (error?.name === 'AbortError' || (movieAttempt && error?.name === 'NotSupportedError')) {
+      await new Promise((resolve) => setTimeout(resolve, movieAttempt ? 900 : 260));
+      if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
+      try { video.load(); } catch (_) {}
+      await waitForNativeStartupSignal(session, attemptToken, movieAttempt ? 1300 : 400);
       if (!isActiveAttempt(session, attemptToken)) throw new DOMException('Stale attempt', 'AbortError');
       await playOnce();
       return;
@@ -3589,12 +3629,16 @@ function attemptTimeoutFor(attempt, format, item) {
   const isDrmDash = format === 'dash' && Boolean(item?.drm || attempt?.source?.drm);
 
   if (isMovie) {
+    const trustedManual = Boolean(item?.manual_source || item?.skip_verification || item?.verification_status === 'manual_trusted');
     if (format === 'direct') {
-      if (attempt?.route === 'direct') return attempt?.sourceIndex === 0 ? 24000 : 21000;
-      return 18000;
+      if (attempt?.route === 'direct') {
+        if (trustedManual) return attempt?.sourceIndex === 0 ? 42000 : 34000;
+        return attempt?.sourceIndex === 0 ? 30000 : 26000;
+      }
+      return trustedManual ? 30000 : 24000;
     }
-    if (format === 'dash' || format === 'hls') return attempt?.route === 'proxy' ? 19000 : 17000;
-    return attempt?.route === 'proxy' ? 18000 : 21000;
+    if (format === 'dash' || format === 'hls') return attempt?.route === 'proxy' ? 24000 : 21000;
+    return attempt?.route === 'proxy' ? 24000 : 28000;
   }
 
   if (isEvent && isDrmDash) return attempt?.route === 'proxy' ? 12000 : 9500;
@@ -5163,13 +5207,27 @@ function applyDefaultPlayerFit() {
   video.style.setProperty('object-position', 'center center', 'important');
 }
 
+function setPlayerControlVisible(id, visible, display = 'inline-flex') {
+  const control = $(id);
+  if (!control) return;
+  control.hidden = !visible;
+  control.setAttribute('aria-hidden', visible ? 'false' : 'true');
+  control.style.setProperty('display', visible ? display : 'none', 'important');
+}
+
 function updateContextualPlayerButtons() {
   const isMovie = isMoviePlaybackContext();
   const mobileFullscreen = wrapperFullscreenElement() === videoContainer && isPhoneSizedPlayer();
-  $('aspectBtn').style.display = mobileFullscreen ? 'inline-flex' : 'none';
   document.documentElement.classList.toggle('movie-playback-context', isMovie);
-  $('networkBtn').style.display = isMovie ? 'none' : 'inline-flex';
-  if (isMovie) $('networkMenu').classList.remove('show');
+
+  setPlayerControlVisible('skipBackBtn', isMovie);
+  setPlayerControlVisible('skipFwdBtn', isMovie);
+  setPlayerControlVisible('speedBtn', isMovie);
+  setPlayerControlVisible('networkBtn', !isMovie);
+  setPlayerControlVisible('aspectBtn', mobileFullscreen);
+
+  if (isMovie) $('networkMenu')?.classList.remove('show');
+  else $('speedMenu')?.classList.remove('show');
 }
 
 function setupPlayerUi(item) {
@@ -5183,9 +5241,6 @@ function setupPlayerUi(item) {
   $('currentTime').textContent = '00:00';
   $('durationTime').textContent = isMovie ? '00:00' : 'LIVE';
   $('metaWatchingCount').style.display = isMovie ? 'none' : 'inline';
-  $('skipBackBtn').style.display = isMovie ? 'inline-flex' : 'none';
-  $('skipFwdBtn').style.display = isMovie ? 'inline-flex' : 'none';
-  $('speedBtn').style.display = isMovie ? 'inline-flex' : 'none';
   applyDefaultPlayerFit();
   updateContextualPlayerButtons();
   video.poster = isMovie ? (item.logo || '') : '';
@@ -5503,15 +5558,44 @@ $('progressWrapper').addEventListener('click', (event) => {
   commitMovieSeek(targetTime);
 });
 
+function fullscreenDrawerContextKey(mode = '') {
+  if (mode) return mode;
+  if (seriesModule?.detailActive || seriesModule?.isEpisodeItem?.(state.currentItem)) {
+    const seriesId = seriesModule?.activeSeriesItem?.id || state.currentItem?.series_id || 'series';
+    return `series:${seriesId}`;
+  }
+  return `${state.view}:${state.selectedMovieCategory || state.selectedCategory || state.activeFinalSub || 'all'}`;
+}
+
+function rememberFullscreenDrawerScroll() {
+  const list = $('fsDrawerList');
+  if (!list) return;
+  const key = list.dataset.contextKey;
+  if (key) state.drawerScrollPositions[key] = Number(list.scrollTop || 0);
+}
+
+function restoreFullscreenDrawerScroll(key) {
+  const list = $('fsDrawerList');
+  if (!list || !key) return;
+  requestAnimationFrame(() => {
+    list.scrollTop = Math.max(0, Number(state.drawerScrollPositions[key] || 0));
+  });
+}
+
 function populateFullscreenDrawer(query = '') {
   if (seriesModule?.populateFullscreenDrawer?.(query)) return;
   const list = $('fsDrawerList');
+  rememberFullscreenDrawerScroll();
   list.replaceChildren();
-  const normalized = query.toLowerCase();
-  const allMatches = state.filteredItems.filter((item) => item.name.toLowerCase().includes(normalized));
+  list.classList.remove('series-drawer-detail', 'movie-drawer-grid', 'channel-drawer-grid');
+
+  const normalized = String(query || '').trim().toLowerCase();
+  const allMatches = state.filteredItems.filter((item) => String(item.name || '').toLowerCase().includes(normalized));
   const items = allMatches.slice(0, FULLSCREEN_DRAWER_RENDER_LIMIT);
-  const movieMode = isMoviePlaybackContext();
-  list.classList.toggle('movie-drawer-grid', movieMode);
+  const movieMode = state.view === VIEW.MOVIE || state.currentItem?._sourceKind === VIEW.MOVIE;
+  const contextKey = fullscreenDrawerContextKey();
+  list.dataset.contextKey = contextKey;
+  list.classList.add(movieMode ? 'movie-drawer-grid' : 'channel-drawer-grid');
 
   const fragment = document.createDocumentFragment();
   items.forEach((item, index) => {
@@ -5520,10 +5604,16 @@ function populateFullscreenDrawer(query = '') {
     row.className = `fs-drawer-item tv-focusable${item._uid === state.currentItem?._uid ? ' active' : ''}`;
     row.dataset.uid = item._uid;
     row.setAttribute('aria-label', item.name);
+    const meta = movieMode
+      ? String(item.year || item.release_year || item.category || '').trim()
+      : String(item.category || item.competition || 'Live').trim();
     row.innerHTML = `
       <span class="fs-drawer-rank">${index + 1}</span>
       <span class="fs-drawer-logo-wrap">${createImageHtml(item, '')}</span>
-      <span class="fs-drawer-title">${escapeHtml(item.name)}</span>`;
+      <span class="fs-drawer-card-copy">
+        <strong class="fs-drawer-title">${escapeHtml(item.name)}</strong>
+        <small class="fs-drawer-meta">${escapeHtml(meta)}</small>
+      </span>`;
     fragment.appendChild(row);
   });
 
@@ -5535,6 +5625,7 @@ function populateFullscreenDrawer(query = '') {
   }
 
   list.appendChild(fragment);
+  restoreFullscreenDrawerScroll(contextKey);
   state.drawerRenderedForSession = state.dataSessionId;
 }
 
@@ -5542,10 +5633,12 @@ function populateFullscreenDrawer(query = '') {
 $('fsDrawerList').addEventListener('click', (event) => {
   const row = event.target.closest('.fs-drawer-item');
   if (!row) return;
+  rememberFullscreenDrawerScroll();
   let item = state.filteredItems.find((entry) => entry._uid === row.dataset.uid);
   if (!item && seriesModule) item = seriesModule.episodeByUid?.(row.dataset.uid);
   if (item && seriesModule?.handleDrawerClick?.(item)) {
-    $('fsDrawer').classList.remove('open');
+    // Series master/episode selections stay inside the approved Series drawer.
+    showControlsTemporarily();
     return;
   }
   if (item && isPlayable(item)) startPlayback(item, true);
@@ -6063,6 +6156,7 @@ $('fsDrawerToggle').addEventListener('click', (event) => {
   if (opening) populateFullscreenDrawer($('fsDrawerSearch').value.trim());
 });
 $('fsDrawerClose').addEventListener('click', () => {
+  rememberFullscreenDrawerScroll();
   $('fsDrawer').classList.remove('open');
   showControlsTemporarily();
 });
@@ -6111,22 +6205,6 @@ $('subscribeBtn')?.addEventListener('click', () => {
   showToast(active ? 'Subscription সরানো হয়েছে' : 'Click TV subscription চালু হয়েছে');
 });
 
-$('refreshBtn').addEventListener('click', async () => {
-  if (state.view === VIEW.MOVIE) {
-    if (state.selectedMovieCategory) {
-      const button = qs(`.sub-chip[data-movie-cat="${cssEscape(state.selectedMovieCategory)}"]`, movieSubcategoryBar);
-      await selectMovieSubcategory(state.selectedMovieCategory, button);
-    } else {
-      openMovieParentMode(activateChipByView('movie'));
-    }
-    return;
-  }
-  if (state.view === VIEW.FAVORITE) await selectMainView('favorites', null, { chip: activateChipByView('favorite') });
-  else if (state.view === VIEW.EVENT) await selectMainView('today-match', null, { chip: activateChipByView('today-match') });
-  else if (state.view === VIEW.UPCOMING) await selectMainView('upcoming', null, { chip: activateChipByView('upcoming') });
-  else if (state.view === VIEW.RECENT) await selectMainView('recent', null, { chip: activateChipByView('recent') });
-  else await selectMainView('channel', state.selectedCategory, { chip: activateChipByView('channel', state.selectedCategory) });
-});
 $('retryCurrentBtn').addEventListener('click', retryCurrentItem);
 $('nextNowBtn').addEventListener('click', () => {
   clearAutoNextTimer();
@@ -6309,6 +6387,9 @@ function initializeSeriesModule() {
     renderCurrentList,
     startPlayback,
     updateFavoriteUi,
+    rememberFullscreenDrawerScroll,
+    restoreFullscreenDrawerScroll,
+    fullscreenDrawerContextKey,
     populateDefaultFullscreenDrawer: (query = '') => {
       const temporarily = window.ClickTvSeries;
       if (temporarily?.detailActive) temporarily.resetDetail({ preservePlaybackContext: true });

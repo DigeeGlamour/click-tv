@@ -469,3 +469,209 @@ html.lite-performance .series-episode-card {
   box-shadow: none !important;
   transition: none !important;
 }
+
+
+/* USER-LIST FINAL LOCK: fullscreen Series content inside the restored drawer shell. */
+.fs-drawer-list.series-drawer-detail{
+  display:flex!important;
+  flex-direction:column!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  padding:0 2px 8px!important;
+}
+.fs-series-shell{
+  display:flex!important;
+  flex:1 1 auto!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+.fs-series-top{
+  display:grid!important;
+  grid-template-columns:104px minmax(0,1fr)!important;
+  align-items:start!important;
+  gap:14px!important;
+  flex:0 0 auto!important;
+  margin:0 0 12px!important;
+}
+.fs-series-poster{
+  width:104px!important;
+  height:146px!important;
+  overflow:hidden!important;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:13px!important;
+  background:linear-gradient(145deg,#344866,#111827 55%,#2b101a)!important;
+}
+.fs-series-poster .movie-poster,
+.fs-series-poster .movie-poster-placeholder{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  border-radius:inherit!important;
+}
+.fs-series-copy{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  min-width:0!important;
+  padding-top:2px!important;
+}
+.fs-series-copy h3{
+  margin:0 0 5px!important;
+  color:#fff!important;
+  font-size:18px!important;
+  font-weight:900!important;
+  line-height:1.18!important;
+  overflow-wrap:anywhere!important;
+}
+.fs-series-summary{
+  margin:0 0 6px!important;
+  color:#9aa7ba!important;
+  font-size:10px!important;
+  font-weight:700!important;
+  line-height:1.3!important;
+}
+.fs-series-description{
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:3!important;
+  overflow:hidden!important;
+  margin:0 0 9px!important;
+  color:#c0c8d4!important;
+  font-size:10px!important;
+  line-height:1.42!important;
+}
+.fs-series-continue{
+  min-height:32px!important;
+  padding:0 11px!important;
+  border:0!important;
+  border-radius:8px!important;
+  background:#ff2a4a!important;
+  color:#fff!important;
+  font-size:10.5px!important;
+  font-weight:900!important;
+}
+.fs-series-seasons{
+  display:flex!important;
+  flex:0 0 auto!important;
+  align-items:center!important;
+  gap:7px!important;
+  margin:0 0 10px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  scrollbar-width:none!important;
+}
+.fs-series-seasons::-webkit-scrollbar{display:none!important}
+.fs-series-season{
+  flex:0 0 auto!important;
+  min-height:32px!important;
+  padding:0 11px!important;
+  border:1px solid rgba(255,255,255,.14)!important;
+  border-radius:8px!important;
+  background:#111a2a!important;
+  color:#d4dbe6!important;
+  font-size:10.5px!important;
+  font-weight:900!important;
+}
+.fs-series-season.active{
+  border-color:#ff2a4a!important;
+  background:#ff2a4a!important;
+  color:#fff!important;
+}
+.fs-series-episodes{
+  display:flex!important;
+  flex:1 1 auto!important;
+  flex-direction:column!important;
+  min-height:0!important;
+  gap:8px!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  padding:0 1px 8px!important;
+  overscroll-behavior:contain!important;
+  scrollbar-width:thin!important;
+}
+.fs-series-episode.fs-drawer-item{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:62px minmax(0,1fr) auto!important;
+  align-items:center!important;
+  gap:8px!important;
+  width:100%!important;
+  min-height:58px!important;
+  padding:7px!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+  border-radius:11px!important;
+  background:#18243a!important;
+  color:#fff!important;
+  text-align:left!important;
+  overflow:hidden!important;
+  animation:none!important;
+}
+.fs-series-episode.fs-drawer-item.active{
+  border-color:rgba(255,42,74,.82)!important;
+  background:rgba(255,42,74,.11)!important;
+  box-shadow:inset 3px 0 0 #ff2a4a!important;
+}
+.fs-series-episode-number{
+  display:grid!important;
+  place-items:center!important;
+  min-height:42px!important;
+  border-radius:9px!important;
+  background:linear-gradient(135deg,#354b6d,#1b2941)!important;
+  color:#fff!important;
+  font-size:20px!important;
+  font-weight:900!important;
+  line-height:1!important;
+}
+.fs-series-episode-copy{
+  display:flex!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  gap:4px!important;
+}
+.fs-series-episode-copy strong{
+  overflow:hidden!important;
+  color:#fff!important;
+  font-size:11.5px!important;
+  font-weight:900!important;
+  line-height:1.25!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.fs-series-episode-copy small{
+  overflow:hidden!important;
+  color:#97a5ba!important;
+  font-size:8.8px!important;
+  font-weight:700!important;
+  line-height:1.2!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.fs-series-state{
+  padding:4px 7px!important;
+  border:1px solid rgba(255,255,255,.16)!important;
+  border-radius:999px!important;
+  font-size:8px!important;
+  font-style:normal!important;
+  font-weight:900!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.fs-series-state.playing{background:#ff2a4a!important;border-color:#ff2a4a!important;color:#fff!important}
+.fs-series-state.resume{border-color:rgba(255,42,74,.55)!important;color:#ff8fa2!important}
+.fs-series-state.watched{border-color:rgba(25,201,135,.50)!important;color:#5ce0aa!important}
+.fs-series-state.new{border-color:rgba(110,168,255,.50)!important;color:#9db7ff!important}
+@media (max-width:700px), (pointer:coarse){
+  .fs-series-top{grid-template-columns:92px minmax(0,1fr)!important;gap:11px!important;margin-bottom:10px!important}
+  .fs-series-poster{width:92px!important;height:130px!important}
+  .fs-series-copy h3{font-size:16px!important}
+  .fs-series-summary,.fs-series-description{font-size:9px!important}
+  .fs-series-continue{min-height:30px!important;font-size:9.5px!important}
+  .fs-series-season{min-height:30px!important;padding-inline:9px!important;font-size:9.5px!important}
+  .fs-series-episode.fs-drawer-item{grid-template-columns:54px minmax(0,1fr) auto!important;min-height:54px!important;gap:7px!important;padding:6px!important}
+  .fs-series-episode-number{min-height:39px!important;font-size:18px!important}
+  .fs-series-episode-copy strong{font-size:10.5px!important}
+  .fs-series-state{font-size:7.5px!important;padding:4px 6px!important}
+}

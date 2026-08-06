@@ -638,11 +638,17 @@
   }
 
   function playEpisode(episode) {
-    if (!episode || !bridge?.startPlayback) return;
+    if (!episode || !bridge?.startPlayback) return Promise.resolve(false);
     clearNextEpisodePrompt();
     const result = bridge.startPlayback(episode, true);
-    Promise.resolve(result).finally(() => updateActiveCards());
     if (bridge?.state) bridge.state.drawerRenderedForSession = -1;
+    return Promise.resolve(result).finally(() => {
+      updateActiveCards();
+      const drawer = document.getElementById('fsDrawer');
+      if (drawer?.classList.contains('open')) {
+        populateFullscreenDrawer(document.getElementById('fsDrawerSearch')?.value || '');
+      }
+    });
   }
 
   async function playRelativeEpisode(direction) {
@@ -728,60 +734,86 @@
     if (!seriesContext || !activeSeriesItem || !activeSeriesData || !bridge?.fsDrawerList) return false;
 
     const list = bridge.fsDrawerList;
+    bridge?.rememberFullscreenDrawerScroll?.();
     list.replaceChildren();
-    list.classList.remove('movie-drawer-grid');
-    list.classList.add('series-drawer-grid');
+    list.classList.remove('movie-drawer-grid', 'channel-drawer-grid');
+    list.classList.add('series-drawer-detail');
+    const contextKey = `series:${activeSeriesItem.id}:season:${activeSeasonNumber}`;
+    list.dataset.contextKey = contextKey;
     const normalized = String(query || '').trim().toLowerCase();
 
-    const header = document.createElement('div');
-    header.className = 'series-drawer-context';
-    header.innerHTML = `
-      <button type="button" class="series-drawer-back"><i class="fas fa-arrow-left"></i></button>
-      <span><strong>${escapeHtml(activeSeriesData.name || activeSeriesItem.name)}</strong><small>${isEpisodeItem(current) ? `Playing · S${twoDigits(current.season_number)} E${twoDigits(current.episode_number)}` : seriesSummaryText()}</small></span>
-      <div class="series-drawer-seasons"></div>`;
-    header.querySelector('.series-drawer-back').addEventListener('click', () => {
-      detailActive = false;
-      bridge.fsDrawerList.classList.remove('series-drawer-grid');
-      bridge.populateDefaultFullscreenDrawer?.(query);
-    });
-    const strip = header.querySelector('.series-drawer-seasons');
+    const progress = seriesProgress(activeSeriesItem.id);
+    const continueLabel = progress
+      ? `Continue S${twoDigits(progress.season_number)} E${twoDigits(progress.episode_number)}`
+      : 'Start Series';
+
+    const shell = document.createElement('section');
+    shell.className = 'fs-series-shell';
+    shell.innerHTML = `
+      <div class="fs-series-top">
+        <div class="fs-series-poster">${createPosterHtml(activeSeriesItem)}</div>
+        <div class="fs-series-copy">
+          <h3>${escapeHtml(activeSeriesData.name || activeSeriesItem.name)}</h3>
+          <p class="fs-series-summary">${escapeHtml(seriesSummaryText())}</p>
+          <p class="fs-series-description">${escapeHtml(safeText(activeSeriesData.description || activeSeriesItem.description, 'Season নির্বাচন করে Episode দেখুন।'))}</p>
+          <button type="button" class="fs-series-continue">${escapeHtml(continueLabel)}</button>
+        </div>
+      </div>
+      <div class="fs-series-seasons" role="tablist"></div>
+      <div class="fs-series-episodes"></div>`;
+
+    shell.querySelector('.fs-series-continue').addEventListener('click', () => continueSeries());
+
+    const strip = shell.querySelector('.fs-series-seasons');
     seasonList().forEach((season) => {
       const number = numberValue(season.number);
       const button = document.createElement('button');
       button.type = 'button';
-      button.className = number === activeSeasonNumber ? 'active' : '';
-      button.textContent = number === 0 ? 'SP' : `S${number}`;
+      button.className = `fs-series-season${number === activeSeasonNumber ? ' active' : ''}`;
+      button.textContent = number === 0 ? 'Specials' : `Season ${number}`;
       button.addEventListener('click', async () => {
+        bridge?.rememberFullscreenDrawerScroll?.();
         await loadSeason(number);
         populateFullscreenDrawer(query);
       });
       strip.appendChild(button);
     });
-    list.appendChild(header);
 
+    const episodeRegion = shell.querySelector('.fs-series-episodes');
     const items = activeEpisodes.filter((episode) => {
       const haystack = `${episode.episode_title} ${episode.episode_number}`.toLowerCase();
       return !normalized || haystack.includes(normalized);
     });
+
     items.forEach((episode) => {
-      const state = episodeState(episode);
+      const status = episodeState(episode);
       const row = document.createElement('button');
       row.type = 'button';
-      row.className = `fs-drawer-item series-drawer-episode tv-focusable${state.className === 'playing' ? ' active' : ''}`;
+      row.className = `fs-series-episode fs-drawer-item tv-focusable${status.className === 'playing' ? ' active' : ''}`;
       row.dataset.uid = episode._uid;
       row.innerHTML = `
-        <span class="fs-drawer-rank">E${twoDigits(episode.episode_number)}</span>
-        <span class="fs-drawer-logo-wrap">${episodeThumbnailHtml(episode)}</span>
-        <span class="fs-drawer-title">${escapeHtml(episode.episode_title)}</span>
-        ${state.label ? `<span class="series-drawer-state ${state.className}">${escapeHtml(state.label)}</span>` : ''}`;
-      list.appendChild(row);
+        <span class="fs-series-episode-number">E${twoDigits(episode.episode_number)}</span>
+        <span class="fs-series-episode-copy">
+          <strong>E${twoDigits(episode.episode_number)} · ${escapeHtml(episode.episode_title)}</strong>
+          <small>${escapeHtml(episode.resolution || episodeDurationLabel(episode))}</small>
+        </span>
+        ${status.label ? `<em class="fs-series-state ${status.className}">${escapeHtml(status.label)}</em>` : '<span class="fs-series-state-placeholder" aria-hidden="true"></span>'}`;
+      row.addEventListener('click', (event) => {
+        event.stopPropagation();
+        void playEpisode(episode);
+      });
+      episodeRegion.appendChild(row);
     });
+
     if (!items.length) {
       const message = document.createElement('div');
       message.className = 'fs-drawer-limit-note';
       message.textContent = 'কোনো Episode পাওয়া যায়নি';
-      list.appendChild(message);
+      episodeRegion.appendChild(message);
     }
+
+    list.appendChild(shell);
+    bridge?.restoreFullscreenDrawerScroll?.(contextKey);
     return true;
   }
 
