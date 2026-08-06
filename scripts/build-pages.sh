@@ -46,7 +46,6 @@ require_directory "${SITE_DIR}"
 require_directory "${DATA_DIR}"
 require_directory "${DATA_DIR}/channels"
 require_directory "${DATA_DIR}/movies"
-require_directory "${DATA_DIR}/series"
 
 log "প্রয়োজনীয় public file পরীক্ষা করা হচ্ছে"
 
@@ -55,6 +54,11 @@ require_file "${SITE_DIR}/runtime-config.json"
 require_file "${SITE_DIR}/app.webmanifest"
 require_file "${SITE_DIR}/sw.js"
 require_file "${SITE_DIR}/_headers"
+require_file "${SITE_DIR}/assets/css/app.css"
+require_file "${SITE_DIR}/assets/css/series.css"
+require_file "${SITE_DIR}/assets/css/final-design.css"
+require_file "${SITE_DIR}/assets/js/app.js"
+require_file "${SITE_DIR}/assets/js/series.js"
 
 log "প্রয়োজনীয় scanner data পরীক্ষা করা হচ্ছে"
 
@@ -69,6 +73,7 @@ CHANNEL_CATEGORIES=(
   "cartoon"
   "islamic"
   "foreign-news"
+  "infotainments"
   "other"
 )
 
@@ -91,21 +96,8 @@ for category in "${MOVIE_CATEGORIES[@]}"; do
   require_file "${DATA_DIR}/movies/${category}/index.json"
 done
 
-SERIES_CATEGORIES=(
-  "bangla"
-  "hindi"
-  "english"
-  "dubbed"
-  "south-indian"
-  "premium"
-  "mix"
-)
-
+require_directory "${DATA_DIR}/series"
 require_file "${DATA_DIR}/series/manifest.json"
-for category in "${SERIES_CATEGORIES[@]}"; do
-  require_directory "${DATA_DIR}/series/${category}"
-  require_file "${DATA_DIR}/series/${category}/index.json"
-done
 
 log "পুরোনো dist folder মুছে ফেলা হচ্ছে"
 

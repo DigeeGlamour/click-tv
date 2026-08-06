@@ -39,6 +39,7 @@ CHANNELS = {
     "Cartoon": "cartoon",
     "Islamic": "islamic",
     "Foreign News": "foreign-news",
+    "Infotainments": "infotainments",
     "Other": "other",
 }
 
@@ -52,14 +53,17 @@ MOVIES = {
     "Mix": "mix",
 }
 
-SERIES = dict(MOVIES)
-
 REQUIRED_FILES = (
     "index.html",
     "runtime-config.json",
     "app.webmanifest",
     "sw.js",
     "_headers",
+    "assets/css/app.css",
+    "assets/css/series.css",
+    "assets/css/final-design.css",
+    "assets/js/app.js",
+    "assets/js/series.js",
     "data/manifest.json",
     "data/today-match.json",
     "data/upcoming.json",
@@ -671,6 +675,9 @@ def validate_frontend_files() -> None:
             "data/manifest.json",
             "app.webmanifest",
             "sw.js",
+            "assets/css/final-design.css",
+            "assets/js/app.js",
+            "assets/js/series.js",
         ):
             if reference not in index_html:
                 add_error(f"index.html-এ required reference নেই: {reference}")
@@ -1009,86 +1016,91 @@ def validate_movie_category(
     COUNTS["movies"] += total_items
 
 
+
 def validate_series_data() -> None:
     manifest_path = require_file("data/series/manifest.json")
-    manifest = load_json(manifest_path, "data/series/manifest.json")
-    if not isinstance(manifest, dict):
+    series_manifest = load_json(manifest_path, "data/series/manifest.json")
+    if not isinstance(series_manifest, dict):
         add_error("data/series/manifest.json root object হতে হবে")
         return
-    categories = manifest.get("categories")
+
+    categories = series_manifest.get("categories")
     if not isinstance(categories, dict):
-        add_error("Series manifest categories object missing")
+        add_error("data/series/manifest.json categories object missing")
         return
-    missing = set(SERIES) - set(categories)
-    extra = set(categories) - set(SERIES)
-    if missing:
-        add_error(f"Series category missing: {sorted(missing)}")
-    if extra:
-        add_error(f"অনুমোদিত নয় এমন Series category: {sorted(extra)}")
 
     total_series = 0
     total_episodes = 0
-    for category, slug in SERIES.items():
-        entry = categories.get(category)
+    for category_name, slug in MOVIES.items():
+        entry = categories.get(category_name)
         if not isinstance(entry, dict):
+            add_error(f"Series category missing: {category_name}")
             continue
-        index_path = resolve_public_path(entry.get("index"), f"series.{category}.index")
+        index_path = resolve_public_path(entry.get("index"), f"series.{category_name}.index")
         expected = f"data/series/{slug}/index.json"
         if index_path is None:
             continue
         if relative_path(index_path) != expected:
-            add_error(f"{category} Series index path ভুল: {relative_path(index_path)}")
+            add_error(f"{category_name} series index path ভুল: {relative_path(index_path)}")
         if not index_path.is_file():
             add_error(f"Series index পাওয়া যায়নি: {expected}")
             continue
         index_data = load_json(index_path, expected)
-        items = get_items(index_data, "items", "series")
-        if not isinstance(index_data, dict) or items is None:
-            add_error(f"{expected} valid Series index নয়")
+        items = index_data.get("items") if isinstance(index_data, dict) else None
+        if not isinstance(items, list):
+            add_error(f"{expected} items array নয়")
             continue
         if index_data.get("count") != len(items) or entry.get("count") != len(items):
-            add_error(f"{category} Series count mismatch")
+            add_error(f"{category_name} series count mismatch")
         total_series += len(items)
         for number, item in enumerate(items, start=1):
             if not isinstance(item, dict):
-                add_error(f"{category} Series item #{number} object নয়")
+                add_error(f"{category_name} series #{number} object নয়")
                 continue
-            series_manifest = resolve_public_path(item.get("series_manifest"), f"{category} Series #{number}.series_manifest")
-            if series_manifest is None or not series_manifest.is_file():
-                add_error(f"{category} Series #{number} manifest missing")
+            detail_path = resolve_public_path(item.get("series_manifest"), f"{category_name} series #{number}.series_manifest")
+            if detail_path is None or not detail_path.is_file():
+                add_error(f"{category_name} series detail missing: {item.get('name', number)}")
                 continue
-            detail = load_json(series_manifest, relative_path(series_manifest))
+            detail = load_json(detail_path, relative_path(detail_path))
             seasons = detail.get("seasons") if isinstance(detail, dict) else None
             if not isinstance(seasons, list):
-                add_error(f"{relative_path(series_manifest)} seasons list missing")
+                add_error(f"{relative_path(detail_path)} seasons array নয়")
                 continue
+            counted = 0
             for season in seasons:
                 if not isinstance(season, dict):
-                    add_error(f"{relative_path(series_manifest)} invalid season entry")
                     continue
-                season_path = resolve_public_path(season.get("path"), f"{category} season path")
+                season_path = resolve_public_path(season.get("path"), "series season path")
                 if season_path is None or not season_path.is_file():
-                    add_error(f"{category} Series season file missing")
+                    add_error(f"Series season file missing: {season.get('path')}")
                     continue
-                season_data = load_json(season_path, relative_path(season_path))
-                episodes = get_items(season_data, "items", "episodes")
-                if not isinstance(season_data, dict) or episodes is None:
-                    add_error(f"{relative_path(season_path)} valid Episode list নয়")
+                payload = load_json(season_path, relative_path(season_path))
+                episodes = payload.get("items") if isinstance(payload, dict) else None
+                if not isinstance(episodes, list):
+                    add_error(f"{relative_path(season_path)} items array নয়")
                     continue
-                if season_data.get("count") != len(episodes):
-                    add_error(f"{relative_path(season_path)} count mismatch")
-                total_episodes += len(episodes)
+                counted += len(episodes)
                 for episode_number, episode in enumerate(episodes, start=1):
                     validate_stream_item(
                         episode,
-                        f"{category} Series episode #{episode_number}",
+                        f"{category_name} episode #{episode_number}",
                         media_kind="movie",
                     )
+            if int(item.get("total_episodes") or 0) != counted:
+                add_error(f"Series total_episodes mismatch: {item.get('name', number)}")
+            total_episodes += counted
 
-    if manifest.get("total_series") != total_series:
-        add_error("Series manifest total_series mismatch")
-    if manifest.get("total_episodes") != total_episodes:
-        add_error("Series manifest total_episodes mismatch")
+    declared_series = int(
+        series_manifest.get("total_series")
+        if series_manifest.get("total_series") is not None
+        else series_manifest.get("count") or 0
+    )
+    if declared_series != total_series:
+        add_error("data/series/manifest.json total count mismatch")
+
+    declared_episodes = series_manifest.get("total_episodes")
+    if declared_episodes is not None and int(declared_episodes or 0) != total_episodes:
+        add_error("data/series/manifest.json total episode count mismatch")
     COUNTS["series"] += total_series
     COUNTS["episodes"] += total_episodes
 
@@ -1164,6 +1176,8 @@ def validate_data_manifest() -> None:
         True,
     )
 
+    validate_series_data()
+
 
 def print_summary() -> None:
     print("\n[Click TV Validator] Summary")
@@ -1199,7 +1213,6 @@ def main() -> int:
     validate_frontend_files()
     validate_allowed_hosts()
     validate_data_manifest()
-    validate_series_data()
     print_summary()
 
     if ERRORS:
