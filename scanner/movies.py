@@ -20,6 +20,7 @@ Manual movie rules:
 from __future__ import annotations
 
 import difflib
+import concurrent.futures
 import hashlib
 import io
 import json
@@ -113,6 +114,7 @@ DEFAULT_REMOTE_CACHE_PATH = "state/manual-movie-remote-cache.json"
 DEFAULT_CONFLICT_REPORT_PATH = "reports/manual-movie-conflicts.json"
 DEFAULT_MISSING_POSTER_REPORT_PATH = "reports/manual-movie-poster-missing.json"
 DEFAULT_MANUAL_INTEGRITY_REPORT_PATH = "reports/manual-movie-integrity.json"
+DEFAULT_YEAR_RESOLUTION_REPORT_PATH = "reports/manual-movie-year-resolution.json"
 DEFAULT_REMOTE_SERIES_STAGING_PATH = "working/manual-series-catalog.json"
 REMOTE_FETCH_MAX_BYTES = 5_000_000
 REPOSITORY_ARCHIVE_MAX_BYTES = 100_000_000
@@ -138,6 +140,26 @@ def _source_url(source: Any) -> str:
         or source.get("link")
         or ""
     ).strip()
+
+
+def _source_identity(source: Any) -> str:
+    """Keep equal URLs separate when headers, tokens or DRM differ."""
+    if isinstance(source, str):
+        payload: Dict[str, Any] = {"url": source.strip()}
+    elif isinstance(source, dict):
+        payload = {
+            "url": _source_url(source),
+            "headers": source.get("headers") if isinstance(source.get("headers"), dict) else {},
+            "drm": source.get("drm") if isinstance(source.get("drm"), dict) else {},
+            "header_profile": str(source.get("header_profile") or ""),
+            "proxy_mode": str(source.get("proxy_mode") or "auto"),
+            "inherit_manifest_query": bool(source.get("inherit_manifest_query", False)),
+        }
+    else:
+        return ""
+    return hashlib.sha256(
+        json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"), default=str).encode("utf-8")
+    ).hexdigest()
 
 def _stream_type_from_source(source: Any) -> str:
     if isinstance(source, dict):
@@ -225,9 +247,10 @@ def _reorder_browser_sources(movie: Dict[str, Any]) -> Dict[str, Any]:
     seen = set()
     for order, source in enumerate(sources):
         url = _source_url(source)
-        if not url or url in seen:
+        identity = _source_identity(source)
+        if not url or identity in seen:
             continue
-        seen.add(url)
+        seen.add(identity)
         deduped.append((order, source))
 
     deduped.sort(
@@ -833,6 +856,136 @@ def _tmdb_poster_lookup(name: Any, year: int = 0) -> str:
     if not poster_path.startswith("/"):
         poster_path = "/" + poster_path
     return TMDB_IMAGE_BASE + poster_path
+
+
+def _tmdb_exact_year_lookup(name: Any, url_hint_year: int = 0) -> Dict[str, Any]:
+    """Resolve a missing year from unambiguous exact movie or TV titles.
+
+    Some remote "movie" catalogues contain a full-series bundle. Searching
+    TMDB multi prevents an exact TV title such as a miniseries from being
+    reported as missing merely because it is not in the movie endpoint.
+    Different-year movie/TV remakes still remain ambiguous.
+    """
+    query = _clean_poster_query(name)
+    normalized_query = _normalize_title(query)
+    if not query or not normalized_query:
+        return {"status": "unresolved", "reason": "empty_title", "candidate_years": []}
+    token, api_key = _tmdb_credentials()
+    if not token and not api_key:
+        return {"status": "unresolved", "reason": "tmdb_not_configured", "candidate_years": []}
+
+    payload = _tmdb_request_json(query, endpoint=TMDB_MULTI_SEARCH_URL)
+    results = payload.get("results") if isinstance(payload, dict) else []
+    exact: List[Dict[str, Any]] = []
+    for result in results if isinstance(results, list) else []:
+        if not isinstance(result, dict):
+            continue
+        titles = _tmdb_result_title_values(result)
+        if normalized_query not in titles:
+            continue
+        year = _tmdb_result_year(result)
+        if year:
+            exact.append(result)
+
+    candidate_years = sorted({_tmdb_result_year(result) for result in exact if _tmdb_result_year(result)})
+    if url_hint_year and url_hint_year in candidate_years:
+        matching = [result for result in exact if _tmdb_result_year(result) == url_hint_year]
+        if len({f"{result.get('media_type', 'movie')}:{result.get('id') or ''}" for result in matching}) == 1:
+            return {
+                "status": "resolved", "year": url_hint_year,
+                "reason": "tmdb_exact_title_plus_url_year", "candidate_years": candidate_years,
+                "tmdb_id": matching[0].get("id"),
+                "tmdb_media_type": matching[0].get("media_type") or "movie",
+            }
+    if len(candidate_years) == 1:
+        matching = [result for result in exact if _tmdb_result_year(result) == candidate_years[0]]
+        return {
+            "status": "resolved", "year": candidate_years[0],
+            "reason": "tmdb_unique_exact_title_year", "candidate_years": candidate_years,
+            "tmdb_id": matching[0].get("id") if matching else None,
+            "tmdb_media_type": (matching[0].get("media_type") or "movie") if matching else None,
+        }
+    if len(candidate_years) > 1:
+        return {
+            "status": "ambiguous", "reason": "same_title_multiple_release_years",
+            "candidate_years": candidate_years,
+        }
+    return {"status": "unresolved", "reason": "no_exact_tmdb_title", "candidate_years": []}
+
+
+def _manual_item_urls(item: Dict[str, Any]) -> set[str]:
+    urls: set[str] = set()
+    primary = _source_url(item)
+    if primary:
+        urls.add(primary)
+    raw_links = item.get("links")
+    if isinstance(raw_links, list):
+        for link in raw_links:
+            url = _source_url(link)
+            if url:
+                urls.add(url)
+    return urls
+
+
+def _resolve_missing_manual_years(raw_items: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
+    """Enrich missing manual years without collapsing same-name remakes.
+
+    An exact shared playback URL with a year-declared owner entry is the
+    strongest local evidence. Otherwise TMDB is accepted only when exact-title
+    results resolve to one year (or a URL year selects one exact TMDB record).
+    Multiple years remain in review instead of being guessed.
+    """
+    items = [dict(item) for item in raw_items]
+    known_by_title: Dict[str, List[Tuple[int, set[str], Dict[str, Any]]]] = {}
+    for item in items:
+        year = _parse_year(item.get("year"))
+        title = _normalize_title(item.get("name") or item.get("title"))
+        if year and title:
+            known_by_title.setdefault(title, []).append((year, _manual_item_urls(item), item))
+
+    report: List[Dict[str, Any]] = []
+    for item in items:
+        if _parse_year(item.get("year")):
+            continue
+        name = _display_title(item.get("name") or item.get("title"))
+        title = _normalize_title(name)
+        urls = _manual_item_urls(item)
+        overlapping_years = {
+            year
+            for year, known_urls, _known in known_by_title.get(title, [])
+            if urls and urls.intersection(known_urls)
+        }
+        resolution: Dict[str, Any]
+        if len(overlapping_years) == 1:
+            year = next(iter(overlapping_years))
+            resolution = {
+                "status": "resolved", "year": year,
+                "reason": "exact_title_and_shared_stream_url",
+                "candidate_years": [year],
+            }
+        elif len(overlapping_years) > 1:
+            resolution = {
+                "status": "ambiguous", "reason": "shared_urls_map_to_multiple_years",
+                "candidate_years": sorted(overlapping_years),
+            }
+        else:
+            resolution = _tmdb_exact_year_lookup(name, _year_from_urls(item))
+
+        if resolution.get("status") == "resolved" and _parse_year(resolution.get("year")):
+            item["year"] = int(resolution["year"])
+            item["year_source"] = str(resolution.get("reason") or "exact_metadata")
+            if resolution.get("tmdb_id") and not item.get("tmdb_id"):
+                item["tmdb_id"] = resolution["tmdb_id"]
+            if resolution.get("tmdb_media_type") and not item.get("tmdb_media_type"):
+                item["tmdb_media_type"] = resolution["tmdb_media_type"]
+        report.append({
+            "movie": name,
+            "status": resolution.get("status", "unresolved"),
+            "resolved_year": _parse_year(resolution.get("year")) or None,
+            "reason": resolution.get("reason", "unresolved"),
+            "candidate_years": resolution.get("candidate_years", []),
+        })
+    return items, report
 
 
 def _resolve_manual_poster(
@@ -1693,15 +1846,21 @@ def _manual_movie_card(
         )
 
     links: List[Dict[str, Any]] = []
-    seen_urls: set[str] = set()
+    seen_sources: set[str] = set()
     for raw_link in raw_links:
         link = _manual_link_object(raw_link, defaults)
         if not link:
             continue
-        url = link["url"]
-        if url in seen_urls:
+        # Manual entries stay trusted and direct-first, but the final catalogue
+        # must never publish a declared/identified stream below 720p or one
+        # whose quality is still unknown.
+        height = _safe_int(link.get("resolution_height"), 0)
+        if height < 720:
             continue
-        seen_urls.add(url)
+        identity = _source_identity(link)
+        if identity in seen_sources:
+            continue
+        seen_sources.add(identity)
         links.append(link)
 
     if not links:
@@ -1803,6 +1962,8 @@ def _manual_movie_card(
         value = raw_item.get(field_name)
         if value not in (None, ""):
             card[field_name] = value
+    if raw_item.get("year_source"):
+        card["year_source"] = str(raw_item["year_source"])
 
     return card
 
@@ -2329,10 +2490,34 @@ def _collect_manual_conflicts(raw_items: Iterable[Dict[str, Any]]) -> List[Dict[
         raw_links = item.get("links")
         if isinstance(raw_links, list):
             for link_index, link in enumerate(raw_links, start=1):
-                if not isinstance(link, dict):
-                    continue
-                declared_height = _resolution_height(link.get("resolution") or link.get("label"))
-                url_height = _resolution_height(urllib.parse.unquote(_source_url(link)))
+                link_dict = link if isinstance(link, dict) else {"url": link}
+                declared_height = _resolution_height(
+                    link_dict.get("resolution") or link_dict.get("label")
+                )
+                url_height = _resolution_height(
+                    urllib.parse.unquote(_source_url(link_dict))
+                )
+                effective_height = declared_height or url_height
+                if effective_height < 720:
+                    conflicts.append(
+                        {
+                            "movie": name,
+                            "category": _canonical_movie_category(item.get("category")),
+                            "source": source_name,
+                            "type": (
+                                "resolution_unknown"
+                                if effective_height <= 0
+                                else "below_minimum_resolution"
+                            ),
+                            "link_number": link_index,
+                            "resolution_height": effective_height,
+                            "minimum_height": 720,
+                            "message": (
+                                "Manual link was retained in the review report but "
+                                "not published because it does not prove 720p or higher."
+                            ),
+                        }
+                    )
                 if declared_height and url_height and declared_height != url_height:
                     conflicts.append(
                         {
@@ -2406,6 +2591,12 @@ def _all_source_objects(movie: Dict[str, Any]) -> List[Dict[str, Any]]:
             normalized = _source_dict(backup, movie)
             if normalized.get("url"):
                 sources.append(normalized)
+    standby = movie.get("standby")
+    if isinstance(standby, list):
+        for entry in standby:
+            normalized = _source_dict(entry, movie)
+            if normalized.get("url"):
+                sources.append(normalized)
     return sources
 
 
@@ -2416,12 +2607,11 @@ def _merge_preferred_movie(preferred: Dict[str, Any], secondary: Dict[str, Any])
     deduped: List[Dict[str, Any]] = []
     for source in combined_sources:
         url = _source_url(source)
-        if not url or url in seen:
+        identity = _source_identity(source)
+        if not url or identity in seen:
             continue
-        seen.add(url)
+        seen.add(identity)
         deduped.append(source)
-        if len(deduped) >= 6:
-            break
     if deduped:
         primary = deduped[0]
         merged["url"] = primary["url"]
@@ -2432,8 +2622,10 @@ def _merge_preferred_movie(preferred: Dict[str, Any], secondary: Dict[str, Any])
         ):
             if field_name in primary:
                 merged[field_name] = primary[field_name]
-        merged["backups"] = [dict(source) for source in deduped[1:]]
-        merged["available_link_count"] = len(deduped)
+        merged["backups"] = [dict(source) for source in deduped[1:6]]
+        merged["available_link_count"] = min(6, len(deduped))
+        merged["standby"] = [dict(source) for source in deduped[6:]]
+        merged["standby_link_count"] = len(merged["standby"])
     if not _valid_poster_url(merged.get("logo")):
         fallback_poster = _valid_poster_url(secondary.get("logo"))
         if fallback_poster:
@@ -2451,6 +2643,7 @@ def load_manual_movies(
     missing_poster_report_path: str | Path = DEFAULT_MISSING_POSTER_REPORT_PATH,
     source_report_path: str | Path = "reports/manual-movie-sources.json",
     series_catalog_path: str | Path = DEFAULT_REMOTE_SERIES_STAGING_PATH,
+    year_resolution_report_path: str | Path = DEFAULT_YEAR_RESOLUTION_REPORT_PATH,
 ) -> List[Dict[str, Any]]:
     """
     Load trusted manual movies from three layers:
@@ -2478,6 +2671,26 @@ def load_manual_movies(
     combined.extend((item, {}) for item in text_items)
     combined.extend((item, json_defaults) for item in json_items)
     combined.extend((item, {}) for item in remote_items)
+
+    resolved_items, year_resolution_items = _resolve_missing_manual_years(
+        [item for item, _defaults in combined]
+    )
+    combined = [
+        (resolved_item, combined[index][1])
+        for index, resolved_item in enumerate(resolved_items)
+    ]
+    _atomic_write_json(
+        year_resolution_report_path,
+        {
+            "version": 1,
+            "updated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "count": len(year_resolution_items),
+            "resolved": sum(item.get("status") == "resolved" for item in year_resolution_items),
+            "ambiguous": sum(item.get("status") == "ambiguous" for item in year_resolution_items),
+            "unresolved": sum(item.get("status") == "unresolved" for item in year_resolution_items),
+            "items": year_resolution_items,
+        },
+    )
 
     for position, (raw_item, defaults) in enumerate(combined, start=1):
         if raw_item.get("enabled") is False:
@@ -2529,18 +2742,94 @@ def load_manual_movies(
     )
     return deduplicated
 
+
+def _probe_manual_movie_url(url: str, timeout_seconds: int) -> Dict[str, Any]:
+    """Perform only a lightweight byte-range liveness check.
+
+    This deliberately does not parse manifests, segments or DRM. Manual
+    metadata remains trusted; the result is informational and never deletes a
+    temporarily geo-restricted owner-managed movie.
+    """
+    started = time.monotonic()
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0 ClickTV-Manual-Liveness/1.0",
+            "Accept": "*/*",
+            "Range": "bytes=0-0",
+        },
+        method="GET",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+            status = int(getattr(response, "status", 200) or 200)
+            response.read(1)
+        label = "live" if 200 <= status < 400 else "unknown"
+        return {
+            "status": label,
+            "http_status": status,
+            "response_time_ms": int((time.monotonic() - started) * 1000),
+        }
+    except urllib.error.HTTPError as error:
+        status = int(getattr(error, "code", 0) or 0)
+        return {
+            "status": "restricted" if status in {401, 403, 429, 451} else "dead" if status in {404, 410} else "unknown",
+            "http_status": status,
+            "response_time_ms": int((time.monotonic() - started) * 1000),
+        }
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return {
+            "status": "unknown",
+            "http_status": 0,
+            "response_time_ms": int((time.monotonic() - started) * 1000),
+        }
+
+
+def _annotate_manual_movie_liveness(
+    movies: List[Dict[str, Any]],
+    settings: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    config = settings.get("manual_movie_liveness")
+    if not isinstance(config, dict) or not bool(config.get("enabled", False)):
+        return movies
+
+    workers = max(1, min(32, _safe_int(config.get("workers"), 12)))
+    timeout_seconds = max(2, min(20, _safe_int(config.get("timeout_seconds"), 5)))
+    checked = [dict(movie) for movie in movies]
+    jobs: Dict[concurrent.futures.Future, int] = {}
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=workers,
+        thread_name_prefix="manual-movie-live",
+    ) as executor:
+        for index, movie in enumerate(checked):
+            url = _source_url(movie)
+            if url.startswith(("https://", "http://")):
+                jobs[executor.submit(_probe_manual_movie_url, url, timeout_seconds)] = index
+        for future in concurrent.futures.as_completed(jobs):
+            index = jobs[future]
+            try:
+                result = future.result()
+            except Exception:
+                result = {"status": "unknown", "http_status": 0, "response_time_ms": 0}
+            checked[index]["manual_liveness_status"] = result["status"]
+            checked[index]["manual_liveness_http_status"] = result["http_status"]
+            checked[index]["manual_liveness_response_time_ms"] = result["response_time_ms"]
+            checked[index]["verification_note"] = (
+                "Trusted manual metadata; lightweight primary-link liveness "
+                f"result: {result['status']}"
+            )
+    return checked
+
 def _merge_manual_over_discovered(
     discovered_movies: Iterable[Dict[str, Any]],
     manual_movies: Iterable[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
     """
-    Give owner-managed manual movies absolute duplicate priority by title.
+    Give owner-managed manual movies absolute primary priority by title.
 
-    When a normalized movie name exists in the manual source, every discovered
-    copy with that name is removed, even if provider metadata reports a
-    different year. Only the manual movie's own primary and backup links remain.
-    A discovered poster may fill an empty manual poster, but discovered playback
-    URLs are never appended to a manual movie.
+    Matching verified discovered links remain as backups/standby. This keeps
+    the owner's URL first while retaining recovery routes from every supplied
+    movie source.
     """
     discovered_unique: List[Dict[str, Any]] = []
     discovered_identity_seen: set[str] = set()
@@ -2580,6 +2869,9 @@ def _merge_manual_over_discovered(
                     manual_copy["logo"] = fallback_poster
                     break
 
+        for discovered_copy in discovered_by_name.get(name_identity, []):
+            manual_copy = _merge_preferred_movie(manual_copy, discovered_copy)
+
         manual_unique.append(manual_copy)
 
     ordered = [
@@ -2591,8 +2883,17 @@ def _merge_manual_over_discovered(
     return ordered
 
 def _enforce_movie_runtime_direct_first(movie: Dict[str, Any]) -> Dict[str, Any]:
-    """Publish every movie with viewer-direct playback before proxy fallback."""
+    """Manual movies are direct-first; discovered routes keep verification truth."""
     output = dict(movie)
+    is_manual = bool(
+        output.get("manual_source") is True
+        or str(output.get("verification_status") or "").casefold() == "manual_trusted"
+    )
+    if not is_manual:
+        if str(output.get("verification_status") or "").casefold() == "verified_proxy":
+            output["proxy_mode"] = "proxy_only"
+        return output
+
     output["proxy_mode"] = "direct_first"
     output["force_proxy"] = False
     output["proxy_required"] = False
@@ -2843,6 +3144,7 @@ def process_movies(
         manual_movies_text_path=manual_movies_text_path,
         remote_sources_path=remote_sources_path,
     )
+    manual_movies = _annotate_manual_movie_liveness(manual_movies, settings)
     merged_movies = _merge_manual_over_discovered(
         discovered_movies,
         manual_movies,
@@ -2878,4 +3180,3 @@ def process_movies(
         )
         for category in VALID_MOVIE_CATEGORIES
     }
-

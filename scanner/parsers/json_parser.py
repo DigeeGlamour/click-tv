@@ -528,6 +528,27 @@ def _collect_streams(
                             metadata,
                         )
 
+    # Some event feeds expose provider maps as stream_url_alpha,
+    # stream_url_bravo, etc. Treat every such field as a stream container
+    # instead of silently producing metadata-only events.
+    for raw_key, container in raw_item.items():
+        key = str(raw_key).strip().casefold()
+        if not key.startswith(("stream_url_", "playback_url_")):
+            continue
+        if isinstance(container, str):
+            add(container, {"provider": str(raw_key)})
+        elif isinstance(container, dict):
+            for provider_name, entry in container.items():
+                if isinstance(entry, str):
+                    add(entry, {"provider": str(provider_name), "server_group": str(raw_key)})
+                elif isinstance(entry, dict):
+                    stream_url = _first_text(entry, DIRECT_STREAM_KEYS)
+                    if stream_url:
+                        metadata = dict(entry)
+                        metadata.setdefault("provider", str(provider_name))
+                        metadata.setdefault("server_group", str(raw_key))
+                        add(stream_url, metadata)
+
     return collected
 
 

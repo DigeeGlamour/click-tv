@@ -112,7 +112,8 @@ def _drm_is_private(drm: Any) -> bool:
         return False
     secret_keys = {
         "key", "keys", "key_id", "kid", "license_key", "clearkey",
-        "clear_keys", "headers", "authorization", "cookie", "token",
+        "clear_keys", "headers", "license_headers", "license_url",
+        "certificate_url", "certificate_headers", "authorization", "cookie", "token",
     }
     return any(str(key).strip().lower() in secret_keys for key in drm)
 
@@ -165,8 +166,8 @@ class PlaybackProfileCollector:
                 drm_type = str(drm.get("type") or drm.get("scheme") or "protected").strip().lower() if isinstance(drm, Mapping) else "protected"
                 clean[key] = {"type": drm_type, "protected": True}
                 continue
-            if key_lower in {"backups", "links", "sources"} and isinstance(value, list):
-                maximum = 5 if key_lower == "backups" else 6
+            if key_lower in {"backups", "links", "sources", "standby"} and isinstance(value, list):
+                maximum = 5 if key_lower == "backups" else len(value) if key_lower == "standby" else 6
                 children: List[Any] = []
                 for index, child in enumerate(value[:maximum]):
                     child_context = f"{context}:{key_lower}:{index}"
@@ -212,12 +213,16 @@ class PlaybackProfileCollector:
         headers: Mapping[str, str],
     ) -> str:
         identity = {
-            "context": context,
-            "item_id": str(item.get("id") or item.get("channel_id") or ""),
-            "name": str(item.get("name") or item.get("title") or "").casefold().strip(),
-            "source_id": str(item.get("source_id") or ""),
-            "url": _redacted_url(source_url),
-            "header_names": sorted(name.casefold() for name in headers),
+            # The ID represents the complete playable configuration. Header,
+            # Cookie/token and DRM values are intentionally included because
+            # this project stores them in its public Git/Pages catalogue and
+            # equal URLs with different credentials must never collide.
+            "url": source_url,
+            "headers": dict(sorted((str(name), str(value)) for name, value in headers.items())),
+            "drm": item.get("drm") if isinstance(item.get("drm"), Mapping) else {},
+            "header_profile": str(item.get("header_profile") or ""),
+            "stream_type": str(item.get("stream_type") or item.get("type") or ""),
+            "inherit_manifest_query": bool(item.get("inherit_manifest_query")),
         }
         digest = hashlib.sha256(
             json.dumps(identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")

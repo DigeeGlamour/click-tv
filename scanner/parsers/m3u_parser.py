@@ -22,7 +22,7 @@ from __future__ import annotations
 import json
 import re
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import parse_qsl, urljoin
+from urllib.parse import parse_qsl, unquote, urljoin
 
 
 ABSOLUTE_URL_RE = re.compile(
@@ -160,6 +160,40 @@ def _parse_inline_url_headers(
         headers[canonical_key] = value
 
     return stream_url.strip(), headers
+
+
+def _parse_kodi_header_string(raw_value: str) -> Dict[str, str]:
+    """Decode Kodi ``inputstream.adaptive.*_headers`` properties.
+
+    Kodi stores headers as a query string and percent-encodes header values.
+    These are request headers, not DRM metadata.  Keeping them in ``drm``
+    meant the verifier and playback Worker silently fell back to a static
+    profile instead of the source's exact Cookie/User-Agent.
+    """
+    value = str(raw_value or "").strip().lstrip("?")
+    if not value:
+        return {}
+
+    headers: Dict[str, str] = {}
+    for raw_name, raw_header_value in parse_qsl(
+        value,
+        keep_blank_values=True,
+        strict_parsing=False,
+    ):
+        name = _canonical_header_name(unquote(str(raw_name))).strip()
+        header_value = unquote(str(raw_header_value)).strip()
+        if not name or not header_value:
+            continue
+        # The target URL already supplies Host. Hop-by-hop/entity headers
+        # cannot safely be replayed by urllib or Cloudflare fetch().
+        if name.casefold() in {
+            "host", "connection", "content-length", "transfer-encoding",
+        }:
+            continue
+        if "\r" in name or "\n" in name or "\r" in header_value or "\n" in header_value:
+            continue
+        headers[name] = header_value
+    return headers
 
 
 def _looks_like_stream_line(
@@ -437,7 +471,12 @@ def parse_m3u_content(
                 key_lower = key_clean.lower()
                 value = value.strip()
 
-                if "license_type" in key_lower:
+                if key_lower.endswith("stream_headers") or key_lower.endswith("manifest_headers"):
+                    # Source-declared headers override configured/static
+                    # profiles. Inline URL headers still have final priority.
+                    state["headers"].update(_parse_kodi_header_string(value))
+
+                elif "license_type" in key_lower:
                     state["drm"]["license_type"] = value
 
                 elif "license_key" in key_lower:

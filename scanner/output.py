@@ -173,7 +173,17 @@ def _iter_public_source_urls(value: Any) -> Iterable[str]:
         if url:
             yield url
 
-    for key in ("backups", "links", "sources"):
+    drm = value.get("drm")
+    if isinstance(drm, dict):
+        for key in (
+            "license_url", "license_server", "server_url",
+            "certificate_url", "server_certificate_url", "fairplay_certificate_url",
+        ):
+            drm_url = str(drm.get(key) or "").strip()
+            if drm_url:
+                yield drm_url
+
+    for key in ("backups", "links", "sources", "standby"):
         children = value.get(key)
         if not isinstance(children, list):
             continue
@@ -200,7 +210,11 @@ def _collect_allowed_hosts_from_data(data_root: Path) -> List[str]:
         json_files.extend(movies_dir.glob("*/page-*.json"))
     if series_dir.exists():
         json_files.extend(series_dir.glob("*/*/season-*.json"))
-    json_files.extend([data_root / "today-match.json", data_root / "upcoming.json"])
+    json_files.extend([
+        data_root / "today-match.json",
+        data_root / "upcoming.json",
+        data_root / "playback-sources.json",
+    ])
 
     for file_path in json_files:
         payload = _load_json_file(file_path)
@@ -210,6 +224,9 @@ def _collect_allowed_hosts_from_data(data_root: Path) -> List[str]:
                 candidate_lists.append(payload.get(key))
         if isinstance(payload, list):
             candidate_lists.append(payload)
+        records = payload.get("records")
+        if isinstance(records, dict):
+            candidate_lists.append(list(records.values()))
 
         for candidate_list in candidate_lists:
             for item in candidate_list:
@@ -452,11 +469,6 @@ def _publish_channel_category(
     previous_count = _channel_count(previous_payload)
     current_count = len(public_cards)
     drop_pct = _drop_percentage(previous_count, current_count)
-
-    # A migration bypass is allowed only when the previous category actually
-    # contains direct VOD/movie links. Normal sudden-drop protection remains
-    # active for clean TV categories.
-    force_replace = bool(force_replace and _channel_payload_has_vod(previous_payload))
 
     should_preserve = (
         not force_replace
@@ -794,6 +806,9 @@ def publish_scan_outputs(
         1,
         1_000_000,
     )
+    movie_migration_id = str(
+        movie_failure_config.get("quality_migration_id", "")
+    ).strip()
 
     data_root = Path(data_dir)
     state_root = Path(state_dir)
@@ -809,6 +824,10 @@ def publish_scan_outputs(
         routing_config.get("cleanup_migration_id", "vod-routing-v1")
     ).strip() or "vod-routing-v1"
     migration_marker = state_root / "migrations" / f"{migration_id}.json"
+    movie_migration_marker = (
+        state_root / "migrations" / f"{movie_migration_id}.json"
+        if movie_migration_id else None
+    )
     cleanup_categories_raw = routing_config.get(
         "cleanup_polluted_tv_categories", ["Bangla", "Indian"]
     )
@@ -836,6 +855,11 @@ def publish_scan_outputs(
         and routing_config.get("cleanup_polluted_tv_once", True)
         and not migration_marker.exists()
         and incoming_channel_total >= cleanup_minimum_incoming
+    )
+    movie_quality_migration_active = bool(
+        movies_data is not None
+        and movie_migration_marker is not None
+        and not movie_migration_marker.exists()
     )
 
     data_root.mkdir(parents=True, exist_ok=True)
@@ -905,7 +929,13 @@ def publish_scan_outputs(
             if drop_error is not None:
                 source_errors.append(drop_error)
 
-        if cleanup_migration_active:
+        cleanup_failed_categories = {
+            str(item.get("category") or "")
+            for item in source_errors
+            if item.get("type") == "sudden_drop_protection"
+            and str(item.get("category") or "") in cleanup_categories
+        }
+        if cleanup_migration_active and not cleanup_failed_categories:
             migration_marker.parent.mkdir(parents=True, exist_ok=True)
             _atomic_write_json(
                 migration_marker,
@@ -914,8 +944,8 @@ def publish_scan_outputs(
                     "completed_at": timestamp,
                     "categories_rebuilt": sorted(cleanup_categories),
                     "reason": (
-                        "Removed VOD/movie items that were previously "
-                        "misrouted into TV category files"
+                        "Rebuilt TV categories from the final configured "
+                        "sources and enforced the minimum resolution policy"
                     ),
                 },
             )
@@ -926,8 +956,8 @@ def publish_scan_outputs(
                     "categories": sorted(cleanup_categories),
                     "timestamp": timestamp,
                     "error": (
-                        "One-time TV/VOD cleanup migration completed; sudden "
-                        "drop protection was bypassed only for affected categories."
+                        "One-time TV source/quality migration completed; sudden "
+                        "drop protection was bypassed only for configured categories."
                     ),
                 }
             )
@@ -945,6 +975,7 @@ def publish_scan_outputs(
         )
         protect_previous_movies = bool(
             movie_drop_protection_enabled
+            and not movie_quality_migration_active
             and previous_movie_total >= movie_minimum_previous_count
             and movie_drop > movie_maximum_drop_percentage
         )
@@ -960,6 +991,7 @@ def publish_scan_outputs(
             output_safety_items.append(warning)
             source_errors.append(warning)
         else:
+            movie_publish_failed = False
             for category_name, category_payload in movies_data.items():
                 try:
                     manifest["movies"][str(category_name)] = (
@@ -971,6 +1003,7 @@ def publish_scan_outputs(
                         )
                     )
                 except Exception as error:
+                    movie_publish_failed = True
                     source_errors.append(
                         {
                             "type": "movie_publish_error",
@@ -979,6 +1012,23 @@ def publish_scan_outputs(
                             "timestamp": timestamp,
                         }
                     )
+            if (
+                movie_quality_migration_active
+                and movie_migration_marker is not None
+                and not movie_publish_failed
+            ):
+                movie_migration_marker.parent.mkdir(parents=True, exist_ok=True)
+                _atomic_write_json(
+                    movie_migration_marker,
+                    {
+                        "migration": movie_migration_id,
+                        "completed_at": timestamp,
+                        "reason": (
+                            "Rebuilt movie categories with the minimum "
+                            "resolution and final source policy"
+                        ),
+                    },
+                )
 
     # 3. Events
     if events_data is not None:

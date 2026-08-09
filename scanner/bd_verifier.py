@@ -833,8 +833,12 @@ def _proxy_verifier_settings(settings: Dict[str, Any]) -> Dict[str, Any]:
 
     resolution = settings.get("resolution", {})
     copied_resolution = dict(resolution) if isinstance(resolution, dict) else {}
-    copied_resolution["allow_unknown_tv_resolution"] = True
-    copied_resolution["allow_unknown_event_resolution"] = True
+    # Proxy verification must enforce the same publication quality contract as
+    # direct verification. A proxy route is not permission to publish an
+    # unknown or sub-720p stream.
+    copied_resolution["allow_unknown_tv_resolution"] = False
+    copied_resolution["allow_unknown_movie_resolution"] = False
+    copied_resolution["allow_unknown_event_resolution"] = False
     copied["resolution"] = copied_resolution
     return copied
 

@@ -133,9 +133,28 @@ def _slug(value: Any) -> str:
 
 def _event_key(value: Any) -> str:
     text = str(value or "").casefold()
+    text = text.replace("pheonix", "phoenix").replace("spirits", "spirit")
+    if "|" in text:
+        text = text.split("|", 1)[0].strip()
+    match = re.search(r"(?:^|[-|])\s*([^-|]+?)\s+v(?:s|\.)\s+([^|]+)", text)
+    if match:
+        left = match.group(1)
+        right = match.group(2)
+        right = re.split(r"\s+-\s+(?!(?:women|men)\b)", right, maxsplit=1)[0]
+        gender = "women" if re.search(r"\bwom(?:e|a)n(?:'s|s)?\b", f"{left} {right}") else ""
+        left = re.sub(r"\bwom(?:e|a)n(?:'s|s)?\b", " ", left)
+        right = re.sub(r"\bwom(?:e|a)n(?:'s|s)?\b", " ", right)
+        text = f"{left} vs {right} {gender}"
     text = re.sub(
-        r"\b(?:official|live|coverage|match|fancode|tapmad|willow|crichd|"
-        r"server\s*\d*|alt|hindi|english|4k|2k|uhd|fhd|hd|sd|"
+        r"\b\d{1,2}\s+(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|"
+        r"may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|"
+        r"nov(?:ember)?|dec(?:ember)?)\s+(?:19|20)\d{2}\b",
+        " ",
+        text,
+    )
+    text = re.sub(
+        r"\b(?:official|live|coverage|match|fancode|tapmad|willow(?:\s+cricket)?|crichd|"
+        r"sony\s*liv|star\s*sports?\s*\d*|server\s*\d*|alt|hindi|english|4k|2k|uhd|fhd|hd|sd|"
         r"1080p|720p|480p|360p)\b",
         " ",
         text,
@@ -163,6 +182,9 @@ def _exact_stream_key(item: Dict[str, Any]) -> str:
     Different headers/DRM metadata are kept as separate candidates.
     """
     payload = {
+        # The same playback configuration may intentionally appear in Today
+        # and Upcoming. Output pipeline is therefore part of exact identity.
+        "pipeline": str(item.get("source_pipeline") or "tv").strip().lower(),
         "url": str(item.get("url") or "").strip(),
         "headers": item.get("headers") if isinstance(item.get("headers"), dict) else {},
         "drm": item.get("drm") if isinstance(item.get("drm"), dict) else {},
@@ -170,6 +192,54 @@ def _exact_stream_key(item: Dict[str, Any]) -> str:
         "start_time": item.get("start_time") if item.get("metadata_only") else "",
     }
     return hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+
+
+def _source_provenance(item: Dict[str, Any]) -> List[Dict[str, str]]:
+    """Return every configured source that supplied this playback setup."""
+    records: List[Dict[str, str]] = []
+    existing = item.get("source_provenance")
+    if isinstance(existing, list):
+        for raw in existing:
+            if not isinstance(raw, dict):
+                continue
+            source_id = str(raw.get("source_id") or "").strip()
+            if source_id:
+                records.append(
+                    {
+                        "source_id": source_id,
+                        "source_name": str(raw.get("source_name") or source_id).strip(),
+                        "source_url": str(raw.get("source_url") or "").strip(),
+                    }
+                )
+
+    source_id = str(item.get("source_id") or "").strip()
+    if source_id:
+        records.append(
+            {
+                "source_id": source_id,
+                "source_name": str(item.get("source_name") or source_id).strip(),
+                "source_url": str(item.get("source_url") or "").strip(),
+            }
+        )
+
+    unique: Dict[str, Dict[str, str]] = {}
+    for record in records:
+        unique.setdefault(record["source_id"], record)
+    return list(unique.values())
+
+
+def _merge_source_provenance(
+    preferred: Dict[str, Any],
+    duplicate: Dict[str, Any],
+) -> Dict[str, Any]:
+    merged = dict(preferred)
+    combined = _source_provenance(preferred) + _source_provenance(duplicate)
+    unique: Dict[str, Dict[str, str]] = {}
+    for record in combined:
+        unique.setdefault(record["source_id"], record)
+    merged["source_provenance"] = list(unique.values())
+    merged["source_ids"] = list(unique)
+    return merged
 
 
 def _group_key(item: Dict[str, Any]) -> str:
@@ -463,6 +533,9 @@ def plan_candidates(
     planning = settings.get("planning")
     if not isinstance(planning, dict):
         planning = {}
+    exhaustive_verification = bool(
+        planning.get("exhaustive_verification", False)
+    )
 
     active_pipelines = _pipeline_for_mode(mode)
     if not active_pipelines:
@@ -510,7 +583,7 @@ def plan_candidates(
         for pipeline, default in defaults_initial.items()
     }
     pool_limits = {
-        pipeline: _safe_int(pool_cfg.get(pipeline), default, 1, 12)
+        pipeline: _safe_int(pool_cfg.get(pipeline), default, 1, 50_000)
         for pipeline, default in defaults_pool.items()
     }
     target_limits = {
@@ -545,14 +618,14 @@ def plan_candidates(
         "all": 9000,
         "full-audit": 12000,
     }
-    maximum_total = _safe_int(
-        maximum_total_by_mode.get(
-            mode_clean,
-            default_total_limits.get(mode_clean, 5000),
-        ),
+    configured_total = maximum_total_by_mode.get(
+        mode_clean,
         default_total_limits.get(mode_clean, 5000),
-        1,
-        50_000,
+    )
+    maximum_total = (
+        0
+        if exhaustive_verification or _safe_int(configured_total, 0, 0) == 0
+        else _safe_int(configured_total, default_total_limits.get(mode_clean, 5000), 1, 500_000)
     )
 
     drop_unknown_tv = bool(
@@ -623,7 +696,9 @@ def plan_candidates(
 
         duplicate_exact += 1
         if _candidate_rank(item, published, feedback_priority_keys) > _candidate_rank(current, published, feedback_priority_keys):
-            unique_map[key] = item
+            unique_map[key] = _merge_source_provenance(item, current)
+        else:
+            unique_map[key] = _merge_source_provenance(current, item)
 
     unique_items = list(unique_map.values())
 
@@ -656,14 +731,18 @@ def plan_candidates(
             key=lambda item: _candidate_rank(item, published, feedback_priority_keys),
             reverse=True,
         )
-        selected = _diverse_take(ranked, pool_limit)
+        selected = ranked if exhaustive_verification else _diverse_take(ranked, pool_limit)
         group_cap_dropped += max(0, len(ranked) - len(selected))
 
         for rank_index, item in enumerate(selected):
             candidate = dict(item)
             candidate["_verification_group"] = group
             candidate["_verification_rank"] = rank_index
-            candidate["_verification_wave"] = 0 if rank_index < initial_limit else rank_index - initial_limit + 1
+            candidate["_verification_wave"] = (
+                0
+                if exhaustive_verification or rank_index < initial_limit
+                else rank_index - initial_limit + 1
+            )
             candidate["_verification_initial_limit"] = initial_limit
             candidate["_verification_target"] = target
             candidate["_verification_pool_size"] = len(selected)
@@ -683,8 +762,10 @@ def plan_candidates(
         )
     )
 
-    global_cap_dropped = max(0, len(planned) - maximum_total)
-    if len(planned) > maximum_total:
+    global_cap_dropped = (
+        max(0, len(planned) - maximum_total) if maximum_total > 0 else 0
+    )
+    if maximum_total > 0 and len(planned) > maximum_total:
         planned = planned[:maximum_total]
 
     # Recalculate pool metadata after a global cap because some groups may
@@ -714,6 +795,7 @@ def plan_candidates(
         "timestamp": _utc_now(),
         "mode": mode_clean,
         "adaptive_verification": True,
+        "exhaustive_verification": exhaustive_verification,
         "active_pipelines": sorted(active_pipelines),
         "input_candidates": input_count,
         "after_mode_and_category_filter": len(mode_filtered),

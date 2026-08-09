@@ -545,7 +545,26 @@ def _fetch_once(
                 getattr(response, "status", 200),
                 200,
             )
-            raw_body = response.read(max_bytes + 1)
+            # urllib's timeout is an inactivity timeout, not a total request
+            # deadline. A server can otherwise drip a byte periodically and
+            # hold a worker forever. Read in bounded chunks and enforce a hard
+            # wall-clock deadline as well.
+            try:
+                response.fp.raw._sock.settimeout(max(0.5, min(2.0, float(timeout))))
+            except (AttributeError, OSError, ValueError):
+                pass
+            deadline = time.monotonic() + max(1, timeout)
+            chunks: List[bytes] = []
+            remaining = max_bytes + 1
+            while remaining > 0:
+                if time.monotonic() >= deadline:
+                    raise TimeoutError("Response body exceeded hard request deadline")
+                chunk = response.read(min(16 * 1024, remaining))
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            raw_body = b"".join(chunks)
             truncated = len(raw_body) > max_bytes
             body = raw_body[:max_bytes]
 
@@ -1483,6 +1502,16 @@ def _resolution_policy(settings: Dict[str, Any]) -> Dict[str, Any]:
         ),
         True,
     )
+    movie_minimum_height = _safe_int(
+        nested.get("movie_minimum_height", 720),
+        720,
+        0,
+        4320,
+    )
+    allow_unknown_movie = _safe_bool(
+        nested.get("allow_unknown_movie_resolution", False),
+        False,
+    )
 
     preserve_working_bd_below_minimum = _safe_bool(
         nested.get("preserve_working_bd_below_minimum", True),
@@ -1501,6 +1530,8 @@ def _resolution_policy(settings: Dict[str, Any]) -> Dict[str, Any]:
         "preserve_unknown_working_tv": preserve_unknown_working_tv,
         "event_minimum_height": event_minimum_height,
         "allow_unknown_event_resolution": allow_unknown_event,
+        "movie_minimum_height": movie_minimum_height,
+        "allow_unknown_movie_resolution": allow_unknown_movie,
     }
 
 
@@ -1589,6 +1620,27 @@ def _apply_resolution_policy(
                 False,
                 "quarantine",
                 "Event resolution could not be determined",
+            )
+
+    if pipeline == "movies":
+        minimum = policy["movie_minimum_height"]
+        allow_unknown = policy["allow_unknown_movie_resolution"]
+
+        if minimum > 0 and detected_height > 0 and detected_height < minimum:
+            return (
+                False,
+                "rejected_low_quality",
+                (
+                    f"Detected movie resolution {detected_height}p "
+                    f"is below required {minimum}p"
+                ),
+            )
+
+        if minimum > 0 and detected_height == 0 and not allow_unknown:
+            return (
+                False,
+                "quarantine",
+                "Movie resolution could not be determined",
             )
 
     return True, "verified_global", ""

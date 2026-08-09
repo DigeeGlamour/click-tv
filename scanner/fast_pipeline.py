@@ -1076,6 +1076,17 @@ def run_fast_verification_pipeline(
         pipeline_cfg.get("checkpoint_interval", 50), 50, 10, 1000
     )
     time_budget_seconds = _pipeline_budget(settings, mode)
+    planning_cfg = settings.get("planning")
+    if not isinstance(planning_cfg, dict):
+        planning_cfg = {}
+    exhaustive_verification = bool(
+        planning_cfg.get("exhaustive_verification", False)
+    )
+    shortcut_deferral_enabled = not exhaustive_verification
+    if exhaustive_verification:
+        # An exhaustive run must not turn unprocessed candidates into pending
+        # output merely because a short cloud-run budget elapsed.
+        time_budget_seconds = 6 * 60 * 60
 
     global_bd_rules = _extract_bd_rules_for_global(settings)
     protection_rules = _extract_bd_rules_for_protection(settings)
@@ -1247,6 +1258,8 @@ def run_fast_verification_pipeline(
             # inconclusive, only a small same-run second-pass sample is useful.
             # The remaining URLs are preserved without flooding the proxy queue.
             if (
+                shortcut_deferral_enabled
+                and
                 _is_movie_candidate(result, mode)
                 and host_disposition.should_defer(host)
                 and host_second_pass_selected[host]
@@ -1392,6 +1405,8 @@ def run_fast_verification_pipeline(
             host = _hostname(item)
 
             if (
+                shortcut_deferral_enabled
+                and
                 _is_movie_candidate(item, mode)
                 and path_404_disposition.should_quarantine(item)
             ):
@@ -1407,6 +1422,8 @@ def run_fast_verification_pipeline(
                 continue
 
             if (
+                shortcut_deferral_enabled
+                and
                 _is_movie_candidate(item, mode)
                 and host_disposition.should_defer(host)
             ):
@@ -1426,13 +1443,20 @@ def run_fast_verification_pipeline(
                 rotations = 0
                 continue
 
-            if host_registry.is_open(host):
+            if shortcut_deferral_enabled and host_registry.is_open(host):
                 groups[group]["pending"] += 1
                 mark_circuit_skipped(item, host)
                 rotations = 0
                 continue
 
-            if host and not host_registry.can_submit(host):
+            host_at_capacity = bool(
+                host
+                and host_registry.inflight.get(host, 0) >= host_registry.per_host_limit
+            )
+            if host and (
+                (shortcut_deferral_enabled and not host_registry.can_submit(host))
+                or (not shortcut_deferral_enabled and host_at_capacity)
+            ):
                 pending_global.append(item)
                 rotations += 1
                 if rotations >= max_rotations:
@@ -1464,6 +1488,7 @@ def run_fast_verification_pipeline(
         f"host-sample={host_sample_size}/{host_sample_uncertain_threshold}, "
         f"404-path-sample={path_404_sample_size}/{path_404_threshold}/d{path_group_depth}, "
         f"priority-forced={priority_forced}, "
+        f"exhaustive={exhaustive_verification}, "
         f"budget={time_budget_seconds}s",
         flush=True,
     )

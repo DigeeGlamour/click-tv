@@ -724,7 +724,11 @@ def load_manual_sources(
     upload_dir = Path(str(manual_cfg.get("upload_directory", "manual/uploads")))
     if upload_dir.exists() and upload_dir.is_dir():
         for upload_file in sorted(upload_dir.iterdir()):
-            if upload_file.is_file() and not upload_file.name.startswith("."):
+            if (
+                upload_file.is_file()
+                and not upload_file.name.startswith(".")
+                and upload_file.suffix.casefold() in {".m3u", ".m3u8", ".json", ".txt"}
+            ):
                 configured_files.append(
                     (f"manual-upload-{upload_file.stem}", str(upload_file))
                 )

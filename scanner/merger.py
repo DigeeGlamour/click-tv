@@ -3,9 +3,8 @@ Stream Merger & Deduplication Engine
 
 Merges verified and protected stream candidates into unified cards.
 
-Live TV keeps 1 Primary + up to 5 Backups (6 links total). Movies use a safer,
-smaller 1 Primary + up to 3 Backups (4 links total) so the player can fail over
-without carrying excessive duplicate URLs. Ranking is status-first:
+Every playable card keeps 1 Primary + up to 5 active Backups. Further verified
+playback configurations remain in a standby list for future promotion. Ranking is status-first:
 verified_global/verified_bd -> verified_proxy -> stale_last_good -> geo_pending
 -> retryable_pending -> host_deferred. HTTPS is preferred within the same tier.
 """
@@ -13,6 +12,7 @@ verified_global/verified_bd -> verified_proxy -> stale_last_good -> geo_pending
 from __future__ import annotations
 
 import json
+import hashlib
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -75,6 +75,61 @@ def _extract_hostname(url: str) -> str:
         return (urlparse(url).hostname or "").lower()
     except Exception:
         return ""
+
+
+def _canonical_json(value: Any) -> str:
+    return json.dumps(
+        value,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+        default=str,
+    )
+
+
+def _stream_identity_key(stream: Dict[str, Any]) -> str:
+    """Identify an exact playable setup, not merely an equal URL."""
+    payload = {
+        "url": str(stream.get("url") or "").strip(),
+        "headers": stream.get("headers") if isinstance(stream.get("headers"), dict) else {},
+        "drm": stream.get("drm") if isinstance(stream.get("drm"), dict) else {},
+        "header_profile": str(stream.get("header_profile") or ""),
+        "proxy_mode": str(stream.get("proxy_mode") or "auto"),
+        "inherit_manifest_query": bool(stream.get("inherit_manifest_query", False)),
+    }
+    return hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
+
+
+def _source_provenance(stream: Dict[str, Any]) -> List[Dict[str, str]]:
+    records: List[Dict[str, str]] = []
+    existing = stream.get("source_provenance")
+    if isinstance(existing, list):
+        records.extend(dict(item) for item in existing if isinstance(item, dict))
+    source_id = str(stream.get("source_id") or "").strip()
+    if source_id:
+        records.append(
+            {
+                "source_id": source_id,
+                "source_name": str(stream.get("source_name") or source_id).strip(),
+                "source_url": str(stream.get("source_url") or "").strip(),
+            }
+        )
+    unique: Dict[str, Dict[str, str]] = {}
+    for record in records:
+        source_id = str(record.get("source_id") or "").strip()
+        if source_id:
+            unique.setdefault(source_id, record)
+    return list(unique.values())
+
+
+def _merge_provenance(preferred: Dict[str, Any], duplicate: Dict[str, Any]) -> Dict[str, Any]:
+    merged = dict(preferred)
+    unique: Dict[str, Dict[str, str]] = {}
+    for record in _source_provenance(preferred) + _source_provenance(duplicate):
+        unique.setdefault(record["source_id"], record)
+    merged["source_provenance"] = list(unique.values())
+    merged["source_ids"] = list(unique)
+    return merged
 
 
 def _normalize_movie_title(value: Any) -> str:
@@ -216,6 +271,33 @@ def _is_publishable_stream(stream: Dict[str, Any]) -> bool:
     )
 
 
+def _meets_resolution_contract(
+    stream: Dict[str, Any],
+    settings: Dict[str, Any],
+) -> bool:
+    if stream.get("metadata_only") is True:
+        return True
+    pipeline = str(stream.get("source_pipeline") or "tv").strip().casefold()
+    resolution = settings.get("resolution")
+    if not isinstance(resolution, dict):
+        resolution = {}
+    minimum_by_pipeline = {
+        "tv": _safe_int(resolution.get("tv_minimum_height", 720), 720),
+        "movies": _safe_int(resolution.get("movie_minimum_height", 720), 720),
+        "today_match": _safe_int(resolution.get("event_minimum_height", 720), 720),
+        "upcoming": _safe_int(resolution.get("event_minimum_height", 720), 720),
+    }
+    minimum = minimum_by_pipeline.get(pipeline, 720)
+    if minimum <= 0:
+        return True
+    detected = _parse_resolution_height(
+        stream.get("resolution_height")
+        or stream.get("height")
+        or stream.get("resolution")
+    )
+    return detected >= minimum
+
+
 def _is_strongly_verified_today_match(stream: Dict[str, Any]) -> bool:
     """Require a real verified flag before Today Match suppresses Upcoming."""
     if str(stream.get("source_pipeline") or "").lower() != "today_match":
@@ -241,7 +323,30 @@ def _is_strongly_verified_today_match(stream: Dict[str, Any]) -> bool:
 
 
 def normalize_event_key(name: str) -> str:
-    text = name.lower()
+    text = str(name or "").casefold()
+    text = text.replace("pheonix", "phoenix").replace("spirits", "spirit")
+    if "|" in text:
+        text = text.split("|", 1)[0].strip()
+
+    # Prefer the actual "team A vs team B" portion. Provider and competition
+    # suffixes then become backup labels instead of separate match cards.
+    match = re.search(r"(?:^|[-|])\s*([^-|]+?)\s+v(?:s|\.)\s+([^|]+)", text)
+    if match:
+        left = match.group(1)
+        right = match.group(2)
+        right = re.split(r"\s+-\s+(?!(?:women|men)\b)", right, maxsplit=1)[0]
+        gender = "women" if re.search(r"\bwom(?:e|a)n(?:'s|s)?\b", f"{left} {right}") else ""
+        left = re.sub(r"\bwom(?:e|a)n(?:'s|s)?\b", " ", left)
+        right = re.sub(r"\bwom(?:e|a)n(?:'s|s)?\b", " ", right)
+        text = f"{left} vs {right} {gender}"
+
+    text = re.sub(
+        r"(?i)\b(?:\d{1,2}\s+(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|"
+        r"may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|"
+        r"nov(?:ember)?|dec(?:ember)?)\s+(?:19|20)\d{2})\b",
+        " ",
+        text,
+    )
 
     text = re.sub(
         r"(?i)\b(?:official\s+live|live\s+coverage|live\s+match|live\s+now|"
@@ -251,7 +356,8 @@ def normalize_event_key(name: str) -> str:
     )
 
     text = re.sub(
-        r"(?i)\b(?:fancode|tapmad|willow|crichd|server\s*\d*|alt|hindi|english|bd|pk)\b",
+        r"(?i)\b(?:fancode|tapmad|willow(?:\s+cricket)?|crichd|sony\s*liv|"
+        r"star\s*sports?\s*\d*|server\s*\d*|alt|hindi|english|bd|pk)\b",
         " ",
         text,
     )
@@ -525,19 +631,24 @@ def rank_and_select_streams(
             return metadata_candidates[0], []
         return None, []
 
-    # Deduplicate exact URLs keeping highest-scoring candidate
-    url_map: Dict[str, Dict[str, Any]] = {}
+    # Exact identity includes headers, Cookie/Authorization values, signed
+    # query strings and DRM. Same URL with different credentials must survive.
+    identity_map: Dict[str, Dict[str, Any]] = {}
     for s in playable_candidates:
         url = str(s.get("url", "")).strip()
         if not url:
             continue
-        if url not in url_map:
-            url_map[url] = s
+        identity = _stream_identity_key(s)
+        if identity not in identity_map:
+            identity_map[identity] = s
         else:
-            if _stream_quality_score(s) > _stream_quality_score(url_map[url]):
-                url_map[url] = s
+            current = identity_map[identity]
+            if _stream_quality_score(s) > _stream_quality_score(current):
+                identity_map[identity] = _merge_provenance(s, current)
+            else:
+                identity_map[identity] = _merge_provenance(current, s)
 
-    unique_streams = list(url_map.values())
+    unique_streams = list(identity_map.values())
     if not unique_streams:
         return None, []
 
@@ -586,8 +697,17 @@ def rank_and_select_streams(
     if not selected_streams:
         return None, []
 
-    primary = selected_streams[0]
+    primary = dict(selected_streams[0])
     backup_candidates = selected_streams[1 : max_backups + 1]
+
+    selected_identities = {
+        _stream_identity_key(stream) for stream in selected_streams
+    }
+    primary["_standby_candidates"] = [
+        stream
+        for stream in protocol_candidates
+        if _stream_identity_key(stream) not in selected_identities
+    ]
 
     backups: List[Dict[str, Any]] = []
     for index, b_stream in enumerate(backup_candidates, start=1):
@@ -640,8 +760,8 @@ def merge_candidates(
     movie_max_backups = _safe_int(
         link_policy.get("movie_maximum_backups", 3), 3, 0
     )
-    movie_max_total = min(movie_max_total, 4)
-    movie_max_backups = min(movie_max_backups, 3, movie_max_total - 1)
+    movie_max_total = min(movie_max_total, 6)
+    movie_max_backups = min(movie_max_backups, 5, movie_max_total - 1)
     prefer_https = bool(link_policy.get("prefer_https", True))
     allow_http_fallback = bool(link_policy.get("allow_http_fallback", True))
     prefer_different_hosts = bool(link_policy.get("prefer_different_hosts", True))
@@ -717,6 +837,7 @@ def merge_candidates(
             item
             for item in stream_candidates
             if _is_publishable_stream(item)
+            and _meets_resolution_contract(item, settings)
         ]
 
         if not publishable_candidates:
@@ -734,7 +855,7 @@ def merge_candidates(
         )
 
         primary, backups = rank_and_select_streams(
-            stream_candidates,
+            publishable_candidates,
             max_total=selected_max_total,
             max_backups=selected_max_backups,
             prefer_https=prefer_https,
@@ -788,10 +909,45 @@ def merge_candidates(
             "backups": backups,
         }
 
+        standby_candidates = primary.get("_standby_candidates")
+        if isinstance(standby_candidates, list) and standby_candidates:
+            standby: List[Dict[str, Any]] = []
+            for index, stream in enumerate(standby_candidates, start=1):
+                if not isinstance(stream, dict):
+                    continue
+                entry: Dict[str, Any] = {
+                    "name": f"Standby-{index}",
+                    "url": str(stream.get("url") or ""),
+                    "headers": stream.get("headers") if isinstance(stream.get("headers"), dict) else {},
+                    "drm": stream.get("drm") if isinstance(stream.get("drm"), dict) else {},
+                    "header_profile": str(stream.get("header_profile") or ""),
+                    "proxy_mode": str(stream.get("proxy_mode") or "auto"),
+                    "requires_headers": bool(stream.get("requires_headers", False)),
+                    "verification_status": _verification_label(stream),
+                    "verified": bool(stream.get("verified", False)),
+                    "source_id": str(stream.get("source_id") or ""),
+                    "source_provenance": _source_provenance(stream),
+                    "host": _extract_hostname(str(stream.get("url") or "")),
+                }
+                if stream.get("resolution"):
+                    entry["resolution"] = stream["resolution"]
+                if stream.get("resolution_height"):
+                    entry["resolution_height"] = stream["resolution_height"]
+                standby.append(entry)
+            merged_card["standby_link_count"] = len(standby)
+            merged_card["standby"] = standby
+
+        provenance = _source_provenance(primary)
+        if provenance:
+            merged_card["source_provenance"] = provenance
+            merged_card["source_ids"] = [item["source_id"] for item in provenance]
+
         if primary and primary.get("drm"):
             merged_card["drm"] = primary["drm"]
         if primary and primary.get("resolution"):
             merged_card["resolution"] = primary["resolution"]
+        if primary and primary.get("resolution_height"):
+            merged_card["resolution_height"] = primary["resolution_height"]
         for field_name in (
             "start_time",
             "end_time",

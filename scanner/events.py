@@ -125,6 +125,54 @@ def _parse_datetime(
                 continue
 
     if parsed is None:
+        relative_text = re.sub(r"(?i)\s*(?:BDT|BST|UTC|GMT)\s*$", "", text).strip()
+        local_now = datetime.now(default_timezone)
+        tomorrow_match = re.fullmatch(
+            r"(?i)tomorrow\s+(\d{1,2}(?::\d{2})?(?:\s*[AP]M)?)",
+            relative_text,
+        )
+        if tomorrow_match:
+            clock_text = tomorrow_match.group(1).strip()
+            for pattern in ("%I:%M %p", "%I %p", "%H:%M"):
+                try:
+                    clock = datetime.strptime(clock_text, pattern).time()
+                    parsed = datetime.combine(
+                        (local_now + timedelta(days=1)).date(),
+                        clock,
+                        tzinfo=default_timezone,
+                    )
+                    break
+                except ValueError:
+                    continue
+
+        if parsed is None:
+            for pattern in ("%a, %b %d %I:%M %p", "%a, %b %d %I %p", "%b %d %I:%M %p"):
+                try:
+                    partial = datetime.strptime(relative_text, pattern)
+                    candidate = partial.replace(year=local_now.year, tzinfo=default_timezone)
+                    if candidate < local_now - timedelta(days=30):
+                        candidate = candidate.replace(year=local_now.year + 1)
+                    parsed = candidate
+                    break
+                except ValueError:
+                    continue
+
+    if parsed is None:
+        # Daily sports feeds commonly provide only "7 PM BDT" or
+        # "Live at 11:30 PM BDT". Anchor those values to today's date in the
+        # configured source timezone so freshness and ordering remain useful.
+        time_only = re.sub(r"(?i)^\s*live\s+at\s+", "", text)
+        time_only = re.sub(r"(?i)\s*(?:BDT|BST|UTC|GMT)\s*$", "", time_only).strip()
+        for pattern in ("%I:%M:%S %p", "%I:%M %p", "%I %p", "%H:%M:%S", "%H:%M"):
+            try:
+                clock = datetime.strptime(time_only, pattern).time()
+                local_now = datetime.now(default_timezone)
+                parsed = datetime.combine(local_now.date(), clock, tzinfo=default_timezone)
+                break
+            except ValueError:
+                continue
+
+    if parsed is None:
         return None
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=default_timezone)
@@ -285,7 +333,11 @@ def process_events(
     try:
         source_timezone: timezone | ZoneInfo = ZoneInfo(timezone_name)
     except ZoneInfoNotFoundError:
-        source_timezone = timezone.utc
+        source_timezone = (
+            timezone(timedelta(hours=6), name="BDT")
+            if timezone_name.casefold() in {"asia/dhaka", "bdt"}
+            else timezone.utc
+        )
 
 
     today_max_age_hours = _safe_int(

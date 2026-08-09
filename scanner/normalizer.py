@@ -15,6 +15,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 from urllib.parse import unquote, urlparse
 
+from scanner.drm import normalize_drm
+
 from scanner.content_router import route_candidate
 
 
@@ -93,6 +95,27 @@ def _match_domain_pattern(domain: str, pattern: str) -> bool:
     if pat.startswith("."):
         return dom == pat[1:] or dom.endswith(pat)
     return dom == pat or dom.endswith("." + pat)
+
+
+def _declared_resolution_height(*values: Any) -> int:
+    text = " ".join(str(value or "") for value in values).upper()
+    dimension = re.search(r"\b\d{3,4}\s*[X×]\s*(\d{3,4})\b", text)
+    if dimension:
+        return int(dimension.group(1))
+    progressive = re.search(r"\b(\d{3,4})\s*P\b", text)
+    if progressive:
+        return int(progressive.group(1))
+    if re.search(r"\b(?:4K|UHD)\b", text):
+        return 2160
+    if re.search(r"\b2K\b", text):
+        return 1440
+    if re.search(r"\b(?:FHD|FULL\s*HD)\b", text):
+        return 1080
+    if re.search(r"\bHD\b", text):
+        return 720
+    if re.search(r"\bSD\b", text):
+        return 480
+    return 0
 
 
 class Normalizer:
@@ -563,6 +586,27 @@ class Normalizer:
         routed_input["source_pipeline"] = self.resolve_pipeline(routed_input)
         routed_input = route_candidate(routed_input)
 
+        routing_config = self.settings.get("content_routing", {})
+        if not isinstance(routing_config, dict):
+            routing_config = {}
+        strict_separation = not bool(
+            routing_config.get("discover_movies_in_tv_sources", False)
+        )
+        configured_pipeline = str(
+            routed_input.get("configured_source_pipeline") or ""
+        ).strip().casefold()
+        routed_pipeline = str(
+            routed_input.get("source_pipeline") or ""
+        ).strip().casefold()
+        if (
+            strict_separation
+            and configured_pipeline in {"tv", "movies"}
+            and routed_pipeline != configured_pipeline
+        ):
+            # A TV source can no longer feed Movies, and a Movie source can no
+            # longer feed TV. Manual files keep their explicit marker routing.
+            return None
+
         raw_name = routed_input.get("name", "")
         clean_name = self.clean_title(raw_name)
 
@@ -624,11 +668,22 @@ class Normalizer:
         normalized_item["logo"] = logo
         normalized_item["category"] = category
         normalized_item["headers"] = headers
+        normalized_item["drm"] = normalize_drm(routed_input.get("drm"))
         normalized_item["header_profile"] = header_profile
         normalized_item["proxy_mode"] = proxy_mode
         normalized_item["stream_type"] = stream_type
         normalized_item["requires_headers"] = headers_required
         normalized_item["source_pipeline"] = pipeline
+        if not normalized_item.get("resolution_height"):
+            declared_height = _declared_resolution_height(
+                raw_name,
+                routed_input.get("resolution"),
+                routed_input.get("label"),
+                url,
+            )
+            if declared_height:
+                normalized_item["resolution_height"] = declared_height
+                normalized_item.setdefault("resolution", f"{declared_height}p")
 
         return normalized_item
 

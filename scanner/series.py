@@ -189,10 +189,22 @@ def _normalize_sources(raw_episode: Mapping[str, Any]) -> Tuple[Dict[str, Any], 
         normalized = _source(raw, position)
         if not normalized:
             continue
-        url = normalized["url"]
-        if url in seen:
+        if _int(normalized.get("resolution_height"), 0) < 720:
             continue
-        seen.add(url)
+        identity = json.dumps(
+            {
+                "url": normalized.get("url"),
+                "headers": normalized.get("headers", {}),
+                "drm": normalized.get("drm", {}),
+                "header_profile": normalized.get("header_profile", ""),
+            },
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        if identity in seen:
+            continue
+        seen.add(identity)
         sources.append(normalized)
 
     if not sources:
