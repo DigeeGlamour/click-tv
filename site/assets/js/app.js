@@ -1813,6 +1813,27 @@ function createImageHtml(item, className) {
   return `<img class="${className}" src="${escapeHtml(logo)}" alt="${escapeHtml(item.name)}" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-name="${escapeHtml(item.name)}">`;
 }
 
+function playbackBadgesHtml(item) {
+  const badges = [];
+  const height = Number(item?.resolution_height || item?.height || 0);
+  const resolutionText = String(item?.resolution || item?.label || '').trim();
+  const quality = height >= 2160 ? '4K' : height >= 1440 ? '2K' : height >= 1080 ? '1080p' : height >= 720 ? '720p' : resolutionText;
+  if (quality) badges.push(`<span class="source-route-badge quality">${escapeHtml(quality)}</span>`);
+
+  const hasDrm = item?.drm && typeof item.drm === 'object' && Object.keys(item.drm).length > 0;
+  const hasHeaders = Boolean(item?.requires_headers || (item?.headers && Object.keys(item.headers).length));
+  const proxyMode = String(item?.proxy_mode || '').toLowerCase();
+  const verificationMode = String(item?.verification_mode || '').toLowerCase();
+  const route = hasHeaders
+    ? 'Header'
+    : (proxyMode === 'proxy_only' || verificationMode.includes('proxy'))
+      ? 'Proxy'
+      : 'Direct';
+  badges.push(`<span class="source-route-badge route">${route}</span>`);
+  if (hasDrm) badges.push('<span class="source-route-badge drm">DRM</span>');
+  return badges.join('');
+}
+
 function createChannelCard(item, visualIndex) {
   const card = document.createElement('div');
   card.className = 'sidebar-item tv-focusable';
@@ -1842,6 +1863,7 @@ function createChannelCard(item, visualIndex) {
       <div class="sidebar-sub-info">
         <span class="${statusClass}">${statusClass === 'card-live-badge' ? '<span class="pulse-dot"></span>' : '<i class="fas fa-clock"></i>'} ${escapeHtml(status)}</span>
         <span class="sidebar-meta-row">${escapeHtml(eventText || item.category || state.selectedCategory || '')}</span>
+        <span class="source-route-badges">${playbackBadgesHtml(item)}</span>
       </div>
     </div>
     ${state.view !== VIEW.UPCOMING ? `<button class="card-fav-btn" data-favorite-id="${escapeHtml(favoriteKey)}" type="button" title="Bookmark"><i class="far fa-star"></i></button>` : ''}`;
@@ -1877,6 +1899,7 @@ function createMovieCard(item, visualIndex) {
     <div class="movie-card-overlay">
       <div class="movie-card-title">${escapeHtml(item.name)}</div>
       <div class="movie-card-year">${escapeHtml(year)}</div>
+      <div class="source-route-badges movie-source-route-badges">${playbackBadgesHtml(item)}</div>
     </div>`;
   const image = qs('img', card);
   image?.addEventListener('error', () => replaceBrokenMovieImage(image));
@@ -3100,10 +3123,38 @@ async function initShaka(url, session, attemptToken) {
 
   const playbackDrm = await resolveProtectedDrm(session);
   if (!isActiveAttempt(session, attemptToken)) return;
-  const clearKeys = parseClearKeys(
-    playbackDrm?.license_key || playbackDrm?.clear_keys || playbackDrm?.clearkey
-  );
-  if (clearKeys) player.configure({ drm: { clearKeys } });
+  const drmType = normalizePlaybackDrmType(playbackDrm);
+  if (drmType === 'clearkey') {
+    const clearKeys = parseClearKeys(
+      playbackDrm?.clear_keys || playbackDrm?.clearkey || playbackDrm?.license_key
+    );
+    if (!clearKeys) throw new Error('ClearKey DRM keys are missing or invalid');
+    player.configure({ drm: { clearKeys } });
+  } else if (['widevine', 'playready', 'fairplay'].includes(drmType)) {
+    if (!attempt?.proxy) throw new Error(`${drmType} DRM requires a playback proxy`);
+    const proxyOrigin = String(attempt.proxy).replace(/\/$/, '');
+    const playbackId = String(attempt?.source?.playback_id || session?.item?.playback_id || '').trim();
+    if (!playbackId || !playbackDrm?.license_url) {
+      throw new Error(`${drmType} license configuration is incomplete`);
+    }
+    const keySystem = {
+      widevine: 'com.widevine.alpha',
+      playready: 'com.microsoft.playready',
+      fairplay: 'com.apple.fps',
+    }[drmType];
+    const licenseEndpoint = `${proxyOrigin}/license?id=${encodeURIComponent(playbackId)}`;
+    const drmConfig = { servers: { [keySystem]: licenseEndpoint } };
+    if (drmType === 'fairplay' && playbackDrm?.certificate_url) {
+      drmConfig.advanced = {
+        [keySystem]: {
+          serverCertificateUri: `${proxyOrigin}/certificate?id=${encodeURIComponent(playbackId)}`,
+        },
+      };
+    }
+    player.configure({ drm: drmConfig });
+  } else if (playbackDrm && Object.keys(playbackDrm).length) {
+    throw new Error('Unsupported or ambiguous DRM type; playback was not guessed');
+  }
   player.addEventListener('error', (event) => {
     if (!isActiveAttempt(session, attemptToken) || isQualityLocked() || state.userPaused) return;
     if (
@@ -3148,6 +3199,15 @@ function parseClearKeys(value) {
     if (keyId && key) output[keyId.trim()] = key.trim();
   });
   return Object.keys(output).length ? output : null;
+}
+
+function normalizePlaybackDrmType(drm) {
+  const value = String(drm?.type || drm?.scheme || drm?.license_type || '').trim().toLowerCase();
+  if (value.includes('widevine') || value === 'com.widevine.alpha') return 'widevine';
+  if (value.includes('playready') || value.includes('microsoft')) return 'playready';
+  if (value.includes('fairplay') || value.includes('apple.fps') || value.includes('com.apple')) return 'fairplay';
+  if (value.includes('clearkey') || value.includes('clear_key')) return 'clearkey';
+  return value ? 'unknown' : '';
 }
 
 let mpegtsLoaderPromise = null;
@@ -6544,6 +6604,28 @@ async function bootstrap() {
     showListMessage('Click TV data load করা যায়নি', 'fa-exclamation-triangle');
     setSidebarCount('0 Items');
   }
+}
+
+// Deterministic localhost-only hooks let the release runtime test force one
+// proxy into cooldown and prove that the real attempt planner selects another
+// proxy. They are never exposed on clicktv.pages.dev.
+if (['127.0.0.1', 'localhost'].includes(location.hostname)) {
+  window.__clickTvRuntimeTest = {
+    resetProxyHealth() {
+      state.proxyHealth = {};
+      try { localStorage.removeItem(STORAGE_KEYS.proxyHealth); } catch (_) {}
+    },
+    buildAttempts(item) {
+      return buildAttemptPlan(item).map((attempt) => ({
+        route: attempt.route,
+        proxy: attempt.proxy,
+        sourceIndex: attempt.sourceIndex,
+      }));
+    },
+    markProxyFailure(proxy, targetUrl) {
+      markProxyResult(proxy, targetUrl, false, 100);
+    },
+  };
 }
 
 bootstrap();
