@@ -557,6 +557,9 @@ class Normalizer:
         # corrects mixed public playlists where direct movie files were placed
         # inside a configured TV source.
         routed_input = dict(candidate)
+        routed_input["configured_source_pipeline"] = str(
+            routed_input.get("source_pipeline") or "tv"
+        ).strip().casefold()
         routed_input["source_pipeline"] = self.resolve_pipeline(routed_input)
         routed_input = route_candidate(routed_input)
 
@@ -572,11 +575,22 @@ class Normalizer:
         pipeline = str(routed_input.get("source_pipeline") or "tv")
         url = routed_input.get("url", "")
         group_title = routed_input.get("group_title", "")
+        original_pipeline = str(
+            routed_input.get("configured_source_pipeline")
+            or routed_input.get("original_source_pipeline")
+            or ""
+        ).strip().casefold()
+        category_group_title = group_title
+        if (
+            original_pipeline == "manual"
+            and routed_input.get("manual_can_override_category") is False
+        ):
+            category_group_title = ""
 
         if pipeline == "movies":
             category = self.detect_movie_category(
                 clean_name,
-                group_title,
+                category_group_title,
                 url,
                 default_cat=routed_input.get("default_category", "Mix"),
             )
@@ -585,7 +599,7 @@ class Normalizer:
         else:
             category = self.detect_tv_category(
                 clean_name,
-                group_title,
+                category_group_title,
                 url,
                 mode=routed_input.get("category_mode", "detect"),
                 force_cat=routed_input.get("force_category", ""),

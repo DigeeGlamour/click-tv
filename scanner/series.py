@@ -21,6 +21,8 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Sequence, Tuple
 from urllib.parse import urlparse
 
+from scanner.playback_profiles import PlaybackProfileCollector, merge_public_catalog
+
 VALID_SERIES_CATEGORIES: Tuple[str, ...] = (
     "Bangla",
     "Hindi",
@@ -455,7 +457,12 @@ def _summary(series: Mapping[str, Any]) -> Dict[str, Any]:
     return {key: value for key, value in result.items() if value not in (None, "")}
 
 
-def _build_tree(root: Path, prepared: Mapping[str, Any], generated_at: str) -> Dict[str, Any]:
+def _build_tree(
+    root: Path,
+    prepared: Mapping[str, Any],
+    generated_at: str,
+    playback_collector: PlaybackProfileCollector,
+) -> Dict[str, Any]:
     category_items: Dict[str, List[Dict[str, Any]]] = {category: [] for category in VALID_SERIES_CATEGORIES}
     for series in prepared.get("items", []):
         category = _text(series["category"])
@@ -479,7 +486,15 @@ def _build_tree(root: Path, prepared: Mapping[str, Any], generated_at: str) -> D
                     "season_number": number,
                     "season_title": season["title"],
                     "count": len(series["episode_payloads"].get(number, [])),
-                    "items": series["episode_payloads"].get(number, []),
+                    "items": [
+                        playback_collector.sanitize_item(
+                            episode,
+                            f"series:{series_id}:season:{number}:episode:{index}",
+                        )
+                        for index, episode in enumerate(
+                            series["episode_payloads"].get(number, [])
+                        )
+                    ],
                 },
             )
         _atomic_write_json(
@@ -553,8 +568,9 @@ def publish_prepared_series(
     shutil.rmtree(temp, ignore_errors=True)
     temp.mkdir(parents=True, exist_ok=False)
     generated_at = _utc_now()
+    playback_collector = PlaybackProfileCollector("series", generated_at)
     try:
-        manifest = _build_tree(temp, prepared, generated_at)
+        manifest = _build_tree(temp, prepared, generated_at, playback_collector)
         if destination.exists():
             os.replace(destination, backup)
         os.replace(temp, destination)
@@ -564,6 +580,21 @@ def publish_prepared_series(
         if backup.exists() and not destination.exists():
             os.replace(backup, destination)
         raise
+
+    if playback_collector.records:
+        catalog = merge_public_catalog(root / "data", playback_collector)
+
+        profile_report_path = root / "reports" / "playback-profiles.json"
+        _atomic_write_json(profile_report_path, {
+            "schema_version": 1,
+            "generated_at": generated_at,
+            "scan_mode": "series",
+            "catalogued_sources": len(playback_collector.records),
+            "total_catalogued_sources": int(catalog.get("count") or 0),
+            "catalog": "data/playback-sources.json",
+            "storage": "public_git_pages_json",
+            "contains_playback_credentials": True,
+        })
 
     result = {
         "status": "success",

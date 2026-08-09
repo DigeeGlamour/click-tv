@@ -524,6 +524,10 @@ def parse_m3u_content(
                 "category_mode",
                 "detect",
             ),
+            "manual_can_override_category": source_info.get(
+                "manual_can_override_category",
+                True,
+            ),
 
             "force_category": source_info.get(
                 "force_category",

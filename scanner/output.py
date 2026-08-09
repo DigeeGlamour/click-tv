@@ -26,6 +26,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from scanner.playback_profiles import (
+    PlaybackProfileCollector,
+    merge_public_catalog,
+    redact_public_report,
+)
+
 
 DEFAULT_DROP_PERCENTAGE = 70
 DEFAULT_DROP_MINIMUM_BASELINE = 10
@@ -111,9 +117,13 @@ PUBLIC_PRIVATE_FIELDS = {
     "secret",
 }
 
+_ACTIVE_PLAYBACK_COLLECTOR: Optional[PlaybackProfileCollector] = None
+
 
 def _sanitize_public_item(item: Dict[str, Any]) -> Dict[str, Any]:
     """Remove raw credentials/headers while preserving safe playback metadata."""
+    if _ACTIVE_PLAYBACK_COLLECTOR is not None:
+        return _ACTIVE_PLAYBACK_COLLECTOR.sanitize_item(item)
     clean: Dict[str, Any] = {}
     for key, value in item.items():
         key_lower = str(key).strip().lower()
@@ -720,6 +730,8 @@ def publish_scan_outputs(
     channels_data, movies_data, and events_data are distinguished from None so
     an explicitly empty scan result can still update/hide its output.
     """
+    global _ACTIVE_PLAYBACK_COLLECTOR
+
     mode_clean = str(scan_mode or "all").strip().lower()
     mode_aliases = {
         "tv": "channels",
@@ -831,6 +843,8 @@ def publish_scan_outputs(
     last_good_dir.mkdir(parents=True, exist_ok=True)
 
     timestamp = _utc_now()
+    playback_collector = PlaybackProfileCollector(mode_clean, timestamp)
+    _ACTIVE_PLAYBACK_COLLECTOR = playback_collector
     manifest_file = data_root / "manifest.json"
     manifest = _ensure_manifest(_load_json_file(manifest_file))
     manifest["updated_at"] = timestamp
@@ -1019,7 +1033,16 @@ def publish_scan_outputs(
                 "url": public_url,
             }
 
-    # 4. Manifest, playback-proxy host allowlist, and reports
+    # 4. Public Git/Pages playback catalogue, manifest, host allowlist, reports.
+    # This deliberately keeps URL/header/DRM configuration in one public data
+    # file so all four Workers can resolve playback_id without KV or secrets.
+    playback_catalog = merge_public_catalog(data_root, playback_collector)
+    playback_report = playback_collector.public_report()
+    playback_report["total_catalogued_sources"] = _safe_int(
+        playback_catalog.get("count"), 0, 0
+    )
+    _atomic_write_json(reports_root / "playback-profiles.json", playback_report)
+
     _atomic_write_json(manifest_file, manifest)
     allowed_hosts_payload = _write_allowed_hosts_file(data_root, timestamp)
 
@@ -1028,7 +1051,7 @@ def publish_scan_outputs(
         {
             "timestamp": timestamp,
             "count": len(source_errors),
-            "errors": source_errors,
+            "errors": redact_public_report(source_errors),
         },
     )
     _atomic_write_json(
@@ -1036,7 +1059,7 @@ def publish_scan_outputs(
         {
             "timestamp": timestamp,
             "count": len(quarantine_items),
-            "items": quarantine_items,
+            "items": redact_public_report(quarantine_items),
         },
     )
     _atomic_write_json(
@@ -1044,7 +1067,7 @@ def publish_scan_outputs(
         {
             "timestamp": timestamp,
             "count": len(rejected_items),
-            "items": rejected_items,
+            "items": redact_public_report(rejected_items),
         },
     )
 
@@ -1053,7 +1076,7 @@ def publish_scan_outputs(
         {
             "timestamp": timestamp,
             "count": len(output_safety_items),
-            "warnings": output_safety_items,
+            "warnings": redact_public_report(output_safety_items),
             "movie_output_preserved": movie_output_preserved,
         },
     )
@@ -1105,6 +1128,10 @@ def publish_scan_outputs(
         "output_safety_warnings": len(output_safety_items),
         "movie_output_preserved": movie_output_preserved,
         "allowed_playback_hosts": _safe_int(allowed_hosts_payload.get("count"), 0, 0),
+        "catalogued_playback_sources": len(playback_collector.records),
+        "total_playback_catalogue_sources": _safe_int(
+            playback_catalog.get("count"), 0, 0
+        ),
         "movie_verification_status_counts": movie_status_counts,
         "pipeline_performance": pipeline_performance,
         "totals": {
@@ -1127,6 +1154,29 @@ def publish_scan_outputs(
     _atomic_write_json(
         reports_root / "scan-summary.json",
         scan_summary,
+    )
+    _atomic_write_json(
+        reports_root / f"scan-summary-{mode_clean}.json",
+        scan_summary,
+    )
+    _atomic_write_json(
+        reports_root / f"source-errors-{mode_clean}.json",
+        {
+            "timestamp": timestamp,
+            "mode": mode_clean,
+            "count": len(source_errors),
+            "errors": redact_public_report(source_errors),
+        },
+    )
+    _atomic_write_json(
+        reports_root / f"output-safety-{mode_clean}.json",
+        {
+            "timestamp": timestamp,
+            "mode": mode_clean,
+            "count": len(output_safety_items),
+            "warnings": redact_public_report(output_safety_items),
+            "movie_output_preserved": movie_output_preserved,
+        },
     )
 
     notifications = settings.get("notifications", {})
@@ -1282,6 +1332,8 @@ def publish_scan_outputs(
         reports_root / "scan-summary.json",
         scan_summary,
     )
+
+    _ACTIVE_PLAYBACK_COLLECTOR = None
 
     return scan_summary
 
