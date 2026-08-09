@@ -81,6 +81,7 @@ const state = {
   manifest: null,
   deviceClass: 'normal',
   telemetrySessionId: '',
+  telemetryEnabled: false,
   manifestVersion: '',
   view: VIEW.CHANNEL,
   selectedCategory: null,
@@ -97,6 +98,7 @@ const state = {
   movieIndex: null,
   moviePageCursor: 0,
   moviePageLoading: false,
+  movieSearchLoading: false,
   movieCategorySessionId: 0,
   moviePreviewMode: false,
   mobileSearchHideTimer: null,
@@ -548,12 +550,14 @@ function mergeDuplicateNormalizedItems(items, sourceKind) {
     const winner = sourceConfidenceScore(item) > sourceConfidenceScore(existing) ? item : existing;
     const loser = winner === item ? existing : item;
     const mergedSources = [];
-    const seenUrls = new Set();
+    const seenSources = new Set();
 
     [...(winner._sources || []), ...(loser._sources || [])].forEach((source) => {
       const url = String(source?.url || '').trim();
-      if (!url || seenUrls.has(url) || mergedSources.length >= 6) return;
-      seenUrls.add(url);
+      const playbackId = String(source?.playback_id || '').trim();
+      const sourceKey = playbackId || url;
+      if (!sourceKey || seenSources.has(sourceKey) || mergedSources.length >= 6) return;
+      seenSources.add(sourceKey);
       mergedSources.push(source);
     });
 
@@ -572,11 +576,12 @@ function mergeDuplicateNormalizedItems(items, sourceKind) {
 
 function isPlayable(item) {
   if (!item || item.metadata_only) return false;
+  if (item.playback_id) return true;
   if (item.url || item.link || item.stream_url) return true;
-  if (Array.isArray(item._sources) && item._sources.some((source) => source?.url)) return true;
+  if (Array.isArray(item._sources) && item._sources.some((source) => source?.url || source?.playback_id)) return true;
   if (Array.isArray(item.backups) && item.backups.some((source) => {
     if (typeof source === 'string') return Boolean(source.trim());
-    return Boolean(source?.url || source?.link || source?.stream_url);
+    return Boolean(source?.url || source?.link || source?.stream_url || source?.playback_id);
   })) return true;
   return false;
 }
@@ -652,11 +657,13 @@ function normalizeBackup(backup, parent) {
   if (!backup) return null;
   const source = typeof backup === 'string' ? { url: backup } : backup;
   const url = source.url || source.link || source.stream_url;
-  if (!url) return null;
+  const playbackId = String(source.playback_id || '').trim();
+  if (!url && !playbackId) return null;
   const profile = inferSafeHeaderProfile(source) || inferSafeHeaderProfile(parent);
   const proxyMode = inferProxyMode(source, profile || inferSafeHeaderProfile(parent));
   return {
     url,
+    playback_id: playbackId,
     name: source.name || 'Backup',
     verification_mode: source.verification_mode || parent.verification_mode || '',
     verification_status: source.verification_status || parent.verification_status || '',
@@ -675,16 +682,21 @@ function normalizeBackup(backup, parent) {
     height: Number(source.height || source.resolution_height || 0),
     bitrate: Number(source.bitrate || source.bandwidth || source.average_bitrate || 0),
     source_id: source.source_id || '',
+    protected_source: Boolean(source.protected_source),
+    requires_credentials: Boolean(source.requires_credentials),
+    drm: source.drm || null,
     inherit_manifest_query: shouldInheritManifestQuery(source) || shouldInheritManifestQuery(parent)
   };
 }
 
 function rankSources(raw) {
   const primaryUrl = raw.url || raw.stream_url || raw.link || '';
+  const primaryPlaybackId = String(raw.playback_id || '').trim();
   const primaryProfile = inferSafeHeaderProfile(raw);
   const primaryProxyMode = inferProxyMode(raw, primaryProfile);
-  const primary = primaryUrl ? [{
+  const primary = (primaryUrl || primaryPlaybackId) ? [{
     url: primaryUrl,
+    playback_id: primaryPlaybackId,
     name: 'Primary',
     verification_mode: raw.verification_mode || '',
     verification_status: raw.verification_status || '',
@@ -702,6 +714,10 @@ function rankSources(raw) {
     width: Number(raw.width || 0),
     height: Number(raw.height || raw.resolution_height || 0),
     bitrate: Number(raw.bitrate || raw.bandwidth || raw.average_bitrate || 0),
+    source_id: raw.source_id || '',
+    protected_source: Boolean(raw.protected_source),
+    requires_credentials: Boolean(raw.requires_credentials),
+    drm: raw.drm || null,
     inherit_manifest_query: shouldInheritManifestQuery(raw)
   }] : [];
 
@@ -718,7 +734,7 @@ function rankSources(raw) {
 
   const seen = new Set();
   const all = [...primary, ...backups].filter((source) => {
-    const key = source.url.trim();
+    const key = String(source.playback_id || source.url || '').trim();
     if (!key || seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -727,8 +743,8 @@ function rankSources(raw) {
   return all
     .map((source, originalIndex) => ({ ...source, originalIndex }))
     .sort((a, b) => {
-      const aHttps = a.url.toLowerCase().startsWith('https://') ? 0 : 1;
-      const bHttps = b.url.toLowerCase().startsWith('https://') ? 0 : 1;
+      const aHttps = a.playback_id || a.url.toLowerCase().startsWith('https://') ? 0 : 1;
+      const bHttps = b.playback_id || b.url.toLowerCase().startsWith('https://') ? 0 : 1;
       return aHttps - bHttps || a.originalIndex - b.originalIndex;
     });
 }
@@ -1504,6 +1520,36 @@ async function preloadRemainingManualMoviePages(options = {}) {
   if (loadedAnotherPage) renderCurrentList(true);
 }
 
+async function preloadAllMoviePagesForSearch() {
+  if (
+    state.view !== VIEW.MOVIE || state.moviePreviewMode || !state.movieIndex ||
+    state.movieSearchLoading || state.moviePageCursor >= (state.movieIndex.pages?.length || 0)
+  ) return;
+
+  const sessionId = state.movieCategorySessionId;
+  const dataSessionId = state.dataSessionId;
+  state.movieSearchLoading = true;
+  try {
+    while (
+      state.searchQuery &&
+      sessionId === state.movieCategorySessionId &&
+      dataSessionId === state.dataSessionId &&
+      state.moviePageCursor < (state.movieIndex.pages?.length || 0)
+    ) {
+      const previousCursor = state.moviePageCursor;
+      await loadNextMoviePage({
+        sessionId,
+        dataSessionId,
+        signal: state.dataAbortController?.signal,
+        deferRender: true
+      });
+      if (state.moviePageCursor === previousCursor) break;
+    }
+  } finally {
+    state.movieSearchLoading = false;
+  }
+}
+
 
 function getRecentItems() {
   const stored = readJsonStorage(STORAGE_KEYS.recentItems, []);
@@ -1519,6 +1565,11 @@ function compactItem(item) {
     logo: item.logo,
     category: item.category,
     url: item.url,
+    playback_id: item.playback_id || '',
+    protected_source: Boolean(item.protected_source),
+    requires_credentials: Boolean(item.requires_credentials),
+    proxy_mode: item.proxy_mode || '',
+    stream_type: item.stream_type || '',
     backups: item.backups || [],
     verification_mode: item.verification_mode || '',
     header_profile: item.header_profile || item.profile || '',
@@ -1540,7 +1591,9 @@ function saveRecentItem(item) {
   if (!item || !isPlayable(item)) return;
   const compact = compactItem(item);
   const old = readJsonStorage(STORAGE_KEYS.recentItems, []);
-  const next = [compact, ...old.filter((entry) => entry.url !== compact.url && entry.id !== compact.id)].slice(0, 15);
+  const next = [compact, ...old.filter((entry) => (
+    (entry.playback_id || entry.url) !== (compact.playback_id || compact.url) && entry.id !== compact.id
+  ))].slice(0, 15);
   writeJsonStorage(STORAGE_KEYS.recentItems, next);
 }
 
@@ -1928,8 +1981,11 @@ function debounce(fn, wait) {
   };
 }
 
-const handleSearch = debounce(() => {
+const handleSearch = debounce(async () => {
   if (state.view === VIEW.MOVIE && !state.selectedMovieCategory) return;
+  if (state.view === VIEW.MOVIE && state.searchQuery) {
+    await preloadAllMoviePagesForSearch();
+  }
   renderCurrentList(true);
 }, 220);
 
@@ -1941,8 +1997,9 @@ mobileSearchInput.addEventListener('input', (event) => {
   setSearchQuery(event.target.value, mobileSearchInput);
   handleSearch();
 });
-$('searchBtnSubmit').addEventListener('click', () => {
+$('searchBtnSubmit').addEventListener('click', async () => {
   setSearchQuery(searchInput.value, searchInput);
+  if (state.view === VIEW.MOVIE && state.searchQuery) await preloadAllMoviePagesForSearch();
   renderCurrentList(true);
 });
 $('sortSelect').addEventListener('change', (event) => {
@@ -1983,6 +2040,14 @@ function isSafariNativeHls() {
 function playbackProxyList() {
   const list = state.runtime?.play_proxies;
   return Array.isArray(list) ? list.filter((value) => /^https:\/\//i.test(value)) : [];
+}
+
+function sourcePlaybackKey(source = {}) {
+  return String(source.playback_id || source.url || source.link || source.stream_url || '').trim();
+}
+
+function itemPlaybackKey(item = {}) {
+  return String(item.id || item.playback_id || item.url || item._uid || '').trim();
 }
 
 function proxyHealthKey(proxy, targetUrl) {
@@ -2051,8 +2116,12 @@ function markProxyResult(proxy, targetUrl, success, elapsedMs) {
 }
 
 function buildProxyUrl(proxy, source) {
+  const proxyOrigin = String(proxy).replace(/\/$/, '');
+  if (source.playback_id) {
+    return `${proxyOrigin}/hls?id=${encodeURIComponent(source.playback_id)}`;
+  }
   const route = state.runtime?.playback_proxy_route || '/hls?url=';
-  let output = `${String(proxy).replace(/\/$/, '')}${route}${encodeURIComponent(source.url)}`;
+  let output = `${proxyOrigin}${route}${encodeURIComponent(source.url)}`;
   const profile = source.header_profile || '';
   const type = source.stream_type || inferStreamType(source);
   if (type) output += `&type=${encodeURIComponent(type)}`;
@@ -2067,7 +2136,9 @@ function buildAttemptPlan(item) {
 
   sources.slice(0, 6).forEach((source, sourceIndex) => {
     const sourceUrl = String(source.url || '').trim();
-    if (!sourceUrl) return;
+    const playbackId = String(source.playback_id || '').trim();
+    if (!sourceUrl && !playbackId) return;
+    const healthTarget = sourceUrl || `playback:${playbackId}`;
 
     const isHttp = sourceUrl.toLowerCase().startsWith('http://');
     const mixedContent = location.protocol === 'https:' && isHttp;
@@ -2075,7 +2146,10 @@ function buildAttemptPlan(item) {
     const sourceType = source.stream_type || inferStreamType(source);
     const isEvent = item?._sourceKind === VIEW.EVENT || state.view === VIEW.EVENT;
     const hasDrm = Boolean(item?.drm || source?.drm);
-    const protectedSource = Boolean(source.requires_headers || item?.requires_headers);
+    const protectedSource = Boolean(
+      source.protected_source || source.requires_credentials ||
+      source.requires_headers || item?.protected_source || item?.requires_credentials || item?.requires_headers
+    );
 
     let mode = configuredMode;
     if (isEvent && sourceType === 'dash' && hasDrm && mode !== 'direct_only') {
@@ -2085,12 +2159,16 @@ function buildAttemptPlan(item) {
       mode = 'proxy_first';
     }
 
-    let proxies = rankHealthyProxies(sourceUrl, false).slice(0, 2);
+    // Every scanned source has an ID. Ordinary public sources still start
+    // direct; credentialed or URL-hidden sources must use the ID-aware proxy.
+    if (playbackId && (!sourceUrl || protectedSource)) mode = 'proxy_only';
+
+    let proxies = rankHealthyProxies(healthTarget, false).slice(0, 2);
     if (!proxies.length && mode !== 'direct_only') {
-      proxies = rankHealthyProxies(sourceUrl, true).slice(0, 2);
+      proxies = rankHealthyProxies(healthTarget, true).slice(0, 2);
     }
 
-    const canDirect = !mixedContent && mode !== 'proxy_only';
+    const canDirect = Boolean(sourceUrl) && !mixedContent && mode !== 'proxy_only';
     const canProxy = mode !== 'direct_only' && proxies.length > 0;
 
     const addDirect = () => {
@@ -2108,7 +2186,7 @@ function buildAttemptPlan(item) {
 
   const seen = new Set();
   return plan.filter((attempt) => {
-    const key = `${attempt.route}:${attempt.proxy || ''}:${attempt.source.url}`;
+    const key = `${attempt.route}:${attempt.proxy || ''}:${attempt.source.playback_id || attempt.source.url}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
@@ -2975,6 +3053,26 @@ function ensureShakaLibrary() {
   return shakaLoaderPromise;
 }
 
+async function resolveProtectedDrm(session) {
+  const attempt = session?.currentAttempt;
+  const source = attempt?.source || {};
+  const playbackId = String(source.playback_id || session?.item?.playback_id || '').trim();
+  const drmHint = source.drm || session?.item?.drm || null;
+  if (!playbackId || !drmHint) return drmHint;
+  if (!attempt?.proxy) throw new Error('Protected DRM requires a playback proxy');
+
+  const endpoint = `${String(attempt.proxy).replace(/\/$/, '')}/drm?id=${encodeURIComponent(playbackId)}`;
+  const response = await fetch(endpoint, {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'no-store',
+    credentials: 'omit'
+  });
+  if (!response.ok) throw new Error(`Protected DRM profile HTTP ${response.status}`);
+  const payload = await response.json();
+  return payload?.drm && typeof payload.drm === 'object' ? payload.drm : null;
+}
+
 async function initShaka(url, session, attemptToken) {
   await ensureShakaLibrary();
   if (!window.shaka?.Player) throw new Error('Shaka Player load হয়নি');
@@ -3000,7 +3098,11 @@ async function initShaka(url, session, attemptToken) {
     if (event.buffering) markAttemptProgress('DASH buffering', attemptToken);
   });
 
-  const clearKeys = parseClearKeys(session.item.drm?.license_key);
+  const playbackDrm = await resolveProtectedDrm(session);
+  if (!isActiveAttempt(session, attemptToken)) return;
+  const clearKeys = parseClearKeys(
+    playbackDrm?.license_key || playbackDrm?.clear_keys || playbackDrm?.clearkey
+  );
   if (clearKeys) player.configure({ drm: { clearKeys } });
   player.addEventListener('error', (event) => {
     if (!isActiveAttempt(session, attemptToken) || isQualityLocked() || state.userPaused) return;
@@ -3167,7 +3269,12 @@ function failCurrentAttempt(reason, attemptToken = state.playbackSession?.attemp
   clearPlaybackTimers();
   const attempt = session.currentAttempt;
   if (attempt?.route === 'proxy') {
-    markProxyResult(attempt.proxy, attempt.source.url, false, Date.now() - session.attemptStartedAt);
+    markProxyResult(
+      attempt.proxy,
+      attempt.source.url || `playback:${attempt.source.playback_id || ''}`,
+      false,
+      Date.now() - session.attemptStartedAt
+    );
   }
   session.success = false;
   sendPlaybackTelemetry('failure', reason);
@@ -3659,11 +3766,16 @@ function acceptPlaybackRoute(session) {
 
   const elapsed = Date.now() - session.attemptStartedAt;
   if (session.currentAttempt?.route === 'proxy') {
-    markProxyResult(session.currentAttempt.proxy, session.currentAttempt.source.url, true, elapsed);
+    markProxyResult(
+      session.currentAttempt.proxy,
+      session.currentAttempt.source.url || `playback:${session.currentAttempt.source.playback_id || ''}`,
+      true,
+      elapsed
+    );
   }
 
   if (state.currentItem && session.currentAttempt?.source?.url) {
-    state.currentItem._activeSourceUrl = session.currentAttempt.source.url;
+    state.currentItem._activeSourceUrl = sourcePlaybackKey(session.currentAttempt.source);
   }
 
   recordPlaybackSuccess();
@@ -3697,6 +3809,30 @@ function telemetryEndpoint() {
   return String(state.runtime?.telemetry_url || '').trim();
 }
 
+async function initializePlaybackTelemetry() {
+  state.telemetryEnabled = false;
+  const endpoint = telemetryEndpoint();
+  if (!endpoint) return;
+  let healthUrl;
+  try {
+    healthUrl = new URL('/health', endpoint).toString();
+  } catch (_) {
+    return;
+  }
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 3500);
+  try {
+    const response = await fetch(healthUrl, { cache: 'no-store', signal: controller.signal });
+    if (!response.ok) return;
+    const health = await response.json();
+    state.telemetryEnabled = Boolean(health?.ok && health?.kv_bound !== false);
+  } catch (_) {
+    state.telemetryEnabled = false;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function telemetrySessionId() {
   if (state.telemetrySessionId) return state.telemetrySessionId;
   let saved = sessionStorage.getItem(STORAGE_KEYS.telemetrySession);
@@ -3726,7 +3862,7 @@ function sendPlaybackTelemetry(result, reason = '') {
   const session = state.playbackSession;
   const attempt = session?.currentAttempt;
   const item = session?.item || state.currentItem;
-  if (!endpoint || !item) return;
+  if (!endpoint || !state.telemetryEnabled || !item) return;
 
   const payload = {
     item_id: String(item.id || item._uid || '').slice(0, 160),
@@ -4608,7 +4744,7 @@ function loadMovieAudioCompanionAttempt(attempt, source, position, options = {})
       if (attempt.route === 'proxy') {
         markProxyResult(
           attempt.proxy,
-          source.url,
+          source.url || `playback:${source.playback_id || ''}`,
           success,
           Math.max(1, Date.now() - startedAt)
         );
@@ -5512,7 +5648,9 @@ function updatePlaybackProgress() {
   const now = Date.now();
   if (state.currentItem?.url && now - state.positionSavedAt >= POSITION_SAVE_INTERVAL_MS) {
     state.positionSavedAt = now;
-    state.playbackPositions[state.currentItem.url] = {
+    const positionKey = sourcePlaybackKey(state.currentItem);
+    if (!positionKey) return;
+    state.playbackPositions[positionKey] = {
       position: video.currentTime,
       duration: video.duration,
       savedAt: now
@@ -5906,30 +6044,14 @@ function showSkip(side) {
   setTimeout(() => element.classList.remove('show'), 800);
 }
 
-async function cleanupLegacyServiceWorker() {
-  const legacyServiceWorkerPath = '/sw.js';
-  const cleanupKey = 'clicktv_legacy_sw_cleanup_v1';
-  void legacyServiceWorkerPath;
+async function setupServiceWorker() {
+  if (!('serviceWorker' in navigator)) return;
   try {
-    if (localStorage.getItem(cleanupKey) === '1') return;
-  } catch (_) {}
-  if ('serviceWorker' in navigator) {
-    try {
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map((registration) => registration.unregister()));
-    } catch (error) {
-      console.warn('Legacy service worker cleanup failed', error);
-    }
+    const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    registration.update().catch(() => {});
+  } catch (error) {
+    console.warn('Click TV service worker registration failed', error);
   }
-  if ('caches' in window) {
-    try {
-      const cacheNames = await caches.keys();
-      await Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
-    } catch (error) {
-      console.warn('Legacy cache cleanup failed', error);
-    }
-  }
-  try { localStorage.setItem(cleanupKey, '1'); } catch (_) {}
 }
 
 function setupPwaInstall() {
@@ -6221,8 +6343,9 @@ function maybeOfferResume() {
   hideResumeBadge();
   const item = state.currentItem;
   const isMovie = item?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
-  if (!isMovie || !item?.url) return;
-  const saved = state.playbackPositions[item.url];
+  const positionKey = sourcePlaybackKey(item);
+  if (!isMovie || !positionKey) return;
+  const saved = state.playbackPositions[positionKey];
   const duration = Number(saved?.duration || video.duration || 0);
   const position = Number(saved?.position || 0);
   if (position < 60 || (duration && position > duration - 60)) return;
@@ -6232,7 +6355,7 @@ function maybeOfferResume() {
 }
 
 $('resumeBadge').addEventListener('click', () => {
-  const saved = state.currentItem && state.playbackPositions[state.currentItem.url];
+  const saved = state.currentItem && state.playbackPositions[sourcePlaybackKey(state.currentItem)];
   if (saved?.position) video.currentTime = saved.position;
   hideResumeBadge();
 });
@@ -6408,12 +6531,13 @@ async function bootstrap() {
   updateMuteUi();
   updateClock();
   setInterval(updateClock, effectivePerformanceClass() === 'normal' ? 1000 : 30000);
-  await cleanupLegacyServiceWorker();
+  await setupServiceWorker();
   setupPwaInstall();
   renderNetworkMenu();
   updateNetworkMenuState(readNetworkMode());
   try {
     await loadRuntimeAndManifest();
+    void initializePlaybackTelemetry();
   } catch (error) {
     console.error(error);
     showPlayerMessage('Data manifest load হয়নি। Refresh করে আবার চেষ্টা করুন।', false);
