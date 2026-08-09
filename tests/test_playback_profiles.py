@@ -70,6 +70,39 @@ class PlaybackProfileTests(unittest.TestCase):
             self.assertIn("secret", json.dumps(bundle))
             self.assertTrue((root / "reports" / "scan-summary-channels.json").exists())
 
+    def test_allowed_hosts_include_protected_media_license_certificate_and_standby(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "config").mkdir()
+            (root / "config" / "settings.json").write_text("{}", encoding="utf-8")
+            publish_scan_outputs(
+                channels_data={"Bangla": [{
+                    "id": "drm-source",
+                    "name": "DRM Source",
+                    "url": "https://media.example/live.mpd?token=secret",
+                    "resolution_height": 1080,
+                    "drm": {
+                        "type": "fairplay",
+                        "license_url": "https://license.example/fps",
+                        "license_headers": {"Authorization": "Bearer token"},
+                        "certificate_url": "https://cert.example/fps.cer",
+                    },
+                    "standby": [{
+                        "url": "https://standby.example/live.mpd",
+                        "resolution_height": 1080,
+                    }],
+                }]},
+                settings_path=str(root / "config" / "settings.json"),
+                data_dir=str(root / "data"),
+                state_dir=str(root / "state"),
+                reports_dir=str(root / "reports"),
+                scan_mode="channels",
+            )
+            allowed = json.loads((root / "data" / "allowed-hosts.json").read_text(encoding="utf-8"))
+            self.assertTrue({
+                "media.example", "license.example", "cert.example", "standby.example"
+            }.issubset(set(allowed["hosts"])))
+
 
 if __name__ == "__main__":
     unittest.main()

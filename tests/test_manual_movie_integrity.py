@@ -8,7 +8,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scanner.movies import (
+    TMDB_MULTI_SEARCH_URL,
     _parse_manual_movies_text,
+    _resolve_missing_manual_years,
+    _tmdb_exact_year_lookup,
     _tmdb_poster_lookup,
     _valid_poster_url,
     process_movies,
@@ -207,6 +210,44 @@ class ManualMovieIntegrityTests(unittest.TestCase):
             _valid_poster_url("https://image.tmdb.org/t500/example.jpg"),
             "https://image.tmdb.org/t/p/w500/example.jpg",
         )
+
+    def test_missing_year_uses_exact_shared_stream_not_title_guess(self) -> None:
+        resolved, report = _resolve_missing_manual_years([
+            {"name": "Same Name", "year": 2026, "links": [{"url": "https://cdn.test/exact.mkv"}]},
+            {"name": "Same Name", "year": 1999, "links": [{"url": "https://cdn.test/remake.mkv"}]},
+            {"name": "Same Name", "year": "", "links": [{"url": "https://cdn.test/exact.mkv"}]},
+        ])
+        self.assertEqual(resolved[2]["year"], 2026)
+        self.assertEqual(resolved[2]["year_source"], "exact_title_and_shared_stream_url")
+        self.assertEqual(report[0]["status"], "resolved")
+
+    def test_same_title_multiple_tmdb_years_stays_ambiguous(self) -> None:
+        payload = {"results": [
+            {"id": 1, "title": "The Example", "release_date": "1999-01-01"},
+            {"id": 2, "title": "The Example", "release_date": "2026-01-01"},
+        ]}
+        with patch("scanner.movies._tmdb_credentials", return_value=("token", "")), patch(
+            "scanner.movies._tmdb_request_json", return_value=payload
+        ):
+            result = _tmdb_exact_year_lookup("The Example")
+        self.assertEqual(result["status"], "ambiguous")
+        self.assertEqual(result["candidate_years"], [1999, 2026])
+
+    def test_exact_tv_title_can_resolve_series_bundle_year(self) -> None:
+        payload = {"results": [{
+            "id": 77,
+            "media_type": "tv",
+            "name": "The East Palace",
+            "first_air_date": "2026-07-17",
+        }]}
+        with patch("scanner.movies._tmdb_credentials", return_value=("token", "")), patch(
+            "scanner.movies._tmdb_request_json", return_value=payload
+        ) as request:
+            result = _tmdb_exact_year_lookup("The East Palace")
+        self.assertEqual(result["status"], "resolved")
+        self.assertEqual(result["year"], 2026)
+        self.assertEqual(result["tmdb_media_type"], "tv")
+        self.assertEqual(request.call_args.kwargs["endpoint"], TMDB_MULTI_SEARCH_URL)
 
 
 if __name__ == "__main__":

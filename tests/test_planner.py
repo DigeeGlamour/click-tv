@@ -9,7 +9,7 @@ from scanner.planner import plan_candidates
 
 
 class PlannerTests(unittest.TestCase):
-    def test_movie_mode_accepts_tv_to_movie_reroute(self):
+    def test_movie_mode_rejects_tv_source_content_under_strict_separation(self):
         normalizer = Normalizer()
         movie = normalizer.normalize_candidate(
             {
@@ -68,9 +68,8 @@ class PlannerTests(unittest.TestCase):
             finally:
                 os.chdir(old_cwd)
 
-        self.assertEqual(len(planned), 1)
-        self.assertEqual(planned[0]["source_pipeline"], "movies")
-        self.assertEqual(summary["rerouted_counts"]["tv->movies"], 1)
+        self.assertEqual(len(planned), 0)
+        self.assertNotIn("tv->movies", summary["rerouted_counts"])
 
 
 if __name__ == "__main__":

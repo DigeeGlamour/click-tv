@@ -29,6 +29,8 @@ class NewCategoryAndOrderingTests(unittest.TestCase):
                                 "verification_status": "verified_global",
                                 "verified": True,
                                 "publish_allowed": True,
+                                "resolution": "1080p",
+                                "resolution_height": 1080,
                                 "source_id": "test",
                             }
                         ]

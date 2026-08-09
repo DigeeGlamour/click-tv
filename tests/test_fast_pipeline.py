@@ -90,6 +90,8 @@ class FastPipelineTests(unittest.TestCase):
                         "url": url,
                         "source_pipeline": "movies",
                         "category": "English",
+                        "resolution": "1080p",
+                        "resolution_height": 1080,
                         "_verification_group": "movies:same-movie",
                         "_verification_rank": index,
                         "_verification_wave": 0 if index == 0 else index,

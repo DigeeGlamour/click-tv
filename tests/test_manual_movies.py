@@ -94,7 +94,7 @@ STREAM Link 2: https://example.com/multi-1080p.mkv
             manual_path.parent.mkdir(parents=True, exist_ok=True)
             cache_path.parent.mkdir(parents=True, exist_ok=True)
             manual_path.write_text(
-                json.dumps({"items": [{"name": "Cached Poster Movie", "year": 2026, "links": ["https://example.com/cached.mkv"]}]}),
+                json.dumps({"items": [{"name": "Cached Poster Movie", "year": 2026, "links": [{"url": "https://example.com/cached.mkv", "resolution": "1080p"}]}]}),
                 encoding="utf-8",
             )
             cache_path.write_text(

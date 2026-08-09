@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import worker from '../workers/playback-proxy/src/index.js';
 
 const playbackId = `ctv_${'a'.repeat(32)}`;
+const widevinePlaybackId = `ctv_${'b'.repeat(32)}`;
 const profile = {
   status: 'active',
   url: 'https://media.example/live/master.m3u8?token=private-token',
@@ -22,7 +23,31 @@ const realFetch = globalThis.fetch;
 globalThis.fetch = async (url, init = {}) => {
   const parsed = new URL(String(url));
   if (parsed.href === 'https://clicktv.pages.dev/data/playback-sources.json') {
-    return Response.json({ schema_version: 1, records: { [playbackId]: structuredClone(profile) } });
+    return Response.json({
+      schema_version: 1,
+      records: {
+        [playbackId]: structuredClone(profile),
+        [widevinePlaybackId]: {
+          ...structuredClone(profile),
+          stream_type: 'dash',
+          drm: {
+            type: 'widevine',
+            license_url: 'https://license.example/widevine',
+            license_headers: { Authorization: 'Bearer license-token', 'X-Device': 'click-tv' },
+          },
+        },
+      },
+    });
+  }
+  if (parsed.href === 'https://clicktv.pages.dev/data/allowed-hosts.json') {
+    return Response.json({ count: 2, hosts: ['media.example', 'license.example'] });
+  }
+  if (parsed.href === 'https://license.example/widevine') {
+    upstreamCalls.push({ url: parsed.toString(), headers: new Headers(init.headers), method: init.method, body: new Uint8Array(init.body || []) });
+    return new Response(new Uint8Array([9, 8, 7, 6]), {
+      status: 200,
+      headers: { 'Content-Type': 'application/octet-stream' },
+    });
   }
   upstreamCalls.push({ url: parsed.toString(), headers: new Headers(init.headers) });
   if (parsed.pathname.endsWith('.m3u8')) {
@@ -79,6 +104,25 @@ try {
   assert.equal((await drm.json()).drm.license_key, 'kid:key');
   assert.equal(drm.headers.get('Cache-Control'), 'no-store');
 
+  const licenseChallenge = new Uint8Array([4, 3, 2, 1]);
+  const license = await worker.fetch(
+    new Request(`https://worker.example/license?id=${widevinePlaybackId}`, {
+      method: 'POST',
+      headers: { ...originHeaders, 'Content-Type': 'application/octet-stream' },
+      body: licenseChallenge,
+    }),
+    env,
+    { waitUntil() {} },
+  );
+  assert.equal(license.status, 200);
+  assert.deepEqual(new Uint8Array(await license.arrayBuffer()), new Uint8Array([9, 8, 7, 6]));
+  const licenseCall = upstreamCalls.find((call) => call.url === 'https://license.example/widevine');
+  assert.equal(licenseCall.method, 'POST');
+  assert.deepEqual(licenseCall.body, licenseChallenge);
+  assert.equal(licenseCall.headers.get('Authorization'), 'Bearer license-token');
+  assert.equal(licenseCall.headers.get('X-Device'), 'click-tv');
+  assert.equal(license.headers.get('Cache-Control'), 'no-store, no-cache, must-revalidate');
+
   const noOrigin = await worker.fetch(
     new Request(`https://worker.example/hls?id=${playbackId}`),
     env,
@@ -97,7 +141,7 @@ try {
 
   const health = await worker.fetch(new Request('https://stream-proxy-3.example/health'), env, {});
   const healthBody = await health.json();
-  assert.equal(healthBody.version, '5.0.0');
+  assert.equal(healthBody.version, '5.1.0');
   assert.equal(healthBody.name, 'play-proxy-2');
   assert.equal(healthBody.configuration_storage, 'git_pages_json');
   assert.equal(healthBody.dashboard_configuration_required, false);

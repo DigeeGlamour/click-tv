@@ -28,7 +28,7 @@ class ContentRouterTests(unittest.TestCase):
         )
         self.assertEqual(item["source_pipeline"], "tv")
 
-    def test_movie_category_uses_path_markers(self):
+    def test_tv_source_movie_is_dropped_under_strict_source_separation(self):
         normalizer = Normalizer()
         item = normalizer.normalize_candidate(
             {
@@ -38,9 +38,7 @@ class ContentRouterTests(unittest.TestCase):
                 "headers": {},
             }
         )
-        self.assertIsNotNone(item)
-        self.assertEqual(item["source_pipeline"], "movies")
-        self.assertEqual(item["category"], "Dubbed")
+        self.assertIsNone(item)
 
     def test_extinf_uses_last_unquoted_comma(self):
         content = (
@@ -66,6 +64,28 @@ class ContentRouterTests(unittest.TestCase):
         normalized = Normalizer().normalize_candidate(items[0])
         self.assertFalse(items[0]["manual_can_override_category"])
         self.assertEqual(normalized["category"], "Other")
+
+    def test_kodi_stream_headers_become_exact_playback_headers(self):
+        content = (
+            "#EXTM3U\n"
+            "#EXTINF:-1 group-title=\"TV: Indian\",Sony Entertainment HD\n"
+            "#KODIPROP:inputstream.adaptive.stream_headers="
+            "Host=bldcmprod-cdn.toffeelive.com&"
+            "cookie=Edge-Cache-Cookie%3DURLPrefix%3Dabc%3ASignature%3Dxyz&"
+            "user-agent=okhttp%2F5.1.0&client-api-header=null\n"
+            "https://bldcmprod-cdn.toffeelive.com/cdn/live/sony/playlist.m3u8\n"
+        )
+        items = parse_m3u_content(content, {
+            "id": "toffee-test",
+            "pipeline": "tv",
+            "headers": {"User-Agent": "static-profile/1.0"},
+        })
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["headers"]["Cookie"], "Edge-Cache-Cookie=URLPrefix=abc:Signature=xyz")
+        self.assertEqual(items[0]["headers"]["User-Agent"], "okhttp/5.1.0")
+        self.assertEqual(items[0]["headers"]["client-api-header"], "null")
+        self.assertNotIn("Host", items[0]["headers"])
+        self.assertEqual(items[0]["drm"], {})
 
 
 if __name__ == "__main__":
