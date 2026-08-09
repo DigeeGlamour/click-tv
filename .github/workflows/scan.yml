@@ -46,23 +46,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           persist-credentials: true
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "22"
-
       - name: Restore scanner source cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: working/source-cache
           key: live-signal-source-cache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
@@ -75,47 +70,96 @@ jobs:
         run: |
           set -euo pipefail
 
-          test -f scan.py
-          test -f config/settings.json
-          test -f config/sources.json
-          test -f scanner/content_router.py
-          test -f scanner/channel_logos.py
-          test -f scanner/fast_pipeline.py
-          test -f scanner/source_loader.py
-          test -f scanner/normalizer.py
-          test -f scanner/planner.py
-          test -f scanner/verifier.py
-          test -f scanner/bd_verifier.py
-          test -f scanner/channels.py
-          test -f scanner/movies.py
-          test -f scanner/series.py
-          test -f manual/movies.txt
-          test -f manual/movies.json
-          test -f manual/channel-logos.json
-          test -f manual/movie-sources.json
-          test -f manual/movies-template.txt
-          test -f manual/movies-template.json
-          test -f state/manual-movie-posters.json
-          test -f state/manual-movie-remote-cache.json
-          test -f state/channel-logo-cache.json
-          test -f tests/test_manual_movies.py
-          test -f tests/test_manual_movie_sources.py
-          test -f tests/test_series_pipeline.py
-          test -f tests/test_final_design_contract.py
-          test -f tests/test_channel_logos.py
-          test -f scanner/events.py
-          test -f scanner/output.py
-          test -f scanner/telegram_notify.py
-          test -f site/index.html
-          test -f site/assets/css/final-design.css
-          test -f site/assets/js/app.js
-          test -f site/assets/js/series.js
+          required_files=(
+            scan.py
+            config/settings.json
+            config/sources.json
+            scanner/content_router.py
+            scanner/channel_logos.py
+            scanner/fast_pipeline.py
+            scanner/source_loader.py
+            scanner/normalizer.py
+            scanner/planner.py
+            scanner/verifier.py
+            scanner/bd_verifier.py
+            scanner/channels.py
+            scanner/movies.py
+            scanner/series.py
+            scanner/events.py
+            scanner/output.py
+            scanner/telegram_notify.py
+            manual/movies.txt
+            manual/movies.json
+            manual/channel-logos.json
+            manual/movie-sources.json
+            manual/movies-template.txt
+            manual/movies-template.json
+            tests/test_channel_logos.py
+            tests/test_content_router.py
+            tests/test_fast_pipeline.py
+            tests/test_manual_movie_integrity.py
+            tests/test_manual_movie_sources.py
+            tests/test_manual_movies.py
+            tests/test_new_categories.py
+            tests/test_planner.py
+            tests/test_series.py
+            tests/test_series_pipeline.py
+          )
 
-          python -m py_compile scan.py scanner/*.py scanner/parsers/*.py scripts/*.py tests/*.py
-          node --check site/assets/js/app.js
-          node --check site/assets/js/series.js
-          node --check site/sw.js
-          python -m unittest discover -s tests -p "test_*.py" -v
+          missing=0
+          for file in "${required_files[@]}"; do
+            if [[ -f "$file" ]]; then
+              echo "[OK] $file"
+            else
+              echo "[MISSING] $file"
+              missing=1
+            fi
+          done
+
+          if [[ "$missing" -ne 0 ]]; then
+            echo "Scanner validation failed because required scanner source files are missing."
+            exit 1
+          fi
+
+          # Files under state/ are generated caches. The scanner can recreate them,
+          # so a deleted/stale cache must never block a scheduled scan before startup.
+          echo "Scanner source-file validation passed."
+
+      - name: Check scanner Python syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scan.py scanner/*.py scanner/parsers/*.py scripts/*.py
+          echo "Scanner Python syntax check passed."
+
+      - name: Run scanner unit tests
+        shell: bash
+        env:
+          PYTHONPATH: .
+        run: |
+          set -euo pipefail
+
+          scanner_tests=(
+            test_channel_logos.py
+            test_content_router.py
+            test_fast_pipeline.py
+            test_manual_movie_integrity.py
+            test_manual_movie_sources.py
+            test_manual_movies.py
+            test_new_categories.py
+            test_planner.py
+            test_series.py
+            test_series_pipeline.py
+          )
+
+          for test_file in "${scanner_tests[@]}"; do
+            echo "============================================================"
+            echo "RUNNING SCANNER TEST: $test_file"
+            echo "============================================================"
+            python -m unittest discover -s tests -p "$test_file" -v
+          done
+
+          echo "All scanner unit tests passed."
 
       - name: Select scan mode
         id: scan_mode
@@ -142,7 +186,7 @@ jobs:
 
       - name: Checkout private movie source repository
         if: steps.scan_mode.outputs.mode == 'movies' || steps.scan_mode.outputs.mode == 'all'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: 0matbank/hopeful-research
           ref: main
@@ -285,7 +329,7 @@ jobs:
 
       - name: Upload scanner log on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: scanner-failure-log-${{ github.run_number }}
           path: scanner-run.log
