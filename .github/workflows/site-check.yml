@@ -1,0 +1,89 @@
+name: Click TV Site Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+  workflow_run:
+    workflows:
+      - Live Signal Scanner
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+concurrency:
+  group: click-tv-site-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Validate required project files
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f site/index.html
+          test -f site/sw.js
+          test -f site/assets/css/app.css
+          test -f site/assets/css/series.css
+          test -f site/assets/css/final-design.css
+          test -f site/assets/js/app.js
+          test -f site/assets/js/series.js
+          test -f data/manifest.json
+          test -f data/series/manifest.json
+          test -f scripts/build-pages.sh
+          test -f scripts/validate-pages.py
+          test -f scanner/series.py
+
+      - name: Check Python syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scan.py scanner/*.py scanner/parsers/*.py scripts/*.py tests/*.py
+
+      - name: Check frontend JavaScript syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check site/assets/js/app.js
+          node --check site/assets/js/series.js
+          node --check site/sw.js
+          node tests/playback-worker-runtime.mjs
+
+      - name: Run unit tests
+        shell: bash
+        env:
+          PYTHONPATH: .
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Build and validate Cloudflare Pages output
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/build-pages.sh
