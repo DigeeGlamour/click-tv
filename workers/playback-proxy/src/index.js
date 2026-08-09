@@ -6,7 +6,9 @@
  *   GET  /health
  *   GET  /hls?id=ctv_... (source resolved from the public Pages catalogue)
  *   GET  /hls?url=...&type=hls|dash|media|mpegts|key|subtitle&profile=...&inherit=0|1
- *   GET  /drm?id=ctv_... (site-only DRM bootstrap for ClearKey playback)
+ *   GET  /drm?id=ctv_... (site-only normalized DRM bootstrap)
+ *   POST /license?id=ctv_... (Widevine/PlayReady/FairPlay license relay)
+ *   GET  /certificate?id=ctv_... (FairPlay server certificate relay)
  *   HEAD /hls?url=...&type=media&profile=...
  *   OPTIONS /hls
  *
@@ -15,7 +17,7 @@
  * Pages in data/playback-sources.json. This is intentionally public.
  */
 
-const DEFAULT_VERSION = "5.0.0";
+const DEFAULT_VERSION = "5.1.0";
 const SITE_ORIGIN = "https://clicktv.pages.dev";
 const ALLOWED_ORIGINS = Object.freeze([SITE_ORIGIN]);
 const ALLOWED_HOSTS_URL = `${SITE_ORIGIN}/data/allowed-hosts.json`;
@@ -197,7 +199,7 @@ export default {
       );
     }
 
-    if (!new Set(["/hls", "/drm"]).has(requestUrl.pathname)) {
+    if (!new Set(["/hls", "/drm", "/license", "/certificate"]).has(requestUrl.pathname)) {
       return textResponse("Not found", 404, corsHeaders(request, env));
     }
 
@@ -212,7 +214,12 @@ export default {
       });
     }
 
-    if (!new Set(["GET", "HEAD"]).has(request.method)) {
+    const methodAllowed = (
+      (requestUrl.pathname === "/license" && request.method === "POST") ||
+      (requestUrl.pathname === "/certificate" && request.method === "GET") ||
+      (new Set(["/hls", "/drm"]).has(requestUrl.pathname) && new Set(["GET", "HEAD"]).has(request.method))
+    );
+    if (!methodAllowed) {
       return textResponse(
         "Method not allowed",
         405,
@@ -248,6 +255,20 @@ export default {
         const headers = corsHeaders(request, env);
         headers.set("Cache-Control", "no-store");
         return jsonResponse({ drm }, 200, headers);
+      }
+
+      if (requestUrl.pathname === "/license") {
+        if (!initialPlaybackId || childPlaybackId || !request.headers.get("Origin")) {
+          return textResponse("License request not allowed", 403, corsHeaders(request, env));
+        }
+        return proxyDrmLicense({ request, playbackProfile, env });
+      }
+
+      if (requestUrl.pathname === "/certificate") {
+        if (!initialPlaybackId || childPlaybackId || !request.headers.get("Origin")) {
+          return textResponse("Certificate request not allowed", 403, corsHeaders(request, env));
+        }
+        return proxyDrmCertificate({ request, playbackProfile, env });
       }
 
       const targetText = String(playbackProfile?.url || requestUrl.searchParams.get("url") || "");
@@ -444,6 +465,112 @@ async function proxyTarget({
     status: response.status,
     statusText: response.statusText,
     headers,
+  });
+}
+
+function normalizedDrmType(drm) {
+  const value = String(drm?.type || drm?.scheme || drm?.license_type || "").trim().toLowerCase();
+  if (value.includes("widevine") || value === "com.widevine.alpha") return "widevine";
+  if (value.includes("playready") || value.includes("microsoft")) return "playready";
+  if (value.includes("fairplay") || value.includes("apple.fps") || value.includes("com.apple")) return "fairplay";
+  if (value.includes("clearkey") || value.includes("clear_key")) return "clearkey";
+  return value ? "unknown" : "";
+}
+
+function applyExactHeaders(headers, rawHeaders) {
+  if (!rawHeaders || typeof rawHeaders !== "object") return;
+  const blocked = new Set([
+    "host", "connection", "content-length", "cf-connecting-ip", "cf-ipcountry",
+    "cf-ray", "x-forwarded-for", "x-forwarded-proto", "transfer-encoding",
+  ]);
+  for (const [name, value] of Object.entries(rawHeaders)) {
+    const cleanName = String(name || "").trim();
+    const cleanValue = String(value || "").trim();
+    if (!cleanName || !cleanValue || blocked.has(cleanName.toLowerCase())) continue;
+    if (/\r|\n/.test(cleanName) || /\r|\n/.test(cleanValue)) continue;
+    headers.set(cleanName, cleanValue);
+  }
+}
+
+async function proxyDrmLicense({ request, playbackProfile, env }) {
+  const drm = playbackProfile?.drm;
+  const drmType = normalizedDrmType(drm);
+  if (!new Set(["widevine", "playready", "fairplay"]).has(drmType)) {
+    return textResponse("Unsupported DRM license type", 422, corsHeaders(request, env));
+  }
+  const target = parseSafeHttpUrl(drm?.license_url || drm?.license_server || "");
+  if (!(await isInitialHostAllowed(target.hostname, env))) {
+    return textResponse("License host not allowed", 403, corsHeaders(request, env));
+  }
+  const declaredLength = Number(request.headers.get("Content-Length") || 0);
+  if (declaredLength > 2 * 1024 * 1024) {
+    return textResponse("License request too large", 413, corsHeaders(request, env));
+  }
+  const body = await request.arrayBuffer();
+  if (body.byteLength > 2 * 1024 * 1024) {
+    return textResponse("License request too large", 413, corsHeaders(request, env));
+  }
+  const headers = buildUpstreamHeaders(
+    request,
+    playbackProfile?.header_profile || "",
+    "license",
+    env,
+    playbackProfile?.headers || {},
+  );
+  applyExactHeaders(headers, drm?.license_headers || {});
+  const requestContentType = request.headers.get("Content-Type");
+  if (requestContentType && !headers.has("Content-Type")) headers.set("Content-Type", requestContentType);
+  headers.set("Accept-Encoding", "identity");
+  headers.set("Cache-Control", "no-store");
+
+  const upstream = await fetchWithValidatedRedirects(
+    target,
+    { method: "POST", headers, body },
+    "license",
+    true,
+  );
+  const responseHeaders = corsHeaders(request, env);
+  responseHeaders.set("Content-Type", upstream.response.headers.get("Content-Type") || "application/octet-stream");
+  responseHeaders.set("Cache-Control", "no-store, no-cache, must-revalidate");
+  responseHeaders.set("X-Upstream-Status", String(upstream.response.status));
+  return new Response(upstream.response.body, {
+    status: upstream.response.status,
+    statusText: upstream.response.statusText,
+    headers: responseHeaders,
+  });
+}
+
+async function proxyDrmCertificate({ request, playbackProfile, env }) {
+  const drm = playbackProfile?.drm;
+  if (normalizedDrmType(drm) !== "fairplay") {
+    return textResponse("FairPlay certificate not configured", 422, corsHeaders(request, env));
+  }
+  const target = parseSafeHttpUrl(drm?.certificate_url || "");
+  if (!(await isInitialHostAllowed(target.hostname, env))) {
+    return textResponse("Certificate host not allowed", 403, corsHeaders(request, env));
+  }
+  const headers = buildUpstreamHeaders(
+    request,
+    playbackProfile?.header_profile || "",
+    "certificate",
+    env,
+    playbackProfile?.headers || {},
+  );
+  applyExactHeaders(headers, drm?.certificate_headers || {});
+  const upstream = await fetchWithValidatedRedirects(
+    target,
+    { method: "GET", headers },
+    "certificate",
+    true,
+  );
+  const responseHeaders = corsHeaders(request, env);
+  responseHeaders.set("Content-Type", upstream.response.headers.get("Content-Type") || "application/octet-stream");
+  responseHeaders.set("Cache-Control", "no-store, no-cache, must-revalidate");
+  responseHeaders.set("X-Upstream-Status", String(upstream.response.status));
+  return new Response(upstream.response.body, {
+    status: upstream.response.status,
+    statusText: upstream.response.statusText,
+    headers: responseHeaders,
   });
 }
 
@@ -798,18 +925,7 @@ function buildUpstreamHeaders(request, profileName, type, env, credentialHeaders
     headers.set(name, value);
   }
 
-  const blockedHeaders = new Set([
-    "host", "connection", "content-length", "cf-connecting-ip", "cf-ipcountry",
-    "cf-ray", "x-forwarded-for", "x-forwarded-proto", "transfer-encoding",
-  ]);
-  if (credentialHeaders && typeof credentialHeaders === "object") {
-    for (const [name, value] of Object.entries(credentialHeaders)) {
-      const cleanName = String(name || "").trim();
-      const cleanValue = String(value || "").trim();
-      if (!cleanName || !cleanValue || blockedHeaders.has(cleanName.toLowerCase())) continue;
-      headers.set(cleanName, cleanValue);
-    }
-  }
+  applyExactHeaders(headers, credentialHeaders);
 
   const range = request.headers.get("Range");
   if (range) headers.set("Range", range);
@@ -863,7 +979,7 @@ function corsHeaders(request, env) {
   } else {
     headers.set("Access-Control-Allow-Origin", "*");
   }
-  headers.set("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
+  headers.set("Access-Control-Allow-Methods", "GET, HEAD, POST, OPTIONS");
   headers.set(
     "Access-Control-Allow-Headers",
     "Range, Content-Type, Accept, Accept-Language",
