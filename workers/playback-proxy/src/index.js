@@ -1,25 +1,29 @@
 /**
  * Click TV Playback Proxy Worker
  *
- * Deploy the same file to Playback Proxy 1-4. Only environment values change.
+ * Deploy this same file unchanged to Playback Proxy 1-4.
  * Viewer-facing routes:
  *   GET  /health
+ *   GET  /hls?id=ctv_... (source resolved from the public Pages catalogue)
  *   GET  /hls?url=...&type=hls|dash|media|mpegts|key|subtitle&profile=...&inherit=0|1
+ *   GET  /drm?id=ctv_... (site-only DRM bootstrap for ClearKey playback)
  *   HEAD /hls?url=...&type=media&profile=...
  *   OPTIONS /hls
  *
- * Required environment variables:
- *   PROXY_NAME
- *   PROXY_VERSION
- *   ALLOWED_ORIGINS       comma separated website origins
- *   ALLOWED_HOSTS_URL     public Click TV data/allowed-hosts.json URL
- *   HEADER_SIGNING_SECRET Cloudflare secret, identical on all four workers
- * Optional encrypted secret:
- *   TOFFEE_EDGE_COOKIE    current Toffee Edge-Cache cookie, when required
+ * No Cloudflare variables, secrets or KV bindings are required. The scanner
+ * publishes the exact verified URL, request headers and DRM data to GitHub /
+ * Pages in data/playback-sources.json. This is intentionally public.
  */
 
-const DEFAULT_VERSION = "3.1.0";
+const DEFAULT_VERSION = "5.0.0";
+const SITE_ORIGIN = "https://clicktv.pages.dev";
+const ALLOWED_ORIGINS = Object.freeze([SITE_ORIGIN]);
+const ALLOWED_HOSTS_URL = `${SITE_ORIGIN}/data/allowed-hosts.json`;
+const PLAYBACK_CATALOG_URL = `${SITE_ORIGIN}/data/playback-sources.json`;
+// Deliberately public. This only detects accidental/tampered child URLs.
+const CHILD_SIGNING_KEY = "click-tv-public-child-link-v5-20260809";
 const HOST_CACHE_MS = 5 * 60 * 1000;
+const CATALOG_CACHE_MS = 60 * 1000;
 const MAX_REDIRECTS = 5;
 const MAX_TEXT_BYTES = 2 * 1024 * 1024;
 const CHILD_LINK_TTL_SECONDS = 6 * 60 * 60;
@@ -27,6 +31,11 @@ const CHILD_LINK_TTL_SECONDS = 6 * 60 * 60;
 let hostCache = {
   expiresAt: 0,
   hosts: new Set(),
+};
+
+let playbackCatalogCache = {
+  expiresAt: 0,
+  records: null,
 };
 
 const TEXT_TYPES = new Set(["hls", "dash", "subtitle"]);
@@ -166,8 +175,8 @@ export default {
   async fetch(request, env, ctx) {
     const startedAt = Date.now();
     const requestUrl = new URL(request.url);
-    const proxyName = String(env.PROXY_NAME || "click-tv-playback-proxy");
-    const proxyVersion = String(env.PROXY_VERSION || DEFAULT_VERSION);
+    const proxyName = proxyNameFromHostname(requestUrl.hostname);
+    const proxyVersion = DEFAULT_VERSION;
 
     if (requestUrl.pathname === "/health") {
       return jsonResponse(
@@ -177,6 +186,10 @@ export default {
           role: "playback",
           name: proxyName,
           version: proxyVersion,
+          protected_playback: true,
+          configuration_storage: "git_pages_json",
+          playback_catalog_url: PLAYBACK_CATALOG_URL,
+          dashboard_configuration_required: false,
           timestamp: Date.now(),
         },
         200,
@@ -184,7 +197,7 @@ export default {
       );
     }
 
-    if (requestUrl.pathname !== "/hls") {
+    if (!new Set(["/hls", "/drm"]).has(requestUrl.pathname)) {
       return textResponse("Not found", 404, corsHeaders(request, env));
     }
 
@@ -213,7 +226,31 @@ export default {
     }
 
     try {
-      const targetText = requestUrl.searchParams.get("url") || "";
+      const initialPlaybackId = normalizePlaybackId(requestUrl.searchParams.get("id"));
+      const childPlaybackId = normalizePlaybackId(requestUrl.searchParams.get("pid"));
+      const playbackId = initialPlaybackId || childPlaybackId;
+      let playbackProfile = null;
+      if (playbackId) {
+        playbackProfile = await loadPlaybackProfile(playbackId, env);
+        if (!playbackProfile) {
+          return textResponse("Protected playback profile not found", 404, corsHeaders(request, env));
+        }
+      }
+
+      if (requestUrl.pathname === "/drm") {
+        if (!initialPlaybackId || childPlaybackId || !request.headers.get("Origin")) {
+          return textResponse("DRM request not allowed", 403, corsHeaders(request, env));
+        }
+        const drm = playbackProfile?.drm;
+        if (!drm || typeof drm !== "object" || !Object.keys(drm).length) {
+          return textResponse("DRM profile not found", 404, corsHeaders(request, env));
+        }
+        const headers = corsHeaders(request, env);
+        headers.set("Cache-Control", "no-store");
+        return jsonResponse({ drm }, 200, headers);
+      }
+
+      const targetText = String(playbackProfile?.url || requestUrl.searchParams.get("url") || "");
       if (!targetText) {
         return textResponse(
           "Missing url",
@@ -224,13 +261,15 @@ export default {
 
       const targetUrl = parseSafeHttpUrl(targetText);
       const requestedType = normalizeStreamType(
-        requestUrl.searchParams.get("type"),
+        playbackProfile?.stream_type || requestUrl.searchParams.get("type"),
         targetUrl,
       );
       const profileName = normalizeProfileName(
-        requestUrl.searchParams.get("profile"),
+        playbackProfile?.header_profile || requestUrl.searchParams.get("profile"),
       );
-      const inheritQuery = requestUrl.searchParams.get("inherit") === "1";
+      const inheritQuery = Boolean(
+        playbackProfile?.inherit_manifest_query || requestUrl.searchParams.get("inherit") === "1"
+      );
       const signature = requestUrl.searchParams.get("sig") || "";
       const expires = Number(requestUrl.searchParams.get("exp") || 0);
       const signedChild = await validateChildSignature({
@@ -240,10 +279,26 @@ export default {
         inheritQuery,
         signature,
         expires,
-        secret: env.HEADER_SIGNING_SECRET,
+        playbackId,
+        secret: CHILD_SIGNING_KEY,
       });
 
-      if (!signedChild) {
+      if (childPlaybackId && !signedChild) {
+        const profileHost = new URL(playbackProfile.url).hostname;
+        const sameTrustedHost = normalizeHostname(targetUrl.hostname) === normalizeHostname(profileHost);
+        if (!sameTrustedHost || !request.headers.get("Origin")) {
+          return textResponse("Invalid protected child signature", 403, corsHeaders(request, env));
+        }
+      }
+
+      if (initialPlaybackId && !request.headers.get("Origin")) {
+        return textResponse("Protected playback requires an allowed site origin", 403, corsHeaders(request, env));
+      }
+
+      if (!playbackId && !signedChild) {
+        if (!request.headers.get("Origin")) {
+          return textResponse("Playback requires the Click TV site origin", 403, corsHeaders(request, env));
+        }
         const allowed = await isInitialHostAllowed(targetUrl.hostname, env);
         if (!allowed) {
           return textResponse(
@@ -261,6 +316,9 @@ export default {
         requestedType,
         profileName,
         inheritQuery,
+        playbackId,
+        credentialHeaders: playbackProfile?.headers || {},
+        protectedSource: Boolean(playbackProfile),
         env,
         ctx,
         startedAt,
@@ -291,6 +349,9 @@ async function proxyTarget({
   requestedType,
   profileName,
   inheritQuery,
+  playbackId,
+  credentialHeaders,
+  protectedSource,
   env,
   ctx,
 }) {
@@ -299,6 +360,7 @@ async function proxyTarget({
     profileName,
     requestedType,
     env,
+    credentialHeaders,
   );
   const upstream = await fetchWithValidatedRedirects(
     targetUrl,
@@ -307,6 +369,7 @@ async function proxyTarget({
       headers: upstreamHeaders,
     },
     requestedType,
+    protectedSource,
   );
 
   const finalUrl = upstream.finalUrl;
@@ -340,6 +403,8 @@ async function proxyTarget({
       finalUrl,
       profileName,
       inheritQuery,
+      playbackId,
+      protectedSource,
       env,
     });
   }
@@ -352,6 +417,8 @@ async function proxyTarget({
       finalUrl,
       profileName,
       inheritQuery,
+      playbackId,
+      protectedSource,
       env,
     });
   }
@@ -365,7 +432,9 @@ async function proxyTarget({
   );
   headers.set(
     "Cache-Control",
-    detectedType === "media" || detectedType === "mpegts"
+    protectedSource
+      ? "no-store"
+      : detectedType === "media" || detectedType === "mpegts"
       ? "public, max-age=60, s-maxage=300"
       : "public, max-age=300, s-maxage=1800",
   );
@@ -385,6 +454,8 @@ async function rewriteHlsResponse({
   finalUrl,
   profileName,
   inheritQuery,
+  playbackId,
+  protectedSource,
   env,
 }) {
   if (!response.ok) {
@@ -425,6 +496,7 @@ async function rewriteHlsResponse({
           proxyOrigin: requestUrl.origin,
           profileName,
           inheritQuery,
+          playbackId,
           env,
         }),
       );
@@ -440,6 +512,7 @@ async function rewriteHlsResponse({
         type: childType,
         profileName,
         inheritQuery,
+        playbackId,
         env,
       }),
     );
@@ -454,6 +527,7 @@ async function rewriteHlsResponse({
   );
   headers.set("Content-Type", "application/vnd.apple.mpegurl; charset=utf-8");
   headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+  if (protectedSource) headers.set("Cache-Control", "no-store");
   headers.delete("Content-Length");
   headers.delete("Content-Encoding");
   headers.set("X-Cache-Status", "BYPASS");
@@ -471,6 +545,7 @@ async function rewriteHlsTagUris({
   proxyOrigin,
   profileName,
   inheritQuery,
+  playbackId,
   env,
 }) {
   const uriPattern = /URI=("([^"]*)"|'([^']*)'|([^,\s]*))/gi;
@@ -493,6 +568,7 @@ async function rewriteHlsTagUris({
       type,
       profileName,
       inheritQuery,
+      playbackId,
       env,
     });
     const quote = match[2] !== undefined ? '"' : match[3] !== undefined ? "'" : "";
@@ -511,6 +587,8 @@ async function rewriteDashResponse({
   finalUrl,
   profileName,
   inheritQuery,
+  playbackId,
+  protectedSource,
   env,
 }) {
   if (!response.ok) {
@@ -546,6 +624,7 @@ async function rewriteDashResponse({
         type: guessTypeFromUrl(absolute, "media"),
         profileName,
         inheritQuery,
+        playbackId,
         env,
       });
       return `<BaseURL>${escapeXml(proxied)}</BaseURL>`;
@@ -570,6 +649,7 @@ async function rewriteDashResponse({
         type,
         profileName,
         inheritQuery,
+        playbackId,
         env,
       });
       const quote = quoted[0];
@@ -586,6 +666,7 @@ async function rewriteDashResponse({
   );
   headers.set("Content-Type", "application/dash+xml; charset=utf-8");
   headers.set("Cache-Control", "no-store, no-cache, must-revalidate");
+  if (protectedSource) headers.set("Cache-Control", "no-store");
   headers.delete("Content-Length");
   headers.delete("Content-Encoding");
   headers.set("X-Cache-Status", "BYPASS");
@@ -603,6 +684,7 @@ async function buildSignedProxyUrl({
   type,
   profileName,
   inheritQuery,
+  playbackId,
   env,
 }) {
   const expires = Math.floor(Date.now() / 1000) + CHILD_LINK_TTL_SECONDS;
@@ -622,8 +704,9 @@ async function buildSignedProxyUrl({
         requestedType: normalizedType,
         profileName: normalizedProfile,
         inheritQuery,
+        playbackId,
         expires,
-        secret: env.HEADER_SIGNING_SECRET,
+        secret: CHILD_SIGNING_KEY,
       });
 
   const output = new URL("/hls", proxyOrigin);
@@ -637,6 +720,7 @@ async function buildSignedProxyUrl({
     output.searchParams.set("exp", String(expires));
     output.searchParams.set("sig", signature);
   }
+  if (playbackId) output.searchParams.set("pid", playbackId);
 
   return restoreDashTemplateTokens(output.toString());
 }
@@ -669,6 +753,7 @@ async function fetchWithValidatedRedirects(
   initialUrl,
   init,
   requestedType,
+  protectedSource = false,
 ) {
   let currentUrl = initialUrl;
   for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
@@ -676,7 +761,7 @@ async function fetchWithValidatedRedirects(
     const response = await fetch(currentUrl.toString(), {
       ...init,
       redirect: "manual",
-      cf: cloudflareFetchOptions(requestedType, init.headers),
+      cf: cloudflareFetchOptions(requestedType, init.headers, protectedSource),
     });
 
     if (![301, 302, 303, 307, 308].includes(response.status)) {
@@ -693,7 +778,8 @@ async function fetchWithValidatedRedirects(
   throw new Error("Redirect loop");
 }
 
-function cloudflareFetchOptions(type, headers) {
+function cloudflareFetchOptions(type, headers, protectedSource = false) {
+  if (protectedSource) return { cacheEverything: false, cacheTtl: 0 };
   const hasRange = headers instanceof Headers && headers.has("Range");
   if (type === "hls" || type === "dash" || hasRange) {
     return { cacheEverything: false, cacheTtl: 0 };
@@ -704,7 +790,7 @@ function cloudflareFetchOptions(type, headers) {
   return { cacheEverything: true, cacheTtl: 300 };
 }
 
-function buildUpstreamHeaders(request, profileName, type, env) {
+function buildUpstreamHeaders(request, profileName, type, env, credentialHeaders = {}) {
   const normalizedProfile = normalizeProfileName(profileName);
   const profile = HEADER_PROFILES[normalizedProfile] || HEADER_PROFILES.default;
   const headers = new Headers();
@@ -712,13 +798,17 @@ function buildUpstreamHeaders(request, profileName, type, env) {
     headers.set(name, value);
   }
 
-  // Optional protected Toffee cookie. It is never accepted from viewers and
-  // never stored in public JSON. Add it only as a Cloudflare encrypted secret.
-  if (
-    (normalizedProfile === "toffee_okhttp" || normalizedProfile === "toffee") &&
-    String(env?.TOFFEE_EDGE_COOKIE || "").trim()
-  ) {
-    headers.set("Cookie", String(env.TOFFEE_EDGE_COOKIE).trim());
+  const blockedHeaders = new Set([
+    "host", "connection", "content-length", "cf-connecting-ip", "cf-ipcountry",
+    "cf-ray", "x-forwarded-for", "x-forwarded-proto", "transfer-encoding",
+  ]);
+  if (credentialHeaders && typeof credentialHeaders === "object") {
+    for (const [name, value] of Object.entries(credentialHeaders)) {
+      const cleanName = String(name || "").trim();
+      const cleanValue = String(value || "").trim();
+      if (!cleanName || !cleanValue || blockedHeaders.has(cleanName.toLowerCase())) continue;
+      headers.set(cleanName, cleanValue);
+    }
   }
 
   const range = request.headers.get("Range");
@@ -761,7 +851,7 @@ function buildDownstreamHeaders(
 
 function corsHeaders(request, env) {
   const headers = new Headers();
-  const allowed = parseCsv(env.ALLOWED_ORIGINS);
+  const allowed = ALLOWED_ORIGINS;
   const origin = request.headers.get("Origin") || "";
   if (allowed.includes("*")) {
     headers.set("Access-Control-Allow-Origin", "*");
@@ -793,7 +883,7 @@ function corsHeaders(request, env) {
 function checkOrigin(request, env) {
   const origin = request.headers.get("Origin");
   if (!origin) return { ok: true };
-  const allowed = parseCsv(env.ALLOWED_ORIGINS);
+  const allowed = ALLOWED_ORIGINS;
   if (allowed.includes("*") || allowed.includes(origin)) return { ok: true };
   return { ok: false };
 }
@@ -802,10 +892,7 @@ async function isInitialHostAllowed(hostname, env) {
   const normalized = normalizeHostname(hostname);
   if (!normalized || isPrivateHostname(normalized)) return false;
 
-  const inlineHosts = parseCsv(env.ALLOWED_HOSTS).map(normalizeHostname);
-  if (hostMatchesAllowlist(normalized, inlineHosts)) return true;
-
-  const remoteHosts = await loadRemoteAllowedHosts(env.ALLOWED_HOSTS_URL);
+  const remoteHosts = await loadRemoteAllowedHosts(ALLOWED_HOSTS_URL);
   return hostMatchesAllowlist(normalized, [...remoteHosts]);
 }
 
@@ -941,6 +1028,54 @@ function normalizeHostname(value) {
   return String(value || "").trim().toLowerCase().replace(/^\[|\]$/g, "").replace(/\.$/, "");
 }
 
+function normalizePlaybackId(value) {
+  const id = String(value || "").trim();
+  return /^ctv_[a-f0-9]{32}$/.test(id) ? id : "";
+}
+
+async function loadPlaybackProfile(playbackId) {
+  if (!playbackId) return null;
+  const now = Date.now();
+  let records = playbackCatalogCache.records;
+  try {
+    if (!records || playbackCatalogCache.expiresAt <= now) {
+      const response = await fetch(PLAYBACK_CATALOG_URL, {
+        headers: { Accept: "application/json" },
+        cf: { cacheEverything: true, cacheTtl: 60 },
+      });
+      if (!response.ok) return null;
+      const payload = await response.json();
+      if (!payload || typeof payload !== "object" || !payload.records || typeof payload.records !== "object") {
+        return null;
+      }
+      records = payload.records;
+      playbackCatalogCache = { expiresAt: now + CATALOG_CACHE_MS, records };
+    }
+  } catch (_) {
+    return null;
+  }
+  const profile = records[playbackId];
+  if (!profile || typeof profile !== "object" || profile.status !== "active") return null;
+  if (Number(profile.expires_at || 0) > 0 && Number(profile.expires_at) < Math.floor(Date.now() / 1000)) {
+    return null;
+  }
+  try {
+    parseSafeHttpUrl(profile.url);
+  } catch (_) {
+    return null;
+  }
+  return profile;
+}
+
+function proxyNameFromHostname(hostname) {
+  const host = normalizeHostname(hostname);
+  if (host.startsWith("raspy-meadow-9279.")) return "play-proxy-1";
+  if (host.startsWith("stream-proxy-3.")) return "play-proxy-2";
+  if (host.startsWith("stream-proxy-4.")) return "play-proxy-3";
+  if (host.startsWith("stream-proxy-5.")) return "play-proxy-4";
+  return "click-tv-playback-proxy";
+}
+
 function normalizeProfileName(value) {
   const profile = String(value || "default").trim().toLowerCase();
   return Object.prototype.hasOwnProperty.call(HEADER_PROFILES, profile)
@@ -986,6 +1121,7 @@ async function createChildSignature({
   requestedType,
   profileName,
   inheritQuery,
+  playbackId,
   expires,
   secret,
 }) {
@@ -996,6 +1132,7 @@ async function createChildSignature({
     requestedType,
     profileName,
     inheritQuery,
+    playbackId,
     expires,
   });
   const key = await crypto.subtle.importKey(
@@ -1018,6 +1155,7 @@ async function validateChildSignature({
   requestedType,
   profileName,
   inheritQuery,
+  playbackId,
   signature,
   expires,
   secret,
@@ -1033,6 +1171,7 @@ async function validateChildSignature({
     requestedType,
     profileName,
     inheritQuery,
+    playbackId,
     expires,
     secret,
   });
@@ -1044,6 +1183,7 @@ function signaturePayload({
   requestedType,
   profileName,
   inheritQuery,
+  playbackId,
   expires,
 }) {
   return [
@@ -1051,6 +1191,7 @@ function signaturePayload({
     normalizeStreamType(requestedType, targetUrl),
     normalizeProfileName(profileName),
     inheritQuery ? "1" : "0",
+    String(playbackId || ""),
     String(expires),
   ].join("\n");
 }

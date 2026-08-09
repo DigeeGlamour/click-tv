@@ -3,13 +3,6 @@ main = "src/index.js"
 compatibility_date = "2026-07-31"
 workers_dev = true
 
-[vars]
-PROXY_NAME = "play-proxy-1"
-PROXY_VERSION = "3.1.0"
-ALLOWED_ORIGINS = "https://clicktv.pages.dev"
-ALLOWED_HOSTS_URL = "https://clicktv.pages.dev/data/allowed-hosts.json"
-
-# Add HEADER_SIGNING_SECRET as an encrypted secret, never in this file:
-# npx wrangler secret put HEADER_SIGNING_SECRET
-# Optional for Toffee links that explicitly require Edge-Cache:
-# npx wrangler secret put TOFFEE_EDGE_COOKIE
+# No variables, secrets or KV bindings are required. Deploy the same source to
+# all four Workers. The production site/catalogue addresses and allowed origin
+# are intentionally fixed in src/index.js.
