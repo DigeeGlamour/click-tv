@@ -52,15 +52,30 @@ class FinalDesignContractTests(unittest.TestCase):
 
     def test_only_requested_mobile_design_tweaks_are_locked(self) -> None:
         # Mobile main-category labels are deliberately larger than the desktop 12px.
-        self.assertIn(".final-main-button{font-size:14px!important", self.css)
-        self.assertIn(".final-main-button{font-size:13.5px!important", self.css)
+        self.assertRegex(
+            self.css,
+            r"\.final-main-button\s*\{[^}]*font-size:13px!important",
+        )
+        self.assertRegex(
+            self.css,
+            r"\.final-main-button\s*\{[^}]*font-size:12\.7px!important",
+        )
 
         # Phone action text stays readable while only its red outline box is compressed.
-        self.assertIn("height:31px!important;padding:0 5px!important", self.css)
-        self.assertIn("height:30px!important;padding:0 4px!important;font-size:11px!important", self.css)
+        self.assertRegex(
+            self.css,
+            r"\.app-header \.header-glow-btn\s*\{[^}]*height:32px!important;[^}]*padding:0 7px!important",
+        )
+        self.assertRegex(
+            self.css,
+            r"\.app-header \.header-glow-btn\s*\{[^}]*height:31px!important;[^}]*padding:0 6px!important",
+        )
 
         # On phones, the fixed shell contains the player/navigation while only the card area scrolls.
-        self.assertIn("body{overflow:hidden!important;height:100dvh!important}", self.css)
+        self.assertRegex(
+            self.css,
+            r"html,body\s*\{[^}]*height:100dvh!important;[^}]*overflow:hidden!important",
+        )
         self.assertIn(".sidebar-scroll-area{", self.css)
         self.assertIn("overflow-y:auto!important", self.css)
 
@@ -106,6 +121,18 @@ class FinalDesignContractTests(unittest.TestCase):
             }
             normalized = normalizer.normalize_candidate(candidate)
             self.assertEqual(normalized["category"], expected)
+
+    def test_manual_broad_category_can_be_ignored(self) -> None:
+        normalizer = Normalizer()
+        normalized = normalizer.normalize_candidate({
+            "name": "Angel TV Europe",
+            "url": "https://example.test/live.m3u8",
+            "group_title": "TV: Bangla",
+            "source_pipeline": "manual",
+            "manual_can_override_category": False,
+            "headers": {},
+        })
+        self.assertEqual(normalized["category"], "Other")
 
 
 if __name__ == "__main__":

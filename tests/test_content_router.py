@@ -52,6 +52,21 @@ class ContentRouterTests(unittest.TestCase):
         items = parse_m3u_content(content, {"id": "test", "pipeline": "tv"})
         self.assertEqual(items[0]["name"], "Aliens Ka Aagman (2026)")
 
+    def test_manual_category_override_switch_reaches_normalizer(self):
+        content = (
+            "#EXTM3U\n"
+            "#EXTINF:-1 group-title=\"TV: Bangla\",Angel TV Europe\n"
+            "https://example.test/live.m3u8\n"
+        )
+        items = parse_m3u_content(content, {
+            "id": "manual-test",
+            "pipeline": "manual",
+            "manual_can_override_category": False,
+        })
+        normalized = Normalizer().normalize_candidate(items[0])
+        self.assertFalse(items[0]["manual_can_override_category"])
+        self.assertEqual(normalized["category"], "Other")
+
 
 if __name__ == "__main__":
     unittest.main()
