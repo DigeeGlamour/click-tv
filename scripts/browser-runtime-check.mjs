@@ -3,6 +3,22 @@ import { chromium } from 'playwright';
 const baseUrl = process.argv[2] || 'http://127.0.0.1:4173';
 const browser = await chromium.launch({ headless: true });
 
+async function currentEnglishMovieProbe() {
+  const indexResponse = await fetch(new URL('/data/movies/english/index.json', baseUrl));
+  if (!indexResponse.ok) throw new Error(`English movie index HTTP ${indexResponse.status}`);
+  const index = await indexResponse.json();
+  const pages = Array.isArray(index?.pages) ? index.pages : [];
+  const pagePath = pages.at(-1)?.path;
+  if (!pagePath) throw new Error('English movie index has no page path');
+  const pageResponse = await fetch(new URL(`/${String(pagePath).replace(/^\/+/, '')}`, baseUrl));
+  if (!pageResponse.ok) throw new Error(`English movie page HTTP ${pageResponse.status}`);
+  const page = await pageResponse.json();
+  const items = Array.isArray(page?.items) ? page.items : [];
+  const probe = [...items].reverse().find((item) => String(item?.name || '').trim());
+  if (!probe) throw new Error('English movie page has no searchable title');
+  return String(probe.name).trim();
+}
+
 async function openCheckedPage(context, label) {
   const page = await context.newPage();
   const runtimeErrors = [];
@@ -23,8 +39,33 @@ async function openCheckedPage(context, label) {
 }
 
 try {
+  const movieProbe = await currentEnglishMovieProbe();
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await openCheckedPage(desktop, 'desktop');
+
+  const failoverResult = await page.evaluate(() => {
+    const hooks = window.__clickTvRuntimeTest;
+    if (!hooks) throw new Error('Local runtime test hooks are unavailable');
+    hooks.resetProxyHealth();
+    const targetUrl = 'https://media.example/live/master.m3u8';
+    const item = {
+      name: 'Proxy failover test',
+      _sources: [{
+        url: targetUrl,
+        stream_type: 'hls',
+        proxy_mode: 'proxy_only',
+        resolution_height: 1080,
+      }],
+    };
+    const before = hooks.buildAttempts(item).filter((attempt) => attempt.route === 'proxy');
+    if (before.length < 2) throw new Error(`Expected at least two proxy attempts, received ${before.length}`);
+    hooks.markProxyFailure(before[0].proxy, targetUrl);
+    const after = hooks.buildAttempts(item).filter((attempt) => attempt.route === 'proxy');
+    return { before, after, failedProxy: before[0].proxy };
+  });
+  if (!failoverResult.after.length || failoverResult.after.some((attempt) => attempt.proxy === failoverResult.failedProxy)) {
+    throw new Error('Forced proxy failure did not move playback planning to healthy fallback proxies');
+  }
 
   const serviceWorkerReady = await page.evaluate(async () => {
     if (!('serviceWorker' in navigator)) return false;
@@ -38,13 +79,15 @@ try {
 
   await page.locator('#desktopMainNav [data-final-key="movies"]').click();
   await page.locator('#desktopSubNav [data-final-key="movie:english"]').click();
-  await page.locator('#searchInput').fill('Corpsing');
-  await page.waitForFunction(() => {
+  await page.locator('#searchInput').fill(movieProbe);
+  await page.waitForFunction((expectedTitle) => {
     const list = document.querySelector('#sidebarList');
-    return list && /Corpsing/i.test(list.textContent || '');
-  }, null, { timeout: 30000 });
+    return list && (list.textContent || '').toLocaleLowerCase().includes(expectedTitle.toLocaleLowerCase());
+  }, movieProbe, { timeout: 30000 });
   const searchResult = await page.locator('#sidebarList').textContent();
-  if (!/Corpsing/i.test(searchResult || '')) throw new Error('Full English movie search missed Corpsing');
+  if (!String(searchResult || '').toLocaleLowerCase().includes(movieProbe.toLocaleLowerCase())) {
+    throw new Error(`Full English movie search missed current title: ${movieProbe}`);
+  }
 
   await page.locator('#searchInput').fill('');
   await page.waitForTimeout(350);
@@ -79,7 +122,7 @@ try {
     throw new Error('Mobile search field did not open');
   }
 
-  console.log('Browser runtime PASS: desktop UI, full movie search, live playback, PWA, mobile UI');
+  console.log('Browser runtime PASS: desktop UI, full movie search, live playback, forced proxy failover, PWA, mobile UI');
   await desktop.close();
   await mobile.close();
 } finally {

@@ -265,6 +265,35 @@ def get_backup_objects(item: dict[str, Any]) -> list[dict[str, Any]]:
     return results
 
 
+def declared_resolution_height(item: dict[str, Any]) -> int:
+    try:
+        height = int(item.get("resolution_height") or 0)
+    except (TypeError, ValueError):
+        height = 0
+    if height > 0:
+        return height
+
+    text = " ".join(
+        str(item.get(key) or "")
+        for key in ("resolution", "quality", "label", "name", "url")
+    )
+    dimension = re.search(r"(?:^|\D)\d{3,4}\s*[xX]\s*(\d{3,4})(?:\D|$)", text)
+    if dimension:
+        return int(dimension.group(1))
+    progressive = re.search(r"(?:^|\D)(\d{3,4})\s*[pP](?:\D|$)", text)
+    if progressive:
+        return int(progressive.group(1))
+    if re.search(r"\b(?:4k|uhd)\b", text, re.IGNORECASE):
+        return 2160
+    if re.search(r"\b(?:2k|qhd)\b", text, re.IGNORECASE):
+        return 1440
+    if re.search(r"\b(?:fhd|full\s*hd)\b", text, re.IGNORECASE):
+        return 1080
+    if re.search(r"\bhd\b", text, re.IGNORECASE):
+        return 720
+    return 0
+
+
 def stream_confidence(item: dict[str, Any]) -> int:
     status = str(item.get("verification_status") or "").strip().lower()
 
@@ -511,6 +540,16 @@ def validate_stream_item(
     playback_id = str(item.get("playback_id") or "").strip()
     metadata_only = item.get("metadata_only") is True
 
+    if media_kind in {"channel", "movie", "event"} and not (
+        allow_metadata_only and metadata_only
+    ):
+        primary_height = declared_resolution_height(item)
+        if primary_height < 720:
+            add_error(
+                f"{label} resolution must be known and at least 720p: "
+                f"{name} ({primary_height or 'unknown'})"
+            )
+
     if playback_id:
         if not re.fullmatch(r"ctv_[a-f0-9]{32}", playback_id):
             add_error(f"{label} invalid playback_id: {name}")
@@ -535,6 +574,19 @@ def validate_stream_item(
         add_error(f"{label} ৫টির বেশি backup: {name} ({len(raw_backups)})")
 
     backup_objects = get_backup_objects(item)
+    standby_objects = item.get("standby", [])
+    if not isinstance(standby_objects, list):
+        add_error(f"{label} standby array invalid: {name}")
+        standby_objects = []
+    for stream_number, stream in enumerate([*backup_objects, *standby_objects], start=1):
+        if not isinstance(stream, dict):
+            continue
+        stream_height = declared_resolution_height(stream)
+        if media_kind in {"channel", "movie", "event"} and stream_height < 720:
+            add_error(
+                f"{label} backup/standby #{stream_number} is below 720p or unknown: "
+                f"{name} ({stream_height or 'unknown'})"
+            )
     backup_urls = [
         get_primary_url(backup)
         for backup in backup_objects
@@ -545,8 +597,18 @@ def validate_stream_item(
     if len(all_urls) > 6:
         add_error(f"{label} primaryসহ মোট ৬টির বেশি link: {name}")
 
-    if len(set(all_urls)) != len(all_urls):
-        add_warning(f"{label} duplicate primary/backup link: {name}")
+    active_streams = [item, *backup_objects]
+    active_identities = [
+        (
+            get_primary_url(stream),
+            str(stream.get("playback_id") or "").strip(),
+            json.dumps(stream.get("headers") or {}, sort_keys=True),
+            json.dumps(stream.get("drm") or {}, sort_keys=True),
+        )
+        for stream in active_streams
+    ]
+    if len(set(active_identities)) != len(active_identities):
+        add_warning(f"{label} duplicate primary/backup configuration: {name}")
 
     validate_https_priority(
         item,
