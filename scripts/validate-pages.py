@@ -26,11 +26,20 @@ from typing import Any
 from urllib.parse import urlparse
 
 
+if hasattr(sys.stdout, "reconfigure"):
+    # Windows PowerShell may default to cp1252, while channel names and
+    # validator messages legitimately contain Bangla/Unicode text.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
+
 ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else "dist").resolve()
 
 ERRORS: list[str] = []
 WARNINGS: list[str] = []
 COUNTS = {"channels": 0, "movies": 0, "series": 0, "episodes": 0, "events": 0}
+PLAYBACK_IDS: set[str] = set()
 
 CHANNELS = {
     "Bangla": "bangla",
@@ -65,6 +74,7 @@ REQUIRED_FILES = (
     "assets/js/app.js",
     "assets/js/series.js",
     "data/manifest.json",
+    "data/playback-sources.json",
     "data/today-match.json",
     "data/upcoming.json",
     "data/allowed-hosts.json",
@@ -498,9 +508,16 @@ def validate_stream_item(
         name = name_value.strip()
 
     primary_url = get_primary_url(item)
+    playback_id = str(item.get("playback_id") or "").strip()
     metadata_only = item.get("metadata_only") is True
 
-    if not primary_url and not (allow_metadata_only and metadata_only):
+    if playback_id:
+        if not re.fullmatch(r"ctv_[a-f0-9]{32}", playback_id):
+            add_error(f"{label} invalid playback_id: {name}")
+        elif playback_id not in PLAYBACK_IDS:
+            add_error(f"{label} playback_id catalogue-এ নেই: {name}")
+
+    if not primary_url and not playback_id and not (allow_metadata_only and metadata_only):
         add_error(f"{label} primary URL missing: {name}")
     elif primary_url and not HTTP_URL_PATTERN.match(primary_url):
         add_warning(f"{label} non-HTTP(S) URL: {name}")
@@ -712,6 +729,40 @@ def validate_frontend_files() -> None:
 
     if ".m3u8" not in service_worker_code or ".ts" not in service_worker_code:
         add_error("sw.js stream bypass rules অসম্পূর্ণ")
+
+
+def validate_playback_catalog() -> None:
+    path = require_file("data/playback-sources.json")
+    data = load_json(path, "data/playback-sources.json")
+    if not isinstance(data, dict):
+        if data is not None:
+            add_error("data/playback-sources.json root object হতে হবে")
+        return
+    if data.get("schema_version") != 1:
+        add_error("data/playback-sources.json schema_version অবশ্যই 1 হতে হবে")
+    records = data.get("records")
+    if not isinstance(records, dict):
+        add_error("data/playback-sources.json records object হতে হবে")
+        return
+    if data.get("count") != len(records):
+        add_error("data/playback-sources.json count records-এর সঙ্গে মিলছে না")
+
+    for playback_id, profile in records.items():
+        if not re.fullmatch(r"ctv_[a-f0-9]{32}", str(playback_id)):
+            add_error(f"Playback catalogue invalid ID: {playback_id}")
+            continue
+        PLAYBACK_IDS.add(str(playback_id))
+        if not isinstance(profile, dict):
+            add_error(f"Playback catalogue profile object নয়: {playback_id}")
+            continue
+        if profile.get("status") != "active":
+            add_error(f"Playback catalogue profile active নয়: {playback_id}")
+        url = profile.get("url")
+        if not isinstance(url, str) or not HTTP_URL_PATTERN.match(url.strip()):
+            add_error(f"Playback catalogue URL invalid: {playback_id}")
+        headers = profile.get("headers", {})
+        if not isinstance(headers, dict):
+            add_error(f"Playback catalogue headers object নয়: {playback_id}")
 
 
 def validate_allowed_hosts() -> None:
@@ -1211,6 +1262,7 @@ def main() -> int:
     validate_runtime_config()
     validate_webmanifest()
     validate_frontend_files()
+    validate_playback_catalog()
     validate_allowed_hosts()
     validate_data_manifest()
     print_summary()

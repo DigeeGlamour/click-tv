@@ -10,6 +10,17 @@ SITE_DIR="${ROOT_DIR}/site"
 DATA_DIR="${ROOT_DIR}/data"
 DIST_DIR="${ROOT_DIR}/dist"
 VALIDATOR="${ROOT_DIR}/scripts/validate-pages.py"
+PYTHON_BIN="${PYTHON_BIN:-}"
+
+if [[ -z "${PYTHON_BIN}" ]]; then
+  for python_candidate in python3 python; do
+    if command -v "${python_candidate}" >/dev/null 2>&1 && \
+      "${python_candidate}" -c "import sys; assert sys.version_info >= (3, 10)" >/dev/null 2>&1; then
+      PYTHON_BIN="${python_candidate}"
+      break
+    fi
+  done
+fi
 
 log() {
   printf '\n[Click TV Build] %s\n' "$1"
@@ -63,6 +74,7 @@ require_file "${SITE_DIR}/assets/js/series.js"
 log "প্রয়োজনীয় scanner data পরীক্ষা করা হচ্ছে"
 
 require_file "${DATA_DIR}/manifest.json"
+require_file "${DATA_DIR}/playback-sources.json"
 require_file "${DATA_DIR}/today-match.json"
 require_file "${DATA_DIR}/upcoming.json"
 
@@ -173,10 +185,12 @@ require_file "${DIST_DIR}/app.webmanifest"
 require_file "${DIST_DIR}/sw.js"
 require_file "${DIST_DIR}/_headers"
 require_file "${DIST_DIR}/data/manifest.json"
+require_file "${DIST_DIR}/data/playback-sources.json"
 
 if [[ -f "${VALIDATOR}" && -s "${VALIDATOR}" ]]; then
   log "Python Pages validator চালানো হচ্ছে"
-  python3 "${VALIDATOR}" "${DIST_DIR}"
+  [[ -n "${PYTHON_BIN}" ]] || fail "Python 3.10+ was not found"
+  "${PYTHON_BIN}" "${VALIDATOR}" "${DIST_DIR}"
 else
   log "validate-pages.py এখনো empty, তাই validation পরবর্তী ধাপে চালু হবে"
 fi
