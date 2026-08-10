@@ -61,7 +61,8 @@ function Assert-SupportedDirtyState {
         "CLOUDFLARE_GITHUB_SETUP_BN.md",
         "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb",
         "RUN_CLICK_TV_LOCAL_SCAN.cmd",
-        "scripts/one-click-all.ps1"
+        "scripts/one-click-all.ps1",
+        "working/scan-progress.json"
     )
     $Unexpected = @()
     foreach ($Line in (& git -C $RepositoryPath status --porcelain)) {
@@ -164,6 +165,19 @@ else {
     Invoke-Git -Arguments @("clone", "--branch", "main", "--single-branch", $RepositoryUrl, $ClonePath) | Out-Null
 }
 
+# If a previous scan completed and committed but its final push was interrupted,
+# push that result once and do not waste hours repeating the same full scan.
+Invoke-Git -WorkingDirectory $ClonePath -Arguments @("fetch", "origin", "main") | Out-Null
+$PendingScanSubjects = @(& git -C $ClonePath log --format=%s origin/main..HEAD)
+$RecoveredPendingScan = @(
+    $PendingScanSubjects | Where-Object { $_ -like "Local auto update:*" }
+).Count -gt 0
+
+$OldProgress = Join-Path $ClonePath "working\scan-progress.json"
+if (Test-Path -LiteralPath $OldProgress) {
+    Remove-Item -LiteralPath $OldProgress -Force
+}
+
 # Recover only the exact files left by the previous failed launcher.
 & git -C $ClonePath restore --staged --worktree -- scripts/run-local-scan.ps1 2>$null
 foreach ($OldRelative in @("CLICK_TV_ONE_CLICK_ALL.cmd", "RUN_CLICK_TV_LOCAL_SCAN.cmd", "scripts\one-click-all.ps1")) {
@@ -202,6 +216,16 @@ Invoke-Git -WorkingDirectory $ClonePath -Arguments @("fetch", "origin", "main") 
 Invoke-Git -WorkingDirectory $ClonePath -Arguments @("rebase", "origin/main") | Out-Null
 Invoke-Git -WorkingDirectory $ClonePath -Arguments @("push", "origin", "HEAD:main") | Out-Null
 
+if ($RecoveredPendingScan) {
+    $RecoveredCommit = (& git -C $ClonePath rev-parse --short HEAD) -join ""
+    Write-Host ""
+    Write-Host "============================================================" -ForegroundColor Green
+    Write-Host "PREVIOUS COMPLETED SCAN WAS RECOVERED AND PUSHED" -ForegroundColor Green
+    Write-Host "No duplicate scan was started. Commit: $RecoveredCommit"
+    Write-Host "============================================================" -ForegroundColor Green
+    exit 0
+}
+
 Write-Host "[2/6] Installing/checking scanner requirements..." -ForegroundColor Cyan
 & $PythonCommand.Source -m pip install -r (Join-Path $ClonePath "requirements.txt")
 if ($LASTEXITCODE -ne 0) { throw "Python dependency installation failed." }
@@ -228,6 +252,8 @@ $Checkpoint = Join-Path $ClonePath "working\pipeline-checkpoint.json"
 if (Test-Path -LiteralPath $Checkpoint) { Remove-Item -LiteralPath $Checkpoint -Force }
 $CheckpointDirectory = Join-Path $ClonePath "working\checkpoints"
 if (Test-Path -LiteralPath $CheckpointDirectory) { Remove-Item -LiteralPath $CheckpointDirectory -Recurse -Force }
+$ProgressFile = Join-Path $ClonePath "working\scan-progress.json"
+if (Test-Path -LiteralPath $ProgressFile) { Remove-Item -LiteralPath $ProgressFile -Force }
 
 $Remaining = (& git -C $ClonePath status --porcelain) -join "`n"
 if ($Remaining.Trim()) {
