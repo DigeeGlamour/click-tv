@@ -54,8 +54,14 @@ function Assert-SupportedDirtyState {
     param([string]$RepositoryPath)
     $Allowed = @(
         "scan.py",
+        "scanner/normalizer.py",
+        "config/channel-categories.json",
+        "config/channel-aliases.json",
+        "config/sources.json",
+        "config/settings.json",
         "scripts/run-local-scan.ps1",
         "tests/test_zero_candidate_preservation.py",
+        "tests/test_content_router.py",
         "CLICK_TV_ONE_CLICK_ALL.cmd",
         "CLICK_TV_EASY_PAT_SCAN.cmd",
         "CLOUDFLARE_GITHUB_SETUP_BN.md",
@@ -190,9 +196,15 @@ foreach ($OldRelative in @("CLICK_TV_ONE_CLICK_ALL.cmd", "RUN_CLICK_TV_LOCAL_SCA
 
 $FilesToSync = @(
     "scan.py",
+    "scanner\normalizer.py",
+    "config\channel-categories.json",
+    "config\channel-aliases.json",
+    "config\sources.json",
+    "config\settings.json",
     "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb",
     "CLOUDFLARE_GITHUB_SETUP_BN.md",
-    "tests\test_zero_candidate_preservation.py"
+    "tests\test_zero_candidate_preservation.py",
+    "tests\test_content_router.py"
 )
 foreach ($RelativePath in $FilesToSync) {
     $Source = Join-Path $PackageRoot $RelativePath
