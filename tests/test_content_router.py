@@ -91,13 +91,78 @@ class ContentRouterTests(unittest.TestCase):
     def test_bangladesh_identity_recovers_channels_from_other(self):
         normalizer = Normalizer()
         for name in (
+            "Channel 1",
+            "Channel 1 NEWS",
+            "Channel 9",
+            "Citizen TV",
             "Desh Bangla TV",
+            "DTV USA",
+            "Global TV",
             "Green TV",
+            "Music Bangla 2025",
+            "My TV",
+            "News 21 Bangla TV",
+            "Rajdhani TV",
             "Ruposhi Bangla",
             "Channel S",
             "NRB TV",
+            "TBN24",
         ):
             self.assertEqual(normalizer.detect_tv_category(name), "Bangla", name)
+
+    def test_other_catalogue_known_identities_reach_specific_categories(self):
+        normalizer = Normalizer()
+        cases = {
+            "92 News": "Foreign News",
+            "GNN": "Foreign News",
+            "Samaa TV": "Foreign News",
+            "FOX 11 Green Bay WI": "Foreign News",
+            "NEWS | News24": "Indian",
+            "Pictures": "Indian",
+            "Pasand TV": "Indian",
+            "Prudent Media": "Indian",
+            "Subin TV": "Indian",
+            "Unique TV": "Indian",
+            "Caze TV BR": "Sports",
+            "Fox Deportes": "Sports",
+            "Outer Delhi Warriors vs South Delhi Superstarz (2026)": "Sports",
+            "Funny Junior": "Cartoon",
+            "FASHION ONE": "Infotainments",
+            "MQTV": "Islamic",
+            "TLC": "Infotainments",
+        }
+        for name, expected in cases.items():
+            self.assertEqual(normalizer.detect_tv_category(name), expected, name)
+
+    def test_ampersand_channel_variants_merge_to_indian_canonical_names(self):
+        normalizer = Normalizer()
+        cases = {
+            "Picture": "&Pictures",
+            "Pictures": "&Pictures",
+            "AND PICTURES": "&Pictures",
+            "TV": "&TV",
+            "And tv": "&TV",
+        }
+        for incoming, canonical in cases.items():
+            normalized = normalizer.normalize_candidate({
+                "name": incoming,
+                "url": "https://example.test/live.m3u8",
+                "source_pipeline": "tv",
+                "headers": {},
+            })
+            self.assertEqual(normalized["name"], canonical, incoming)
+            self.assertEqual(normalized["category"], "Indian", incoming)
+
+    def test_duplicate_brand_spellings_merge_before_backup_selection(self):
+        normalizer = Normalizer()
+        cases = {
+            "HUM": "HUM TV",
+            "081 HUM MASALA": "HUM Masala",
+            "HUM SITERY world": "HUM Sitaray",
+            "Luxel": "Luxell",
+        }
+        for incoming, canonical in cases.items():
+            self.assertEqual(normalizer.clean_title(incoming), canonical, incoming)
 
     def test_indian_bengali_is_indian_not_bangladesh_category(self):
         normalizer = Normalizer()
