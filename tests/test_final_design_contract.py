@@ -12,6 +12,7 @@ class FinalDesignContractTests(unittest.TestCase):
         cls.root = Path(__file__).resolve().parents[1]
         cls.index = (cls.root / "site/index.html").read_text(encoding="utf-8")
         cls.css = (cls.root / "site/assets/css/final-design.css").read_text(encoding="utf-8")
+        cls.reference_css = (cls.root / "site/assets/css/reference-design.css").read_text(encoding="utf-8")
         cls.app = (cls.root / "site/assets/js/app.js").read_text(encoding="utf-8")
 
     def test_approved_layout_and_navigation_contract(self) -> None:
@@ -49,6 +50,17 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn(navigation_block, self.app)
         self.assertIn("final-design.css", self.index)
         self.assertIn("series.js", self.index)
+
+    def test_reference_design_is_external_and_preserves_the_three_column_contract(self) -> None:
+        self.assertIn("reference-design.css?v=20260811-reference-v1", self.index)
+        self.assertIn('class="desktop-category-rail"', self.index)
+        self.assertIn('id="desktopCategoryTitle"', self.index)
+        self.assertIn('id="mobileBottomSearchBtn"', self.index)
+        self.assertIn('id="mobileBottomNoticeBtn"', self.index)
+        self.assertIn('grid-template-columns:235px minmax(0,1fr) 330px!important', self.reference_css)
+        self.assertIn('grid-template-areas:"rail player catalog"!important', self.reference_css)
+        self.assertIn(".series-episode-list{grid-template-columns:repeat(2,minmax(0,1fr))!important", self.reference_css)
+        self.assertLess(len(self.index.encode("utf-8")), 25_000)
 
     def test_only_requested_mobile_design_tweaks_are_locked(self) -> None:
         # Mobile main-category labels are deliberately larger than the desktop 12px.
