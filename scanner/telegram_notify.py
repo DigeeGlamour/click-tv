@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Send a detailed Telegram success message only after GitHub push succeeds."""
+"""Send Telegram success or failure messages for the scanner workflow."""
 
 from __future__ import annotations
 
@@ -211,24 +211,49 @@ def build_message(mode: str, commit: str, branch: str) -> str:
     return "\n".join(lines)[:4000]
 
 
+def build_failure_message(mode: str, commit: str, branch: str, run_url: str) -> str:
+    mode_clean = str(mode or "unknown").strip().lower()
+    lines = [
+        "❌ <b>CLICK TV SCAN OR GITHUB PUSH FAILED</b>",
+        "",
+        f"<b>Mode:</b> {html.escape(mode_clean)}",
+        f"<b>Branch:</b> {html.escape(str(branch or 'main'))}",
+        f"<b>Started From:</b> {html.escape(str(commit or 'unknown'))}",
+        "<b>Published:</b> No",
+        "<b>Action:</b> Open the failed workflow log; previous published data is unchanged.",
+    ]
+    if run_url:
+        safe_url = html.escape(str(run_url), quote=True)
+        lines.extend(["", f'<a href="{safe_url}">Open failed GitHub Actions run</a>'])
+    return "\n".join(lines)[:4000]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "mode",
-        choices=["channels", "today", "upcoming", "movies", "all"],
-    )
+    parser.add_argument("mode")
     parser.add_argument("commit")
     parser.add_argument("branch", nargs="?", default="main")
+    parser.add_argument("--failure", action="store_true")
+    parser.add_argument("--run-url", default="")
     args = parser.parse_args()
 
-    message = build_message(args.mode, args.commit, args.branch)
+    if args.failure:
+        message = build_failure_message(
+            args.mode,
+            args.commit,
+            args.branch,
+            args.run_url,
+        )
+    else:
+        message = build_message(args.mode, args.commit, args.branch)
     sent = send_telegram_alert(message)
     if sent:
-        print("Telegram success notification sent after GitHub push.")
+        label = "failure" if args.failure else "success"
+        print(f"Telegram {label} notification sent.")
     else:
         print(
-            "Telegram notification was not sent. GitHub push is already "
-            "successful; check TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID."
+            "Telegram notification was not sent; check the configured "
+            "TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID secrets."
         )
     return 0
 

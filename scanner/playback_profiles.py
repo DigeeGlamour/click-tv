@@ -18,6 +18,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Tuple
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
+from scanner.security import redact_sensitive_text
+
 
 PRIVATE_FIELDS = {
     "headers",
@@ -132,8 +134,11 @@ def redact_public_report(value: Any) -> Any:
                 continue
             clean[str(key)] = redact_public_report(child)
         return clean
-    if isinstance(value, str) and ("?" in value or "&" in value):
-        return _redacted_url(value)
+    if isinstance(value, str):
+        clean_value = redact_sensitive_text(value)
+        if "?" in clean_value or "&" in clean_value:
+            return _redacted_url(clean_value)
+        return clean_value
     return value
 
 

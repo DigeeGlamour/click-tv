@@ -31,6 +31,7 @@ from scanner.playback_profiles import (
     merge_public_catalog,
     redact_public_report,
 )
+from scanner.security import redact_sensitive_text
 
 
 DEFAULT_DROP_PERCENTAGE = 70
@@ -709,7 +710,7 @@ def send_telegram_alert(
     except Exception as error:
         print(
             "[Telegram Notification Warning] "
-            f"Could not send message: {error}"
+            f"Could not send message: {redact_sensitive_text(error)}"
         )
         return False
 
