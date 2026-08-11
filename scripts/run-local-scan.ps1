@@ -24,6 +24,48 @@ function Invoke-Git {
     }
 }
 
+function Enable-GitHubPatAuthentication {
+    $CredentialRoot = Join-Path $env:LOCALAPPDATA "ClickTV"
+    $CredentialPath = Join-Path $CredentialRoot "github-pat.clixml"
+    $SecureToken = $null
+
+    if ($env:CLICKTV_GITHUB_PAT) {
+        $SecureToken = ConvertTo-SecureString $env:CLICKTV_GITHUB_PAT -AsPlainText -Force
+    }
+    elseif (Test-Path -LiteralPath $CredentialPath) {
+        try {
+            $SecureToken = Import-Clixml -LiteralPath $CredentialPath
+        }
+        catch {
+            throw "Saved GitHub PAT could not be read. Run SETUP_CLICK_TV_PAT.cmd again."
+        }
+    }
+    else {
+        throw "GitHub PAT is not configured. Run SETUP_CLICK_TV_PAT.cmd once before using automatic local push."
+    }
+
+    $Pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecureToken)
+    try {
+        $PlainToken = ([Runtime.InteropServices.Marshal]::PtrToStringBSTR($Pointer)).Trim().Trim('"').Trim("'").Trim()
+        if (-not $PlainToken -or $PlainToken.Length -lt 20) {
+            throw "Saved GitHub PAT is empty or incomplete. Run SETUP_CLICK_TV_PAT.cmd again."
+        }
+        $BasicValue = [Convert]::ToBase64String(
+            [Text.Encoding]::UTF8.GetBytes("x-access-token:$PlainToken")
+        )
+        $env:GIT_CONFIG_COUNT = "1"
+        $env:GIT_CONFIG_KEY_0 = "http.https://github.com/.extraHeader"
+        $env:GIT_CONFIG_VALUE_0 = "AUTHORIZATION: basic $BasicValue"
+    }
+    finally {
+        if ($Pointer -ne [IntPtr]::Zero) {
+            [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($Pointer)
+        }
+        $PlainToken = $null
+        $BasicValue = $null
+    }
+}
+
 function Assert-CleanRepository {
     $Remaining = (& git status --porcelain --untracked-files=normal) -join "`n"
     if ($LASTEXITCODE -ne 0) {
@@ -36,6 +78,7 @@ function Assert-CleanRepository {
 }
 
 function Test-GeneratedPages {
+    param([string]$PythonPath)
     $TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("clicktv-pages-" + [guid]::NewGuid().ToString("N"))
     try {
         New-Item -ItemType Directory -Path $TempRoot | Out-Null
@@ -43,7 +86,7 @@ function Test-GeneratedPages {
         $TempData = Join-Path $TempRoot "data"
         New-Item -ItemType Directory -Path $TempData | Out-Null
         Copy-Item -Path (Join-Path $ProjectRoot "data\*") -Destination $TempData -Recurse -Force
-        & $PythonCommand.Source (Join-Path $ProjectRoot "scripts\validate-pages.py") $TempRoot
+        & $PythonPath (Join-Path $ProjectRoot "scripts\validate-pages.py") $TempRoot
         if ($LASTEXITCODE -ne 0) {
             throw "Generated Cloudflare Pages data validation failed. GitHub push was stopped."
         }
@@ -59,12 +102,19 @@ function Test-GeneratedPages {
 
 if ($AutoPush) {
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
-        throw "Git was not found. Install Git for Windows and sign in with GitHub Desktop first."
+        throw "Git was not found. Install Git for Windows first. GitHub Desktop is not required."
+    }
+
+    # Git Credential Manager (included with Git for Windows) handles browser
+    # sign-in and encrypted credential storage. A manually copied PAT is not
+    # required. CLICKTV_GITHUB_PAT remains an optional advanced override only.
+    if ($env:CLICKTV_GITHUB_PAT) {
+        [void](Enable-GitHubPatAuthentication)
     }
 
     $GitRoot = (& git rev-parse --show-toplevel 2>$null) -join ""
     if ($LASTEXITCODE -ne 0 -or -not $GitRoot.Trim()) {
-        throw "This folder is not a Git clone. Clone DigeeGlamour/click-tv with GitHub Desktop, then run this file from that cloned folder. A downloaded ZIP cannot auto-push."
+        throw "This folder is not a Git clone. Run SETUP_CLICK_TV_PAT.cmd once, then use RUN_CLICK_TV_LOCAL_SCAN.cmd from the created click-tv-pat-clone folder."
     }
 
     $ResolvedProject = [System.IO.Path]::GetFullPath($ProjectRoot).TrimEnd('\', '/')
@@ -87,18 +137,26 @@ Write-Host "Mode      : $Mode"
 Write-Host "Auto Push : $AutoPush"
 Write-Host "Network   : This PC's current Internet/IP will be used (useful for BD-IP sources)."
 
-& $PythonCommand.Source -m pip install -r requirements.txt
+$VenvPath = Join-Path $ProjectRoot ".venv"
+$VenvPython = Join-Path $VenvPath "Scripts\python.exe"
+if (-not (Test-Path -LiteralPath $VenvPython)) {
+    Write-Host "[PYTHON] Creating isolated Click TV environment..." -ForegroundColor Cyan
+    & $PythonCommand.Source -m venv $VenvPath
+    if ($LASTEXITCODE -ne 0) { throw "Could not create the Click TV virtual environment." }
+}
+
+& $VenvPython -m pip install --disable-pip-version-check -r requirements.txt
 if ($LASTEXITCODE -ne 0) {
     throw "Python dependency installation failed."
 }
 
-& $PythonCommand.Source -u scan.py $Mode
+& $VenvPython -u scan.py $Mode
 if ($LASTEXITCODE -ne 0) {
     throw "Click TV scan failed. GitHub push was not attempted. Check working/scan-progress.json and reports/source-errors.json."
 }
 
 Write-Host "[VALIDATE] Testing generated website data before push..." -ForegroundColor Cyan
-Test-GeneratedPages
+Test-GeneratedPages -PythonPath $VenvPython
 
 if (-not $AutoPush) {
     Write-Host "Scan and validation completed. NoPush was selected, so GitHub was not changed." -ForegroundColor Green
@@ -121,6 +179,9 @@ else {
 & git restore --worktree -- working 2>$null
 if (Test-Path -LiteralPath (Join-Path $ProjectRoot "working\pipeline-checkpoint.json")) {
     Remove-Item -LiteralPath (Join-Path $ProjectRoot "working\pipeline-checkpoint.json") -Force
+}
+if (Test-Path -LiteralPath (Join-Path $ProjectRoot "working\scan-progress.json")) {
+    Remove-Item -LiteralPath (Join-Path $ProjectRoot "working\scan-progress.json") -Force
 }
 if (Test-Path -LiteralPath (Join-Path $ProjectRoot "working\checkpoints")) {
     Remove-Item -LiteralPath (Join-Path $ProjectRoot "working\checkpoints") -Recurse -Force
