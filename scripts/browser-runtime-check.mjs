@@ -43,6 +43,52 @@ try {
   const desktop = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await openCheckedPage(desktop, 'desktop');
 
+  const desktopGeometry = await page.evaluate(() => {
+    const rect = (selector) => document.querySelector(selector)?.getBoundingClientRect();
+    const notice = document.querySelector('#sticky-header-notice');
+    const noticeStyle = getComputedStyle(notice);
+    return {
+      noticeHeight: rect('#sticky-header-notice')?.height || 0,
+      noticeFontSize: Number.parseFloat(noticeStyle.fontSize || '0'),
+      headerHeight: rect('.app-header')?.height || 0,
+      headerBorderBottom: Number.parseFloat(getComputedStyle(document.querySelector('.app-header')).borderBottomWidth || '0'),
+      nowPlayingHeight: rect('.video-meta')?.height || 0,
+      leftRailWidth: rect('.desktop-category-rail')?.width || 0,
+      rightPanelWidth: rect('.sidebar-section.side-panel')?.width || 0,
+      subtitleDisplay: getComputedStyle(document.querySelector('.video-meta .meta-subtitle-row')).display,
+    };
+  });
+  if (desktopGeometry.noticeHeight < 32 || desktopGeometry.noticeFontSize < 12) {
+    throw new Error(`Desktop notice is too small: ${JSON.stringify(desktopGeometry)}`);
+  }
+  if (desktopGeometry.headerHeight > 70 || desktopGeometry.headerBorderBottom > 0) {
+    throw new Error(`Desktop header geometry mismatch: ${JSON.stringify(desktopGeometry)}`);
+  }
+  if (desktopGeometry.nowPlayingHeight > 74 || desktopGeometry.subtitleDisplay !== 'none') {
+    throw new Error(`Now Playing row is not compact: ${JSON.stringify(desktopGeometry)}`);
+  }
+  if (desktopGeometry.leftRailWidth < 250 || desktopGeometry.rightPanelWidth < 380) {
+    throw new Error(`Desktop side columns are too narrow: ${JSON.stringify(desktopGeometry)}`);
+  }
+
+  await page.locator('#noticeCloseBtn').click();
+  await page.waitForFunction(() => document.querySelector('#sticky-header-notice')?.hidden === true);
+
+  await page.locator('#searchBtnSubmit').click();
+  await page.waitForTimeout(500);
+  const desktopSearchState = await page.evaluate(() => {
+    const input = document.querySelector('#searchInput');
+    const wrap = input?.closest('.search-wrap');
+    return {
+      visible: Boolean(input && getComputedStyle(input).opacity !== '0' && input.getBoundingClientRect().width > 80),
+      open: Boolean(wrap?.classList.contains('search-open')),
+      focused: document.activeElement === input,
+    };
+  });
+  if (!desktopSearchState.visible || !desktopSearchState.open || !desktopSearchState.focused) {
+    throw new Error(`Desktop search did not stay open: ${JSON.stringify(desktopSearchState)}`);
+  }
+
   const failoverResult = await page.evaluate(() => {
     const hooks = window.__clickTvRuntimeTest;
     if (!hooks) throw new Error('Local runtime test hooks are unavailable');
@@ -65,6 +111,45 @@ try {
   });
   if (!failoverResult.after.length || failoverResult.after.some((attempt) => attempt.proxy === failoverResult.failedProxy)) {
     throw new Error('Forced proxy failure did not move playback planning to healthy fallback proxies');
+  }
+
+  const protectedPlaybackResult = await page.evaluate(async () => {
+    const hooks = window.__clickTvRuntimeTest;
+    const originalFetch = window.fetch;
+    let drmRequests = 0;
+    window.fetch = async (input, init) => {
+      if (String(input).includes('/drm?id=ctv_test_protected')) {
+        drmRequests += 1;
+        return new Response(JSON.stringify({ drm: { type: 'clearkey', clear_keys: { kid: 'key' } } }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+      return originalFetch(input, init);
+    };
+    try {
+      const drm = await hooks.resolveProtectedDrm('ctv_test_protected', 'https://proxy.example');
+      const groups = hooks.movieQualityGroups({
+        id: 'protected-4k-test',
+        _sources: [{
+          playback_id: 'ctv_test_4k',
+          resolution_height: 2160,
+          stream_type: 'dash',
+          proxy_mode: 'proxy_only',
+          protected_source: true,
+        }],
+      });
+      return { drmRequests, drmType: drm?.type || '', groups };
+    } finally {
+      window.fetch = originalFetch;
+    }
+  });
+  const protected4KSource = protectedPlaybackResult.groups?.[0]?.sources?.[0];
+  if (protectedPlaybackResult.drmRequests !== 1 || protectedPlaybackResult.drmType !== 'clearkey') {
+    throw new Error(`Protected DRM bootstrap mismatch: ${JSON.stringify(protectedPlaybackResult)}`);
+  }
+  if (!protected4KSource || protected4KSource.playback_id !== 'ctv_test_4k' || protected4KSource.proxy_mode !== 'proxy_only') {
+    throw new Error(`Protected 4K source contract mismatch: ${JSON.stringify(protectedPlaybackResult)}`);
   }
 
   const serviceWorkerReady = await page.evaluate(async () => {
@@ -114,15 +199,24 @@ try {
     hasTouch: true,
   });
   const mobilePage = await openCheckedPage(mobile, 'mobile');
-  const searchToggleVisible = await mobilePage.locator('#mobileSearchToggleBtn').isVisible();
-  if (!searchToggleVisible) throw new Error('Mobile search toggle is not visible');
-  await mobilePage.locator('#mobileSearchToggleBtn').click();
+  const mobileGeometry = await mobilePage.evaluate(() => ({
+    noticeHeight: document.querySelector('#sticky-header-notice')?.getBoundingClientRect().height || 0,
+    noticeFontSize: Number.parseFloat(getComputedStyle(document.querySelector('#sticky-header-notice')).fontSize || '0'),
+    horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  }));
+  if (mobileGeometry.noticeHeight < 30 || mobileGeometry.noticeFontSize < 10 || mobileGeometry.horizontalOverflow > 1) {
+    throw new Error(`Mobile geometry mismatch: ${JSON.stringify(mobileGeometry)}`);
+  }
+  const searchToggleVisible = await mobilePage.locator('#mobileBottomSearchBtn').isVisible();
+  if (!searchToggleVisible) throw new Error('Mobile bottom search toggle is not visible');
+  await mobilePage.locator('#mobileBottomSearchBtn').click();
   await mobilePage.locator('#mobileSearchInput').fill('10 TV');
+  await mobilePage.waitForTimeout(500);
   if (!(await mobilePage.locator('#mobileSearchInput').isVisible())) {
-    throw new Error('Mobile search field did not open');
+    throw new Error('Mobile search field did not stay open');
   }
 
-  console.log('Browser runtime PASS: desktop UI, full movie search, live playback, forced proxy failover, PWA, mobile UI');
+  console.log('Browser runtime PASS: desktop/mobile geometry, notice close, persistent search, protected DRM/4K planning, live playback, forced proxy failover, PWA');
   await desktop.close();
   await mobile.close();
 } finally {

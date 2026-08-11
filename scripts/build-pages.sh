@@ -68,6 +68,7 @@ require_file "${SITE_DIR}/_headers"
 require_file "${SITE_DIR}/assets/css/app.css"
 require_file "${SITE_DIR}/assets/css/series.css"
 require_file "${SITE_DIR}/assets/css/final-design.css"
+require_file "${SITE_DIR}/assets/css/reference-design.css"
 require_file "${SITE_DIR}/assets/js/app.js"
 require_file "${SITE_DIR}/assets/js/series.js"
 
