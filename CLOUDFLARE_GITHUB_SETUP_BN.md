@@ -13,7 +13,7 @@
 
 ## নিজের Windows PC থেকে full scan চালানো
 
-সবচেয়ে সহজ পদ্ধতি: project folder খুলে root-এ থাকা `RUN_CLICK_TV_LOCAL_SCAN.cmd` double-click করুন। কালো window-তে `1` লিখে Enter দিলে recommended full scan শুরু হবে। শুধু Channels-এর জন্য `2`, Movies-এর জন্য `3`, Today-এর জন্য `4`, এবং Upcoming-এর জন্য `5` নির্বাচন করুন। Scan শেষ না হওয়া পর্যন্ত window বন্ধ করবেন না।
+সবচেয়ে সহজ ও বর্তমান recommended পদ্ধতি: project folder খুলে root-এ থাকা শুধু `CLICK_TV_EASY_PAT_SCAN.cmd` double-click করুন। প্রথমে GitHub fine-grained PAT paste করুন—লেখাটি screen-এ দেখা যাবে না এবং file-এ save হবে না। তারপর কালো window-তে `1` লিখে Enter দিলে recommended full scan শুরু হবে। শুধু Channels-এর জন্য `2`, Movies-এর জন্য `3`, Today-এর জন্য `4`, এবং Upcoming-এর জন্য `5` নির্বাচন করুন। Launcher নিজে `Downloads\ClickTV-Auto` clone তৈরি/হালনাগাদ, scan, Pages validation এবং GitHub push করবে। Scan শেষ না হওয়া পর্যন্ত window বন্ধ করবেন না।
 
 Windows warning দেখালে file-টির উপর right-click → **Properties** → নিচে **Unblock** থাকলে tick → **Apply** করুন; তারপর আবার double-click করুন। SmartScreen এলে **More info → Run anyway** দিন। এটি শুধু local project-এর trusted launcher।
 
@@ -23,7 +23,7 @@ BD-only link নিজের বাংলাদেশের Internet/IP দি�
 powershell -ExecutionPolicy Bypass -File .\scripts\run-local-scan.ps1 -Mode all
 ```
 
-Script প্রথমে প্রয়োজনীয় Python package install/check করবে, তারপর চার ধাপ sequentially চালাবে। Window বন্ধ করবেন না। Progress দেখতে আরেকটি PowerShell-এ চালাতে পারেন:
+Script প্রথমে project-এর নিজস্ব `.venv` তৈরি করে প্রয়োজনীয় Python package install/check করবে; Windows-এর global Python package বদলাবে না। তারপর চার ধাপ sequentially চালাবে। Window বন্ধ করবেন না। Progress দেখতে আরেকটি PowerShell-এ চালাতে পারেন:
 
 ```powershell
 Get-Content .\working\scan-progress.json
@@ -173,11 +173,11 @@ GitHub Push-এর পরে Cloudflare Dashboard → **Workers & Pages** → Cl
 
 ### তিন জায়গার auto-push নিয়ম
 
-**GitHub Actions:** `Live Signal Scanner` workflow-এর `contents: write` permission আছে। Scanner এবং Pages validation PASS হলেই workflow `data/`, `reports/`, `state/` commit করে `main`-এ push করবে। Today/Upcoming-এ বর্তমানে publish করার মতো event একটিও না থাকলে scanner এখন আগের event JSON অক্ষত রেখে `completed_preserved` status-এ পরের ধাপে যাবে; এই স্বাভাবিক zero-result-এর জন্য `all` run আর বন্ধ হবে না। Channels/Movies zero হলে data রক্ষার জন্য run এখনো fail করবে।
+**GitHub Actions:** `Live Signal Scanner` workflow-এর `contents: write` permission আছে। Scanner এবং Pages validation PASS হলেই workflow `data/`, `reports/`, `state/` commit করে `main`-এ push করবে। Runtime-এর `working/scan-progress.json` push-এর আগে মুছে যাবে এবং Git-এ ignore থাকবে। Run fail হলে Telegram secrets configured থাকলে failed Actions run-এর link-সহ failure message যাবে; success message আগের মতো push-এর পরেই যাবে। Today/Upcoming-এ বর্তমানে publish করার মতো event একটিও না থাকলে scanner এখন আগের event JSON অক্ষত রেখে `completed_preserved` status-এ পরের ধাপে যাবে; এই স্বাভাবিক zero-result-এর জন্য `all` run আর বন্ধ হবে না। Channels/Movies zero হলে data রক্ষার জন্য run এখনো fail করবে।
 
 **Google Colab:** `ClickTV_Colab_FINAL_EASY_5_MODE.ipynb` খুলে Colab-এর বাঁ পাশের key/Secrets icon-এ `GITHUB_TOKEN` দিন এবং Notebook access ON করুন। Token-এ `DigeeGlamour/click-tv` repository-এর Contents read/write permission থাকতে হবে। Private movie source একই token দিয়ে readable হলে আলাদা secret দরকার নেই; অন্য token হলে `PRIVATE_MOVIE_SOURCE_TOKEN` দিন। Poster/year metadata-এর জন্য চাইলে `TMDB_API_KEY` বা `TMDB_API_TOKEN`, notification-এর জন্য `TELEGRAM_BOT_TOKEN` ও `TELEGRAM_CHAT_ID` দিন। Cell 1 একবার, তারপর Cell 2 চালালেই scan → commit → rebase → push হবে। Push মাঝপথে fail হলে Cell 2 আবার চালালে pending local commit আগে push হবে।
 
-**নিজের Windows PC — সবচেয়ে সহজ one-click:** শুধু `CLICK_TV_ONE_CLICK_ALL.cmd` double-click করুন। PAT copy/paste এবং GitHub Desktop লাগবে না। প্রথমবার Git Credential Manager browser খুললে GitHub-এ login করে Authorize/Continue দিন। একই launcher `Downloads\ClickTV-Auto` clone তৈরি, current fix sync, initial push, full local scan, Pages validation এবং final push করবে। পরেরবারও `Downloads\ClickTV-Auto\CLICK_TV_ONE_CLICK_ALL.cmd` এই একটিই চালাবেন।
+**নিজের Windows PC — সবচেয়ে সহজ one-file:** শুধু `CLICK_TV_EASY_PAT_SCAN.cmd` double-click করুন। Hidden prompt-এ GitHub fine-grained PAT একবার paste করুন, তারপর scan mode বেছে নিন। GitHub Desktop লাগে না; PAT disk-এ save হয় না। একই launcher `Downloads\ClickTV-Auto` clone তৈরি/হালনাগাদ, current fix sync, scan, Pages validation এবং final push করবে। পরেরবারও package বা `Downloads\ClickTV-Auto` folder-এর `CLICK_TV_EASY_PAT_SCAN.cmd` চালাতে পারবেন। পুরোনো `CLICK_TV_ONE_CLICK_ALL.cmd`, `RUN_CLICK_TV_LOCAL_SCAN.cmd` এবং `scripts/one-click-all.ps1` backward compatibility-এর জন্য file হিসেবে রাখা হয়েছে; বর্তমান recommended launcher সেগুলো cleanup/sync logic-এ আর reference করে না।
 
 ## ধাপ 6 — Catalogue/header sync হাতে verify
 

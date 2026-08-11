@@ -5,7 +5,7 @@ cd /d "%~dp0"
 title Click TV - Easy PAT Scan and GitHub Push
 set "CLICKTV_SELF=%~f0"
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$raw=Get-Content -LiteralPath $env:CLICKTV_SELF -Raw; $marker='# CLICKTV_'+'POWERSHELL_BEGIN'; $at=$raw.IndexOf($marker); if($at -lt 0){throw 'Internal launcher code is missing'}; $code=$raw.Substring($at+$marker.Length); & ([scriptblock]::Create($code))"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$raw=Get-Content -LiteralPath $env:CLICKTV_SELF -Raw; $marker='# CLICKTV_'+'POWERSHELL_BEGIN'; $at=$raw.IndexOf($marker); if($at -lt 0){throw 'Internal launcher code is missing'}; $code=$raw.Substring($at+$marker.Length); try { & ([scriptblock]::Create($code)) } catch { $safe=[string]$_; foreach($name in @('PRIVATE_MOVIE_SOURCE_TOKEN','CLICKTV_TEST_TOKEN','GIT_CONFIG_VALUE_0')){$secret=[Environment]::GetEnvironmentVariable($name); if($secret -and $secret.Length -ge 8){$safe=$safe.Replace($secret,'[REDACTED]')}}; [Console]::Error.WriteLine($safe); exit 1 }"
 set "CLICKTV_EXIT=%ERRORLEVEL%"
 
 echo.
@@ -54,7 +54,13 @@ function Assert-SupportedDirtyState {
     param([string]$RepositoryPath)
     $Allowed = @(
         "scan.py",
+        "scanner/security.py",
+        "scanner/playback_profiles.py",
+        "scanner/output.py",
+        "scanner/telegram_notify.py",
         "scanner/normalizer.py",
+        ".github/workflows/scan.yml",
+        ".gitignore",
         "config/channel-categories.json",
         "config/channel-aliases.json",
         "config/sources.json",
@@ -62,12 +68,10 @@ function Assert-SupportedDirtyState {
         "scripts/run-local-scan.ps1",
         "tests/test_zero_candidate_preservation.py",
         "tests/test_content_router.py",
-        "CLICK_TV_ONE_CLICK_ALL.cmd",
+        "tests/test_operational_safety.py",
         "CLICK_TV_EASY_PAT_SCAN.cmd",
         "CLOUDFLARE_GITHUB_SETUP_BN.md",
         "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb",
-        "RUN_CLICK_TV_LOCAL_SCAN.cmd",
-        "scripts/one-click-all.ps1",
         "working/scan-progress.json"
     )
     $Unexpected = @()
@@ -184,19 +188,16 @@ if (Test-Path -LiteralPath $OldProgress) {
     Remove-Item -LiteralPath $OldProgress -Force
 }
 
-# Recover only the exact files left by the previous failed launcher.
-& git -C $ClonePath restore --staged --worktree -- scripts/run-local-scan.ps1 2>$null
-foreach ($OldRelative in @("CLICK_TV_ONE_CLICK_ALL.cmd", "RUN_CLICK_TV_LOCAL_SCAN.cmd", "scripts\one-click-all.ps1")) {
-    $OldPath = Join-Path $ClonePath $OldRelative
-    $TrackedOldPath = (& git -C $ClonePath ls-files -- $OldRelative) -join ""
-    if (-not $TrackedOldPath.Trim() -and (Test-Path -LiteralPath $OldPath)) {
-        Remove-Item -LiteralPath $OldPath -Force
-    }
-}
-
 $FilesToSync = @(
     "scan.py",
+    "scanner\security.py",
+    "scanner\playback_profiles.py",
+    "scanner\output.py",
+    "scanner\telegram_notify.py",
     "scanner\normalizer.py",
+    ".github\workflows\scan.yml",
+    ".gitignore",
+    "scripts\run-local-scan.ps1",
     "config\channel-categories.json",
     "config\channel-aliases.json",
     "config\sources.json",
@@ -204,7 +205,8 @@ $FilesToSync = @(
     "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb",
     "CLOUDFLARE_GITHUB_SETUP_BN.md",
     "tests\test_zero_candidate_preservation.py",
-    "tests\test_content_router.py"
+    "tests\test_content_router.py",
+    "tests\test_operational_safety.py"
 )
 foreach ($RelativePath in $FilesToSync) {
     $Source = Join-Path $PackageRoot $RelativePath
@@ -239,17 +241,24 @@ if ($RecoveredPendingScan) {
 }
 
 Write-Host "[2/6] Installing/checking scanner requirements..." -ForegroundColor Cyan
-& $PythonCommand.Source -m pip install -r (Join-Path $ClonePath "requirements.txt")
+$VenvPath = Join-Path $ClonePath ".venv"
+$VenvPython = Join-Path $VenvPath "Scripts\python.exe"
+if (-not (Test-Path -LiteralPath $VenvPython)) {
+    Write-Host "Creating isolated Click TV Python environment..." -ForegroundColor Cyan
+    & $PythonCommand.Source -m venv $VenvPath
+    if ($LASTEXITCODE -ne 0) { throw "Could not create the Click TV virtual environment." }
+}
+& $VenvPython -m pip install --disable-pip-version-check -r (Join-Path $ClonePath "requirements.txt")
 if ($LASTEXITCODE -ne 0) { throw "Python dependency installation failed." }
 
 Write-Host "[3/6] Running scan mode: $Mode" -ForegroundColor Cyan
 $env:PYTHONUTF8 = "1"
 $env:PYTHONUNBUFFERED = "1"
-& $PythonCommand.Source -u (Join-Path $ClonePath "scan.py") $Mode
+& $VenvPython -u (Join-Path $ClonePath "scan.py") $Mode
 if ($LASTEXITCODE -ne 0) { throw "Scanner failed. No generated data was pushed." }
 
 Write-Host "[4/6] Validating generated Pages data..." -ForegroundColor Cyan
-Test-GeneratedPages -RepositoryPath $ClonePath -PythonPath $PythonCommand.Source
+Test-GeneratedPages -RepositoryPath $ClonePath -PythonPath $VenvPython
 
 Write-Host "[5/6] Committing generated data..." -ForegroundColor Cyan
 Invoke-Git -WorkingDirectory $ClonePath -Arguments @("add", "-A", "--", "data", "reports", "state") | Out-Null
