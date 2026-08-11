@@ -36,7 +36,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: live-signal-data-writer
+  # v2 rotates away from the orphaned v1 queue while preserving one-writer safety.
+  group: live-signal-data-writer-v2
   cancel-in-progress: false
 
 jobs:
@@ -62,6 +63,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Mask scanner secrets in all following logs
+        shell: bash
+        env:
+          PRIVATE_MOVIE_SOURCE_TOKEN: ${{ secrets.PRIVATE_MOVIE_SOURCE_TOKEN }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          for VALUE in \
+            "$PRIVATE_MOVIE_SOURCE_TOKEN" \
+            "$TMDB_API_KEY" \
+            "$TMDB_API_TOKEN" \
+            "$TELEGRAM_BOT_TOKEN" \
+            "$TELEGRAM_CHAT_ID"; do
+            if [[ -n "$VALUE" ]]; then
+              echo "::add-mask::$VALUE"
+            fi
+          done
 
       - name: Restore scanner source cache
         uses: actions/cache@v4
@@ -242,6 +263,7 @@ jobs:
 
           # Untracked temporary checkpoint পরিষ্কার করা হবে।
           rm -f working/pipeline-checkpoint.json
+          rm -f working/scan-progress.json
           rm -rf working/checkpoints
 
           # source-cache delete করা হবে না।
@@ -293,6 +315,23 @@ jobs:
             "${{ steps.scan_mode.outputs.mode }}" \
             "${{ steps.git_push.outputs.commit }}" \
             "main"
+
+      - name: Send Telegram after failed scan or push
+        if: failure()
+        continue-on-error: true
+        shell: bash
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          MODE="${{ steps.scan_mode.outputs.mode }}"
+          if [[ -z "$MODE" ]]; then MODE="unknown"; fi
+          python -u scanner/telegram_notify.py \
+            "$MODE" \
+            "${{ github.sha }}" \
+            "${{ github.ref_name }}" \
+            --failure \
+            --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
       - name: Upload scanner log on failure
         if: failure()
