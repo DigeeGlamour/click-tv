@@ -806,6 +806,9 @@ function normalizeList(rawList, sourceKind) {
     .filter((item) => {
       if (sourceKind === VIEW.CHANNEL) return !isLikelyVodLeak(item);
       if (sourceKind === VIEW.MOVIE) return !isLikelyLiveLeak(item) && isPlayable(item);
+      // Upcoming schedules are useful before a stream URL exists. Keep the
+      // published metadata card, then open its details preview on selection.
+      if (sourceKind === VIEW.UPCOMING) return Boolean(String(item.name || '').trim());
       return isPlayable(item);
     });
 
@@ -1176,6 +1179,7 @@ function clearCurrentListState() {
 }
 
 async function selectMainView(view, category, options = {}) {
+  closeEventPreview();
   cancelDataLoading();
   clearCurrentListState();
   closeMobileSearch(true);
@@ -1859,7 +1863,61 @@ function playbackBadgesHtml(item) {
   return badges.join('');
 }
 
+function eventDisplayParts(item) {
+  const original = cleanDisplayName(item?.name || 'Live Match');
+  const competition = cleanDisplayName(item?.competition || '').replace(/^Untitled$/i, '');
+  const structured = original.match(/^(.+?\b(?:competition|league|cup|series)\b(?:\s+\d{4})?)(?:\s+\d+(?:st|nd|rd|th)\s+match)?\s+(.+\bvs\b.+)$/i);
+  if (structured) {
+    return {
+      title: cleanDisplayName(structured[2]),
+      competition: competition || cleanDisplayName(structured[1])
+    };
+  }
+  const trimmed = original.replace(/^.+?\b\d+(?:st|nd|rd|th)\s+match\s+/i, '');
+  return { title: trimmed || original, competition };
+}
+
+function createEventCard(item, visualIndex) {
+  const card = document.createElement('div');
+  const playable = isPlayable(item);
+  const upcoming = state.view === VIEW.UPCOMING || String(item.status || item.original_status || '').toUpperCase() === 'UPCOMING';
+  const parts = eventDisplayParts(item);
+  card.className = `sidebar-item event-ref-card tv-focusable ${upcoming ? 'event-upcoming-card' : 'event-live-card'}${playable ? ' is-playable' : ' is-scheduled'}`;
+  card.tabIndex = 0;
+  card.setAttribute('role', 'button');
+  card.setAttribute('aria-label', `${parts.title}. ${upcoming ? 'Upcoming match' : 'Live match'}${item.start_time ? `. ${item.start_time}` : ''}`);
+  card.dataset.uid = item._uid;
+  card.dataset.itemIndex = String(visualIndex);
+  card.addEventListener('focus', () => {
+    state.lastFocusedUid = item._uid;
+    state.lastFocusedSelector = 'card';
+    maybePreconnect(item.url);
+  });
+
+  const statusLabel = upcoming ? 'UPCOMING' : (playable ? 'LIVE NOW' : 'SCHEDULED');
+  const favoriteKey = item.id || item.url;
+  card.innerHTML = `
+    <span class="sidebar-channel-num">${visualIndex + 1}</span>
+    <div class="event-card-art">${createImageHtml(item, '')}<span class="event-card-art-shade"></span></div>
+    <div class="event-card-details">
+      <div class="event-card-title">${escapeHtml(parts.title)}</div>
+      ${parts.competition ? `<div class="event-card-competition"><i class="fas fa-trophy" aria-hidden="true"></i>${escapeHtml(parts.competition)}</div>` : ''}
+      <div class="event-card-footer">
+        <span class="event-status-pill ${upcoming ? 'upcoming' : 'live'}">${upcoming ? '<i class="far fa-calendar-alt" aria-hidden="true"></i>' : '<span class="pulse-dot" aria-hidden="true"></span>'}${statusLabel}</span>
+        ${item.start_time ? `<span class="event-card-time"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(item.start_time)}</span>` : ''}
+      </div>
+    </div>
+    <span class="event-card-action ${upcoming ? 'reminder' : 'watch'}" aria-hidden="true"><i class="fas ${upcoming ? 'fa-bell' : 'fa-play'}"></i><span>${upcoming ? 'Details' : 'Watch'}</span></span>
+    ${!upcoming ? `<button class="card-fav-btn" data-favorite-id="${escapeHtml(favoriteKey)}" type="button" title="Bookmark" aria-label="Bookmark ${escapeHtml(parts.title)}"><i class="far fa-star"></i></button>` : ''}`;
+
+  const image = qs('img', card);
+  image?.addEventListener('error', () => replaceBrokenImage(image));
+  qs('.card-fav-btn', card)?.addEventListener('click', (event) => toggleFavorite(item._uid, event));
+  return card;
+}
+
 function createChannelCard(item, visualIndex) {
+  if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) return createEventCard(item, visualIndex);
   const card = document.createElement('div');
   card.className = `sidebar-item tv-focusable${state.view === VIEW.CHANNEL ? ' channel-ref-card' : ''}`;
   card.tabIndex = 0;
@@ -1949,6 +2007,37 @@ function replaceBrokenMovieImage(image) {
   image.replaceWith(placeholder);
 }
 
+function closeEventPreview() {
+  const preview = $('eventPreviewOverlay');
+  if (!preview) return;
+  preview.classList.remove('show');
+  preview.setAttribute('aria-hidden', 'true');
+}
+
+function showEventPreview(item) {
+  const preview = $('eventPreviewOverlay');
+  if (!preview || !item) return;
+  const parts = eventDisplayParts(item);
+  const art = $('eventPreviewArt');
+  const logo = String(item.logo || '').trim();
+  art.replaceChildren();
+  art.style.removeProperty('background-image');
+  if (logo) {
+    art.style.backgroundImage = `linear-gradient(90deg,rgba(8,13,22,.08),rgba(8,13,22,.74)),url("${logo.replace(/["\\]/g, '\\$&')}")`;
+  } else {
+    const initials = parts.title.split(/\s+/).filter(Boolean).map((word) => word[0]).join('').slice(0, 3).toUpperCase();
+    art.innerHTML = `<span>${escapeHtml(initials || 'TV')}</span>`;
+  }
+  $('eventPreviewTitle').textContent = parts.title;
+  $('eventPreviewLeague').textContent = parts.competition || 'Live Sports';
+  qs('span', $('eventPreviewTime')).textContent = item.start_time || 'Schedule will be updated';
+  preview.classList.add('show');
+  preview.setAttribute('aria-hidden', 'false');
+  showControlsTemporarily();
+}
+
+$('eventPreviewClose')?.addEventListener('click', closeEventPreview);
+
 let preconnectTimer = null;
 function maybePreconnect(url) {
   if (!url) return;
@@ -1974,9 +2063,14 @@ sidebarList.addEventListener('click', (event) => {
   if (!item) return;
   if (seriesModule?.handleCatalogClick(item)) return;
   if (!isPlayable(item)) {
-    showToast(item.start_time ? `শুরু হবে: ${item.start_time}` : 'এই ইভেন্ট এখনো শুরু হয়নি');
+    if (item._sourceKind === VIEW.UPCOMING || state.view === VIEW.UPCOMING) {
+      showEventPreview(item);
+    } else {
+      showToast(item.start_time ? `শুরু হবে: ${item.start_time}` : 'এই ইভেন্ট এখনো শুরু হয়নি');
+    }
     return;
   }
+  closeEventPreview();
   startPlayback(item, true);
 });
 

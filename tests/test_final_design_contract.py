@@ -52,8 +52,8 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn("series.js", self.index)
 
     def test_reference_design_is_external_and_preserves_the_three_column_contract(self) -> None:
-        self.assertIn("reference-design.css?v=20260812-reference-v19", self.index)
-        self.assertIn("app.js?v=20260812-reference-v12", self.index)
+        self.assertIn("reference-design.css?v=20260812-reference-v20", self.index)
+        self.assertIn("app.js?v=20260812-reference-v13", self.index)
         self.assertIn('class="desktop-category-rail"', self.index)
         self.assertIn('id="desktopCategoryTitle"', self.index)
         self.assertIn('id="mobileBottomSearchBtn"', self.index)
@@ -137,6 +137,15 @@ class FinalDesignContractTests(unittest.TestCase):
             'id="fsDrawer"',
         ):
             self.assertIn(element_id, self.index)
+
+    def test_modern_event_cards_keep_schedules_and_live_actions(self) -> None:
+        self.assertIn("if (sourceKind === VIEW.UPCOMING) return Boolean(String(item.name || '').trim());", self.app)
+        self.assertIn("'LIVE NOW'", self.app)
+        self.assertIn("'Details' : 'Watch'", self.app)
+        self.assertIn('showEventPreview(item)', self.app)
+        self.assertIn('.event-ref-card', self.reference_css)
+        self.assertIn('.event-status-pill.upcoming', self.reference_css)
+        self.assertIn('.event-status-pill.live', self.reference_css)
 
 
     def test_every_static_app_id_reference_exists_in_final_html(self) -> None:
