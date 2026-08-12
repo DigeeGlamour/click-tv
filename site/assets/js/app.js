@@ -1697,6 +1697,15 @@ function applyFilterAndSort() {
     items.sort((a, b) => a.name.localeCompare(b.name));
   } else if (state.currentSortMode === 'za') {
     items.sort((a, b) => b.name.localeCompare(a.name));
+  } else if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
+    const statusRank = { LIVE_NOW: 0, STARTING_SOON: 1, LINK_UPDATING: 2, UPCOMING: 3, TIME_UNVERIFIED: 4 };
+    items.sort((a, b) => {
+      const statusDifference = (statusRank[eventUiStatus(a)] ?? 9) - (statusRank[eventUiStatus(b)] ?? 9);
+      if (statusDifference) return statusDifference;
+      const aTime = eventStartDate(a)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      const bTime = eventStartDate(b)?.getTime() ?? Number.MAX_SAFE_INTEGER;
+      return aTime - bTime || (a.seqNumber || 0) - (b.seqNumber || 0);
+    });
   } else if (state.view === VIEW.MOVIE) {
     items.sort((a, b) => {
       const yearDifference = movieYearValue(b) - movieYearValue(a);
@@ -1877,15 +1886,67 @@ function eventDisplayParts(item) {
   return { title: trimmed || original, competition };
 }
 
+function eventStartDate(item) {
+  const raw = String(item?.start_at || item?.start_time || '').trim();
+  if (!raw) return null;
+  const parsed = new Date(raw);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function eventScheduleText(item) {
+  const start = eventStartDate(item);
+  if (!start) return String(item?.start_time || 'Time verification pending');
+  const time = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true
+  }).format(start);
+  const dayKey = (date) => new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(date);
+  const now = new Date();
+  const tomorrow = new Date(now.getTime() + 86400000);
+  const targetKey = dayKey(start);
+  if (targetKey === dayKey(now)) return `Today ${time} BDT`;
+  if (targetKey === dayKey(tomorrow)) return `Tomorrow ${time} BDT`;
+  const date = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Dhaka', weekday: 'short', day: 'numeric', month: 'short'
+  }).format(start);
+  return `${date} ${time} BDT`;
+}
+
+function eventUiStatus(item) {
+  const configured = String(item?.schedule_status || item?.status || '').toUpperCase();
+  const start = eventStartDate(item);
+  if (!start) {
+    if (['LIVE_NOW', 'STARTING_SOON', 'LINK_UPDATING', 'UPCOMING', 'TIME_UNVERIFIED'].includes(configured)) return configured;
+    return isPlayable(item) ? 'LIVE_NOW' : 'UPCOMING';
+  }
+  const minutes = (start.getTime() - Date.now()) / 60000;
+  if (minutes <= 0 && minutes >= -360) return isPlayable(item) ? 'LIVE_NOW' : 'LINK_UPDATING';
+  if (minutes > 0 && minutes <= 60) return 'STARTING_SOON';
+  return 'UPCOMING';
+}
+
+function eventStatusLabel(status) {
+  return ({
+    LIVE_NOW: 'LIVE NOW',
+    STARTING_SOON: 'STARTING SOON',
+    LINK_UPDATING: 'LINK UPDATING',
+    UPCOMING: 'UPCOMING',
+    TIME_UNVERIFIED: 'TIME UNVERIFIED'
+  })[status] || 'UPCOMING';
+}
+
 function createEventCard(item, visualIndex) {
   const card = document.createElement('div');
   const playable = isPlayable(item);
-  const upcoming = state.view === VIEW.UPCOMING || String(item.status || item.original_status || '').toUpperCase() === 'UPCOMING';
+  const uiStatus = eventUiStatus(item);
+  const upcoming = uiStatus !== 'LIVE_NOW';
+  const scheduleText = eventScheduleText(item);
   const parts = eventDisplayParts(item);
   card.className = `sidebar-item event-ref-card tv-focusable ${upcoming ? 'event-upcoming-card' : 'event-live-card'}${playable ? ' is-playable' : ' is-scheduled'}`;
   card.tabIndex = 0;
   card.setAttribute('role', 'button');
-  card.setAttribute('aria-label', `${parts.title}. ${upcoming ? 'Upcoming match' : 'Live match'}${item.start_time ? `. ${item.start_time}` : ''}`);
+  card.setAttribute('aria-label', `${parts.title}. ${eventStatusLabel(uiStatus)}${scheduleText ? `. ${scheduleText}` : ''}`);
   card.dataset.uid = item._uid;
   card.dataset.itemIndex = String(visualIndex);
   card.addEventListener('focus', () => {
@@ -1894,7 +1955,7 @@ function createEventCard(item, visualIndex) {
     maybePreconnect(item.url);
   });
 
-  const statusLabel = upcoming ? 'UPCOMING' : (playable ? 'LIVE NOW' : 'SCHEDULED');
+  const statusLabel = eventStatusLabel(uiStatus);
   const favoriteKey = item.id || item.url;
   card.innerHTML = `
     <span class="sidebar-channel-num">${visualIndex + 1}</span>
@@ -1904,7 +1965,7 @@ function createEventCard(item, visualIndex) {
       ${parts.competition ? `<div class="event-card-competition"><i class="fas fa-trophy" aria-hidden="true"></i>${escapeHtml(parts.competition)}</div>` : ''}
       <div class="event-card-footer">
         <span class="event-status-pill ${upcoming ? 'upcoming' : 'live'}">${upcoming ? '<i class="far fa-calendar-alt" aria-hidden="true"></i>' : '<span class="pulse-dot" aria-hidden="true"></span>'}${statusLabel}</span>
-        ${item.start_time ? `<span class="event-card-time"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(item.start_time)}</span>` : ''}
+        ${scheduleText ? `<span class="event-card-time"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(scheduleText)}</span>` : ''}
       </div>
     </div>
     <span class="event-card-action ${upcoming ? 'reminder' : 'watch'}" aria-hidden="true"><i class="fas ${upcoming ? 'fa-bell' : 'fa-play'}"></i><span>${upcoming ? 'Details' : 'Watch'}</span></span>
@@ -2030,7 +2091,7 @@ function showEventPreview(item) {
   }
   $('eventPreviewTitle').textContent = parts.title;
   $('eventPreviewLeague').textContent = parts.competition || 'Live Sports';
-  qs('span', $('eventPreviewTime')).textContent = item.start_time || 'Schedule will be updated';
+  qs('span', $('eventPreviewTime')).textContent = eventScheduleText(item);
   preview.classList.add('show');
   preview.setAttribute('aria-hidden', 'false');
   showControlsTemporarily();

@@ -1,6 +1,12 @@
 import { chromium } from 'playwright';
+import { spawn } from 'node:child_process';
 
 const baseUrl = process.argv[2] || 'http://127.0.0.1:4173';
+const localServer = process.argv[2] ? null : spawn(
+  'python', ['-m', 'http.server', '4173', '--directory', 'dist'],
+  { cwd: new URL('..', import.meta.url), stdio: 'ignore', windowsHide: true }
+);
+if (localServer) await new Promise((resolve) => setTimeout(resolve, 900));
 const browser = await chromium.launch({ headless: true, args: ['--disable-web-security'] });
 
 async function check(label, viewport, mobile = false) {
@@ -15,7 +21,7 @@ async function check(label, viewport, mobile = false) {
   await page.locator(`${mobile ? '#mobileMainNav' : '#desktopMainNav'} [data-final-key="sports"]`).click();
   const upcoming = page.locator(`${mobile ? '#mobileSubNav' : '#desktopSubNav'} [data-final-key="upcoming"]`);
   await upcoming.click();
-  await page.locator('.event-ref-card.event-upcoming-card').first().waitFor({ state: 'visible', timeout: 20000 });
+  await page.locator('.event-ref-card').first().waitFor({ state: 'visible', timeout: 20000 });
   const geometry = await page.locator('.event-ref-card').first().evaluate((card) => {
     const art = card.querySelector('.event-card-art')?.getBoundingClientRect();
     const rect = card.getBoundingClientRect();
@@ -25,13 +31,18 @@ async function check(label, viewport, mobile = false) {
       artWidth: art?.width || 0,
       artHeight: art?.height || 0,
       hasTime: Boolean(card.querySelector('.event-card-time')),
-      hasStatus: Boolean(card.querySelector('.event-status-pill.upcoming')),
+      hasStatus: Boolean(card.querySelector('.event-status-pill')),
+      timeText: card.querySelector('.event-card-time')?.textContent?.trim(),
+      statusText: card.querySelector('.event-status-pill')?.textContent?.trim(),
       action: card.querySelector('.event-card-action')?.textContent?.trim(),
       overflow: card.scrollWidth - card.clientWidth,
     };
   });
   if (!geometry.hasTime || !geometry.hasStatus || geometry.overflow > 1 || geometry.artWidth < 80 || geometry.artHeight < 55) {
     throw new Error(`${label} upcoming card mismatch: ${JSON.stringify(geometry)}`);
+  }
+  if (/\b(?:GMT|BST|UTC)\b/i.test(geometry.timeText || '') || !/BDT|pending/i.test(geometry.timeText || '')) {
+    throw new Error(`${label} event time is not Bangladesh-friendly: ${JSON.stringify(geometry)}`);
   }
 
   const before = await page.locator('#metaTitle').textContent();
@@ -61,4 +72,5 @@ try {
   console.log('Event cards PASS: responsive upcoming design, schedule metadata, non-playback preview and close behavior');
 } finally {
   await browser.close();
+  localServer?.kill();
 }

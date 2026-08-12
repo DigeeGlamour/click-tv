@@ -18,11 +18,13 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 try:
     from scanner.merger import merge_candidates
+    from scanner.schedule_resolver import enrich_event_candidates
 except ImportError:
     module_dir = str(Path(__file__).resolve().parent)
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
     from merger import merge_candidates
+    from schedule_resolver import enrich_event_candidates
 
 
 DEFAULT_TODAY_MAX_AGE_HOURS = 12
@@ -320,11 +322,13 @@ def _payload(
 def process_events(
     bd_results_path: str = "working/bd-results.json",
     settings_path: str = "config/settings.json",
+    fixture_path: str = "config/event-fixtures.json",
 ) -> Dict[str, Dict[str, Any]]:
     """Return freshness-checked today_match and upcoming payloads."""
     results = _load_required_results(bd_results_path)
     settings = _load_optional_json(settings_path)
     event_settings = settings.get("events") if isinstance(settings.get("events"), dict) else {}
+    fixture_path = str(event_settings.get("fixture_catalogue") or fixture_path)
     timezone_name = str(
         event_settings.get("timezone")
         or settings.get("timezone")
@@ -359,12 +363,20 @@ def process_events(
         365,
     )
 
-    event_candidates = [
+    raw_event_candidates = [
         dict(item)
         for item in results
         if str(item.get("source_pipeline") or "").strip().lower()
         in {"today_match", "upcoming"}
     ]
+
+    event_candidates, schedule_stats = enrich_event_candidates(
+        raw_event_candidates,
+        fixture_path=fixture_path,
+        timezone_name=timezone_name,
+        now=_utc_now_dt(),
+        future_days=upcoming_future_days,
+    )
 
     merged = merge_candidates(
         event_candidates,
@@ -394,7 +406,9 @@ def process_events(
                 today_stale += 1
                 continue
             card_copy["event_type"] = "today_match"
-            card_copy["status"] = "LIVE"
+            card_copy["status"] = str(
+                card_copy.get("schedule_status") or card_copy.get("status") or "LIVE_NOW"
+            )
             today_items.append(card_copy)
 
         elif pipeline == "upcoming":
@@ -407,10 +421,12 @@ def process_events(
                 upcoming_stale += 1
                 continue
             card_copy["event_type"] = "upcoming"
-            card_copy["status"] = "UPCOMING"
+            card_copy["status"] = str(
+                card_copy.get("schedule_status") or card_copy.get("status") or "UPCOMING"
+            )
             upcoming_items.append(card_copy)
 
-    return {
+    result = {
         "today_match": _payload(
             today_items,
             "today_match",
@@ -426,6 +442,11 @@ def process_events(
             source_timezone=source_timezone,
         ),
     }
+    result["schedule"] = {
+        "timezone": timezone_name,
+        **schedule_stats,
+    }
+    return result
 
 
 if __name__ == "__main__":
@@ -435,5 +456,6 @@ if __name__ == "__main__":
         f"today={result['today_match']['count']}, "
         f"upcoming={result['upcoming']['count']}, "
         f"today_stale={result['today_match']['filtered_stale']}, "
-        f"today_unplayable={result['today_match']['filtered_unplayable']}"
+        f"today_unplayable={result['today_match']['filtered_unplayable']}, "
+        f"time_corrected={result['schedule']['corrected']}"
     )

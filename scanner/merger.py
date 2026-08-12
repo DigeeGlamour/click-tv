@@ -950,11 +950,20 @@ def merge_candidates(
             merged_card["resolution_height"] = primary["resolution_height"]
         for field_name in (
             "start_time",
+            "start_at",
             "end_time",
             "competition",
+            "fixture_id",
+            "venue",
             "event_url",
             "status",
             "original_status",
+            "schedule_status",
+            "schedule_verified",
+            "schedule_source_url",
+            "source_start_time",
+            "source_time_delta_minutes",
+            "time_verification",
         ):
             if base_item.get(field_name) not in (None, ""):
                 merged_card[field_name] = base_item[field_name]
