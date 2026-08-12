@@ -217,9 +217,26 @@ body{
 .video-container-wrap .fs-drawer.open{right:0!important}
 .video-container-wrap .fs-drawer:has(#fsDrawerList:is(.movie-drawer-grid,.movie-search-grid)){width:min(78vw,310px)!important;right:min(-78vw,-310px)!important}
 .video-container-wrap .fs-drawer.open:has(#fsDrawerList:is(.movie-drawer-grid,.movie-search-grid)){right:0!important}
-.video-container-wrap .fs-drawer-header{gap:6px!important;margin-bottom:7px!important}
-.video-container-wrap .fs-drawer-search{height:30px!important;padding:5px 10px!important;font-size:10px!important}
+.video-container-wrap .fs-drawer-heading{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important;min-height:21px!important;margin:0 1px 6px!important;color:#f4f7fb!important}
+.video-container-wrap .fs-drawer-heading strong{min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;font-size:12px!important;font-weight:850!important;letter-spacing:.1px!important}
+.video-container-wrap .fs-drawer-heading span{flex:0 0 auto!important;color:#96a3b5!important;font-size:9px!important;font-weight:750!important;white-space:nowrap!important}
+.video-container-wrap .fs-drawer-header{display:flex!important;align-items:center!important;gap:6px!important;margin-bottom:7px!important}
+.video-container-wrap .fs-drawer-search-wrap{position:relative!important;display:flex!important;align-items:center!important;min-width:0!important;flex:1 1 auto!important}
+.video-container-wrap .fs-drawer-search-wrap>i{position:absolute!important;left:9px!important;z-index:2!important;color:#7f8b9e!important;font-size:9px!important;pointer-events:none!important}
+.video-container-wrap .fs-drawer-search{width:100%!important;height:30px!important;padding:5px 31px 5px 25px!important;font-size:10px!important}
+.video-container-wrap .fs-drawer-search::-webkit-search-cancel-button{display:none!important}
+.video-container-wrap .fs-drawer-clear{position:absolute!important;right:4px!important;z-index:2!important;display:grid!important;width:22px!important;height:22px!important;padding:0!important;place-items:center!important;border:0!important;border-radius:50%!important;background:rgba(255,255,255,.08)!important;color:#b8c1ce!important;cursor:pointer!important}
+.video-container-wrap .fs-drawer-clear[hidden]{display:none!important}
+.video-container-wrap .fs-drawer-clear:hover,.video-container-wrap .fs-drawer-clear:focus-visible{background:rgba(255,45,86,.18)!important;color:#fff!important;outline:1px solid rgba(255,45,86,.7)!important}
 .video-container-wrap .fs-drawer-close{width:26px!important;height:26px!important;flex:0 0 26px!important}
+.video-container-wrap .fs-drawer-search:focus-visible{outline:2px solid rgba(255,45,86,.78)!important;outline-offset:1px!important}
+.video-container-wrap .fs-drawer-status{grid-column:1/-1!important;display:flex!important;min-height:150px!important;padding:24px 12px!important;align-items:center!important;justify-content:center!important;flex-direction:column!important;gap:8px!important;text-align:center!important;color:#dce3ee!important}
+.video-container-wrap .fs-drawer-status i{font-size:20px!important;color:#768398!important}
+.video-container-wrap .fs-drawer-status strong{font-size:12px!important;font-weight:850!important}
+.video-container-wrap .fs-drawer-status span:not(.fs-drawer-spinner){max-width:220px!important;color:#8996a9!important;font-size:9px!important;line-height:1.4!important}
+.video-container-wrap .fs-drawer-spinner{width:22px!important;height:22px!important;border:2px solid rgba(255,255,255,.13)!important;border-top-color:#ff2d56!important;border-radius:50%!important;animation:fsDrawerSpin .75s linear infinite!important}
+@keyframes fsDrawerSpin{to{transform:rotate(360deg)}}
+.video-container-wrap .fs-drawer-match{padding:0!important;background:transparent!important;color:#ff5b79!important;font:inherit!important}
 .video-container-wrap #fsDrawerList:not(.series-drawer-detail){
   grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-auto-rows:76px!important;gap:8px!important;padding:1px 1px 8px!important;
 }
@@ -228,10 +245,17 @@ body{
   box-sizing:border-box!important;width:100%!important;height:76px!important;min-height:76px!important;max-height:76px!important;padding:8px!important;gap:9px!important;
   border-radius:10px!important;background:rgba(255,255,255,.055)!important;
 }
+.video-container-wrap #fsDrawerList:not(.series-drawer-detail) .fs-drawer-item:hover{border-color:rgba(255,255,255,.2)!important;background:rgba(255,255,255,.085)!important}
+.video-container-wrap #fsDrawerList:not(.series-drawer-detail) .fs-drawer-item:focus-visible{outline:2px solid #ff2d56!important;outline-offset:1px!important}
+.video-container-wrap #fsDrawerList:not(.series-drawer-detail) .fs-drawer-item.active{border-color:#ff2d56!important;box-shadow:inset 3px 0 0 #ff2d56,0 0 0 1px rgba(255,45,86,.12)!important}
 .video-container-wrap #fsDrawerList:not(.series-drawer-detail) .fs-drawer-logo-wrap{
   box-sizing:border-box!important;width:56px!important;height:56px!important;min-width:56px!important;aspect-ratio:1!important;border-radius:9px!important;
   background:rgba(255,255,255,.055)!important;
 }
+.video-container-wrap #fsDrawerList:not(.series-drawer-detail) .fs-drawer-logo-wrap{overflow:hidden!important;isolation:isolate!important}
+.video-container-wrap #fsDrawerList:not(.series-drawer-detail) .fs-drawer-logo-wrap img{transition:opacity .18s ease,transform .18s ease!important}
+.video-container-wrap #fsDrawerList:not(.series-drawer-detail) .fs-drawer-item:hover .fs-drawer-logo-wrap img{transform:scale(1.025)!important}
+@media (prefers-reduced-motion:reduce){.video-container-wrap .fs-drawer-spinner{animation:none!important}.video-container-wrap #fsDrawerList .fs-drawer-logo-wrap img{transition:none!important;transform:none!important}}
 .video-container-wrap #fsDrawerList:not(.series-drawer-detail) .fs-drawer-logo-wrap img{object-fit:contain!important}
 .video-container-wrap #fsDrawerList:not(.series-drawer-detail) .fs-drawer-item.is-movie .fs-drawer-logo-wrap img{object-fit:contain!important}
 .video-container-wrap #fsDrawerList:not(.series-drawer-detail) .fs-drawer-card-copy{display:flex!important;min-width:0!important;flex-direction:column!important;justify-content:center!important;gap:3px!important;padding:0!important;overflow:hidden!important}

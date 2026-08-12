@@ -46,7 +46,7 @@
   <link rel="stylesheet" href="assets/css/app.css?v=20260806-user-list-final-v1">
   <link rel="stylesheet" href="assets/css/series.css?v=20260806-user-list-final-v1">
   <link rel="stylesheet" href="assets/css/final-design.css?v=20260806-user-list-final-v1">
-  <link rel="stylesheet" href="assets/css/reference-design.css?v=20260812-reference-v18">
+  <link rel="stylesheet" href="assets/css/reference-design.css?v=20260812-reference-v19">
 </head>
 <body translate="no" class="notranslate">
   <div id="sticky-header-notice" class="sticky-notice">
@@ -120,15 +120,23 @@
           <div class="player-clock" id="playerClock"><i class="fas fa-clock"></i> <span id="clockTime">03:16 PM</span></div>
 
           <!-- Fullscreen Channel Drawer Toggle -->
-          <button class="fs-drawer-toggle" id="fsDrawerToggle" aria-label="Channel, movie or series list" title="Channel, movie or series list"><span class="drawer-bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
+          <button class="fs-drawer-toggle" id="fsDrawerToggle" aria-label="Channel, movie or series list" aria-controls="fsDrawer" aria-expanded="false" title="Channel, movie or series list"><span class="drawer-bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
           
           <!-- Fullscreen Channel Drawer -->
-          <div class="fs-drawer" id="fsDrawer">
-            <div class="fs-drawer-header">
-              <input class="fs-drawer-search" id="fsDrawerSearch" placeholder="Search..." type="text">
-              <button class="fs-drawer-close" id="fsDrawerClose"><i class="fas fa-times"></i></button>
+          <div class="fs-drawer" id="fsDrawer" role="dialog" aria-modal="false" aria-label="Playback catalogue" aria-hidden="true">
+            <div class="fs-drawer-heading">
+              <strong id="fsDrawerTitle">Current category</strong>
+              <span id="fsDrawerCount" role="status" aria-live="polite"></span>
             </div>
-            <div class="fs-drawer-list" id="fsDrawerList"></div>
+            <div class="fs-drawer-header">
+              <div class="fs-drawer-search-wrap">
+                <i class="fas fa-search" aria-hidden="true"></i>
+                <input class="fs-drawer-search" id="fsDrawerSearch" placeholder="Search everything..." type="search" autocomplete="off" spellcheck="false" aria-label="Search all channels, movies and events">
+                <button class="fs-drawer-clear" id="fsDrawerClear" type="button" aria-label="Clear search" title="Clear search" hidden><i class="fas fa-times" aria-hidden="true"></i></button>
+              </div>
+              <button class="fs-drawer-close" id="fsDrawerClose" type="button" aria-label="Close catalogue" title="Close"><i class="fas fa-times" aria-hidden="true"></i></button>
+            </div>
+            <div class="fs-drawer-list" id="fsDrawerList" aria-busy="false"></div>
           </div>
 
           <button class="center-play-btn" id="centerPlayBtn" style="display:none;"><i class="fas fa-play"></i></button>
@@ -287,6 +295,6 @@
   </div>
 
   <script src="assets/js/series.js?v=20260806-user-list-final-v1"></script>
-  <script src="assets/js/app.js?v=20260812-reference-v11"></script>
+  <script src="assets/js/app.js?v=20260812-reference-v12"></script>
 </body>
 </html>

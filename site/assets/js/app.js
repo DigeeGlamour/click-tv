@@ -150,6 +150,7 @@ const state = {
   drawerGlobalCatalog: null,
   drawerGlobalCatalogPromise: null,
   drawerSearchRequestId: 0,
+  drawerSearchDebounceTimer: null,
   hideControlsTimer: null,
   deferredInstallPrompt: null,
   autoplayUnlockPending: false,
@@ -5959,9 +5960,51 @@ function currentFullscreenDrawerItems() {
   ));
 }
 
+function fullscreenDrawerTitle(query = '') {
+  if (String(query || '').trim()) return 'Search results';
+  if (seriesModule?.detailActive) return 'Series episodes';
+  if (state.view === VIEW.MOVIE) return state.selectedMovieCategory || 'Movies';
+  if (state.view === VIEW.EVENT) return 'Today Match';
+  if (state.view === VIEW.UPCOMING) return 'Upcoming Match';
+  return state.selectedCategory || state.currentItem?.category || 'Current category';
+}
+
+function updateFullscreenDrawerHeader(query = '', count = 0, loading = false) {
+  const title = $('fsDrawerTitle');
+  const countNode = $('fsDrawerCount');
+  const clear = $('fsDrawerClear');
+  const normalized = String(query || '').trim();
+  if (title) title.textContent = fullscreenDrawerTitle(normalized);
+  if (countNode) countNode.textContent = loading ? 'Searching…' : `${count} ${count === 1 ? 'item' : 'items'}`;
+  if (clear) clear.hidden = !normalized;
+  $('fsDrawerList')?.setAttribute('aria-busy', loading ? 'true' : 'false');
+}
+
+function drawerHighlightedText(value, query = '') {
+  const source = String(value || '');
+  const needle = String(query || '').trim();
+  if (!needle) return escapeHtml(source);
+  const index = source.toLowerCase().indexOf(needle.toLowerCase());
+  if (index < 0) return escapeHtml(source);
+  return `${escapeHtml(source.slice(0, index))}<mark class="fs-drawer-match">${escapeHtml(source.slice(index, index + needle.length))}</mark>${escapeHtml(source.slice(index + needle.length))}`;
+}
+
+function renderFullscreenDrawerStatus(type, title, detail = '') {
+  const list = $('fsDrawerList');
+  const status = document.createElement('div');
+  status.className = `fs-drawer-status ${type}`;
+  status.setAttribute('role', type === 'loading' ? 'status' : 'note');
+  status.innerHTML = `${type === 'loading' ? '<span class="fs-drawer-spinner" aria-hidden="true"></span>' : '<i class="fas fa-search" aria-hidden="true"></i>'}<strong>${escapeHtml(title)}</strong>${detail ? `<span>${escapeHtml(detail)}</span>` : ''}`;
+  list.appendChild(status);
+}
+
 async function populateFullscreenDrawer(query = '') {
   const normalized = String(query || '').trim().toLowerCase();
-  if (!normalized && seriesModule?.populateFullscreenDrawer?.('')) return;
+  if (!normalized && seriesModule?.populateFullscreenDrawer?.('')) {
+    const count = qsa('.fs-drawer-item', $('fsDrawerList')).length;
+    updateFullscreenDrawerHeader('', count, false);
+    return;
+  }
   const list = $('fsDrawerList');
   const requestId = ++state.drawerSearchRequestId;
   rememberFullscreenDrawerScroll();
@@ -5971,10 +6014,8 @@ async function populateFullscreenDrawer(query = '') {
   let sourceItems = currentFullscreenDrawerItems();
   let contextKey = fullscreenDrawerContextKey();
   if (normalized) {
-    const loading = document.createElement('div');
-    loading.className = 'fs-drawer-limit-note';
-    loading.textContent = 'Searching all categories…';
-    list.appendChild(loading);
+    updateFullscreenDrawerHeader(normalized, 0, true);
+    renderFullscreenDrawerStatus('loading', 'Searching everything…', 'Channels, movies and events');
     sourceItems = await loadFullscreenGlobalCatalog();
     if (requestId !== state.drawerSearchRequestId) return;
     list.replaceChildren();
@@ -5993,6 +6034,13 @@ async function populateFullscreenDrawer(query = '') {
   if (!normalized) list.classList.add(movieMode ? 'movie-drawer-grid' : 'channel-drawer-grid');
   if (movieSearchMode) list.classList.add('movie-search-grid');
   state.drawerRenderedItems = new Map(items.map((item) => [item._uid, item]));
+  updateFullscreenDrawerHeader(normalized, allMatches.length, false);
+
+  if (!items.length) {
+    renderFullscreenDrawerStatus('empty', 'No results found', normalized ? `Try another spelling for “${String(query || '').trim()}”.` : 'This category has no available items.');
+    state.drawerRenderedForSession = state.dataSessionId;
+    return;
+  }
 
   const fragment = document.createDocumentFragment();
   items.forEach((item, index) => {
@@ -6002,12 +6050,14 @@ async function populateFullscreenDrawer(query = '') {
     row.className = `fs-drawer-item tv-focusable${itemMovieMode ? ' is-movie' : ''}${item._uid === state.currentItem?._uid ? ' active' : ''}`;
     row.dataset.uid = item._uid;
     row.setAttribute('aria-label', item.name);
+    row.setAttribute('title', item.name);
+    if (item._uid === state.currentItem?._uid) row.setAttribute('aria-current', 'true');
     const meta = String(item.category || item.competition || (itemMovieMode ? 'Movie' : 'Live')).trim();
     row.innerHTML = `
       <span class="fs-drawer-rank">${index + 1}</span>
       <span class="fs-drawer-logo-wrap">${createImageHtml(item, '')}</span>
       <span class="fs-drawer-card-copy">
-        <strong class="fs-drawer-title">${escapeHtml(item.name)}</strong>
+        <strong class="fs-drawer-title">${drawerHighlightedText(item.name, normalized)}</strong>
         <small class="fs-drawer-meta">${escapeHtml(meta)}</small>
       </span>`;
     if (itemMovieMode) {
@@ -6047,11 +6097,21 @@ $('fsDrawerList').addEventListener('click', (event) => {
     return;
   }
   if (item && isPlayable(item)) startPlayback(item, true);
-  $('fsDrawer').classList.remove('open');
+  closeFullscreenDrawer(true);
 });
 $('fsDrawerList').addEventListener('error', (event) => {
   const image = event.target;
-  if (image?.tagName === 'IMG') replaceBrokenImage(image);
+  if (image?.tagName !== 'IMG') return;
+  const row = image.closest('.fs-drawer-item');
+  if (row?.classList.contains('is-movie')) {
+    image.parentElement?.style.removeProperty('background-image');
+    replaceBrokenMovieImage(image);
+  } else {
+    replaceBrokenImage(image);
+  }
+}, true);
+$('fsDrawerList').addEventListener('load', (event) => {
+  if (event.target?.tagName === 'IMG') event.target.classList.add('is-loaded');
 }, true);
 
 let popupAutoCloseTimer = null;
@@ -6155,12 +6215,23 @@ function handleRemoteNavigation(event) {
       // Backspace inside search/text fields must edit text normally. Previously
       // the TV remote handler blurred the field and blocked the browser edit.
       if (key === 'Backspace' || code === 8) return;
+      if (key === 'Escape' && active.id === 'fsDrawerSearch') {
+        event.preventDefault();
+        if (active.value) {
+          resetFullscreenDrawerSearch();
+          populateFullscreenDrawer('');
+          active.focus();
+        } else {
+          closeFullscreenDrawer(true);
+        }
+        return;
+      }
       active.blur();
       event.preventDefault();
       return;
     }
     if ($('fsDrawer').classList.contains('open')) {
-      $('fsDrawer').classList.remove('open');
+      closeFullscreenDrawer(true);
       event.preventDefault();
       return;
     }
@@ -6595,24 +6666,75 @@ video.addEventListener('webkitendfullscreen', restoreCustomControlsAfterFullscre
 $('fullscreenBtn').addEventListener('click', toggleFullscreen);
 function resetFullscreenDrawerSearch() {
   state.drawerSearchRequestId += 1;
+  clearTimeout(state.drawerSearchDebounceTimer);
+  state.drawerSearchDebounceTimer = null;
   $('fsDrawerSearch').value = '';
+  $('fsDrawerClear').hidden = true;
+}
+function closeFullscreenDrawer(focusToggle = false) {
+  const drawer = $('fsDrawer');
+  rememberFullscreenDrawerScroll();
+  resetFullscreenDrawerSearch();
+  drawer.classList.remove('open');
+  drawer.setAttribute('aria-hidden', 'true');
+  $('fsDrawerToggle').setAttribute('aria-expanded', 'false');
+  showControlsTemporarily();
+  if (focusToggle) $('fsDrawerToggle').focus({ preventScroll: true });
 }
 $('fsDrawerToggle').addEventListener('click', (event) => {
   event.stopPropagation();
   const drawer = $('fsDrawer');
   const opening = !drawer.classList.contains('open');
   drawer.classList.toggle('open', opening);
+  drawer.setAttribute('aria-hidden', opening ? 'false' : 'true');
+  $('fsDrawerToggle').setAttribute('aria-expanded', opening ? 'true' : 'false');
   showControlsTemporarily();
   resetFullscreenDrawerSearch();
-  if (opening) populateFullscreenDrawer('');
+  if (opening) {
+    populateFullscreenDrawer('');
+    requestAnimationFrame(() => $('fsDrawerSearch').focus({ preventScroll: true }));
+  }
 });
 $('fsDrawerClose').addEventListener('click', () => {
-  rememberFullscreenDrawerScroll();
-  resetFullscreenDrawerSearch();
-  $('fsDrawer').classList.remove('open');
-  showControlsTemporarily();
+  closeFullscreenDrawer(true);
 });
-$('fsDrawerSearch').addEventListener('input', (event) => populateFullscreenDrawer(event.target.value.trim()));
+$('fsDrawerClear').addEventListener('click', () => {
+  resetFullscreenDrawerSearch();
+  populateFullscreenDrawer('');
+  $('fsDrawerSearch').focus({ preventScroll: true });
+});
+$('fsDrawerSearch').addEventListener('input', (event) => {
+  const query = event.target.value;
+  $('fsDrawerClear').hidden = !query.trim();
+  clearTimeout(state.drawerSearchDebounceTimer);
+  state.drawerSearchDebounceTimer = setTimeout(() => {
+    state.drawerSearchDebounceTimer = null;
+    populateFullscreenDrawer(query);
+  }, 140);
+});
+$('fsDrawerSearch').addEventListener('keydown', (event) => {
+  if (event.key !== 'ArrowDown') return;
+  const firstResult = qs('.fs-drawer-item', $('fsDrawerList'));
+  if (!firstResult) return;
+  event.preventDefault();
+  firstResult.focus({ preventScroll: true });
+  firstResult.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+});
+$('fsDrawer').addEventListener('keydown', (event) => {
+  if (event.key !== 'Tab') return;
+  const focusable = qsa('input, button:not([disabled]), [tabindex]:not([tabindex="-1"])', $('fsDrawer'))
+    .filter((element) => !element.hidden && getComputedStyle(element).display !== 'none');
+  if (!focusable.length) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    last.focus({ preventScroll: true });
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    first.focus({ preventScroll: true });
+  }
+});
 function clearMobileSearchAutoClose() {
   clearTimeout(state.mobileSearchHideTimer);
   state.mobileSearchHideTimer = null;
