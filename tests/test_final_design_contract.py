@@ -52,8 +52,8 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn("series.js", self.index)
 
     def test_reference_design_is_external_and_preserves_the_three_column_contract(self) -> None:
-        self.assertIn("reference-design.css?v=20260812-reference-v17", self.index)
-        self.assertIn("app.js?v=20260812-reference-v10", self.index)
+        self.assertIn("reference-design.css?v=20260812-reference-v18", self.index)
+        self.assertIn("app.js?v=20260812-reference-v11", self.index)
         self.assertIn('class="desktop-category-rail"', self.index)
         self.assertIn('id="desktopCategoryTitle"', self.index)
         self.assertIn('id="mobileBottomSearchBtn"', self.index)
@@ -78,6 +78,8 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn("if (opening) populateFullscreenDrawer('')", self.app)
         self.assertIn('resetFullscreenDrawerSearch();', self.app)
         self.assertIn("if (key === 'Backspace' || code === 8) return", self.app)
+        self.assertIn("posterWrap.style.setProperty('background-image'", self.app)
+        self.assertIn('filter:drop-shadow(0 2px 5px rgba(0,0,0,.55))!important', self.reference_css)
         self.assertIn('drawerGlobalCatalogPromise', self.app)
         self.assertIn('loadFullscreenGlobalCatalog()', self.app)
         self.assertIn("if (!normalized && seriesModule?.populateFullscreenDrawer?.('')) return", self.app)

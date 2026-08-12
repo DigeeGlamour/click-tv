@@ -6010,6 +6010,14 @@ async function populateFullscreenDrawer(query = '') {
         <strong class="fs-drawer-title">${escapeHtml(item.name)}</strong>
         <small class="fs-drawer-meta">${escapeHtml(meta)}</small>
       </span>`;
+    if (itemMovieMode) {
+      const posterWrap = row.querySelector('.fs-drawer-logo-wrap');
+      const poster = posterWrap?.querySelector('img');
+      const posterUrl = poster?.getAttribute('src');
+      if (posterWrap && posterUrl) {
+        posterWrap.style.setProperty('background-image', `url("${posterUrl.replace(/["\\]/g, '\\$&')}")`, 'important');
+      }
+    }
     fragment.appendChild(row);
   });
 
