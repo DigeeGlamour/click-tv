@@ -92,6 +92,10 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertIn("ClickTV-Data-Scanner", launcher)
         self.assertIn("Invoke-RebaseAndPush", launcher)
         self.assertIn('"rebase", "--abort"', launcher)
+        self.assertIn('"clone", "--depth", "1", "--no-tags"', launcher)
+        self.assertIn("Test-UsableScannerClone", launcher)
+        self.assertIn("Move-IncompleteScannerClone", launcher)
+        self.assertIn("http.lowSpeedTime=30", launcher)
 
         advanced_launcher = (ROOT / "scripts/run-local-scan.ps1").read_text(
             encoding="utf-8"

@@ -18,7 +18,11 @@ foreach ($Required in @(
     'Invoke-RebaseAndPush',
     '@("add", "-A", "--", "data", "reports", "state")',
     '@("reset", "--hard", "origin/main")',
-    '@("rebase", "--abort")'
+    '@("rebase", "--abort")',
+    '"clone", "--depth", "1", "--no-tags"',
+    'Test-UsableScannerClone',
+    'Move-IncompleteScannerClone',
+    'http.lowSpeedTime=30'
 )) {
     if (-not $Launcher.Contains($Required)) {
         throw "Local data-only scanner requirement is missing: $Required"

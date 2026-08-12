@@ -27,8 +27,11 @@ exit /b %CLICKTV_EXIT%
 # CLICKTV_POWERSHELL_BEGIN
 $ErrorActionPreference = "Stop"
 $SelfPath = [IO.Path]::GetFullPath($env:CLICKTV_SELF)
-$PackageRoot = Split-Path -Parent $SelfPath
-$ClonePath = Join-Path (Join-Path $env:USERPROFILE "Downloads") "ClickTV-Auto"
+$ClonePath = if ($env:CLICKTV_CLONE_PATH) {
+    [IO.Path]::GetFullPath($env:CLICKTV_CLONE_PATH)
+} else {
+    Join-Path (Join-Path $env:USERPROFILE "Downloads") "ClickTV-Data-Scanner"
+}
 $RepositoryUrl = "https://github.com/DigeeGlamour/click-tv.git"
 
 function Invoke-Git {
@@ -50,50 +53,35 @@ function Invoke-Git {
     return $Code
 }
 
-function Assert-SupportedDirtyState {
+function Invoke-RebaseAndPush {
     param([string]$RepositoryPath)
-    $Allowed = @(
-        "scan.py",
-        "scanner/security.py",
-        "scanner/playback_profiles.py",
-        "scanner/output.py",
-        "scanner/telegram_notify.py",
-        "scanner/normalizer.py",
-        ".github/workflows/scan.yml",
-        ".gitignore",
-        "config/channel-categories.json",
-        "config/channel-aliases.json",
-        "config/sources.json",
-        "config/settings.json",
-        "config/event-fixtures.json",
-        "scanner/events.py",
-        "scanner/merger.py",
-        "scanner/schedule_resolver.py",
-        "site/assets/js/app.js",
-        "site/sw.js",
-        "scripts/browser-event-card-check.mjs",
-        "tests/test_schedule_resolver.py",
-        "scripts/run-local-scan.ps1",
-        "tests/test_zero_candidate_preservation.py",
-        "tests/test_content_router.py",
-        "tests/test_operational_safety.py",
-        "CLICK_TV_EASY_PAT_SCAN.cmd",
-        "CLOUDFLARE_GITHUB_SETUP_BN.md",
-        "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb",
-        "working/scan-progress.json"
-    )
-    $Unexpected = @()
-    foreach ($Line in (& git -C $RepositoryPath status --porcelain)) {
-        if (-not $Line) { continue }
-        # Git status always uses forward slashes. Normalize Windows separators
-        # the same way before comparing with the allow-list.
-        $Path = $Line.Substring(3).Trim().Trim('"').Replace('\', '/')
-        if ($Path -notin $Allowed) { $Unexpected += $Line }
+    Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("fetch", "origin", "main") | Out-Null
+    try {
+        Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("rebase", "origin/main") | Out-Null
+        Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("push", "origin", "HEAD:main") | Out-Null
     }
-    if ($Unexpected.Count) {
-        Write-Host ($Unexpected -join "`n")
-        throw "ClickTV-Auto contains unrelated unfinished files. They were not overwritten."
+    catch {
+        Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("rebase", "--abort") -AllowFailure | Out-Null
+        throw
     }
+}
+
+function Test-UsableScannerClone {
+    param([string]$RepositoryPath)
+    if (-not (Test-Path -LiteralPath (Join-Path $RepositoryPath ".git"))) { return $false }
+    & git -C $RepositoryPath rev-parse --verify HEAD *> $null
+    if ($LASTEXITCODE -ne 0) { return $false }
+    & git -C $RepositoryPath rev-parse --verify refs/heads/main *> $null
+    return ($LASTEXITCODE -eq 0)
+}
+
+function Move-IncompleteScannerClone {
+    param([string]$RepositoryPath)
+    if (-not (Test-Path -LiteralPath $RepositoryPath)) { return }
+    $Timestamp = [DateTime]::Now.ToString("yyyyMMdd-HHmmss")
+    $BackupPath = "$RepositoryPath-incomplete-$Timestamp"
+    Move-Item -LiteralPath $RepositoryPath -Destination $BackupPath
+    Write-Host "Incomplete download preserved at: $BackupPath" -ForegroundColor Yellow
 }
 
 function Test-GeneratedPages {
@@ -174,68 +162,47 @@ if (-not $Mode) { throw "Invalid scan option. Run the same file again and choose
 Write-Host ""
 Write-Host "[1/6] Preparing Git repository..." -ForegroundColor Cyan
 if (Test-Path -LiteralPath $ClonePath) {
-    if (-not (Test-Path -LiteralPath (Join-Path $ClonePath ".git"))) {
-        throw "Downloads\ClickTV-Auto exists but is not a Git clone. Rename that folder and run again."
+    if (-not (Test-UsableScannerClone -RepositoryPath $ClonePath)) {
+        Write-Host "Previous repository download is incomplete. Recovering automatically..." -ForegroundColor Yellow
+        Move-IncompleteScannerClone -RepositoryPath $ClonePath
     }
-    Assert-SupportedDirtyState -RepositoryPath $ClonePath
-}
-else {
-    Invoke-Git -Arguments @("clone", "--branch", "main", "--single-branch", $RepositoryUrl, $ClonePath) | Out-Null
 }
 
-# If a previous scan completed and committed but its final push was interrupted,
-# push that result once and do not waste hours repeating the same full scan.
+if (-not (Test-Path -LiteralPath $ClonePath)) {
+    Write-Host "Downloading latest GitHub files (fast shallow download)..." -ForegroundColor Cyan
+    Invoke-Git -Arguments @(
+        "-c", "http.lowSpeedLimit=1024",
+        "-c", "http.lowSpeedTime=30",
+        "clone", "--depth", "1", "--no-tags", "--branch", "main", "--single-branch",
+        $RepositoryUrl, $ClonePath
+    ) | Out-Null
+}
+
+# A previous interrupted push must never leave the next scan trapped in Git's
+# detached rebase state. This affects only the dedicated scanner clone.
+$RebaseMerge = Join-Path $ClonePath ".git\rebase-merge"
+$RebaseApply = Join-Path $ClonePath ".git\rebase-apply"
+if ((Test-Path -LiteralPath $RebaseMerge) -or (Test-Path -LiteralPath $RebaseApply)) {
+    Write-Host "Recovering an interrupted previous Git rebase..." -ForegroundColor Yellow
+    Invoke-Git -WorkingDirectory $ClonePath -Arguments @("rebase", "--abort") -AllowFailure | Out-Null
+}
+
 Invoke-Git -WorkingDirectory $ClonePath -Arguments @("fetch", "origin", "main") | Out-Null
+Invoke-Git -WorkingDirectory $ClonePath -Arguments @("checkout", "main") | Out-Null
 $PendingScanSubjects = @(& git -C $ClonePath log --format=%s origin/main..HEAD)
 $RecoveredPendingScan = @(
     $PendingScanSubjects | Where-Object { $_ -like "Local auto update:*" }
 ).Count -gt 0
 
-$OldProgress = Join-Path $ClonePath "working\scan-progress.json"
-if (Test-Path -LiteralPath $OldProgress) {
-    Remove-Item -LiteralPath $OldProgress -Force
-}
-
-$FilesToSync = @(
-    "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb",
-    "config\sources.json",
-    "config\settings.json",
-    "config\event-fixtures.json",
-    "scanner\events.py",
-    "scanner\merger.py",
-    "scanner\schedule_resolver.py",
-    "site\assets\js\app.js",
-    "site\sw.js",
-    "scripts\browser-event-card-check.mjs",
-    "scripts\test-update-package.ps1",
-    "tests\test_schedule_resolver.py",
-    "tests\test_operational_safety.py"
+$NonScanPending = @(
+    $PendingScanSubjects | Where-Object { $_ -notlike "Local auto update:*" }
 )
-foreach ($RelativePath in $FilesToSync) {
-    $Source = Join-Path $PackageRoot $RelativePath
-    if (-not (Test-Path -LiteralPath $Source)) {
-        throw "Update package file is missing: $RelativePath. Extract the complete Ruman-17 package and run this CMD from inside that folder."
-    }
-    $Destination = Join-Path $ClonePath $RelativePath
-    New-Item -ItemType Directory -Path (Split-Path -Parent $Destination) -Force | Out-Null
-    Copy-Item -LiteralPath $Source -Destination $Destination -Force
+if ($NonScanPending.Count) {
+    throw "The dedicated scanner clone contains a non-scan local commit. No file was changed or pushed."
 }
-Copy-Item -LiteralPath $SelfPath -Destination (Join-Path $ClonePath "CLICK_TV_EASY_PAT_SCAN.cmd") -Force
-$FilesToSync += "CLICK_TV_EASY_PAT_SCAN.cmd"
-
-Invoke-Git -WorkingDirectory $ClonePath -Arguments @("config", "user.name", "Click TV Local Scanner") | Out-Null
-Invoke-Git -WorkingDirectory $ClonePath -Arguments @("config", "user.email", "clicktv-local@users.noreply.github.com") | Out-Null
-$AddCodeArguments = @("add", "--") + $FilesToSync
-Invoke-Git -WorkingDirectory $ClonePath -Arguments $AddCodeArguments | Out-Null
-& git -C $ClonePath diff --cached --quiet
-if ($LASTEXITCODE -ne 0) {
-    Invoke-Git -WorkingDirectory $ClonePath -Arguments @("commit", "-m", "Fix scanner and add easy PAT scan launcher") | Out-Null
-}
-Invoke-Git -WorkingDirectory $ClonePath -Arguments @("fetch", "origin", "main") | Out-Null
-Invoke-Git -WorkingDirectory $ClonePath -Arguments @("rebase", "origin/main") | Out-Null
-Invoke-Git -WorkingDirectory $ClonePath -Arguments @("push", "origin", "HEAD:main") | Out-Null
 
 if ($RecoveredPendingScan) {
+    Invoke-RebaseAndPush -RepositoryPath $ClonePath
     $RecoveredCommit = (& git -C $ClonePath rev-parse --short HEAD) -join ""
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
@@ -244,6 +211,18 @@ if ($RecoveredPendingScan) {
     Write-Host "============================================================" -ForegroundColor Green
     exit 0
 }
+
+# Start from the exact latest GitHub code. Local scan never copies, commits or
+# pushes edited code/config/site/workflow files.
+Invoke-Git -WorkingDirectory $ClonePath -Arguments @("reset", "--hard", "origin/main") | Out-Null
+
+$OldProgress = Join-Path $ClonePath "working\scan-progress.json"
+if (Test-Path -LiteralPath $OldProgress) {
+    Remove-Item -LiteralPath $OldProgress -Force
+}
+
+Invoke-Git -WorkingDirectory $ClonePath -Arguments @("config", "user.name", "Click TV Local Scanner") | Out-Null
+Invoke-Git -WorkingDirectory $ClonePath -Arguments @("config", "user.email", "clicktv-local@users.noreply.github.com") | Out-Null
 
 Write-Host "[2/6] Installing/checking scanner requirements..." -ForegroundColor Cyan
 $VenvPath = Join-Path $ClonePath ".venv"
@@ -288,14 +267,12 @@ if ($Remaining.Trim()) {
 }
 
 Write-Host "[6/6] Pushing scan result to GitHub..." -ForegroundColor Cyan
-Invoke-Git -WorkingDirectory $ClonePath -Arguments @("fetch", "origin", "main") | Out-Null
-Invoke-Git -WorkingDirectory $ClonePath -Arguments @("rebase", "origin/main") | Out-Null
-Invoke-Git -WorkingDirectory $ClonePath -Arguments @("push", "origin", "HEAD:main") | Out-Null
+Invoke-RebaseAndPush -RepositoryPath $ClonePath
 $Commit = (& git -C $ClonePath rev-parse --short HEAD) -join ""
 
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Green
 Write-Host "COMPLETED: $Mode SCAN + GITHUB PUSH" -ForegroundColor Green
 Write-Host "Commit: $Commit"
-Write-Host "Next time run: $ClonePath\CLICK_TV_EASY_PAT_SCAN.cmd"
+Write-Host "Next time use this same Ruman-18 CMD file."
 Write-Host "============================================================" -ForegroundColor Green
