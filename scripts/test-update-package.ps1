@@ -3,22 +3,26 @@ $ErrorActionPreference = "Stop"
 $RepositoryRoot = Split-Path -Parent $PSScriptRoot
 
 $Launcher = Get-Content -LiteralPath (Join-Path $RepositoryRoot "CLICK_TV_EASY_PAT_SCAN.cmd") -Raw
-$Match = [regex]::Match($Launcher, '(?s)\$FilesToSync\s*=\s*@\((.*?)\r?\n\)')
-if (-not $Match.Success) { throw "FilesToSync block was not found" }
-
-$Files = [regex]::Matches($Match.Groups[1].Value, '"([^"]+)"') |
-    ForEach-Object { $_.Groups[1].Value }
-
-$Missing = @($Files | Where-Object {
-    -not (Test-Path -LiteralPath (Join-Path $RepositoryRoot $_))
-})
-
-if ($Missing.Count) {
-    throw "Package incomplete: $($Missing -join ', ')"
+foreach ($Forbidden in @(
+    '$FilesToSync',
+    'Copy-Item -LiteralPath $Source',
+    'Fix scanner and add easy PAT scan launcher'
+)) {
+    if ($Launcher.Contains($Forbidden)) {
+        throw "Local scanner still contains forbidden code-sync behavior: $Forbidden"
+    }
 }
 
-if ($Files -contains "scan.py") {
-    throw "Partial update launcher must use scan.py from the fresh GitHub clone"
+foreach ($Required in @(
+    'ClickTV-Data-Scanner',
+    'Invoke-RebaseAndPush',
+    '@("add", "-A", "--", "data", "reports", "state")',
+    '@("reset", "--hard", "origin/main")',
+    '@("rebase", "--abort")'
+)) {
+    if (-not $Launcher.Contains($Required)) {
+        throw "Local data-only scanner requirement is missing: $Required"
+    }
 }
 
-Write-Host "LOCAL UPDATE PACKAGE PREFLIGHT PASS ($($Files.Count) synced files)"
+Write-Host "LOCAL DATA-ONLY SCANNER PREFLIGHT PASS"
