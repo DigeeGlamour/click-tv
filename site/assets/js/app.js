@@ -6144,6 +6144,9 @@ function handleRemoteNavigation(event) {
 
   if (isBack) {
     if (isInput) {
+      // Backspace inside search/text fields must edit text normally. Previously
+      // the TV remote handler blurred the field and blocked the browser edit.
+      if (key === 'Backspace' || code === 8) return;
       active.blur();
       event.preventDefault();
       return;
