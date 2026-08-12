@@ -1975,6 +1975,10 @@ function createEventCard(item, visualIndex) {
   const playable = isPlayable(item);
   const uiStatus = eventUiStatus(item);
   const upcoming = uiStatus !== 'LIVE_NOW';
+  // Today Match cards with a verified link must say Watch even while their
+  // schedule badge is STARTING SOON/UPCOMING. Details is reserved for a
+  // metadata-only card or the dedicated Upcoming view.
+  const showWatchAction = playable && state.view === VIEW.EVENT;
   const scheduleText = eventScheduleText(item);
   const parts = eventDisplayParts(item);
   card.className = `sidebar-item event-ref-card tv-focusable ${upcoming ? 'event-upcoming-card' : 'event-live-card'}${playable ? ' is-playable' : ' is-scheduled'}`;
@@ -2002,7 +2006,7 @@ function createEventCard(item, visualIndex) {
         ${scheduleText ? `<span class="event-card-time"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(scheduleText)}</span>` : ''}
       </div>
     </div>
-    <span class="event-card-action ${upcoming ? 'reminder' : 'watch'}" aria-hidden="true"><i class="fas ${upcoming ? 'fa-bell' : 'fa-play'}"></i><span>${upcoming ? 'Details' : 'Watch'}</span></span>
+    <span class="event-card-action ${showWatchAction ? 'watch' : 'reminder'}" aria-hidden="true"><i class="fas ${showWatchAction ? 'fa-play' : 'fa-bell'}"></i><span>${showWatchAction ? 'Watch' : 'Details'}</span></span>
     ${!upcoming ? `<button class="card-fav-btn" data-favorite-id="${escapeHtml(favoriteKey)}" type="button" title="Bookmark" aria-label="Bookmark ${escapeHtml(parts.title)}"><i class="far fa-star"></i></button>` : ''}`;
 
   const image = qs('img', card);

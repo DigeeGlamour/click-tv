@@ -141,7 +141,8 @@ class FinalDesignContractTests(unittest.TestCase):
     def test_modern_event_cards_keep_schedules_and_live_actions(self) -> None:
         self.assertIn("if (sourceKind === VIEW.UPCOMING) return Boolean(String(item.name || '').trim());", self.app)
         self.assertIn("'LIVE NOW'", self.app)
-        self.assertIn("'Details' : 'Watch'", self.app)
+        self.assertIn("showWatchAction ? 'Watch' : 'Details'", self.app)
+        self.assertIn("playable && state.view === VIEW.EVENT", self.app)
         self.assertIn('showEventPreview(item)', self.app)
         self.assertIn('.event-ref-card', self.reference_css)
         self.assertIn('.event-status-pill.upcoming', self.reference_css)

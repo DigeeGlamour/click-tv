@@ -125,12 +125,57 @@ async function checkEndedEventIsHidden() {
   await context.close();
 }
 
+async function checkPlayableTodayActionSaysWatch() {
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    serviceWorkers: 'block',
+  });
+  const page = await context.newPage();
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.route('**/data/today-match.json*', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({
+        type: 'today_match',
+        count: 1,
+        items: [{
+          id: 'browser-playable-starting-soon',
+          name: 'Playable Today Match',
+          category: 'today_match',
+          source_pipeline: 'today_match',
+          status: 'STARTING_SOON',
+          schedule_status: 'STARTING_SOON',
+          start_time: '2099-08-12T01:00:00+00:00',
+          end_time: '2099-08-12T05:00:00+00:00',
+          url: 'https://example.invalid/live.m3u8',
+          verified: true,
+          publish_allowed: true,
+        }],
+      }),
+    });
+  });
+  await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.locator('#sidebarList').waitFor({ state: 'visible', timeout: 20000 });
+  await page.locator('#desktopMainNav [data-final-key="sports"]').click();
+  await page.locator('#desktopSubNav [data-final-key="today-match"]').click();
+  const card = page.locator('.event-ref-card', { hasText: 'Playable Today Match' });
+  await card.waitFor({ state: 'visible', timeout: 20000 });
+  const action = await card.locator('.event-card-action').textContent();
+  if (action?.trim() !== 'Watch') {
+    throw new Error(`playable Today Match action must be Watch, received: ${action}`);
+  }
+  if (errors.length) throw new Error(`Today action runtime errors: ${errors.join(' | ')}`);
+  await context.close();
+}
+
 try {
   await check('desktop', { width: 1440, height: 900 });
   await check('tablet', { width: 1024, height: 768 });
   await check('mobile', { width: 390, height: 844 }, true);
   await check('landscape', { width: 844, height: 390 }, true);
   await checkEndedEventIsHidden();
+  await checkPlayableTodayActionSaysWatch();
   console.log('Event cards PASS: responsive upcoming design, schedule metadata, non-playback preview and close behavior');
 } finally {
   await browser.close();
