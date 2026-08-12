@@ -197,17 +197,7 @@ if (Test-Path -LiteralPath $OldProgress) {
 }
 
 $FilesToSync = @(
-    "scan.py",
-    "scanner\security.py",
-    "scanner\playback_profiles.py",
-    "scanner\output.py",
-    "scanner\telegram_notify.py",
-    "scanner\normalizer.py",
-    ".github\workflows\scan.yml",
-    ".gitignore",
-    "scripts\run-local-scan.ps1",
-    "config\channel-categories.json",
-    "config\channel-aliases.json",
+    "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb",
     "config\sources.json",
     "config\settings.json",
     "config\event-fixtures.json",
@@ -217,16 +207,15 @@ $FilesToSync = @(
     "site\assets\js\app.js",
     "site\sw.js",
     "scripts\browser-event-card-check.mjs",
+    "scripts\test-update-package.ps1",
     "tests\test_schedule_resolver.py",
-    "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb",
-    "CLOUDFLARE_GITHUB_SETUP_BN.md",
-    "tests\test_zero_candidate_preservation.py",
-    "tests\test_content_router.py",
     "tests\test_operational_safety.py"
 )
 foreach ($RelativePath in $FilesToSync) {
     $Source = Join-Path $PackageRoot $RelativePath
-    if (-not (Test-Path -LiteralPath $Source)) { throw "Package file is missing: $RelativePath" }
+    if (-not (Test-Path -LiteralPath $Source)) {
+        throw "Update package file is missing: $RelativePath. Extract the complete Ruman-17 package and run this CMD from inside that folder."
+    }
     $Destination = Join-Path $ClonePath $RelativePath
     New-Item -ItemType Directory -Path (Split-Path -Parent $Destination) -Force | Out-Null
     Copy-Item -LiteralPath $Source -Destination $Destination -Force

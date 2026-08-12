@@ -84,6 +84,11 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertNotIn("CLICK_TV_ONE_CLICK_ALL.cmd", launcher)
         self.assertNotIn("RUN_CLICK_TV_LOCAL_SCAN.cmd", launcher)
         self.assertNotIn("scripts\\one-click-all.ps1", launcher)
+        sync_block = launcher.split("$FilesToSync = @(", 1)[1].split("\n)", 1)[0]
+        self.assertNotIn('    "scan.py",', sync_block)
+        self.assertIn('"scanner\\schedule_resolver.py"', launcher)
+        self.assertIn('"ClickTV_Colab_FINAL_EASY_5_MODE.ipynb"', launcher)
+        self.assertIn('"scripts\\test-update-package.ps1"', launcher)
 
         advanced_launcher = (ROOT / "scripts/run-local-scan.ps1").read_text(
             encoding="utf-8"
@@ -91,6 +96,21 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertIn('Scripts\\python.exe', advanced_launcher)
         self.assertIn("$VenvPython -m pip install", advanced_launcher)
         self.assertNotIn("$PythonCommand.Source -m pip install -r", advanced_launcher)
+
+    def test_actions_requires_complete_schedule_update(self):
+        workflow = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
+        self.assertIn("test -f config/event-fixtures.json", workflow)
+        self.assertIn("test -f scanner/schedule_resolver.py", workflow)
+        self.assertIn("test -f tests/test_schedule_resolver.py", workflow)
+
+    def test_colab_restores_temporary_settings_override(self):
+        notebook = (ROOT / "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            '\\"config/settings.json\\", \\"working\\"',
+            notebook,
+        )
 
     def test_failure_message_contains_run_link_but_no_secret(self):
         message = build_failure_message(
