@@ -16,6 +16,22 @@ class ScheduleResolverTests(unittest.TestCase):
         self.assertEqual(welsh["start"].isoformat(), "2026-08-12T10:30:00+00:00")
         self.assertEqual(ireland["start"].isoformat(), "2026-08-12T09:45:00+00:00")
 
+    def test_unconfirmed_knockout_rounds_are_labelled_teams_tba(self):
+        fixtures = load_fixtures("config/event-fixtures.json")
+        knockout_names = {
+            item["name"] for item in fixtures
+            if "Eliminator" in item["name"] or "Final" in item["name"]
+        }
+        self.assertEqual(
+            knockout_names,
+            {
+                "The Hundred Women Eliminator - Teams TBA",
+                "The Hundred Men Eliminator - Teams TBA",
+                "The Hundred Women Final - Teams TBA",
+                "The Hundred Men Final - Teams TBA",
+            },
+        )
+
     def test_wrong_source_times_are_corrected_and_auditable(self):
         candidates = [
             {
@@ -76,6 +92,80 @@ class ScheduleResolverTests(unittest.TestCase):
         attached = next(item for item in resolved if item.get("url"))
         self.assertEqual(attached["name"], "Welsh Fire Women vs London Spirit Women")
         self.assertEqual(attached["schedule_status"], "LIVE_NOW")
+
+    def test_hmen_url_never_attaches_to_women_fixture(self):
+        candidate = [{
+            "name": "Welsh Fire vs London Spirit - 12 Aug 2026 | The Hundred 2026",
+            "logo": "https://example.test/The_Hundred2026_mens_Welsh_Fire.jpg",
+            "url": "https://example.test/live/DAI18-HMEN/master.m3u8",
+            "source_pipeline": "today_match",
+        }]
+        resolved, _ = enrich_event_candidates(
+            candidate,
+            now=datetime(2026, 8, 12, 13, 0, tzinfo=timezone.utc),
+            future_days=2,
+        )
+        attached = next(item for item in resolved if item.get("url"))
+        self.assertEqual(attached["name"], "Welsh Fire Men vs London Spirit Men")
+
+    def test_ambiguous_neutral_same_team_event_is_not_guessed(self):
+        candidate = [{
+            "name": "Welsh Fire vs London Spirit",
+            "url": "https://example.test/generic.m3u8",
+            "source_pipeline": "today_match",
+        }]
+        resolved, stats = enrich_event_candidates(
+            candidate,
+            now=datetime(2026, 8, 12, 13, 0, tzinfo=timezone.utc),
+            future_days=2,
+        )
+        self.assertFalse(any(item.get("url") for item in resolved))
+        self.assertEqual(stats["unverified_suppressed"], 1)
+
+    def test_ended_fixture_is_not_published(self):
+        candidate = [{
+            "name": "Welsh Fire Women vs London Spirit Women",
+            "url": "https://example.test/women.m3u8",
+            "source_pipeline": "today_match",
+        }]
+        resolved, _ = enrich_event_candidates(
+            candidate,
+            now=datetime(2026, 8, 12, 14, 0, 1, tzinfo=timezone.utc),
+            future_days=2,
+        )
+        self.assertFalse(any(
+            item.get("name") == "Welsh Fire Women vs London Spirit Women"
+            for item in resolved
+        ))
+
+    def test_generic_series_teams_attach_only_to_current_numbered_fixture(self):
+        candidate = [{
+            "name": "Afghanistan vs Ireland - Willow HD",
+            "url": "https://example.test/willow-hd.m3u8",
+            "source_pipeline": "today_match",
+        }]
+        resolved, _ = enrich_event_candidates(
+            candidate,
+            now=datetime(2026, 8, 12, 12, 0, tzinfo=timezone.utc),
+            future_days=10,
+        )
+        attached = next(item for item in resolved if item.get("url"))
+        self.assertEqual(attached["name"], "Ireland vs Afghanistan 4th ODI")
+        self.assertTrue(attached["fixture_id"].endswith("4th-odi"))
+
+    def test_same_ordinal_different_teams_never_match(self):
+        candidate = [{
+            "name": "England vs India 4th T20I 12 Aug 2026",
+            "url": "https://example.test/england-india.m3u8",
+            "source_pipeline": "today_match",
+        }]
+        resolved, stats = enrich_event_candidates(
+            candidate,
+            now=datetime(2026, 8, 12, 12, 0, tzinfo=timezone.utc),
+            future_days=10,
+        )
+        self.assertFalse(any(item.get("url") for item in resolved))
+        self.assertEqual(stats["unverified_suppressed"], 1)
 
     def test_process_events_preserves_resolved_schedule_fields(self):
         with tempfile.TemporaryDirectory() as temp_dir:

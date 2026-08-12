@@ -64,11 +64,73 @@ async function check(label, viewport, mobile = false) {
   await context.close();
 }
 
+async function checkEndedEventIsHidden() {
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    serviceWorkers: 'block',
+  });
+  const page = await context.newPage();
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  await page.route('**/data/today-match.json*', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({
+        type: 'today_match',
+        count: 1,
+        items: [{
+          id: 'browser-ended-event',
+          name: 'Browser Ended Event Must Be Hidden',
+          category: 'today_match',
+          source_pipeline: 'today_match',
+          status: 'ENDED',
+          schedule_status: 'ENDED',
+          start_time: '2026-08-12T01:00:00+00:00',
+          end_time: '2026-08-12T02:00:00+00:00',
+          url: 'https://example.invalid/ended.m3u8',
+          publish_allowed: true,
+        }],
+      }),
+    });
+  });
+  await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.locator('#sidebarList').waitFor({ state: 'visible', timeout: 20000 });
+  await page.locator('#desktopMainNav [data-final-key="sports"]').click();
+  await page.locator('#desktopSubNav [data-final-key="today-match"]').click();
+  await page.waitForTimeout(500);
+  const endedCards = page.locator('.event-ref-card', {
+    hasText: 'Browser Ended Event Must Be Hidden',
+  });
+  if (await endedCards.count()) {
+    const details = await endedCards.first().evaluate((card) => ({
+      text: card.textContent,
+      uid: card.dataset.uid,
+      html: card.outerHTML.slice(0, 1200),
+      now: new Date().toISOString(),
+    }));
+    details.runtime = await page.evaluate(() => ({
+      view: state.view,
+      current: state.currentItems.map((item) => ({
+        name: item.name,
+        status: item.status,
+        schedule_status: item.schedule_status,
+        end_time: item.end_time,
+        ended: isEventEnded(item),
+      })),
+      filtered: state.filteredItems.map((item) => item.name),
+    }));
+    throw new Error(`ENDED event remained visible in the Today Match list: ${JSON.stringify(details)}`);
+  }
+  if (errors.length) throw new Error(`ended-event runtime errors: ${errors.join(' | ')}`);
+  await context.close();
+}
+
 try {
   await check('desktop', { width: 1440, height: 900 });
   await check('tablet', { width: 1024, height: 768 });
   await check('mobile', { width: 390, height: 844 }, true);
   await check('landscape', { width: 844, height: 390 }, true);
+  await checkEndedEventIsHidden();
   console.log('Event cards PASS: responsive upcoming design, schedule metadata, non-playback preview and close behavior');
 } finally {
   await browser.close();

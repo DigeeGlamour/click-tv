@@ -19,11 +19,17 @@ class FinalScannerContractTests(unittest.TestCase):
         payload = json.loads(Path("config/sources.json").read_text(encoding="utf-8"))
         self.assertEqual(len(payload["upcoming"]), 5)
         self.assertEqual(len(payload["today_match"]), 6)
-        self.assertEqual(len(payload["tv"]), 10)
+        self.assertEqual(len(payload["tv"]), 11)
         self.assertEqual(len(payload["movies"]), 2)
         self.assertEqual(
             {entry["id"] for entry in payload["movies"]},
             {"sm-movie-combined", "bollywood-movies-collector"},
+        )
+        self.assertEqual(payload["tv"][1]["id"], "sm-roarzone-auto-update")
+        self.assertEqual(payload["tv"][1]["priority"], 148)
+        self.assertEqual(
+            payload["tv"][1]["url"],
+            "https://raw.githubusercontent.com/sm-monirulislam/RoarZone-Auto-Update-playlist/refs/heads/main/RoarZone.m3u",
         )
 
     def test_same_url_with_different_cookie_or_drm_survives(self):

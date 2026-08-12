@@ -256,11 +256,19 @@ def _is_today_fresh(
     now: datetime,
     max_age_hours: int,
 ) -> bool:
+    schedule_status = str(
+        item.get("schedule_status") or item.get("status") or ""
+    ).strip().upper()
+    if schedule_status == "ENDED":
+        return False
+
     end_time = _parse_datetime(
         item.get("end_time"),
         item.get("_source_timezone", timezone.utc),
     )
-    if end_time is not None and end_time < now - timedelta(hours=1):
+    # Today Match is a live surface, not a recent-results archive.  Remove a
+    # card as soon as its authoritative fixture end_time is reached.
+    if end_time is not None and end_time <= now:
         return False
 
     start_time = _parse_datetime(

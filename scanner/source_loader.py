@@ -850,7 +850,10 @@ def collect_candidates(mode: str = "all") -> Dict[str, Any]:
         active_pipelines.append("movies")
     if mode_clean in {"all", "full-audit", "events", "today", "today_match"}:
         active_pipelines.append("today_match")
-    if mode_clean in {"all", "full-audit", "events", "upcoming"}:
+    # Exact rotating event links can remain in provider Upcoming catalogues
+    # after kickoff. A Today scan therefore collects both event source groups;
+    # schedule resolution still publishes only the currently active fixture.
+    if mode_clean in {"all", "full-audit", "events", "today", "today_match", "upcoming"}:
         active_pipelines.append("upcoming")
 
     # Movie discovery also reads mixed TV sources, but the content router keeps

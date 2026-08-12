@@ -90,7 +90,10 @@ def load_fixtures(path: str | Path) -> List[Dict[str, Any]]:
                 if not date_text or not clock:
                     continue
                 if home == "TBD" and away == "TBD":
-                    name = f"The Hundred {gender} {round_name}".strip()
+                    # Do not make a generic round label look like confirmed
+                    # teams. Update the official fixture config after the
+                    # qualified teams are officially published.
+                    name = f"The Hundred {gender} {round_name} - Teams TBA".strip()
                 else:
                     name = f"{home} {gender} vs {away} {gender}"
                 fixtures.append(_fixture_record(
@@ -104,16 +107,42 @@ def _team_tokens(value: str) -> set[str]:
         "the", "2026", "competition", "series", "tour", "odi", "t20", "cup", "league",
         "men", "women", "willow", "cricket", "sky", "sport", "sports", "star", "fox",
         "server", "link", "alt", "low", "fhd", "hd", "uhd", "english", "hindi",
+        "vs", "v", "jan", "january", "feb", "february", "mar", "march", "apr",
+        "april", "may", "jun", "june", "jul", "july", "aug", "august", "sep",
+        "september", "oct", "october", "nov", "november", "dec", "december",
     }
     return {part for part in _norm(value).split() if part not in ignored and not part.isdigit()}
 
 
 def _gender(value: str) -> str:
     normalized = _norm(value)
-    if re.search(r"\bw(?:omen)?\b", normalized):
+    if re.search(r"\b(?:w|woman|women|womens)\b", normalized):
         return "women"
-    if re.search(r"\bmen\b", normalized):
+    if re.search(r"\b(?:man|men|mens)\b", normalized):
         return "men"
+    return ""
+
+
+def _candidate_gender(item: Dict[str, Any]) -> str:
+    """Use provider metadata as evidence when the display title is neutral."""
+    evidence = " ".join(
+        str(item.get(field) or "")
+        for field in (
+            "name", "title", "competition", "group_title", "category",
+            "logo", "url", "event_url", "tvg_id", "source_name",
+        )
+    )
+    explicit = _gender(evidence)
+    if explicit:
+        return explicit
+
+    # Sony event path codes such as DAI18-HMEN identify a men's feed even
+    # when the published M3U title omits the word Men.
+    lowered = evidence.casefold()
+    if re.search(r"(?:^|[-_/])h?men(?:$|[-_/])", lowered):
+        return "men"
+    if re.search(r"(?:^|[-_/])h?women(?:$|[-_/])", lowered):
+        return "women"
     return ""
 
 
@@ -133,22 +162,45 @@ def _is_exact_event(value: str) -> bool:
     return bool(left_tokens and right_tokens and left_tokens != right_tokens)
 
 
-def _fixture_score(candidate_name: str, fixture: Dict[str, Any]) -> int:
+def _fixture_score(
+    candidate_name: str,
+    fixture: Dict[str, Any],
+    candidate_gender: str = "",
+) -> int:
     candidate = _norm(candidate_name)
     fixture_name = _norm(fixture.get("name"))
     candidate_tokens = _team_tokens(candidate)
     fixture_tokens = _team_tokens(fixture_name)
     overlap = len(candidate_tokens & fixture_tokens)
-    if not overlap:
+    # An ordinal such as "4th" is schedule metadata, not team identity.  Two
+    # actual identity tokens must agree before ordinal/gender bonuses apply.
+    identity_overlap = {
+        token for token in candidate_tokens & fixture_tokens
+        if not re.fullmatch(r"\d+(?:st|nd|rd|th)", token)
+    }
+    if len(identity_overlap) < 2:
         return 0
-    score = overlap * 10
+    score = len(identity_overlap) * 10
     if fixture_tokens and fixture_tokens.issubset(candidate_tokens):
         score += 50
-    candidate_gender, fixture_gender = _gender(candidate), _gender(fixture_name)
+    elif (
+        len(candidate_tokens) >= 2
+        and candidate_tokens.issubset(fixture_tokens)
+    ):
+        # A provider may omit the match ordinal ("Afghanistan vs Ireland")
+        # while the catalogue has "4th ODI".  The tie/active-window guard in
+        # _best_fixture still prevents selecting a future numbered match.
+        score += 40
+    candidate_gender = candidate_gender or _gender(candidate)
+    fixture_gender = _gender(fixture_name)
     if candidate_gender and fixture_gender:
-        score += 20 if candidate_gender == fixture_gender else -100
-    ordinal = re.search(r"\b(\d+)(?:st|nd|rd|th)?\b", candidate)
-    fixture_ordinal = re.search(r"\b(\d+)(?:st|nd|rd|th)?\b", fixture_name)
+        if candidate_gender != fixture_gender:
+            return 0
+        score += 20
+    # Only a suffixed match ordinal is comparable. A year/date such as 2026
+    # must never be treated as the event number.
+    ordinal = re.search(r"\b(\d+)(?:st|nd|rd|th)\b", candidate)
+    fixture_ordinal = re.search(r"\b(\d+)(?:st|nd|rd|th)\b", fixture_name)
     if ordinal and fixture_ordinal:
         score += 25 if ordinal.group(1) == fixture_ordinal.group(1) else -50
     return score
@@ -159,12 +211,45 @@ def _competition_matches(name: str, fixture: Dict[str, Any]) -> bool:
     return any(alias and alias in normalized for alias in fixture.get("competition_aliases", []))
 
 
-def _best_fixture(name: str, fixtures: Iterable[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+def _best_fixture(
+    item: Dict[str, Any],
+    fixtures: Iterable[Dict[str, Any]],
+    now: Optional[datetime] = None,
+) -> Optional[Dict[str, Any]]:
+    name = str(item.get("name") or "")
+    candidate_gender = _candidate_gender(item)
     scored = sorted(
-        ((_fixture_score(name, fixture), fixture) for fixture in fixtures),
+        (
+            (_fixture_score(name, fixture, candidate_gender), fixture)
+            for fixture in fixtures
+        ),
         key=lambda pair: pair[0], reverse=True,
     )
-    return scored[0][1] if scored and scored[0][0] >= 40 else None
+    if not scored or scored[0][0] < 40:
+        return None
+
+    # A neutral provider title can match concurrent men's and women's cards,
+    # or two numbered fixtures, equally well. Never guess in that situation.
+    top_score = scored[0][0]
+    tied = [fixture for score, fixture in scored if score == top_score]
+    if len(tied) > 1:
+        tied_ids = {str(fixture.get("fixture_id") or "") for fixture in tied}
+        if len(tied_ids) > 1:
+            tied_genders = {_gender(str(fixture.get("name") or "")) for fixture in tied}
+            # A gender-neutral title must never choose between men's and
+            # women's fixtures.  For a numbered series with the same teams,
+            # however, one currently active fixture is authoritative.
+            if not candidate_gender and len(tied_genders) > 1:
+                return None
+            now_utc = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+            active = [
+                fixture for fixture in tied
+                if fixture["start"] - timedelta(minutes=20) <= now_utc < fixture["end"]
+            ]
+            if len(active) == 1:
+                return active[0]
+            return None
+    return scored[0][1]
 
 
 def _parse_source_time(value: Any, source_timezone: ZoneInfo, now: datetime) -> Optional[datetime]:
@@ -254,7 +339,7 @@ def enrich_event_candidates(
     fixtures = load_fixtures(fixture_path)
     relevant = [
         fixture for fixture in fixtures
-        if fixture["end"] >= now_utc - timedelta(hours=6)
+        if fixture["end"] > now_utc
         and fixture["start"] <= now_utc + timedelta(days=future_days)
     ]
     output: List[Dict[str, Any]] = []
@@ -271,7 +356,7 @@ def enrich_event_candidates(
         item = copy.deepcopy(original)
         name = str(item.get("name") or "")
         source_time = _parse_source_time(item.get("start_time"), source_zone, now_utc)
-        best = _best_fixture(name, relevant) if _is_exact_event(name) else None
+        best = _best_fixture(item, relevant, now_utc) if _is_exact_event(name) else None
         if best:
             item = _apply_fixture(item, best, source_time)
             item = _classify(item, now_utc)

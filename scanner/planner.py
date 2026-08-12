@@ -276,7 +276,7 @@ def _pipeline_for_mode(mode: str) -> Set[str]:
         active.add("movies")
     if mode_clean in {"all", "full-audit", "events", "today", "today_match"}:
         active.add("today_match")
-    if mode_clean in {"all", "full-audit", "events", "upcoming"}:
+    if mode_clean in {"all", "full-audit", "events", "today", "today_match", "upcoming"}:
         active.add("upcoming")
 
     return active

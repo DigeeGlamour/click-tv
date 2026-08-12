@@ -1686,6 +1686,10 @@ function applyFilterAndSort() {
   state.currentQuery = query;
   let items = state.currentItems.slice();
 
+  if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
+    items = items.filter((item) => !isEventEnded(item));
+  }
+
   if (query) {
     items = items.filter((item) => {
       const haystack = `${item.name || ''} ${item.category || ''} ${item.competition || ''}`.toLowerCase();
@@ -1779,6 +1783,7 @@ function renderCurrentList(reset = true, options = {}) {
   } else if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
     sidebarList.classList.remove('movie-grid');
     setSidebarCount(`${state.filteredItems.length} Events`);
+    state.eventUiFingerprint = eventUiFingerprint();
   } else if (state.view === VIEW.FAVORITE) {
     sidebarList.classList.remove('movie-grid');
     setSidebarCount(`${state.filteredItems.length} Bookmarks`);
@@ -1893,6 +1898,20 @@ function eventStartDate(item) {
   return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
+function eventEndDate(item) {
+  const raw = String(item?.end_at || item?.end_time || '').trim();
+  if (!raw) return null;
+  const parsed = new Date(raw);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function isEventEnded(item, nowMs = Date.now()) {
+  const configured = String(item?.schedule_status || item?.status || '').toUpperCase();
+  if (configured === 'ENDED') return true;
+  const end = eventEndDate(item);
+  return Boolean(end && end.getTime() <= nowMs);
+}
+
 function eventScheduleText(item) {
   const start = eventStartDate(item);
   if (!start) return String(item?.start_time || 'Time verification pending');
@@ -1915,6 +1934,7 @@ function eventScheduleText(item) {
 
 function eventUiStatus(item) {
   const configured = String(item?.schedule_status || item?.status || '').toUpperCase();
+  if (isEventEnded(item)) return 'ENDED';
   const start = eventStartDate(item);
   if (!start) {
     if (['LIVE_NOW', 'STARTING_SOON', 'LINK_UPDATING', 'UPCOMING', 'TIME_UNVERIFIED'].includes(configured)) return configured;
@@ -1932,8 +1952,22 @@ function eventStatusLabel(status) {
     STARTING_SOON: 'STARTING SOON',
     LINK_UPDATING: 'LINK UPDATING',
     UPCOMING: 'UPCOMING',
-    TIME_UNVERIFIED: 'TIME UNVERIFIED'
+    TIME_UNVERIFIED: 'TIME UNVERIFIED',
+    ENDED: 'ENDED'
   })[status] || 'UPCOMING';
+}
+
+function eventUiFingerprint() {
+  if (state.view !== VIEW.UPCOMING && state.view !== VIEW.EVENT) return '';
+  return state.currentItems.map((item) => `${item._uid}:${eventUiStatus(item)}`).join('|');
+}
+
+function refreshEventCardsForClock() {
+  if (state.view !== VIEW.UPCOMING && state.view !== VIEW.EVENT) return;
+  const nextFingerprint = eventUiFingerprint();
+  if (nextFingerprint === state.eventUiFingerprint) return;
+  state.eventUiFingerprint = nextFingerprint;
+  renderCurrentList(true, { preserveScroll: true });
 }
 
 function createEventCard(item, visualIndex) {
@@ -7152,6 +7186,7 @@ async function bootstrap() {
   updateMuteUi();
   updateClock();
   setInterval(updateClock, effectivePerformanceClass() === 'normal' ? 1000 : 30000);
+  setInterval(refreshEventCardsForClock, 30000);
   await setupServiceWorker();
   setupPwaInstall();
   renderNetworkMenu();
