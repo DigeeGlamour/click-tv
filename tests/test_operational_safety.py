@@ -84,11 +84,14 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertNotIn("CLICK_TV_ONE_CLICK_ALL.cmd", launcher)
         self.assertNotIn("RUN_CLICK_TV_LOCAL_SCAN.cmd", launcher)
         self.assertNotIn("scripts\\one-click-all.ps1", launcher)
-        sync_block = launcher.split("$FilesToSync = @(", 1)[1].split("\n)", 1)[0]
-        self.assertNotIn('    "scan.py",', sync_block)
-        self.assertIn('"scanner\\schedule_resolver.py"', launcher)
-        self.assertIn('"ClickTV_Colab_FINAL_EASY_5_MODE.ipynb"', launcher)
-        self.assertIn('"scripts\\test-update-package.ps1"', launcher)
+        self.assertNotIn("$FilesToSync", launcher)
+        self.assertNotIn("Fix scanner and add easy PAT scan launcher", launcher)
+        self.assertNotIn("Copy-Item -LiteralPath $Source", launcher)
+        self.assertIn('"data", "reports", "state"', launcher)
+        self.assertIn('"reset", "--hard", "origin/main"', launcher)
+        self.assertIn("ClickTV-Data-Scanner", launcher)
+        self.assertIn("Invoke-RebaseAndPush", launcher)
+        self.assertIn('"rebase", "--abort"', launcher)
 
         advanced_launcher = (ROOT / "scripts/run-local-scan.ps1").read_text(
             encoding="utf-8"
