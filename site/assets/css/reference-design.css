@@ -802,3 +802,108 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.sidebar-scroll-area
   .sidebar-section.channel-grid-mode .channel-ref-card .sidebar-logo-wrap,
   .sidebar-section.sports-grid-mode .channel-ref-card .sidebar-logo-wrap{width:46px!important;min-width:46px!important;height:46px!important}
 }
+
+/* Short landscape phones: keep the player and catalogue simultaneously reachable. */
+@media (max-width:980px) and (orientation:landscape) and (max-height:500px){
+  .youtube-layout.final-shell{
+    display:grid!important;grid-template-columns:minmax(0,1fr) minmax(270px,36vw)!important;
+    grid-template-rows:minmax(0,1fr)!important;width:100%!important;
+    height:calc(100dvh - var(--ref-notice-h))!important;min-height:0!important;
+    padding:0 8px 68px!important;gap:8px!important;overflow:hidden!important;
+  }
+  .left-column{grid-column:1!important;display:flex!important;height:100%!important;min-height:0!important;overflow:hidden!important}
+  .mobile-main-navigation{height:45px!important;min-height:45px!important;flex:0 0 45px!important;padding-block:1px!important}
+  .mobile-main-navigation .final-main-button{height:42px!important;min-height:42px!important}
+  .final-main-icon,.final-main-icon svg{width:18px!important;height:18px!important}
+  .mobile-sub-navigation{height:38px!important;min-height:38px!important;flex:0 0 38px!important;padding-bottom:3px!important}
+  .mobile-sub-navigation .final-sub-button{height:30px!important;min-height:30px!important}
+  .video-container-wrap{flex:1 1 auto!important;height:auto!important;min-height:0!important;aspect-ratio:auto!important}
+  .video-container-wrap .video-container,#videoPlayer{object-fit:contain!important}
+  .video-meta{height:50px!important;min-height:50px!important;max-height:50px!important}
+  .video-meta .meta-title-row{min-height:44px!important;padding-top:12px!important}
+  .video-meta #metaTitle{font-size:14px!important;max-height:31px!important}
+  .sidebar-section.side-panel{grid-column:2!important;height:100%!important;min-height:0!important;margin:0!important;overflow:hidden!important}
+  .sidebar-scroll-area{height:100%!important;min-height:0!important;padding-bottom:8px!important;overflow-y:auto!important}
+}
+
+/* RUMAN-29: final authoritative mobile contract. Keep this block last. */
+@media (max-width:980px){
+  /* Notice remains readable when animation is disabled on low-memory phones. */
+  .sticky-notice{overflow:hidden!important;justify-content:center!important;padding:0 38px 0 10px!important}
+  .sticky-notice .marquee-wrapper{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;overflow:hidden!important}
+  .sticky-notice .marquee-text{display:block!important;max-width:100%!important;padding-left:0!important;color:#e8eef7!important;font-size:10px!important;font-weight:800!important;line-height:1.25!important;text-align:center!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  html.lite-performance .sticky-notice .marquee-text,
+  html.ultra-lite-performance .sticky-notice .marquee-text,
+  .mobile-playback-performance .sticky-notice .marquee-text{animation:none!important;transform:none!important}
+  .sticky-notice .close-btn{right:3px!important;top:50%!important;width:32px!important;height:32px!important;min-width:32px!important;min-height:32px!important;transform:translateY(-50%)!important;font-size:20px!important;line-height:1!important}
+
+  /* Five equal main categories; selection is underline-only. */
+  .mobile-main-navigation .final-main-nav{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+  .mobile-main-navigation .final-main-button,
+  .mobile-main-navigation .final-main-button.active{border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+  .mobile-main-navigation .final-main-button[data-final-key="favorites"]{display:flex!important}
+
+  /* Sports chips are centred; all other chip rows start at the left. */
+  .mobile-sub-navigation .final-sub-nav{justify-content:flex-start!important;scrollbar-width:none!important}
+  .mobile-sub-navigation .final-sub-nav::-webkit-scrollbar{display:none!important}
+  .mobile-sub-navigation.sports-subnav .final-sub-nav{justify-content:center!important}
+
+  /* Compact metadata with readable two-line title and no list overlap. */
+  .video-meta{height:64px!important;min-height:64px!important;max-height:64px!important;padding:4px!important;overflow:hidden!important}
+  .video-meta .meta-title-row{min-height:58px!important;padding:15px 0 0!important;align-items:center!important}
+  .video-meta #metaTitle{display:-webkit-box!important;min-width:0!important;max-height:38px!important;margin:0!important;overflow:hidden!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;white-space:normal!important;text-overflow:ellipsis!important;font-size:17px!important;line-height:1.12!important}
+  .video-meta .meta-actions{flex:0 0 auto!important;margin-left:7px!important}
+  .video-meta .fav-action-btn{height:42px!important;min-height:42px!important;padding:0 11px!important}
+
+  /* Only the catalogue list scrolls; navigation/player/dock remain stable. */
+  .sidebar-section.side-panel{min-height:0!important;overflow:hidden!important}
+  .sidebar-scroll-area{height:100%!important;min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior:contain!important;touch-action:pan-y!important;-webkit-overflow-scrolling:touch!important;scrollbar-width:none!important}
+  .sidebar-scroll-area::-webkit-scrollbar{display:none!important}
+
+  /* Movie and series cards share one stable outer height. Posters never crop. */
+  .sidebar-list.movie-grid .movie-card,
+  .sidebar-list.movie-grid .catalog-series-card{height:220px!important;min-height:220px!important;max-height:220px!important;border-radius:12px!important;overflow:hidden!important}
+  .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card>img.movie-poster,
+  .sidebar-list.movie-grid .series-catalog-poster .movie-poster{width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;background:linear-gradient(145deg,#1b2637,#090e17)!important}
+  .sidebar-list.movie-grid .movie-card-title,
+  .sidebar-list.movie-grid .series-catalog-copy h3{display:-webkit-box!important;overflow:hidden!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:2!important;white-space:normal!important;font-size:12.5px!important;line-height:1.2!important}
+  .sidebar-list.movie-grid .series-catalog-copy{min-height:72px!important;padding:7px!important}
+  .sidebar-list.movie-grid .series-catalog-continue{margin-top:auto!important}
+
+  /* Today/Upcoming stay single-column and long event metadata remains legible. */
+  .sidebar-section.event-list-mode .sidebar-list.upcoming-grid{display:flex!important;flex-direction:column!important;gap:8px!important}
+  .sidebar-section.event-list-mode .event-ref-card{grid-template-columns:96px minmax(0,1fr) 42px!important;height:102px!important;min-height:102px!important;max-height:102px!important;padding:7px!important;gap:9px!important}
+  .sidebar-section.event-list-mode .event-card-art{width:96px!important;min-width:96px!important;height:78px!important}
+  .sidebar-section.event-list-mode .event-card-title{display:-webkit-box!important;overflow:hidden!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:3!important;white-space:normal!important;font-size:11.5px!important;line-height:1.15!important}
+  .sidebar-section.event-list-mode .event-card-competition{display:-webkit-box!important;overflow:hidden!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:1!important;font-size:8px!important;line-height:1.15!important}
+  .sidebar-section.event-list-mode .event-card-footer{display:flex!important;flex-wrap:wrap!important;gap:3px 5px!important;overflow:visible!important}
+  .sidebar-section.event-list-mode .event-card-time{max-width:100%!important;overflow:visible!important;white-space:normal!important;text-overflow:clip!important;font-size:8px!important;line-height:1.15!important}
+  .sidebar-section.event-list-mode .event-card-action{min-width:38px!important;font-size:7px!important}
+
+  /* One clean floating glass dock, without a second opaque strip. */
+  .app-header{background:linear-gradient(145deg,rgba(18,29,45,.86),rgba(8,14,24,.78))!important;border-color:rgba(133,158,196,.30)!important;box-shadow:0 12px 34px rgba(0,0,0,.38)!important;backdrop-filter:blur(18px) saturate(145%)!important;-webkit-backdrop-filter:blur(18px) saturate(145%)!important}
+  body::after{display:none!important;content:none!important}
+  .youtube-layout.final-shell{padding-bottom:calc(76px + env(safe-area-inset-bottom,0px))!important}
+
+  /* Mobile movie-only transport layout. Live and event controls are untouched. */
+  html.movie-playback-context .video-container-wrap .player-controls{background:linear-gradient(180deg,transparent,rgba(2,5,10,.92))!important}
+  html.movie-playback-context .video-container-wrap .controls-row{display:grid!important;grid-template-columns:1fr auto!important;align-items:end!important}
+  html.movie-playback-context .video-container-wrap .ctrl-left{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:5px!important}
+  html.movie-playback-context .video-container-wrap #playPauseBtn{width:42px!important;min-width:42px!important;height:42px!important;border-color:rgba(255,255,255,.48)!important;font-size:15px!important}
+  html.movie-playback-context .video-container-wrap #skipBackBtn,
+  html.movie-playback-context .video-container-wrap #skipFwdBtn,
+  html.movie-playback-context .video-container-wrap #prevChBtn,
+  html.movie-playback-context .video-container-wrap #nextChBtn,
+  html.movie-playback-context .video-container-wrap #movieLockBtn,
+  html.movie-playback-context .video-container-wrap #movieRotateBtn{display:grid!important;width:32px!important;min-width:32px!important;height:32px!important}
+  html.movie-playback-context .video-container-wrap #liveIndicator{display:none!important}
+  .video-container.movie-controls-locked .player-controls button:not(#movieLockBtn),
+  .video-container.movie-controls-locked .progress-container{opacity:.18!important;pointer-events:none!important}
+}
+
+@media (max-width:380px){
+  .sidebar-list.movie-grid .movie-card,
+  .sidebar-list.movie-grid .catalog-series-card{height:202px!important;min-height:202px!important;max-height:202px!important}
+  .sidebar-section.event-list-mode .event-ref-card{grid-template-columns:86px minmax(0,1fr) 38px!important}
+  .sidebar-section.event-list-mode .event-card-art{width:86px!important;min-width:86px!important}
+}

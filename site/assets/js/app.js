@@ -161,6 +161,7 @@ const state = {
   seekPendingTime: null,
   seekWasPlaying: false,
   lastTouchSeekAt: 0,
+  movieControlsLocked: false,
   movieAudioResumeTimer: null,
   fullscreenAudioSyncTimer: null,
   fullscreenLiveRecoveryTimer: null,
@@ -1952,9 +1953,10 @@ function eventUiStatus(item) {
   // Scanner-resolved LIVE_NOW is authoritative for multi-day events. Do not
   // downgrade it after the frontend's generic six-hour fallback window.
   if (item?.schedule_verified === true && configured === 'LIVE_NOW') return 'LIVE_NOW';
+  if (item?.today_source_channel === true || configured === 'CHANNEL_LIVE') return 'CHANNEL_LIVE';
   const start = eventStartDate(item);
   if (!start) {
-    if (['LIVE_NOW', 'STARTING_SOON', 'LINK_UPDATING', 'UPCOMING', 'TIME_UNVERIFIED'].includes(configured)) return configured;
+    if (['LIVE_NOW', 'CHANNEL_LIVE', 'STARTING_SOON', 'LINK_UPDATING', 'UPCOMING', 'TIME_UNVERIFIED'].includes(configured)) return configured;
     return isPlayable(item) ? 'LIVE_NOW' : 'UPCOMING';
   }
   const minutes = (start.getTime() - Date.now()) / 60000;
@@ -1966,6 +1968,7 @@ function eventUiStatus(item) {
 function eventStatusLabel(status) {
   return ({
     LIVE_NOW: 'LIVE NOW',
+    CHANNEL_LIVE: 'CHANNEL LIVE',
     STARTING_SOON: 'STARTING SOON',
     LINK_UPDATING: 'LINK UPDATING',
     UPCOMING: 'UPCOMING',
@@ -1991,7 +1994,8 @@ function createEventCard(item, visualIndex) {
   const card = document.createElement('div');
   const playable = isPlayable(item);
   const uiStatus = eventUiStatus(item);
-  const upcoming = uiStatus !== 'LIVE_NOW';
+  const liveLike = uiStatus === 'LIVE_NOW' || uiStatus === 'CHANNEL_LIVE';
+  const upcoming = !liveLike;
   // Today Match cards with a verified link must say Watch even while their
   // schedule badge is STARTING SOON/UPCOMING. Details is reserved for a
   // metadata-only card or the dedicated Upcoming view.
@@ -2024,7 +2028,7 @@ function createEventCard(item, visualIndex) {
       </div>
     </div>
     <span class="event-card-action ${showWatchAction ? 'watch' : 'reminder'}" aria-hidden="true"><i class="fas ${showWatchAction ? 'fa-play' : 'fa-bell'}"></i><span>${showWatchAction ? 'Watch' : 'Details'}</span></span>
-    ${!upcoming ? `<button class="card-fav-btn" data-favorite-id="${escapeHtml(favoriteKey)}" type="button" title="Bookmark" aria-label="Bookmark ${escapeHtml(parts.title)}"><i class="far fa-star"></i></button>` : ''}`;
+    ${liveLike ? `<button class="card-fav-btn" data-favorite-id="${escapeHtml(favoriteKey)}" type="button" title="Bookmark" aria-label="Bookmark ${escapeHtml(parts.title)}"><i class="far fa-star"></i></button>` : ''}`;
 
   const image = qs('img', card);
   image?.addEventListener('error', () => replaceBrokenImage(image));
@@ -2640,7 +2644,7 @@ function networkProfile(mode, isMovie, _fastStart = false) {
   if (mode === NETWORK_MODE.AUTO) {
     return {
       label: 'Auto · Smooth Start', lowLatencyMode: true,
-      maxBufferLength: isEvent ? 8 : 10,
+      maxBufferLength: isEvent ? 8 : 8,
       maxMaxBufferLength: isEvent ? 18 : 22,
       maxBufferSize: 20 * 1024 * 1024,
       backBufferLength: 10,
@@ -2654,7 +2658,7 @@ function networkProfile(mode, isMovie, _fastStart = false) {
     if (autoProfile === 'lite') {
       return {
         label: 'Fast Start', lowLatencyMode: isEvent,
-        maxBufferLength: isEvent ? 5 : 8,
+        maxBufferLength: isEvent ? 5 : 6,
         maxMaxBufferLength: isEvent ? 12 : 18,
         maxBufferSize: 14 * 1024 * 1024,
         backBufferLength: 8,
@@ -2664,7 +2668,7 @@ function networkProfile(mode, isMovie, _fastStart = false) {
     }
     return {
       label: 'Fast Start', lowLatencyMode: isEvent,
-      maxBufferLength: isEvent ? 5 : 10,
+      maxBufferLength: isEvent ? 5 : 6,
       maxMaxBufferLength: isEvent ? 12 : 24,
       maxBufferSize: 18 * 1024 * 1024,
       backBufferLength: 10,
@@ -5694,8 +5698,22 @@ function setPlayerControlVisible(id, visible, display = 'inline-flex') {
   control.style.setProperty('display', visible ? display : 'none', 'important');
 }
 
+function setMovieControlsLocked(locked) {
+  state.movieControlsLocked = Boolean(locked);
+  videoContainer.classList.toggle('movie-controls-locked', state.movieControlsLocked);
+  const button = $('movieLockBtn');
+  if (!button) return;
+  button.classList.toggle('active', state.movieControlsLocked);
+  button.title = state.movieControlsLocked ? 'Unlock controls' : 'Lock controls';
+  button.setAttribute('aria-label', button.title);
+  const icon = button.querySelector('i');
+  if (icon) icon.className = state.movieControlsLocked ? 'fas fa-lock' : 'fas fa-lock-open';
+  showControlsTemporarily();
+}
+
 function updateContextualPlayerButtons() {
   const isMovie = isMoviePlaybackContext();
+  const mobileMovie = isMovie && isPhoneSizedPlayer();
   const mobileFullscreen = wrapperFullscreenElement() === videoContainer && isPhoneSizedPlayer();
   document.documentElement.classList.toggle('movie-playback-context', isMovie);
 
@@ -5704,6 +5722,8 @@ function updateContextualPlayerButtons() {
   setPlayerControlVisible('speedBtn', isMovie);
   setPlayerControlVisible('networkBtn', !isMovie);
   setPlayerControlVisible('aspectBtn', mobileFullscreen);
+  setPlayerControlVisible('movieLockBtn', mobileMovie);
+  setPlayerControlVisible('movieRotateBtn', mobileMovie);
 
   if (isMovie) $('networkMenu')?.classList.remove('show');
   else $('speedMenu')?.classList.remove('show');
@@ -5711,6 +5731,7 @@ function updateContextualPlayerButtons() {
 
 function setupPlayerUi(item) {
   const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+  setMovieControlsLocked(false);
   renderNetworkMenu(isMovie);
   updateNetworkMenuState(isMovie ? NETWORK_MODE.AUTO : readNetworkMode(item));
   $('liveIndicator').style.display = isMovie ? 'none' : 'inline-flex';
@@ -6591,6 +6612,7 @@ videoContainer.addEventListener('touchstart', (event) => {
 }, { passive: true });
 
 videoContainer.addEventListener('touchmove', (event) => {
+  if (state.movieControlsLocked) return;
   if (event.target.closest('#playerControls, .fs-drawer')) return;
   const touch = event.touches[0];
   const dx = touch.clientX - state.touchStartX;
@@ -6614,6 +6636,7 @@ videoContainer.addEventListener('touchmove', (event) => {
 }, { passive: true });
 
 videoContainer.addEventListener('touchend', (event) => {
+  if (state.movieControlsLocked && !event.target.closest('#movieLockBtn')) return;
   if (event.target.closest('#playerControls, .fs-drawer, #fsDrawerToggle')) return;
   const touch = event.changedTouches[0];
   const dx = touch.clientX - state.touchStartX;
@@ -6737,6 +6760,19 @@ $('nextChBtn').addEventListener('click', () => playRelativeItem(1, true));
 $('prevChBtn').addEventListener('click', () => playRelativeItem(-1, true));
 $('skipBackBtn').addEventListener('click', () => { video.currentTime = Math.max(0, video.currentTime - 10); showSkip('left'); });
 $('skipFwdBtn').addEventListener('click', () => { video.currentTime = Math.min(video.duration || Infinity, video.currentTime + 10); showSkip('right'); });
+$('movieLockBtn')?.addEventListener('click', () => setMovieControlsLocked(!state.movieControlsLocked));
+$('movieRotateBtn')?.addEventListener('click', async () => {
+  try {
+    const orientationApi = screen.orientation;
+    if (!orientationApi?.lock) throw new Error('Orientation lock unsupported');
+    const target = orientationApi.type?.startsWith('landscape') ? 'portrait-primary' : 'landscape';
+    if (!wrapperFullscreenElement()) await enterWrapperFullscreen();
+    await orientationApi.lock(target);
+    setPlayerStatus('info', target.startsWith('landscape') ? 'Landscape mode চালু হয়েছে।' : 'Portrait mode চালু হয়েছে।', 1800);
+  } catch (_) {
+    setPlayerStatus('info', 'এই browser-এ screen rotation lock support করে না। Device rotate করুন।', 2600);
+  }
+});
 $('muteBtn').addEventListener('click', handleMuteButtonClick);
 $('volumeSlider').addEventListener('input', (event) => {
   const nextVolume = Number(event.target.value);
