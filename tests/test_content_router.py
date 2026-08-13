@@ -28,6 +28,32 @@ class ContentRouterTests(unittest.TestCase):
         )
         self.assertEqual(item["source_pipeline"], "tv")
 
+    def test_today_event_only_rejects_ordinary_entertainment_channel(self):
+        item = Normalizer().normalize_candidate({
+            "name": "Zee Bangla",
+            "url": "https://example.test/zee/index.m3u8",
+            "group_title": "Entertainment",
+            "source_pipeline": "today_match",
+            "force_output": "today_match",
+            "content_filter": "live_event_only",
+            "headers": {},
+        })
+        self.assertIsNone(item)
+
+    def test_today_event_only_keeps_playable_sports_channel_and_source_group(self):
+        item = Normalizer().normalize_candidate({
+            "name": "Willow Sports",
+            "url": "https://example.test/willow/index.m3u8",
+            "group_title": "Live Sports",
+            "source_pipeline": "today_match",
+            "force_output": "today_match",
+            "content_filter": "live_event_only",
+            "headers": {},
+        })
+        self.assertIsNotNone(item)
+        self.assertEqual(item["category"], "today_match")
+        self.assertEqual(item["source_category"], "Live Sports")
+
     def test_tv_source_movie_is_dropped_under_strict_source_separation(self):
         normalizer = Normalizer()
         item = normalizer.normalize_candidate(

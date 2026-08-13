@@ -152,7 +152,7 @@ class ScheduleResolverTests(unittest.TestCase):
         attached = next(item for item in resolved if item.get("url"))
         self.assertEqual(attached["name"], "Welsh Fire Men vs London Spirit Men")
 
-    def test_ambiguous_neutral_same_team_event_is_not_guessed(self):
+    def test_ambiguous_neutral_today_source_stays_channel_live_without_guessing(self):
         candidate = [{
             "name": "Welsh Fire vs London Spirit",
             "url": "https://example.test/generic.m3u8",
@@ -163,7 +163,11 @@ class ScheduleResolverTests(unittest.TestCase):
             now=datetime(2026, 8, 12, 13, 0, tzinfo=timezone.utc),
             future_days=2,
         )
-        self.assertFalse(any(item.get("url") for item in resolved))
+        attached = next(item for item in resolved if item.get("url"))
+        self.assertEqual(attached["name"], "Welsh Fire vs London Spirit")
+        self.assertEqual(attached["schedule_status"], "CHANNEL_LIVE")
+        self.assertTrue(attached["today_source_channel"])
+        self.assertNotIn("start_time", attached)
         self.assertEqual(stats["unverified_suppressed"], 1)
 
     def test_ended_fixture_is_not_published(self):
@@ -193,7 +197,9 @@ class ScheduleResolverTests(unittest.TestCase):
             now=datetime(2026, 8, 12, 12, 0, tzinfo=timezone.utc),
             future_days=10,
         )
-        self.assertFalse(any(item.get("url") for item in resolved))
+        attached = next(item for item in resolved if item.get("url"))
+        self.assertEqual(attached["schedule_status"], "CHANNEL_LIVE")
+        self.assertNotIn("fixture_id", attached)
 
     def test_wrong_willow_program_is_not_labelled_as_first_test(self):
         candidate = [{
@@ -206,7 +212,9 @@ class ScheduleResolverTests(unittest.TestCase):
             now=datetime(2026, 8, 13, 10, 42, tzinfo=timezone.utc),
             future_days=10,
         )
-        self.assertFalse(any(item.get("url") for item in resolved))
+        attached = next(item for item in resolved if item.get("url"))
+        self.assertEqual(attached["name"], "Australia vs Bangladesh Willow")
+        self.assertEqual(attached["schedule_status"], "CHANNEL_LIVE")
 
     def test_matching_ordinal_can_attach_to_numbered_fixture(self):
         candidate = [{
@@ -233,7 +241,8 @@ class ScheduleResolverTests(unittest.TestCase):
             now=datetime(2026, 8, 12, 12, 0, tzinfo=timezone.utc),
             future_days=10,
         )
-        self.assertFalse(any(item.get("url") for item in resolved))
+        attached = next(item for item in resolved if item.get("url"))
+        self.assertEqual(attached["schedule_status"], "CHANNEL_LIVE")
         self.assertEqual(stats["unverified_suppressed"], 1)
 
     def test_process_events_preserves_resolved_schedule_fields(self):
