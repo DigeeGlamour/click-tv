@@ -913,11 +913,23 @@ const FINAL_LIVE_TV_CATEGORIES = Object.freeze([
   ['others', 'Others', ['Others', 'Other']]
 ]);
 
-function finalButton(label, className, active, handler, key) {
+const FINAL_MAIN_ICONS = Object.freeze({
+  sports: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="13" cy="4.5" r="2"/><path d="m10.5 8.2 3.8 2.1 2.4-2.1M10.5 8.2 8 12l-3 .8M12.6 10.5l-1.4 4.2-3.6 4.1M11.2 14.7l4.3 1.6 2.4 3.1"/><circle cx="19" cy="17.5" r="2.2"/></svg>',
+  'live-tv': '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6.5" width="17" height="12" rx="2"/><path d="m8 3 4 3.5L16 3M9 21h6"/></svg>',
+  movies: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="8" width="17" height="12" rx="2"/><path d="M3.5 8 5 4l4 4 2-5 4 4 2-5 3.5 3v3M8 13h8"/></svg>',
+  drama: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 5.5h8v6.2c0 3-1.9 5-4 6.3-2.1-1.3-4-3.3-4-6.3z"/><path d="M12.5 6.5h8v6.2c0 3-1.9 5-4 6.3-1.2-.7-2.3-1.7-3-2.9"/><path d="M6 9.5h.01M9 9.5h.01M6 13c.8.7 1.8 1 2.7 1M15 10h.01M18 10h.01M15 14c.8-.7 1.8-1 2.7-1"/></svg>',
+  favorites: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9z"/></svg>'
+});
+
+function finalButton(label, className, active, handler, key, withIcon = false) {
   const button = document.createElement('button');
   button.type = 'button';
   button.className = `${className}${active ? ' active' : ''}`;
-  button.textContent = label;
+  if (withIcon && FINAL_MAIN_ICONS[key]) {
+    button.innerHTML = `<span class="final-main-icon">${FINAL_MAIN_ICONS[key]}</span><span class="final-main-label">${escapeHtml(label)}</span>`;
+  } else {
+    button.textContent = label;
+  }
   if (key) button.dataset.finalKey = key;
   button.addEventListener('click', handler);
   return button;
@@ -954,7 +966,8 @@ function renderFinalMainNavigation() {
         'final-main-button tv-focusable',
         state.activeMainGroup === key,
         () => selectFinalMainGroup(key),
-        key
+        key,
+        root === mobileMainNav
       ));
     });
   });
@@ -962,6 +975,7 @@ function renderFinalMainNavigation() {
 
 function renderFinalSubNavigation() {
   const items = finalSubItems();
+  mobileSubNavigation?.classList.toggle('sports-subnav', state.activeMainGroup === 'sports');
   [desktopSubNav, mobileSubNav].forEach((root) => {
     if (!root) return;
     root.replaceChildren();
@@ -6672,7 +6686,7 @@ function dismissNotice() {
   notice.classList.add('notice-dismissed');
   notice.hidden = true;
   syncNoticeHeight();
-  try { localStorage.setItem(STORAGE_KEYS.noticeDismissed, '1'); } catch (_) {}
+  try { sessionStorage.setItem(STORAGE_KEYS.noticeDismissed, '1'); } catch (_) {}
 }
 
 function syncNoticeHeight() {
@@ -6682,7 +6696,10 @@ function syncNoticeHeight() {
 }
 
 function restoreNoticeState() {
-  if (localStorage.getItem(STORAGE_KEYS.noticeDismissed) === '1') {
+  // A dismissal is intentionally limited to the current browser tab. An old
+  // persistent flag used to make the mobile notice disappear forever.
+  try { localStorage.removeItem(STORAGE_KEYS.noticeDismissed); } catch (_) {}
+  if (sessionStorage.getItem(STORAGE_KEYS.noticeDismissed) === '1') {
     const notice = $('sticky-header-notice');
     notice.classList.add('notice-dismissed');
     notice.hidden = true;
@@ -6970,7 +6987,10 @@ $('mobileBottomNoticeBtn')?.addEventListener('click', () => {
   if (!notice) return;
   notice.hidden = false;
   notice.classList.remove('notice-dismissed');
-  try { localStorage.removeItem(STORAGE_KEYS.noticeDismissed); } catch (_) {}
+  try {
+    localStorage.removeItem(STORAGE_KEYS.noticeDismissed);
+    sessionStorage.removeItem(STORAGE_KEYS.noticeDismissed);
+  } catch (_) {}
   syncNoticeHeight();
   showToast('Click TV notice দেখানো হয়েছে');
 });
@@ -7248,6 +7268,26 @@ if (['127.0.0.1', 'localhost'].includes(location.hostname)) {
           protected_source: Boolean(source.protected_source),
         })),
       }));
+    },
+    currentItemsPlaybackAudit() {
+      return state.currentItems.map((item) => ({
+        name: item.name || item.title || '',
+        sourceKind: item._sourceKind || '',
+        navigatesToSeries: Boolean(seriesModule?.isSeriesItem?.(item)),
+        playable: isPlayable(item),
+        attemptCount: buildAttemptPlan(item).length,
+      }));
+    },
+    playbackSessionSnapshot() {
+      const session = state.playbackSession;
+      return session ? {
+        itemName: session.item?.name || session.item?.title || '',
+        planLength: session.plan?.length || 0,
+        attemptsRun: session.attemptsRun || 0,
+        attemptIndex: session.attemptIndex || 0,
+        currentRoute: session.currentAttempt?.route || '',
+        success: Boolean(session.success),
+      } : null;
     },
   };
 }

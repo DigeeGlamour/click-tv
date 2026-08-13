@@ -52,8 +52,8 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn("series.js", self.index)
 
     def test_reference_design_is_external_and_preserves_the_three_column_contract(self) -> None:
-        self.assertIn("reference-design.css?v=20260813-reference-v21", self.index)
-        self.assertIn("app.js?v=20260812-reference-v13", self.index)
+        self.assertIn("reference-design.css?v=20260813-mobile-ruman26-v1", self.index)
+        self.assertIn("app.js?v=20260813-mobile-ruman26-v1", self.index)
         self.assertIn('class="desktop-category-rail"', self.index)
         self.assertIn('id="desktopCategoryTitle"', self.index)
         self.assertIn('id="mobileBottomSearchBtn"', self.index)
@@ -93,6 +93,20 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn('scrollbar-width:none!important', self.reference_css)
         self.assertIn(".series-episode-list{grid-template-columns:repeat(2,minmax(0,1fr))!important", self.reference_css)
         self.assertLess(len(self.index.encode("utf-8")), 25_000)
+
+    def test_ruman26_mobile_navigation_and_scroll_contract(self) -> None:
+        for icon_key in ("sports", "live-tv", "movies", "drama", "favorites"):
+            key_literal = icon_key if "-" not in icon_key else f"'{icon_key}'"
+            self.assertIn(f"{key_literal}:", self.app)
+        self.assertIn("sessionStorage.setItem(STORAGE_KEYS.noticeDismissed, '1')", self.app)
+        self.assertIn("localStorage.removeItem(STORAGE_KEYS.noticeDismissed)", self.app)
+        self.assertIn("mobileSubNavigation?.classList.toggle('sports-subnav'", self.app)
+        self.assertIn('grid-template-columns:repeat(5,minmax(0,1fr))!important', self.reference_css)
+        self.assertIn('.mobile-main-navigation .final-main-button[data-final-key="favorites"]{display:flex!important}', self.reference_css)
+        self.assertIn('.mobile-main-navigation .final-main-button::before{content:none!important;display:none!important}', self.reference_css)
+        self.assertIn('overflow-y:auto!important;overflow-x:hidden!important', self.reference_css)
+        self.assertIn('grid-template-columns:repeat(2,minmax(0,1fr))!important', self.reference_css)
+        self.assertIn('.sidebar-section.event-list-mode .sidebar-list.upcoming-grid{display:flex!important;flex-direction:column!important', self.reference_css)
 
     def test_only_requested_mobile_design_tweaks_are_locked(self) -> None:
         # Mobile main-category labels are deliberately larger than the desktop 12px.
