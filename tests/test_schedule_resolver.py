@@ -182,7 +182,7 @@ class ScheduleResolverTests(unittest.TestCase):
             for item in resolved
         ))
 
-    def test_generic_series_teams_attach_only_to_current_numbered_fixture(self):
+    def test_generic_channel_label_never_attaches_to_numbered_fixture(self):
         candidate = [{
             "name": "Afghanistan vs Ireland - Willow HD",
             "url": "https://example.test/willow-hd.m3u8",
@@ -193,9 +193,34 @@ class ScheduleResolverTests(unittest.TestCase):
             now=datetime(2026, 8, 12, 12, 0, tzinfo=timezone.utc),
             future_days=10,
         )
+        self.assertFalse(any(item.get("url") for item in resolved))
+
+    def test_wrong_willow_program_is_not_labelled_as_first_test(self):
+        candidate = [{
+            "name": "Australia vs Bangladesh Willow",
+            "url": "https://example.test/reused-willow-channel.m3u8",
+            "source_pipeline": "today_match",
+        }]
+        resolved, _ = enrich_event_candidates(
+            candidate,
+            now=datetime(2026, 8, 13, 10, 42, tzinfo=timezone.utc),
+            future_days=10,
+        )
+        self.assertFalse(any(item.get("url") for item in resolved))
+
+    def test_matching_ordinal_can_attach_to_numbered_fixture(self):
+        candidate = [{
+            "name": "Australia vs Bangladesh 1st Test - Willow HD",
+            "url": "https://example.test/first-test.m3u8",
+            "source_pipeline": "today_match",
+        }]
+        resolved, _ = enrich_event_candidates(
+            candidate,
+            now=datetime(2026, 8, 13, 10, 42, tzinfo=timezone.utc),
+            future_days=10,
+        )
         attached = next(item for item in resolved if item.get("url"))
-        self.assertEqual(attached["name"], "Ireland vs Afghanistan 4th ODI")
-        self.assertTrue(attached["fixture_id"].endswith("4th-odi"))
+        self.assertEqual(attached["name"], "Australia vs Bangladesh 1st Test")
 
     def test_same_ordinal_different_teams_never_match(self):
         candidate = [{

@@ -1935,6 +1935,9 @@ function eventScheduleText(item) {
 function eventUiStatus(item) {
   const configured = String(item?.schedule_status || item?.status || '').toUpperCase();
   if (isEventEnded(item)) return 'ENDED';
+  // Scanner-resolved LIVE_NOW is authoritative for multi-day events. Do not
+  // downgrade it after the frontend's generic six-hour fallback window.
+  if (item?.schedule_verified === true && configured === 'LIVE_NOW') return 'LIVE_NOW';
   const start = eventStartDate(item);
   if (!start) {
     if (['LIVE_NOW', 'STARTING_SOON', 'LINK_UPDATING', 'UPCOMING', 'TIME_UNVERIFIED'].includes(configured)) return configured;

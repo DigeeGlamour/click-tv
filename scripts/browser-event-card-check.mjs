@@ -186,6 +186,48 @@ async function checkPlayableTodayActionSaysWatch() {
   await context.close();
 }
 
+async function checkVerifiedMultiDayEventStaysLive() {
+  const context = await browser.newContext({
+    viewport: { width: 1440, height: 900 },
+    serviceWorkers: 'block',
+  });
+  const page = await context.newPage();
+  await page.route('**/data/today-match.json*', async (route) => {
+    await route.fulfill({
+      contentType: 'application/json',
+      body: JSON.stringify({
+        type: 'today_match',
+        count: 1,
+        items: [{
+          id: 'browser-verified-multiday-live',
+          name: 'Verified Multi-day Test Match',
+          category: 'today_match',
+          source_pipeline: 'today_match',
+          status: 'LIVE_NOW',
+          schedule_status: 'LIVE_NOW',
+          schedule_verified: true,
+          start_time: '2020-01-01T00:00:00+00:00',
+          end_time: '2099-01-01T00:00:00+00:00',
+          url: 'https://example.invalid/live.m3u8',
+          verified: true,
+          publish_allowed: true,
+        }],
+      }),
+    });
+  });
+  await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+  await page.locator('#sidebarList').waitFor({ state: 'visible', timeout: 20000 });
+  await page.locator('#desktopMainNav [data-final-key="sports"]').click();
+  await page.locator('#desktopSubNav [data-final-key="today-match"]').click();
+  const card = page.locator('.event-ref-card', { hasText: 'Verified Multi-day Test Match' });
+  await card.waitFor({ state: 'visible', timeout: 20000 });
+  const badge = (await card.locator('.event-status-pill').textContent())?.trim();
+  if (badge !== 'LIVE NOW') {
+    throw new Error(`verified multi-day Today event was downgraded to ${badge}`);
+  }
+  await context.close();
+}
+
 try {
   await check('desktop', { width: 1440, height: 900 });
   await check('tablet', { width: 1024, height: 768 });
@@ -193,6 +235,7 @@ try {
   await check('landscape', { width: 844, height: 390 }, true);
   await checkEndedEventIsHidden();
   await checkPlayableTodayActionSaysWatch();
+  await checkVerifiedMultiDayEventStaysLive();
   console.log('Event cards PASS: responsive upcoming design, schedule metadata, non-playback preview and close behavior');
 } finally {
   await browser.close();

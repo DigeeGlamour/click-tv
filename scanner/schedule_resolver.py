@@ -204,9 +204,10 @@ def _fixture_score(
         len(candidate_tokens) >= 2
         and candidate_tokens.issubset(fixture_tokens)
     ):
-        # A provider may omit the match ordinal ("Afghanistan vs Ireland")
-        # while the catalogue has "4th ODI".  The tie/active-window guard in
-        # _best_fixture still prevents selecting a future numbered match.
+        # Generic team labels can still match fixtures without an ordinal.
+        # Numbered fixtures are rejected below unless the candidate carries
+        # the same ordinal, because reusable channel labels are not proof of
+        # the programme currently being broadcast.
         score += 40
     candidate_gender = candidate_gender or _gender(candidate)
     fixture_gender = _gender(fixture_name)
@@ -218,6 +219,12 @@ def _fixture_score(
     # must never be treated as the event number.
     ordinal = re.search(r"\b(\d+)(?:st|nd|rd|th)\b", candidate)
     fixture_ordinal = re.search(r"\b(\d+)(?:st|nd|rd|th)\b", fixture_name)
+    # A generic channel label such as "Australia vs Bangladesh Willow" is
+    # not proof that the channel is carrying the current numbered fixture.
+    # Providers frequently reuse those labels while airing another match.
+    # Numbered fixtures therefore require the same ordinal in the candidate.
+    if fixture_ordinal and not ordinal:
+        return 0
     if ordinal and fixture_ordinal:
         score += 25 if ordinal.group(1) == fixture_ordinal.group(1) else -50
     return score
