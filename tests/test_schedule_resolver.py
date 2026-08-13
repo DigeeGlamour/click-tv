@@ -16,7 +16,7 @@ class ScheduleResolverTests(unittest.TestCase):
         self.assertEqual(welsh["start"].isoformat(), "2026-08-12T10:30:00+00:00")
         self.assertEqual(ireland["start"].isoformat(), "2026-08-12T09:45:00+00:00")
 
-    def test_unconfirmed_knockout_rounds_are_labelled_teams_tba(self):
+    def test_knockout_names_follow_current_official_qualifiers(self):
         fixtures = load_fixtures("config/event-fixtures.json")
         knockout_names = {
             item["name"] for item in fixtures
@@ -25,12 +25,56 @@ class ScheduleResolverTests(unittest.TestCase):
         self.assertEqual(
             knockout_names,
             {
-                "The Hundred Women's Eliminator - Teams TBA",
-                "The Hundred Men's Eliminator - Teams TBA",
-                "The Hundred Women's Final - Teams TBA",
-                "The Hundred Men's Final - Teams TBA",
+                "SunRisers Leeds Women vs Southern Brave Women - The Hundred Eliminator",
+                "Manchester Super Giants Men vs SunRisers Leeds Men - The Hundred Eliminator",
+                "The Hundred Women's Final - Trent Rockets Women vs Opponent TBA",
+                "The Hundred Men's Final - Trent Rockets Men vs Opponent TBA",
             },
         )
+
+    def test_multi_day_test_has_authoritative_end_time(self):
+        fixtures = load_fixtures("config/event-fixtures.json")
+        first_test = next(
+            item for item in fixtures
+            if item["name"] == "Australia vs Bangladesh 1st Test"
+        )
+        self.assertEqual(first_test["start"].isoformat(), "2026-08-13T00:30:00+00:00")
+        self.assertEqual(first_test["end"].isoformat(), "2026-08-17T08:30:00+00:00")
+
+        resolved, _ = enrich_event_candidates(
+            [{
+                "name": "Bangladesh tour of Australia 2026 - 1st Test - Australia vs Bangladesh",
+                "url": "https://example.test/test.m3u8",
+                "source_pipeline": "today_match",
+            }],
+            now=datetime(2026, 8, 14, 3, 0, tzinfo=timezone.utc),
+            future_days=10,
+        )
+        attached = next(item for item in resolved if item.get("url"))
+        self.assertEqual(attached["schedule_status"], "LIVE_NOW")
+
+    def test_current_official_catalogue_covers_main_upcoming_feeds(self):
+        fixtures = load_fixtures("config/event-fixtures.json")
+        names = {item["name"] for item in fixtures}
+        required = {
+            "Jamaica Kingsmen vs Guyana Amazon Warriors - CPL 6th Match",
+            "Saint Lucia Kings vs Antigua and Barbuda Falcons - CPL 7th Match",
+            "SunRisers Leeds Women vs Southern Brave Women - The Hundred Eliminator",
+            "Manchester Super Giants Men vs SunRisers Leeds Men - The Hundred Eliminator",
+            "Ireland vs Afghanistan 5th ODI",
+            "Sri Lanka vs India 1st Test",
+            "Australia vs Bangladesh 2nd Test",
+        }
+        self.assertTrue(required.issubset(names), required - names)
+
+    def test_mackay_uses_queensland_time_not_darwin_time(self):
+        fixtures = load_fixtures("config/event-fixtures.json")
+        second_test = next(
+            item for item in fixtures
+            if item["name"] == "Australia vs Bangladesh 2nd Test"
+        )
+        self.assertEqual(second_test["start"].isoformat(), "2026-08-22T00:00:00+00:00")
+        self.assertEqual(second_test["end"].isoformat(), "2026-08-26T08:00:00+00:00")
 
     def test_wrong_source_times_are_corrected_and_auditable(self):
         candidates = [
@@ -213,6 +257,20 @@ class ScheduleResolverTests(unittest.TestCase):
             for item in resolved
         ))
         self.assertEqual(stats["unverified_suppressed"], 1)
+
+    def test_birmingham_italian_live_label_maps_to_official_session(self):
+        resolved, _ = enrich_event_candidates(
+            [{
+                "name": "Birmingham: Sessione mattutina",
+                "url": "https://example.test/athletics.m3u8",
+                "source_pipeline": "upcoming",
+            }],
+            now=datetime(2026, 8, 13, 9, 35, tzinfo=timezone.utc),
+            future_days=2,
+        )
+        attached = next(item for item in resolved if item.get("url"))
+        self.assertEqual(attached["name"], "Birmingham 2026 Athletics - Morning Session")
+        self.assertEqual(attached["status"], "LIVE_NOW")
 
 
 if __name__ == "__main__":

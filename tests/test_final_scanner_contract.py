@@ -137,6 +137,47 @@ class FinalScannerContractTests(unittest.TestCase):
         self.assertIsNotNone(_parse_datetime("Tomorrow 3:45 PM BDT", timezone(timedelta(hours=6))))
         self.assertIsNotNone(_parse_datetime("Wed, Aug 12 3:45 PM BDT", timezone(timedelta(hours=6))))
 
+    def test_axsports_full_json_schema_keeps_live_and_upcoming_streams(self):
+        content = json.dumps({"matches": [
+            {
+                "id": 47165,
+                "status": "LIVE",
+                "name": "Birmingham: Sessione mattutina",
+                "bd_time": "3:30 PM 13-08-2026",
+                "league_name": "Sessione mattutina",
+                "referer": "https://iframe.example.test",
+                "link_live": [{
+                    "display_name": "FHD",
+                    "stream_link": "https://example.test/1410_abr.m3u8",
+                    "videoURL": "https://example.test/1410/720p/chunks.m3u8?token=valid",
+                }],
+            },
+            {
+                "id": 37228,
+                "status": "NS",
+                "name": "Kingsmen vs Warriors",
+                "bd_time": "6:30 AM 14-08-2026",
+                "league_name": "CPL",
+                "link_live": [{
+                    "display_name": "HD",
+                    "stream_link": "https://example.test/490_abr.m3u8",
+                }],
+            },
+        ]})
+        items = parse_json_content(content, {
+            "id": "axsports",
+            "pipeline": "upcoming",
+            "status_filter": ["LIVE", "UPCOMING"],
+            "allow_without_stream": True,
+        })
+        self.assertEqual(len(items), 2)
+        self.assertEqual({item["status"] for item in items}, {"LIVE", "UPCOMING"})
+        live = next(item for item in items if item["status"] == "LIVE")
+        self.assertEqual(live["start_time"], "3:30 PM 13-08-2026")
+        self.assertEqual(live["competition"], "Sessione mattutina")
+        self.assertEqual(live["headers"].get("Referer"), "https://iframe.example.test")
+        self.assertIn("token=valid", live["url"])
+
     def test_exhaustive_planner_keeps_every_unique_setup_and_provenance(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)

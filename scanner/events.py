@@ -271,6 +271,12 @@ def _is_today_fresh(
     if end_time is not None and end_time <= now:
         return False
 
+    # An official multi-day fixture remains current until its authoritative
+    # end time.  The generic age guard below is only a fallback for feeds that
+    # do not carry a verified schedule.
+    if item.get("schedule_verified") is True and end_time is not None:
+        return True
+
     start_time = _parse_datetime(
         item.get("start_time"),
         item.get("_source_timezone", timezone.utc),

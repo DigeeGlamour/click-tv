@@ -13,6 +13,8 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 def _norm(value: Any) -> str:
     text = str(value or "").casefold()
+    text = text.replace("sessione mattutina", "morning session")
+    text = text.replace("sessione serale", "evening session")
     text = text.replace("women's", "women").replace("womens", "women")
     text = text.replace("men's", "men").replace("mens", "men")
     text = re.sub(r"\bw\b", " women ", text)
@@ -42,7 +44,11 @@ def _iso_utc(value: datetime) -> str:
 
 
 def _fixture_record(
-    competition: Dict[str, Any], name: str, start_text: str, venue: str = ""
+    competition: Dict[str, Any],
+    name: str,
+    start_text: str,
+    venue: str = "",
+    end_text: str = "",
 ) -> Dict[str, Any]:
     source_zone = _zone(
         competition.get("timezone"), "UTC", competition.get("utc_offset", "+00:00")
@@ -50,7 +56,13 @@ def _fixture_record(
     start = datetime.fromisoformat(start_text)
     if start.tzinfo is None:
         start = start.replace(tzinfo=source_zone)
-    duration = int(competition.get("duration_minutes") or 240)
+    if end_text:
+        end = datetime.fromisoformat(end_text)
+        if end.tzinfo is None:
+            end = end.replace(tzinfo=source_zone)
+    else:
+        duration = int(competition.get("duration_minutes") or 240)
+        end = start + timedelta(minutes=duration)
     return {
         "fixture_id": f"{competition.get('id')}:{_norm(name).replace(' ', '-')}",
         "name": name,
@@ -58,7 +70,7 @@ def _fixture_record(
         "competition_id": str(competition.get("id") or ""),
         "competition_aliases": [_norm(v) for v in competition.get("aliases", [])],
         "start": start.astimezone(timezone.utc),
-        "end": (start + timedelta(minutes=duration)).astimezone(timezone.utc),
+        "end": end.astimezone(timezone.utc),
         "venue": venue,
         "schedule_source_url": str(competition.get("source_url") or ""),
     }
@@ -76,7 +88,11 @@ def load_fixtures(path: str | Path) -> List[Dict[str, Any]]:
         for entry in competition.get("fixtures", []):
             if isinstance(entry, dict) and entry.get("name") and entry.get("start"):
                 fixtures.append(_fixture_record(
-                    competition, str(entry["name"]), str(entry["start"]), str(entry.get("venue") or "")
+                    competition,
+                    str(entry["name"]),
+                    str(entry["start"]),
+                    str(entry.get("venue") or ""),
+                    str(entry.get("end") or ""),
                 ))
         for entry in competition.get("double_headers", []):
             if not isinstance(entry, dict):

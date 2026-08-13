@@ -66,6 +66,7 @@ GROUP_KEYS = (
 )
 
 START_KEYS = (
+    "bd_time",
     "start_time",
     "startTime",
     "start",
@@ -83,6 +84,7 @@ END_KEYS = (
 )
 
 COMPETITION_KEYS = (
+    "league_name",
     "eventName",
     "competition",
     "tournament",
@@ -106,6 +108,8 @@ ID_KEYS = (
 )
 
 DIRECT_STREAM_KEYS = (
+    "videoURL",
+    "stream_link",
     "url",
     "link",
     "stream_url",
@@ -121,6 +125,7 @@ DIRECT_STREAM_KEYS = (
 )
 
 STREAM_CONTAINER_KEYS = (
+    "link_live",
     "streams",
     "sources",
     "links",
@@ -224,6 +229,7 @@ def _normalize_status(value: Any) -> str:
         "NOT_STARTED": "UPCOMING",
         "SCHEDULED": "UPCOMING",
         "FIXTURE": "UPCOMING",
+        "NS": "UPCOMING",
 
         "FINISHED": "COMPLETED",
         "ENDED": "COMPLETED",
