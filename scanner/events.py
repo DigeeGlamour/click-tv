@@ -421,7 +421,9 @@ def process_events(
                 continue
             card_copy["event_type"] = "today_match"
             card_copy["status"] = str(
-                card_copy.get("schedule_status") or card_copy.get("status") or "LIVE_NOW"
+                card_copy.get("schedule_status")
+                or card_copy.get("status")
+                or ("CHANNEL_LIVE" if card_copy.get("today_source_channel") else "LIVE_NOW")
             )
             today_items.append(card_copy)
 

@@ -52,6 +52,34 @@ CANONICAL_HEADERS = {
     "accept-language": "Accept-Language",
 }
 
+LIVE_EVENT_GROUP_TOKENS = {
+    "sport", "sports", "cricket", "football", "soccer", "tennis",
+    "badminton", "basketball", "baseball", "hockey", "rugby", "golf",
+    "wrestling", "boxing", "mma", "motogp", "formula", "athletics",
+    "kabaddi", "volleyball", "live event", "live sports",
+}
+LIVE_EVENT_TITLE_PATTERNS = (
+    r"\b(?:vs|versus)\b",
+    r"\b(?:match|test|odi|t20i?|innings|fixture)\b",
+    r"\b(?:cup|league|tournament|championship|qualifier|eliminator|final)\b",
+    r"\b(?:cricket|football|soccer|tennis|badminton|basketball|hockey|rugby|golf|boxing|mma|athletics|kabaddi|motogp|formula\s*1)\b",
+)
+
+
+def _is_live_event_candidate(candidate: Dict[str, Any]) -> bool:
+    """Reject ordinary entertainment channels from event-only sources.
+
+    Source playlists are not trusted to keep their own group tags perfect, so
+    either a sports/event group or strong event wording in the title is enough.
+    This deliberately does not require a schedule because a verified base
+    event channel is allowed in Today Match by the product contract.
+    """
+    name = _normalize_separators(str(candidate.get("name") or "")).lower()
+    group = _normalize_separators(str(candidate.get("group_title") or "")).lower()
+    if any(token in group for token in LIVE_EVENT_GROUP_TOKENS):
+        return True
+    return any(re.search(pattern, name, re.IGNORECASE) for pattern in LIVE_EVENT_TITLE_PATTERNS)
+
 
 def _canonical_header_name(name: str) -> str:
     normalized = name.strip().lower().replace("_", "-")
@@ -648,6 +676,13 @@ class Normalizer:
         pipeline = str(routed_input.get("source_pipeline") or "tv")
         url = routed_input.get("url", "")
         group_title = routed_input.get("group_title", "")
+        if (
+            pipeline == "today_match"
+            and str(routed_input.get("content_filter") or "").strip().casefold()
+            == "live_event_only"
+            and not _is_live_event_candidate(routed_input)
+        ):
+            return None
         original_pipeline = str(
             routed_input.get("configured_source_pipeline")
             or routed_input.get("original_source_pipeline")
@@ -703,6 +738,8 @@ class Normalizer:
         normalized_item["stream_type"] = stream_type
         normalized_item["requires_headers"] = headers_required
         normalized_item["source_pipeline"] = pipeline
+        if pipeline == "today_match" and group_title:
+            normalized_item["source_category"] = str(group_title).strip()
         if not normalized_item.get("resolution_height"):
             declared_height = _declared_resolution_height(
                 raw_name,

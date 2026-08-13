@@ -964,6 +964,8 @@ def merge_candidates(
             "source_start_time",
             "source_time_delta_minutes",
             "time_verification",
+            "source_category",
+            "today_source_channel",
         ):
             if base_item.get(field_name) not in (None, ""):
                 merged_card[field_name] = base_item[field_name]

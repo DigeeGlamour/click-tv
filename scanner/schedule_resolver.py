@@ -351,6 +351,39 @@ def _classify(item: Dict[str, Any], now: datetime) -> Dict[str, Any]:
     return item
 
 
+def _today_source_channel_fallback(item: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """Keep a verified Today-source channel without inventing a live fixture.
+
+    Today source playlists also expose reusable sports channels.  An exact
+    official fixture match upgrades one of those entries to LIVE_NOW.  When no
+    fixture can be proven, a playable Today candidate remains useful as a
+    CHANNEL_LIVE card; it must not be labelled as an actual live match.
+    """
+    if str(item.get("source_pipeline") or "").strip().casefold() != "today_match":
+        return None
+    if not str(item.get("url") or "").strip() or item.get("metadata_only") is True:
+        return None
+    configured_status = str(
+        item.get("schedule_status") or item.get("status") or item.get("original_status") or ""
+    ).strip().upper()
+    if configured_status in {"ENDED", "COMPLETED", "FINISHED", "OFFLINE", "DEAD"}:
+        return None
+
+    fallback = copy.deepcopy(item)
+    # A provider clock or title is not authoritative fixture evidence.  Clear
+    # it so the frontend cannot turn a reusable channel into UPCOMING/LIVE_NOW.
+    for field in (
+        "start_time", "start_at", "end_time", "end_at", "fixture_id",
+        "schedule_source_url", "time_verification", "source_time_delta_minutes",
+    ):
+        fallback.pop(field, None)
+    fallback["schedule_verified"] = False
+    fallback["today_source_channel"] = True
+    fallback["schedule_status"] = "CHANNEL_LIVE"
+    fallback["status"] = "CHANNEL_LIVE"
+    return fallback
+
+
 def enrich_event_candidates(
     candidates: List[Dict[str, Any]],
     fixture_path: str | Path = "config/event-fixtures.json",
@@ -380,6 +413,15 @@ def enrich_event_candidates(
         item = copy.deepcopy(original)
         name = str(item.get("name") or "")
         source_time = _parse_source_time(item.get("start_time"), source_zone, now_utc)
+        # `relevant` intentionally excludes completed fixtures.  Before using
+        # the reusable-channel fallback, nevertheless check the full official
+        # catalogue so an ended match link can never return as CHANNEL_LIVE.
+        historical_match = (
+            _best_fixture(item, fixtures, now_utc) if _is_exact_event(name) else None
+        )
+        if historical_match and historical_match["end"] <= now_utc:
+            stats["unverified_suppressed"] += 1
+            continue
         best = _best_fixture(item, relevant, now_utc) if _is_exact_event(name) else None
         if best:
             item = _apply_fixture(item, best, source_time)
@@ -405,12 +447,18 @@ def enrich_event_candidates(
                 output.append(item)
             else:
                 stats["ambiguous_suppressed"] += 1
+                fallback = _today_source_channel_fallback(item)
+                if fallback is not None:
+                    output.append(fallback)
             continue
 
         # A source-provided date is useful evidence, but it is not authoritative
         # enough to publish an event card by itself. The raw candidate remains in
         # scan reports; it becomes public only after an exact catalogue match.
         stats["unverified_suppressed"] += 1
+        fallback = _today_source_channel_fallback(item)
+        if fallback is not None:
+            output.append(fallback)
 
     for fixture in relevant:
         if fixture["fixture_id"] in matched_fixture_ids:
