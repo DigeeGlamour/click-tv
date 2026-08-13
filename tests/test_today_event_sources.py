@@ -117,6 +117,56 @@ class TodayEventSourceTests(unittest.TestCase):
         self.assertEqual(payload["source_count"], len(expected_ids))
         self.assertEqual(submitted_ids, expected_ids)
 
+    def test_empty_304_cache_retries_without_conditional_headers(self):
+        source = {
+            "id": "duplicate-url-second-pipeline",
+            "name": "Duplicate URL second pipeline",
+            "url": "https://example.test/events.m3u",
+            "pipeline": "upcoming",
+            "enabled": True,
+        }
+        settings = {
+            "source_timeout_seconds": 5,
+            "source_cache": {"enabled": True},
+            "network": {
+                "retry_attempts": 1,
+                "retry_delays_seconds": [],
+                "retry_status_codes": [],
+                "verify_ssl": True,
+            },
+        }
+        response_meta = {"etag": '"new"', "last_modified": ""}
+        playlist = '#EXTM3U\n#EXTINF:-1,Example Event\nhttps://media.test/live.m3u8\n'
+
+        with (
+            patch.object(
+                source_loader,
+                "_load_source_cache",
+                return_value=({"etag": '"old"'}, []),
+            ),
+            patch.object(
+                source_loader,
+                "_fetch_url_with_retry",
+                side_effect=[
+                    (None, None, 304, 2, 1, {"etag": '"old"'}),
+                    (playlist, None, 200, 3, 1, response_meta),
+                ],
+            ) as fetch,
+            patch.object(source_loader, "_save_source_cache"),
+        ):
+            items, health = source_loader.process_single_source(source, settings)
+
+        self.assertEqual(fetch.call_count, 2)
+        first_headers = fetch.call_args_list[0].kwargs["headers"]
+        second_headers = fetch.call_args_list[1].kwargs["headers"]
+        self.assertEqual(first_headers["If-None-Match"], '"old"')
+        self.assertNotIn("If-None-Match", second_headers)
+        self.assertEqual(health["status"], "success")
+        self.assertEqual(health["http_status"], 200)
+        self.assertEqual(health["attempts"], 2)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["source_pipeline"], "upcoming")
+
 
 if __name__ == "__main__":
     unittest.main()

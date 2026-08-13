@@ -93,7 +93,8 @@ def load_fixtures(path: str | Path) -> List[Dict[str, Any]]:
                     # Do not make a generic round label look like confirmed
                     # teams. Update the official fixture config after the
                     # qualified teams are officially published.
-                    name = f"The Hundred {gender} {round_name} - Teams TBA".strip()
+                    possessive_gender = "Women's" if gender == "Women" else "Men's"
+                    name = f"The Hundred {possessive_gender} {round_name} - Teams TBA".strip()
                 else:
                     name = f"{home} {gender} vs {away} {gender}"
                 fixtures.append(_fixture_record(

@@ -25,10 +25,10 @@ class ScheduleResolverTests(unittest.TestCase):
         self.assertEqual(
             knockout_names,
             {
-                "The Hundred Women Eliminator - Teams TBA",
-                "The Hundred Men Eliminator - Teams TBA",
-                "The Hundred Women Final - Teams TBA",
-                "The Hundred Men Final - Teams TBA",
+                "The Hundred Women's Eliminator - Teams TBA",
+                "The Hundred Men's Eliminator - Teams TBA",
+                "The Hundred Women's Final - Teams TBA",
+                "The Hundred Men's Final - Teams TBA",
             },
         )
 

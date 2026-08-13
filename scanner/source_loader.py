@@ -562,6 +562,43 @@ def process_single_source(
         response_time_ms=elapsed_ms,
     )
 
+    # The same remote catalog can intentionally be registered under more than
+    # one pipeline/source id. GitHub may answer 304 using conditional headers
+    # even when this particular source id has no parsed cache yet. In that
+    # case a 304 is unusable, so retry once without validators and build the
+    # source-specific cache from the real response body.
+    if status_code == 304 and not cached_items:
+        unconditional_headers = {
+            key: value
+            for key, value in source_headers.items()
+            if str(key).casefold() not in {"if-none-match", "if-modified-since"}
+        }
+        (
+            content,
+            error,
+            status_code,
+            retry_elapsed_ms,
+            retry_attempts,
+            response_meta,
+        ) = _fetch_url_with_retry(
+            request_url,
+            headers=unconditional_headers,
+            timeout=timeout,
+            retries=retries,
+            delays=delays,
+            retry_status_codes=retry_codes,
+            verify_ssl=verify_ssl,
+            max_bytes=max_source_bytes,
+        )
+        elapsed_ms += retry_elapsed_ms
+        attempts += retry_attempts
+        health.update(
+            http_status=status_code,
+            attempts=attempts,
+            response_time_ms=elapsed_ms,
+            fetch_mode="unconditional_retry_after_empty_304",
+        )
+
     if status_code == 304 and cached_items:
         detected = str(cached_meta.get("detected_format") or "cached")
         health.update(

@@ -52,7 +52,7 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn("series.js", self.index)
 
     def test_reference_design_is_external_and_preserves_the_three_column_contract(self) -> None:
-        self.assertIn("reference-design.css?v=20260812-reference-v20", self.index)
+        self.assertIn("reference-design.css?v=20260813-reference-v21", self.index)
         self.assertIn("app.js?v=20260812-reference-v13", self.index)
         self.assertIn('class="desktop-category-rail"', self.index)
         self.assertIn('id="desktopCategoryTitle"', self.index)

@@ -25,6 +25,10 @@ async function check(label, viewport, mobile = false) {
   const geometry = await page.locator('.event-ref-card').first().evaluate((card) => {
     const art = card.querySelector('.event-card-art')?.getBoundingClientRect();
     const rect = card.getBoundingClientRect();
+    const title = card.querySelector('.event-card-title');
+    const competition = card.querySelector('.event-card-competition');
+    const time = card.querySelector('.event-card-time');
+    const fontSize = (element) => element ? Number.parseFloat(getComputedStyle(element).fontSize) : 0;
     return {
       width: rect.width,
       height: rect.height,
@@ -36,6 +40,11 @@ async function check(label, viewport, mobile = false) {
       statusText: card.querySelector('.event-status-pill')?.textContent?.trim(),
       action: card.querySelector('.event-card-action')?.textContent?.trim(),
       overflow: card.scrollWidth - card.clientWidth,
+      titleFontSize: fontSize(title),
+      competitionFontSize: fontSize(competition),
+      timeFontSize: fontSize(time),
+      titleClipped: Boolean(title && title.scrollHeight > title.clientHeight + 1),
+      timeClipped: Boolean(time && time.scrollWidth > time.clientWidth + 1),
     };
   });
   if (!geometry.hasTime || !geometry.hasStatus || geometry.overflow > 1 || geometry.artWidth < 80 || geometry.artHeight < 55) {
@@ -43,6 +52,14 @@ async function check(label, viewport, mobile = false) {
   }
   if (/\b(?:GMT|BST|UTC)\b/i.test(geometry.timeText || '') || !/BDT|pending/i.test(geometry.timeText || '')) {
     throw new Error(`${label} event time is not Bangladesh-friendly: ${JSON.stringify(geometry)}`);
+  }
+  if (label === 'desktop' && (
+    geometry.titleFontSize < 14
+    || geometry.competitionFontSize < 10
+    || geometry.timeFontSize < 9
+    || geometry.timeClipped
+  )) {
+    throw new Error(`${label} event text is too small or clipped: ${JSON.stringify(geometry)}`);
   }
 
   const before = await page.locator('#metaTitle').textContent();
