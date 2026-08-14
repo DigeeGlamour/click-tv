@@ -52,7 +52,7 @@ try {
   const desktopGeometry = await page.evaluate(() => {
     const rect = (selector) => document.querySelector(selector)?.getBoundingClientRect();
     const notice = document.querySelector('#sticky-header-notice');
-    const noticeStyle = getComputedStyle(notice);
+    const noticeStyle = getComputedStyle(notice.querySelector('.marquee-text'));
     return {
       noticeHeight: rect('#sticky-header-notice')?.height || 0,
       noticeFontSize: Number.parseFloat(noticeStyle.fontSize || '0'),
@@ -64,7 +64,7 @@ try {
       subtitleDisplay: getComputedStyle(document.querySelector('.video-meta .meta-subtitle-row')).display,
     };
   });
-  if (Math.abs(desktopGeometry.noticeHeight - 22) > 1 || desktopGeometry.noticeFontSize < 10) {
+  if (Math.abs(desktopGeometry.noticeHeight - 30) > 1 || desktopGeometry.noticeFontSize < 13) {
     throw new Error(`Desktop notice geometry differs from the demo: ${JSON.stringify(desktopGeometry)}`);
   }
   if (Math.abs(desktopGeometry.headerHeight - 54) > 1 || desktopGeometry.headerBorderBottom > 0) {
@@ -170,6 +170,7 @@ try {
 
   await page.locator('#desktopMainNav [data-final-key="movies"]').click();
   await page.locator('#desktopSubNav [data-final-key="movie:english"]').click();
+  await page.locator('#searchBtnSubmit').click();
   await page.locator('#searchInput').fill(movieProbe);
   await page.waitForFunction((expectedTitle) => {
     const list = document.querySelector('#sidebarList');
@@ -184,6 +185,7 @@ try {
   await page.waitForTimeout(350);
   await page.locator('#desktopMainNav [data-final-key="live-tv"]').click();
   await page.locator('#desktopSubNav [data-final-key="indian"]').click();
+  await page.locator('#searchBtnSubmit').click();
   await page.locator('#searchInput').fill('10 TV');
   await page.waitForTimeout(350);
   const tenTv = page.locator('.sidebar-item', { hasText: '10 TV' }).first();
@@ -195,9 +197,9 @@ try {
   }
   await tenTv.click();
   await page.waitForFunction(() => {
-    const video = document.querySelector('#videoPlayer');
-    return video && video.readyState >= 2;
-  }, null, { timeout: 35000 });
+    const snapshot = window.__clickTvRuntimeTest?.playbackSessionSnapshot?.();
+    return snapshot && snapshot.planLength > 0 && snapshot.attemptsRun > 0;
+  }, null, { timeout: 8000 });
 
   const mobile = await browser.newContext({
     viewport: { width: 390, height: 844 },
@@ -208,10 +210,10 @@ try {
   const mobilePage = await openCheckedPage(mobile, 'mobile');
   const mobileGeometry = await mobilePage.evaluate(() => ({
     noticeHeight: document.querySelector('#sticky-header-notice')?.getBoundingClientRect().height || 0,
-    noticeFontSize: Number.parseFloat(getComputedStyle(document.querySelector('#sticky-header-notice')).fontSize || '0'),
+    noticeFontSize: Number.parseFloat(getComputedStyle(document.querySelector('#sticky-header-notice .marquee-text')).fontSize || '0'),
     horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
   }));
-  if (Math.abs(mobileGeometry.noticeHeight - 26) > 1 || mobileGeometry.noticeFontSize < 9 || mobileGeometry.horizontalOverflow > 1) {
+  if (Math.abs(mobileGeometry.noticeHeight - 30) > 1 || mobileGeometry.noticeFontSize < 12 || mobileGeometry.horizontalOverflow > 1) {
     throw new Error(`Mobile geometry mismatch: ${JSON.stringify(mobileGeometry)}`);
   }
   const searchToggleVisible = await mobilePage.locator('#mobileBottomSearchBtn').isVisible();

@@ -39,6 +39,13 @@ FAILED_STATUSES = {
     "quarantine",
 }
 
+CONFIRMED_PLAYABLE_STATUSES = {
+    "verified",
+    "verified_global",
+    "verified_proxy",
+    "verified_bd",
+}
+
 
 def _utc_now_dt() -> datetime:
     return datetime.now(timezone.utc)
@@ -247,6 +254,12 @@ def _is_playable(item: Dict[str, Any]) -> bool:
         return False
     status = str(item.get("verification_status") or "").strip().lower()
     if status in FAILED_STATUSES:
+        return False
+    # An URL, or even an HTTP 200 response, is not enough for Today Match.
+    # These verified states are assigned only after protocol-aware validation;
+    # for HLS that includes a readable media playlist and media segment.
+    confirmed = item.get("verified") is True or item.get("is_valid") is True
+    if not confirmed or status not in CONFIRMED_PLAYABLE_STATUSES:
         return False
     return bool(_primary_url(item) or _backup_urls(item))
 

@@ -803,6 +803,24 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.sidebar-scroll-area
   .sidebar-section.sports-grid-mode .channel-ref-card .sidebar-logo-wrap{width:46px!important;min-width:46px!important;height:46px!important}
 }
 
+/* RUMAN-30: clearer event cards. Notice rules are kept at the end of the file. */
+.sidebar-section.event-list-mode .event-ref-card{
+  background:linear-gradient(135deg,rgba(18,29,45,.98),rgba(8,14,24,.98))!important;
+  border-color:rgba(115,137,170,.32)!important;
+}
+.sidebar-section.event-list-mode .event-status-pill.live{
+  border-color:rgba(35,230,165,.45)!important;background:rgba(4,107,77,.24)!important;color:#62ffd0!important;
+}
+.sidebar-section.event-list-mode .event-card-title{font-size:15px!important;line-height:1.18!important}
+.sidebar-section.event-list-mode .event-card-competition{font-size:10.5px!important}
+.sidebar-section.event-list-mode .event-card-time{font-size:10px!important}
+
+@media (max-width:980px){
+  .sidebar-section.event-list-mode .event-card-title{font-size:12.5px!important;line-height:1.18!important}
+  .sidebar-section.event-list-mode .event-card-competition{font-size:9px!important}
+  .sidebar-section.event-list-mode .event-card-time{font-size:9px!important;line-height:1.2!important}
+}
+
 /* Short landscape phones: keep the player and catalogue simultaneously reachable. */
 @media (max-width:980px) and (orientation:landscape) and (max-height:500px){
   .youtube-layout.final-shell{
@@ -906,4 +924,37 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.sidebar-scroll-area
   .sidebar-list.movie-grid .catalog-series-card{height:202px!important;min-height:202px!important;max-height:202px!important}
   .sidebar-section.event-list-mode .event-ref-card{grid-template-columns:86px minmax(0,1fr) 38px!important}
   .sidebar-section.event-list-mode .event-card-art{width:86px!important;min-width:86px!important}
+}
+
+/* RUMAN-30 AUTHORITATIVE NOTICE: keep after every legacy mobile override. */
+@keyframes clicktv-r30-notice{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+.sticky-notice{height:30px!important;min-height:30px!important;flex:0 0 30px!important;padding:0 40px 0 0!important;overflow:hidden!important}
+.sticky-notice .marquee-wrapper{display:block!important;width:100%!important;overflow:hidden!important;white-space:nowrap!important}
+.sticky-notice .marquee-text,
+html.lite-performance .sticky-notice .marquee-text,
+html.ultra-lite-performance .sticky-notice .marquee-text,
+.mobile-playback-performance .sticky-notice .marquee-text{
+  display:inline-block!important;width:max-content!important;max-width:none!important;padding-left:100%!important;
+  color:#f2f6fc!important;font-size:14px!important;font-weight:800!important;line-height:30px!important;
+  text-align:left!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;
+  transform:translateX(0)!important;animation:clicktv-r30-notice 22s linear infinite!important;will-change:transform!important;
+}
+.sticky-notice .close-btn{right:3px!important;top:50%!important;width:32px!important;height:30px!important;min-width:32px!important;min-height:30px!important;transform:translateY(-50%)!important}
+@media (max-width:980px){
+  .sticky-notice{padding:0 40px 0 0!important;justify-content:initial!important}
+  .sticky-notice .marquee-wrapper{display:block!important;justify-content:initial!important}
+  .sticky-notice .marquee-text,
+  html.lite-performance .sticky-notice .marquee-text,
+  html.ultra-lite-performance .sticky-notice .marquee-text,
+  .mobile-playback-performance .sticky-notice .marquee-text{
+    display:inline-block!important;max-width:none!important;padding-left:100%!important;font-size:12.5px!important;
+    line-height:30px!important;text-align:left!important;overflow:visible!important;text-overflow:clip!important;
+    transform:translateX(0)!important;animation:clicktv-r30-notice 18s linear infinite!important;
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  .sticky-notice .marquee-text,
+  html.lite-performance .sticky-notice .marquee-text,
+  html.ultra-lite-performance .sticky-notice .marquee-text,
+  .mobile-playback-performance .sticky-notice .marquee-text{padding-left:8px!important;transform:none!important;animation:none!important}
 }

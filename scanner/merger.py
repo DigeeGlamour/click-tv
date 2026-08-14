@@ -248,6 +248,10 @@ def _is_publishable_stream(stream: Dict[str, Any]) -> bool:
     )
     publish_allowed = stream.get("publish_allowed") is True
 
+    # Pending/geo/last-good labels are not current playback proof for movies.
+    if pipeline == "movies" and not confirmed:
+        return False
+
     if status in {
         "failed",
         "failed_bd",

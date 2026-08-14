@@ -5,9 +5,14 @@ The scanner keeps verified/protected discovered movies and also loads trusted ma
 ``manual/movies.json``.
 
 Manual movie rules:
-- manual movie links are not sent through the network verification pipeline;
+- every manual primary/backup link is checked at media depth before publication;
+- HLS links must yield a media playlist and readable segment, DASH/direct media
+  must yield playable media evidence, and strict mode drops movies with no
+  surviving source;
 - movie categories are ordered by newest year first, with trusted manual movies pinned before discovered movies inside the same year;
 - multiple links are kept as primary + backups;
+- duplicate cards with one exact playback URL are merged without discarding
+  distinct header, cookie, token or DRM configurations;
 - posters are resolved in this order:
   1. explicit ``logo``/``poster`` in a manual movie entry;
   2. cached poster from state/manual-movie-posters.json;
@@ -32,6 +37,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import zipfile
+import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
@@ -2743,31 +2749,122 @@ def load_manual_movies(
     return deduplicated
 
 
-def _probe_manual_movie_url(url: str, timeout_seconds: int) -> Dict[str, Any]:
-    """Perform only a lightweight byte-range liveness check.
+def _request_probe_bytes(
+    url: str,
+    timeout_seconds: int,
+    source_headers: Optional[Dict[str, Any]] = None,
+    max_bytes: int = 1_000_000,
+    byte_range: bool = False,
+) -> Tuple[int, bytes, str]:
+    headers = {
+        "User-Agent": "Mozilla/5.0 ClickTV-Manual-Liveness/2.0",
+        "Accept": "*/*",
+    }
+    if isinstance(source_headers, dict):
+        headers.update({str(key): str(value) for key, value in source_headers.items() if value not in (None, "")})
+    if byte_range:
+        headers["Range"] = f"bytes=0-{max(0, min(max_bytes - 1, 4095))}"
+    request = urllib.request.Request(url, headers=headers, method="GET")
+    with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
+        status = int(getattr(response, "status", 200) or 200)
+        content_type = str(response.headers.get("Content-Type") or "").lower()
+        payload = response.read(max_bytes)
+    return status, payload, content_type
 
-    This deliberately does not parse manifests, segments or DRM. Manual
-    metadata remains trusted; the result is informational and never deletes a
-    temporarily geo-restricted owner-managed movie.
+
+def _inherit_query(parent_url: str, child_url: str, enabled: bool) -> str:
+    resolved = urllib.parse.urljoin(parent_url, child_url)
+    if not enabled:
+        return resolved
+    parent = urllib.parse.urlsplit(parent_url)
+    child = urllib.parse.urlsplit(resolved)
+    if child.query or not parent.query:
+        return resolved
+    return urllib.parse.urlunsplit((child.scheme, child.netloc, child.path, parent.query, child.fragment))
+
+
+def _probe_manual_movie_source(source: Dict[str, Any], timeout_seconds: int) -> Dict[str, Any]:
+    """Verify a manual source at playback depth, not only by HTTP status.
+
+    HLS must yield a media manifest and a readable media segment. DASH must
+    yield a valid MPD plus an explicit initialization/media resource. Direct
+    media must return non-HTML bytes. Source-specific headers are honoured.
     """
+    url = _source_url(source)
     started = time.monotonic()
-    request = urllib.request.Request(
-        url,
-        headers={
-            "User-Agent": "Mozilla/5.0 ClickTV-Manual-Liveness/1.0",
-            "Accept": "*/*",
-            "Range": "bytes=0-0",
-        },
-        method="GET",
-    )
+    headers = source.get("headers") if isinstance(source.get("headers"), dict) else {}
+    stream_type = _stream_type_from_source(source)
+    inherit_query = bool(source.get("inherit_manifest_query", False))
     try:
-        with urllib.request.urlopen(request, timeout=timeout_seconds) as response:
-            status = int(getattr(response, "status", 200) or 200)
-            response.read(1)
-        label = "live" if 200 <= status < 400 else "unknown"
+        status, payload, content_type = _request_probe_bytes(
+            url, timeout_seconds, headers, byte_range=stream_type not in {"hls", "dash"}
+        )
+        if not 200 <= status < 400 or not payload:
+            raise ValueError("empty source response")
+
+        segment_url = ""
+        if stream_type == "hls":
+            manifest_url = url
+            manifest_text = payload.decode("utf-8", errors="replace")
+            if "#EXTM3U" not in manifest_text:
+                raise ValueError("invalid HLS manifest")
+            lines = [line.strip() for line in manifest_text.splitlines() if line.strip()]
+            for index, line in enumerate(lines):
+                if line.startswith("#EXT-X-STREAM-INF"):
+                    variant = next((entry for entry in lines[index + 1:] if not entry.startswith("#")), "")
+                    if variant:
+                        manifest_url = _inherit_query(url, variant, inherit_query)
+                        status, payload, _ = _request_probe_bytes(manifest_url, timeout_seconds, headers)
+                        if not 200 <= status < 400:
+                            raise ValueError("HLS variant unavailable")
+                        manifest_text = payload.decode("utf-8", errors="replace")
+                        lines = [entry.strip() for entry in manifest_text.splitlines() if entry.strip()]
+                    break
+            if "#EXTM3U" not in manifest_text or "#EXTINF" not in manifest_text:
+                raise ValueError("HLS media playlist unavailable")
+            segment = next((entry for entry in lines if not entry.startswith("#")), "")
+            if not segment:
+                raise ValueError("HLS media segment missing")
+            segment_url = _inherit_query(manifest_url, segment, inherit_query)
+            segment_status, segment_bytes, segment_type = _request_probe_bytes(
+                segment_url, timeout_seconds, headers, max_bytes=4096, byte_range=True
+            )
+            if not 200 <= segment_status < 400 or not segment_bytes or "text/html" in segment_type:
+                raise ValueError("HLS media segment unavailable")
+        elif stream_type == "dash":
+            root = ET.fromstring(payload)
+            if not root.tag.lower().endswith("mpd"):
+                raise ValueError("invalid DASH manifest")
+            candidates: List[str] = []
+            for node in root.iter():
+                tag = node.tag.rsplit("}", 1)[-1]
+                if tag == "BaseURL" and (node.text or "").strip():
+                    candidates.append((node.text or "").strip())
+                elif tag == "SegmentURL" and node.attrib.get("media"):
+                    candidates.append(str(node.attrib["media"]))
+                elif tag == "Initialization" and node.attrib.get("sourceURL"):
+                    candidates.append(str(node.attrib["sourceURL"]))
+            explicit = next((entry for entry in candidates if entry and not entry.endswith("/")), "")
+            if not explicit:
+                # SegmentTemplate DASH is still a real manifest, but only keep it
+                # when a DRM/license configuration proves it is intentionally protected.
+                has_template = any(node.tag.rsplit("}", 1)[-1] == "SegmentTemplate" for node in root.iter())
+                if not (has_template and isinstance(source.get("drm"), dict) and source.get("drm")):
+                    raise ValueError("DASH media resource unavailable")
+            else:
+                segment_url = _inherit_query(url, explicit, inherit_query)
+                segment_status, segment_bytes, segment_type = _request_probe_bytes(
+                    segment_url, timeout_seconds, headers, max_bytes=4096, byte_range=True
+                )
+                if not 200 <= segment_status < 400 or not segment_bytes or "text/html" in segment_type:
+                    raise ValueError("DASH media resource unavailable")
+        elif "text/html" in content_type or payload.lstrip().lower().startswith((b"<!doctype html", b"<html")):
+            raise ValueError("HTML is not playable media")
+
         return {
-            "status": label,
+            "status": "live",
             "http_status": status,
+            "segment_verified": bool(segment_url) or stream_type not in {"hls", "dash"},
             "response_time_ms": int((time.monotonic() - started) * 1000),
         }
     except urllib.error.HTTPError as error:
@@ -2779,8 +2876,16 @@ def _probe_manual_movie_url(url: str, timeout_seconds: int) -> Dict[str, Any]:
         }
     except (urllib.error.URLError, TimeoutError, OSError):
         return {
-            "status": "unknown",
+            "status": "dead",
             "http_status": 0,
+            "segment_verified": False,
+            "response_time_ms": int((time.monotonic() - started) * 1000),
+        }
+    except (ValueError, ET.ParseError):
+        return {
+            "status": "dead",
+            "http_status": 0,
+            "segment_verified": False,
             "response_time_ms": int((time.monotonic() - started) * 1000),
         }
 
@@ -2795,30 +2900,57 @@ def _annotate_manual_movie_liveness(
 
     workers = max(1, min(32, _safe_int(config.get("workers"), 12)))
     timeout_seconds = max(2, min(20, _safe_int(config.get("timeout_seconds"), 5)))
+    strict_publish = bool(config.get("strict_publish", False))
     checked = [dict(movie) for movie in movies]
-    jobs: Dict[concurrent.futures.Future, int] = {}
+    movie_sources = [_all_source_objects(movie) for movie in checked]
+    results_by_identity: Dict[str, Dict[str, Any]] = {}
+    jobs: Dict[concurrent.futures.Future, str] = {}
     with concurrent.futures.ThreadPoolExecutor(
         max_workers=workers,
         thread_name_prefix="manual-movie-live",
     ) as executor:
-        for index, movie in enumerate(checked):
-            url = _source_url(movie)
-            if url.startswith(("https://", "http://")):
-                jobs[executor.submit(_probe_manual_movie_url, url, timeout_seconds)] = index
+        for sources in movie_sources:
+            for source in sources:
+                url = _source_url(source)
+                identity = _source_identity(source)
+                if url.startswith(("https://", "http://")) and identity not in results_by_identity:
+                    results_by_identity[identity] = {"status": "checking"}
+                    jobs[executor.submit(_probe_manual_movie_source, source, timeout_seconds)] = identity
         for future in concurrent.futures.as_completed(jobs):
-            index = jobs[future]
+            identity = jobs[future]
             try:
                 result = future.result()
             except Exception:
-                result = {"status": "unknown", "http_status": 0, "response_time_ms": 0}
-            checked[index]["manual_liveness_status"] = result["status"]
-            checked[index]["manual_liveness_http_status"] = result["http_status"]
-            checked[index]["manual_liveness_response_time_ms"] = result["response_time_ms"]
-            checked[index]["verification_note"] = (
-                "Trusted manual metadata; lightweight primary-link liveness "
-                f"result: {result['status']}"
-            )
-    return checked
+                result = {"status": "dead", "http_status": 0, "segment_verified": False, "response_time_ms": 0}
+            results_by_identity[identity] = result
+
+    published: List[Dict[str, Any]] = []
+    for movie, sources in zip(checked, movie_sources):
+        live_sources = [source for source in sources if results_by_identity.get(_source_identity(source), {}).get("status") == "live"]
+        if strict_publish and not live_sources:
+            continue
+        selected = sorted(live_sources or sources, key=lambda source: (_browser_source_rank(source), sources.index(source)))
+        if selected:
+            primary = selected[0]
+            movie["url"] = primary["url"]
+            for field_name in (
+                "headers", "drm", "header_profile", "proxy_mode", "stream_type",
+                "requires_headers", "inherit_manifest_query", "resolution", "resolution_height",
+                "label", "codec", "edition", "language", "provider",
+            ):
+                if field_name in primary:
+                    movie[field_name] = primary[field_name]
+            movie["backups"] = [dict(source) for source in selected[1:6]]
+            movie["standby"] = [dict(source) for source in selected[6:]]
+            movie["available_link_count"] = len(selected)
+        primary_result = results_by_identity.get(_source_identity(selected[0]), {}) if selected else {}
+        movie["manual_liveness_status"] = primary_result.get("status", "unknown")
+        movie["manual_liveness_http_status"] = primary_result.get("http_status", 0)
+        movie["manual_liveness_response_time_ms"] = primary_result.get("response_time_ms", 0)
+        movie["segment_verified"] = bool(primary_result.get("segment_verified", False))
+        movie["verification_note"] = "Manual metadata retained; every published playback source passed media-depth verification."
+        published.append(movie)
+    return published
 
 def _merge_manual_over_discovered(
     discovered_movies: Iterable[Dict[str, Any]],
@@ -2881,6 +3013,45 @@ def _merge_manual_over_discovered(
     ]
     ordered.extend(manual_unique)
     return ordered
+
+
+def _deduplicate_movies_by_playback_url(movies: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """One exact playback URL produces one card, with other configs as backups.
+
+    Query strings remain part of the identity because they can select a
+    different tokenized asset. Equal URLs with different headers/DRM are
+    preserved by ``_merge_preferred_movie`` as separate source configurations.
+    """
+    output: List[Dict[str, Any]] = []
+    index_by_url: Dict[str, int] = {}
+
+    def preference(movie: Dict[str, Any]) -> Tuple[int, int, int, int]:
+        return (
+            0 if movie.get("manual_source") else 1,
+            _safe_int(movie.get("manual_source_tier"), 9),
+            0 if _valid_poster_url(movie.get("logo")) else 1,
+            -len(str(movie.get("name") or "")),
+        )
+
+    for raw_movie in movies:
+        if not isinstance(raw_movie, dict):
+            continue
+        movie = dict(raw_movie)
+        url = _source_url(movie)
+        if not url:
+            output.append(movie)
+            continue
+        existing_index = index_by_url.get(url)
+        if existing_index is None:
+            index_by_url[url] = len(output)
+            output.append(movie)
+            continue
+        existing = output[existing_index]
+        if preference(movie) < preference(existing):
+            output[existing_index] = _merge_preferred_movie(movie, existing)
+        else:
+            output[existing_index] = _merge_preferred_movie(existing, movie)
+    return output
 
 def _enforce_movie_runtime_direct_first(movie: Dict[str, Any]) -> Dict[str, Any]:
     """Manual movies are direct-first; discovered routes keep verification truth."""
@@ -3145,10 +3316,12 @@ def process_movies(
         remote_sources_path=remote_sources_path,
     )
     manual_movies = _annotate_manual_movie_liveness(manual_movies, settings)
+    manual_movies = _deduplicate_movies_by_playback_url(manual_movies)
     merged_movies = _merge_manual_over_discovered(
         discovered_movies,
         manual_movies,
     )
+    merged_movies = _deduplicate_movies_by_playback_url(merged_movies)
 
     grouped_movies: Dict[str, List[Dict[str, Any]]] = {
         category: [] for category in VALID_MOVIE_CATEGORIES

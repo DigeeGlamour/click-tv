@@ -12,6 +12,7 @@ const STORAGE_KEYS = Object.freeze({
   liveNetworkMode: 'clicktv_live_network_mode_v2',
   movieNetworkMode: 'clicktv_movie_network_mode_v2',
   proxyHealth: 'clicktv_proxy_health_v1',
+  routePreferences: 'clicktv_route_preferences_v1',
   playbackHistory: 'clicktv_playback_history_v1',
   recentItems: 'clicktv_recent_items_v1',
   favorites: 'clicktv_favorites_v1',
@@ -62,6 +63,7 @@ const AUTO_NEXT_SECONDS = 5;
 const MPEGTS_CDN = 'https://cdn.jsdelivr.net/npm/mpegts.js@1.7.3/dist/mpegts.min.js';
 const SHAKA_CDN = 'https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.10.9/shaka-player.compiled.js';
 const DATA_FETCH_TIMEOUT_MS = 9000;
+const EVENT_CATALOG_REFRESH_MS = 60000;
 const POSITION_SAVE_INTERVAL_MS = 10000;
 const POSITION_HISTORY_LIMIT = 200;
 const MOVIE_PROMPT_TEXT = 'মুভি দেখতে একটি বিভাগ নির্বাচন করুন';
@@ -95,6 +97,8 @@ const state = {
   seriesDetailMode: false,
   dataSessionId: 0,
   dataAbortController: null,
+  currentDataPath: '',
+  eventCatalogRefreshActive: false,
   movieIndex: null,
   moviePageCursor: 0,
   moviePageLoading: false,
@@ -181,6 +185,7 @@ const state = {
   resumeBadgeTimer: null,
   playbackPositions: readJsonStorage(STORAGE_KEYS.positions, {}),
   proxyHealth: readJsonStorage(STORAGE_KEYS.proxyHealth, {}),
+  routePreferences: readJsonStorage(STORAGE_KEYS.routePreferences, {}),
   mobileNativeFullscreen: false,
   performanceMonitorTimer: null,
   performanceSample: null,
@@ -301,7 +306,9 @@ function withTimeoutSignal(signal, timeoutMs = DATA_FETCH_TIMEOUT_MS) {
 }
 
 async function fetchJson(path, options = {}) {
-  const response = await fetch(withVersion(path), {
+  const requestUrl = new URL(withVersion(path));
+  if (options.fresh === true) requestUrl.searchParams.set('_refresh', String(Date.now()));
+  const response = await fetch(requestUrl.toString(), {
     cache: options.cache || 'no-store',
     signal: withTimeoutSignal(options.signal, options.timeoutMs),
     headers: { Accept: 'application/json' }
@@ -1248,6 +1255,7 @@ async function selectMainView(view, category, options = {}) {
 
   state.view = kind;
   state.selectedCategory = label;
+  state.currentDataPath = path || '';
   showListMessage(`${label} তালিকা লোড হচ্ছে…`, 'fa-spinner', true);
   setSidebarCount('Loading...');
 
@@ -1717,7 +1725,7 @@ function applyFilterAndSort() {
   } else if (state.currentSortMode === 'za') {
     items.sort((a, b) => b.name.localeCompare(a.name));
   } else if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
-    const statusRank = { LIVE_NOW: 0, STARTING_SOON: 1, LINK_UPDATING: 2, UPCOMING: 3, TIME_UNVERIFIED: 4 };
+    const statusRank = { LIVE_NOW: 0, CHANNEL_LIVE: 1, STARTING_SOON: 2, LINK_UPDATING: 3, UPCOMING: 4, TIME_UNVERIFIED: 5 };
     items.sort((a, b) => {
       const statusDifference = (statusRank[eventUiStatus(a)] ?? 9) - (statusRank[eventUiStatus(b)] ?? 9);
       if (statusDifference) return statusDifference;
@@ -1960,7 +1968,9 @@ function eventUiStatus(item) {
     return isPlayable(item) ? 'LIVE_NOW' : 'UPCOMING';
   }
   const minutes = (start.getTime() - Date.now()) / 60000;
-  if (minutes <= 0 && minutes >= -360) return isPlayable(item) ? 'LIVE_NOW' : 'LINK_UPDATING';
+  // A clock plus a playable URL is not proof of an actual live match.
+  // Only scanner-verified LIVE_NOW may make that claim.
+  if (minutes <= 0) return isPlayable(item) ? (configured === 'LIVE_NOW' ? 'LIVE_NOW' : 'CHANNEL_LIVE') : 'LINK_UPDATING';
   if (minutes > 0 && minutes <= 60) return 'STARTING_SOON';
   return 'UPCOMING';
 }
@@ -1988,6 +1998,31 @@ function refreshEventCardsForClock() {
   if (nextFingerprint === state.eventUiFingerprint) return;
   state.eventUiFingerprint = nextFingerprint;
   renderCurrentList(true, { preserveScroll: true });
+}
+
+async function refreshActiveEventCatalogue() {
+  if (state.eventCatalogRefreshActive) return;
+  if (state.view !== VIEW.UPCOMING && state.view !== VIEW.EVENT) return;
+  const path = state.currentDataPath;
+  if (!path) return;
+  const expectedView = state.view;
+  state.eventCatalogRefreshActive = true;
+  try {
+    const data = await fetchJson(path, { cache: 'no-store', fresh: true, timeoutMs: 7000 });
+    if (state.view !== expectedView || state.currentDataPath !== path) return;
+    const raw = Array.isArray(data) ? data : (data.channels || data.items || data.events || []);
+    const nextItems = normalizeList(raw, expectedView);
+    const signature = (items) => JSON.stringify(items.map((item) => [item._uid, item.url, item.status, item.start_time, item.end_time]));
+    if (signature(nextItems) === signature(state.currentItems)) return;
+    const scrollTop = getSidebarScrollTop();
+    state.currentItems = nextItems;
+    renderCurrentList(true, { preserveScroll: true });
+    restoreSidebarScroll(scrollTop);
+  } catch (error) {
+    console.debug('Event catalogue refresh deferred', error?.message || error);
+  } finally {
+    state.eventCatalogRefreshActive = false;
+  }
 }
 
 function createEventCard(item, visualIndex) {
@@ -2433,7 +2468,12 @@ function buildProxyUrl(proxy, source) {
 
 function buildAttemptPlan(item) {
   const plan = [];
-  const sources = item._sources?.length ? item._sources : rankSources(item);
+  const preferred = state.routePreferences[itemPlaybackKey(item)] || null;
+  const rankedSources = item._sources?.length ? item._sources : rankSources(item);
+  const sources = [...rankedSources].sort((left, right) => {
+    if (!preferred?.sourceKey) return 0;
+    return Number(sourcePlaybackKey(right) === preferred.sourceKey) - Number(sourcePlaybackKey(left) === preferred.sourceKey);
+  });
 
   sources.slice(0, 6).forEach((source, sourceIndex) => {
     const sourceUrl = String(source.url || '').trim();
@@ -2487,11 +2527,20 @@ function buildAttemptPlan(item) {
   });
 
   const seen = new Set();
-  return plan.filter((attempt) => {
+  const deduplicated = plan.filter((attempt) => {
     const key = `${attempt.route}:${attempt.proxy || ''}:${attempt.source.playback_id || attempt.source.url}`;
     if (seen.has(key)) return false;
     seen.add(key);
     return true;
+  });
+  if (!preferred) return deduplicated;
+  return deduplicated.sort((left, right) => {
+    const score = (attempt) => {
+      const sourceMatch = sourcePlaybackKey(attempt.source) === preferred.sourceKey;
+      const routeMatch = attempt.route === preferred.route && (attempt.route !== 'proxy' || attempt.proxy === preferred.proxy);
+      return sourceMatch && routeMatch ? 0 : sourceMatch ? 1 : 2;
+    };
+    return score(left) - score(right);
   });
 }
 
@@ -3687,17 +3736,17 @@ function liveStartupBufferTargetSeconds(item = state.currentItem) {
     if (mode === NETWORK_MODE.STABLE) return 3.4;
     return 2.8;
   }
-  if (mode === NETWORK_MODE.BALANCED) return 2.2;
-  if (mode === NETWORK_MODE.STABLE) return 4.0;
-  return 3.2;
+  if (mode === NETWORK_MODE.BALANCED) return 1.2;
+  if (mode === NETWORK_MODE.STABLE) return 3.0;
+  return 1.6;
 }
 
 function liveStartupBufferMinimumSeconds(item = state.currentItem) {
   const mode = currentNetworkMode();
   const isEvent = isLiveEventContext(item);
-  if (mode === NETWORK_MODE.BALANCED) return isEvent ? 0.8 : 1.0;
-  if (mode === NETWORK_MODE.STABLE) return isEvent ? 1.9 : 2.2;
-  return isEvent ? 1.5 : 1.8;
+  if (mode === NETWORK_MODE.BALANCED) return isEvent ? 0.8 : 0.5;
+  if (mode === NETWORK_MODE.STABLE) return isEvent ? 1.9 : 1.6;
+  return isEvent ? 1.5 : 0.8;
 }
 
 function liveStartupBufferMaximumWaitMs(item = state.currentItem) {
@@ -3708,9 +3757,9 @@ function liveStartupBufferMaximumWaitMs(item = state.currentItem) {
     if (mode === NETWORK_MODE.STABLE) return 4000;
     return 3000;
   }
-  if (mode === NETWORK_MODE.BALANCED) return 2400;
-  if (mode === NETWORK_MODE.STABLE) return 4400;
-  return 3300;
+  if (mode === NETWORK_MODE.BALANCED) return 1400;
+  if (mode === NETWORK_MODE.STABLE) return 3300;
+  return 1800;
 }
 
 function releaseLiveStartupBufferGate(session, attemptToken) {
@@ -4095,8 +4144,8 @@ function attemptTimeoutFor(attempt, format, item) {
   if (isEvent && isDrmDash) return attempt?.route === 'proxy' ? 12000 : 9500;
   if (isEvent && format === 'dash') return attempt?.route === 'proxy' ? 10500 : 8500;
   if (format === 'dash') return attempt?.route === 'proxy' ? 9000 : 8000;
-  if (attempt?.route === 'direct') return attempt?.sourceIndex === 0 ? 5200 : 5800;
-  return 6000;
+  if (attempt?.route === 'direct') return attempt?.sourceIndex === 0 ? 4200 : 4500;
+  return 4800;
 }
 
 function acceptPlaybackRoute(session) {
@@ -4120,6 +4169,22 @@ function acceptPlaybackRoute(session) {
 
   if (state.currentItem && session.currentAttempt?.source?.url) {
     state.currentItem._activeSourceUrl = sourcePlaybackKey(session.currentAttempt.source);
+  }
+
+  const preferenceKey = itemPlaybackKey(session.item);
+  if (preferenceKey && session.currentAttempt) {
+    state.routePreferences[preferenceKey] = {
+      sourceKey: sourcePlaybackKey(session.currentAttempt.source),
+      route: session.currentAttempt.route,
+      proxy: session.currentAttempt.proxy || '',
+      updatedAt: Date.now()
+    };
+    state.routePreferences = Object.fromEntries(
+      Object.entries(state.routePreferences)
+        .sort((left, right) => Number(right[1]?.updatedAt || 0) - Number(left[1]?.updatedAt || 0))
+        .slice(0, 200)
+    );
+    writeJsonStorage(STORAGE_KEYS.routePreferences, state.routePreferences);
   }
 
   recordPlaybackSuccess();
@@ -7250,6 +7315,7 @@ async function bootstrap() {
   updateClock();
   setInterval(updateClock, effectivePerformanceClass() === 'normal' ? 1000 : 30000);
   setInterval(refreshEventCardsForClock, 30000);
+  setInterval(refreshActiveEventCatalogue, EVENT_CATALOG_REFRESH_MS);
   await setupServiceWorker();
   setupPwaInstall();
   renderNetworkMenu();

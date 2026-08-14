@@ -339,12 +339,10 @@ def _classify(item: Dict[str, Any], now: datetime) -> Dict[str, Any]:
     if start - timedelta(minutes=20) <= now <= end:
         item["schedule_status"] = "LIVE_NOW" if playable else "LINK_UPDATING"
         item["status"] = item["schedule_status"]
-        item["source_pipeline"] = "today_match" if playable else "upcoming"
     elif now < start:
         minutes = (start - now).total_seconds() / 60
         item["schedule_status"] = "STARTING_SOON" if minutes <= 60 else "UPCOMING"
         item["status"] = item["schedule_status"]
-        item["source_pipeline"] = "upcoming"
     else:
         item["schedule_status"] = "ENDED"
         item["status"] = "ENDED"

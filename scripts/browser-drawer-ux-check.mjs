@@ -11,7 +11,13 @@ async function verifyViewport(label, viewport, isMobile = false) {
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
   await page.locator('#sidebarList').waitFor({ state: 'visible', timeout: 20000 });
   await page.waitForTimeout(900);
-  await page.locator('#fullscreenBtn').click();
+  // A failed remote stream can leave the player message over the controls in
+  // local CORS tests. Trigger the control directly so this test remains about
+  // fullscreen drawer behavior, not remote stream availability.
+  await page.evaluate(async () => {
+    const container = document.querySelector('#videoContainer');
+    if (!document.fullscreenElement) await container.requestFullscreen();
+  });
   await page.waitForFunction(() => document.fullscreenElement?.id === 'videoContainer');
   await page.evaluate(() => document.querySelector('#fsDrawerToggle').click());
   await page.locator('#fsDrawer.open').waitFor({ state: 'visible' });
