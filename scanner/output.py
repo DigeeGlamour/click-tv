@@ -31,7 +31,11 @@ from scanner.playback_profiles import (
     merge_public_catalog,
     redact_public_report,
 )
-from scanner.browser_reachability import item_is_browser_reachable
+from scanner.browser_reachability import (
+    item_is_browser_reachable,
+    item_is_proven_live,
+    requires_same_run_proof,
+)
 from scanner.security import redact_sensitive_text
 
 
@@ -161,10 +165,15 @@ def _sanitize_public_items(value: Any) -> List[Dict[str, Any]]:
         for item in value
         if isinstance(item, dict)
     ]
-    # Last gate before the public JSON. A card with no viewer route (http:// on
-    # a bare IP: blocked by mixed content and by Cloudflare error 1003) would
-    # otherwise ship with a green "Verified" badge and never play.
-    return [item for item in sanitized if item_is_browser_reachable(item)]
+    # Last gate before the public JSON. Two ways a dead link used to ship with a
+    # green "Verified" badge: no viewer route at all (http:// on a bare IP), or a
+    # status like "stale_last_good" that means "this run's check failed, reusing
+    # the old link". Neither is allowed out.
+    return [
+        item for item in sanitized
+        if item_is_browser_reachable(item)
+        and (item_is_proven_live(item) if requires_same_run_proof(item) else True)
+    ]
 
 
 

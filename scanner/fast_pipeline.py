@@ -36,7 +36,11 @@ from scanner.bd_verifier import (
     _verify_via_proxy_workers,
     verify_bd_stream,
 )
-from scanner.browser_reachability import mark_browser_unreachable
+from scanner.browser_reachability import (
+    mark_browser_unreachable,
+    mark_unproven_items,
+    requires_same_run_proof,
+)
 from scanner.player_compatibility import mark_confirmed_player_failures
 from scanner.verifier import (
     _budget_exhausted_result,
@@ -1836,6 +1840,32 @@ def run_fast_verification_pipeline(
         },
     )
 
+    # Only same-run proof may reach the site. "stale_last_good" republished a
+    # link whose verification had just failed, which is how expired CDN links
+    # kept their green badge for days after they stopped playing.
+    publish_gate = settings.get("publish_gate")
+    publish_gate = publish_gate if isinstance(publish_gate, dict) else {}
+    unproven_hidden = 0
+    unproven_report: List[Dict[str, str]] = []
+    if bool(publish_gate.get("require_same_run_proof", True)):
+        apply_to_movies = bool(publish_gate.get("apply_to_movies", False))
+        unproven_hidden, unproven_report = mark_unproven_items(
+            [item for item in final_results if requires_same_run_proof(item, apply_to_movies)],
+            "channel",
+            allow_geo_pending=bool(publish_gate.get("allow_geo_pending", True)),
+        )
+    _atomic_write_json(
+        Path("reports/unproven-hidden.json"),
+        {
+            "timestamp": _utc_now(),
+            "mode": mode,
+            "count": unproven_hidden,
+            "reason": "Not proven playable in this run. Returns automatically "
+                      "on the next successful verification.",
+            "records": unproven_report,
+        },
+    )
+
     _atomic_write_json(history_path, stream_history)
     _atomic_write_json(protection_state_path, protection_state)
 
@@ -1856,6 +1886,7 @@ def run_fast_verification_pipeline(
         "total_budget_fallbacks": len(budget_fallbacks),
         "strict_player_hidden": strict_hidden,
         "browser_unreachable_hidden": browser_unreachable_hidden,
+        "unproven_hidden": unproven_hidden,
         "confirmed_player_failure_hidden": player_failure_hidden,
         "budget_exhausted": budget_exhausted,
         "elapsed_seconds": elapsed_seconds,
@@ -1902,6 +1933,7 @@ def run_fast_verification_pipeline(
             "total_publishable": len(publishable),
             "strict_player_hidden": strict_hidden,
             "browser_unreachable_hidden": browser_unreachable_hidden,
+            "unproven_hidden": unproven_hidden,
             "status_counts": final_counts,
             "groups": report_groups,
         },
@@ -1923,6 +1955,7 @@ def run_fast_verification_pipeline(
         "budget_fallbacks": len(budget_fallbacks),
         "strict_player_hidden": strict_hidden,
         "browser_unreachable_hidden": browser_unreachable_hidden,
+        "unproven_hidden": unproven_hidden,
         "budget_exhausted": budget_exhausted,
         "host_circuits_opened": host_registry.opened_count,
         "host_circuit_skips": host_registry.skipped_count,

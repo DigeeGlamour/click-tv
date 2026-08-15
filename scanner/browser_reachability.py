@@ -1,4 +1,14 @@
-"""Reject sources that a real browser + Cloudflare Worker can never reach.
+"""Decide whether a viewer can actually play an item, and block the rest.
+
+Two independent gates live here, both answering the same question the network
+verifier cannot answer on its own — "will this play in a real viewer's browser?"
+
+1.  ``item_is_browser_reachable`` — structural. Some URLs have no viewer route
+    at all, whatever the upstream server says (see the note below).
+2.  ``item_is_proven_live`` — evidential. Only a status that was proven in the
+    current scan run may be published. ``stale_last_good`` in particular means
+    "verification failed, republishing yesterday's link anyway", which is
+    exactly how dead links reach the site.
 
 The network verifier runs from Python on a GitHub runner, where a plain
 ``http://<ip-address>/stream.m3u8`` answers perfectly.  The published site does
@@ -34,6 +44,107 @@ UNREACHABLE_NOTE = (
     "route. The browser blocks it as mixed content and the Cloudflare playback "
     "proxy cannot fetch a raw IP host (error code 1003)."
 )
+
+UNPROVEN_NOTE = (
+    "Hidden from Click TV: this link was not proven playable in the current "
+    "scan run. It stays in scanner state and returns automatically as soon as "
+    "one verification succeeds again."
+)
+
+# Proven in this run, or curated by hand — safe to publish.
+PROVEN_LIVE_STATUSES = frozenset({
+    "verified",
+    "verified_global",
+    "verified_bd",
+    "verified_proxy",
+    "manual_trusted",
+})
+
+# Not proven from a GitHub runner, but genuinely reachable for the Bangladeshi
+# audience the site is built for: these hosts geo-block everything outside BD.
+# Dropping them would remove working channels, so they are allowed by default
+# and can be turned off with publish_gate.allow_geo_pending.
+GEO_PENDING_STATUSES = frozenset({
+    "geo_pending",
+    "bd_protected_pending",
+})
+
+
+def requires_same_run_proof(item: Dict[str, Any], apply_to_movies: bool = False) -> bool:
+    """Which items the same-run-proof rule applies to.
+
+    Live TV only, by default, and that split is measured rather than assumed.
+
+    For channels the status is a clean signal: sampling the live catalogue
+    through the real player path gave 26/29 playable for ``verified_global``
+    against 1/11 for ``stale_last_good``.
+
+    For movies it is not. The same sampling gave 0/12 for ``verified_global`` —
+    identical to every pending status — because a movie plays as a direct
+    browser download, not through the proxy the sample could measure. Applying
+    the rule there would have deleted 774 of 2030 titles on no evidence.
+    """
+    if apply_to_movies:
+        return True
+    kind = str(item.get("content_kind") or "").strip().casefold()
+    pipeline = str(item.get("source_pipeline") or "").strip().casefold()
+    return kind == "live_tv" or pipeline == "tv"
+
+
+def item_is_proven_live(item: Dict[str, Any], allow_geo_pending: bool = True) -> bool:
+    """True when the item carries real evidence that a viewer can play it.
+
+    ``verified`` is the authoritative flag: every success path sets it, and the
+    preserved-last-good path deliberately leaves it False while still setting
+    ``publish_allowed``. So ``publish_allowed`` alone is never taken as proof.
+    """
+    if item.get("verified") is True:
+        return True
+
+    status = str(item.get("verification_status") or "").strip().casefold()
+    if status in PROVEN_LIVE_STATUSES:
+        return True
+    if allow_geo_pending and status in GEO_PENDING_STATUSES:
+        return True
+    # Manual catalogue entries carry their own trust and are never network
+    # verified, so an empty status on a manual card is not a failure signal.
+    if not status and item.get("manual_source") is True:
+        return True
+    return False
+
+
+def mark_unproven_items(
+    items: Iterable[Dict[str, Any]],
+    kind: str = "channel",
+    allow_geo_pending: bool = True,
+) -> Tuple[int, List[Dict[str, str]]]:
+    """Hide anything not proven live this run; return (hidden_count, rows)."""
+    hidden = 0
+    report: List[Dict[str, str]] = []
+
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        if item.get("publish_allowed") is False:
+            continue
+        if item_is_proven_live(item, allow_geo_pending):
+            continue
+
+        status = str(item.get("verification_status") or "").strip()
+        item["network_verification_status"] = status
+        item["publish_allowed"] = False
+        item["player_visibility"] = "hidden_unproven_this_run"
+        item["verification_note"] = UNPROVEN_NOTE
+        hidden += 1
+        report.append({
+            "kind": kind,
+            "name": str(item.get("name") or item.get("title") or ""),
+            "category": str(item.get("category") or ""),
+            "url": str(item.get("url") or ""),
+            "reason": status or "unknown_status",
+        })
+
+    return hidden, report
 
 
 def _is_bare_ip_host(host: str) -> bool:
