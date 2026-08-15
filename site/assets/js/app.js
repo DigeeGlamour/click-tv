@@ -53,9 +53,7 @@ const MOVIE_ORDER = Object.freeze([
 const CHANNEL_INITIAL_CHUNK = 30;
 const CHANNEL_NEXT_CHUNK = 20;
 const MOVIE_CHUNK_SIZE = 20;
-// A live item may need the direct route, two fast proxy routes and one backup.
-// Keep the total bounded, but do not expire before those useful routes run.
-const CHANNEL_ATTEMPT_BUDGET_MS = 30000;
+const CHANNEL_ATTEMPT_BUDGET_MS = 16000;
 const MOVIE_ATTEMPT_BUDGET_MS = 110000;
 const EVENT_ATTEMPT_BUDGET_MS = 38000;
 const MIDPLAY_RECOVERY_BUDGET_MS = 16000;
@@ -2475,8 +2473,6 @@ function buildProxyUrl(proxy, source) {
 function buildAttemptPlan(item) {
   const plan = [];
   const rankedSources = item._sources?.length ? item._sources : rankSources(item);
-  // The scanner's primary source is always first. A prior proxy success may
-  // inform health ranking, but must never silently bypass original direct-first.
   const sources = [...rankedSources];
 
   sources.slice(0, 6).forEach((source, sourceIndex) => {
