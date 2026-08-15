@@ -290,12 +290,29 @@ jobs:
           # __pycache__/pyc .gitignore-এ আছে। এগুলো delete করলে পুরোনো
           # repository-তে ভুল করে tracked থাকা cache D status তৈরি করত।
 
+          # Windows-authored helper scripts carry the `eol=crlf` attribute. If
+          # their blob was ever committed with CRLF bytes, Git re-reports them
+          # as modified immediately after `git restore`, because the clean
+          # filter normalises CRLF -> LF and that never matches the stored blob.
+          # That is cosmetic noise, and it must not block publishing the data
+          # commit that was already created above. Renormalise once, then only
+          # a real content change is allowed to fail the run.
+          git add --renormalize -- . >/dev/null 2>&1 || true
+          git restore --staged -- . >/dev/null 2>&1 || true
+
           REMAINING="$(git status --porcelain --untracked-files=normal)"
 
           if [[ -n "$REMAINING" ]]; then
-            echo "Unexpected changes remain:"
-            echo "$REMAINING"
-            exit 1
+            if git diff --quiet --ignore-cr-at-eol && git diff --cached --quiet --ignore-cr-at-eol; then
+              echo "Only line-ending noise remains; continuing to push."
+              echo "$REMAINING"
+              git checkout -- . >/dev/null 2>&1 || true
+            else
+              echo "Unexpected changes remain:"
+              echo "$REMAINING"
+              git diff --stat
+              exit 1
+            fi
           fi
 
           git fetch origin main
