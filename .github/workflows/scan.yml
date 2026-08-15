@@ -49,20 +49,21 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
           persist-credentials: true
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: "22"
+          package-manager-cache: false
 
       - name: Mask scanner secrets in all following logs
         shell: bash
@@ -85,7 +86,7 @@ jobs:
           done
 
       - name: Restore scanner source cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: working/source-cache
           key: live-signal-source-cache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
@@ -138,6 +139,19 @@ jobs:
           test -f site/assets/js/app.js
           test -f site/assets/js/series.js
           test -f data/playback-sources.json
+          test -f .gitattributes
+
+          python - <<'PY'
+          from pathlib import Path
+
+          bad = [
+              path.as_posix()
+              for path in Path(".").rglob("*.sh")
+              if ".git" not in path.parts and b"\r" in path.read_bytes()
+          ]
+          if bad:
+              raise SystemExit("Shell scripts must use LF line endings: " + ", ".join(bad))
+          PY
 
           python -m py_compile scan.py scanner/*.py scanner/parsers/*.py scripts/*.py tests/*.py
           node --check site/assets/js/app.js
@@ -171,7 +185,7 @@ jobs:
 
       - name: Checkout private movie source repository
         if: steps.scan_mode.outputs.mode == 'movies' || steps.scan_mode.outputs.mode == 'all'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: 0matbank/hopeful-research
           ref: main
@@ -261,16 +275,9 @@ jobs:
             git commit -m "Auto update: ${{ steps.scan_mode.outputs.mode }} [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
           fi
 
-          # Scanner/test code কখনো source/config/workflow বদলালে সেই runtime
-          # mutation commit করা হবে না। শুধু generated public outputs রাখা হবে।
-          git restore --worktree -- . \
-            ':(exclude)data/**' \
-            ':(exclude)reports/**' \
-            ':(exclude)state/**' \
-            ':(exclude)working/**'
-
-          # Tracked temporary files আগের অবস্থায় ফেরত নেওয়া হবে।
-          git restore --worktree -- working || true
+          # Generated output is safely stored in the commit above. Remove every
+          # uncommitted scanner/test mutation before rebase; the commit remains.
+          git restore --staged --worktree -- .
 
           # Untracked temporary checkpoint পরিষ্কার করা হবে।
           rm -f working/pipeline-checkpoint.json
@@ -346,7 +353,7 @@ jobs:
 
       - name: Upload scanner log on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: scanner-failure-log-${{ github.run_number }}
           path: scanner-run.log
