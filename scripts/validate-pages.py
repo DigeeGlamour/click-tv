@@ -246,6 +246,25 @@ def get_primary_url(item: dict[str, Any]) -> str:
     return ""
 
 
+def normalize_catalog_identity(value: Any) -> str:
+    text = str(value or "").casefold()
+    text = re.sub(r"\b(?:19|20)\d{2}\b", " ", text)
+    text = re.sub(r"\b(?:4k|2k|uhd|fhd|full\s*hd|hd|sd|1080p?|720p?|576p?|480p?|360p?|web[- ]?dl|webrip|bluray|brrip|hdrip)\b", " ", text)
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return " ".join(text.split())
+
+
+def normalize_movie_identity(item: dict[str, Any]) -> str:
+    name = str(item.get("name") or item.get("title") or "").strip()
+    year_match = re.search(r"\b(?:19|20)\d{2}\b", name)
+    year = str(item.get("year") or (year_match.group(0) if year_match else "")).strip()
+    return f"{normalize_catalog_identity(name)}:{year}"
+
+
+def normalized_primary_url(item: dict[str, Any]) -> str:
+    return get_primary_url(item).split("|", 1)[0].strip().casefold()
+
+
 def get_backup_objects(item: dict[str, Any]) -> list[dict[str, Any]]:
     raw_backups = item.get("backups", [])
 
@@ -907,12 +926,26 @@ def validate_channel_category(
     if manifest_entry.get("count") != actual_count:
         add_error(f"manifest {category_name} count mismatch")
 
+    seen_names: dict[str, str] = {}
+    seen_urls: dict[str, str] = {}
     for number, item in enumerate(items, start=1):
         validate_stream_item(
             item,
             f"{category_name} channel #{number}",
             media_kind="channel",
         )
+        if isinstance(item, dict):
+            name = str(item.get("name") or item.get("title") or "").strip()
+            name_key = normalize_catalog_identity(name)
+            url_key = normalized_primary_url(item)
+            if name_key and name_key in seen_names:
+                add_error(f"{category_name} duplicate channel name: {seen_names[name_key]} / {name}")
+            elif name_key:
+                seen_names[name_key] = name
+            if url_key and url_key in seen_urls:
+                add_error(f"{category_name} duplicate channel URL: {seen_urls[url_key]} / {name}")
+            elif url_key:
+                seen_urls[url_key] = name
 
     COUNTS["channels"] += actual_count
 
@@ -1053,6 +1086,8 @@ def validate_movie_category(
 
     total_items = 0
     seen_numbers: set[int] = set()
+    seen_movie_names: dict[str, str] = {}
+    seen_movie_urls: dict[str, str] = {}
 
     for position, page_entry in enumerate(pages, start=1):
         if not isinstance(page_entry, dict) or not isinstance(
@@ -1114,6 +1149,18 @@ def validate_movie_category(
                 ),
                 media_kind="movie",
             )
+            if isinstance(item, dict):
+                name = str(item.get("name") or item.get("title") or "").strip()
+                name_key = normalize_movie_identity(item)
+                url_key = normalized_primary_url(item)
+                if name_key and name_key in seen_movie_names:
+                    add_error(f"{category_name} duplicate movie name: {seen_movie_names[name_key]} / {name}")
+                elif name_key:
+                    seen_movie_names[name_key] = name
+                if url_key and url_key in seen_movie_urls:
+                    add_error(f"{category_name} duplicate movie URL: {seen_movie_urls[url_key]} / {name}")
+                elif url_key:
+                    seen_movie_urls[url_key] = name
 
     expected_numbers = set(range(1, len(pages) + 1))
 

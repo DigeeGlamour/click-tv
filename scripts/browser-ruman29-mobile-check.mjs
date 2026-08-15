@@ -61,6 +61,51 @@ try {
   });
   assert(controls.movieContext && controls.visible.every(([, visible]) => visible), `Mobile movie controls missing: ${JSON.stringify(controls)}`);
 
+  await page.setViewportSize({ width: 844, height: 390 });
+  await page.locator('#fullscreenBtn').click({ force: true });
+  await page.waitForTimeout(300);
+  const nativeFullscreen = await page.evaluate(() => Boolean(document.fullscreenElement || document.webkitFullscreenElement));
+  if (!nativeFullscreen) {
+    // Chromium headless may reject the Fullscreen API even after a click.
+    await page.evaluate(() => {
+      document.getElementById('videoContainer').classList.add('clicktv-mobile-fullscreen');
+      const aspect = document.getElementById('aspectBtn');
+      aspect.hidden = false;
+      aspect.setAttribute('aria-hidden', 'false');
+      aspect.style.setProperty('display', 'grid', 'important');
+    });
+  }
+  await page.waitForTimeout(250);
+  const landscapeTransport = await page.evaluate(() => {
+    const box = (id) => {
+      const rect = document.getElementById(id).getBoundingClientRect();
+      const style = getComputedStyle(document.getElementById(id));
+      return { id, x: rect.x, y: rect.y, width: rect.width, height: rect.height, radius: style.borderRadius, display: style.display };
+    };
+    const ids = ['movieLockBtn', 'movieRotateBtn', 'muteBtn', 'skipBackBtn', 'prevChBtn', 'playPauseBtn', 'nextChBtn', 'skipFwdBtn', 'speedBtn', 'qualityBtn', 'aspectBtn', 'fullscreenBtn'];
+    const progress = document.getElementById('progressContainer').getBoundingClientRect();
+    return {
+      controls: ids.map(box),
+      progress: { y: progress.y, bottom: progress.bottom },
+      viewport: { width: innerWidth, height: innerHeight, orientation: matchMedia('(orientation:landscape)').matches },
+      htmlClass: document.documentElement.className,
+      wrapperClass: document.getElementById('videoContainer').className,
+      aspectOuter: document.getElementById('aspectBtn').outerHTML,
+      aspectMatches: document.getElementById('aspectBtn').matches('html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #aspectBtn'),
+    };
+  });
+  const transport = Object.fromEntries(landscapeTransport.controls.map((item) => [item.id, item]));
+  const orderedIds = ['movieLockBtn', 'movieRotateBtn', 'muteBtn', 'skipBackBtn', 'prevChBtn', 'playPauseBtn', 'nextChBtn', 'skipFwdBtn', 'speedBtn', 'qualityBtn', 'aspectBtn', 'fullscreenBtn'];
+  assert(orderedIds.every((id, index) => index === 0 || transport[orderedIds[index - 1]].x < transport[id].x), `Landscape control order is wrong: ${JSON.stringify(landscapeTransport)}`);
+  assert(transport.playPauseBtn.width >= 53 && transport.playPauseBtn.height >= 53, `Landscape play button is not screenshot-sized: ${JSON.stringify(landscapeTransport)}`);
+  assert(landscapeTransport.progress.bottom < transport.playPauseBtn.y, `Progress is not above transport buttons: ${JSON.stringify(landscapeTransport)}`);
+  await page.evaluate(() => {
+    document.getElementById('videoContainer').classList.remove('clicktv-mobile-fullscreen');
+    if (document.fullscreenElement) document.exitFullscreen?.();
+  });
+  await page.waitForTimeout(150);
+  await page.setViewportSize({ width: 390, height: 844 });
+
   await page.locator('#mobileMainNav [data-final-key="live-tv"]').click();
   await page.locator('#mobileSubNav [data-final-key="bangla"]').click();
   await page.locator('#sidebarList .channel-ref-card').first().click();
@@ -72,7 +117,7 @@ try {
   assert(liveBuffers.some((text) => /Fast Start.*6s Buffer/.test(text)), `Fast buffer is not 6s: ${JSON.stringify(liveBuffers)}`);
   assert(liveBuffers.some((text) => /Stable.*16s Buffer/.test(text)), `Stable buffer is not 16s: ${JSON.stringify(liveBuffers)}`);
   assert(!errors.length, `Runtime errors: ${errors.join(' | ')}`);
-  console.log(`Ruman-29 mobile PASS: ${JSON.stringify({ shell, cards, controls, liveBuffers })}`);
+  console.log(`Ruman-29 mobile PASS: ${JSON.stringify({ shell, cards, controls, landscapeTransport, liveBuffers })}`);
 } finally {
   await browser.close();
 }
