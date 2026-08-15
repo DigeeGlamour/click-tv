@@ -6942,6 +6942,7 @@ function restoreCustomControlsAfterFullscreen() {
   const fullscreenElement = wrapperFullscreenElement();
   const wrapperActive = fullscreenElement === videoContainer;
   document.documentElement.classList.toggle('custom-player-fullscreen', wrapperActive);
+  videoContainer.classList.toggle('clicktv-mobile-fullscreen', wrapperActive);
 
   if (wrapperActive) {
     state.mobileNativeFullscreen = false;
@@ -7390,6 +7391,18 @@ if (['127.0.0.1', 'localhost'].includes(location.hostname)) {
         currentRoute: session.currentAttempt?.route || '',
         success: Boolean(session.success),
       } : null;
+    },
+    startAuditPlayback(item, sourceKind = 'movie') {
+      const kind = sourceKind === 'channel' ? VIEW.CHANNEL : VIEW.MOVIE;
+      const normalized = normalizeItem({ ...item, _sourceKind: kind });
+      state.view = kind;
+      state.currentItems = [normalized];
+      startPlayback(normalized, true);
+      return {
+        name: normalized.name || normalized.title || '',
+        playable: isPlayable(normalized),
+        attemptCount: buildAttemptPlan(normalized).length,
+      };
     },
   };
 }
