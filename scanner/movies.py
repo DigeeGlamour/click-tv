@@ -42,13 +42,13 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 try:
-    from scanner.merger import merge_candidates
+    from scanner.merger import _movie_identity_key, merge_candidates
     from scanner.player_compatibility import is_confirmed_player_failure, is_player_proven, load_failure_keys, load_proof_keys, mark_confirmed_player_failures, mark_unproven_player_items
 except ImportError:
     module_dir = str(Path(__file__).resolve().parent)
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
-    from merger import merge_candidates
+    from merger import _movie_identity_key, merge_candidates
     from player_compatibility import is_confirmed_player_failure, is_player_proven, load_failure_keys, load_proof_keys, mark_confirmed_player_failures, mark_unproven_player_items
 
 
@@ -512,14 +512,9 @@ def _movie_name_identity(item: Dict[str, Any]) -> str:
 
 
 def _movie_identity(item: Dict[str, Any]) -> str:
-    # General duplicate grouping keeps different-year remakes separate.
-    name_identity = _movie_name_identity(item)
-    year = _parse_year(item.get("year"))
-
-    if not year:
-        year = _parse_year(item.get("name"))
-
-    return f"{name_identity}:{year or 'unknown'}"
+    # Use the same canonical title/year rule as the final merger so pipeline,
+    # language, quality and release labels cannot create a second movie card.
+    return _movie_identity_key(item)
 
 
 def _resolve_category_precedence(

@@ -350,6 +350,8 @@ def process_events(
     bd_results_path: str = "working/bd-results.json",
     settings_path: str = "config/settings.json",
     fixture_path: str = "config/event-fixtures.json",
+    *,
+    now: Optional[datetime] = None,
 ) -> Dict[str, Dict[str, Any]]:
     """Return freshness-checked today_match and upcoming payloads."""
     results = _load_required_results(bd_results_path)
@@ -397,11 +399,12 @@ def process_events(
         in {"today_match", "upcoming"}
     ]
 
+    reference_now = now or _utc_now_dt()
     event_candidates, schedule_stats = enrich_event_candidates(
         raw_event_candidates,
         fixture_path=fixture_path,
         timezone_name=timezone_name,
-        now=_utc_now_dt(),
+        now=reference_now,
         future_days=upcoming_future_days,
     )
 
@@ -410,7 +413,7 @@ def process_events(
         settings_path=settings_path,
     )
 
-    now = _utc_now_dt()
+    now = reference_now
     today_items: List[Dict[str, Any]] = []
     upcoming_items: List[Dict[str, Any]] = []
     today_stale = 0
