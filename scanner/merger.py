@@ -234,6 +234,12 @@ def _is_publishable_stream(stream: Dict[str, Any]) -> bool:
     """
     pipeline = str(stream.get("source_pipeline") or "").lower()
 
+    # An explicit visibility denial always wins over HTTP verification.  This
+    # is how a real-player failure remains recorded without leaking back into
+    # the public catalogue on the next scan.
+    if stream.get("publish_allowed") is False:
+        return False
+
     if stream.get("metadata_only", False):
         return (
             pipeline == "upcoming"
@@ -415,6 +421,22 @@ def _normalize_priority_name(value: Any) -> str:
     )
     text = re.sub(r"[^a-z0-9]+", " ", text)
     return " ".join(text.split())
+
+
+def _channel_identity_key(item: Dict[str, Any]) -> str:
+    """Return one card identity for a canonical channel brand.
+
+    Alias normalization has already selected the canonical display name. Raw
+    source IDs are provenance, not separate channel identities.
+    """
+    normalized = _normalize_priority_name(item.get("name"))
+    if normalized:
+        return normalized
+    fallback_id = str(item.get("id") or item.get("tvg_id") or "").strip().casefold()
+    return fallback_id or (
+        f"{str(item.get('source_id') or 'unknown').casefold()}:"
+        f"{item.get('stream_index', item.get('source_index', 0))}"
+    )
 
 
 def _configured_priority_index(
@@ -794,7 +816,7 @@ def merge_candidates(
 
     grouped: Dict[str, List[Dict[str, Any]]] = {}
     for c in filtered_candidates:
-        pipeline = c.get("source_pipeline", "tv")
+        pipeline = str(c.get("source_pipeline", "tv")).strip().casefold() or "tv"
         raw_id = str(c.get("id") or "").strip()
 
         if pipeline in ("today_match", "upcoming"):
@@ -805,26 +827,16 @@ def merge_candidates(
                 or f"{c.get('source_id', 'unknown')}:{c.get('stream_index', 0)}"
             )
             group_key = f"{pipeline}:{evt_key or fallback_key}"
-        elif str(pipeline).strip().lower() == "movies":
+        elif pipeline in {"movies", "movie", "vod", "film"}:
             group_key = f"movies:{_movie_identity_key(c)}"
         else:
-            fallback_name = re.sub(
-                r"[^\w\s-]",
-                "",
-                str(c.get("name", "")).lower(),
-            )
-            fallback_name = re.sub(r"[-\s]+", "-", fallback_name).strip("-")
             if (
                 str(c.get("category") or "").strip().lower() == "sports"
                 and _is_t_sports(c)
             ):
                 card_id = "t-sports"
             else:
-                card_id = (
-                    raw_id
-                    or fallback_name
-                    or f"{c.get('source_id', 'unknown')}:{c.get('stream_index', 0)}"
-                )
+                card_id = _channel_identity_key(c)
             group_key = f"{pipeline}:{card_id}"
 
         if group_key not in grouped:

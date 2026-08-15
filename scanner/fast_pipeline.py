@@ -36,6 +36,7 @@ from scanner.bd_verifier import (
     _verify_via_proxy_workers,
     verify_bd_stream,
 )
+from scanner.player_compatibility import mark_confirmed_player_failures
 from scanner.verifier import (
     _budget_exhausted_result,
     _extract_bd_rules as _extract_bd_rules_for_global,
@@ -213,7 +214,33 @@ def _status_counts(items: Iterable[Dict[str, Any]]) -> Dict[str, int]:
 
 
 def _publishable(item: Dict[str, Any]) -> bool:
+    if item.get("publish_allowed") is False:
+        return False
     return item.get("verified") is True or item.get("publish_allowed") is True
+
+
+def _apply_strict_player_visibility(
+    items: List[Dict[str, Any]],
+    settings: Dict[str, Any],
+) -> int:
+    """Hide unproven items from the site without deleting scan records."""
+    config = settings.get("bd_verification", {})
+    if not isinstance(config, dict) or not bool(config.get("strict_player_publish", False)):
+        return 0
+
+    hidden = 0
+    for item in items:
+        if item.get("verified") is True:
+            continue
+        if item.get("publish_allowed") is True:
+            item["publish_allowed"] = False
+            item["player_visibility"] = "hidden_unverified"
+            item["verification_note"] = (
+                str(item.get("verification_note") or "").strip()
+                + " Hidden from Click TV because same-run playable media was not proven."
+            ).strip()
+            hidden += 1
+    return hidden
 
 
 def _is_movie_candidate(item: Dict[str, Any], mode: str) -> bool:
@@ -1779,8 +1806,20 @@ def run_fast_verification_pipeline(
     global_results.sort(key=lambda item: _safe_int(item.get("_planner_index"), 0))
     final_results.sort(key=lambda item: _safe_int(item.get("_planner_index"), 0))
 
+    player_failure_hidden = 0
+    player_failure_hidden += mark_confirmed_player_failures(
+        [item for item in final_results if str(item.get("source_pipeline") or "").strip().casefold() == "tv"],
+        "channel",
+    )
+    player_failure_hidden += mark_confirmed_player_failures(
+        [item for item in final_results if str(item.get("source_pipeline") or "").strip().casefold() in {"movies", "movie", "vod", "film"}],
+        "movie",
+    )
+
     _atomic_write_json(history_path, stream_history)
     _atomic_write_json(protection_state_path, protection_state)
+
+    strict_hidden = _apply_strict_player_visibility(final_results, settings)
 
     global_counts = _status_counts(global_results)
     final_counts = _status_counts(final_results)
@@ -1795,6 +1834,8 @@ def run_fast_verification_pipeline(
         "total_global_completed": len(global_results),
         "total_adaptive_skipped": len(adaptive_skipped),
         "total_budget_fallbacks": len(budget_fallbacks),
+        "strict_player_hidden": strict_hidden,
+        "confirmed_player_failure_hidden": player_failure_hidden,
         "budget_exhausted": budget_exhausted,
         "elapsed_seconds": elapsed_seconds,
         "status_counts": global_counts,
@@ -1814,6 +1855,7 @@ def run_fast_verification_pipeline(
         "total_processed": len(final_results),
         "total_verified": sum(1 for item in final_results if item.get("verified") is True),
         "total_publishable": len(publishable),
+        "confirmed_player_failure_hidden": player_failure_hidden,
         "total_adaptive_skipped": len(adaptive_skipped),
         "total_budget_fallbacks": len(budget_fallbacks),
         "status_counts": final_counts,
@@ -1837,6 +1879,7 @@ def run_fast_verification_pipeline(
             "total_proxy_checked": bd_submitted,
             "total_processed": len(final_results),
             "total_publishable": len(publishable),
+            "strict_player_hidden": strict_hidden,
             "status_counts": final_counts,
             "groups": report_groups,
         },
@@ -1856,6 +1899,7 @@ def run_fast_verification_pipeline(
         "final_publishable": len(publishable),
         "adaptive_skipped": len(adaptive_skipped),
         "budget_fallbacks": len(budget_fallbacks),
+        "strict_player_hidden": strict_hidden,
         "budget_exhausted": budget_exhausted,
         "host_circuits_opened": host_registry.opened_count,
         "host_circuit_skips": host_registry.skipped_count,

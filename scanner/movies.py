@@ -43,11 +43,13 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 try:
     from scanner.merger import merge_candidates
+    from scanner.player_compatibility import is_confirmed_player_failure, is_player_proven, load_failure_keys, load_proof_keys, mark_confirmed_player_failures, mark_unproven_player_items
 except ImportError:
     module_dir = str(Path(__file__).resolve().parent)
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
     from merger import merge_candidates
+    from player_compatibility import is_confirmed_player_failure, is_player_proven, load_failure_keys, load_proof_keys, mark_confirmed_player_failures, mark_unproven_player_items
 
 
 VALID_MOVIE_CATEGORIES = (
@@ -428,9 +430,13 @@ def _normalize_title(value: Any) -> str:
     text = str(value or "").strip().casefold()
     text = re.sub(r"^\s*\[\s*18\+\s*\]\s*", "", text)
     text = re.sub(
-        r"\b(?:official|movie|film|full|4k|2k|uhd|fhd|full\s*hd|hd|sd|"
+        r"\b(?:official|movie|film|full|uncut|dual\s*audio|dual|multi\s*audio|"
+        r"hindi\s*dubbed|bengali\s*dubbed|bangla\s*dubbed|"
+        r"4k|2k|uhd|fhd|full\s*hd|hd|sd|"
         r"2160p|1440p|1080p|720p|480p|360p|web[ ._-]?dl|webrip|"
-        r"hdrip|hdtc|hevc|av1|x264|x265|esub)\b",
+        r"hdrip|hdtc|bluray|brrip|dvdrip|camrip|amzn|amazon|netflix|"
+        r"dsnp|hotstar|hoichoi|chorki|aha|hevc|av1|x264|x265|esub|"
+        r"fibwatch\.?com)\b",
         " ",
         text,
     )
@@ -3317,11 +3323,35 @@ def process_movies(
     )
     manual_movies = _annotate_manual_movie_liveness(manual_movies, settings)
     manual_movies = _deduplicate_movies_by_playback_url(manual_movies)
+    failure_keys = load_failure_keys()
+    mark_confirmed_player_failures(manual_movies, "movie")
+    visible_manual_movies = [
+        movie for movie in manual_movies
+        if not is_confirmed_player_failure(movie, "movie", failure_keys)
+    ]
     merged_movies = _merge_manual_over_discovered(
         discovered_movies,
-        manual_movies,
+        visible_manual_movies,
     )
     merged_movies = _deduplicate_movies_by_playback_url(merged_movies)
+    mark_confirmed_player_failures(merged_movies, "movie")
+    merged_movies = [
+        movie for movie in merged_movies
+        if not is_confirmed_player_failure(movie, "movie", failure_keys)
+    ]
+    bd_settings = settings.get("bd_verification") if isinstance(settings, dict) else {}
+    if isinstance(bd_settings, dict) and bool(bd_settings.get("strict_player_publish", False)):
+        proof_keys = load_proof_keys()
+        bangla_movies = [
+            movie for movie in merged_movies
+            if _canonical_movie_category(movie.get("category")) == "Bangla"
+        ]
+        mark_unproven_player_items(bangla_movies, "movie")
+        merged_movies = [
+            movie for movie in merged_movies
+            if _canonical_movie_category(movie.get("category")) != "Bangla"
+            or is_player_proven(movie, "movie", proof_keys)
+        ]
 
     grouped_movies: Dict[str, List[Dict[str, Any]]] = {
         category: [] for category in VALID_MOVIE_CATEGORIES
@@ -3343,7 +3373,17 @@ def process_movies(
             movie_copy = _reorder_browser_sources(movie_copy)
         grouped_movies[category].append(movie_copy)
 
-    _validate_and_report_manual_integrity(manual_movies, grouped_movies)
+    published_movie_keys = {
+        _movie_identity(movie)
+        for movies in grouped_movies.values()
+        for movie in movies
+        if isinstance(movie, dict)
+    }
+    integrity_manual_movies = [
+        movie for movie in visible_manual_movies
+        if _movie_identity(movie) in published_movie_keys
+    ]
+    _validate_and_report_manual_integrity(integrity_manual_movies, grouped_movies)
 
     return {
         category: paginate_movie_list(

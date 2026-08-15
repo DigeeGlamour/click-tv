@@ -18,6 +18,7 @@ try:
     from scanner.channel_logos import enrich_channel_logos
     from scanner.content_router import is_vod_candidate
     from scanner.merger import merge_candidates, pin_t_sports_first
+    from scanner.player_compatibility import is_confirmed_player_failure, is_player_proven, load_failure_keys, load_proof_keys, mark_confirmed_player_failures, mark_unproven_player_items
 except ImportError:
     module_dir = str(Path(__file__).resolve().parent)
     if module_dir not in sys.path:
@@ -25,6 +26,7 @@ except ImportError:
     from channel_logos import enrich_channel_logos
     from content_router import is_vod_candidate
     from merger import merge_candidates, pin_t_sports_first
+    from player_compatibility import is_confirmed_player_failure, is_player_proven, load_failure_keys, load_proof_keys, mark_confirmed_player_failures, mark_unproven_player_items
 
 
 VALID_TV_CATEGORIES = (
@@ -37,6 +39,23 @@ VALID_TV_CATEGORIES = (
     "Foreign News",
     "Other",
 )
+
+
+def _coalesce_exact_url_names(candidates: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Give equal playback URLs one canonical card name before merger ranking."""
+    owners: Dict[str, str] = {}
+    output: List[Dict[str, Any]] = []
+    for candidate in candidates:
+        item = dict(candidate)
+        url_key = str(item.get("url") or "").split("|", 1)[0].strip().casefold()
+        name = str(item.get("name") or "").strip()
+        if url_key and url_key in owners:
+            item["duplicate_alias_name"] = name
+            item["name"] = owners[url_key]
+        elif url_key and name:
+            owners[url_key] = name
+        output.append(item)
+    return output
 
 _CATEGORY_LOOKUP = {
     re.sub(r"[^a-z0-9]+", "", category.lower()): category
@@ -133,6 +152,9 @@ def process_tv_channels(
     manual movie/event entries are not allowed to leak into TV output.
     """
     candidates = _load_required_results(bd_results_path)
+    settings_payload = json.loads(Path(settings_path).read_text(encoding="utf-8"))
+    bd_settings = settings_payload.get("bd_verification") if isinstance(settings_payload, dict) else {}
+    strict_player_publish = isinstance(bd_settings, dict) and bool(bd_settings.get("strict_player_publish", False))
 
     tv_candidates: List[Dict[str, Any]] = []
     for item in candidates:
@@ -175,9 +197,24 @@ def process_tv_channels(
     # Merge known categories first so a recognized category always wins over
     # an unknown duplicate of the same channel.
     known_cards = merge_candidates(
-        known_candidates,
+        _coalesce_exact_url_names(known_candidates),
         settings_path=settings_path,
     )
+    failure_keys = load_failure_keys()
+    mark_confirmed_player_failures(known_cards, "channel")
+    known_cards = [
+        card for card in known_cards
+        if not is_confirmed_player_failure(card, "channel", failure_keys)
+    ]
+    if strict_player_publish:
+        proof_keys = load_proof_keys()
+        bangla_cards = [card for card in known_cards if str(card.get("category") or "") == "Bangla"]
+        mark_unproven_player_items(bangla_cards, "channel")
+        known_cards = [
+            card for card in known_cards
+            if str(card.get("category") or "") != "Bangla"
+            or is_player_proven(card, "channel", proof_keys)
+        ]
 
     published_identity_keys: Set[str] = set()
 
@@ -200,6 +237,11 @@ def process_tv_channels(
         unknown_candidates,
         settings_path=settings_path,
     )
+    mark_confirmed_player_failures(unknown_cards, "channel")
+    unknown_cards = [
+        card for card in unknown_cards
+        if not is_confirmed_player_failure(card, "channel", failure_keys)
+    ]
 
     for card in unknown_cards:
         if not isinstance(card, dict):

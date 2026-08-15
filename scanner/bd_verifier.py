@@ -1081,6 +1081,20 @@ def verify_bd_stream(
         _reset_permanent_failure(item, protection_state)
         return item
 
+    if _safe_bool(bd_config.get("strict_player_publish", False), False):
+        item.update(
+            verified=False,
+            publish_allowed=False,
+            verification_mode="same_run_player_gate",
+            verification_note=(
+                "Retained in verification reports but hidden from Click TV: "
+                "neither the browser-style direct retry nor the configured "
+                "proxy proved playable media in this run."
+            ),
+            player_visibility="hidden_unverified",
+        )
+        return item
+
     if http_status in permanent_codes:
         fail_count = _increment_permanent_failure(
             item,
