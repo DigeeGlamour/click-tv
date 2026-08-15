@@ -5772,7 +5772,7 @@ function setMovieControlsLocked(locked) {
   button.title = state.movieControlsLocked ? 'Unlock controls' : 'Lock controls';
   button.setAttribute('aria-label', button.title);
   const icon = button.querySelector('i');
-  if (icon) icon.className = state.movieControlsLocked ? 'fas fa-lock' : 'fas fa-lock-open';
+  if (icon) icon.className = state.movieControlsLocked ? 'fas fa-lock-open' : 'fas fa-lock';
   showControlsTemporarily();
 }
 
@@ -5789,6 +5789,7 @@ function updateContextualPlayerButtons() {
   setPlayerControlVisible('aspectBtn', mobileFullscreen);
   setPlayerControlVisible('movieLockBtn', mobileMovie);
   setPlayerControlVisible('movieRotateBtn', mobileMovie);
+  setPlayerControlVisible('pipBtn', mobileMovie);
 
   if (isMovie) $('networkMenu')?.classList.remove('show');
   else $('speedMenu')?.classList.remove('show');
@@ -6838,6 +6839,24 @@ $('movieRotateBtn')?.addEventListener('click', async () => {
     setPlayerStatus('info', 'এই browser-এ screen rotation lock support করে না। Device rotate করুন।', 2600);
   }
 });
+$('pipBtn')?.addEventListener('click', async () => {
+  try {
+    if (!document.pictureInPictureEnabled || video.disablePictureInPicture) {
+      throw new Error('Picture-in-Picture unsupported');
+    }
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+      return;
+    }
+    if (video.readyState < 1) {
+      setPlayerStatus('info', 'Movie loading শেষ হলে Picture-in-Picture চালু করুন।', 2200);
+      return;
+    }
+    await video.requestPictureInPicture();
+  } catch (_) {
+    setPlayerStatus('info', 'এই browser/device-এ Picture-in-Picture support করে না।', 2600);
+  }
+});
 $('muteBtn').addEventListener('click', handleMuteButtonClick);
 $('volumeSlider').addEventListener('input', (event) => {
   const nextVolume = Number(event.target.value);
@@ -7409,4 +7428,4 @@ if (['127.0.0.1', 'localhost'].includes(location.hostname)) {
 
 bootstrap();
 
-  
+

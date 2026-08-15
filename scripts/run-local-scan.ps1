@@ -176,7 +176,9 @@ else {
     Write-Host "No generated output changed; current main will still be synchronized."
 }
 
-& git restore --worktree -- working 2>$null
+# Generated output has already been committed. Clear scanner/test runtime
+# mutations before rebase so only that commit is ever pushed.
+Invoke-Git -Arguments @("restore", "--staged", "--worktree", "--", ".")
 if (Test-Path -LiteralPath (Join-Path $ProjectRoot "working\pipeline-checkpoint.json")) {
     Remove-Item -LiteralPath (Join-Path $ProjectRoot "working\pipeline-checkpoint.json") -Force
 }

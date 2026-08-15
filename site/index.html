@@ -32,13 +32,13 @@
     gtag('js', new Date());
     gtag('config', 'G-9MQR0EXVDY', { 'cookie_domain': 'none' });
   </script>
-  
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  
+
 
   <!-- Shaka (DASH/DRM) শুধু প্রয়োজন হলে dynamically load হয় — initial payload হালকা রাখতে -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
@@ -46,7 +46,7 @@
   <link rel="stylesheet" href="assets/css/app.css?v=20260806-user-list-final-v1">
   <link rel="stylesheet" href="assets/css/series.css?v=20260806-user-list-final-v1">
   <link rel="stylesheet" href="assets/css/final-design.css?v=20260806-user-list-final-v1">
-  <link rel="stylesheet" href="assets/css/reference-design.css?v=20260813-mobile-ruman29-v1">
+  <link rel="stylesheet" href="assets/css/reference-design.css?v=20260815-mobile-movie-controls-v2">
 </head>
 <body translate="no" class="notranslate">
   <div id="sticky-header-notice" class="sticky-notice">
@@ -121,7 +121,7 @@
 
           <!-- Fullscreen Channel Drawer Toggle -->
           <button class="fs-drawer-toggle" id="fsDrawerToggle" aria-label="Channel, movie or series list" aria-controls="fsDrawer" aria-expanded="false" title="Channel, movie or series list"><span class="drawer-bars" aria-hidden="true"><i></i><i></i><i></i></span></button>
-          
+
           <!-- Fullscreen Channel Drawer -->
           <div class="fs-drawer" id="fsDrawer" role="dialog" aria-modal="false" aria-label="Playback catalogue" aria-hidden="true">
             <div class="fs-drawer-heading">
@@ -152,7 +152,7 @@
           </section>
 
           <button class="center-play-btn" id="centerPlayBtn" style="display:none;"><i class="fas fa-play"></i></button>
-          
+
           <!-- Professional 4K availability guidance -->
           <div class="quality-availability-note" id="qualityAvailabilityBadge" aria-hidden="true">
             <span class="quality-note-icon">4K</span>
@@ -192,18 +192,18 @@
 
           <div class="controls-row">
             <div class="ctrl-left">
-              <button id="movieLockBtn" class="ctrl-btn movie-mobile-control" style="display:none;" title="Lock controls" aria-label="Lock movie controls"><i class="fas fa-lock-open"></i></button>
+              <button id="movieLockBtn" class="ctrl-btn movie-mobile-control" style="display:none;" title="Lock controls" aria-label="Lock movie controls"><i class="fas fa-lock"></i></button>
               <button id="prevChBtn" class="ctrl-btn" title="Previous Channel/Movie"><i class="fas fa-step-backward"></i></button>
               <button id="skipBackBtn" class="ctrl-btn" style="display:none;" title="Rewind 10s"><i class="fas fa-undo-alt"></i></button>
               <button id="playPauseBtn" class="ctrl-btn" title="Play/Pause"><i class="fas fa-play" id="playIcon"></i><i class="fas fa-pause" id="pauseIcon" style="display:none;"></i></button>
               <button id="skipFwdBtn" class="ctrl-btn" style="display:none;" title="Forward 10s"><i class="fas fa-redo-alt"></i></button>
               <button id="nextChBtn" class="ctrl-btn" title="Next Channel/Movie"><i class="fas fa-step-forward"></i></button>
-              
+
               <!-- Unmute Tooltip Pointer Container -->
               <div class="volume-slider-wrap">
                 <button id="muteBtn" class="ctrl-btn" title="Mute/Unmute"><i class="fas fa-volume-up" id="volumeIcon"></i></button>
                 <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" class="volume-range-slider" title="Volume Slider" />
-                
+
                 <div id="muteNoticeText" class="mute-pointer-tooltip" style="display:none;">
                   <div class="tooltip-box">Unmute করতে Tap করুন</div>
                   <div class="tooltip-line"></div>
@@ -217,8 +217,8 @@
             </div>
 
             <div class="controls-right" style="position: relative;">
-              <button id="movieRotateBtn" class="ctrl-btn movie-mobile-control" style="display:none;" title="Rotate screen" aria-label="Rotate movie screen"><i class="fas fa-mobile-alt"></i></button>
-              
+              <button id="movieRotateBtn" class="ctrl-btn movie-mobile-control" style="display:none;" title="Rotate screen" aria-label="Rotate movie screen"><i class="fas fa-redo-alt"></i></button>
+
               <button id="speedBtn" class="ctrl-btn" style="display:none;" title="Playback Speed"><i class="fas fa-tachometer-alt"></i></button>
               <div class="popup-menu" id="speedMenu">
                 <div class="popup-menu-item" data-speed="0.5">0.5x</div>
@@ -239,7 +239,8 @@
               </button>
               <div class="popup-menu" id="networkMenu" aria-label="Network mode"></div>
 
-              <button id="aspectBtn" class="ctrl-btn" title="Screen Fit"><i class="fas fa-expand-alt"></i></button>
+              <button id="pipBtn" class="ctrl-btn movie-mobile-control" style="display:none;" title="Picture in Picture" aria-label="Picture in Picture"><i class="fas fa-clone"></i></button>
+              <button id="aspectBtn" class="ctrl-btn" title="Screen Fit"><i class="fas fa-arrows-alt-h"></i></button>
               <button id="fullscreenBtn" class="ctrl-btn" title="Fullscreen"><i class="fas fa-expand"></i></button>
             </div>
           </div>
@@ -258,7 +259,7 @@
             <button class="fav-action-btn" id="favActionBtn" type="button" aria-label="Bookmark"><i class="fas fa-star"></i> Bookmark</button>
           </div>
         </div>
-        
+
         <div class="meta-subtitle-row">
           <span id="metaCategory" class="meta-category">Category</span>
           <span>•</span>
@@ -309,6 +310,6 @@
   </div>
 
   <script src="assets/js/series.js?v=20260806-user-list-final-v1"></script>
-  <script src="assets/js/app.js?v=20260813-mobile-ruman29-v1"></script>
+  <script src="assets/js/app.js?v=20260815-mobile-movie-controls-v2"></script>
 </body>
 </html>

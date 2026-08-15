@@ -14,7 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scanner.movies import CATEGORY_SLUGS, VALID_MOVIE_CATEGORIES, _merge_preferred_movie, _movie_identity, paginate_movie_list
+from scanner.merger import _movie_identity_key
+from scanner.movies import CATEGORY_SLUGS, VALID_MOVIE_CATEGORIES, _merge_preferred_movie, paginate_movie_list
 from scanner.normalizer import Normalizer
 
 
@@ -213,7 +214,7 @@ def dedupe_movies() -> list[dict[str, Any]]:
     key_owner: dict[str, int] = {}
     for index, item in enumerate(cards):
         keys = {f"route:{key}" for key in _route_keys(item)}
-        identity = _movie_identity(item)
+        identity = _movie_identity_key(item)
         if identity:
             keys.add(f"movie:{identity}")
         for key in keys:

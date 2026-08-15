@@ -52,7 +52,7 @@ try {
   await movieCard.click();
   await page.waitForTimeout(500);
   const controls = await page.evaluate(() => {
-    const ids = ['movieLockBtn', 'prevChBtn', 'skipBackBtn', 'playPauseBtn', 'skipFwdBtn', 'nextChBtn', 'movieRotateBtn'];
+    const ids = ['movieLockBtn', 'prevChBtn', 'skipBackBtn', 'playPauseBtn', 'skipFwdBtn', 'nextChBtn', 'movieRotateBtn', 'pipBtn'];
     return {
       movieContext: document.documentElement.classList.contains('movie-playback-context'),
       visible: ids.map((id) => [id, getComputedStyle(document.getElementById(id)).display !== 'none']),
@@ -80,9 +80,10 @@ try {
     const box = (id) => {
       const rect = document.getElementById(id).getBoundingClientRect();
       const style = getComputedStyle(document.getElementById(id));
-      return { id, x: rect.x, y: rect.y, width: rect.width, height: rect.height, radius: style.borderRadius, display: style.display };
+      const icon = document.querySelector(`#${id} i:not([style*="display:none"])`) || document.querySelector(`#${id} i`);
+      return { id, x: rect.x, y: rect.y, width: rect.width, height: rect.height, radius: style.borderRadius, display: style.display, fontSize: style.fontSize, iconFontSize: icon ? getComputedStyle(icon).fontSize : '' };
     };
-    const ids = ['movieLockBtn', 'movieRotateBtn', 'muteBtn', 'skipBackBtn', 'prevChBtn', 'playPauseBtn', 'nextChBtn', 'skipFwdBtn', 'speedBtn', 'qualityBtn', 'aspectBtn', 'fullscreenBtn'];
+    const ids = ['movieLockBtn', 'movieRotateBtn', 'skipBackBtn', 'prevChBtn', 'playPauseBtn', 'nextChBtn', 'skipFwdBtn', 'pipBtn', 'aspectBtn', 'muteBtn', 'speedBtn', 'qualityBtn', 'fullscreenBtn'];
     const progress = document.getElementById('progressContainer').getBoundingClientRect();
     return {
       controls: ids.map(box),
@@ -92,13 +93,25 @@ try {
       wrapperClass: document.getElementById('videoContainer').className,
       aspectOuter: document.getElementById('aspectBtn').outerHTML,
       aspectMatches: document.getElementById('aspectBtn').matches('html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #aspectBtn'),
+      icons: Object.fromEntries(['movieLockBtn', 'movieRotateBtn', 'pipBtn', 'aspectBtn'].map((id) => [id, document.querySelector(`#${id} i`)?.className || ''])),
     };
   });
   const transport = Object.fromEntries(landscapeTransport.controls.map((item) => [item.id, item]));
-  const orderedIds = ['movieLockBtn', 'movieRotateBtn', 'muteBtn', 'skipBackBtn', 'prevChBtn', 'playPauseBtn', 'nextChBtn', 'skipFwdBtn', 'speedBtn', 'qualityBtn', 'aspectBtn', 'fullscreenBtn'];
+  const orderedIds = ['movieLockBtn', 'movieRotateBtn', 'skipBackBtn', 'prevChBtn', 'playPauseBtn', 'nextChBtn', 'skipFwdBtn', 'pipBtn', 'aspectBtn'];
   assert(orderedIds.every((id, index) => index === 0 || transport[orderedIds[index - 1]].x < transport[id].x), `Landscape control order is wrong: ${JSON.stringify(landscapeTransport)}`);
-  assert(transport.playPauseBtn.width >= 53 && transport.playPauseBtn.height >= 53, `Landscape play button is not screenshot-sized: ${JSON.stringify(landscapeTransport)}`);
-  assert(landscapeTransport.progress.bottom < transport.playPauseBtn.y, `Progress is not above transport buttons: ${JSON.stringify(landscapeTransport)}`);
+  const bottomCenters = orderedIds.map((id) => transport[id].y + (transport[id].height / 2));
+  assert(Math.max(...bottomCenters) - Math.min(...bottomCenters) <= 2, `Bottom controls are not on one aligned row: ${JSON.stringify(landscapeTransport)}`);
+  assert(transport.playPauseBtn.width >= 57 && transport.playPauseBtn.height >= 57, `Landscape play button is not screenshot-sized: ${JSON.stringify(landscapeTransport)}`);
+  assert(['movieLockBtn', 'movieRotateBtn', 'skipBackBtn', 'prevChBtn', 'playPauseBtn', 'nextChBtn', 'skipFwdBtn', 'pipBtn', 'aspectBtn'].every((id) => parseFloat(transport[id].iconFontSize) >= 21), `Bottom transport icons are smaller than the reference: ${JSON.stringify(landscapeTransport)}`);
+  assert(Math.abs((transport.playPauseBtn.x + transport.playPauseBtn.width / 2) - landscapeTransport.viewport.width / 2) <= 30, `Transport group is not centered: ${JSON.stringify(landscapeTransport)}`);
+  assert(transport.movieRotateBtn.x < transport.skipBackBtn.x && transport.skipFwdBtn.x < transport.pipBtn.x, `Left/center/right transport groups are not separated: ${JSON.stringify(landscapeTransport)}`);
+  assert(landscapeTransport.progress.bottom < Math.min(...orderedIds.map((id) => transport[id].y)), `Progress is not above transport buttons: ${JSON.stringify(landscapeTransport)}`);
+  assert(['muteBtn', 'speedBtn', 'qualityBtn', 'fullscreenBtn'].every((id) => transport[id].display !== 'none' && transport[id].y < landscapeTransport.progress.y), `Existing utility controls were not preserved above the transport row: ${JSON.stringify(landscapeTransport)}`);
+  assert(/fa-lock/.test(landscapeTransport.icons.movieLockBtn) && /fa-redo-alt/.test(landscapeTransport.icons.movieRotateBtn), `Left control icons do not match the reference: ${JSON.stringify(landscapeTransport)}`);
+  assert(/fa-clone/.test(landscapeTransport.icons.pipBtn) && /fa-arrows-alt-h/.test(landscapeTransport.icons.aspectBtn), `Right control icons do not match the reference: ${JSON.stringify(landscapeTransport)}`);
+  if (process.env.CLICKTV_MOBILE_SCREENSHOT) {
+    await page.screenshot({ path: process.env.CLICKTV_MOBILE_SCREENSHOT, fullPage: false });
+  }
   await page.evaluate(() => {
     document.getElementById('videoContainer').classList.remove('clicktv-mobile-fullscreen');
     if (document.fullscreenElement) document.exitFullscreen?.();
