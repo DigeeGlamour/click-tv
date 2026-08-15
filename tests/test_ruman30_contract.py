@@ -186,11 +186,43 @@ class RuntimeContractTests(unittest.TestCase):
         self.assertIn('class="fas fa-clone"', index)
         self.assertIn('class="fas fa-arrows-alt-h"', index)
         self.assertIn("grid-template-columns:repeat(12,minmax(24px,1fr))", css)
-        self.assertIn("#pipBtn{grid-column:11", css)
-        self.assertIn("#aspectBtn{grid-column:12", css)
         self.assertIn('content:"10"!important', css)
         self.assertIn("video.requestPictureInPicture()", app)
         self.assertIn("setPlayerControlVisible('pipBtn', mobileMovie)", app)
+
+        # Reference bottom row, left to right:
+        # lock, volume | -10s, prev, play, next, +10s | speed, screen fit, fullscreen.
+        for column_rule in (
+            "#movieLockBtn{grid-column:1",
+            "#muteBtn{grid-column:2",
+            "#skipBackBtn{grid-column:4",
+            "#prevChBtn{grid-column:5",
+            "#playPauseBtn{grid-column:6 / span 2",
+            "#nextChBtn{grid-column:8",
+            "#skipFwdBtn{grid-column:9",
+            "#speedBtn{grid-column:10",
+            "#aspectBtn{grid-column:11",
+            "#fullscreenBtn{grid-column:12",
+        ):
+            self.assertIn(column_rule, css)
+
+        # Rotate, PiP and Quality keep working from the top-right overlay strip.
+        self.assertIn("html.mobile-movie-controls .video-container-wrap #qualityBtn{right:8px", css)
+        self.assertIn("html.mobile-movie-controls .video-container-wrap #pipBtn{right:48px", css)
+        self.assertIn("html.mobile-movie-controls .video-container-wrap #movieRotateBtn{right:88px", css)
+        self.assertIn("classList.toggle('mobile-movie-controls', mobileMovie)", app)
+
+    def test_notice_marquee_can_actually_scroll(self):
+        css = (ROOT / "site/assets/css/reference-design.css").read_text(encoding="utf-8")
+
+        authoritative = css.split("RUMAN-30 AUTHORITATIVE NOTICE", 1)[1]
+        marquee_rule = authoritative.split(".sticky-notice .marquee-text,", 1)[1].split("}", 1)[0]
+        # An !important transform outranks the running animation and freezes the
+        # marquee at offset 0, which hid the whole notice behind padding-left:100%.
+        self.assertNotIn("transform:", marquee_rule)
+        self.assertIn("animation:clicktv-r30-notice 22s linear infinite!important", marquee_rule)
+        # Reduced motion stops the animation, so the text must stay swipeable.
+        self.assertIn("overflow-x:auto!important", css)
 
 
 if __name__ == "__main__":

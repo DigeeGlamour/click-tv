@@ -77,9 +77,9 @@ class FastPipelineTests(unittest.TestCase):
             )
 
             urls = [
-                f"http://127.0.0.1:{port}/movie.mp4",
-                f"http://127.0.0.1:{port}/missing-2.mp4",
-                f"http://127.0.0.1:{port}/missing-3.mp4",
+                f"http://localhost:{port}/movie.mp4",
+                f"http://localhost:{port}/missing-2.mp4",
+                f"http://localhost:{port}/missing-3.mp4",
             ]
             items = []
             for index, url in enumerate(urls):

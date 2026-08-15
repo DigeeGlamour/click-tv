@@ -53,9 +53,9 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn("series.js", self.index)
 
     def test_reference_design_is_external_and_preserves_the_three_column_contract(self) -> None:
-        self.assertIn("reference-design.css?v=20260815-mobile-movie-controls-v3", self.index)
-        self.assertIn("app.js?v=20260815-mobile-movie-controls-v3", self.index)
-        self.assertIn('CACHE_VERSION = "click-tv-design-playback-20260815-v23"', self.service_worker)
+        self.assertIn("reference-design.css?v=20260816-movie-controls-notice-v4", self.index)
+        self.assertIn("app.js?v=20260816-movie-controls-notice-v4", self.index)
+        self.assertIn('CACHE_VERSION = "click-tv-design-playback-20260816-v24"', self.service_worker)
         self.assertIn('class="desktop-category-rail"', self.index)
         self.assertIn('id="desktopCategoryTitle"', self.index)
         self.assertIn('id="mobileBottomSearchBtn"', self.index)

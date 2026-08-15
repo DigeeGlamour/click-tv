@@ -153,10 +153,36 @@ try {
 
   const health = await worker.fetch(new Request('https://stream-proxy-3.example/health'), env, {});
   const healthBody = await health.json();
-  assert.equal(healthBody.version, '5.1.2');
+  assert.equal(healthBody.version, '5.2.0');
   assert.equal(healthBody.name, 'play-proxy-2');
   assert.equal(healthBody.configuration_storage, 'git_pages_json');
   assert.equal(healthBody.dashboard_configuration_required, false);
+
+  // A Pages preview deploy and a local copy of the site must be able to play,
+  // otherwise a playback bug can only ever be reproduced on production.
+  for (const allowedOrigin of [
+    'https://clicktv.pages.dev',
+    'https://a1b2c3d4.clicktv.pages.dev',
+    'http://localhost:8791',
+    'http://127.0.0.1:8080',
+  ]) {
+    const response = await worker.fetch(
+      new Request(`https://worker.example/hls?id=${playbackId}`, { headers: { Origin: allowedOrigin } }),
+      env,
+      { waitUntil() {} },
+    );
+    assert.notEqual(response.status, 403, `origin must be allowed: ${allowedOrigin}`);
+    assert.equal(response.headers.get('Access-Control-Allow-Origin'), allowedOrigin);
+  }
+
+  for (const blockedOrigin of ['https://evil.example', 'https://clicktv.pages.dev.evil.com', 'http://192.168.1.5:8080']) {
+    const response = await worker.fetch(
+      new Request(`https://worker.example/hls?id=${playbackId}`, { headers: { Origin: blockedOrigin } }),
+      env,
+      { waitUntil() {} },
+    );
+    assert.equal(response.status, 403, `origin must stay blocked: ${blockedOrigin}`);
+  }
 
   console.log('Playback Worker public-catalog runtime PASS');
 } finally {
