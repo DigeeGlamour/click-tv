@@ -3,6 +3,7 @@ import worker from '../workers/playback-proxy/src/index.js';
 
 const playbackId = `ctv_${'a'.repeat(32)}`;
 const widevinePlaybackId = `ctv_${'b'.repeat(32)}`;
+const refreshPlaybackId = `ctv_${'c'.repeat(32)}`;
 const profile = {
   status: 'active',
   url: 'https://media.example/live/master.m3u8?token=private-token',
@@ -22,7 +23,10 @@ const upstreamCalls = [];
 const realFetch = globalThis.fetch;
 globalThis.fetch = async (url, init = {}) => {
   const parsed = new URL(String(url));
-  if (parsed.href === 'https://clicktv.pages.dev/data/playback-sources.json') {
+  if (parsed.pathname === '/data/playback-sources.json') {
+    const refreshedRecords = parsed.searchParams.has('refresh')
+      ? { [refreshPlaybackId]: structuredClone(profile) }
+      : {};
     return Response.json({
       schema_version: 1,
       records: {
@@ -36,6 +40,7 @@ globalThis.fetch = async (url, init = {}) => {
             license_headers: { Authorization: 'Bearer license-token', 'X-Device': 'click-tv' },
           },
         },
+        ...refreshedRecords,
       },
     });
   }
@@ -139,9 +144,16 @@ try {
   );
   assert.equal(wrongOrigin.status, 403);
 
+  const refreshed = await worker.fetch(
+    new Request(`https://worker.example/hls?id=${refreshPlaybackId}`, { headers: originHeaders }),
+    env,
+    { waitUntil() {} },
+  );
+  assert.equal(refreshed.status, 200, 'catalogue miss must refresh once before 404');
+
   const health = await worker.fetch(new Request('https://stream-proxy-3.example/health'), env, {});
   const healthBody = await health.json();
-  assert.equal(healthBody.version, '5.1.0');
+  assert.equal(healthBody.version, '5.1.2');
   assert.equal(healthBody.name, 'play-proxy-2');
   assert.equal(healthBody.configuration_storage, 'git_pages_json');
   assert.equal(healthBody.dashboard_configuration_required, false);

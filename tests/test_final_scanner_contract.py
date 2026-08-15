@@ -6,8 +6,11 @@ from datetime import timedelta, timezone
 from pathlib import Path
 
 from scanner.events import _parse_datetime
+from scanner.fast_pipeline import _apply_strict_player_visibility
 from scanner.merger import merge_candidates, rank_and_select_streams
-from scanner.movies import _merge_manual_over_discovered
+from scanner.normalizer import Normalizer
+from scanner.movies import _deduplicate_movies_by_playback_url, _merge_manual_over_discovered
+from scanner.player_compatibility import load_failure_keys, mark_confirmed_player_failures, mark_unproven_player_items, playback_fingerprint
 from scanner.parsers.json_parser import parse_json_content
 from scanner.planner import plan_candidates
 from scanner.playback_profiles import PlaybackProfileCollector
@@ -15,6 +18,148 @@ from scanner.verifier import _apply_resolution_policy
 
 
 class FinalScannerContractTests(unittest.TestCase):
+    def test_bangla_aliases_and_different_source_ids_merge_to_one_card(self):
+        normalizer = Normalizer()
+        names = [normalizer.clean_title("Somoy TV"), normalizer.clean_title("Somoy TV BK")]
+        self.assertEqual(names, ["Somoy TV", "Somoy TV"])
+        with tempfile.TemporaryDirectory() as temp_dir:
+            settings_path = Path(temp_dir) / "settings.json"
+            settings_path.write_text(json.dumps({"resolution": {"tv_minimum_height": 720}}), encoding="utf-8")
+            cards = merge_candidates([
+                {"id": "source-a", "name": names[0], "url": "https://a.example/live.m3u8", "source_pipeline": "tv", "category": "Bangla", "verified": True, "publish_allowed": True, "verification_status": "verified_global", "resolution_height": 720},
+                {"id": "source-b", "name": names[1], "url": "https://b.example/live.m3u8", "source_pipeline": "TV", "category": "Bangla", "verified": True, "publish_allowed": True, "verification_status": "verified_global", "resolution_height": 1080},
+            ], settings_path=str(settings_path))
+        self.assertEqual(len(cards), 1)
+        self.assertEqual(cards[0]["available_link_count"], 2)
+
+    def test_movie_pipeline_aliases_merge_same_title_and_year(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            settings_path = Path(temp_dir) / "settings.json"
+            settings_path.write_text(json.dumps({"resolution": {"movie_minimum_height": 720}}), encoding="utf-8")
+            cards = merge_candidates([
+                {"id": "movie-a", "name": "Example Movie (2026)", "url": "https://a.example/movie.m3u8", "source_pipeline": "movies", "category": "Bangla", "verified": True, "publish_allowed": True, "verification_status": "verified_global", "resolution_height": 1080},
+                {"id": "movie-b", "name": "Example Movie 2026", "url": "https://b.example/movie.m3u8", "source_pipeline": "VOD", "category": "Bangla", "verified": True, "publish_allowed": True, "verification_status": "verified_global", "resolution_height": 1080},
+            ], settings_path=str(settings_path))
+        self.assertEqual(len(cards), 1)
+        self.assertEqual(cards[0]["available_link_count"], 2)
+
+    def test_cross_category_same_movie_route_produces_one_card(self):
+        cards = _deduplicate_movies_by_playback_url([
+            {
+                "name": "Balan The Boy",
+                "year": 2026,
+                "category": "Hindi",
+                "url": "https://media.example/balan.mkv",
+                "manual_source": True,
+                "manual_source_tier": 2,
+            },
+            {
+                "name": "Balan",
+                "year": 2026,
+                "category": "South Indian",
+                "url": "https://media.example/balan.mkv",
+                "manual_source": True,
+                "manual_source_tier": 2,
+            },
+        ])
+        self.assertEqual(len(cards), 1)
+
+    def test_dual_audio_suffix_does_not_create_second_movie(self):
+        discovered = {
+            "name": "Example Film (2026) Dual",
+            "year": 2026,
+            "category": "Mix",
+            "url": "https://found.example/example.mkv",
+            "verified": True,
+        }
+        manual = {
+            "name": "Example Film",
+            "year": 2026,
+            "category": "Bangla",
+            "url": "https://manual.example/example.mkv",
+            "manual_source": True,
+        }
+        cards = _merge_manual_over_discovered([discovered], [manual])
+        self.assertEqual(len(cards), 1)
+        self.assertEqual(cards[0]["url"], manual["url"])
+        self.assertEqual(cards[0]["backups"][0]["url"], discovered["url"])
+
+    def test_strict_player_visibility_retains_but_hides_unverified(self):
+        items = [
+            {"name": "Pending", "publish_allowed": True, "verified": False, "verification_status": "bd_protected_pending"},
+            {"name": "Proven", "publish_allowed": True, "verified": True, "verification_status": "verified_global"},
+        ]
+        hidden = _apply_strict_player_visibility(items, {"bd_verification": {"strict_player_publish": True}})
+        self.assertEqual(hidden, 1)
+        self.assertFalse(items[0]["publish_allowed"])
+        self.assertEqual(items[0]["player_visibility"], "hidden_unverified")
+        self.assertTrue(items[1]["publish_allowed"])
+
+    def test_explicit_player_denial_wins_over_network_verified(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            settings_path = Path(temp_dir) / "settings.json"
+            settings_path.write_text(json.dumps({"resolution": {"tv_minimum_height": 720}}), encoding="utf-8")
+            cards = merge_candidates([{
+                "name": "Network Only",
+                "url": "https://example.test/live.m3u8",
+                "source_pipeline": "tv",
+                "category": "Bangla",
+                "verified": True,
+                "publish_allowed": False,
+                "verification_status": "failed_player_twice",
+                "resolution_height": 1080,
+            }], settings_path=str(settings_path))
+        self.assertEqual(cards, [])
+
+    def test_confirmed_player_failure_is_retained_but_marked_hidden(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            report_path = Path(temp_dir) / "confirmed.json"
+            report_path.write_text(json.dumps({
+                "records": [{
+                    "kind": "movie",
+                    "record": {"name": "Broken Film", "year": 2026},
+                }],
+            }), encoding="utf-8")
+            item = {
+                "name": "Broken Film",
+                "year": 2026,
+                "verified": True,
+                "publish_allowed": True,
+                "verification_status": "verified_global",
+            }
+            hidden = mark_confirmed_player_failures([item], "movie", report_path)
+            self.assertEqual(hidden, 1)
+            self.assertTrue(item["verified"])
+            self.assertFalse(item["publish_allowed"])
+            self.assertEqual(item["network_verification_status"], "verified_global")
+            self.assertEqual(item["verification_status"], "failed_player_twice")
+            self.assertIn(("movie", "broken film", "2026"), load_failure_keys(report_path))
+
+    def test_route_change_requires_a_new_real_player_proof(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            ledger_path = Path(temp_dir) / "proof.json"
+            proven = {
+                "name": "Proven Channel",
+                "category": "Bangla",
+                "url": "https://media.example/working.m3u8",
+                "proxy_mode": "auto",
+                "stream_type": "hls",
+                "publish_allowed": True,
+            }
+            ledger_path.write_text(json.dumps({
+                "proofs": [{
+                    "kind": "channel",
+                    "name": proven["name"],
+                    "fingerprint": playback_fingerprint(proven),
+                }],
+            }), encoding="utf-8")
+            unchanged = dict(proven)
+            changed = {**proven, "url": "https://media.example/new-unproven.m3u8"}
+            self.assertEqual(mark_unproven_player_items([unchanged], "channel", ledger_path), 0)
+            self.assertEqual(mark_unproven_player_items([changed], "channel", ledger_path), 1)
+            self.assertFalse(changed["publish_allowed"])
+            self.assertEqual(changed["verification_status"], "pending_player_proof")
+
     def test_final_source_registry_contains_only_agreed_remote_sources(self):
         payload = json.loads(Path("config/sources.json").read_text(encoding="utf-8"))
         self.assertEqual(len(payload["upcoming"]), 5)
