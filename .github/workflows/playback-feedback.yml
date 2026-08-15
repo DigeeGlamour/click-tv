@@ -8,12 +8,18 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: live-signal-data-writer-v2
+  cancel-in-progress: false
+
 jobs:
   collect:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,4 +42,17 @@ jobs:
           git config user.email "click-tv-bot@users.noreply.github.com"
           git add reports/playback-feedback.json
           git commit -m "Update playback feedback report"
-          git push
+          git fetch origin main
+          git rebase origin/main
+          for ATTEMPT in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            if [[ "$ATTEMPT" == "3" ]]; then
+              echo "Playback feedback push failed after 3 attempts."
+              exit 1
+            fi
+            sleep 5
+            git fetch origin main
+            git rebase origin/main
+          done
