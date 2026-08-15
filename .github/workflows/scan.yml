@@ -261,6 +261,14 @@ jobs:
             git commit -m "Auto update: ${{ steps.scan_mode.outputs.mode }} [$(date -u +'%Y-%m-%d %H:%M:%S UTC')]"
           fi
 
+          # Scanner/test code কখনো source/config/workflow বদলালে সেই runtime
+          # mutation commit করা হবে না। শুধু generated public outputs রাখা হবে।
+          git restore --worktree -- . \
+            ':(exclude)data/**' \
+            ':(exclude)reports/**' \
+            ':(exclude)state/**' \
+            ':(exclude)working/**'
+
           # Tracked temporary files আগের অবস্থায় ফেরত নেওয়া হবে।
           git restore --worktree -- working || true
 
@@ -272,8 +280,8 @@ jobs:
           # source-cache delete করা হবে না।
           # .gitignore এটিকে Git থেকে বাদ রাখবে এবং Actions cache সংরক্ষণ করবে।
 
-          find . -type d -name __pycache__ -prune -exec rm -rf {} +
-          find . -type f -name '*.pyc' -delete
+          # __pycache__/pyc .gitignore-এ আছে। এগুলো delete করলে পুরোনো
+          # repository-তে ভুল করে tracked থাকা cache D status তৈরি করত।
 
           REMAINING="$(git status --porcelain --untracked-files=normal)"
 
