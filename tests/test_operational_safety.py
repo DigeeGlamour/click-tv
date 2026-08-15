@@ -112,6 +112,22 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertIn("test -f scanner/schedule_resolver.py", workflow)
         self.assertIn("test -f tests/test_schedule_resolver.py", workflow)
 
+    def test_browser_smoke_is_bounded_and_skips_frequent_event_scans(self):
+        workflow = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
+        self.assertIn('BROWSER_SMOKE_BUDGET_MS: "95000"', workflow)
+        self.assertIn("scripts/browser-publish-smoke.mjs", workflow)
+        self.assertIn("scripts/apply-browser-smoke.py", workflow)
+        self.assertIn("steps.scan_mode.outputs.mode == 'channels'", workflow)
+        self.assertIn("steps.scan_mode.outputs.mode == 'movies'", workflow)
+        self.assertNotIn("steps.scan_mode.outputs.mode == 'today' ||", workflow)
+
+    def test_all_repository_writers_share_one_concurrency_group(self):
+        scan = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
+        feedback = (ROOT / ".github/workflows/playback-feedback.yml").read_text(encoding="utf-8")
+        self.assertIn("group: live-signal-data-writer-v2", scan)
+        self.assertIn("group: live-signal-data-writer-v2", feedback)
+        self.assertIn("git rebase origin/main", feedback)
+
     def test_colab_restores_temporary_settings_override(self):
         notebook = (ROOT / "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb").read_text(
             encoding="utf-8"

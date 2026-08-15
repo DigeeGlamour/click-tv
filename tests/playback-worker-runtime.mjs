@@ -141,7 +141,7 @@ try {
 
   const health = await worker.fetch(new Request('https://stream-proxy-3.example/health'), env, {});
   const healthBody = await health.json();
-  assert.equal(healthBody.version, '5.1.0');
+  assert.equal(healthBody.version, '5.1.1');
   assert.equal(healthBody.name, 'play-proxy-2');
   assert.equal(healthBody.configuration_storage, 'git_pages_json');
   assert.equal(healthBody.dashboard_configuration_required, false);

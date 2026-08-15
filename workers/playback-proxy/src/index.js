@@ -17,7 +17,7 @@
  * Pages in data/playback-sources.json. This is intentionally public.
  */
 
-const DEFAULT_VERSION = "5.1.0";
+const DEFAULT_VERSION = "5.1.1";
 const SITE_ORIGIN = "https://clicktv.pages.dev";
 const ALLOWED_ORIGINS = Object.freeze([SITE_ORIGIN]);
 const ALLOWED_HOSTS_URL = `${SITE_ORIGIN}/data/allowed-hosts.json`;
