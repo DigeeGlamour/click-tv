@@ -93,6 +93,7 @@ const state = {
   currentItems: [],
   filteredItems: [],
   renderedCount: 0,
+  renderedUids: new Set(),
   currentSortMode: 'default',
   seriesDetailMode: false,
   dataSessionId: 0,
@@ -1191,6 +1192,7 @@ function clearCurrentListState() {
   state.currentItems = [];
   state.filteredItems = [];
   state.renderedCount = 0;
+  state.renderedUids.clear();
   state.movieIndex = null;
   state.moviePageCursor = 0;
   state.moviePreviewMode = false;
@@ -1515,8 +1517,10 @@ async function loadNextMoviePage(options = {}) {
       showListMessage('মুভির তালিকা প্রস্তুত করা হচ্ছে…', 'fa-film');
       renderCurrentList(true);
     } else if (!options.deferRender) {
-      applyFilterAndSort();
-      appendNextChunk();
+      // A new page re-sorts the whole list by year, so the already rendered
+      // rows are rebuilt in the new order instead of appended to a stale DOM.
+      const visibleTarget = state.renderedCount + MOVIE_CHUNK_SIZE;
+      renderCurrentList(true, { preserveScroll: true, initialLimit: visibleTarget });
     }
     return items.length > 0;
   } finally {
@@ -1783,6 +1787,7 @@ function renderCurrentList(reset = true, options = {}) {
     cancelPendingImages(sidebarList);
     sidebarList.replaceChildren();
     state.renderedCount = 0;
+    state.renderedUids.clear();
     if (!options.preserveScroll) scrollSidebarToTop();
   }
 
@@ -1848,19 +1853,32 @@ function appendNextChunk(limit = null) {
   if (state.seriesDetailMode || seriesModule?.detailActive) return;
   if (!state.filteredItems.length) return;
   const chunkSize = limit ?? (state.view === VIEW.MOVIE ? MOVIE_CHUNK_SIZE : CHANNEL_NEXT_CHUNK);
-  const start = state.renderedCount;
-  const chunk = state.filteredItems.slice(start, start + chunkSize);
+
+  // Cards are tracked by identity, never by a positional cursor. Loading the
+  // next movie page re-sorts the whole catalogue by year, so an index cursor
+  // would re-append rows that are already on screen (the "same movie added
+  // twice" report) and silently drop the rows that moved above the cursor.
+  const chunk = [];
+  for (let index = 0; index < state.filteredItems.length; index += 1) {
+    const item = state.filteredItems[index];
+    if (!item || state.renderedUids.has(item._uid)) continue;
+    chunk.push({ item, index });
+    if (chunk.length >= chunkSize) break;
+  }
+  if (!chunk.length) return;
+
   const fragment = document.createDocumentFragment();
-  chunk.forEach((item, offset) => {
+  chunk.forEach(({ item, index }) => {
     const card = state.view === VIEW.MOVIE
       ? (seriesModule?.isSeriesItem(item)
-        ? seriesModule.createSeriesCard(item, start + offset)
-        : createMovieCard(item, start + offset))
-      : createChannelCard(item, start + offset);
+        ? seriesModule.createSeriesCard(item, index)
+        : createMovieCard(item, index))
+      : createChannelCard(item, index);
+    state.renderedUids.add(item._uid);
     fragment.appendChild(card);
   });
   sidebarList.appendChild(fragment);
-  state.renderedCount += chunk.length;
+  state.renderedCount = state.renderedUids.size;
   updateFavoriteUi();
   updateActiveCards();
 }
@@ -2242,31 +2260,43 @@ sidebarList.addEventListener('scroll', scheduleSidebarScrollCheck, { passive: tr
 sidebarSection.addEventListener('scroll', scheduleSidebarScrollCheck, { passive: true });
 sidebarScrollArea?.addEventListener('scroll', scheduleSidebarScrollCheck, { passive: true });
 
+// Every scroll event used to start its own recursive rAF chain. Several chains
+// then grew the same list at once, which multiplied partially rendered pages.
+let sidebarScrollBusy = false;
+const SIDEBAR_SCROLL_MAX_STEPS = 60;
+
 async function handleSidebarScroll() {
   if (state.seriesDetailMode || seriesModule?.detailActive) return;
-  const mobileFlow = window.matchMedia('(max-width: 1000px)').matches;
-  const scrollHost = sidebarScrollArea || sidebarList;
-  const nearBottom = scrollHost.scrollTop + scrollHost.clientHeight >= scrollHost.scrollHeight - (mobileFlow ? 360 : 260);
+  if (sidebarScrollBusy) return;
+  sidebarScrollBusy = true;
 
-  if (!nearBottom) return;
+  try {
+    const mobileFlow = window.matchMedia('(max-width: 1000px)').matches;
+    const scrollHost = sidebarScrollArea || sidebarList;
+    const nearBottom = () =>
+      scrollHost.scrollTop + scrollHost.clientHeight >= scrollHost.scrollHeight - (mobileFlow ? 360 : 260);
+    const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));
 
-  if (state.renderedCount < state.filteredItems.length) {
-    appendNextChunk();
-    if (mobileFlow) requestAnimationFrame(handleSidebarScroll);
-    return;
-  }
+    for (let step = 0; step < SIDEBAR_SCROLL_MAX_STEPS && nearBottom(); step += 1) {
+      if (state.renderedCount < state.filteredItems.length) {
+        appendNextChunk();
+        if (!mobileFlow) return;
+        await nextFrame();
+        continue;
+      }
 
-  if (
-    state.view === VIEW.MOVIE &&
-    !state.moviePreviewMode &&
-    state.movieIndex &&
-    state.moviePageCursor < state.movieIndex.pages.length
-  ) {
-    const loaded = await loadNextMoviePage();
-    if (loaded && state.renderedCount < state.filteredItems.length) {
-      appendNextChunk();
-      if (mobileFlow) requestAnimationFrame(handleSidebarScroll);
+      const canLoadMorePages = state.view === VIEW.MOVIE &&
+        !state.moviePreviewMode &&
+        state.movieIndex &&
+        state.moviePageCursor < state.movieIndex.pages.length;
+      if (!canLoadMorePages) return;
+
+      const loaded = await loadNextMoviePage();
+      if (!loaded || !mobileFlow) return;
+      await nextFrame();
     }
+  } finally {
+    sidebarScrollBusy = false;
   }
 }
 
@@ -5778,15 +5808,21 @@ function setMovieControlsLocked(locked) {
 
 function updateContextualPlayerButtons() {
   const isMovie = isMoviePlaybackContext();
-  const mobileMovie = isMovie && isPhoneSizedPlayer();
-  const mobileFullscreen = wrapperFullscreenElement() === videoContainer && isPhoneSizedPlayer();
+  const phonePlayer = isPhoneSizedPlayer();
+  const mobileMovie = isMovie && phonePlayer;
+  const mobileFullscreen = wrapperFullscreenElement() === videoContainer && phonePlayer;
   document.documentElement.classList.toggle('movie-playback-context', isMovie);
+  // The mobile movie transport row is laid out entirely from CSS. This class is
+  // what switches it on, so the row keeps one fixed button order.
+  document.documentElement.classList.toggle('mobile-movie-controls', mobileMovie);
 
   setPlayerControlVisible('skipBackBtn', isMovie);
   setPlayerControlVisible('skipFwdBtn', isMovie);
   setPlayerControlVisible('speedBtn', isMovie);
   setPlayerControlVisible('networkBtn', !isMovie);
-  setPlayerControlVisible('aspectBtn', mobileFullscreen);
+  // Screen Fit belongs to the mobile movie transport row and stays a normal
+  // desktop control. It used to be reachable only in mobile fullscreen.
+  setPlayerControlVisible('aspectBtn', !phonePlayer || mobileMovie || mobileFullscreen);
   setPlayerControlVisible('movieLockBtn', mobileMovie);
   setPlayerControlVisible('movieRotateBtn', mobileMovie);
   setPlayerControlVisible('pipBtn', mobileMovie);

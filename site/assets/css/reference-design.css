@@ -930,6 +930,10 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.sidebar-scroll-area
 @keyframes clicktv-r30-notice{from{transform:translateX(0)}to{transform:translateX(-100%)}}
 .sticky-notice{height:30px!important;min-height:30px!important;flex:0 0 30px!important;padding:0 40px 0 0!important;overflow:hidden!important}
 .sticky-notice .marquee-wrapper{display:block!important;width:100%!important;overflow:hidden!important;white-space:nowrap!important}
+/* `transform` must NOT be declared here. An !important author declaration
+   outranks a running animation, so `transform:translateX(0)!important` froze
+   the marquee at offset 0 while `padding-left:100%` held the whole sentence
+   outside the clipped wrapper — the notice looked blank and never scrolled. */
 .sticky-notice .marquee-text,
 html.lite-performance .sticky-notice .marquee-text,
 html.ultra-lite-performance .sticky-notice .marquee-text,
@@ -937,7 +941,7 @@ html.ultra-lite-performance .sticky-notice .marquee-text,
   display:inline-block!important;width:max-content!important;max-width:none!important;padding-left:100%!important;
   color:#f2f6fc!important;font-size:14px!important;font-weight:800!important;line-height:30px!important;
   text-align:left!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;
-  transform:translateX(0)!important;animation:clicktv-r30-notice 22s linear infinite!important;will-change:transform!important;
+  animation:clicktv-r30-notice 22s linear infinite!important;will-change:transform!important;
 }
 .sticky-notice .close-btn{right:3px!important;top:50%!important;width:32px!important;height:30px!important;min-width:32px!important;min-height:30px!important;transform:translateY(-50%)!important}
 @media (max-width:980px){
@@ -949,14 +953,24 @@ html.ultra-lite-performance .sticky-notice .marquee-text,
   .mobile-playback-performance .sticky-notice .marquee-text{
     display:inline-block!important;max-width:none!important;padding-left:100%!important;font-size:12.5px!important;
     line-height:30px!important;text-align:left!important;overflow:visible!important;text-overflow:clip!important;
-    transform:translateX(0)!important;animation:clicktv-r30-notice 18s linear infinite!important;
+    animation:clicktv-r30-notice 18s linear infinite!important;
   }
 }
+/* Battery saver and "remove animations" on Android report reduced motion. The
+   marquee stops there by design, so the notice becomes swipeable instead —
+   otherwise the sentence is simply cut off with no way to read the rest. */
 @media (prefers-reduced-motion:reduce){
+  .sticky-notice .marquee-wrapper{
+    overflow-x:auto!important;overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch!important;scrollbar-width:none!important;overscroll-behavior-x:contain!important;
+  }
+  .sticky-notice .marquee-wrapper::-webkit-scrollbar{display:none!important}
   .sticky-notice .marquee-text,
   html.lite-performance .sticky-notice .marquee-text,
   html.ultra-lite-performance .sticky-notice .marquee-text,
-  .mobile-playback-performance .sticky-notice .marquee-text{padding-left:8px!important;transform:none!important;animation:none!important}
+  .mobile-playback-performance .sticky-notice .marquee-text{
+    padding-left:0!important;padding-right:16px!important;transform:none!important;animation:none!important;
+  }
 }
 
 /* Mobile landscape movie controls: screenshot-matched bottom transport bar. */
@@ -1019,12 +1033,8 @@ html.ultra-lite-performance .sticky-notice .marquee-text,
     grid-row:1!important;place-self:center!important;width:40px!important;min-width:40px!important;height:40px!important;border:0!important;border-radius:50%!important;
     background:transparent!important;color:#fff!important;box-shadow:none!important;font-size:19px!important;text-shadow:0 1px 4px rgba(0,0,0,.8)!important;
   }
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #movieLockBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen #movieLockBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen #movieLockBtn{grid-column:1!important}
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #movieRotateBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen #movieRotateBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen #movieRotateBtn{grid-column:2!important}
+  /* Button-to-column assignment now lives in the authoritative mobile movie
+     transport block at the end of this file. Only shared chrome stays here. */
   html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #skipBackBtn,
   html.movie-playback-context .video-container-wrap:fullscreen #skipBackBtn,
   html.movie-playback-context .video-container-wrap:-webkit-full-screen #skipBackBtn{grid-column:4!important}
@@ -1046,39 +1056,6 @@ html.ultra-lite-performance .sticky-notice .marquee-text,
   html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #skipFwdBtn,
   html.movie-playback-context .video-container-wrap:fullscreen #skipFwdBtn,
   html.movie-playback-context .video-container-wrap:-webkit-full-screen #skipFwdBtn{grid-column:9!important}
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen .controls-row #movieLockBtn,
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen .controls-row #movieRotateBtn,
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen .controls-row #skipBackBtn,
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen .controls-row #prevChBtn,
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen .controls-row #nextChBtn,
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen .controls-row #skipFwdBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen .controls-row #movieLockBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen .controls-row #movieRotateBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen .controls-row #skipBackBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen .controls-row #prevChBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen .controls-row #nextChBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen .controls-row #skipFwdBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen .controls-row #movieLockBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen .controls-row #movieRotateBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen .controls-row #skipBackBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen .controls-row #prevChBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen .controls-row #nextChBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen .controls-row #skipFwdBtn{
-    width:42px!important;min-width:42px!important;height:42px!important;font-size:22px!important;
-  }
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen .controls-row :is(#movieLockBtn,#movieRotateBtn,#skipBackBtn,#prevChBtn,#nextChBtn,#skipFwdBtn) i,
-  html.movie-playback-context .video-container-wrap:fullscreen .controls-row :is(#movieLockBtn,#movieRotateBtn,#skipBackBtn,#prevChBtn,#nextChBtn,#skipFwdBtn) i,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen .controls-row :is(#movieLockBtn,#movieRotateBtn,#skipBackBtn,#prevChBtn,#nextChBtn,#skipFwdBtn) i{font-size:22px!important}
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #pipBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen #pipBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen #pipBtn{grid-column:11!important;display:grid!important}
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #aspectBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen #aspectBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen #aspectBtn{grid-column:12!important;display:grid!important;font-size:21px!important}
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen :is(#pipBtn,#aspectBtn) i,
-  html.movie-playback-context .video-container-wrap:fullscreen :is(#pipBtn,#aspectBtn) i,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen :is(#pipBtn,#aspectBtn) i{font-size:21px!important}
-
   html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #skipBackBtn,
   html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #skipFwdBtn,
   html.movie-playback-context .video-container-wrap:fullscreen #skipBackBtn,
@@ -1095,29 +1072,134 @@ html.ultra-lite-performance .sticky-notice .marquee-text,
     color:#fff!important;font-size:8px!important;font-weight:800!important;line-height:1!important;text-shadow:0 1px 2px #000!important;
   }
 
-  /* Existing utility actions stay available, but are moved out of the exact
-     screenshot-matched bottom transport row. */
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen .volume-slider-wrap,
-  html.movie-playback-context .video-container-wrap:fullscreen .volume-slider-wrap,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen .volume-slider-wrap{
-    display:block!important;position:fixed!important;top:10px!important;right:176px!important;width:40px!important;height:40px!important;z-index:12!important;
-  }
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen .volume-range-slider,
-  html.movie-playback-context .video-container-wrap:fullscreen .volume-range-slider,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen .volume-range-slider{display:none!important}
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #speedBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen #speedBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen #speedBtn{display:grid!important;position:fixed!important;top:10px!important;right:132px!important;z-index:12!important}
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #qualityBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen #qualityBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen #qualityBtn{display:grid!important;position:fixed!important;top:10px!important;right:88px!important;z-index:12!important}
   html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #networkBtn,
   html.movie-playback-context .video-container-wrap:fullscreen #networkBtn,
   html.movie-playback-context .video-container-wrap:-webkit-full-screen #networkBtn{display:none!important}
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen #fullscreenBtn,
-  html.movie-playback-context .video-container-wrap:fullscreen #fullscreenBtn,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen #fullscreenBtn{display:grid!important;position:fixed!important;top:10px!important;right:44px!important;z-index:12!important}
-  html.movie-playback-context .video-container-wrap.clicktv-mobile-fullscreen :is(#muteBtn,#speedBtn,#qualityBtn,#fullscreenBtn) i,
-  html.movie-playback-context .video-container-wrap:fullscreen :is(#muteBtn,#speedBtn,#qualityBtn,#fullscreenBtn) i,
-  html.movie-playback-context .video-container-wrap:-webkit-full-screen :is(#muteBtn,#speedBtn,#qualityBtn,#fullscreenBtn) i{font-size:17px!important}
+}
+
+/* ==========================================================================
+   CLICKTV MOBILE MOVIE TRANSPORT — AUTHORITATIVE. KEEP THIS BLOCK LAST.
+   Bottom row, left to right, exactly as in the reference screenshots:
+
+     [lock] [volume] .. [-10s] [prev] [PLAY] [next] [+10s] .. [speed] [fit] [full]
+
+   Rotate, Picture-in-Picture and Quality keep working but sit in the small
+   overlay strip at the top-right, so the transport row stays uncluttered.
+   `html.mobile-movie-controls` is set by updateContextualPlayerButtons() and
+   is never present for live TV or events, which keep their own layout.
+   ========================================================================== */
+@media (max-width:980px){
+  html.mobile-movie-controls .video-container-wrap .controls-row{
+    position:relative!important;display:grid!important;grid-template-columns:repeat(12,minmax(20px,1fr))!important;
+    align-items:center!important;gap:0!important;width:100%!important;
+  }
+  /* Both wrappers dissolve so their buttons become direct grid children. */
+  html.mobile-movie-controls .video-container-wrap .ctrl-left,
+  html.mobile-movie-controls .video-container-wrap .controls-right,
+  html.mobile-movie-controls .video-container-wrap .volume-slider-wrap{display:contents!important}
+  html.mobile-movie-controls .video-container-wrap .volume-range-slider,
+  html.mobile-movie-controls .video-container-wrap .mute-pointer-tooltip,
+  html.mobile-movie-controls .video-container-wrap #liveIndicator,
+  html.mobile-movie-controls .video-container-wrap #networkBtn{display:none!important}
+
+  html.mobile-movie-controls .video-container-wrap .controls-row .ctrl-btn{
+    grid-row:1!important;place-self:center!important;border:0!important;border-radius:50%!important;
+    background:transparent!important;color:#fff!important;box-shadow:none!important;text-shadow:0 1px 4px rgba(0,0,0,.8)!important;
+  }
+
+  /* Left cluster */
+  html.mobile-movie-controls .video-container-wrap #movieLockBtn{grid-column:1!important;display:grid!important}
+  html.mobile-movie-controls .video-container-wrap #muteBtn{grid-column:2!important;display:grid!important}
+  /* Centre transport */
+  html.mobile-movie-controls .video-container-wrap #skipBackBtn{grid-column:4!important}
+  html.mobile-movie-controls .video-container-wrap #prevChBtn{grid-column:5!important}
+  html.mobile-movie-controls .video-container-wrap #playPauseBtn{grid-column:6 / span 2!important}
+  html.mobile-movie-controls .video-container-wrap #nextChBtn{grid-column:8!important}
+  html.mobile-movie-controls .video-container-wrap #skipFwdBtn{grid-column:9!important}
+  /* Right cluster: speed, then screen fit, then fullscreen at the far right. */
+  html.mobile-movie-controls .video-container-wrap #speedBtn{grid-column:10!important;display:grid!important}
+  html.mobile-movie-controls .video-container-wrap #aspectBtn{grid-column:11!important;display:grid!important}
+  html.mobile-movie-controls .video-container-wrap #fullscreenBtn{grid-column:12!important;display:grid!important}
+
+  /* Utility strip at the top-right of the video surface. */
+  html.mobile-movie-controls .video-container-wrap #movieRotateBtn,
+  html.mobile-movie-controls .video-container-wrap #pipBtn,
+  html.mobile-movie-controls .video-container-wrap #qualityBtn{
+    position:absolute!important;top:8px!important;display:grid!important;place-content:center!important;
+    width:34px!important;min-width:34px!important;height:34px!important;
+    border:0!important;border-radius:50%!important;background:rgba(4,8,16,.52)!important;color:#fff!important;
+    box-shadow:none!important;font-size:15px!important;z-index:14!important;
+  }
+  html.mobile-movie-controls .video-container-wrap #qualityBtn{right:8px!important}
+  html.mobile-movie-controls .video-container-wrap #pipBtn{right:48px!important}
+  html.mobile-movie-controls .video-container-wrap #movieRotateBtn{right:88px!important}
+  html.mobile-movie-controls .video-container-wrap :is(#movieRotateBtn,#pipBtn,#qualityBtn) i{font-size:15px!important}
+
+  /* Inline (non-fullscreen) sizing. */
+  html.mobile-movie-controls .video-container-wrap .controls-row{height:44px!important}
+  html.mobile-movie-controls .video-container-wrap .controls-row .ctrl-btn{
+    width:32px!important;min-width:32px!important;height:32px!important;font-size:15px!important;
+  }
+  html.mobile-movie-controls .video-container-wrap .controls-row .ctrl-btn i{font-size:15px!important}
+  html.mobile-movie-controls .video-container-wrap #playPauseBtn{
+    width:42px!important;min-width:42px!important;height:42px!important;
+    border:1.5px solid rgba(255,255,255,.88)!important;background:rgba(0,0,0,.18)!important;font-size:17px!important;
+  }
+  html.mobile-movie-controls .video-container-wrap #playPauseBtn i{font-size:17px!important}
+}
+
+/* Fullscreen / landscape sizing — the exact proportions of the screenshots. */
+@media (max-width:980px){
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen .controls-row,
+  html.mobile-movie-controls .video-container-wrap:fullscreen .controls-row,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen .controls-row{
+    grid-template-columns:repeat(12,minmax(24px,1fr))!important;height:54px!important;
+  }
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen .controls-row .ctrl-btn,
+  html.mobile-movie-controls .video-container-wrap:fullscreen .controls-row .ctrl-btn,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen .controls-row .ctrl-btn{
+    width:42px!important;min-width:42px!important;height:42px!important;font-size:22px!important;
+  }
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen .controls-row .ctrl-btn i,
+  html.mobile-movie-controls .video-container-wrap:fullscreen .controls-row .ctrl-btn i,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen .controls-row .ctrl-btn i{font-size:22px!important}
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #playPauseBtn,
+  html.mobile-movie-controls .video-container-wrap:fullscreen #playPauseBtn,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #playPauseBtn{
+    width:58px!important;min-width:58px!important;height:58px!important;font-size:24px!important;
+  }
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #playPauseBtn i,
+  html.mobile-movie-controls .video-container-wrap:fullscreen #playPauseBtn i,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #playPauseBtn i{font-size:24px!important}
+  /* The right cluster reads slightly smaller than the transport, as designed. */
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen :is(#speedBtn,#aspectBtn,#fullscreenBtn) i,
+  html.mobile-movie-controls .video-container-wrap:fullscreen :is(#speedBtn,#aspectBtn,#fullscreenBtn) i,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen :is(#speedBtn,#aspectBtn,#fullscreenBtn) i{font-size:20px!important}
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen :is(#movieRotateBtn,#pipBtn,#qualityBtn),
+  html.mobile-movie-controls .video-container-wrap:fullscreen :is(#movieRotateBtn,#pipBtn,#qualityBtn),
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen :is(#movieRotateBtn,#pipBtn,#qualityBtn){
+    position:fixed!important;top:10px!important;width:38px!important;min-width:38px!important;height:38px!important;
+  }
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #qualityBtn,
+  html.mobile-movie-controls .video-container-wrap:fullscreen #qualityBtn,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #qualityBtn{right:12px!important}
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #pipBtn,
+  html.mobile-movie-controls .video-container-wrap:fullscreen #pipBtn,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #pipBtn{right:56px!important}
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #movieRotateBtn,
+  html.mobile-movie-controls .video-container-wrap:fullscreen #movieRotateBtn,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #movieRotateBtn{right:100px!important}
+
+  /* The "10" glyph inside the seek buttons, kept from the previous layout. */
+  html.mobile-movie-controls .video-container-wrap #skipBackBtn,
+  html.mobile-movie-controls .video-container-wrap #skipFwdBtn{position:relative!important}
+  html.mobile-movie-controls .video-container-wrap #skipBackBtn::after,
+  html.mobile-movie-controls .video-container-wrap #skipFwdBtn::after{
+    content:"10"!important;position:absolute!important;left:50%!important;top:52%!important;transform:translate(-50%,-50%)!important;
+    color:#fff!important;font-size:8px!important;font-weight:800!important;line-height:1!important;text-shadow:0 1px 2px #000!important;
+  }
+
+  /* Lock dims the transport but never itself. */
+  html.mobile-movie-controls .video-container.movie-controls-locked .player-controls button:not(#movieLockBtn),
+  html.mobile-movie-controls .video-container.movie-controls-locked .progress-container{opacity:.18!important;pointer-events:none!important}
 }
