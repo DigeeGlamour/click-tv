@@ -17,9 +17,30 @@
  * Pages in data/playback-sources.json. This is intentionally public.
  */
 
-const DEFAULT_VERSION = "5.1.2";
+const DEFAULT_VERSION = "5.2.0";
 const SITE_ORIGIN = "https://clicktv.pages.dev";
 const ALLOWED_ORIGINS = Object.freeze([SITE_ORIGIN]);
+
+// Only the production origin used to be accepted, so a Cloudflare Pages preview
+// deploy and a local `python -m http.server` copy of the site both got HTTP 403
+// on every stream. That made it impossible to reproduce a playback bug anywhere
+// except production. Previews live on the same pages.dev project and loopback is
+// not reachable by a third party, so both are safe to allow; nothing else is.
+const PAGES_PREVIEW_SUFFIX = ".clicktv.pages.dev";
+const LOCAL_ORIGIN_PATTERN = /^http:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d{1,5})?$/i;
+
+function isAllowedOrigin(origin) {
+  const value = String(origin || "").trim();
+  if (!value) return false;
+  if (ALLOWED_ORIGINS.includes("*") || ALLOWED_ORIGINS.includes(value)) return true;
+  if (LOCAL_ORIGIN_PATTERN.test(value)) return true;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && url.hostname.endsWith(PAGES_PREVIEW_SUFFIX);
+  } catch (_) {
+    return false;
+  }
+}
 const ALLOWED_HOSTS_URL = `${SITE_ORIGIN}/data/allowed-hosts.json`;
 const PLAYBACK_CATALOG_URL = `${SITE_ORIGIN}/data/playback-sources.json`;
 // Deliberately public. This only detects accidental/tampered child URLs.
@@ -967,17 +988,17 @@ function buildDownstreamHeaders(
 
 function corsHeaders(request, env) {
   const headers = new Headers();
-  const allowed = ALLOWED_ORIGINS;
   const origin = request.headers.get("Origin") || "";
-  if (allowed.includes("*")) {
+  if (ALLOWED_ORIGINS.includes("*")) {
     headers.set("Access-Control-Allow-Origin", "*");
-  } else if (origin && allowed.includes(origin)) {
+  } else if (origin && isAllowedOrigin(origin)) {
     headers.set("Access-Control-Allow-Origin", origin);
     headers.set("Vary", "Origin");
-  } else if (!origin && allowed.length) {
-    headers.set("Access-Control-Allow-Origin", allowed[0]);
+  } else if (!origin) {
+    headers.set("Access-Control-Allow-Origin", SITE_ORIGIN);
   } else {
-    headers.set("Access-Control-Allow-Origin", "*");
+    headers.set("Access-Control-Allow-Origin", SITE_ORIGIN);
+    headers.set("Vary", "Origin");
   }
   headers.set("Access-Control-Allow-Methods", "GET, HEAD, POST, OPTIONS");
   headers.set(
@@ -999,8 +1020,7 @@ function corsHeaders(request, env) {
 function checkOrigin(request, env) {
   const origin = request.headers.get("Origin");
   if (!origin) return { ok: true };
-  const allowed = ALLOWED_ORIGINS;
-  if (allowed.includes("*") || allowed.includes(origin)) return { ok: true };
+  if (ALLOWED_ORIGINS.includes("*") || isAllowedOrigin(origin)) return { ok: true };
   return { ok: false };
 }
 
