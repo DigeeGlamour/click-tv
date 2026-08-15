@@ -919,49 +919,6 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.sidebar-scroll-area
   .video-container.movie-controls-locked .progress-container{opacity:.18!important;pointer-events:none!important}
 }
 
-/* Movie controls follow the supplied landscape-player reference.  This is
-   deliberately phone/movie-only; desktop, live TV and event controls retain
-   their approved layout and behavior. */
-@media (max-width:980px) and (orientation:landscape){
-  html.movie-playback-context .video-container-wrap .controls-row{
-    display:grid!important;grid-template-columns:repeat(16,minmax(0,1fr))!important;
-    align-items:center!important;width:100%!important;gap:0!important;padding:2px 8px 4px!important;
-  }
-  html.movie-playback-context .video-container-wrap .ctrl-left,
-  html.movie-playback-context .video-container-wrap .controls-right{display:contents!important}
-  html.movie-playback-context .video-container-wrap .ctrl-btn{
-    justify-self:center!important;width:34px!important;min-width:34px!important;height:34px!important;
-    border:0!important;background:transparent!important;color:#fff!important;box-shadow:none!important;font-size:16px!important;
-  }
-  html.movie-playback-context .video-container-wrap #movieLockBtn{grid-column:1!important}
-  html.movie-playback-context .video-container-wrap #prevChBtn{grid-column:2!important}
-  html.movie-playback-context .video-container-wrap #movieRotateBtn{grid-column:3!important}
-  html.movie-playback-context .video-container-wrap #aspectBtn{grid-column:4!important}
-  html.movie-playback-context .video-container-wrap #skipBackBtn{grid-column:6!important}
-  html.movie-playback-context .video-container-wrap #playPauseBtn{
-    grid-column:8 / span 2!important;width:52px!important;min-width:52px!important;height:52px!important;
-    border:2px solid rgba(255,255,255,.9)!important;border-radius:50%!important;background:rgba(0,0,0,.18)!important;font-size:20px!important;
-  }
-  html.movie-playback-context .video-container-wrap #skipFwdBtn{grid-column:11!important}
-  html.movie-playback-context .video-container-wrap #nextChBtn{grid-column:12!important}
-  html.movie-playback-context .video-container-wrap .volume-slider-wrap{grid-column:13!important;justify-self:center!important}
-  html.movie-playback-context .video-container-wrap #speedBtn{grid-column:14!important}
-  html.movie-playback-context .video-container-wrap #qualityBtn{grid-column:15!important}
-  html.movie-playback-context .video-container-wrap #fullscreenBtn{grid-column:16!important}
-  html.movie-playback-context .video-container-wrap .progress-container{padding:0 6.8%!important;margin-bottom:5px!important}
-}
-
-@media (max-width:520px) and (orientation:portrait){
-  html.movie-playback-context .video-container-wrap .controls-row{
-    display:flex!important;align-items:center!important;justify-content:flex-start!important;
-    gap:8px!important;overflow-x:auto!important;overscroll-behavior-x:contain!important;scrollbar-width:none!important;
-  }
-  html.movie-playback-context .video-container-wrap .controls-row::-webkit-scrollbar{display:none!important}
-  html.movie-playback-context .video-container-wrap .ctrl-left,
-  html.movie-playback-context .video-container-wrap .controls-right{display:flex!important;flex:0 0 auto!important;gap:8px!important}
-  html.movie-playback-context .video-container-wrap .volume-slider-wrap{flex:0 0 auto!important}
-}
-
 @media (max-width:380px){
   .sidebar-list.movie-grid .movie-card,
   .sidebar-list.movie-grid .catalog-series-card{height:202px!important;min-height:202px!important;max-height:202px!important}
@@ -980,7 +937,7 @@ html.ultra-lite-performance .sticky-notice .marquee-text,
   display:inline-block!important;width:max-content!important;max-width:none!important;padding-left:100%!important;
   color:#f2f6fc!important;font-size:14px!important;font-weight:800!important;line-height:30px!important;
   text-align:left!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;
-  animation:clicktv-r30-notice 22s linear infinite!important;will-change:transform!important;
+  transform:translateX(0)!important;animation:clicktv-r30-notice 22s linear infinite!important;will-change:transform!important;
 }
 .sticky-notice .close-btn{right:3px!important;top:50%!important;width:32px!important;height:30px!important;min-width:32px!important;min-height:30px!important;transform:translateY(-50%)!important}
 @media (max-width:980px){
@@ -992,7 +949,7 @@ html.ultra-lite-performance .sticky-notice .marquee-text,
   .mobile-playback-performance .sticky-notice .marquee-text{
     display:inline-block!important;max-width:none!important;padding-left:100%!important;font-size:12.5px!important;
     line-height:30px!important;text-align:left!important;overflow:visible!important;text-overflow:clip!important;
-    animation:clicktv-r30-notice 18s linear infinite!important;
+    transform:translateX(0)!important;animation:clicktv-r30-notice 18s linear infinite!important;
   }
 }
 @media (prefers-reduced-motion:reduce){

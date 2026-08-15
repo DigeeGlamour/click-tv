@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Click TV Cloudflare Pages Build Script (LF-safe)
+# Click TV Cloudflare Pages Build Script
 # শুধু public website file এবং generated JSON data dist/ folder-এ নেবে।
 
 set -Eeuo pipefail

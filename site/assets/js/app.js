@@ -2387,13 +2387,9 @@ function itemPlaybackKey(item = {}) {
 }
 
 function proxyHealthKey(proxy, targetUrl) {
-  let target = String(targetUrl || 'unknown');
-  try {
-    const parsed = new URL(target);
-    const pathFamily = parsed.pathname.split('/').filter(Boolean).slice(0, 2).join('/');
-    target = `${parsed.host}/${pathFamily}`;
-  } catch (_) {}
-  return `${proxy}|${target}`;
+  let host = 'unknown';
+  try { host = new URL(targetUrl).host; } catch (_) {}
+  return `${proxy}|${host}`;
 }
 
 function getProxyHealth(proxy, targetUrl) {
@@ -2429,7 +2425,7 @@ function rankHealthyProxies(targetUrl, allowCooling = false) {
 
   const available = ranked.filter((entry) => !entry.cooling);
   const selected = available.length ? available : (allowCooling ? ranked : []);
-  return selected.map((entry) => entry.proxy);
+  return selected.slice(0, 2).map((entry) => entry.proxy);
 }
 
 function markProxyResult(proxy, targetUrl, success, elapsedMs) {
@@ -2472,8 +2468,12 @@ function buildProxyUrl(proxy, source) {
 
 function buildAttemptPlan(item) {
   const plan = [];
+  const preferred = state.routePreferences[itemPlaybackKey(item)] || null;
   const rankedSources = item._sources?.length ? item._sources : rankSources(item);
-  const sources = [...rankedSources];
+  const sources = [...rankedSources].sort((left, right) => {
+    if (!preferred?.sourceKey) return 0;
+    return Number(sourcePlaybackKey(right) === preferred.sourceKey) - Number(sourcePlaybackKey(left) === preferred.sourceKey);
+  });
 
   sources.slice(0, 6).forEach((source, sourceIndex) => {
     const sourceUrl = String(source.url || '').trim();
@@ -2505,9 +2505,9 @@ function buildAttemptPlan(item) {
     // direct; credentialed or URL-hidden sources must use the ID-aware proxy.
     if (playbackId && (!sourceUrl || protectedSource)) mode = 'proxy_only';
 
-    let proxies = rankHealthyProxies(healthTarget, false);
+    let proxies = rankHealthyProxies(healthTarget, false).slice(0, 2);
     if (!proxies.length && mode !== 'direct_only') {
-      proxies = rankHealthyProxies(healthTarget, true);
+      proxies = rankHealthyProxies(healthTarget, true).slice(0, 2);
     }
 
     const canDirect = Boolean(sourceUrl) && !mixedContent && mode !== 'proxy_only';
@@ -2533,7 +2533,15 @@ function buildAttemptPlan(item) {
     seen.add(key);
     return true;
   });
-  return deduplicated;
+  if (!preferred) return deduplicated;
+  return deduplicated.sort((left, right) => {
+    const score = (attempt) => {
+      const sourceMatch = sourcePlaybackKey(attempt.source) === preferred.sourceKey;
+      const routeMatch = attempt.route === preferred.route && (attempt.route !== 'proxy' || attempt.proxy === preferred.proxy);
+      return sourceMatch && routeMatch ? 0 : sourceMatch ? 1 : 2;
+    };
+    return score(left) - score(right);
+  });
 }
 
 function devicePerformanceClass() {
@@ -3042,7 +3050,7 @@ function resetManualRetryState(item) {
   const urls = new Set((item?._sources?.length ? item._sources : rankSources(item || {})).map((source) => String(source?.url || '')).filter(Boolean));
   Object.entries(state.proxyHealth || {}).forEach(([key, health]) => {
     if (![...urls].some((url) => {
-      try { return key.includes(`|${new URL(url).host}/`); } catch (_) { return false; }
+      try { return key.endsWith(`|${new URL(url).host}`); } catch (_) { return false; }
     })) return;
     state.proxyHealth[key] = { ...health, cooldownUntil: 0, consecutiveFailures: 0 };
   });
@@ -3456,7 +3464,6 @@ async function initShaka(url, session, attemptToken) {
     if (!clearKeys) throw new Error('ClearKey DRM keys are missing or invalid');
     player.configure({ drm: { clearKeys } });
   } else if (['widevine', 'playready', 'fairplay'].includes(drmType)) {
-    const attempt = session?.currentAttempt;
     if (!attempt?.proxy) throw new Error(`${drmType} DRM requires a playback proxy`);
     const proxyOrigin = String(attempt.proxy).replace(/\/$/, '');
     const playbackId = String(attempt?.source?.playback_id || session?.item?.playback_id || '').trim();
@@ -7365,37 +7372,13 @@ if (['127.0.0.1', 'localhost'].includes(location.hostname)) {
       }));
     },
     currentItemsPlaybackAudit() {
-      return state.currentItems.map((item, index) => ({
-        index,
-        id: item.id || item.playback_id || item._uid || '',
+      return state.currentItems.map((item) => ({
         name: item.name || item.title || '',
-        category: item.category || state.category || '',
-        playbackKey: sourcePlaybackKey((item._sources?.length ? item._sources[0] : rankSources(item)[0]) || item),
         sourceKind: item._sourceKind || '',
         navigatesToSeries: Boolean(seriesModule?.isSeriesItem?.(item)),
         playable: isPlayable(item),
         attemptCount: buildAttemptPlan(item).length,
       }));
-    },
-    async startPlaybackByIndex(index) {
-      const item = state.currentItems[Number(index)];
-      if (!item || !isPlayable(item)) return false;
-      await startPlayback(item, false);
-      return true;
-    },
-    mediaSnapshot() {
-      const session = state.playbackSession;
-      return {
-        currentTime: Number(video.currentTime || 0),
-        readyState: Number(video.readyState || 0),
-        paused: Boolean(video.paused),
-        ended: Boolean(video.ended),
-        errorCode: Number(video.error?.code || 0),
-        sessionSuccess: Boolean(session?.success),
-        attemptsRun: Number(session?.attemptsRun || 0),
-        attemptIndex: Number(session?.attemptIndex || 0),
-        planLength: Number(session?.plan?.length || 0),
-      };
     },
     playbackSessionSnapshot() {
       const session = state.playbackSession;
