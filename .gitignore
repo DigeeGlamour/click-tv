@@ -11,6 +11,16 @@ working/scan-progress.json
 working/manual-series-catalog.json
 working/checkpoints/
 
+# Scan intermediates. Every run rewrites these, and nothing reads them across
+# runs, so keeping them in Git only produced large pointless diffs.
+working/candidates.json
+working/global-results.json
+working/bd-results.json
+
+# Per-source failure dumps: pure diagnostics, ~11 MB per commit, write-only.
+# The scanner never reads them back. Local copies still get written normally.
+reports/source-errors-*.json
+
 # Cloudflare Pages build output
 dist/
 
