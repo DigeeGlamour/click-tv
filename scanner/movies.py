@@ -428,17 +428,12 @@ def _normalize_title(value: Any) -> str:
     text = str(value or "").strip().casefold()
     text = re.sub(r"^\s*\[\s*18\+\s*\]\s*", "", text)
     text = re.sub(
-        r"\b(?:official|full\s*movie|movie|film|full|uncut|4k|2k|uhd|fhd|"
-        r"full\s*hd|hd|sd|2160p|1440p|1080p|720p|576p|480p|360p|"
-        r"web[ ._-]?dl|webrip|hdrip|bluray|brrip|dvdrip|hdtc|camrip|"
-        r"amzn|amazon|netflix|dsnp|hotstar|hoichoi|chorki|aha|esub|org|"
-        r"dual\s*audio|dual|multi\s*audio|hindi\s*dubbed|bengali\s*dubbed|"
-        r"bangla\s*dubbed|hevc|av1|x264|x265|h\.?264|h\.?265|aac|"
-        r"fibwatch\.?com)\b",
+        r"\b(?:official|movie|film|full|4k|2k|uhd|fhd|full\s*hd|hd|sd|"
+        r"2160p|1440p|1080p|720p|480p|360p|web[ ._-]?dl|webrip|"
+        r"hdrip|hdtc|hevc|av1|x264|x265|esub)\b",
         " ",
         text,
     )
-    text = re.sub(r"\.(?:mkv|mp4|m3u8|mov|avi|webm)\b", " ", text)
     text = re.sub(r"\b(?:19|20)\d{2}\b", " ", text)
     text = re.sub(r"[^\w]+", "-", text, flags=re.UNICODE)
     return text.strip("-")
