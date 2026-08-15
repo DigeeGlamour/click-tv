@@ -14,6 +14,7 @@ class FinalDesignContractTests(unittest.TestCase):
         cls.css = (cls.root / "site/assets/css/final-design.css").read_text(encoding="utf-8")
         cls.reference_css = (cls.root / "site/assets/css/reference-design.css").read_text(encoding="utf-8")
         cls.app = (cls.root / "site/assets/js/app.js").read_text(encoding="utf-8")
+        cls.service_worker = (cls.root / "site/sw.js").read_text(encoding="utf-8")
 
     def test_approved_layout_and_navigation_contract(self) -> None:
         for element_id in (
@@ -52,8 +53,9 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn("series.js", self.index)
 
     def test_reference_design_is_external_and_preserves_the_three_column_contract(self) -> None:
-        self.assertIn("reference-design.css?v=20260815-mobile-movie-controls-v2", self.index)
-        self.assertIn("app.js?v=20260815-mobile-movie-controls-v2", self.index)
+        self.assertIn("reference-design.css?v=20260815-mobile-movie-controls-v3", self.index)
+        self.assertIn("app.js?v=20260815-mobile-movie-controls-v3", self.index)
+        self.assertIn('CACHE_VERSION = "click-tv-design-playback-20260815-v23"', self.service_worker)
         self.assertIn('class="desktop-category-rail"', self.index)
         self.assertIn('id="desktopCategoryTitle"', self.index)
         self.assertIn('id="mobileBottomSearchBtn"', self.index)
