@@ -143,6 +143,8 @@ jobs:
           node --check site/assets/js/app.js
           node --check site/assets/js/series.js
           node --check site/sw.js
+          node --check scripts/browser-publish-smoke.mjs
+          node --check scripts/browser-version2-regression.mjs
           node tests/playback-worker-runtime.mjs
           python -m unittest discover -s tests -p "test_*.py" -v
 
@@ -244,6 +246,30 @@ jobs:
           set -euo pipefail
           bash scripts/build-pages.sh
 
+      - name: Bounded real-Chromium publication check
+        if: steps.scan_mode.outputs.mode == 'channels' || steps.scan_mode.outputs.mode == 'movies' || steps.scan_mode.outputs.mode == 'all'
+        timeout-minutes: 3
+        shell: bash
+        env:
+          BROWSER_SMOKE_BUDGET_MS: "95000"
+          BROWSER_SMOKE_CHANNEL_LIMIT: "4"
+          BROWSER_SMOKE_MOVIE_LIMIT: "3"
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock playwright-core@1.54.2
+          python -m http.server 4173 --bind 127.0.0.1 --directory dist > browser-smoke-server.log 2>&1 &
+          SERVER_PID="$!"
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          node scripts/browser-publish-smoke.mjs \
+            http://127.0.0.1:4173 \
+            "${{ steps.scan_mode.outputs.mode }}" \
+            reports/browser-playback-smoke.json
+          kill "$SERVER_PID" 2>/dev/null || true
+          wait "$SERVER_PID" 2>/dev/null || true
+          trap - EXIT
+          python scripts/apply-browser-smoke.py
+          bash scripts/build-pages.sh
+
       - name: Commit and push updated data
         id: git_push
         shell: bash
@@ -274,6 +300,11 @@ jobs:
 
           find . -type d -name __pycache__ -prune -exec rm -rf {} +
           find . -type f -name '*.pyc' -delete
+
+          # A previous web upload accidentally tracked compiled Python files.
+          # Keep this recovery compatible until those repository files are
+          # removed in a dedicated cleanup commit.
+          git ls-files -z -- '*__pycache__*' '*.pyc' | xargs -0 -r git restore --worktree --
 
           REMAINING="$(git status --porcelain --untracked-files=normal)"
 
