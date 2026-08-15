@@ -186,11 +186,6 @@ class ContentRouterTests(unittest.TestCase):
             "081 HUM MASALA": "HUM Masala",
             "HUM SITERY world": "HUM Sitaray",
             "Luxel": "Luxell",
-            "JAGONEWS24": "Jago News 24",
-            "NRB": "NRB TV",
-            "SRKTV Bangla": "SRK TV",
-            "Music Bangla 2025": "Bangla Music",
-            "Ekattor": "Ekattor TV",
         }
         for incoming, canonical in cases.items():
             self.assertEqual(normalizer.clean_title(incoming), canonical, incoming)

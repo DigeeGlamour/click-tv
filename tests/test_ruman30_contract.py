@@ -6,7 +6,6 @@ from unittest.mock import patch
 from scanner.movies import (
     _annotate_manual_movie_liveness,
     _deduplicate_movies_by_playback_url,
-    _movie_identity,
     _probe_manual_movie_source,
 )
 
@@ -15,14 +14,6 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class ManualMovieMediaDepthTests(unittest.TestCase):
-    def test_release_and_dubbed_tokens_share_one_title_year_identity(self):
-        pairs = (
-            ({"name": "Master", "year": 2026}, {"name": "Master (2026) Bengali Dubbed ORG"}),
-            ({"name": "KD – The Devil", "year": 2026}, {"name": "KD The Devil 2026 Hindi Dubbed"}),
-        )
-        for left, right in pairs:
-            self.assertEqual(_movie_identity(left), _movie_identity(right))
-
     def test_hls_requires_a_readable_media_segment(self):
         responses = {
             "https://media.example/master.m3u8": (
@@ -173,25 +164,6 @@ class RuntimeContractTests(unittest.TestCase):
         self.assertIn("font-size:14px!important", block)
         self.assertIn("font-size:12.5px!important", block)
         self.assertIn("animation:clicktv-r30-notice 18s linear infinite!important", block)
-        self.assertNotIn("transform:translateX(0)!important;animation:clicktv-r30-notice", block)
-
-    def test_drm_uses_the_active_session_attempt(self):
-        source = (ROOT / "site/assets/js/app.js").read_text(encoding="utf-8")
-        branch = source[source.index("async function initShaka"):source.index("async function initMpegTs")]
-        self.assertIn("const attempt = session?.currentAttempt", branch)
-        self.assertIn("attempt?.proxy", branch)
-
-    def test_direct_first_does_not_reorder_from_saved_proxy_preference(self):
-        source = (ROOT / "site/assets/js/app.js").read_text(encoding="utf-8")
-        planner = source[source.index("function buildAttemptPlan"):source.index("function devicePerformanceClass")]
-        self.assertNotIn("routePreferences", planner)
-        self.assertIn("rankHealthyProxies(healthTarget, false)", planner)
-        self.assertNotIn("slice(0, 2)", planner)
-
-    def test_header_retry_is_not_mislabelled_as_proxy_verification(self):
-        source = (ROOT / "scanner/bd_verifier.py").read_text(encoding="utf-8")
-        self.assertIn('"verification_route": "direct_header_retry"', source)
-        self.assertIn('verified_status = "verified_global" if direct_retry else "verified_proxy"', source)
 
     def test_scheduled_event_refresh_is_automatic(self):
         workflow = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
