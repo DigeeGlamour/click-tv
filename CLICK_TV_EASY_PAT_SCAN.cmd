@@ -66,6 +66,34 @@ function Invoke-RebaseAndPush {
     }
 }
 
+function Reset-DedicatedScannerRuntimeChanges {
+    param([string]$RepositoryPath)
+
+    # A completed scan is already stored in a local commit before this runs.
+    # Reset only uncommitted leftovers in the dedicated scanner clone so an
+    # interrupted push can be safely rebased and retried on the next launch.
+    Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("restore", "--staged", "--worktree", "--", ".") | Out-Null
+
+    foreach ($RelativePath in @(
+        "working\pipeline-checkpoint.json",
+        "working\scan-progress.json"
+    )) {
+        $Target = Join-Path $RepositoryPath $RelativePath
+        if (Test-Path -LiteralPath $Target) { Remove-Item -LiteralPath $Target -Force }
+    }
+
+    $CheckpointDirectory = Join-Path $RepositoryPath "working\checkpoints"
+    if (Test-Path -LiteralPath $CheckpointDirectory) {
+        Remove-Item -LiteralPath $CheckpointDirectory -Recurse -Force
+    }
+
+    $Remaining = (& git -C $RepositoryPath status --porcelain) -join "`n"
+    if ($Remaining.Trim()) {
+        Write-Host $Remaining
+        throw "The dedicated scanner clone still has unexpected uncommitted files; recovery push was stopped."
+    }
+}
+
 function Test-UsableScannerClone {
     param([string]$RepositoryPath)
     if (-not (Test-Path -LiteralPath (Join-Path $RepositoryPath ".git"))) { return $false }
@@ -202,6 +230,8 @@ if ($NonScanPending.Count) {
 }
 
 if ($RecoveredPendingScan) {
+    Write-Host "Cleaning interrupted scan runtime files before recovery push..." -ForegroundColor Yellow
+    Reset-DedicatedScannerRuntimeChanges -RepositoryPath $ClonePath
     Invoke-RebaseAndPush -RepositoryPath $ClonePath
     $RecoveredCommit = (& git -C $ClonePath rev-parse --short HEAD) -join ""
     Write-Host ""
@@ -252,7 +282,9 @@ if ($LASTEXITCODE -ne 0) {
     Invoke-Git -WorkingDirectory $ClonePath -Arguments @("commit", "-m", "Local auto update: $Mode [$Timestamp]") | Out-Null
 }
 
-& git -C $ClonePath restore --worktree -- working 2>$null
+# All generated output is committed above. Clear every uncommitted scanner/test
+# mutation before the clean check, while preserving the committed scan result.
+Invoke-Git -WorkingDirectory $ClonePath -Arguments @("restore", "--staged", "--worktree", "--", ".") | Out-Null
 $Checkpoint = Join-Path $ClonePath "working\pipeline-checkpoint.json"
 if (Test-Path -LiteralPath $Checkpoint) { Remove-Item -LiteralPath $Checkpoint -Force }
 $CheckpointDirectory = Join-Path $ClonePath "working\checkpoints"
