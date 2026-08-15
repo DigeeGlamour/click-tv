@@ -47,6 +47,20 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertLess(cleanup, clean_check)
         self.assertIn("Send Telegram after failed scan or push", workflow)
         self.assertIn("::add-mask::$VALUE", workflow)
+        self.assertIn("actions/checkout@v7", workflow)
+        self.assertIn("actions/setup-python@v7", workflow)
+        self.assertIn("actions/setup-node@v7", workflow)
+        self.assertIn("actions/cache@v6", workflow)
+        self.assertIn("actions/upload-artifact@v6", workflow)
+        self.assertIn("git restore --staged --worktree -- .", workflow)
+
+    def test_all_shell_scripts_are_forced_to_lf(self):
+        attributes = (ROOT / ".gitattributes").read_text(encoding="utf-8")
+        self.assertIn("*.sh text eol=lf", attributes)
+        shell_scripts = [path for path in ROOT.rglob("*.sh") if ".git" not in path.parts]
+        self.assertTrue(shell_scripts)
+        for path in shell_scripts:
+            self.assertNotIn(b"\r", path.read_bytes(), path.relative_to(ROOT))
 
     def test_runtime_progress_and_virtualenv_are_ignored(self):
         ignored = (ROOT / ".gitignore").read_text(encoding="utf-8").splitlines()
@@ -91,6 +105,17 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertIn('"reset", "--hard", "origin/main"', launcher)
         self.assertIn("ClickTV-Data-Scanner", launcher)
         self.assertIn("Invoke-RebaseAndPush", launcher)
+        self.assertIn("Reset-DedicatedScannerRuntimeChanges", launcher)
+        recovery_cleanup = launcher.index(
+            "Reset-DedicatedScannerRuntimeChanges -RepositoryPath $ClonePath"
+        )
+        recovery_rebase = launcher.index(
+            "Invoke-RebaseAndPush -RepositoryPath $ClonePath", recovery_cleanup
+        )
+        self.assertLess(recovery_cleanup, recovery_rebase)
+        self.assertIn(
+            '@("restore", "--staged", "--worktree", "--", ".")', launcher
+        )
         self.assertIn('"rebase", "--abort"', launcher)
         self.assertIn('"clone", "--depth", "1", "--no-tags"', launcher)
         self.assertIn("Test-UsableScannerClone", launcher)
@@ -103,6 +128,10 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertIn('Scripts\\python.exe', advanced_launcher)
         self.assertIn("$VenvPython -m pip install", advanced_launcher)
         self.assertNotIn("$PythonCommand.Source -m pip install -r", advanced_launcher)
+        self.assertIn(
+            '@("restore", "--staged", "--worktree", "--", ".")',
+            advanced_launcher,
+        )
 
     def test_actions_requires_complete_schedule_update(self):
         workflow = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
@@ -112,12 +141,26 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertIn("test -f scanner/schedule_resolver.py", workflow)
         self.assertIn("test -f tests/test_schedule_resolver.py", workflow)
 
+    def test_every_workflow_uses_node24_action_majors(self):
+        workflows = "\n".join(
+            path.read_text(encoding="utf-8")
+            for path in (ROOT / ".github/workflows").glob("*.yml")
+        )
+        for legacy in (
+            "actions/checkout@v4",
+            "actions/setup-python@v5",
+            "actions/setup-node@v4",
+            "actions/cache@v4",
+            "actions/upload-artifact@v4",
+        ):
+            self.assertNotIn(legacy, workflows)
+
     def test_colab_restores_temporary_settings_override(self):
         notebook = (ROOT / "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb").read_text(
             encoding="utf-8"
         )
         self.assertIn(
-            '\\"config/settings.json\\", \\"working\\"',
+            '\\"restore\\", \\"--staged\\", \\"--worktree\\", \\"--\\", \\".\\"',
             notebook,
         )
 

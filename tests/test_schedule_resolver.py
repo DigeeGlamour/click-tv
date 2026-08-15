@@ -266,7 +266,10 @@ class ScheduleResolverTests(unittest.TestCase):
                 "resolution": {"event_minimum_height": 720},
             }), encoding="utf-8")
             result = process_events(
-                str(results_path), str(settings_path), "config/event-fixtures.json"
+                str(results_path),
+                str(settings_path),
+                "config/event-fixtures.json",
+                now=datetime(2026, 8, 12, 12, 0, tzinfo=timezone.utc),
             )
             card = next(
                 item for item in result["upcoming"]["items"]

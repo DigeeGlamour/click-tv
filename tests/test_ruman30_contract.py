@@ -175,6 +175,23 @@ class RuntimeContractTests(unittest.TestCase):
         self.assertIn('"publish_uncertain_movies": false', settings)
         self.assertIn('"strict_publish": true', settings)
 
+    def test_mobile_movie_transport_matches_reference_groups(self):
+        index = (ROOT / "site/index.html").read_text(encoding="utf-8")
+        css = (ROOT / "site/assets/css/reference-design.css").read_text(encoding="utf-8")
+        app = (ROOT / "site/assets/js/app.js").read_text(encoding="utf-8")
+
+        self.assertIn('id="pipBtn"', index)
+        self.assertIn('class="fas fa-lock"', index)
+        self.assertIn('class="fas fa-redo-alt"', index)
+        self.assertIn('class="fas fa-clone"', index)
+        self.assertIn('class="fas fa-arrows-alt-h"', index)
+        self.assertIn("grid-template-columns:repeat(12,minmax(24px,1fr))", css)
+        self.assertIn("#pipBtn{grid-column:11", css)
+        self.assertIn("#aspectBtn{grid-column:12", css)
+        self.assertIn('content:"10"!important', css)
+        self.assertIn("video.requestPictureInPicture()", app)
+        self.assertIn("setPlayerControlVisible('pipBtn', mobileMovie)", app)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -9,7 +9,7 @@ from scanner.events import _parse_datetime
 from scanner.fast_pipeline import _apply_strict_player_visibility
 from scanner.merger import merge_candidates, rank_and_select_streams
 from scanner.normalizer import Normalizer
-from scanner.movies import _deduplicate_movies_by_playback_url, _merge_manual_over_discovered
+from scanner.movies import _deduplicate_movies_by_playback_url, _merge_manual_over_discovered, _movie_identity
 from scanner.player_compatibility import load_failure_keys, mark_confirmed_player_failures, mark_unproven_player_items, playback_fingerprint
 from scanner.parsers.json_parser import parse_json_content
 from scanner.planner import plan_candidates
@@ -83,6 +83,16 @@ class FinalScannerContractTests(unittest.TestCase):
         self.assertEqual(len(cards), 1)
         self.assertEqual(cards[0]["url"], manual["url"])
         self.assertEqual(cards[0]["backups"][0]["url"], discovered["url"])
+
+    def test_final_movie_pipeline_uses_canonical_title_year_identity(self):
+        self.assertEqual(
+            _movie_identity({"name": "Master", "year": 2026}),
+            _movie_identity({"name": "Master (2026) Bengali Dubbed ORG"}),
+        )
+        self.assertEqual(
+            _movie_identity({"name": "Demon Slayer: Kimetsu No Yaiba Infinity Castle", "year": 2025}),
+            _movie_identity({"name": "Demon Slayer Kimetsu no Yaiba Infinity Castle (2025) Dual ORG"}),
+        )
 
     def test_strict_player_visibility_retains_but_hides_unverified(self):
         items = [
