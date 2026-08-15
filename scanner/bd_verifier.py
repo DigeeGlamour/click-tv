@@ -919,6 +919,7 @@ def _verify_via_proxy_workers(
             "proxy_segment_verified": _safe_bool(
                 checked.get("segment_verified"), False
             ),
+            "verification_route": "direct_header_retry",
         }
         if checked.get("verified") is True:
             last_detail["proxy_checked_at"] = _utc_now()
@@ -975,6 +976,7 @@ def _verify_via_proxy_workers(
                 checked.get("segment_verified"),
                 False,
             ),
+            "verification_route": "cloudflare_proxy",
         }
 
         if checked.get("verified") is True:
@@ -1067,17 +1069,20 @@ def verify_bd_stream(
     item.update(proxy_detail)
 
     if proxy_ok:
+        direct_retry = proxy_detail.get("verification_route") == "direct_header_retry"
+        verified_status = "verified_global" if direct_retry else "verified_proxy"
+        verified_mode = "direct_header_retry" if direct_retry else "same_run_cloud_proxy"
         item.update(
             verified=True,
             publish_allowed=True,
-            verification_status="verified_proxy",
-            verification_mode="same_run_cloud_proxy",
+            verification_status=verified_status,
+            verification_mode=verified_mode,
             verification_error="",
             verification_note="",
             last_check_success=True,
             recent_success=True,
         )
-        _record_success(item, stream_history, "verified_proxy")
+        _record_success(item, stream_history, verified_status)
         _reset_permanent_failure(item, protection_state)
         return item
 
