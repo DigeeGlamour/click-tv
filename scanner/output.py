@@ -31,6 +31,7 @@ from scanner.playback_profiles import (
     merge_public_catalog,
     redact_public_report,
 )
+from scanner.browser_reachability import item_is_browser_reachable
 from scanner.security import redact_sensitive_text
 
 
@@ -155,11 +156,15 @@ def _sanitize_public_item(item: Dict[str, Any]) -> Dict[str, Any]:
 def _sanitize_public_items(value: Any) -> List[Dict[str, Any]]:
     if not isinstance(value, list):
         return []
-    return [
+    sanitized = [
         _sanitize_public_item(item)
         for item in value
         if isinstance(item, dict)
     ]
+    # Last gate before the public JSON. A card with no viewer route (http:// on
+    # a bare IP: blocked by mixed content and by Cloudflare error 1003) would
+    # otherwise ship with a green "Verified" badge and never play.
+    return [item for item in sanitized if item_is_browser_reachable(item)]
 
 
 

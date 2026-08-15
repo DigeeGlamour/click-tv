@@ -36,6 +36,7 @@ from scanner.bd_verifier import (
     _verify_via_proxy_workers,
     verify_bd_stream,
 )
+from scanner.browser_reachability import mark_browser_unreachable
 from scanner.player_compatibility import mark_confirmed_player_failures
 from scanner.verifier import (
     _budget_exhausted_result,
@@ -1816,6 +1817,25 @@ def run_fast_verification_pipeline(
         "movie",
     )
 
+    # A source can pass every Python probe and still have no viewer route: an
+    # http:// link on a bare IP is blocked by the browser (mixed content) and by
+    # the Cloudflare proxy (error code 1003). Hide those before publishing.
+    browser_unreachable_hidden, browser_unreachable_report = mark_browser_unreachable(
+        final_results,
+        "channel",
+    )
+    _atomic_write_json(
+        Path("reports/browser-unreachable.json"),
+        {
+            "timestamp": _utc_now(),
+            "mode": mode,
+            "count": browser_unreachable_hidden,
+            "reason": "No viewer route: http:// on a bare IP host cannot be "
+                      "loaded directly (mixed content) or proxied (Cloudflare 1003).",
+            "records": browser_unreachable_report,
+        },
+    )
+
     _atomic_write_json(history_path, stream_history)
     _atomic_write_json(protection_state_path, protection_state)
 
@@ -1835,6 +1855,7 @@ def run_fast_verification_pipeline(
         "total_adaptive_skipped": len(adaptive_skipped),
         "total_budget_fallbacks": len(budget_fallbacks),
         "strict_player_hidden": strict_hidden,
+        "browser_unreachable_hidden": browser_unreachable_hidden,
         "confirmed_player_failure_hidden": player_failure_hidden,
         "budget_exhausted": budget_exhausted,
         "elapsed_seconds": elapsed_seconds,
@@ -1880,6 +1901,7 @@ def run_fast_verification_pipeline(
             "total_processed": len(final_results),
             "total_publishable": len(publishable),
             "strict_player_hidden": strict_hidden,
+            "browser_unreachable_hidden": browser_unreachable_hidden,
             "status_counts": final_counts,
             "groups": report_groups,
         },
@@ -1900,6 +1922,7 @@ def run_fast_verification_pipeline(
         "adaptive_skipped": len(adaptive_skipped),
         "budget_fallbacks": len(budget_fallbacks),
         "strict_player_hidden": strict_hidden,
+        "browser_unreachable_hidden": browser_unreachable_hidden,
         "budget_exhausted": budget_exhausted,
         "host_circuits_opened": host_registry.opened_count,
         "host_circuit_skips": host_registry.skipped_count,
