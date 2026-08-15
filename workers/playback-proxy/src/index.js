@@ -17,7 +17,7 @@
  * Pages in data/playback-sources.json. This is intentionally public.
  */
 
-const DEFAULT_VERSION = "5.1.0";
+const DEFAULT_VERSION = "5.1.2";
 const SITE_ORIGIN = "https://clicktv.pages.dev";
 const ALLOWED_ORIGINS = Object.freeze([SITE_ORIGIN]);
 const ALLOWED_HOSTS_URL = `${SITE_ORIGIN}/data/allowed-hosts.json`;
@@ -1166,6 +1166,24 @@ async function loadPlaybackProfile(playbackId) {
       }
       records = payload.records;
       playbackCatalogCache = { expiresAt: now + CATALOG_CACHE_MS, records };
+    }
+
+    // Pages and Workers do not update atomically. On a catalogue ID miss,
+    // bypass both cache layers once before declaring the player route absent.
+    if (!records[playbackId]) {
+      const refreshUrl = `${PLAYBACK_CATALOG_URL}?refresh=${encodeURIComponent(playbackId)}`;
+      const response = await fetch(refreshUrl, {
+        headers: { Accept: "application/json", "Cache-Control": "no-cache" },
+        cache: "no-store",
+        cf: { cacheEverything: false, cacheTtl: 0 },
+      });
+      if (response.ok) {
+        const payload = await response.json();
+        if (payload && typeof payload === "object" && payload.records && typeof payload.records === "object") {
+          records = payload.records;
+          playbackCatalogCache = { expiresAt: Date.now() + CATALOG_CACHE_MS, records };
+        }
+      }
     }
   } catch (_) {
     return null;
