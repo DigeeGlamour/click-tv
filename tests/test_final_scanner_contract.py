@@ -171,9 +171,11 @@ class FinalScannerContractTests(unittest.TestCase):
             self.assertEqual(changed["verification_status"], "pending_player_proof")
 
     def test_final_source_registry_contains_only_agreed_remote_sources(self):
-        payload = json.loads(Path("config/sources.json").read_text(encoding="utf-8"))
+        from scanner.source_loader import load_sources_config
+
+        payload = load_sources_config("config")
         self.assertEqual(len(payload["upcoming"]), 5)
-        self.assertEqual(len(payload["today_match"]), 6)
+        self.assertEqual(len(payload["today_match"]), 8)
         self.assertEqual(len(payload["tv"]), 11)
         self.assertEqual(len(payload["movies"]), 2)
         self.assertEqual(
@@ -223,6 +225,10 @@ class FinalScannerContractTests(unittest.TestCase):
                 "manual_can_override_resolution": False,
                 "preserve_working_bd_below_minimum": False,
                 "preserve_unknown_working_tv": False,
+                # Every "keep it anyway" rescue is switched off here on purpose:
+                # this test pins the bare 720p minimum itself. The event rescue
+                # has its own coverage in tests/test_event_resolution_policy.py.
+                "preserve_unknown_working_event": False,
             }
         }
         for pipeline in ("tv", "movies", "today_match", "upcoming"):

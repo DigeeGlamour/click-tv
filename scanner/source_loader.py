@@ -92,6 +92,74 @@ def _load_json_file(file_path: str | Path) -> Dict[str, Any]:
         return {}
 
 
+SOURCE_PIPELINE_FILES = {
+    "tv": "tv.json",
+    "movies": "movies.json",
+    "today_match": "today-match.json",
+    "upcoming": "upcoming.json",
+    "manual": "manual.json",
+}
+
+
+def _extract_pipeline_sources(payload: Any) -> Any:
+    """Read one pipeline's configuration out of a per-category source file.
+
+    Three shapes are accepted so a file stays easy to hand-edit: a bare list of
+    sources, {"sources": [...]}, and {"config": {...}} for the manual pipeline,
+    whose configuration is a single object rather than a list.
+    """
+    if isinstance(payload, list):
+        return payload
+    if not isinstance(payload, dict):
+        return None
+    for key in ("sources", "config"):
+        if key in payload:
+            return payload[key]
+    return None
+
+
+def load_sources_config(
+    config_dir: str | Path = "config",
+) -> Dict[str, Any]:
+    """Assemble the source configuration from one file per category.
+
+    Every category owns its own file under config/sources/ - today-match.json,
+    upcoming.json, movies.json, tv.json, manual.json - so a change to Today
+    Match sources can never disturb the Movie or TV lists. The older single
+    config/sources.json is still read as a fallback for any category that has
+    no file of its own yet, which keeps an in-progress migration runnable.
+    """
+    root = Path(config_dir)
+    legacy = _load_json_file(root / "sources.json")
+    per_category_dir = root / "sources"
+
+    merged: Dict[str, Any] = {}
+    for pipeline, filename in SOURCE_PIPELINE_FILES.items():
+        path = per_category_dir / filename
+        if path.is_file():
+            extracted = _extract_pipeline_sources(_load_any_json_file(path))
+            if extracted is not None:
+                merged[pipeline] = extracted
+                continue
+        if pipeline in legacy:
+            merged[pipeline] = legacy[pipeline]
+
+    return merged
+
+
+def _load_any_json_file(file_path: str | Path) -> Any:
+    """Like _load_json_file, but a top-level JSON list is preserved."""
+    path = Path(file_path)
+    if not path.exists():
+        return None
+
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            return json.load(handle)
+    except (OSError, UnicodeError, json.JSONDecodeError, TypeError, ValueError):
+        return None
+
+
 def _atomic_write_json(file_path: str | Path, data: Dict[str, Any]) -> None:
     """Write JSON to a temporary file, then replace the target atomically."""
     path = Path(file_path)
@@ -876,7 +944,7 @@ def _merge_health_history(
 
 def collect_candidates(mode: str = "all") -> Dict[str, Any]:
     """Fetch active pipelines and write working/candidates.json."""
-    sources_config = _load_json_file("config/sources.json")
+    sources_config = load_sources_config("config")
     settings = _load_json_file("config/settings.json")
     mode_clean = str(mode or "all").strip().lower()
 

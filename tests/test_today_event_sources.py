@@ -9,7 +9,7 @@ from scanner.planner import _pipeline_for_mode
 
 class TodayEventSourceTests(unittest.TestCase):
     def test_every_configured_event_source_is_enabled_and_has_unique_id(self):
-        sources = json.loads(Path("config/sources.json").read_text(encoding="utf-8"))
+        sources = source_loader.load_sources_config("config")
         configured = sources["today_match"] + sources["upcoming"]
         self.assertTrue(configured)
         self.assertTrue(all(source.get("enabled") is True for source in configured))
@@ -17,7 +17,7 @@ class TodayEventSourceTests(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
 
     def test_agreed_event_sources_are_all_registered(self):
-        sources = json.loads(Path("config/sources.json").read_text(encoding="utf-8"))
+        sources = source_loader.load_sources_config("config")
         urls = {
             source["url"]
             for pipeline in ("today_match", "upcoming")
@@ -44,7 +44,7 @@ class TodayEventSourceTests(unittest.TestCase):
         }
 
         def fake_load(path):
-            return sources if str(path).endswith("sources.json") else settings
+            return settings
 
         def fake_process(source, _settings):
             return [], {
@@ -63,6 +63,7 @@ class TodayEventSourceTests(unittest.TestCase):
             }
 
         with (
+            patch.object(source_loader, "load_sources_config", return_value=sources),
             patch.object(source_loader, "_load_json_file", side_effect=fake_load),
             patch.object(source_loader, "process_single_source", side_effect=fake_process),
             patch.object(source_loader, "load_manual_sources", return_value=([], {})),
@@ -76,7 +77,7 @@ class TodayEventSourceTests(unittest.TestCase):
 
     def test_today_collection_submits_every_today_and_upcoming_source(self):
         settings = {"source_workers": 2, "source_cache": {"enabled": False}}
-        sources = json.loads(Path("config/sources.json").read_text(encoding="utf-8"))
+        sources = source_loader.load_sources_config("config")
         expected_ids = {
             source["id"]
             for pipeline in ("today_match", "upcoming")
@@ -86,7 +87,7 @@ class TodayEventSourceTests(unittest.TestCase):
         submitted_ids = set()
 
         def fake_load(path):
-            return sources if str(path).endswith("sources.json") else settings
+            return settings
 
         def fake_process(source, _settings):
             submitted_ids.add(source["id"])
@@ -106,6 +107,7 @@ class TodayEventSourceTests(unittest.TestCase):
             }
 
         with (
+            patch.object(source_loader, "load_sources_config", return_value=sources),
             patch.object(source_loader, "_load_json_file", side_effect=fake_load),
             patch.object(source_loader, "process_single_source", side_effect=fake_process),
             patch.object(source_loader, "load_manual_sources", return_value=([], {})),

@@ -1521,6 +1521,17 @@ def _resolution_policy(settings: Dict[str, Any]) -> Dict[str, Any]:
         nested.get("preserve_unknown_working_tv", True),
         True,
     )
+    # Live event playlists are the worst offenders for undeclared resolution:
+    # a match feed is usually an ABR master or a bare chunk list with no
+    # RESOLUTION attribute at all. Quarantining those threw away matches whose
+    # stream had already verified as live, which is why Today Match kept
+    # publishing an empty tab while the source playlists plainly held fixtures.
+    # Mirrors preserve_unknown_working_tv: a dead link still fails earlier in
+    # verification, so this only ever rescues a stream that already answered.
+    preserve_unknown_working_event = _safe_bool(
+        nested.get("preserve_unknown_working_event", True),
+        True,
+    )
 
     return {
         "tv_minimum_height": tv_minimum_height,
@@ -1528,6 +1539,7 @@ def _resolution_policy(settings: Dict[str, Any]) -> Dict[str, Any]:
         "manual_can_override_resolution": manual_override,
         "preserve_working_bd_below_minimum": preserve_working_bd_below_minimum,
         "preserve_unknown_working_tv": preserve_unknown_working_tv,
+        "preserve_unknown_working_event": preserve_unknown_working_event,
         "event_minimum_height": event_minimum_height,
         "allow_unknown_event_resolution": allow_unknown_event,
         "movie_minimum_height": movie_minimum_height,
@@ -1615,6 +1627,13 @@ def _apply_resolution_policy(
 
         if minimum > 0 and detected_height == 0 and not allow_unknown:
             if manual_override_active:
+                return True, "verified_global", ""
+            if policy["preserve_unknown_working_event"]:
+                item["quality_unknown"] = True
+                item["quality_policy_note"] = (
+                    "Manifest/media verification succeeded; event resolution "
+                    "metadata was unavailable"
+                )
                 return True, "verified_global", ""
             return (
                 False,

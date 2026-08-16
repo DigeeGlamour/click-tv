@@ -46,6 +46,26 @@ SUCCESS_SOURCE_STATUSES = {
 }
 
 
+def _force_utf8_console() -> None:
+    """
+    Progress messages contain emoji. A Windows console defaults to the legacy
+    cp1252 code page, so the very first `print("🚀 ...")` raises
+    UnicodeEncodeError and the whole scan dies before a single source is read -
+    while the same code runs fine on the Linux GitHub Actions runner. Switch
+    stdout/stderr to UTF-8 so local PC runs behave like CI, and fall back to
+    replacing unencodable characters if the stream cannot be reconfigured at
+    all (it has been swapped for a plain buffer by a test harness, say).
+    """
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if reconfigure is None:
+            continue
+        try:
+            reconfigure(encoding="utf-8", errors="replace")
+        except (ValueError, OSError):
+            pass
+
+
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -1073,6 +1093,8 @@ def run_pipeline(
 
 
 def main() -> int:
+    _force_utf8_console()
+
     parser = argparse.ArgumentParser(
         description=(
             "Live Signal IPTV, Today Match, Upcoming Match "
