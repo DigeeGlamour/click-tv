@@ -2041,16 +2041,19 @@ function eventScheduleText(item) {
   return `${date} • ${time} BDT`;
 }
 
-// A live card says when the match began instead of repeating "Today".
+// A live card says when the match began. The elapsed chip beside the LIVE
+// badge already says "started", and the date is only worth the width when the
+// match did not begin today - saying "Started: Sun 16 Aug • 9:00 PM BDT" in a
+// 167px column simply got clipped mid-word on the live site.
 function eventStartedText(item) {
   const start = eventStartDate(item);
   if (!start) return '';
-  const time = eventDhakaTime(start);
-  if (eventDhakaDayKey(start) === eventDhakaDayKey(new Date())) return `Started: ${time} BDT`;
+  const time = `${eventDhakaTime(start)} BDT`;
+  if (eventDhakaDayKey(start) === eventDhakaDayKey(new Date())) return time;
   const date = new Intl.DateTimeFormat('en-GB', {
-    timeZone: 'Asia/Dhaka', weekday: 'short', day: 'numeric', month: 'short'
+    timeZone: 'Asia/Dhaka', day: 'numeric', month: 'short'
   }).format(start);
-  return `Started: ${date} • ${time} BDT`;
+  return `${date} • ${time}`;
 }
 
 // Guide 17. Minute granularity, refreshed by the 30s card clock.
@@ -2077,12 +2080,15 @@ function eventLivePhaseText(item) {
   if (!start) return '';
   const diff = Date.now() - start.getTime();
   if (diff < 0) return '';
+  // Compact on purpose: it sits immediately after the LIVE badge, which
+  // already supplies the "started" sense, so "3h 52m" reads the same as
+  // "Started 3h 52m ago" in a third of the width.
   const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return 'Just started';
-  if (minutes < 60) return `Started ${minutes}m ago`;
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes}m`;
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;
-  return rest ? `Started ${hours}h ${rest}m ago` : `Started ${hours}h ago`;
+  return rest ? `${hours}h ${rest}m` : `${hours}h`;
 }
 
 // Guide 18. User-facing wording for what the scanner already recorded.
@@ -2601,25 +2607,29 @@ function createEventCard(item, visualIndex) {
   // status, row two the supporting detail on a single ellipsised line.
   // The clock spans carry data-clock so the 30s tick can rewrite their text
   // without rebuilding the list.
-  const statusRow = [
-    `<span class="event-status-pill ${upcoming ? 'upcoming' : 'live'}">${upcoming
-      ? '<i class="far fa-calendar-alt" aria-hidden="true"></i>'
-      : '<span class="pulse-dot" aria-hidden="true"></span>'}${escapeHtml(statusLabel)}</span>`,
-    upcoming
-      ? `<span class="event-card-countdown" data-clock="countdown"${countdown ? '' : ' hidden'}><i class="fas fa-hourglass-half" aria-hidden="true"></i>${escapeHtml(countdown)}</span>`
-      : `<span class="event-card-phase" data-clock="phase"${phase ? '' : ' hidden'}>${escapeHtml(phase)}</span>`
-  ].join('');
+  // One status, not two. An upcoming card used to carry STARTING SOON *and*
+  // "Starts in 17m" side by side, which said the same thing twice and pushed
+  // the rest of the card into a third line. The countdown is the more useful
+  // of the pair, so when there is one it becomes the status; a fixture with no
+  // countdown left keeps the worded badge.
+  const statusRow = upcoming
+    ? `<span class="event-status-pill upcoming${countdown ? ' is-countdown' : ''}" data-clock="countdown"><i class="fas ${countdown ? 'fa-hourglass-half' : 'fa-calendar-alt'}" aria-hidden="true"></i>${escapeHtml(countdown || statusLabel)}</span>`
+    : [
+      `<span class="event-status-pill live"><span class="pulse-dot" aria-hidden="true"></span>${escapeHtml(statusLabel)}</span>`,
+      `<span class="event-card-phase" data-clock="phase"${phase ? '' : ' hidden'}>${escapeHtml(phase)}</span>`
+    ].join('');
 
+  // One supporting line: the clock, then the stream state. The verification
+  // tick rides inside the clock chip instead of being a chip of its own, so it
+  // can no longer wrap onto a line by itself the way it did on the live site.
+  const verifiedTick = upcoming
+    ? `<i class="fas ${verification === 'Verification Pending' ? 'fa-circle-question' : 'fa-circle-check'} event-verified-tick ${verification === 'Verification Pending' ? 'pending' : 'ok'}" aria-hidden="true"></i>`
+    : '';
   const metaRow = [
     scheduleText
-      ? `<span class="event-card-time" data-clock="schedule"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(scheduleText)}</span>`
+      ? `<span class="event-card-time" data-clock="schedule" title="${escapeHtml([scheduleText, verification].filter(Boolean).join(' · '))}"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(scheduleText)}${verifiedTick}</span>`
       : '',
-    `<span class="event-card-streams ${streams.ready ? 'ready' : 'waiting'}" title="${escapeHtml(streams.text)}"><i class="fas ${streams.ready ? 'fa-circle-play' : 'fa-hourglass-start'}" aria-hidden="true"></i>${escapeHtml(streams.short)}</span>`,
-    // Guide 18 with guide 32's level 3 rule: the card carries the state as a
-    // single glyph, the words live in the tooltip and the details popup.
-    upcoming
-      ? `<span class="event-card-verified ${verification === 'Verification Pending' ? 'pending' : 'ok'}" title="${escapeHtml(verification)}" aria-label="${escapeHtml(verification)}"><i class="fas ${verification === 'Verification Pending' ? 'fa-circle-question' : 'fa-circle-check'}" aria-hidden="true"></i></span>`
-      : ''
+    `<span class="event-card-streams ${streams.ready ? 'ready' : 'waiting'}" title="${escapeHtml(streams.text)}"><i class="fas ${streams.ready ? 'fa-circle-play' : 'fa-hourglass-start'}" aria-hidden="true"></i>${escapeHtml(streams.short)}</span>`
   ].filter(Boolean).join('');
 
   card.innerHTML = `
@@ -2684,8 +2694,29 @@ function updateEventCardClocks() {
       }
     };
     const countdown = liveLike ? '' : eventCountdownText(item);
+    // The clock chip keeps its verification tick across a tick update.
+    const scheduleNode = qs('[data-clock="schedule"]', card);
+    const tick = scheduleNode ? qs('.event-verified-tick', scheduleNode)?.outerHTML || '' : '';
     write('[data-clock="schedule"]', liveLike ? eventStartedText(item) : eventScheduleText(item));
-    write('[data-clock="countdown"]', countdown);
+    if (tick && scheduleNode && !qs('.event-verified-tick', scheduleNode)) {
+      scheduleNode.insertAdjacentHTML('beforeend', tick);
+    }
+    // On an upcoming card the countdown *is* the status pill, so it is
+    // rewritten rather than hidden - hiding it would leave the card with no
+    // status at all once a fixture's kickoff passes.
+    const countdownNode = qs('[data-clock="countdown"]', card);
+    if (countdownNode) {
+      const isPill = countdownNode.classList.contains('event-status-pill');
+      if (isPill) {
+        const label = countdown || eventStatusLabel(eventUiStatus(item));
+        countdownNode.classList.toggle('is-countdown', Boolean(countdown));
+        const icon = qs('i', countdownNode);
+        if (icon) icon.className = `fas ${countdown ? 'fa-hourglass-half' : 'fa-calendar-alt'}`;
+        countdownNode.innerHTML = `${qs('i', countdownNode)?.outerHTML || ''}${escapeHtml(label)}`;
+      } else {
+        write('[data-clock="countdown"]', countdown);
+      }
+    }
     write('[data-clock="phase"]', liveLike ? eventLivePhaseText(item) : '');
     card.classList.toggle('has-countdown', Boolean(countdown));
   });

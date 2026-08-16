@@ -17,7 +17,7 @@
  * Pages in data/playback-sources.json. This is intentionally public.
  */
 
-const DEFAULT_VERSION = "5.3.1";
+const DEFAULT_VERSION = "5.3.2";
 const SITE_ORIGIN = "https://clicktv.pages.dev";
 // Every origin the site is genuinely served from. Each Today Match card is
 // proxy_only - the raw URL is deliberately absent - so an origin missing from
@@ -316,7 +316,19 @@ export default {
         return proxyDrmCertificate({ request, playbackProfile, env });
       }
 
-      const targetText = String(playbackProfile?.url || requestUrl.searchParams.get("url") || "");
+      // A child link carries the exact variant or segment URL, that hop's own
+      // type, and a signature minted over both; pid= rides along only so the
+      // Worker can recover this stream's headers and DRM. Letting the profile
+      // win here meant every child request was answered with the parent
+      // manifest again, re-signed as HLS - the player fetched the same
+      // playlist forever instead of media, then gave up with "every available
+      // link was tried". The initial id= request carries no url= of its own
+      // and still resolves entirely from the profile.
+      const isChildRequest = Boolean(childPlaybackId);
+      const requestedUrlParam = requestUrl.searchParams.get("url");
+      const targetText = String(
+        (isChildRequest && requestedUrlParam) || playbackProfile?.url || requestedUrlParam || ""
+      );
       if (!targetText) {
         return textResponse(
           "Missing url",
@@ -327,7 +339,9 @@ export default {
 
       const targetUrl = parseSafeHttpUrl(targetText);
       const requestedType = normalizeStreamType(
-        playbackProfile?.stream_type || requestUrl.searchParams.get("type"),
+        isChildRequest
+          ? requestUrl.searchParams.get("type") || playbackProfile?.stream_type
+          : playbackProfile?.stream_type || requestUrl.searchParams.get("type"),
         targetUrl,
       );
       const profileName = normalizeProfileName(

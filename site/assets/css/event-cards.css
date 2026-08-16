@@ -315,3 +315,73 @@
   .sidebar-section.event-list-mode .event-now-playing{display:none!important}
   .sidebar-section.event-list-mode .event-ref-card.active .event-now-playing{display:none!important}
 }
+
+/* ── Card polish pass ───────────────────────────────────────────────────────
+ * Production showed the upcoming card carrying two status chips that said the
+ * same thing, a verification tick stranded on its own line, and a live card
+ * whose start time was clipped mid-word. The markup now sends one status and
+ * one supporting line; these rules quiet everything that is not level 1 so the
+ * eye lands on the title, the status and the clock — in that order. Card
+ * dimensions, the grid and the player are untouched.
+ */
+
+/* Guide 32 level 2: the competition is context, not headline. */
+.sidebar-section.event-list-mode .event-card-competition{
+  color:#8b98ab!important;font-size:10px!important;font-weight:700!important;
+}
+.sidebar-section.event-list-mode .event-card-competition i{color:#9a8a5f!important;font-size:8.5px!important}
+
+/* The countdown carries the status on an upcoming card, so it gets the pill
+   treatment rather than sitting next to a second badge. */
+.sidebar-section.event-list-mode .event-status-pill.is-countdown{
+  border-color:rgba(255,190,35,.5)!important;background:rgba(137,94,0,.26)!important;color:#ffd97a!important;
+}
+
+/* The verification tick lives inside the clock chip now. */
+.sidebar-section.event-list-mode .event-verified-tick{
+  margin-left:5px!important;font-size:9px!important;
+}
+.sidebar-section.event-list-mode .event-verified-tick.ok{color:#4ecb8a!important}
+.sidebar-section.event-list-mode .event-verified-tick.pending{color:#e0b95c!important}
+
+/* Elapsed time reads as a quiet companion to the LIVE badge. */
+.sidebar-section.event-list-mode .event-card-phase{
+  color:#78d9b6!important;font-size:9px!important;font-weight:800!important;opacity:.92!important;
+}
+
+/* Artwork: a touch smaller and calmer, so an oversized source poster stops
+   dominating the row. The fallback chain itself is unchanged. */
+.sidebar-section.event-list-mode .event-card-art{
+  border-color:rgba(95,113,141,.3)!important;
+  background:linear-gradient(150deg,#141f31,#0a101b)!important;
+}
+.sidebar-section.event-list-mode .event-card-art img{
+  padding:6px!important;
+}
+.sidebar-section.event-list-mode .event-art-versus{
+  background:linear-gradient(150deg,#16223a,#0a101b)!important;gap:2px!important;
+}
+.sidebar-section.event-list-mode .event-art-versus span{
+  font-size:15px!important;font-weight:900!important;letter-spacing:.3px!important;color:#e4ecf8!important;
+}
+.sidebar-section.event-list-mode .event-art-versus em{
+  color:#7d8da3!important;font-size:7.5px!important;letter-spacing:1.4px!important;
+}
+.sidebar-section.event-list-mode .event-art-fallback i{font-size:19px!important;color:#6f93c2!important}
+.sidebar-section.event-list-mode .event-art-fallback span{font-size:10px!important;color:#c6d2e2!important}
+
+/* Corner and action controls: outline weight only, no filled circles
+   competing with the Watch button. */
+.sidebar-section.event-list-mode .card-remind-btn,
+.sidebar-section.event-list-mode .event-ref-card .card-fav-btn{
+  border-color:rgba(255,255,255,.1)!important;background:rgba(6,12,21,.55)!important;color:#9fadc0!important;
+}
+.sidebar-section.event-list-mode .event-card-action.reminder i{
+  border-color:rgba(140,170,210,.24)!important;background:transparent!important;color:#9dbadb!important;
+}
+.sidebar-section.event-list-mode .event-card-action.reminder{color:#93a5bb!important}
+
+/* The sport badge is a label, not a headline. */
+.sidebar-section.event-list-mode .event-sport-badge{
+  background:rgba(5,11,20,.72)!important;border-color:rgba(255,255,255,.1)!important;color:#b8c6d8!important;
+}

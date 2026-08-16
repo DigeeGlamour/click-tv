@@ -145,6 +145,17 @@ try {
   assert.equal(upstreamCalls.at(-1).headers.get('Origin'), 'https://source.example');
   assert.equal(upstreamCalls.at(-1).headers.get('User-Agent'), 'Scanner-Verified-Agent/1.0');
 
+  // A child link names its own hop. pid= is only there so the Worker can find
+  // this stream's headers, so the profile's manifest URL must not be used in
+  // its place - doing so answered every segment request with the parent
+  // playlist, and the player looped on it until it gave up. Assert on what
+  // actually came back, not just the status: the segment bytes, from the
+  // segment URL, typed as media.
+  assert.match(upstreamCalls.at(-1).url, /segment\.ts/, 'a child request must fetch its own URL');
+  const childBody = new Uint8Array(await child.arrayBuffer());
+  assert.deepEqual(Array.from(childBody), [1, 2, 3], 'a child request must return media, not the manifest again');
+  assert.match(child.headers.get('Content-Type') || '', /mp2t|video|octet-stream/i);
+
   const drm = await worker.fetch(
     new Request(`https://worker.example/drm?id=${playbackId}`, { headers: originHeaders }),
     env,
@@ -219,7 +230,7 @@ try {
 
   const health = await worker.fetch(new Request('https://stream-proxy-3.example/health'), env, {});
   const healthBody = await health.json();
-  assert.equal(healthBody.version, '5.3.1');
+  assert.equal(healthBody.version, '5.3.2');
   assert.equal(healthBody.name, 'play-proxy-2');
   assert.equal(healthBody.configuration_storage, 'git_pages_json');
   assert.equal(healthBody.dashboard_configuration_required, false);
