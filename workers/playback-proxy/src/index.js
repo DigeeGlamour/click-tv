@@ -17,7 +17,7 @@
  * Pages in data/playback-sources.json. This is intentionally public.
  */
 
-const DEFAULT_VERSION = "5.3.0";
+const DEFAULT_VERSION = "5.3.1";
 const SITE_ORIGIN = "https://clicktv.pages.dev";
 // Every origin the site is genuinely served from. Each Today Match card is
 // proxy_only - the raw URL is deliberately absent - so an origin missing from
@@ -1207,9 +1207,23 @@ async function fetchShardRecords(shard, { bypassCache } = {}) {
       : { cacheEverything: true, cacheTtl: 300 },
   });
   if (!response.ok) return null;
-  const payload = await response.json();
+  // Cloudflare Pages answers an unknown path with the site's own HTML and
+  // HTTP 200 - it does not 404. Parsing that as JSON throws, and the throw
+  // used to escape all the way past the legacy-catalogue fallback below, so
+  // every protected stream returned 404 on a repository whose data/ had not
+  // been resharded yet. A local static server 404s instead, which is why this
+  // only ever showed up in production.
+  const payload = await readJsonOrNull(response);
   if (!payload || typeof payload !== "object") return null;
   return payload.records && typeof payload.records === "object" ? payload.records : null;
+}
+
+async function readJsonOrNull(response) {
+  try {
+    return await response.json();
+  } catch (_) {
+    return null;
+  }
 }
 
 async function loadLegacyCatalogRecords(now) {
@@ -1224,7 +1238,7 @@ async function loadLegacyCatalogRecords(now) {
     cf: { cacheEverything: true, cacheTtl: 300 },
   });
   if (!response.ok) return null;
-  const payload = await response.json();
+  const payload = await readJsonOrNull(response);
   if (!payload || typeof payload !== "object") return null;
   if (!payload.records || typeof payload.records !== "object") return null;
   playbackCatalogCache = { expiresAt: now + CATALOG_CACHE_MS, records: payload.records };
