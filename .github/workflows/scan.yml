@@ -322,8 +322,33 @@ jobs:
             exit 1
           fi
 
+          # Two scan modes can be in flight at once (today at :47, upcoming at
+          # :39 and so on). Both rewrite whole machine-generated JSON files, so
+          # a plain rebase hits "CONFLICT in state/stream-history.json" and the
+          # run dies with the data already committed but never pushed.
+          # A 3-way text merge of regenerated JSON is meaningless; the newer
+          # scan result is simply the correct one. `-X theirs` resolves exactly
+          # those conflicting files in favour of the commit being replayed and
+          # leaves every file the other run touched alone.
+          reconcile_generated_counts() {
+            # A rebase can auto-merge a large collection (channel list,
+            # playback-sources records) from both sides while resolving the
+            # single scalar count describing it in favour of only one side.
+            # The collection and its declared count then disagree, and the
+            # Pages validator rightly refuses to publish. Recompute every
+            # count from the file it actually describes, right after the
+            # rebase that could have introduced the drift.
+            "$PYTHON_BIN" scripts/reconcile-generated-counts.py
+            if ! git diff --quiet -- data/manifest.json data/playback-sources.json; then
+              git add data/manifest.json data/playback-sources.json
+              git commit --amend --no-edit
+            fi
+          }
+
+          PYTHON_BIN="$(command -v python3 || command -v python)"
           git fetch origin main
-          git rebase origin/main
+          git rebase -X theirs origin/main
+          reconcile_generated_counts
 
           for ATTEMPT in 1 2 3; do
             if git push origin HEAD:main; then
@@ -338,7 +363,8 @@ jobs:
             echo "Push attempt $ATTEMPT failed. Retrying..."
             sleep 5
             git fetch origin main
-            git rebase origin/main
+            git rebase -X theirs origin/main
+            reconcile_generated_counts
           done
 
           COMMIT="$(git rev-parse --short HEAD)"
