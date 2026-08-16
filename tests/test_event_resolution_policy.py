@@ -86,9 +86,53 @@ class UnknownEventResolutionTests(unittest.TestCase):
         settings = json.loads(
             (ROOT / "config" / "settings.json").read_text(encoding="utf-8")
         )
-        self.assertIs(
-            settings["resolution"]["preserve_unknown_working_event"], True
+        resolution = settings["resolution"]
+        self.assertIs(resolution["preserve_unknown_working_event"], True)
+        # "live হলেই add" - no height floor for events at all.
+        self.assertEqual(resolution["event_minimum_height"], 0)
+        self.assertIs(resolution["allow_unknown_event_resolution"], True)
+
+
+class ValidatorExemptsEveryEventStreamTests(unittest.TestCase):
+    """The Pages validator enforces 720p in two separate places: once for an
+    item's primary stream and once for each backup/standby beside it. Exempting
+    only the first still failed the build on a live match whose *backup* had no
+    declared resolution, so both gates are pinned here together.
+    """
+
+    def _validator(self):
+        import importlib.util
+
+        path = ROOT / "scripts" / "validate-pages.py"
+        spec = importlib.util.spec_from_file_location("validate_pages", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def _errors_for(self, item, media_kind):
+        module = self._validator()
+        module.ERRORS.clear()
+        module.PLAYBACK_IDS.clear()
+        module.validate_stream_item(item, "label", media_kind=media_kind)
+        return [e for e in module.ERRORS if "720p" in e]
+
+    def _event(self):
+        return {
+            "name": "Dinamo Vladivostok vs FK Sokol Saratov",
+            "url": "https://live.test/match.m3u8",
+            "backups": [{"url": "https://live.test/backup.m3u8"}],
+        }
+
+    def test_an_event_with_an_undeclared_resolution_backup_is_accepted(self):
+        self.assertEqual(self._errors_for(self._event(), "event"), [])
+
+    def test_a_channel_with_the_same_shape_is_still_rejected(self):
+        errors = self._errors_for(self._event(), "channel")
+        self.assertTrue(
+            any("backup/standby" in e for e in errors),
+            f"channel backups must keep the 720p rule; got {errors}",
         )
+        self.assertTrue(any("resolution must be known" in e for e in errors))
 
 
 if __name__ == "__main__":

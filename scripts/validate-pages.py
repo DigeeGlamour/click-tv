@@ -606,7 +606,9 @@ def validate_stream_item(
         if not isinstance(stream, dict):
             continue
         stream_height = declared_resolution_height(stream)
-        if media_kind in {"channel", "movie", "event"} and stream_height < 720:
+        # Same exemption as the primary stream above: an event's backup feed is
+        # the same kind of undeclared-resolution live match link.
+        if media_kind in {"channel", "movie"} and stream_height < 720:
             add_error(
                 f"{label} backup/standby #{stream_number} is below 720p or unknown: "
                 f"{name} ({stream_height or 'unknown'})"
