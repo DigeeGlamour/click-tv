@@ -46,6 +46,150 @@ def _write_if_changed(path: Path, before: str, payload: dict) -> bool:
     return True
 
 
+def _item_is_playable(item: dict, playback_ids: set) -> bool:
+    """An item must still have a way to actually play after a merge.
+
+    A protected stream carries no url; its real address lives in
+    data/playback-sources.json under `playback_id`. Those two files are written
+    together by one scan, but a rebase resolves them independently: the channel
+    list can merge in entries from one run while the catalogue keeps the other
+    run's records. The leftover entry then points at a playback_id nobody holds
+    - no url, no catalogue record, nothing to play - and the Pages validator
+    correctly refuses it ("playback_id catalogue-এ নেই").
+
+    Metadata-only cards are deliberately link-less (an announced fixture whose
+    stream is published at kickoff) and are kept.
+    """
+    if item.get("metadata_only") is True:
+        return True
+
+    playback_id = str(item.get("playback_id") or "").strip()
+    if playback_id and playback_id not in playback_ids:
+        has_url = any(
+            str(item.get(key) or "").strip()
+            for key in ("url", "stream_url", "link")
+        )
+        if not has_url:
+            return False
+    return True
+
+
+def _drop_orphaned_items(
+    data_root: Path,
+    playback_ids: set,
+    changed: list,
+) -> tuple:
+    """Remove every published item whose only playback route went missing.
+
+    Returns (removed_count, movie_category_dirs_touched) so the index rebuild
+    below only rewrites categories that actually lost something.
+    """
+    removed = 0
+    touched_movie_dirs = set()
+
+    targets = []
+    channels_dir = data_root / "channels"
+    if channels_dir.is_dir():
+        targets.extend(sorted(channels_dir.glob("*.json")))
+    movies_dir = data_root / "movies"
+    if movies_dir.is_dir():
+        targets.extend(sorted(movies_dir.glob("*/page-*.json")))
+    for event_file in ("today-match.json", "upcoming.json"):
+        path = data_root / event_file
+        if path.is_file():
+            targets.append(path)
+
+    for path in targets:
+        before = path.read_text(encoding="utf-8")
+        if not before.strip():
+            continue
+        try:
+            payload = json.loads(before)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(payload, dict):
+            continue
+
+        dropped_here = 0
+        for list_key in ("channels", "movies", "items", "matches", "events"):
+            values = payload.get(list_key)
+            if not isinstance(values, list):
+                continue
+            kept = [
+                item
+                for item in values
+                if not isinstance(item, dict)
+                or _item_is_playable(item, playback_ids)
+            ]
+            if len(kept) != len(values):
+                dropped_here += len(values) - len(kept)
+                payload[list_key] = kept
+                if isinstance(payload.get("count"), int):
+                    payload["count"] = len(kept)
+
+        if dropped_here and _write_if_changed(path, before, payload):
+            removed += dropped_here
+            changed.append(str(path.relative_to(data_root.parent)).replace("\\", "/"))
+            if path.parent.parent.name == "movies":
+                touched_movie_dirs.add(path.parent)
+
+    return removed, touched_movie_dirs
+
+
+def _page_items(payload: dict):
+    for list_key in ("movies", "items"):
+        values = payload.get(list_key)
+        if isinstance(values, list):
+            return values
+    return None
+
+
+def _rebuild_movie_index(index_path: Path, changed: list, data_root: Path) -> None:
+    """Re-derive one movie index from the page files that survived.
+
+    Page filenames are zero-padded (page-001.json), so the page entry's own
+    "file" field is the only reliable way back to the file it describes.
+    """
+    before = index_path.read_text(encoding="utf-8")
+    if not before.strip():
+        return
+    try:
+        index_payload = json.loads(before)
+    except json.JSONDecodeError:
+        return
+    if not isinstance(index_payload, dict):
+        return
+
+    pages = index_payload.get("pages")
+    if not isinstance(pages, list):
+        return
+
+    total = 0
+    for page_entry in pages:
+        if not isinstance(page_entry, dict):
+            return
+        filename = str(page_entry.get("file") or "").strip()
+        if not filename:
+            return
+        page_file = index_path.parent / filename
+        try:
+            page_payload = json.loads(page_file.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return
+        items = _page_items(page_payload)
+        if items is None:
+            return
+        page_entry["count"] = len(items)
+        total += len(items)
+
+    index_payload["total_pages"] = len(pages)
+    index_payload["count"] = total
+    if _write_if_changed(index_path, before, index_payload):
+        changed.append(
+            str(index_path.relative_to(data_root.parent)).replace("\\", "/")
+        )
+
+
 def main() -> int:
     # An optional repository root argument keeps this testable against a
     # throwaway directory; real callers (the GitHub Actions workflow, the
@@ -53,6 +197,19 @@ def main() -> int:
     repo_root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else ROOT
     data_root = repo_root / "data"
     changed = []
+
+    # Referential integrity first: dropping unplayable items changes the very
+    # counts the manifest reconciliation below is about to recompute.
+    catalog = _load(data_root / "playback-sources.json")
+    records = catalog.get("records")
+    playback_ids = set(records) if isinstance(records, dict) else set()
+    removed, touched_movie_dirs = _drop_orphaned_items(
+        data_root, playback_ids, changed
+    )
+    for category_dir in sorted(touched_movie_dirs):
+        index_path = category_dir / "index.json"
+        if index_path.is_file():
+            _rebuild_movie_index(index_path, changed, data_root)
 
     manifest_path = data_root / "manifest.json"
     if manifest_path.is_file():
@@ -74,10 +231,12 @@ def main() -> int:
         if _write_if_changed(catalog_path, before, catalog):
             changed.append("data/playback-sources.json")
 
+    if removed:
+        print(f"Dropped {removed} item(s) with no surviving playback route.")
     if changed:
-        print("Reconciled stale counts in: " + ", ".join(changed))
+        print("Reconciled: " + ", ".join(sorted(set(changed))))
     else:
-        print("No count drift found; nothing to reconcile.")
+        print("No drift found; nothing to reconcile.")
     return 0
 
 

@@ -788,6 +788,16 @@ def _reconcile_manifest_counts(
             entry["count"] = count
             entry["visible"] = count > 0
 
+            # total_pages drifts the same way "count" does, and the Pages
+            # validator checks it separately: it compares the manifest entry
+            # against the number of page entries the index actually lists. A
+            # merge that kept one side's manifest line while the index and its
+            # page files came from the other side leaves the two disagreeing.
+            if index_payload is not None and "pages" in index_payload:
+                pages = index_payload.get("pages")
+                if isinstance(pages, list):
+                    entry["total_pages"] = len(pages)
+
     for event_key in ("today_match", "upcoming"):
         entry = manifest.get(event_key)
         if not isinstance(entry, dict):

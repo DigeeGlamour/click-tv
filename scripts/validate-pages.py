@@ -559,7 +559,12 @@ def validate_stream_item(
     playback_id = str(item.get("playback_id") or "").strip()
     metadata_only = item.get("metadata_only") is True
 
-    if media_kind in {"channel", "movie", "event"} and not (
+    # Events are exempt on purpose. A live match feed is an ABR master or a
+    # bare chunk list that rarely declares RESOLUTION, and the Today Match /
+    # Upcoming sources are already curated high-resolution providers. Holding
+    # events to a declared 720p only ever deleted matches that were live and
+    # playable. Channels and movies keep the rule.
+    if media_kind in {"channel", "movie"} and not (
         allow_metadata_only and metadata_only
     ):
         primary_height = declared_resolution_height(item)
