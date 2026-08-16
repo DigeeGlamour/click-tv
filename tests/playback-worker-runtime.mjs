@@ -4,6 +4,11 @@ import worker from '../workers/playback-proxy/src/index.js';
 const playbackId = `ctv_${'a'.repeat(32)}`;
 const widevinePlaybackId = `ctv_${'b'.repeat(32)}`;
 const refreshPlaybackId = `ctv_${'c'.repeat(32)}`;
+// Two ids whose shards are deliberately unavailable, each in one of the ways a
+// real deployment fails: Pages serving its HTML for an unknown path, and a
+// plain 404. Separate prefixes so neither reuses the other's shard cache.
+const htmlShardId = `ctv_${'d'.repeat(32)}`;
+const missingShardId = `ctv_${'e'.repeat(32)}`;
 const profile = {
   status: 'active',
   url: 'https://media.example/live/master.m3u8?token=private-token',
@@ -21,8 +26,46 @@ const profile = {
 const env = {};
 const upstreamCalls = [];
 const realFetch = globalThis.fetch;
+// The catalogue is sharded now: the Worker asks for data/playback/<prefix>.json
+// first and only falls back to the single legacy file. This mock had never been
+// taught about shards, so the shard request fell through to the binary-segment
+// branch below, response.json() threw, and the throw escaped past the fallback
+// - the Worker answered 404 for a perfectly good id. Cloudflare Pages does the
+// same thing to a real deployment, serving the site's HTML with HTTP 200 for a
+// path that does not exist, so this is the production behaviour too.
+const shardFor = (id) => {
+  const text = String(id).replace(/^ctv_/, '').toLowerCase();
+  return /^[0-9a-f]{2}/.test(text) ? text.slice(0, 2) : '00';
+};
+// Flip to 'html' or 'missing' to exercise the fallback paths.
+let shardMode = 'served';
+
 globalThis.fetch = async (url, init = {}) => {
   const parsed = new URL(String(url));
+  if (parsed.pathname.startsWith('/data/playback/')) {
+    if (shardMode === 'missing') return new Response('nope', { status: 404 });
+    if (shardMode === 'html') {
+      // Exactly what Pages returns for an unknown path.
+      return new Response('<!DOCTYPE html><html lang="bn"><body>Click TV</body></html>', {
+        status: 200,
+        headers: { 'Content-Type': 'text/html; charset=utf-8' },
+      });
+    }
+    const wanted = parsed.pathname.slice('/data/playback/'.length).replace('.json', '');
+    const records = {};
+    const available = {
+      [playbackId]: profile,
+      [widevinePlaybackId]: { ...profile, stream_type: 'dash', drm: { type: 'widevine', license_url: 'https://license.example/widevine', license_headers: { Authorization: 'Bearer license-token', 'X-Device': 'click-tv' } } },
+    };
+    // Pages and the Worker do not update together, so an id can be live in the
+    // repository a moment before the cached shard knows about it. The Worker
+    // must retry once with the cache bypassed; only the retry sees this one.
+    if (parsed.searchParams.has('refresh')) available[refreshPlaybackId] = profile;
+    for (const [id, record] of Object.entries(available)) {
+      if (shardFor(id) === wanted) records[id] = structuredClone(record);
+    }
+    return Response.json({ schema_version: 2, shard: wanted, records });
+  }
   if (parsed.pathname === '/data/playback-sources.json') {
     const refreshedRecords = parsed.searchParams.has('refresh')
       ? { [refreshPlaybackId]: structuredClone(profile) }
@@ -31,6 +74,8 @@ globalThis.fetch = async (url, init = {}) => {
       schema_version: 1,
       records: {
         [playbackId]: structuredClone(profile),
+        [htmlShardId]: structuredClone(profile),
+        [missingShardId]: structuredClone(profile),
         [widevinePlaybackId]: {
           ...structuredClone(profile),
           stream_type: 'dash',
@@ -151,9 +196,30 @@ try {
   );
   assert.equal(refreshed.status, 200, 'catalogue miss must refresh once before 404');
 
+  // A repository whose data/ has not been resharded yet still has to play.
+  // Pages answers the missing shard with the site's HTML and HTTP 200, which
+  // used to make response.json() throw straight past the legacy fallback and
+  // turn every protected stream into a 404 - in production and in this suite.
+  shardMode = 'html';
+  const htmlFallback = await worker.fetch(
+    new Request(`https://worker.example/hls?id=${htmlShardId}`, { headers: originHeaders }),
+    env,
+    { waitUntil() {} },
+  );
+  assert.equal(htmlFallback.status, 200, 'an HTML shard response must fall back to the legacy catalogue');
+
+  shardMode = 'missing';
+  const missingFallback = await worker.fetch(
+    new Request(`https://worker.example/hls?id=${missingShardId}`, { headers: originHeaders }),
+    env,
+    { waitUntil() {} },
+  );
+  assert.equal(missingFallback.status, 200, 'a 404 shard response must fall back to the legacy catalogue');
+  shardMode = 'served';
+
   const health = await worker.fetch(new Request('https://stream-proxy-3.example/health'), env, {});
   const healthBody = await health.json();
-  assert.equal(healthBody.version, '5.2.0');
+  assert.equal(healthBody.version, '5.3.1');
   assert.equal(healthBody.name, 'play-proxy-2');
   assert.equal(healthBody.configuration_storage, 'git_pages_json');
   assert.equal(healthBody.dashboard_configuration_required, false);
