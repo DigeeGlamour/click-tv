@@ -17,9 +17,19 @@ working/candidates.json
 working/global-results.json
 working/bd-results.json
 
-# Per-source failure dumps: pure diagnostics, ~11 MB per commit, write-only.
-# The scanner never reads them back. Local copies still get written normally.
+# Per-mode report copies. output.py writes both "<name>.json" and a
+# "<name>-<mode>.json" duplicate; only the first is ever read back, and the
+# source-errors duplicate alone was ~11 MB per commit. Local copies are still
+# written normally, they just stay out of Git.
 reports/source-errors-*.json
+reports/scan-summary-*.json
+reports/output-safety-*.json
+
+# One-off browser audit output. Regenerate with the scripts/browser-*.mjs
+# checks when needed; the scanner never reads these.
+reports/browser-full-bangla-playback.json
+reports/browser-full-bangla-visible-final*.json
+reports/browser-news24-player-confirmation-*.json
 
 # Cloudflare Pages build output
 dist/
