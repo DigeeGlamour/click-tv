@@ -53,6 +53,22 @@ class BrowserReachabilityTests(unittest.TestCase):
         self.assertIs(item["publish_allowed"], False)
         self.assertEqual(records[0]["reason"], "http_bare_ip_host")
 
+    def test_an_upcoming_announcement_without_a_link_survives(self):
+        # Upcoming matches are published before a stream exists; the card says
+        # "stream link will be added before the match starts". Treating an empty
+        # URL as unreachable emptied the whole Upcoming tab.
+        announcement = {
+            "name": "The Hundred Men's Final",
+            "url": "",
+            "source_pipeline": "upcoming",
+            "verification_status": "metadata_only",
+            "metadata_only": True,
+        }
+        self.assertTrue(item_is_browser_reachable(announcement))
+        hidden, _ = mark_browser_unreachable([announcement])
+        self.assertEqual(hidden, 0)
+        self.assertIsNone(announcement.get("publish_allowed"))
+
 
 class SameRunProofTests(unittest.TestCase):
     def test_only_same_run_proof_or_manual_trust_may_publish(self):

@@ -1,12 +1,31 @@
 from __future__ import annotations
 
+import contextlib
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
 
 from scanner.channels import process_tv_channels
 from scanner.movies import paginate_movie_list
+
+
+@contextlib.contextmanager
+def working_directory(path: Path):
+    """Run inside `path` so relative default paths stay out of the repository.
+
+    process_tv_channels() enriches logos through the default relative cache
+    path, so calling it from the repository root rewrote the real
+    state/channel-logo-cache.json on every test run and left ~47 KB of
+    phantom changes in the working tree.
+    """
+    previous = Path.cwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(previous)
 
 
 class NewCategoryAndOrderingTests(unittest.TestCase):
@@ -41,7 +60,8 @@ class NewCategoryAndOrderingTests(unittest.TestCase):
             settings = root / "config/settings.json"
             settings.parent.mkdir(parents=True)
             settings.write_text("{}", encoding="utf-8")
-            output = process_tv_channels(str(results), str(settings))
+            with working_directory(root):
+                output = process_tv_channels(str(results), str(settings))
             self.assertEqual(len(output["Other"]), 1)
             self.assertEqual(output["Other"][0]["category"], "Other")
             self.assertEqual(output["quarantine"], [])
