@@ -428,12 +428,19 @@ def _looks_like_direct_stream_candidate(item: Dict[str, Any]) -> bool:
     ))
 
 
+# A live stream is a live stream, whether the catalogue calls it a channel or a
+# match. Today/Upcoming events were excluded from BD protection, so a match that
+# is geo-locked to Bangladesh answered 403 to the GitHub runner and was thrown
+# away — even though it plays perfectly for the audience the site is built for.
+LIVE_STREAM_PIPELINES = frozenset({"tv", "today_match", "upcoming"})
+
+
 def _is_uncertain_tv_result(
     item: Dict[str, Any],
     rules: Dict[str, Any],
 ) -> bool:
-    """A cloud failure on a direct TV stream is not always proof of death."""
-    if str(item.get("source_pipeline") or "").strip().casefold() != "tv":
+    """A cloud failure on a direct live stream is not always proof of death."""
+    if str(item.get("source_pipeline") or "").strip().casefold() not in LIVE_STREAM_PIPELINES:
         return False
     if not _looks_like_direct_stream_candidate(item):
         return False
