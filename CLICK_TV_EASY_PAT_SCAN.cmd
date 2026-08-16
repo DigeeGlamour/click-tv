@@ -53,11 +53,40 @@ function Invoke-Git {
     return $Code
 }
 
+function Invoke-ManifestReconciliation {
+    param([string]$RepositoryPath, [string]$PythonPath)
+
+    # A rebase can auto-merge a large collection (channel list, playback-sources
+    # records) from both sides while resolving the single scalar count field
+    # describing it in favour of only one side. The collection and its
+    # declared count then disagree, and the Pages validator refuses to
+    # publish. Recompute every count from the file it actually describes,
+    # right after the rebase that could have introduced the drift, and fold
+    # the fix into the same commit before it is pushed.
+    & $PythonPath (Join-Path $RepositoryPath "scripts\reconcile-generated-counts.py")
+    if ($LASTEXITCODE -ne 0) { throw "Manifest/count reconciliation failed." }
+
+    $Changed = & git -C $RepositoryPath diff --name-only -- data/manifest.json data/playback-sources.json
+    if ($Changed) {
+        Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("add", "data/manifest.json", "data/playback-sources.json") | Out-Null
+        Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("commit", "--amend", "--no-edit") | Out-Null
+    }
+}
+
 function Invoke-RebaseAndPush {
-    param([string]$RepositoryPath)
+    param([string]$RepositoryPath, [string]$PythonPath)
     Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("fetch", "origin", "main") | Out-Null
     try {
-        Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("rebase", "origin/main") | Out-Null
+        # Two scan modes (this local run, GitHub Actions, Google Colab) can be
+        # in flight at once. A plain rebase then hits "CONFLICT" on whichever
+        # generated JSON file both runs rewrote and dies with the scan result
+        # committed but never pushed - exactly the failure this file used to
+        # show. A 3-way text merge of regenerated JSON is meaningless; the
+        # newer scan result is simply correct. `-X theirs` resolves exactly
+        # those conflicting files in favour of the commit being replayed and
+        # leaves every file the other run touched alone.
+        Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("rebase", "-X", "theirs", "origin/main") | Out-Null
+        Invoke-ManifestReconciliation -RepositoryPath $RepositoryPath -PythonPath $PythonPath
         Invoke-Git -WorkingDirectory $RepositoryPath -Arguments @("push", "origin", "HEAD:main") | Out-Null
     }
     catch {
@@ -232,7 +261,7 @@ if ($NonScanPending.Count) {
 if ($RecoveredPendingScan) {
     Write-Host "Cleaning interrupted scan runtime files before recovery push..." -ForegroundColor Yellow
     Reset-DedicatedScannerRuntimeChanges -RepositoryPath $ClonePath
-    Invoke-RebaseAndPush -RepositoryPath $ClonePath
+    Invoke-RebaseAndPush -RepositoryPath $ClonePath -PythonPath $PythonCommand.Source
     $RecoveredCommit = (& git -C $ClonePath rev-parse --short HEAD) -join ""
     Write-Host ""
     Write-Host "============================================================" -ForegroundColor Green
@@ -299,7 +328,7 @@ if ($Remaining.Trim()) {
 }
 
 Write-Host "[6/6] Pushing scan result to GitHub..." -ForegroundColor Cyan
-Invoke-RebaseAndPush -RepositoryPath $ClonePath
+Invoke-RebaseAndPush -RepositoryPath $ClonePath -PythonPath $VenvPython
 $Commit = (& git -C $ClonePath rev-parse --short HEAD) -join ""
 
 Write-Host ""

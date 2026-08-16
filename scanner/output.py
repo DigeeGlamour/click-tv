@@ -23,7 +23,7 @@ import time
 import urllib.request
 from urllib.parse import urlparse
 from datetime import datetime, timezone
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from scanner.playback_profiles import (
@@ -729,6 +729,87 @@ def send_telegram_alert(
         return False
 
 
+def _reconcile_manifest_counts(
+    manifest: Dict[str, Any],
+    data_root: Path,
+) -> None:
+    """Force every manifest count to match the file that is actually on disk.
+
+    Three independent scanners (GitHub Actions, a local PC clone, Google Colab)
+    can each fetch, scan and push around the same time. A scan mode that never
+    touches channels (e.g. "today") still loads and rewrites the WHOLE
+    manifest, and the sudden-drop-protection path in
+    _publish_channel_category() sources its "previous count" from
+    state/last-good/<slug>.json while leaving data/channels/<slug>.json
+    completely untouched. If a git rebase resolves those two files (or a
+    manifest entry versus the channel file it describes) from different sides
+    of a conflict, the count baked into manifest.json can end up describing a
+    file that no longer looks like that anymore — exactly the
+    "manifest <Category> count mismatch" failures seen in production.
+
+    Whatever the cause, the fix is the same: manifest.json is a derived index,
+    never the source of truth, so its counts are recomputed here from the
+    actual files this run is about to publish, right before the final write.
+    """
+
+    def resolve(public_path: str) -> Path:
+        # Manifest "url"/"index" fields are always the fixed public path the
+        # site fetches ("data/channels/x.json"), independent of the data_dir
+        # this run was actually given (tests use a temporary directory). The
+        # real on-disk file is the same path rooted at data_root instead.
+        relative = PurePosixPath(public_path)
+        if relative.parts and relative.parts[0] == "data":
+            relative = PurePosixPath(*relative.parts[1:])
+        return data_root / Path(*relative.parts)
+
+    channels = manifest.get("channels")
+    if isinstance(channels, dict):
+        for entry in channels.values():
+            if not isinstance(entry, dict):
+                continue
+            url = str(entry.get("url") or "")
+            if not url:
+                continue
+            payload = _load_json_file(resolve(url))
+            count = _channel_count(payload) if payload else 0
+            entry["count"] = count
+            entry["visible"] = count > 0
+
+    movies = manifest.get("movies")
+    if isinstance(movies, dict):
+        for entry in movies.values():
+            if not isinstance(entry, dict):
+                continue
+            index_path = str(entry.get("index") or "")
+            if not index_path:
+                continue
+            index_payload = _load_json_file(resolve(index_path))
+            count = _safe_int(index_payload.get("count"), 0, 0) if index_payload else 0
+            entry["count"] = count
+            entry["visible"] = count > 0
+
+    for event_key in ("today_match", "upcoming"):
+        entry = manifest.get(event_key)
+        if not isinstance(entry, dict):
+            continue
+        url = str(entry.get("url") or "")
+        if not url:
+            continue
+        payload = _load_json_file(resolve(url))
+        # _event_count() trusts the file's own declared "count"/"total" field
+        # first, which is exactly the stale value this reconciliation exists
+        # to correct. Count the actual list instead.
+        count = 0
+        if payload:
+            for list_key in ("items", "matches", "events"):
+                values = payload.get(list_key)
+                if isinstance(values, list):
+                    count = len(values)
+                    break
+        entry["count"] = count
+        entry["visible"] = count > 0
+
+
 def refresh_allowed_hosts(
     data_dir: str | Path = "data",
 ) -> Dict[str, Any]:
@@ -1108,6 +1189,7 @@ def publish_scan_outputs(
     )
     _atomic_write_json(reports_root / "playback-profiles.json", playback_report)
 
+    _reconcile_manifest_counts(manifest, data_root)
     _atomic_write_json(manifest_file, manifest)
     allowed_hosts_payload = _write_allowed_hosts_file(data_root, timestamp)
 
