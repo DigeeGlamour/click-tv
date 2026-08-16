@@ -46,6 +46,27 @@ def _write_if_changed(path: Path, before: str, payload: dict) -> bool:
     return True
 
 
+def _catalog_playback_ids(data_root: Path) -> set:
+    """Every playback id the catalogue can serve, sharded or not.
+
+    Reading only the index would report zero ids under the sharded layout and
+    make every protected item look orphaned, which would delete the entire
+    published catalogue on the next reconciliation.
+    """
+    ids = set()
+    shard_dir = data_root / "playback"
+    if shard_dir.is_dir():
+        for shard_file in sorted(shard_dir.glob("*.json")):
+            records = _load(shard_file).get("records")
+            if isinstance(records, dict):
+                ids.update(records)
+
+    legacy = _load(data_root / "playback-sources.json").get("records")
+    if isinstance(legacy, dict):
+        ids.update(legacy)
+    return ids
+
+
 def _item_is_playable(item: dict, playback_ids: set) -> bool:
     """An item must still have a way to actually play after a merge.
 
@@ -200,9 +221,7 @@ def main() -> int:
 
     # Referential integrity first: dropping unplayable items changes the very
     # counts the manifest reconciliation below is about to recompute.
-    catalog = _load(data_root / "playback-sources.json")
-    records = catalog.get("records")
-    playback_ids = set(records) if isinstance(records, dict) else set()
+    playback_ids = _catalog_playback_ids(data_root)
     removed, touched_movie_dirs = _drop_orphaned_items(
         data_root, playback_ids, changed
     )
@@ -228,8 +247,31 @@ def main() -> int:
             actual = len(records)
             if catalog.get("count") != actual:
                 catalog["count"] = actual
+        elif catalog.get("sharded") is True:
+            # Sharded layout: the index declares a per-shard count plus a
+            # total. A rebase can leave either disagreeing with the shard
+            # files that actually shipped.
+            shard_dir = data_root / "playback"
+            actual_shards = {}
+            for shard_file in sorted(shard_dir.glob("*.json")):
+                shard_payload = _load(shard_file)
+                shard_records = shard_payload.get("records")
+                if isinstance(shard_records, dict):
+                    actual_shards[shard_file.stem] = len(shard_records)
+            if actual_shards:
+                catalog["shards"] = actual_shards
+                catalog["count"] = sum(actual_shards.values())
         if _write_if_changed(catalog_path, before, catalog):
             changed.append("data/playback-sources.json")
+
+    for shard_file in sorted((data_root / "playback").glob("*.json")):
+        before = shard_file.read_text(encoding="utf-8")
+        shard_payload = json.loads(before) if before.strip() else {}
+        shard_records = shard_payload.get("records")
+        if isinstance(shard_records, dict) and shard_payload.get("count") != len(shard_records):
+            shard_payload["count"] = len(shard_records)
+            if _write_if_changed(shard_file, before, shard_payload):
+                changed.append(f"data/playback/{shard_file.name}")
 
     if removed:
         print(f"Dropped {removed} item(s) with no surviving playback route.")

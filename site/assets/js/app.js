@@ -21,7 +21,8 @@ const STORAGE_KEYS = Object.freeze({
   noticeDismissed: 'clicktv_notice_dismissed_v1',
   liteMode: 'clicktv_lite_mode',
   maxHeight: 'clicktv_max_height',
-  telemetrySession: 'clicktv_telemetry_session_v1'
+  telemetrySession: 'clicktv_telemetry_session_v1',
+  eventReminders: 'clicktv_event_reminders_v1'
 });
 
 const VIEW = Object.freeze({
@@ -100,6 +101,9 @@ const state = {
   dataAbortController: null,
   currentDataPath: '',
   eventCatalogRefreshActive: false,
+  // Smart Filter. Purely a view over the final merged cards: it never reaches
+  // the scanner, never refetches and never touches playback.
+  eventSportFilter: 'all',
   movieIndex: null,
   moviePageCursor: 0,
   moviePageLoading: false,
@@ -357,9 +361,16 @@ function showToast(message, duration = 2200, variant = '') {
   }, duration);
 }
 
-function setSidebarCount(text) {
+function setSidebarCount(text, detail = '') {
   const count = $('sidebarCountText');
   if (count) count.textContent = text;
+  // The breakdown line lives beside the count and is hidden with the whole
+  // meta bar below 1000px, so it never competes for room on a phone.
+  const sub = $('sidebarCountDetail');
+  if (sub) {
+    sub.textContent = detail;
+    sub.style.display = detail ? '' : 'none';
+  }
 }
 
 function setSearchEnabled(enabled) {
@@ -800,6 +811,12 @@ function normalizeItem(raw, index, sourceKind = VIEW.CHANNEL) {
     height: Number(safeRaw.height || 0),
     bitrate: Number(safeRaw.bitrate || safeRaw.bandwidth || safeRaw.average_bitrate || 0),
     inherit_manifest_query: shouldInheritManifestQuery(raw),
+    // Smart Filter guide 9 and 10: the final card carries one canonical sport
+    // field, resolved from the source's own category first, then the
+    // competition, then the name. Unknown stays "other" — nothing is invented.
+    sport_type: sourceKind === VIEW.EVENT || sourceKind === VIEW.UPCOMING
+      ? eventSportType({ ...safeRaw, name })
+      : '',
     _sources: sources,
     _sourceKind: sourceKind
   };
@@ -1204,6 +1221,10 @@ function clearCurrentListState() {
 
 async function selectMainView(view, category, options = {}) {
   closeEventPreview();
+  // Smart Filter guide 5: every section change starts from All Events, in
+  // both directions between Today Match and Upcoming.
+  closeEventSportFilter();
+  state.eventSportFilter = 'all';
   cancelDataLoading();
   clearCurrentListState();
   closeMobileSearch(true);
@@ -1715,6 +1736,12 @@ function applyFilterAndSort() {
 
   if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
     items = items.filter((item) => !isEventEnded(item));
+    // Smart Filter guide 8 and 24: the last stage of the chain, and it only
+    // hides. The sort below is untouched, so the surviving cards keep exactly
+    // the order they had under All Events.
+    if (state.eventSportFilter !== 'all') {
+      items = items.filter((item) => itemSportType(item) === state.eventSportFilter);
+    }
   }
 
   if (query) {
@@ -1766,6 +1793,7 @@ function renderCurrentList(reset = true, options = {}) {
     return;
   }
   applyFilterAndSort();
+  renderEventSportFilter();
   sidebarSection.classList.toggle('movie-mode', state.view === VIEW.MOVIE);
   sidebarSection.classList.toggle(
     'sports-grid-mode',
@@ -1809,8 +1837,31 @@ function renderCurrentList(reset = true, options = {}) {
       setSidebarCount(`${manualText}${state.currentItems.length}/${totalKnown} Movies loaded`);
     }
   } else if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
+    // Guide 23. The headline count answers "how many", the breakdown answers
+    // "of what" — and the breakdown is desktop-only so it never crowds a phone.
     sidebarList.classList.remove('movie-grid');
-    setSidebarCount(`${state.filteredItems.length} Events`);
+    const events = state.filteredItems;
+    if (state.view === VIEW.EVENT) {
+      const channels = events.filter((entry) => isChannelOnlyEventCard(entry)).length;
+      const matches = events.length - channels;
+      const detail = [
+        matches ? `${matches} Match${matches === 1 ? '' : 'es'}` : '',
+        channels ? `${channels} Channel${channels === 1 ? '' : 's'}` : ''
+      ].filter(Boolean).join(' • ');
+      setSidebarCount(`${events.length} Live`, events.length ? detail : '');
+    } else {
+      const todayKey = eventDhakaDayKey(new Date());
+      const todayCount = events.filter((entry) => {
+        const start = eventStartDate(entry);
+        return start ? eventDhakaDayKey(start) === todayKey : false;
+      }).length;
+      const later = events.length - todayCount;
+      const detail = [
+        todayCount ? `${todayCount} Today` : '',
+        later ? `${later} Later` : ''
+      ].filter(Boolean).join(' • ');
+      setSidebarCount(`${events.length} Upcoming`, events.length ? detail : '');
+    }
     state.eventUiFingerprint = eventUiFingerprint();
   } else if (state.view === VIEW.FAVORITE) {
     sidebarList.classList.remove('movie-grid');
@@ -1826,6 +1877,14 @@ function renderCurrentList(reset = true, options = {}) {
   if (!state.filteredItems.length) {
     let message = 'কোনো আইটেম পাওয়া যায়নি';
     if (state.currentQuery) message = 'কোনো ফলাফল পাওয়া যায়নি';
+    // Guide 23: a filter that matches nothing says so in its own words rather
+    // than leaving a blank panel.
+    else if (
+      (state.view === VIEW.EVENT || state.view === VIEW.UPCOMING) &&
+      state.eventSportFilter !== 'all'
+    ) {
+      message = `এই মুহূর্তে ${eventSportLabel(state.eventSportFilter)} ইভেন্ট নেই — Filter থেকে All Events বেছে নিন`;
+    }
     else if (state.view === VIEW.MOVIE) message = 'এই বিভাগে বর্তমানে কোনো মুভি পাওয়া যায়নি';
     else if (state.view === VIEW.FAVORITE) message = 'কোনো Bookmark সংরক্ষিত নেই — পছন্দের চ্যানেল/মুভিতে ☆ চাপুন';
     else if (state.view === VIEW.RECENT) message = 'সম্প্রতি দেখা কোনো আইটেম নেই';
@@ -1880,6 +1939,7 @@ function appendNextChunk(limit = null) {
   sidebarList.appendChild(fragment);
   state.renderedCount = state.renderedUids.size;
   updateFavoriteUi();
+  updateReminderUi();
   updateActiveCards();
 }
 
@@ -1953,24 +2013,455 @@ function isEventEnded(item, nowMs = Date.now()) {
   return Boolean(end && end.getTime() <= nowMs);
 }
 
+function eventDhakaDayKey(date) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).format(date);
+}
+
+function eventDhakaTime(date) {
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true
+  }).format(date);
+}
+
+// Guide 7 and 16. Every clock the user sees is Bangladesh time and says so.
+// Same-day events drop the date entirely so the row stays short.
 function eventScheduleText(item) {
   const start = eventStartDate(item);
   if (!start) return String(item?.start_time || 'Time verification pending');
-  const time = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Dhaka', hour: 'numeric', minute: '2-digit', hour12: true
-  }).format(start);
-  const dayKey = (date) => new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Dhaka', year: 'numeric', month: '2-digit', day: '2-digit'
-  }).format(date);
+  const time = eventDhakaTime(start);
   const now = new Date();
-  const tomorrow = new Date(now.getTime() + 86400000);
-  const targetKey = dayKey(start);
-  if (targetKey === dayKey(now)) return `Today ${time} BDT`;
-  if (targetKey === dayKey(tomorrow)) return `Tomorrow ${time} BDT`;
+  const targetKey = eventDhakaDayKey(start);
+  if (targetKey === eventDhakaDayKey(now)) return `Today • ${time} BDT`;
+  if (targetKey === eventDhakaDayKey(new Date(now.getTime() + 86400000))) return `Tomorrow • ${time} BDT`;
   const date = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Asia/Dhaka', weekday: 'short', day: 'numeric', month: 'short'
   }).format(start);
-  return `${date} ${time} BDT`;
+  return `${date} • ${time} BDT`;
+}
+
+// A live card says when the match began instead of repeating "Today".
+function eventStartedText(item) {
+  const start = eventStartDate(item);
+  if (!start) return '';
+  const time = eventDhakaTime(start);
+  if (eventDhakaDayKey(start) === eventDhakaDayKey(new Date())) return `Started: ${time} BDT`;
+  const date = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Asia/Dhaka', weekday: 'short', day: 'numeric', month: 'short'
+  }).format(start);
+  return `Started: ${date} • ${time} BDT`;
+}
+
+// Guide 17. Minute granularity, refreshed by the 30s card clock.
+function eventCountdownText(item) {
+  const start = eventStartDate(item);
+  if (!start) return '';
+  const diff = start.getTime() - Date.now();
+  if (diff <= 0) return '';
+  const minutes = Math.round(diff / 60000);
+  if (minutes < 60) return `Starts in ${Math.max(1, minutes)}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    const rest = minutes % 60;
+    return rest ? `Starts in ${hours}h ${rest}m` : `Starts in ${hours}h`;
+  }
+  const days = Math.round(hours / 24);
+  return days <= 1 ? 'Starts tomorrow' : `Starts in ${days} days`;
+}
+
+// Guide 6. Elapsed time is measured, never guessed. A card with no kickoff
+// time on record simply keeps the plain LIVE NOW badge.
+function eventLivePhaseText(item) {
+  const start = eventStartDate(item);
+  if (!start) return '';
+  const diff = Date.now() - start.getTime();
+  if (diff < 0) return '';
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return 'Just started';
+  if (minutes < 60) return `Started ${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest ? `Started ${hours}h ${rest}m ago` : `Started ${hours}h ago`;
+}
+
+// Guide 18. User-facing wording for what the scanner already recorded.
+function eventVerificationLabel(item) {
+  const mode = String(item?.time_verification || '').toLowerCase();
+  if (mode === 'official_catalogue') return 'Fixture Verified';
+  if (mode === 'provider_feed') return 'Time Verified';
+  if (!eventStartDate(item)) return 'Verification Pending';
+  return item?.schedule_verified === true ? 'Schedule Updated' : 'Verification Pending';
+}
+
+// Guide 8, 9 and 19. A summary, never the technical detail behind it. The
+// card gets guide 9's compact pill because the text column is about 175px
+// wide — "Primary • +2 Backups" does not fit there and used to be cut to
+// "Primary". The full wording goes to the details popup, which has the room.
+function eventStreamSummary(item) {
+  if (item?.metadata_only === true || !isPlayable(item)) {
+    return { short: 'Waiting', text: 'Waiting for Stream', ready: false };
+  }
+  const backups = Array.isArray(item?.backups) ? item.backups.length : 0;
+  const total = Math.max(Number(item?.available_link_count || 0), backups + 1);
+  if (backups <= 0) return { short: '1 Stream', text: 'Stream Ready', ready: true };
+  return {
+    short: `${total} Streams`,
+    text: `Primary • +${backups} Backup${backups > 1 ? 's' : ''}`,
+    ready: true
+  };
+}
+
+// Order is deliberate: the distinctive names are tested before the generic
+// ones, so "League of Legends" reaches ESPORTS instead of being swallowed by
+// the football rule that has to accept a bare "League".
+const EVENT_SPORTS = [
+  ['ESPORTS', 'fa-gamepad', /\b(?:esports?|e[\s-]?sports?|pubg|dota|valorant|counter[\s-]?strike|cs\s?2|league\s+of\s+legends|mobile\s+legends|free\s+fire|rocket\s+league|fifa\s+e)\b/i],
+  ['CRICKET', 'fa-baseball', /\b(?:cricket|t20i?|odi|test\s+match|\d{1,2}(?:st|nd|rd|th)\s+(?:test|odi|t20i?)|the\s+hundred|bbl|ipl|psl|cpl|ashes|county|vitality\s+blast)\b/i],
+  ['MOTORSPORT', 'fa-flag-checkered', /\b(?:motorsport|formula\s?e?|f1|e[\s-]?prix|moto\s?gp|nascar|rally|grand\s+prix|race\s+\d|race\s+day|gt4|gt3|adac|superbike|mxgp|motocross|indycar|cycling|uci\b|tour\s+de)\b/i],
+  ['GOLF', 'fa-golf-ball-tee', /\b(?:golf|pga|lpga|dp\s+world\s+tour|ryder\s+cup)\b/i],
+  // "<place> Open" is a tennis tournament; "<x> Open Cup" is not.
+  ['TENNIS', 'fa-table-tennis-paddle-ball', /\b(?:tennis|atp|wta|padel|badminton|squash|roland\s+garros|wimbledon)\b|\b[a-z]+\s+open\b(?!\s+cup)/i],
+  ['RUGBY', 'fa-football', /\b(?:rugby|currie\s+cup|six\s+nations|super\s+rugby|nfl|american\s+football)\b/i],
+  ['BASEBALL', 'fa-baseball-bat-ball', /\b(?:mlb|baseball|world\s+series|npb)\b/i],
+  ['BASKETBALL', 'fa-basketball', /\b(?:basketball|nba|wnba|euroleague|basket)\b/i],
+  ['VOLLEYBALL', 'fa-volleyball', /\b(?:volleyball|beach\s+volley)\b/i],
+  ['HOCKEY', 'fa-hockey-puck', /\b(?:ice\s+hockey|nhl|khl|field\s+hockey)\b/i],
+  ['RACING', 'fa-horse', /\b(?:horse\s+racing|racecourse|steeplechase|greyhound)\b/i],
+  ['FOOTBALL', 'fa-futbol', /\b(?:football|soccer|bundesliga|eredivisie|serie\s+[ab]|la\s?liga|ligue\s?\d|s[üu]per\s+lig|lig\b|liga|uefa|fifa|afc|caf|concacaf|champions|europa|efl|efbet|championship|friendlies|frauenliga|ekstraklasa|allsvenskan|superliga|eliteserien|primeira|segunda|coppa|copa|coupe|pokal|hnl|nwsl|npl|mls|[akj][\s-]?league|cup|league|division|fc\b|sc\b|utd\b|united)\b/i]
+];
+
+// Guide 5. The scanner's own category wins when it is specific; the generic
+// "LIVE" bucket is not a sport, so the name and competition decide instead.
+function eventSport(item) {
+  const declared = cleanDisplayName(item?.source_category || '').replace(/^Untitled$/i, '');
+  const haystack = [declared, item?.competition, item?.name].filter(Boolean).join(' ');
+  if (declared && !/^(?:live|sports?|event|other|general)$/i.test(declared)) {
+    const matched = EVENT_SPORTS.find(([, , pattern]) => pattern.test(declared));
+    if (matched) return { label: matched[0], icon: matched[1] };
+  }
+  const matched = EVENT_SPORTS.find(([, , pattern]) => pattern.test(haystack));
+  if (matched) return { label: matched[0], icon: matched[1] };
+  return { label: 'OTHER', icon: 'fa-medal' };
+}
+
+// Guide 10. A card only drops to the channel style when nothing identifies a
+// fixture: no competition, no clock and no fixture wording in the name.
+function eventHasFixtureSignal(item) {
+  if (cleanDisplayName(item?.competition || '').replace(/^Untitled$/i, '')) return true;
+  if (eventStartDate(item)) return true;
+  const name = String(item?.name || '');
+  return /\s(?:vs\.?|v\.?)\s/i.test(name) ||
+    /\b(?:day|round|race|stage|session|leg|final|semi|quarter|matchday|heat|qualifying|innings|prix)\b/i.test(name) ||
+    /\b\d{1,2}(?:st|nd|rd|th)\b/i.test(name);
+}
+
+function isChannelOnlyEventCard(item) {
+  return !eventHasFixtureSignal(item);
+}
+
+// Smart Filter guide 9, 10 and 13. One canonical lowercase value per final
+// card. A card that identifies no fixture at all is a channel, not a sport.
+function eventSportType(item) {
+  if (isChannelOnlyEventCard(item)) return 'channel';
+  return eventSport(item).label.toLowerCase();
+}
+
+function eventSportLabel(sportType) {
+  if (sportType === 'channel') return 'Channels';
+  const entry = EVENT_SPORTS.find(([label]) => label.toLowerCase() === sportType);
+  // A recognised sport arrives here as FOOTBALL and needs lowering; "other"
+  // arrives already lowercase and needs raising. Doing both covers each case
+  // — the first letter used to be left as it came, so the fallback bucket
+  // showed up in the menu as "other".
+  const text = entry ? entry[0] : String(sportType || 'other');
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
+function eventSportIcon(sportType) {
+  if (sportType === 'channel') return 'fa-tv';
+  const entry = EVENT_SPORTS.find(([label]) => label.toLowerCase() === sportType);
+  return entry ? entry[1] : 'fa-medal';
+}
+
+function itemSportType(item) {
+  return String(item?.sport_type || '').toLowerCase() || eventSportType(item || {});
+}
+
+// Guide 15: counts come from the final merged cards, never from raw stream
+// links. Ended events are already gone by the time this runs, so the totals
+// match exactly what "All Events" puts on screen.
+function eventSportCounts(items) {
+  const counts = new Map();
+  items.forEach((item) => {
+    const key = itemSportType(item);
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+  // Channels last, then biggest group first, then alphabetically.
+  return [...counts.entries()]
+    .sort((a, b) => {
+      if ((a[0] === 'channel') !== (b[0] === 'channel')) return a[0] === 'channel' ? 1 : -1;
+      return b[1] - a[1] || a[0].localeCompare(b[0]);
+    })
+    .map(([sport, count]) => ({ sport, count, label: eventSportLabel(sport), icon: eventSportIcon(sport) }));
+}
+
+function eventFilterBaseItems() {
+  if (state.view !== VIEW.UPCOMING && state.view !== VIEW.EVENT) return [];
+  return state.currentItems.filter((item) => !isEventEnded(item));
+}
+
+// Guide 4. Stream-level wording belongs to the stream, not to the match title.
+function stripStreamNoise(text) {
+  const original = String(text || '').trim();
+  let out = original;
+  let previous;
+  do {
+    previous = out;
+    out = out.replace(
+      /[\s|\-–—•]*\b(?:server\s*\d*|srv\s*\d*|link\s*\d+|backup(?:\s*\d+)?|multi[\s-]?audio|fhd|uhd|hd|sd|4k|2k|1080p?|720p?|576p?|480p?)\s*$/i,
+      ''
+    );
+  } while (out !== previous);
+  return out.trim() || original;
+}
+
+// Guide 11 and 28. With one logo field per item a real two-crest layout is not
+// possible, so the placeholder carries the team pair instead of bare initials.
+function eventArtFallbackHtml(item, parts) {
+  const pair = String(parts.title).split(/\s+(?:vs\.?|v\.?)\s+/i);
+  const abbreviate = (value) => {
+    const words = String(value).replace(/[^A-Za-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+    if (!words.length) return '?';
+    if (words.length === 1) return words[0].slice(0, 3).toUpperCase();
+    return words.slice(0, 3).map((word) => word[0]).join('').toUpperCase();
+  };
+  if (pair.length === 2 && pair[0].trim() && pair[1].trim()) {
+    return `<div class="event-art-versus" aria-hidden="true"><span>${escapeHtml(abbreviate(pair[0]))}</span><em>vs</em><span>${escapeHtml(abbreviate(pair[1]))}</span></div>`;
+  }
+  const sport = eventSport(item);
+  return `<div class="event-art-fallback" aria-hidden="true"><i class="fas ${sport.icon}"></i><span>${escapeHtml(abbreviate(parts.title))}</span></div>`;
+}
+
+function eventArtHtml(item, parts) {
+  const logo = String(item?.logo || '').trim();
+  if (!logo) return eventArtFallbackHtml(item, parts);
+  return `<img src="${escapeHtml(logo)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-event-art="1">`;
+}
+
+// Guide 20. Reminders are a local preference; nothing is sent anywhere.
+function reminderIds() {
+  const list = readJsonStorage(STORAGE_KEYS.eventReminders, []);
+  return Array.isArray(list) ? list : [];
+}
+
+function toggleEventReminder(uid, event) {
+  event?.stopPropagation();
+  const item = state.currentItems.find((entry) => entry._uid === uid);
+  if (!item) return;
+  const key = item.id || item.url || item.name;
+  const current = reminderIds();
+  const active = current.includes(key);
+  writeJsonStorage(STORAGE_KEYS.eventReminders, active ? current.filter((id) => id !== key) : [...current, key]);
+  updateReminderUi();
+  showToast(active ? 'Reminder সরানো হয়েছে' : 'Reminder সেট হয়েছে');
+}
+
+// ── Smart Filter ──────────────────────────────────────────────────────────
+// A view over the final merged Today Match / Upcoming cards. It never scans,
+// never refetches, never rebuilds primary/backup selection and never touches
+// the player: selecting a sport re-renders the card list and nothing else.
+
+function isEventSportFilterOpen() {
+  return $('eventFilterMenu')?.classList.contains('open') === true;
+}
+
+function closeEventSportFilter(focusButton = false) {
+  const menu = $('eventFilterMenu');
+  const button = $('eventFilterBtn');
+  if (!menu || !button) return;
+  menu.classList.remove('open');
+  menu.setAttribute('aria-hidden', 'true');
+  button.setAttribute('aria-expanded', 'false');
+  if (focusButton) button.focus();
+}
+
+function openEventSportFilter() {
+  const menu = $('eventFilterMenu');
+  const button = $('eventFilterBtn');
+  if (!menu || !button) return;
+  menu.classList.add('open');
+  menu.setAttribute('aria-hidden', 'false');
+  button.setAttribute('aria-expanded', 'true');
+  positionEventSportFilter();
+  // preventScroll matters: without it the browser scrolls the catalogue
+  // column to reveal the focused row, and the menu's own scroll handler then
+  // closes the menu the instant it opened.
+  qs('.event-filter-option', menu)?.focus({ preventScroll: true });
+  // Icons and web fonts can land after the first measurement, so measure once
+  // more on the next frame rather than trusting a half-laid-out box.
+  requestAnimationFrame(positionEventSportFilter);
+}
+
+// The header sits inside a scrolling column, so the menu is positioned in
+// viewport coordinates instead of being clipped by that column. Its height is
+// capped to the room actually available, so it can never run off screen no
+// matter how many sports a day brings.
+function positionEventSportFilter() {
+  const menu = $('eventFilterMenu');
+  const button = $('eventFilterBtn');
+  if (!menu || !button || !menu.classList.contains('open')) return;
+
+  const anchor = button.getBoundingClientRect();
+  const margin = 8;
+  const gap = 6;
+  const spaceBelow = window.innerHeight - anchor.bottom - gap - margin;
+  const spaceAbove = anchor.top - gap - margin;
+  const openBelow = spaceBelow >= spaceAbove;
+  const room = Math.max(120, openBelow ? spaceBelow : spaceAbove);
+
+  menu.style.maxHeight = `${Math.round(room)}px`;
+  const width = menu.offsetWidth || 210;
+  const height = Math.min(menu.offsetHeight || 240, room);
+  const left = Math.max(margin, Math.min(anchor.right - width, window.innerWidth - width - margin));
+  const top = openBelow
+    ? Math.min(anchor.bottom + gap, window.innerHeight - height - margin)
+    : Math.max(margin, anchor.top - height - gap);
+
+  menu.style.left = `${Math.round(left)}px`;
+  menu.style.top = `${Math.round(Math.max(margin, top))}px`;
+}
+
+function setEventSportFilter(sport) {
+  const next = String(sport || 'all');
+  if (state.eventSportFilter === next) {
+    closeEventSportFilter(true);
+    return;
+  }
+  state.eventSportFilter = next;
+  closeEventSportFilter(true);
+  // Only the catalogue list is redrawn. state.currentItem, the <video> and
+  // every playback timer are deliberately left alone (guide 7, 20 and 21).
+  renderCurrentList(true);
+}
+
+function renderEventSportFilter() {
+  const wrap = $('eventFilterWrap');
+  const button = $('eventFilterBtn');
+  const menu = $('eventFilterMenu');
+  if (!wrap || !button || !menu) return;
+
+  const isEventView = state.view === VIEW.UPCOMING || state.view === VIEW.EVENT;
+  const groups = isEventView ? eventSportCounts(eventFilterBaseItems()) : [];
+  const active = state.eventSportFilter;
+
+  // Guide 14: with a single sport on screen there is nothing to filter, so
+  // the control disappears rather than sitting there doing nothing. It never
+  // disappears while a filter is active, though — that would strand the user
+  // on a filtered list with no way back to All Events.
+  if (!isEventView || (groups.length <= 1 && active === 'all')) {
+    wrap.hidden = true;
+    closeEventSportFilter();
+    return;
+  }
+  wrap.hidden = false;
+
+  // Guide 4 says a sport with no cards is not offered, and guide 23 says a
+  // filter that matches nothing must say so. Both hold: the menu lists only
+  // sports that exist, plus the current selection at zero if the last of its
+  // matches has just ended, so the empty-state message can explain itself and
+  // All Events is still one click away.
+  const total = groups.reduce((sum, group) => sum + group.count, 0);
+  const menuGroups = active !== 'all' && !groups.some((group) => group.sport === active)
+    ? [...groups, { sport: active, count: 0, label: eventSportLabel(active), icon: eventSportIcon(active) }]
+    : groups;
+  const activeGroup = menuGroups.find((group) => group.sport === active);
+  const label = active === 'all' ? 'Filter' : (activeGroup?.label || 'Filter');
+  qs('.event-filter-label', button).textContent = label;
+  button.classList.toggle('filtered', active !== 'all');
+  button.setAttribute('aria-label', active === 'all'
+    ? 'Filter events by sport'
+    : `Events filtered by ${label}. Change filter`);
+
+  const option = (sport, text, icon, count) => `
+    <button class="event-filter-option${active === sport ? ' selected' : ''}" type="button"
+            role="menuitemradio" aria-checked="${active === sport}" data-sport="${escapeHtml(sport)}">
+      <span class="event-filter-tick" aria-hidden="true"></span>
+      <i class="fas ${icon}" aria-hidden="true"></i>
+      <span class="event-filter-name">${escapeHtml(text)}</span>
+      <span class="event-filter-count">${count}</span>
+    </button>`;
+
+  menu.innerHTML = `
+    <div class="event-filter-heading">Sport</div>
+    ${option('all', 'All Events', 'fa-layer-group', total)}
+    ${menuGroups.map((group) => option(group.sport, group.label, group.icon, group.count)).join('')}`;
+
+  if (menu.classList.contains('open')) positionEventSportFilter();
+}
+
+function setupEventSportFilter() {
+  const button = $('eventFilterBtn');
+  const menu = $('eventFilterMenu');
+  if (!button || !menu) return;
+
+  // The catalogue panel paints with backdrop-filter, and any filtered or
+  // transformed ancestor becomes the containing block for position:fixed —
+  // which parked the menu a full sidebar-width off screen. Re-parenting it to
+  // <body> once makes its coordinates genuinely viewport-relative. The button
+  // itself stays in the Events header, which is what the guide places there.
+  if (menu.parentElement !== document.body) document.body.appendChild(menu);
+
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (isEventSportFilterOpen()) closeEventSportFilter(true);
+    else openEventSportFilter();
+  });
+
+  menu.addEventListener('click', (event) => {
+    const option = event.target.closest('.event-filter-option');
+    if (!option) return;
+    event.stopPropagation();
+    setEventSportFilter(option.dataset.sport);
+  });
+
+  menu.addEventListener('keydown', (event) => {
+    const options = qsa('.event-filter-option', menu);
+    const index = options.indexOf(document.activeElement);
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      const step = event.key === 'ArrowDown' ? 1 : -1;
+      options[(index + step + options.length) % options.length]?.focus();
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      closeEventSportFilter(true);
+    }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!isEventSportFilterOpen()) return;
+    if (event.target.closest('#eventFilterWrap, #eventFilterMenu')) return;
+    closeEventSportFilter();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && isEventSportFilterOpen()) closeEventSportFilter(true);
+  });
+  window.addEventListener('resize', () => closeEventSportFilter());
+  // Scrolling the catalogue keeps the menu glued to its button rather than
+  // dismissing it, so a stray scroll never interrupts a choice.
+  qsa('.sidebar-scroll-area').forEach((area) => area.addEventListener('scroll', positionEventSportFilter, { passive: true }));
+  window.addEventListener('scroll', positionEventSportFilter, { passive: true });
+}
+
+function updateReminderUi() {
+  const reminders = reminderIds();
+  qsa('[data-reminder-id]', sidebarList).forEach((button) => {
+    const active = reminders.includes(button.dataset.reminderId);
+    button.classList.toggle('active', active);
+    const icon = qs('i', button);
+    if (icon) icon.className = active ? 'fas fa-bell' : 'far fa-bell';
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+  });
 }
 
 function eventUiStatus(item) {
@@ -2013,7 +2504,10 @@ function eventUiFingerprint() {
 function refreshEventCardsForClock() {
   if (state.view !== VIEW.UPCOMING && state.view !== VIEW.EVENT) return;
   const nextFingerprint = eventUiFingerprint();
-  if (nextFingerprint === state.eventUiFingerprint) return;
+  if (nextFingerprint === state.eventUiFingerprint) {
+    updateEventCardClocks();
+    return;
+  }
   state.eventUiFingerprint = nextFingerprint;
   renderCurrentList(true, { preserveScroll: true });
 }
@@ -2043,22 +2537,52 @@ async function refreshActiveEventCatalogue() {
   }
 }
 
+// Guide 30, 31 and 32. Level 1 information (title, status, time, action) is
+// always on the card; level 2 appears when the data exists; level 3 stays in
+// the details popup. The two card kinds share one shape so the list keeps a
+// single rhythm, and differ by accent, by which clock is emphasised and by
+// which action they offer.
 function createEventCard(item, visualIndex) {
   const card = document.createElement('div');
   const playable = isPlayable(item);
   const uiStatus = eventUiStatus(item);
   const liveLike = uiStatus === 'LIVE_NOW' || uiStatus === 'CHANNEL_LIVE';
   const upcoming = !liveLike;
-  // Today Match cards with a verified link must say Watch even while their
-  // schedule badge is STARTING SOON/UPCOMING. Details is reserved for a
-  // metadata-only card or the dedicated Upcoming view.
-  const showWatchAction = playable && state.view === VIEW.EVENT;
-  const scheduleText = eventScheduleText(item);
-  const parts = eventDisplayParts(item);
-  card.className = `sidebar-item event-ref-card tv-focusable ${upcoming ? 'event-upcoming-card' : 'event-live-card'}${playable ? ' is-playable' : ' is-scheduled'}`;
+  // Guide 12. The action names what the click actually does. A card with a
+  // verified link plays when tapped on either tab, so labelling it "Details"
+  // there — as this card used to on the Upcoming tab — was a promise the
+  // click handler did not keep. Cards with no link keep Details.
+  const showWatchAction = playable;
+  const rawParts = eventDisplayParts(item);
+  const parts = { title: stripStreamNoise(rawParts.title), competition: rawParts.competition };
+  const channelOnly = isChannelOnlyEventCard(item);
+  const sport = eventSport(item);
+  const streams = eventStreamSummary(item);
+  const statusLabel = channelOnly && liveLike ? 'CHANNEL LIVE' : eventStatusLabel(uiStatus);
+
+  // The live card leads with when it began; the upcoming card leads with when
+  // it starts and how long that is away.
+  const scheduleText = liveLike ? (eventStartedText(item) || '') : eventScheduleText(item);
+  const countdown = upcoming ? eventCountdownText(item) : '';
+  const phase = liveLike ? eventLivePhaseText(item) : '';
+  const verification = eventVerificationLabel(item);
+
+  card.className = [
+    'sidebar-item event-ref-card tv-focusable',
+    upcoming ? 'event-upcoming-card' : 'event-live-card',
+    playable ? 'is-playable' : 'is-scheduled',
+    channelOnly ? 'event-channel-card' : 'event-fixture-card',
+    // A short landscape screen lets the countdown stand in for the clock, but
+    // only on a card that actually has one — a fixture whose kickoff has
+    // passed while it waits for a link has no countdown and must keep its
+    // clock, or it would answer "when" with nothing at all.
+    countdown ? 'has-countdown' : ''
+  ].filter(Boolean).join(' ');
   card.tabIndex = 0;
   card.setAttribute('role', 'button');
-  card.setAttribute('aria-label', `${parts.title}. ${eventStatusLabel(uiStatus)}${scheduleText ? `. ${scheduleText}` : ''}`);
+  card.setAttribute('aria-label', [
+    parts.title, statusLabel, scheduleText, countdown, streams.text
+  ].filter(Boolean).join('. '));
   card.dataset.uid = item._uid;
   card.dataset.itemIndex = String(visualIndex);
   card.addEventListener('focus', () => {
@@ -2067,26 +2591,104 @@ function createEventCard(item, visualIndex) {
     maybePreconnect(item.url);
   });
 
-  const statusLabel = eventStatusLabel(uiStatus);
   const favoriteKey = item.id || item.url;
+  const reminderKey = item.id || item.url || item.name;
+  const actionLabel = showWatchAction ? (channelOnly ? 'Watch Channel' : 'Watch') : 'Details';
+
+  // The footer is two fixed rows rather than one wrapping bag of chips: with
+  // five chips free to wrap, the row count depended on the title's width and
+  // the tallest cards spilled past their own clipped box. Row one carries the
+  // status, row two the supporting detail on a single ellipsised line.
+  // The clock spans carry data-clock so the 30s tick can rewrite their text
+  // without rebuilding the list.
+  const statusRow = [
+    `<span class="event-status-pill ${upcoming ? 'upcoming' : 'live'}">${upcoming
+      ? '<i class="far fa-calendar-alt" aria-hidden="true"></i>'
+      : '<span class="pulse-dot" aria-hidden="true"></span>'}${escapeHtml(statusLabel)}</span>`,
+    upcoming
+      ? `<span class="event-card-countdown" data-clock="countdown"${countdown ? '' : ' hidden'}><i class="fas fa-hourglass-half" aria-hidden="true"></i>${escapeHtml(countdown)}</span>`
+      : `<span class="event-card-phase" data-clock="phase"${phase ? '' : ' hidden'}>${escapeHtml(phase)}</span>`
+  ].join('');
+
+  const metaRow = [
+    scheduleText
+      ? `<span class="event-card-time" data-clock="schedule"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(scheduleText)}</span>`
+      : '',
+    `<span class="event-card-streams ${streams.ready ? 'ready' : 'waiting'}" title="${escapeHtml(streams.text)}"><i class="fas ${streams.ready ? 'fa-circle-play' : 'fa-hourglass-start'}" aria-hidden="true"></i>${escapeHtml(streams.short)}</span>`,
+    // Guide 18 with guide 32's level 3 rule: the card carries the state as a
+    // single glyph, the words live in the tooltip and the details popup.
+    upcoming
+      ? `<span class="event-card-verified ${verification === 'Verification Pending' ? 'pending' : 'ok'}" title="${escapeHtml(verification)}" aria-label="${escapeHtml(verification)}"><i class="fas ${verification === 'Verification Pending' ? 'fa-circle-question' : 'fa-circle-check'}" aria-hidden="true"></i></span>`
+      : ''
+  ].filter(Boolean).join('');
+
   card.innerHTML = `
     <span class="sidebar-channel-num">${visualIndex + 1}</span>
-    <div class="event-card-art">${createImageHtml(item, '')}<span class="event-card-art-shade"></span></div>
+    <div class="event-card-art">
+      ${eventArtHtml(item, parts)}
+      <span class="event-card-art-shade"></span>
+      <span class="event-sport-badge"><i class="fas ${sport.icon}" aria-hidden="true"></i>${escapeHtml(channelOnly ? 'CHANNEL' : sport.label)}</span>
+    </div>
     <div class="event-card-details">
       <div class="event-card-title">${escapeHtml(parts.title)}</div>
-      ${parts.competition ? `<div class="event-card-competition"><i class="fas fa-trophy" aria-hidden="true"></i>${escapeHtml(parts.competition)}</div>` : ''}
+      ${parts.competition
+        ? `<div class="event-card-competition"><i class="fas fa-trophy" aria-hidden="true"></i>${escapeHtml(parts.competition)}</div>`
+        : (channelOnly ? '<div class="event-card-competition muted">Event information unavailable</div>' : '')}
       <div class="event-card-footer">
-        <span class="event-status-pill ${upcoming ? 'upcoming' : 'live'}">${upcoming ? '<i class="far fa-calendar-alt" aria-hidden="true"></i>' : '<span class="pulse-dot" aria-hidden="true"></span>'}${statusLabel}</span>
-        ${scheduleText ? `<span class="event-card-time"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(scheduleText)}</span>` : ''}
+        <div class="event-card-status-row">
+          <span class="event-now-playing"><span class="playing-equalizer" aria-hidden="true"><span></span><span></span><span></span></span>NOW PLAYING</span>
+          ${statusRow}
+        </div>
+        <div class="event-card-meta-row">${metaRow}</div>
       </div>
     </div>
-    <span class="event-card-action ${showWatchAction ? 'watch' : 'reminder'}" aria-hidden="true"><i class="fas ${showWatchAction ? 'fa-play' : 'fa-bell'}"></i><span>${showWatchAction ? 'Watch' : 'Details'}</span></span>
-    ${liveLike ? `<button class="card-fav-btn" data-favorite-id="${escapeHtml(favoriteKey)}" type="button" title="Bookmark" aria-label="Bookmark ${escapeHtml(parts.title)}"><i class="far fa-star"></i></button>` : ''}`;
+    <span class="event-card-action ${showWatchAction ? 'watch' : 'reminder'}"><i class="fas ${showWatchAction ? 'fa-play' : 'fa-circle-info'}" aria-hidden="true"></i><span>${escapeHtml(actionLabel)}</span></span>
+    ${playable
+      ? `<button class="card-fav-btn" data-favorite-id="${escapeHtml(favoriteKey)}" type="button" title="Bookmark" aria-label="Bookmark ${escapeHtml(parts.title)}"><i class="far fa-star"></i></button>`
+      : `<button class="card-remind-btn" data-reminder-id="${escapeHtml(reminderKey)}" type="button" title="Remind Me" aria-pressed="false" aria-label="Remind me about ${escapeHtml(parts.title)}"><i class="far fa-bell"></i></button>`}`;
 
-  const image = qs('img', card);
-  image?.addEventListener('error', () => replaceBrokenImage(image));
+  const image = qs('img[data-event-art]', card);
+  image?.addEventListener('error', () => {
+    const wrap = image.parentElement;
+    if (wrap) image.replaceWith(...htmlToNodes(eventArtFallbackHtml(item, parts)));
+  });
   qs('.card-fav-btn', card)?.addEventListener('click', (event) => toggleFavorite(item._uid, event));
+  qs('.card-remind-btn', card)?.addEventListener('click', (event) => toggleEventReminder(item._uid, event));
   return card;
+}
+
+function htmlToNodes(html) {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  return Array.from(template.content.childNodes);
+}
+
+// Guide 17 again: the countdown has to keep moving. Rewriting only the clock
+// rows keeps the 30s tick off the render path, so scroll position, focus and
+// image decoding all survive untouched.
+function updateEventCardClocks() {
+  if (state.view !== VIEW.UPCOMING && state.view !== VIEW.EVENT) return;
+  qsa('.event-ref-card[data-uid]', sidebarList).forEach((card) => {
+    const item = state.currentItems.find((entry) => entry._uid === card.dataset.uid);
+    if (!item) return;
+    const liveLike = ['LIVE_NOW', 'CHANNEL_LIVE'].includes(eventUiStatus(item));
+    const write = (selector, text) => {
+      const node = qs(selector, card);
+      if (!node) return;
+      const icon = qs('i', node)?.outerHTML || '';
+      if (text) {
+        node.innerHTML = `${icon}${escapeHtml(text)}`;
+        node.removeAttribute('hidden');
+      } else {
+        node.setAttribute('hidden', '');
+      }
+    };
+    const countdown = liveLike ? '' : eventCountdownText(item);
+    write('[data-clock="schedule"]', liveLike ? eventStartedText(item) : eventScheduleText(item));
+    write('[data-clock="countdown"]', countdown);
+    write('[data-clock="phase"]', liveLike ? eventLivePhaseText(item) : '');
+    card.classList.toggle('has-countdown', Boolean(countdown));
+  });
 }
 
 function createChannelCard(item, visualIndex) {
@@ -2201,9 +2803,26 @@ function showEventPreview(item) {
     const initials = parts.title.split(/\s+/).filter(Boolean).map((word) => word[0]).join('').slice(0, 3).toUpperCase();
     art.innerHTML = `<span>${escapeHtml(initials || 'TV')}</span>`;
   }
-  $('eventPreviewTitle').textContent = parts.title;
+  $('eventPreviewTitle').textContent = stripStreamNoise(parts.title);
   $('eventPreviewLeague').textContent = parts.competition || 'Live Sports';
-  qs('span', $('eventPreviewTime')).textContent = eventScheduleText(item);
+  const countdown = eventCountdownText(item);
+  qs('span', $('eventPreviewTime')).textContent = [eventScheduleText(item), countdown].filter(Boolean).join(' • ');
+
+  // Guide 29 and 32. The card stays clean; the level 3 facts surface here.
+  const facts = $('eventPreviewFacts');
+  if (facts) {
+    const sport = eventSport(item);
+    const streams = eventStreamSummary(item);
+    const chips = [
+      [sport.icon, sport.label],
+      ['fa-circle-check', eventVerificationLabel(item)],
+      [streams.ready ? 'fa-circle-play' : 'fa-hourglass-start', streams.text],
+      item?.venue ? ['fa-location-dot', cleanDisplayName(item.venue)] : null
+    ].filter(Boolean);
+    facts.innerHTML = chips
+      .map(([icon, text]) => `<span class="event-preview-fact"><i class="fas ${icon}" aria-hidden="true"></i>${escapeHtml(text)}</span>`)
+      .join('');
+  }
   preview.classList.add('show');
   preview.setAttribute('aria-hidden', 'false');
   showControlsTemporarily();
@@ -2231,12 +2850,14 @@ function maybePreconnect(url) {
 
 sidebarList.addEventListener('click', (event) => {
   const card = event.target.closest('[data-uid]');
-  if (!card || event.target.closest('.card-fav-btn')) return;
+  if (!card || event.target.closest('.card-fav-btn, .card-remind-btn')) return;
   const item = state.currentItems.find((entry) => entry._uid === card.dataset.uid);
   if (!item) return;
   if (seriesModule?.handleCatalogClick(item)) return;
   if (!isPlayable(item)) {
-    if (item._sourceKind === VIEW.UPCOMING || state.view === VIEW.UPCOMING) {
+    // Guide 18 and 32. Level 3 detail belongs in the popup, so any event card
+    // without a link opens it rather than firing a toast that says less.
+    if (item._sourceKind === VIEW.UPCOMING || state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
       showEventPreview(item);
     } else {
       showToast(item.start_time ? `শুরু হবে: ${item.start_time}` : 'এই ইভেন্ট এখনো শুরু হয়নি');
@@ -5887,6 +6508,21 @@ function updateActiveCards() {
   qsa('[data-uid]', sidebarList).forEach((card) => {
     const active = card.dataset.uid === state.currentItem?._uid;
     card.classList.toggle('active', active);
+    // Guide 12 and 13. An event card carries its own NOW PLAYING marker in the
+    // markup, so it only needs the action swapped from Watch to Playing.
+    if (card.classList.contains('event-ref-card')) {
+      const action = qs('.event-card-action.watch', card);
+      if (action) {
+        const icon = qs('i', action);
+        const text = qs('span', action);
+        if (icon) icon.className = active ? 'fas fa-pause' : 'fas fa-play';
+        if (text) {
+          if (!action.dataset.idleLabel) action.dataset.idleLabel = text.textContent;
+          text.textContent = active ? 'Playing' : action.dataset.idleLabel;
+        }
+      }
+      return;
+    }
     const existing = qs('.playing-equalizer, .movie-eq-overlay', card);
     if (existing && !active) existing.remove();
     if (active && card.classList.contains('sidebar-item') && !qs('.playing-equalizer', card)) {
@@ -7362,6 +7998,7 @@ function initializeSeriesModule() {
 
 async function bootstrap() {
   setupFinalNavigationControls();
+  setupEventSportFilter();
   initializeSeriesModule();
   setupMobileZoomGuard();
   updatePerformanceClasses();

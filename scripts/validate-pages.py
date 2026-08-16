@@ -41,6 +41,23 @@ WARNINGS: list[str] = []
 COUNTS = {"channels": 0, "movies": 0, "series": 0, "episodes": 0, "events": 0}
 PLAYBACK_IDS: set[str] = set()
 
+
+def catalog_shard_for(playback_id: str) -> str:
+    """Mirror of scanner.playback_profiles.catalog_shard_for.
+
+    Duplicated deliberately: the validator runs against a built dist/ folder
+    during the Cloudflare Pages build, where the scanner package is not
+    importable. The proxy Worker carries a third copy in JavaScript, and
+    tests/test_playback_catalog_shards.py pins all three to the same result.
+    """
+    text = str(playback_id or "").strip().lower()
+    if text.startswith("ctv_"):
+        text = text[4:]
+    prefix = text[:2]
+    if len(prefix) == 2 and all(c in "0123456789abcdef" for c in prefix):
+        return prefix
+    return "00"
+
 CHANNELS = {
     "Bangla": "bangla",
     "Sports": "sports",
@@ -826,14 +843,49 @@ def validate_playback_catalog() -> None:
         if data is not None:
             add_error("data/playback-sources.json root object হতে হবে")
         return
-    if data.get("schema_version") != 1:
-        add_error("data/playback-sources.json schema_version অবশ্যই 1 হতে হবে")
-    records = data.get("records")
-    if not isinstance(records, dict):
-        add_error("data/playback-sources.json records object হতে হবে")
-        return
-    if data.get("count") != len(records):
-        add_error("data/playback-sources.json count records-এর সঙ্গে মিলছে না")
+    schema_version = data.get("schema_version")
+    if schema_version not in (1, 2):
+        add_error("data/playback-sources.json schema_version অবশ্যই 1 বা 2 হতে হবে")
+
+    if schema_version == 2 or data.get("sharded") is True:
+        # Sharded layout: the catalogue lives in data/playback/<xx>.json so the
+        # proxy Worker reads one small shard per lookup instead of the whole
+        # file. The index here only declares which shards exist and how many
+        # records each holds; every record is validated from its shard.
+        shards = data.get("shards")
+        if not isinstance(shards, dict):
+            add_error("data/playback-sources.json shards object হতে হবে")
+            return
+        records = {}
+        for shard_name, declared in sorted(shards.items()):
+            shard_path = require_file(f"data/playback/{shard_name}.json")
+            if shard_path is None:
+                continue
+            shard_data = load_json(shard_path, f"data/playback/{shard_name}.json")
+            if not isinstance(shard_data, dict):
+                add_error(f"data/playback/{shard_name}.json root object হতে হবে")
+                continue
+            shard_records = shard_data.get("records")
+            if not isinstance(shard_records, dict):
+                add_error(f"data/playback/{shard_name}.json records object হতে হবে")
+                continue
+            if shard_data.get("count") != len(shard_records):
+                add_error(f"data/playback/{shard_name}.json count মিলছে না")
+            if declared != len(shard_records):
+                add_error(f"playback-sources.json shard {shard_name} count মিলছে না")
+            for playback_id in shard_records:
+                if catalog_shard_for(playback_id) != shard_name:
+                    add_error(f"Playback id ভুল shard-এ: {playback_id} ({shard_name})")
+            records.update(shard_records)
+        if data.get("count") != len(records):
+            add_error("data/playback-sources.json count shard-গুলোর সঙ্গে মিলছে না")
+    else:
+        records = data.get("records")
+        if not isinstance(records, dict):
+            add_error("data/playback-sources.json records object হতে হবে")
+            return
+        if data.get("count") != len(records):
+            add_error("data/playback-sources.json count records-এর সঙ্গে মিলছে না")
 
     for playback_id, profile in records.items():
         if not re.fullmatch(r"ctv_[a-f0-9]{32}", str(playback_id)):

@@ -255,41 +255,125 @@ class PlaybackProfileCollector:
         }
 
 
-def merge_public_catalog(
-    data_root: str | Path,
-    collector: PlaybackProfileCollector,
-) -> Dict[str, Any]:
-    """Merge one partial scan into the public Pages playback catalogue."""
-    root = Path(data_root)
-    root.mkdir(parents=True, exist_ok=True)
-    target = root / "playback-sources.json"
-    existing: Dict[str, Any] = {}
-    if target.exists():
-        try:
-            loaded = json.loads(target.read_text(encoding="utf-8"))
-            if isinstance(loaded, dict):
-                existing = loaded
-        except (OSError, UnicodeError, json.JSONDecodeError):
-            existing = {}
+CATALOG_SHARD_DIRECTORY = "playback"
+CATALOG_SHARD_KEY = "playback_id_prefix_2"
+CATALOG_SHARD_PATH_TEMPLATE = "data/playback/{shard}.json"
 
-    records = existing.get("records")
-    if not isinstance(records, dict):
-        records = {}
-    records.update(collector.records)
-    payload = {
-        "schema_version": 1,
-        "generated_at": collector.timestamp,
-        "scan_mode": collector.scan_mode,
-        "storage": "public_git_pages_json",
-        "count": len(records),
-        "records": dict(sorted(records.items())),
-    }
 
-    temporary = target.with_name(f".{target.name}.{os.getpid()}.tmp")
+def catalog_shard_for(playback_id: str) -> str:
+    """Return the shard a playback_id belongs to.
+
+    A playback_id is ``ctv_`` followed by 32 hex characters, so the first two
+    of those characters spread the catalogue evenly over 256 shards. The proxy
+    Worker computes the same prefix, which is why this must stay a pure
+    function of the id and never depend on scan order or record contents.
+    """
+    text = str(playback_id or "").strip().lower()
+    if text.startswith("ctv_"):
+        text = text[4:]
+    prefix = text[:2]
+    return prefix if len(prefix) == 2 and all(c in "0123456789abcdef" for c in prefix) else "00"
+
+
+def _atomic_write(path: Path, payload: Dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = path.with_name(f".{path.name}.{os.getpid()}.tmp")
     with temporary.open("w", encoding="utf-8", newline="\n") as handle:
         json.dump(payload, handle, ensure_ascii=False, indent=2)
         handle.write("\n")
         handle.flush()
         os.fsync(handle.fileno())
-    os.replace(temporary, target)
+    os.replace(temporary, path)
+
+
+def load_public_catalog_records(data_root: str | Path) -> Dict[str, Any]:
+    """Read every playback record, from shards or the pre-shard single file.
+
+    The single-file layout is still understood so a repository mid-migration,
+    and any tooling that has not been redeployed yet, keeps working.
+    """
+    root = Path(data_root)
+    records: Dict[str, Any] = {}
+
+    shard_dir = root / CATALOG_SHARD_DIRECTORY
+    if shard_dir.is_dir():
+        for shard_file in sorted(shard_dir.glob("*.json")):
+            try:
+                payload = json.loads(shard_file.read_text(encoding="utf-8"))
+            except (OSError, UnicodeError, json.JSONDecodeError):
+                continue
+            shard_records = payload.get("records") if isinstance(payload, dict) else None
+            if isinstance(shard_records, dict):
+                records.update(shard_records)
+
+    index_file = root / "playback-sources.json"
+    if index_file.is_file():
+        try:
+            payload = json.loads(index_file.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            payload = {}
+        legacy = payload.get("records") if isinstance(payload, dict) else None
+        if isinstance(legacy, dict):
+            # Pre-shard records are older than anything already read from a
+            # shard, so they must not overwrite it.
+            for key, value in legacy.items():
+                records.setdefault(key, value)
+
+    return records
+
+
+def merge_public_catalog(
+    data_root: str | Path,
+    collector: PlaybackProfileCollector,
+) -> Dict[str, Any]:
+    """Merge one partial scan into the public Pages playback catalogue.
+
+    The catalogue is written as one file per shard plus a small index, because
+    the playback proxy Worker has to look a single id up on every manifest and
+    segment request. Reading and parsing one ~70 KB shard fits comfortably in a
+    Worker's CPU budget; re-parsing the previous single 17 MB file on every
+    request did not, and that is what stalled live playback. Splitting it also
+    keeps each scan's git diff to the few shards that actually changed.
+    """
+    root = Path(data_root)
+    root.mkdir(parents=True, exist_ok=True)
+
+    records = load_public_catalog_records(root)
+    records.update(collector.records)
+
+    grouped: Dict[str, Dict[str, Any]] = {}
+    for playback_id, profile in sorted(records.items()):
+        grouped.setdefault(catalog_shard_for(playback_id), {})[playback_id] = profile
+
+    shard_dir = root / CATALOG_SHARD_DIRECTORY
+    shard_dir.mkdir(parents=True, exist_ok=True)
+    for shard, shard_records in sorted(grouped.items()):
+        _atomic_write(shard_dir / f"{shard}.json", {
+            "schema_version": 1,
+            "shard": shard,
+            "generated_at": collector.timestamp,
+            "count": len(shard_records),
+            "records": shard_records,
+        })
+
+    # A shard that lost its last record must not linger with stale credentials.
+    for stale in shard_dir.glob("*.json"):
+        if stale.stem not in grouped:
+            try:
+                stale.unlink()
+            except OSError:
+                pass
+
+    payload = {
+        "schema_version": 2,
+        "generated_at": collector.timestamp,
+        "scan_mode": collector.scan_mode,
+        "storage": "public_git_pages_json",
+        "sharded": True,
+        "shard_key": CATALOG_SHARD_KEY,
+        "shard_path": CATALOG_SHARD_PATH_TEMPLATE,
+        "count": len(records),
+        "shards": {shard: len(items) for shard, items in sorted(grouped.items())},
+    }
+    _atomic_write(root / "playback-sources.json", payload)
     return payload

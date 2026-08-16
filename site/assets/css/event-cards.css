@@ -1,0 +1,317 @@
+/* Click TV — Today Match & Upcoming Match card upgrade.
+ *
+ * Loaded after reference-design.css so it owns the event card and nothing
+ * else. Every selector is scoped to .sidebar-section.event-list-mode, so the
+ * channel list, the movie grid, the series view and the whole player are
+ * outside this file's reach by construction. Card geometry stays inside the
+ * sizes reference-design.css already established.
+ */
+
+/* ── Card shell ─────────────────────────────────────────────────────────── */
+
+.sidebar-section.event-list-mode .event-ref-card{
+  grid-template-columns:112px minmax(0,1fr) 54px!important;
+  align-items:stretch!important;
+  /* An upcoming card carries a status pill, a countdown, a clock, a stream
+     summary and a verification glyph. In a 167px text column that is three
+     footer lines, which needs eight more pixels than the old fixed 144. */
+  height:152px!important;min-height:152px!important;max-height:152px!important;
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease,transform .18s ease!important;
+}
+
+/* Guide 21 and 22. Colour carries the status and nothing else: a live card
+   gets a green edge, a scheduled one amber, a bare channel a cool teal. */
+.sidebar-section.event-list-mode .event-ref-card::before{
+  content:''!important;position:absolute!important;top:10px!important;bottom:10px!important;left:0!important;
+  width:3px!important;border-radius:0 3px 3px 0!important;z-index:6!important;pointer-events:none!important;
+}
+.sidebar-section.event-list-mode .event-live-card::before{background:linear-gradient(180deg,#25e6a5,#0c9f74)!important}
+.sidebar-section.event-list-mode .event-upcoming-card::before{background:linear-gradient(180deg,#ffc93d,#c97f05)!important}
+.sidebar-section.event-list-mode .event-channel-card::before{background:linear-gradient(180deg,#4fc3f7,#1668a8)!important}
+
+/* Guide 33. A slight lift, not a glow. */
+.sidebar-section.event-list-mode .event-ref-card:hover{transform:translateY(-1px)!important}
+.sidebar-section.event-list-mode .event-ref-card.active{transform:none!important}
+
+/* ── Artwork ────────────────────────────────────────────────────────────── */
+
+.sidebar-section.event-list-mode .event-card-art img{
+  width:100%!important;height:100%!important;object-fit:contain!important;object-position:center!important;
+  display:block!important;border-radius:inherit!important;
+}
+
+/* Guide 11 and 28. One logo field per item means no true two-crest layout is
+   available, so the fallback carries the team pair rather than bare initials. */
+.sidebar-section.event-list-mode .event-art-versus{
+  display:flex!important;width:100%!important;height:100%!important;
+  flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:1px!important;
+  background:radial-gradient(circle at 50% 18%,rgba(255,64,91,.20),transparent 55%),linear-gradient(145deg,#17253b,#0a111d)!important;
+}
+.sidebar-section.event-list-mode .event-art-versus span{
+  max-width:96%!important;overflow:hidden!important;color:#eef4ff!important;
+  font-size:17px!important;font-weight:950!important;letter-spacing:.5px!important;line-height:1.05!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+}
+.sidebar-section.event-list-mode .event-art-versus em{
+  color:#8fa1ba!important;font-size:8.5px!important;font-style:normal!important;font-weight:900!important;
+  letter-spacing:1.6px!important;text-transform:uppercase!important;
+}
+.sidebar-section.event-list-mode .event-art-fallback{
+  display:flex!important;width:100%!important;height:100%!important;
+  flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:5px!important;
+  background:radial-gradient(circle at 40% 22%,rgba(90,168,255,.18),transparent 55%),linear-gradient(145deg,#17253b,#0a111d)!important;
+}
+.sidebar-section.event-list-mode .event-art-fallback i{color:#7ea6d8!important;font-size:22px!important}
+.sidebar-section.event-list-mode .event-art-fallback span{
+  color:#dae4f2!important;font-size:11px!important;font-weight:900!important;letter-spacing:.6px!important;
+}
+
+/* Guide 5. The sport reads at a glance, and it costs the text column nothing
+   because it sits on the artwork. */
+.sidebar-section.event-list-mode .event-sport-badge{
+  position:absolute!important;right:5px!important;bottom:5px!important;z-index:4!important;
+  display:inline-flex!important;max-width:calc(100% - 10px)!important;align-items:center!important;gap:4px!important;
+  height:17px!important;padding:0 6px!important;border:1px solid rgba(255,255,255,.15)!important;border-radius:999px!important;
+  background:rgba(5,11,20,.86)!important;color:#cfdcec!important;
+  font-size:7.5px!important;font-weight:950!important;letter-spacing:.6px!important;
+  overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;backdrop-filter:blur(4px)!important;
+}
+.sidebar-section.event-list-mode .event-sport-badge i{font-size:8px!important;color:#8fb6e6!important}
+.sidebar-section.event-list-mode .event-channel-card .event-sport-badge{
+  border-color:rgba(79,195,247,.42)!important;color:#9fdcff!important;
+}
+.sidebar-section.event-list-mode .event-channel-card .event-sport-badge i{color:#4fc3f7!important}
+
+/* ── Text column ────────────────────────────────────────────────────────── */
+
+.sidebar-section.event-list-mode .event-card-details{
+  gap:3px!important;justify-content:center!important;padding:2px 0!important;
+}
+
+/* Guide 4. Two lines, then a clean ellipsis. */
+.sidebar-section.event-list-mode .event-card-title{
+  -webkit-line-clamp:2!important;font-size:15px!important;line-height:1.18!important;
+}
+.sidebar-section.event-list-mode .event-card-competition{
+  -webkit-line-clamp:1!important;font-size:10.5px!important;
+}
+.sidebar-section.event-list-mode .event-card-competition.muted{color:#8391a5!important;font-style:italic!important}
+.sidebar-section.event-list-mode .event-card-competition.muted i{display:none!important}
+
+/* Guide 32. The footer is a named status row and a named detail row rather
+   than one free-wrapping bag of chips, so how tall a card gets never depends
+   on how long a match name happens to be.
+
+   Inside a row, nothing may be cut mid-word. The text column is only about
+   175px on a 1440px screen, so a chip that will not fit wraps to a second
+   line instead of being clipped to "Waiti". Below 1000px there is no room for
+   that second line, so the stream summary and the verification glyph step
+   aside entirely and the clock keeps the row to itself. */
+.sidebar-section.event-list-mode .event-card-footer{
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  gap:3px!important;min-width:0!important;white-space:normal!important;overflow:hidden!important;
+}
+.sidebar-section.event-list-mode .event-card-status-row,
+.sidebar-section.event-list-mode .event-card-meta-row{
+  display:flex!important;min-width:0!important;align-items:center!important;
+  flex-wrap:wrap!important;overflow:hidden!important;white-space:nowrap!important;
+}
+.sidebar-section.event-list-mode .event-card-status-row{gap:2px 6px!important}
+.sidebar-section.event-list-mode .event-card-meta-row{gap:2px 8px!important}
+.sidebar-section.event-list-mode .event-card-status-row>*,
+.sidebar-section.event-list-mode .event-card-meta-row>*{flex:0 0 auto!important;min-width:0!important}
+
+.sidebar-section.event-list-mode .event-status-pill{height:19px!important;font-size:8px!important}
+
+.sidebar-section.event-list-mode .event-card-time,
+.sidebar-section.event-list-mode .event-card-countdown,
+.sidebar-section.event-list-mode .event-card-streams,
+.sidebar-section.event-list-mode .event-card-verified,
+.sidebar-section.event-list-mode .event-card-phase{
+  display:inline-flex!important;align-items:center!important;gap:4px!important;
+  font-size:9.5px!important;font-weight:800!important;white-space:nowrap!important;line-height:1.2!important;
+}
+.sidebar-section.event-list-mode .event-card-time{color:#b9c4d2!important}
+.sidebar-section.event-list-mode .event-card-time i{color:#8ea0b8!important}
+
+/* Guide 14 and 16. On an upcoming card the clock is the headline fact, so it
+   is the brightest thing in the meta row. */
+.sidebar-section.event-list-mode .event-upcoming-card .event-card-time{color:#ffdf9a!important;font-weight:900!important}
+.sidebar-section.event-list-mode .event-upcoming-card .event-card-time i{color:#ffc93d!important}
+
+/* Guide 17. */
+.sidebar-section.event-list-mode .event-card-countdown{
+  height:19px!important;padding:0 7px!important;border:1px solid rgba(255,190,35,.38)!important;border-radius:999px!important;
+  background:rgba(137,94,0,.20)!important;color:#ffd36b!important;font-size:8.5px!important;font-weight:950!important;
+}
+.sidebar-section.event-list-mode .event-card-countdown i{font-size:8px!important}
+
+/* Guide 6. Only shown when a real kickoff time was recorded. */
+.sidebar-section.event-list-mode .event-card-phase{color:#7fe9c6!important;font-size:9px!important;font-weight:850!important}
+
+/* Guide 8, 9 and 19. A summary, never the DRM/token detail behind it. */
+.sidebar-section.event-list-mode .event-card-streams{color:#9fb0c6!important;font-size:9px!important}
+.sidebar-section.event-list-mode .event-card-streams.ready i{color:#54e9bd!important}
+.sidebar-section.event-list-mode .event-card-streams.waiting{color:#8b97a9!important}
+.sidebar-section.event-list-mode .event-card-streams.waiting i{color:#8b97a9!important}
+
+/* Guide 18. Glyph only on the card; the words are in the tooltip and popup. */
+.sidebar-section.event-list-mode .event-card-verified{gap:0!important;font-size:10px!important}
+.sidebar-section.event-list-mode .event-card-verified.ok{color:#8fcfae!important}
+.sidebar-section.event-list-mode .event-card-verified.ok i{color:#4ecb8a!important}
+.sidebar-section.event-list-mode .event-card-verified.pending{color:#c2ab7a!important}
+.sidebar-section.event-list-mode .event-card-verified.pending i{color:#e0b95c!important}
+
+/* Guide 13. The playing card names itself and drops the stream summary so the
+   row does not grow. */
+.sidebar-section.event-list-mode .event-now-playing{
+  display:none!important;height:19px!important;align-items:center!important;gap:5px!important;padding:0 8px!important;
+  border:1px solid rgba(255,64,91,.5)!important;border-radius:999px!important;background:rgba(148,20,42,.28)!important;
+  color:#ffb3c0!important;font-size:8px!important;font-weight:950!important;letter-spacing:.5px!important;
+}
+.sidebar-section.event-list-mode .event-ref-card.active .event-now-playing{display:inline-flex!important}
+.sidebar-section.event-list-mode .event-ref-card.active .event-card-streams,
+.sidebar-section.event-list-mode .event-ref-card.active .event-card-verified{display:none!important}
+.sidebar-section.event-list-mode .event-now-playing .playing-equalizer{
+  display:inline-flex!important;align-items:flex-end!important;gap:1.5px!important;height:9px!important;margin:0!important;
+}
+.sidebar-section.event-list-mode .event-now-playing .playing-equalizer span{
+  width:2px!important;height:100%!important;border-radius:1px!important;background:#ff7c93!important;
+  animation:eventEqualizer .9s ease-in-out infinite!important;
+}
+.sidebar-section.event-list-mode .event-now-playing .playing-equalizer span:nth-child(2){animation-delay:.15s!important}
+.sidebar-section.event-list-mode .event-now-playing .playing-equalizer span:nth-child(3){animation-delay:.3s!important}
+@keyframes eventEqualizer{0%,100%{transform:scaleY(.35)}50%{transform:scaleY(1)}}
+@media (prefers-reduced-motion:reduce){
+  .sidebar-section.event-list-mode .event-now-playing .playing-equalizer span{animation:none!important;transform:scaleY(.7)!important}
+  .sidebar-section.event-list-mode .event-ref-card:hover{transform:none!important}
+}
+
+/* ── Action column ──────────────────────────────────────────────────────── */
+
+.sidebar-section.event-list-mode .event-card-action{
+  min-width:54px!important;align-self:center!important;gap:5px!important;font-size:8px!important;
+}
+.sidebar-section.event-list-mode .event-card-action span{
+  max-width:54px!important;overflow:hidden!important;text-align:center!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+}
+.sidebar-section.event-list-mode .event-card-action.reminder i{
+  border-color:rgba(140,170,210,.32)!important;background:rgba(60,90,130,.18)!important;color:#a9c6e8!important;
+}
+/* Guide 12. A card without a usable link never offers a play affordance. */
+.sidebar-section.event-list-mode .event-ref-card.is-scheduled .event-card-action.watch{opacity:.45!important}
+
+/* Guide 20 and 27. Both corner buttons are real buttons, they never start
+   playback, and they read filled once set. */
+.sidebar-section.event-list-mode .card-remind-btn{
+  position:absolute!important;top:6px!important;right:6px!important;z-index:7!important;
+  display:grid!important;width:24px!important;height:24px!important;min-width:24px!important;place-items:center!important;
+  border:1px solid rgba(255,255,255,.14)!important;border-radius:50%!important;background:rgba(6,12,21,.72)!important;
+  color:#b6c1d0!important;font-size:10px!important;cursor:pointer!important;
+  transition:color .15s ease,border-color .15s ease,background .15s ease!important;
+}
+.sidebar-section.event-list-mode .card-remind-btn:hover,
+.sidebar-section.event-list-mode .card-remind-btn:focus-visible{
+  border-color:rgba(255,190,35,.6)!important;background:rgba(137,94,0,.3)!important;color:#ffd36b!important;outline:0!important;
+}
+.sidebar-section.event-list-mode .card-remind-btn.active{
+  border-color:rgba(255,190,35,.75)!important;background:rgba(137,94,0,.4)!important;color:#ffcf5a!important;
+}
+
+/* ── Count header (guide 23) ────────────────────────────────────────────── */
+
+.sidebar-count-detail{
+  margin-left:8px!important;color:#8b98ac!important;font-size:10.5px!important;font-weight:800!important;
+  overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+}
+
+/* ── Details popup (guide 18, 29, 32) ───────────────────────────────────── */
+
+.event-preview-facts{display:flex!important;flex-wrap:wrap!important;gap:6px!important;margin:0 0 12px!important}
+.event-preview-fact{
+  display:inline-flex!important;align-items:center!important;gap:5px!important;height:22px!important;padding:0 9px!important;
+  border:1px solid rgba(255,255,255,.16)!important;border-radius:999px!important;background:rgba(6,12,21,.55)!important;
+  color:#d3dceb!important;font-size:9px!important;font-weight:850!important;letter-spacing:.3px!important;
+}
+.event-preview-fact i{color:#7fc9ff!important;font-size:9px!important}
+
+/* ── Responsive (guide 25 and 26) ───────────────────────────────────────── */
+
+/* Tablet and small laptop: the card gains a little height so the meta row can
+   wrap without clipping, and the verification chip steps aside. */
+@media (max-width:1000px){
+  .sidebar-section.event-list-mode .event-ref-card{
+    grid-template-columns:104px minmax(0,1fr) 46px!important;
+    height:106px!important;min-height:106px!important;max-height:106px!important;
+  }
+  .sidebar-section.event-list-mode .event-card-title{font-size:12.5px!important;-webkit-line-clamp:2!important}
+  .sidebar-section.event-list-mode .event-card-competition{font-size:9px!important}
+  .sidebar-section.event-list-mode .event-card-footer{gap:3px 6px!important}
+  .sidebar-section.event-list-mode .event-card-time,
+  .sidebar-section.event-list-mode .event-card-streams,
+  .sidebar-section.event-list-mode .event-card-phase{font-size:8.5px!important}
+  .sidebar-section.event-list-mode .event-card-countdown{height:17px!important;padding:0 6px!important;font-size:8px!important}
+  .sidebar-section.event-list-mode .event-card-verified,
+  .sidebar-section.event-list-mode .event-card-streams{display:none!important}
+  .sidebar-section.event-list-mode .event-sport-badge{height:15px!important;font-size:7px!important;padding:0 5px!important}
+  .sidebar-section.event-list-mode .event-art-versus span{font-size:14px!important}
+  .sidebar-section.event-list-mode .event-card-action{min-width:46px!important;font-size:7px!important}
+  .sidebar-section.event-list-mode .event-card-action span{max-width:46px!important}
+}
+
+/* Phone: level 1 only — title, status, clock, action. The competition line,
+   the stream summary and the live phase all step aside; the artwork, the two
+   corner buttons and the action stay at a touch-friendly size. */
+@media (max-width:480px){
+  .sidebar-section.event-list-mode .event-ref-card{
+    grid-template-columns:92px minmax(0,1fr) 40px!important;
+    height:98px!important;min-height:98px!important;max-height:98px!important;
+  }
+  .sidebar-section.event-list-mode .event-card-title{font-size:11.5px!important}
+  .sidebar-section.event-list-mode .event-card-competition{display:none!important}
+  .sidebar-section.event-list-mode .event-card-streams,
+  .sidebar-section.event-list-mode .event-card-phase{display:none!important}
+  .sidebar-section.event-list-mode .event-card-time{font-size:8px!important}
+  .sidebar-section.event-list-mode .event-status-pill{height:17px!important;font-size:7px!important;padding:0 6px!important}
+  .sidebar-section.event-list-mode .event-now-playing{height:17px!important;font-size:7px!important;padding:0 6px!important}
+  .sidebar-section.event-list-mode .event-sport-badge{right:4px!important;bottom:4px!important}
+  .sidebar-section.event-list-mode .event-art-versus span{font-size:12px!important}
+  .sidebar-section.event-list-mode .event-card-action{min-width:40px!important}
+  .sidebar-section.event-list-mode .event-card-action span{display:none!important}
+  .sidebar-section.event-list-mode .event-card-action i{width:32px!important;height:32px!important;font-size:11px!important}
+  .sidebar-section.event-list-mode .card-remind-btn{width:26px!important;height:26px!important;min-width:26px!important}
+  .event-preview-fact{height:20px!important;padding:0 7px!important;font-size:8px!important}
+}
+
+/* Very narrow phones keep the same information, one step tighter. */
+@media (max-width:380px){
+  .sidebar-section.event-list-mode .event-ref-card{
+    grid-template-columns:80px minmax(0,1fr) 38px!important;
+    height:92px!important;min-height:92px!important;max-height:92px!important;
+  }
+  .sidebar-section.event-list-mode .event-card-art{width:80px!important;min-width:80px!important;height:62px!important}
+  .sidebar-section.event-list-mode .event-card-title{font-size:11px!important}
+}
+
+/* Short landscape phones: the player and the list share the screen, so the
+   card drops to its most compact form without losing status or clock. */
+@media (max-width:980px) and (orientation:landscape) and (max-height:500px){
+  .sidebar-section.event-list-mode .event-ref-card{
+    grid-template-columns:74px minmax(0,1fr) 36px!important;
+    height:88px!important;min-height:88px!important;max-height:88px!important;padding:6px!important;gap:7px!important;
+  }
+  .sidebar-section.event-list-mode .event-card-art{width:74px!important;min-width:74px!important;height:58px!important}
+  .sidebar-section.event-list-mode .event-card-title{font-size:10.5px!important;-webkit-line-clamp:2!important}
+  .sidebar-section.event-list-mode .event-card-competition,
+  .sidebar-section.event-list-mode .event-card-streams,
+  .sidebar-section.event-list-mode .event-card-phase,
+  .sidebar-section.event-list-mode .event-card-verified,
+  .sidebar-section.event-list-mode .event-card-streams{display:none!important}
+  .sidebar-section.event-list-mode .event-sport-badge{display:none!important}
+  .sidebar-section.event-list-mode .event-card-action span{display:none!important}
+  /* The countdown answers "when" better than a clock does here, so an
+     upcoming card shows that alone and the exact time moves to the popup. */
+  .sidebar-section.event-list-mode .event-upcoming-card.has-countdown .event-card-time{display:none!important}
+  /* The active border and the pause icon already say what is playing. */
+  .sidebar-section.event-list-mode .event-now-playing{display:none!important}
+  .sidebar-section.event-list-mode .event-ref-card.active .event-now-playing{display:none!important}
+}

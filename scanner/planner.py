@@ -274,7 +274,14 @@ def _pipeline_for_mode(mode: str) -> Set[str]:
         active.add("tv")
     if mode_clean in {"all", "full-audit", "movies", "movies-discovery"}:
         active.add("movies")
-    if mode_clean in {"all", "full-audit", "events", "today", "today_match"}:
+    # Both event modes plan both event source groups. Today Match and Upcoming
+    # are decided by each event's schedule status rather than by the file it
+    # was configured in, so an Upcoming scan that planned only "upcoming"
+    # sources would republish Today Match from a partial pool and delete the
+    # live cards the previous scan had proven.
+    if mode_clean in {
+        "all", "full-audit", "events", "today", "today_match", "upcoming",
+    }:
         active.add("today_match")
     if mode_clean in {"all", "full-audit", "events", "today", "today_match", "upcoming"}:
         active.add("upcoming")

@@ -228,8 +228,16 @@ def _collect_allowed_hosts_from_data(data_root: Path) -> List[str]:
     json_files.extend([
         data_root / "today-match.json",
         data_root / "upcoming.json",
+        # Still read for a repository that predates the sharded catalogue.
         data_root / "playback-sources.json",
     ])
+    # The catalogue holds the only copy of a protected source's real URL, plus
+    # its DRM licence and certificate hosts. Missing these would leave the
+    # proxy's allowlist without the very hosts protected playback needs, so
+    # every shard has to be walked here, not just the index.
+    playback_dir = data_root / "playback"
+    if playback_dir.exists():
+        json_files.extend(sorted(playback_dir.glob("*.json")))
 
     for file_path in json_files:
         payload = _load_json_file(file_path)

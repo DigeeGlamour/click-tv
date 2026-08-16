@@ -47,6 +47,8 @@
   <link rel="stylesheet" href="assets/css/series.css?v=20260806-user-list-final-v1">
   <link rel="stylesheet" href="assets/css/final-design.css?v=20260806-user-list-final-v1">
   <link rel="stylesheet" href="assets/css/reference-design.css?v=20260816-movie-controls-notice-v4">
+  <link rel="stylesheet" href="assets/css/event-cards.css?v=20260816-event-card-ui-v1">
+  <link rel="stylesheet" href="assets/css/smart-filter.css?v=20260816-smart-filter-v1">
 </head>
 <body translate="no" class="notranslate">
   <div id="sticky-header-notice" class="sticky-notice">
@@ -147,6 +149,7 @@
               <h3 id="eventPreviewTitle">Match information</h3>
               <p class="event-preview-league" id="eventPreviewLeague"></p>
               <p class="event-preview-time" id="eventPreviewTime"><i class="far fa-clock" aria-hidden="true"></i><span>Schedule will be updated</span></p>
+              <div class="event-preview-facts" id="eventPreviewFacts"></div>
               <p class="event-preview-note"><i class="fas fa-satellite-dish" aria-hidden="true"></i> Stream link will be added before the match starts.</p>
             </div>
           </section>
@@ -298,6 +301,11 @@
       <div class="sidebar-scroll-area" id="sidebarScrollArea">
         <div class="sidebar-top-bar card-list-meta">
           <span class="sidebar-count" id="sidebarCountText">0 Items</span>
+          <span class="sidebar-count-detail" id="sidebarCountDetail" style="display:none"></span>
+          <span class="event-filter-wrap" id="eventFilterWrap" hidden>
+            <button class="event-filter-btn" id="eventFilterBtn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="eventFilterMenu" aria-label="Filter events by sport"><i class="fas fa-sliders" aria-hidden="true"></i><span class="event-filter-label">Filter</span><i class="fas fa-chevron-down event-filter-caret" aria-hidden="true"></i></button>
+            <div class="event-filter-menu" id="eventFilterMenu" role="menu" aria-hidden="true" aria-label="Sport filter"></div>
+          </span>
           <select class="sort-select sort-text" id="sortSelect" aria-label="Sort content">
             <option value="default">Default Sort</option>
             <option value="az">A-Z Name</option>
@@ -310,6 +318,6 @@
   </div>
 
   <script src="assets/js/series.js?v=20260806-user-list-final-v1"></script>
-  <script src="assets/js/app.js?v=20260816-movie-controls-notice-v4"></script>
+  <script src="assets/js/app.js?v=20260816-smart-filter-v1"></script>
 </body>
 </html>

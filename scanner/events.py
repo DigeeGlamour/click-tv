@@ -18,13 +18,25 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 try:
     from scanner.merger import merge_candidates
-    from scanner.schedule_resolver import enrich_event_candidates
+    from scanner.schedule_resolver import (
+        DEFAULT_FIXTURE_AUTHORITY_SOURCES,
+        DEFAULT_PROVIDER_EVENT_HOURS,
+        attach_streams_to_fixtures,
+        enrich_event_candidates,
+        reuse_published_event_ids,
+    )
 except ImportError:
     module_dir = str(Path(__file__).resolve().parent)
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
     from merger import merge_candidates
-    from schedule_resolver import enrich_event_candidates
+    from schedule_resolver import (
+        DEFAULT_FIXTURE_AUTHORITY_SOURCES,
+        DEFAULT_PROVIDER_EVENT_HOURS,
+        attach_streams_to_fixtures,
+        enrich_event_candidates,
+        reuse_published_event_ids,
+    )
 
 
 DEFAULT_TODAY_MAX_AGE_HOURS = 12
@@ -323,6 +335,33 @@ def _is_upcoming_fresh(
     return True
 
 
+LIVE_SCHEDULE_STATUSES = frozenset({"LIVE_NOW", "LIVE", "CHANNEL_LIVE", "IN_PROGRESS"})
+UPCOMING_SCHEDULE_STATUSES = frozenset({
+    "UPCOMING", "STARTING_SOON", "LINK_UPDATING", "NOT_STARTED", "SCHEDULED",
+})
+
+
+def _destination_for(card: Dict[str, Any]) -> str:
+    """Decide Today Match vs Upcoming from the event, not from its source file.
+
+    Routing used to read `source_pipeline`, so a match stayed wherever its
+    playlist happened to be configured. A live fixture that arrived from an
+    "upcoming" feed was therefore filed as Upcoming and then dropped for having
+    started in the past - which is how `Sri Lanka vs India 1st Test`, carrying
+    five working streams, vanished from both tabs. The schedule status is what
+    actually decides where an event belongs; the source group is only a hint
+    for anything with no resolved status at all.
+    """
+    status = str(card.get("schedule_status") or card.get("status") or "").strip().upper()
+    if status in LIVE_SCHEDULE_STATUSES:
+        return "today_match"
+    if status in UPCOMING_SCHEDULE_STATUSES:
+        return "upcoming"
+    if status == "ENDED":
+        return "ended"
+    return str(card.get("source_pipeline") or "").strip().lower()
+
+
 def _payload(
     items: List[Dict[str, Any]],
     event_type: str,
@@ -399,6 +438,19 @@ def process_events(
         in {"today_match", "upcoming"}
     ]
 
+    configured_authority = event_settings.get("fixture_authority_sources")
+    authority_source_ids = (
+        {str(value).strip() for value in configured_authority if str(value).strip()}
+        if isinstance(configured_authority, list)
+        else None
+    )
+    provider_event_hours = _safe_int(
+        event_settings.get("provider_event_hours"),
+        DEFAULT_PROVIDER_EVENT_HOURS,
+        1,
+        24,
+    )
+
     reference_now = now or _utc_now_dt()
     event_candidates, schedule_stats = enrich_event_candidates(
         raw_event_candidates,
@@ -406,12 +458,27 @@ def process_events(
         timezone_name=timezone_name,
         now=reference_now,
         future_days=upcoming_future_days,
+        authority_source_ids=authority_source_ids,
+        provider_event_hours=provider_event_hours,
     )
+
+    # Guide 30.7: the fixture exists first, then a matching stream is attached
+    # to it. Without this an Upcoming card and the stream that could play it
+    # stay in separate groups and the card publishes with nothing to play.
+    event_candidates, attach_stats = attach_streams_to_fixtures(
+        event_candidates,
+        authority_source_ids or set(DEFAULT_FIXTURE_AUTHORITY_SOURCES),
+    )
+    schedule_stats.update(attach_stats)
 
     merged = merge_candidates(
         event_candidates,
         settings_path=settings_path,
     )
+
+    # Guide 30.8: an event that moved from Upcoming to Today Match keeps the
+    # card it already had rather than appearing as a new one.
+    schedule_stats["reused_event_ids"] = reuse_published_event_ids(merged)
 
     now = reference_now
     today_items: List[Dict[str, Any]] = []
@@ -424,9 +491,9 @@ def process_events(
         if not isinstance(card, dict):
             continue
 
-        pipeline = str(card.get("source_pipeline") or "").strip().lower()
         card_copy = dict(card)
         card_copy["_source_timezone"] = source_timezone
+        pipeline = _destination_for(card_copy)
 
         if pipeline == "today_match":
             if not _is_playable(card_copy):

@@ -295,7 +295,14 @@ def _parse_source_time(value: Any, source_timezone: ZoneInfo, now: datetime) -> 
     if re.match(r"(?i)^tomorrow\b", cleaned):
         day += timedelta(days=1)
         cleaned = re.sub(r"(?i)^tomorrow\s+", "", cleaned)
-    for pattern in ("%Y-%m-%d %I:%M %p", "%Y-%m-%d %H:%M", "%d-%m-%Y %I:%M %p"):
+    for pattern in (
+        "%Y-%m-%d %I:%M %p", "%Y-%m-%d %H:%M", "%d-%m-%Y %I:%M %p",
+        # AX Sports writes the clock before the date ("12:30 AM 17-08-2026").
+        # Without these the kickoff time was unreadable, so every one of its
+        # not-started fixtures was discarded for having no schedule.
+        "%I:%M %p %d-%m-%Y", "%I %p %d-%m-%Y", "%H:%M %d-%m-%Y",
+        "%I:%M %p %Y-%m-%d", "%H:%M %Y-%m-%d",
+    ):
         try:
             parsed = datetime.strptime(cleaned, pattern).replace(tzinfo=source_timezone)
             return parsed.astimezone(timezone.utc)
@@ -382,12 +389,360 @@ def _today_source_channel_fallback(item: Dict[str, Any]) -> Optional[Dict[str, A
     return fallback
 
 
+# Feeds that publish a real fixture list - participants, competition, kickoff
+# time and a live/not-started status - rather than only a playable link. They
+# are the authority on what a match is and when it starts; stream playlists are
+# the authority on how to play it. Only a source named here may bring a fixture
+# into existence, so a stream-only playlist can still never invent one.
+DEFAULT_FIXTURE_AUTHORITY_SOURCES = frozenset({
+    "srhady-axsports-upcoming",
+    "srhady-willow-event-upcoming",
+})
+
+# A provider feed gives a kickoff time but almost never an end time, so a
+# window has to be assumed to decide when a card stops being current.
+DEFAULT_PROVIDER_EVENT_HOURS = 4
+
+PROVIDER_LIVE_STATUSES = frozenset({"LIVE", "LIVE_NOW", "IN_PROGRESS", "STARTED"})
+PROVIDER_UPCOMING_STATUSES = frozenset({"UPCOMING", "NOT_STARTED", "SCHEDULED", "NS"})
+PROVIDER_DEAD_STATUSES = frozenset({
+    "COMPLETED", "ENDED", "FINISHED", "CLOSED", "UNSCHEDULED",
+    "CANCELLED", "POSTPONED", "ABANDONED",
+})
+
+
+UNUSABLE_STREAM_STATUSES = frozenset({
+    "failed", "failed_bd", "404_quarantined", "rejected_low_quality", "quarantine",
+})
+
+
+def _stream_is_usable(item: Dict[str, Any]) -> bool:
+    """Whether this candidate still carries a link worth publishing."""
+    if not str(item.get("url") or "").strip():
+        return False
+    if item.get("metadata_only") is True:
+        return False
+    if item.get("publish_allowed") is False:
+        return False
+    status = str(item.get("verification_status") or "").strip().lower()
+    return status not in UNUSABLE_STREAM_STATUSES
+
+
+def _provider_status(item: Dict[str, Any]) -> str:
+    return str(
+        item.get("status")
+        or item.get("event_status")
+        or item.get("original_status")
+        or ""
+    ).strip().upper()
+
+
+def _provider_fixture_item(
+    item: Dict[str, Any],
+    source_time: Optional[datetime],
+    now_utc: datetime,
+    event_hours: int,
+) -> Optional[Dict[str, Any]]:
+    """Turn one fixture-authority feed entry into a scheduled event.
+
+    The local config/event-fixtures.json catalogue holds a handful of
+    hand-written competitions, and requiring an exact match against it
+    suppressed 414 of 444 candidates - every AX Sports football fixture and
+    every SM Sports Data entry - because their competitions were simply not
+    listed. A feed that states the participants, the kickoff time and whether
+    the match has started is itself sufficient evidence to publish a card.
+    """
+    status = _provider_status(item)
+    if status in PROVIDER_DEAD_STATUSES:
+        return None
+
+    is_live = status in PROVIDER_LIVE_STATUSES
+    is_upcoming = status in PROVIDER_UPCOMING_STATUSES
+    if not is_live and not is_upcoming:
+        return None
+
+    start = source_time
+    if start is None:
+        if not is_live:
+            # No kickoff time and not currently playing: nothing to schedule.
+            return None
+        start = now_utc
+
+    resolved = copy.deepcopy(item)
+    end = start + timedelta(hours=max(1, event_hours))
+    if is_live:
+        # The feed says this is playing now, which outranks a guessed window;
+        # a long format like a Test day would otherwise read as already ended.
+        end = max(end, now_utc + timedelta(hours=1))
+
+    resolved["start_time"] = _iso_utc(start)
+    resolved["start_at"] = resolved["start_time"]
+    resolved["end_time"] = _iso_utc(end)
+    resolved["source_start_time"] = str(item.get("start_time") or "")
+    resolved["schedule_verified"] = True
+    resolved["schedule_authority"] = str(item.get("source_id") or "provider_feed")
+    resolved["time_verification"] = "provider_feed"
+    resolved.setdefault(
+        "schedule_source_url", str(item.get("source_url") or item.get("event_url") or "")
+    )
+    resolved["fixture_id"] = resolved.get("fixture_id") or _provider_fixture_id(resolved, start)
+
+    if is_upcoming and not _stream_is_usable(resolved):
+        # A fixture that has not started usually carries a placeholder link, so
+        # verification rightly marks it failed. The fixture itself is still
+        # real and belongs on the Upcoming tab; only its link is not ready. Drop
+        # the dead link and keep the card, exactly as `allow_without_stream`
+        # describes - a later scan attaches a working stream near kickoff. This
+        # keeps the promise that no dead link is ever published.
+        for field in ("url", "stream_url", "link", "final_url", "backups", "standby"):
+            resolved.pop(field, None)
+        resolved["metadata_only"] = True
+        resolved["verification_status"] = "metadata_only"
+        resolved["publish_allowed"] = True
+        resolved["allow_without_stream"] = True
+        resolved["stream_pending"] = True
+
+    resolved = _classify(resolved, now_utc)
+
+    if is_live and resolved.get("schedule_status") == "ENDED":
+        playable = (
+            bool(str(resolved.get("url") or "").strip())
+            and resolved.get("metadata_only") is not True
+        )
+        resolved["schedule_status"] = "LIVE_NOW" if playable else "LINK_UPDATING"
+        resolved["status"] = resolved["schedule_status"]
+    elif is_upcoming and resolved.get("schedule_status") == "ENDED":
+        # A not-started fixture whose kickoff has already passed means the feed
+        # is stale. Publishing it would show a match that is over.
+        return None
+
+    return resolved
+
+
+def _event_identity_name(value: Any) -> str:
+    """Name portion of a fixture id, stable across day labels and channels."""
+    try:
+        from scanner.merger import normalize_event_key
+    except ImportError:  # scanner/ on sys.path directly
+        from merger import normalize_event_key
+    return normalize_event_key(value) or _norm(value)
+
+
+def _provider_fixture_id(item: Dict[str, Any], start: datetime) -> str:
+    """Identity from participants + competition + date, never the title alone.
+
+    Same teams meeting again on another date stay distinguishable (guide 22),
+    while a multi-day Test keeps one identity across its days because the name
+    portion is the normalised event key, which drops "Day 3"/"Session 2" but
+    keeps "1st Test" (guide 19).
+
+    The date is dropped for a multi-day fixture; including it would mint a new
+    id every morning and break the "one match, one card" rule the moment play
+    resumed.
+    """
+    parts = [
+        _event_identity_name(item.get("name")),
+        _norm(item.get("competition")),
+    ]
+    if not _MULTI_DAY_FIXTURE.search(str(item.get("name") or "")):
+        parts.append(start.strftime("%Y-%m-%d"))
+    return "provider:" + "|".join(part for part in parts if part)
+
+
+#: A format that legitimately spans more than one calendar day.
+_MULTI_DAY_FIXTURE = re.compile(
+    r"(?i)\b(?:test|day\s*\d|session\s*\d|stage\s*\d|tour|championship)\b"
+)
+
+
+def reuse_published_event_ids(
+    items: List[Dict[str, Any]],
+    data_root: str | Path = "data",
+) -> int:
+    """Guide 30.8: a promoted event reuses its card, it does not get a new one.
+
+    When a fixture goes from not-started to in-play it moves from the Upcoming
+    tab to Today Match. Minting a fresh id at that moment would read to the
+    site as a brand new card, losing whatever the viewer already had open.
+    Matching this scan's events against the ids already published keeps one
+    identity for the whole life of the match. Two small file reads, so it adds
+    nothing measurable to a scan.
+    """
+    published: Dict[str, str] = {}
+    for filename in ("today-match.json", "upcoming.json"):
+        path = Path(data_root) / filename
+        if not path.is_file():
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            continue
+        for entry in payload.get("items") or []:
+            if not isinstance(entry, dict):
+                continue
+            key = _event_identity_name(entry.get("name"))
+            existing = str(entry.get("id") or "").strip()
+            if key and existing:
+                published.setdefault(key, existing)
+
+    if not published:
+        return 0
+
+    reused = 0
+    for item in items:
+        key = _event_identity_name(item.get("name"))
+        previous = published.get(key)
+        if not previous:
+            continue
+        if str(item.get("id") or "").strip() != previous:
+            item["previous_event_id"] = str(item.get("id") or "")
+            item["id"] = previous
+            item["promoted_card"] = True
+            reused += 1
+    return reused
+
+
+TEAM_SEPARATOR = re.compile(r"(?i)\s+(?:versus|vs\.?|v\.?)\s+")
+
+# Words that describe the broadcast or the competition rather than the teams.
+# Everything from the first of these onwards is competition/channel noise.
+_TEAM_TAIL_NOISE = re.compile(
+    r"(?i)\b(?:"
+    r"premier|league|liga|bundesliga|eredivisie|serie|ligue|division|"
+    r"championship|cup|trophy|series|test|odi|t20|tnpl|cpl|ipl|bpl|"
+    r"friendl(?:y|ies)|qualif(?:ier|ying)|round|matchday|group|women|men|"
+    r"willow|crichd|criclife|tapmad|fancode|sony|star|fox|ptv|supersport|"
+    r"server|hd|fhd|uhd|sd|live|stream"
+    r")\b"
+)
+
+
+def team_pair_key(name: str) -> str:
+    """Identity built from the participants alone.
+
+    A fixture feed says `Amarante vs Lusitania Lourosa`; the playlist relaying
+    it says `Amarante vs Lusitania Lourosa Segunda Liga`. Keyed on the whole
+    title those never meet, which is why every Upcoming card was published with
+    no stream at all. Cutting the title at the competition leaves the one part
+    both sides always agree on.
+    """
+    text = str(name or "").casefold()
+    if "|" in text:
+        text = text.split("|", 1)[0]
+    parts = TEAM_SEPARATOR.split(text, maxsplit=1)
+    if len(parts) != 2:
+        return ""
+
+    def clean(side: str) -> str:
+        side = re.split(r"\s+-\s+", side, maxsplit=1)[0]
+        noise = _TEAM_TAIL_NOISE.search(side)
+        if noise:
+            side = side[: noise.start()]
+        side = re.sub(r"[^\w\s]", " ", side)
+        return " ".join(side.split())
+
+    left, right = clean(parts[0]), clean(parts[1])
+    if not left or not right:
+        return ""
+    return f"{left}|{right}"
+
+
+def attach_streams_to_fixtures(
+    items: List[Dict[str, Any]],
+    authority_source_ids: set,
+) -> Tuple[List[Dict[str, Any]], Dict[str, int]]:
+    """Guide 30.7: build the fixture first, then hang matching streams on it.
+
+    A fixture feed carries no playable link and a playlist carries no reliable
+    schedule, so on their own each is half a card: 88 Upcoming fixtures with
+    nothing to play, beside verified streams nobody could place on a timeline.
+    Re-labelling a matching stream with its fixture's identity lets the ordinary
+    merge fold them into one card with primary and backups, which is exactly the
+    structure the guide asks for.
+    """
+    fixtures_by_team = {}
+    for item in items:
+        if str(item.get("source_id") or "") not in authority_source_ids:
+            continue
+        key = team_pair_key(item.get("name"))
+        if key:
+            fixtures_by_team.setdefault(key, item)
+
+    stats = {"streams_attached": 0, "fixtures_with_stream": 0}
+    if not fixtures_by_team:
+        return items, stats
+
+    # Longest first so "Arsenal|Manchester City" is preferred over a shorter
+    # fixture that happens to share a prefix.
+    fixture_keys = sorted(fixtures_by_team, key=len, reverse=True)
+
+    def find_fixture(stream_key: str):
+        exact = fixtures_by_team.get(stream_key)
+        if exact is not None:
+            return exact
+        # A playlist titles the same match as the fixture plus its competition
+        # ("... Segunda Liga", "... Currie Cup"), so the fixture key is a
+        # prefix of the stream key. The space guard stops "Arsenal|Man" from
+        # capturing "Arsenal|Manchester City".
+        for key in fixture_keys:
+            if stream_key.startswith(key) and stream_key[len(key):len(key) + 1] == " ":
+                return fixtures_by_team[key]
+        return None
+
+    enriched_fixture_keys = set()
+    output: List[Dict[str, Any]] = []
+    for item in items:
+        if str(item.get("source_id") or "") in authority_source_ids:
+            output.append(item)
+            continue
+        if not _stream_is_usable(item):
+            output.append(item)
+            continue
+
+        key = team_pair_key(item.get("name"))
+        fixture = find_fixture(key) if key else None
+        if fixture is None:
+            output.append(item)
+            continue
+
+        attached = copy.deepcopy(item)
+        # The fixture owns the identity and the clock; the stream keeps only
+        # what makes it playable.
+        attached["name"] = fixture["name"]
+        for field in (
+            "competition", "fixture_id", "start_time", "start_at", "end_time",
+            "schedule_status", "status", "schedule_verified",
+            "schedule_source_url", "time_verification", "schedule_authority",
+        ):
+            if field in fixture:
+                attached[field] = fixture[field]
+        # Guide 30.8 step 6: the fixture was in play but had no link, so it was
+        # parked as LINK_UPDATING on the Upcoming tab. A working stream has now
+        # arrived, so the event is genuinely playable and belongs on Today
+        # Match. Without this the card stays in Upcoming holding a live stream
+        # nobody can reach from there.
+        if str(fixture.get("schedule_status") or "").upper() == "LINK_UPDATING":
+            attached["schedule_status"] = "LIVE_NOW"
+            attached["status"] = "LIVE_NOW"
+            attached["promoted_from_upcoming"] = True
+
+        attached["stream_attached_to_fixture"] = True
+        output.append(attached)
+        stats["streams_attached"] += 1
+        enriched_fixture_keys.add(key)
+
+    stats["fixtures_with_stream"] = len(enriched_fixture_keys)
+    return output, stats
+
+
 def enrich_event_candidates(
     candidates: List[Dict[str, Any]],
     fixture_path: str | Path = "config/event-fixtures.json",
     timezone_name: str = "Asia/Dhaka",
     now: Optional[datetime] = None,
     future_days: int = 120,
+    authority_source_ids: Optional[set] = None,
+    provider_event_hours: int = DEFAULT_PROVIDER_EVENT_HOURS,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, int]]:
     now_utc = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     source_zone = _zone(timezone_name, "Asia/Dhaka", "+06:00")
@@ -397,11 +752,18 @@ def enrich_event_candidates(
         if fixture["end"] > now_utc
         and fixture["start"] <= now_utc + timedelta(days=future_days)
     ]
+    authority = (
+        DEFAULT_FIXTURE_AUTHORITY_SOURCES
+        if authority_source_ids is None
+        else {str(value).strip() for value in authority_source_ids if str(value).strip()}
+    )
     output: List[Dict[str, Any]] = []
     stats = {
         "matched": 0,
         "corrected": 0,
         "catalogue": 0,
+        "provider_fixture": 0,
+        "provider_rejected": 0,
         "ambiguous_suppressed": 0,
         "unverified_suppressed": 0,
     }
@@ -450,9 +812,25 @@ def enrich_event_candidates(
                     output.append(fallback)
             continue
 
-        # A source-provided date is useful evidence, but it is not authoritative
-        # enough to publish an event card by itself. The raw candidate remains in
-        # scan reports; it becomes public only after an exact catalogue match.
+        # No entry in the local catalogue. A fixture-authority feed states the
+        # participants, the kickoff time and whether play has started, which is
+        # evidence enough on its own; a stream-only playlist is not and still
+        # falls through to the channel handling below.
+        if str(item.get("source_id") or "").strip() in authority:
+            provider_item = _provider_fixture_item(
+                item, source_time, now_utc, provider_event_hours
+            )
+            if provider_item is not None:
+                stats["provider_fixture"] += 1
+                output.append(provider_item)
+                continue
+            stats["provider_rejected"] += 1
+            continue
+
+        # A stream source's own date is useful evidence, but it is not
+        # authoritative enough to publish an event card by itself. The raw
+        # candidate remains in scan reports; it becomes public only after a
+        # catalogue or fixture-authority match.
         stats["unverified_suppressed"] += 1
         fallback = _today_source_channel_fallback(item)
         if fallback is not None:

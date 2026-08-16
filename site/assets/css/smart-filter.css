@@ -1,0 +1,110 @@
+/* Click TV — Smart Sports Filter.
+ *
+ * The control lives entirely inside the existing right-side Events header
+ * (.sidebar-top-bar.card-list-meta). Nothing here touches the player column,
+ * the sidebar rail, the main header, the Now Playing bar or the event cards:
+ * the only selectors are the filter's own, plus one rule that reveals the
+ * already-existing header row on phones so the button has its place there.
+ *
+ * The menu is positioned in viewport coordinates from JS, because the header
+ * it hangs off sits inside a scrolling column that would otherwise clip it.
+ */
+
+.event-filter-wrap{position:relative!important;display:inline-flex!important;flex:0 0 auto!important;margin-left:auto!important}
+.event-filter-wrap[hidden]{display:none!important}
+
+.event-filter-btn{
+  display:inline-flex!important;align-items:center!important;gap:7px!important;
+  height:30px!important;padding:0 11px!important;
+  border:1px solid rgba(120,142,175,.42)!important;border-radius:999px!important;
+  background:linear-gradient(135deg,rgba(22,34,52,.96),rgba(11,17,28,.96))!important;
+  color:#e7edf6!important;font-size:11.5px!important;font-weight:850!important;letter-spacing:.2px!important;
+  cursor:pointer!important;white-space:nowrap!important;
+  transition:border-color .15s ease,background .15s ease,color .15s ease!important;
+}
+.event-filter-btn:hover,.event-filter-btn:focus-visible{
+  border-color:rgba(255,64,91,.6)!important;background:rgba(255,45,86,.12)!important;outline:0!important;
+}
+.event-filter-btn>i:first-child{color:#8fb6e6!important;font-size:11px!important}
+.event-filter-caret{color:#94a3b8!important;font-size:9px!important}
+.event-filter-btn[aria-expanded="true"] .event-filter-caret{transform:rotate(180deg)!important}
+
+/* Guide 6: an active filter is named on the button itself. */
+.event-filter-btn.filtered{
+  border-color:rgba(255,64,91,.62)!important;background:rgba(255,45,86,.16)!important;color:#ffd7de!important;
+}
+.event-filter-btn.filtered>i:first-child{color:#ff7c93!important}
+
+.event-filter-menu{
+  position:fixed!important;z-index:120!important;display:none!important;
+  min-width:210px!important;max-width:min(280px,calc(100vw - 16px))!important;
+  max-height:min(60vh,420px)!important;overflow-y:auto!important;
+  padding:8px!important;border:1px solid rgba(120,142,175,.38)!important;border-radius:14px!important;
+  background:linear-gradient(160deg,rgba(20,30,47,.99),rgba(9,14,24,.99))!important;
+  box-shadow:0 18px 40px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.03)!important;
+  backdrop-filter:blur(10px)!important;
+}
+.event-filter-menu.open{display:block!important}
+
+.event-filter-heading{
+  padding:4px 10px 8px!important;color:#8492a6!important;
+  font-size:9px!important;font-weight:950!important;letter-spacing:1.3px!important;text-transform:uppercase!important;
+}
+
+.event-filter-option{
+  display:flex!important;width:100%!important;align-items:center!important;gap:9px!important;
+  height:36px!important;padding:0 10px!important;margin:0!important;
+  border:0!important;border-radius:9px!important;background:transparent!important;
+  color:#dfe7f2!important;font-size:12px!important;font-weight:800!important;text-align:left!important;
+  cursor:pointer!important;transition:background .13s ease,color .13s ease!important;
+}
+.event-filter-option:hover,.event-filter-option:focus-visible{background:rgba(255,255,255,.06)!important;outline:0!important}
+.event-filter-option:focus-visible{box-shadow:inset 0 0 0 1px rgba(255,64,91,.55)!important}
+.event-filter-option.selected{background:rgba(255,45,86,.14)!important;color:#fff!important}
+
+.event-filter-tick{
+  position:relative!important;display:inline-block!important;flex:0 0 auto!important;
+  width:14px!important;height:14px!important;border:2px solid rgba(140,158,184,.7)!important;border-radius:50%!important;
+}
+.event-filter-option.selected .event-filter-tick{border-color:#ff405b!important}
+.event-filter-option.selected .event-filter-tick::after{
+  content:''!important;position:absolute!important;inset:2px!important;border-radius:50%!important;background:#ff405b!important;
+}
+
+.event-filter-option>i{flex:0 0 auto!important;width:14px!important;color:#8fb6e6!important;font-size:11px!important;text-align:center!important}
+.event-filter-option.selected>i{color:#ff8fa3!important}
+.event-filter-name{flex:1 1 auto!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+.event-filter-count{
+  flex:0 0 auto!important;color:#93a1b5!important;font-size:11px!important;font-weight:900!important;font-variant-numeric:tabular-nums!important;
+}
+.event-filter-option.selected .event-filter-count{color:#ffb3c0!important}
+
+/* Guide 22. The Events header row already exists but is hidden on phones, so
+   it is shown again only while an event list is on screen — the player, the
+   navigation and the cards keep their positions, and every other view keeps
+   the header hidden exactly as before. */
+@media (max-width:1000px){
+  .sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta{
+    display:flex!important;min-height:0!important;align-items:center!important;
+    padding:0 2px 7px!important;border-bottom:1px solid #202b3d!important;
+  }
+  /* Sorting stays a desktop control; the phone header carries count + filter. */
+  .sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta .sort-select{display:none!important}
+  .sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta .sidebar-count{font-size:12px!important}
+  .event-filter-btn{height:28px!important;padding:0 10px!important;font-size:11px!important}
+  .event-filter-option{height:38px!important}
+}
+
+/* Short landscape phones: the list is only a few rows tall, so the menu stays
+   inside the viewport and scrolls rather than pushing anything around. */
+@media (max-width:980px) and (orientation:landscape) and (max-height:500px){
+  .sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta{padding:0 2px 5px!important}
+  .event-filter-btn{height:24px!important;padding:0 8px!important;font-size:10px!important;gap:5px!important}
+  .event-filter-menu{max-height:calc(100vh - 24px)!important;padding:6px!important}
+  .event-filter-option{height:30px!important;font-size:11px!important}
+  .event-filter-heading{padding:2px 8px 5px!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .event-filter-btn,.event-filter-option{transition:none!important}
+}

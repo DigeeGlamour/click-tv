@@ -14,6 +14,8 @@ class FinalDesignContractTests(unittest.TestCase):
         cls.css = (cls.root / "site/assets/css/final-design.css").read_text(encoding="utf-8")
         cls.reference_css = (cls.root / "site/assets/css/reference-design.css").read_text(encoding="utf-8")
         cls.app = (cls.root / "site/assets/js/app.js").read_text(encoding="utf-8")
+        cls.event_css = (cls.root / "site/assets/css/event-cards.css").read_text(encoding="utf-8")
+        cls.filter_css = (cls.root / "site/assets/css/smart-filter.css").read_text(encoding="utf-8")
         cls.service_worker = (cls.root / "site/sw.js").read_text(encoding="utf-8")
 
     def test_approved_layout_and_navigation_contract(self) -> None:
@@ -54,8 +56,8 @@ class FinalDesignContractTests(unittest.TestCase):
 
     def test_reference_design_is_external_and_preserves_the_three_column_contract(self) -> None:
         self.assertIn("reference-design.css?v=20260816-movie-controls-notice-v4", self.index)
-        self.assertIn("app.js?v=20260816-movie-controls-notice-v4", self.index)
-        self.assertIn('CACHE_VERSION = "click-tv-design-playback-20260816-v24"', self.service_worker)
+        self.assertIn("app.js?v=20260816-smart-filter-v1", self.index)
+        self.assertIn('CACHE_VERSION = "click-tv-design-playback-20260816-v26-smart-filter"', self.service_worker)
         self.assertIn('class="desktop-category-rail"', self.index)
         self.assertIn('id="desktopCategoryTitle"', self.index)
         self.assertIn('id="mobileBottomSearchBtn"', self.index)
@@ -157,12 +159,156 @@ class FinalDesignContractTests(unittest.TestCase):
     def test_modern_event_cards_keep_schedules_and_live_actions(self) -> None:
         self.assertIn("if (sourceKind === VIEW.UPCOMING) return Boolean(String(item.name || '').trim());", self.app)
         self.assertIn("'LIVE NOW'", self.app)
-        self.assertIn("showWatchAction ? 'Watch' : 'Details'", self.app)
-        self.assertIn("playable && state.view === VIEW.EVENT", self.app)
+        # The action names what the click does. A card with a usable link plays
+        # on either tab, so the label follows playability rather than the tab.
+        self.assertIn("const showWatchAction = playable;", self.app)
+        self.assertIn("showWatchAction ? (channelOnly ? 'Watch Channel' : 'Watch') : 'Details'", self.app)
         self.assertIn('showEventPreview(item)', self.app)
         self.assertIn('.event-ref-card', self.reference_css)
         self.assertIn('.event-status-pill.upcoming', self.reference_css)
         self.assertIn('.event-status-pill.live', self.reference_css)
+
+    def test_event_card_upgrade_is_present_and_scoped(self) -> None:
+        """The Today Match / Upcoming card upgrade.
+
+        Everything it adds lives in one stylesheet that is scoped to the event
+        list, so the channel grid, the movie grid and the player keep whatever
+        the earlier stylesheets gave them.
+        """
+        self.assertIn("assets/css/event-cards.css", self.index)
+        self.assertIn('id="sidebarCountDetail"', self.index)
+        self.assertIn('id="eventPreviewFacts"', self.index)
+
+        # Every rule in the new file is scoped to the event list or to the two
+        # elements the upgrade adds outside it.
+        allowed_prefixes = (
+            ".sidebar-section.event-list-mode",
+            ".sidebar-count-detail",
+            ".event-preview-facts",
+            ".event-preview-fact",
+            "@keyframes eventEqualizer",
+        )
+        for line in self.event_css.splitlines():
+            stripped = line.strip()
+            if not stripped.startswith("."):
+                continue
+            for selector in stripped.split("{")[0].split(","):
+                selector = selector.strip()
+                if not selector:
+                    continue
+                self.assertTrue(
+                    selector.startswith(allowed_prefixes),
+                    f"event-cards.css must not reach outside the event list: {selector}",
+                )
+
+        # Guide sections that must be represented in the card factory.
+        for marker in (
+            "function eventSport(",             # 5, sport badge
+            "function eventLivePhaseText(",     # 6, measured live phase
+            "function eventStartedText(",       # 7, BDT start time
+            "function eventStreamSummary(",     # 8, 9 and 19, stream readiness
+            "function isChannelOnlyEventCard(", # 10, channel-only card
+            "function stripStreamNoise(",       # 4, title without stream noise
+            "function eventCountdownText(",     # 17, countdown
+            "function eventVerificationLabel(", # 18, fixture verification
+            "function toggleEventReminder(",    # 20, reminder
+            "function updateEventCardClocks(",  # in-place clock tick
+            "event-now-playing",                # 13, now playing marker
+        ):
+            self.assertIn(marker, self.app)
+
+        # Guide 29 and 32: technical routing detail stays off the card face.
+        card_source = self.app.split("function createEventCard(")[1].split("\nfunction ")[0]
+        for forbidden in ("license_url", "requires_headers", "expires_at", "playbackBadgesHtml"):
+            self.assertNotIn(forbidden, card_source)
+
+        # Guide 34: the reminder and bookmark buttons never start playback.
+        self.assertIn(".card-fav-btn, .card-remind-btn", self.app)
+
+    def test_smart_filter_sits_in_the_events_header_and_only_filters(self) -> None:
+        """The Smart Filter, against its own guide.
+
+        The hard rule there is that the player, the sidebar, the main header
+        and the card design keep every pixel they had. The filter therefore
+        gets no layout of its own: its button lives inside the Events header
+        row that already existed, and its stylesheet may not name anything
+        outside its own classes.
+        """
+        import re
+
+        # Placement: inside the existing right-side Events header (guide 2),
+        # never in the player column (guide 19).
+        header = self.index.split('class="sidebar-top-bar card-list-meta"')[1].split("</div>")[0]
+        self.assertIn('id="eventFilterWrap"', header)
+        self.assertIn('id="eventFilterBtn"', header)
+        self.assertIn("assets/css/smart-filter.css", self.index)
+        self.assertIn("/assets/css/smart-filter.css", self.service_worker)
+        player_markup = self.index.split('id="videoContainer"')[1].split('class="sidebar-section')[0]
+        self.assertNotIn("eventFilter", player_markup)
+
+        # Guide 3: a dropdown, never a permanent row of sport tabs.
+        self.assertIn('class="event-filter-menu"', self.index)
+        self.assertNotIn("sport-tab", self.index)
+
+        # Scoping: the stylesheet may only reach its own control and the
+        # already-existing Events header row it sits in.
+        allowed = (".event-filter", ".sidebar-section.event-list-mode")
+        for line in self.filter_css.splitlines():
+            stripped = line.strip()
+            if not stripped.startswith("."):
+                continue
+            for selector in stripped.split("{")[0].split(","):
+                selector = selector.strip()
+                if not selector:
+                    continue
+                self.assertTrue(
+                    selector.startswith(allowed),
+                    f"smart-filter.css must not reach outside the filter: {selector}",
+                )
+
+        # Guide 9 and 10: one canonical sport field on the final card, and a
+        # card that identifies no fixture is a channel rather than a sport.
+        self.assertIn("sport_type:", self.app)
+        self.assertIn("function eventSportType(", self.app)
+        self.assertIn("return 'channel';", self.app)
+
+        # Guide 8 and 24: the filter is the last stage and only hides, so it
+        # runs before the sort block that establishes the existing order.
+        sort_source = self.app.split("function applyFilterAndSort(")[1].split("\nfunction ")[0]
+        self.assertIn("state.eventSportFilter !== 'all'", sort_source)
+        self.assertLess(
+            sort_source.index("state.eventSportFilter"),
+            sort_source.index("state.currentSortMode"),
+        )
+
+        # Guide 5: every section change starts from All Events.
+        view_source = self.app.split("async function selectMainView(")[1].split("\nfunction ")[0]
+        self.assertIn("state.eventSportFilter = 'all';", view_source)
+
+        # Guide 7, 20 and 21: choosing a sport re-renders the card list and
+        # touches nothing else — no scan, no refetch, no playback call.
+        filter_source = "\n".join(
+            self.app.split(f"function {name}(")[1].split("\nfunction ")[0]
+            for name in ("setEventSportFilter", "renderEventSportFilter", "eventSportCounts")
+        )
+        for forbidden in (
+            "fetch(",
+            "fetchJson",
+            "startPlayback",
+            "stopPlayback",
+            "video.",
+            "selectMainView",
+            "loadRuntimeAndManifest",
+            "refreshActiveEventCatalogue",
+        ):
+            self.assertNotIn(forbidden, filter_source, f"the filter must not call {forbidden}")
+
+        # Guide 23: an empty result explains itself instead of going blank.
+        self.assertIn("eventSportLabel(state.eventSportFilter)", self.app)
+
+        # Guide 16 and 17: no card or header dimension is redefined here.
+        for forbidden in re.findall(r"^\s*\.(?:event-ref-card|app-header|video-|sidebar-list)\b", self.filter_css, re.M):
+            self.fail(f"smart-filter.css must not restyle {forbidden.strip()}")
 
 
     def test_every_static_app_id_reference_exists_in_final_html(self) -> None:

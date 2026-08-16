@@ -3,7 +3,7 @@
  * Live stream, video segment ও playback proxy request স্পর্শ করবে না।
  */
 
-const CACHE_VERSION = "click-tv-design-playback-20260816-v24";
+const CACHE_VERSION = "click-tv-design-playback-20260816-v26-smart-filter";
 const APP_CACHE = `${CACHE_VERSION}-app`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 
@@ -16,6 +16,8 @@ const APP_SHELL = [
   "/assets/css/series.css",
   "/assets/css/final-design.css",
   "/assets/css/reference-design.css",
+  "/assets/css/event-cards.css",
+  "/assets/css/smart-filter.css",
   "/assets/js/series.js",
   "/assets/js/app.js"
 ];

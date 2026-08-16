@@ -332,15 +332,64 @@ def _is_strongly_verified_today_match(stream: Dict[str, Any]) -> bool:
     }
 
 
+#: Which day or session of a multi-day fixture an entry is relaying.
+_MULTI_DAY_LABEL = re.compile(
+    r"(?i)(?:^|[\s\-|,(])"
+    r"(?:day|session|innings|inning|part|stage)\s*[-:]?\s*\d{1,2}"
+    r"(?:\s*(?:of|/)\s*\d{1,2})?"
+    r"(?=$|[\s\-|,)])"
+)
+
+#: The fixture's own number inside its series. Must survive normalisation, or
+#: the 1st Test and the 2nd Test collapse into one card.
+_FIXTURE_ORDINAL_KINDS = (
+    r"test|odi|t20i?|match|leg|round|final|semi[\s-]?final|quarter[\s-]?final"
+)
+_FIXTURE_ORDINAL = re.compile(
+    rf"(?i)\b(\d{{1,2}})(?:st|nd|rd|th)\s+({_FIXTURE_ORDINAL_KINDS})\b"
+)
+#: The same ordinal once "1st test" has been canonicalised to "1 test".
+_CANONICAL_ORDINAL = re.compile(
+    rf"(?i)\b(\d{{1,2}})\s+({_FIXTURE_ORDINAL_KINDS})\b"
+)
+
+
+def _strip_multi_day_labels(text: str) -> str:
+    """Guide 19: one fixture spanning several days stays one card.
+
+    A Test is relayed as "1st Test", "1st Test Day 2", "- 1st Test - Day 3"
+    and "Day 4 - 1st Test - ...". Those are the same match. The fixture's own
+    ordinal ("1st Test") is preserved and pinned to the front, because the day
+    labels sit in positions that otherwise caused the ordinal to be dropped -
+    which would have merged the 1st Test with the 2nd.
+    """
+    # Canonicalise "1st test" to "1 test" first, so a re-appended ordinal and
+    # one that survived in place produce the identical key.
+    cleaned = _FIXTURE_ORDINAL.sub(r"\1 \2", text)
+    cleaned = _MULTI_DAY_LABEL.sub(" ", cleaned)
+    return " ".join(cleaned.split())
+
+
 def normalize_event_key(name: str) -> str:
     text = str(name or "").casefold()
     text = text.replace("pheonix", "phoenix").replace("spirits", "spirit")
     if "|" in text:
         text = text.split("|", 1)[0].strip()
+    text = _strip_multi_day_labels(text)
+    # Held aside because the "team A vs team B" extraction below cuts the title
+    # at the first " - ", which is exactly where a title like
+    # "Australia vs Bangladesh - 1st Test - Day 3" keeps its fixture number.
+    # Losing it would merge the 1st Test with the 2nd.
+    ordinal = _CANONICAL_ORDINAL.search(text)
 
     # Prefer the actual "team A vs team B" portion. Provider and competition
     # suffixes then become backup labels instead of separate match cards.
-    match = re.search(r"(?:^|[-|])\s*([^-|]+?)\s+v(?:s|\.)\s+([^|]+)", text)
+    # Guide 27 lists "vs", "v" and "versus" as the same separator. Only "vs"
+    # and "v." were recognised, so "Yokohama FC v Jubilo Iwata" never matched
+    # the same fixture as "Yokohama FC vs Jubilo Iwata".
+    match = re.search(
+        r"(?:^|[-|])\s*([^-|]+?)\s+(?:versus|vs\.?|v\.?)\s+([^|]+)", text
+    )
     if match:
         left = match.group(1)
         right = match.group(2)
@@ -349,6 +398,9 @@ def normalize_event_key(name: str) -> str:
         left = re.sub(r"\bwom(?:e|a)n(?:'s|s)?\b", " ", left)
         right = re.sub(r"\bwom(?:e|a)n(?:'s|s)?\b", " ", right)
         text = f"{left} vs {right} {gender}"
+
+    if ordinal and not _CANONICAL_ORDINAL.search(text):
+        text = f"{text} {ordinal.group(1)} {ordinal.group(2)}"
 
     text = re.sub(
         r"(?i)\b(?:\d{1,2}\s+(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|"
@@ -365,9 +417,16 @@ def normalize_event_key(name: str) -> str:
         text,
     )
 
+    # Broadcaster names carried in the title. Guide 27: one match relayed by
+    # six channels is one event, not six. "Willow" alone was stripped but
+    # "Willow HD", "Sony Sports Ten 3", "T Sports HD" and "Fox Cricket" were
+    # not, so the same fixture still produced several cards.
     text = re.sub(
-        r"(?i)\b(?:fancode|tapmad|willow(?:\s+cricket)?|crichd|sony\s*liv|"
-        r"star\s*sports?\s*\d*|server\s*\d*|alt|hindi|english|bd|pk)\b",
+        r"(?i)\b(?:fancode|tapmad|willow(?:\s+cricket)?|crichd|criclife|"
+        r"sony\s*liv|sony\s*(?:sports\s*)?ten|sony\s*sports?|"
+        r"star\s*sports?|t\s*sports?|fox\s*(?:cricket|sports?)|"
+        r"ptv\s*sports?|a\s*sports?|astro\s*cricket|supersport|"
+        r"server|alt|hindi|english|bd|pk)\s*\d*\b",
         " ",
         text,
     )
@@ -586,14 +645,76 @@ def _stream_quality_score(
 
     return (
         tier_score,
+        _playback_readiness(stream),
         is_manual,
         priority,
         resolution_height,
         -response_time,
         recent_success,
         stability_score,
+        _direct_playback_score(stream),
         has_request_metadata,
     )
+
+
+def _playback_readiness(stream: Dict[str, Any]) -> int:
+    """Guide 29, points 2, 5 and 6: is everything needed to play it present?
+
+    Two streams can both answer HTTP 200 and still differ: one carries a live
+    token, a complete DRM block and the headers its origin insists on, the
+    other is missing a licence URL or its token has already expired. Reading
+    what verification already recorded costs nothing, so this never adds a
+    request to a scan.
+    """
+    penalties = 0
+
+    expiry = stream.get("expires_at") or stream.get("token_expires_at")
+    if expiry:
+        try:
+            if 0 < int(expiry) < int(_now_epoch()):
+                penalties += 1
+        except (TypeError, ValueError):
+            pass
+
+    drm = stream.get("drm")
+    if isinstance(drm, dict) and drm:
+        declared = str(drm.get("type") or drm.get("scheme") or "").strip()
+        has_route = any(
+            str(drm.get(key) or "").strip()
+            for key in ("license_url", "license_server", "server_url", "key", "keys")
+        )
+        # A DRM block naming a scheme but carrying no licence route cannot play.
+        if declared and not has_route and drm.get("protected") is not True:
+            penalties += 1
+
+    if stream.get("requires_headers") is True:
+        headers = stream.get("headers")
+        if not isinstance(headers, dict) or not headers:
+            if stream.get("protected_source") is not True:
+                penalties += 1
+
+    return 0 if penalties else 1
+
+
+def _direct_playback_score(stream: Dict[str, Any]) -> int:
+    """Guide 29, point 10: prefer direct playback where practical.
+
+    Ranked below quality and speed on purpose - it only settles a tie between
+    otherwise equal streams. A proxied route still works; it just spends a
+    Worker request per manifest and per segment, so an equal direct stream is
+    the better primary.
+    """
+    if str(stream.get("proxy_mode") or "").strip().lower() == "proxy_only":
+        return 0
+    if stream.get("protected_source") is True or stream.get("requires_credentials") is True:
+        return 0
+    return 1 if str(stream.get("url") or "").strip() else 0
+
+
+def _now_epoch() -> int:
+    from time import time
+
+    return int(time())
 
 
 def _effective_publish_allowed(stream: Dict[str, Any]) -> bool:

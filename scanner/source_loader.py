@@ -953,7 +953,13 @@ def collect_candidates(mode: str = "all") -> Dict[str, Any]:
         active_pipelines.append("tv")
     if mode_clean in {"all", "full-audit", "movies", "movies-discovery"}:
         active_pipelines.append("movies")
-    if mode_clean in {"all", "full-audit", "events", "today", "today_match"}:
+    # Both event modes collect both event source groups. Today Match and
+    # Upcoming are decided by each event's schedule status, not by the file it
+    # was configured in, so a mode that saw only one group would publish the
+    # other surface from a partial pool and wipe good cards out of it.
+    if mode_clean in {
+        "all", "full-audit", "events", "today", "today_match", "upcoming",
+    }:
         active_pipelines.append("today_match")
     # Exact rotating event links can remain in provider Upcoming catalogues
     # after kickoff. A Today scan therefore collects both event source groups;
@@ -978,6 +984,13 @@ def collect_candidates(mode: str = "all") -> Dict[str, Any]:
         raise ValueError(f"Unsupported scan mode: {mode_clean}")
 
     sources_to_process: List[Dict[str, Any]] = []
+    # One physical playlist must be fetched once, however many times it is
+    # configured. sm-tapmad-auto and sm-tapmad-auto-blob-alias are the same
+    # URL, and the SonyLiv playlist is registered under both event groups, so
+    # every entry in them arrived two or three times over and had to be
+    # de-duplicated again later. The canonical entry keeps the pipelines the
+    # aliases declared, so nothing stops being scanned for either surface.
+    canonical_by_url: Dict[str, Dict[str, Any]] = {}
     for pipeline in active_pipelines:
         pipeline_sources = sources_config.get(pipeline, [])
         if not isinstance(pipeline_sources, list):
@@ -988,7 +1001,39 @@ def collect_candidates(mode: str = "all") -> Dict[str, Any]:
                 continue
             source_entry = dict(source)
             source_entry["pipeline"] = pipeline
-            sources_to_process.append(source_entry)
+
+            fetch_url = str(source_entry.get("url") or "").strip()
+            if not fetch_url:
+                sources_to_process.append(source_entry)
+                continue
+
+            existing = canonical_by_url.get(fetch_url)
+            if existing is None:
+                source_entry["alias_source_ids"] = []
+                source_entry["usable_for"] = [pipeline]
+                canonical_by_url[fetch_url] = source_entry
+                sources_to_process.append(source_entry)
+                continue
+
+            # An explicit canonical_source_id decides which entry survives;
+            # otherwise the first one configured wins.
+            if str(source_entry.get("canonical_source_id") or "").strip():
+                keeper, alias = existing, source_entry
+            elif str(existing.get("canonical_source_id") or "").strip():
+                keeper, alias = source_entry, existing
+                sources_to_process.remove(existing)
+                sources_to_process.append(keeper)
+                keeper["alias_source_ids"] = existing.get("alias_source_ids", [])
+                keeper["usable_for"] = existing.get("usable_for", [])
+                canonical_by_url[fetch_url] = keeper
+            else:
+                keeper, alias = existing, source_entry
+
+            keeper.setdefault("alias_source_ids", []).append(alias.get("id"))
+            for extra in ("usable_for",):
+                values = keeper.setdefault(extra, [])
+                if alias["pipeline"] not in values:
+                    values.append(alias["pipeline"])
 
     all_candidates: List[Dict[str, Any]] = []
     current_health: Dict[str, Dict[str, Any]] = {}

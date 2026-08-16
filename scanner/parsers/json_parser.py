@@ -224,16 +224,44 @@ def _normalize_status(value: Any) -> str:
         "ONGOING": "LIVE",
         "PLAYING": "LIVE",
         "ACTIVE": "LIVE",
+        # AX Sports reports the period a match is currently in rather than a
+        # plain "LIVE". Without these an in-play match reads as an unknown
+        # status and never reaches Today Match.
+        "1H": "LIVE",
+        "2H": "LIVE",
+        "HT": "LIVE",          # half time - still an in-play broadcast
+        "ET": "LIVE",          # extra time
+        "BT": "LIVE",          # break before extra time
+        "P": "LIVE",           # penalty shootout
+        "PEN_LIVE": "LIVE",
+        "INT": "LIVE",         # interrupted, expected to resume
+        "SUSP": "LIVE",        # suspended, expected to resume
+        "LIVE": "LIVE",
 
         "NOT STARTED": "UPCOMING",
         "NOT_STARTED": "UPCOMING",
         "SCHEDULED": "UPCOMING",
         "FIXTURE": "UPCOMING",
         "NS": "UPCOMING",
+        "UPCOMING": "UPCOMING",
 
         "FINISHED": "COMPLETED",
         "ENDED": "COMPLETED",
         "CLOSED": "COMPLETED",
+        "FT": "COMPLETED",     # full time
+        "AET": "COMPLETED",    # after extra time
+        "PEN": "COMPLETED",    # decided on penalties
+        "AWD": "COMPLETED",    # awarded
+        "WO": "COMPLETED",     # walkover
+
+        # Neither live nor reliably scheduled. Kept distinct from UPCOMING so a
+        # postponed or abandoned fixture never becomes a published card.
+        "TBD": "UNSCHEDULED",
+        "PST": "UNSCHEDULED",  # postponed
+        "CANC": "UNSCHEDULED",
+        "CANCELLED": "UNSCHEDULED",
+        "ABD": "UNSCHEDULED",  # abandoned
+        "DELAYED": "UNSCHEDULED",
     }
 
     return mapping.get(text, text)

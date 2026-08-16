@@ -75,22 +75,32 @@ class TodayEventSourceTests(unittest.TestCase):
         self.assertEqual(payload["active_pipelines"], ["today_match", "upcoming"])
         self.assertEqual(payload["source_count"], 2)
 
-    def test_today_collection_submits_every_today_and_upcoming_source(self):
+    def test_today_collection_submits_every_distinct_playlist_once(self):
+        """Guide 30.2/30.3: one physical playlist is fetched once.
+
+        sm-tapmad-auto and sm-tapmad-auto-blob-alias are the same URL, and the
+        SonyLiv playlist is configured under both event groups. Every entry in
+        them used to arrive two or three times over. Each distinct URL must be
+        submitted exactly once, and no URL may be skipped.
+        """
         settings = {"source_workers": 2, "source_cache": {"enabled": False}}
         sources = source_loader.load_sources_config("config")
-        expected_ids = {
-            source["id"]
+        configured = [
+            source
             for pipeline in ("today_match", "upcoming")
             for source in sources[pipeline]
             if source.get("enabled") is True
-        }
+        ]
+        expected_urls = {source["url"] for source in configured}
         submitted_ids = set()
+        submitted_urls = []
 
         def fake_load(path):
             return settings
 
         def fake_process(source, _settings):
             submitted_ids.add(source["id"])
+            submitted_urls.append(source.get("url", ""))
             return [], {
                 "source_id": source["id"],
                 "source_name": source["id"],
@@ -116,8 +126,15 @@ class TodayEventSourceTests(unittest.TestCase):
         ):
             payload = source_loader.collect_candidates("today")
 
-        self.assertEqual(payload["source_count"], len(expected_ids))
-        self.assertEqual(submitted_ids, expected_ids)
+        self.assertEqual(set(submitted_urls), expected_urls)
+        self.assertEqual(
+            len(submitted_urls), len(set(submitted_urls)),
+            f"a playlist was fetched more than once: {submitted_urls}",
+        )
+        self.assertLess(
+            len(submitted_ids), len(configured),
+            "the duplicate alias entries should have been folded away",
+        )
 
     def test_empty_304_cache_retries_without_conditional_headers(self):
         source = {

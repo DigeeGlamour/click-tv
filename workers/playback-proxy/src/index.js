@@ -17,9 +17,16 @@
  * Pages in data/playback-sources.json. This is intentionally public.
  */
 
-const DEFAULT_VERSION = "5.2.0";
+const DEFAULT_VERSION = "5.3.0";
 const SITE_ORIGIN = "https://clicktv.pages.dev";
-const ALLOWED_ORIGINS = Object.freeze([SITE_ORIGIN]);
+// Every origin the site is genuinely served from. Each Today Match card is
+// proxy_only - the raw URL is deliberately absent - so an origin missing from
+// this list does not degrade playback, it removes it entirely. Add a custom
+// domain here the moment it starts serving the site.
+const ALLOWED_ORIGINS = Object.freeze([
+  SITE_ORIGIN,
+  "https://www.clicktv.pages.dev",
+]);
 
 // Only the production origin used to be accepted, so a Cloudflare Pages preview
 // deploy and a local `python -m http.server` copy of the site both got HTTP 403
@@ -46,7 +53,21 @@ const PLAYBACK_CATALOG_URL = `${SITE_ORIGIN}/data/playback-sources.json`;
 // Deliberately public. This only detects accidental/tampered child URLs.
 const CHILD_SIGNING_KEY = "click-tv-public-child-link-v5-20260809";
 const HOST_CACHE_MS = 5 * 60 * 1000;
-const CATALOG_CACHE_MS = 60 * 1000;
+// The catalogue is now one small shard per id prefix instead of a single file
+// holding every record, so a miss costs one ~70 KB fetch rather than re-parsing
+// megabytes. A live HLS player re-requests its manifest every few seconds; at
+// the old 60s TTL that meant reloading the whole catalogue mid-playback, which
+// is what exhausted the Worker CPU budget and stalled streams.
+const CATALOG_CACHE_MS = 5 * 60 * 1000;
+const CATALOG_SHARD_URL = (shard) => `${SITE_ORIGIN}/data/playback/${shard}.json`;
+
+function catalogShardFor(playbackId) {
+  // Must match scanner/playback_profiles.py:catalog_shard_for exactly.
+  let text = String(playbackId || "").trim().toLowerCase();
+  if (text.startsWith("ctv_")) text = text.slice(4);
+  const prefix = text.slice(0, 2);
+  return /^[0-9a-f]{2}$/.test(prefix) ? prefix : "00";
+}
 const MAX_REDIRECTS = 5;
 const MAX_TEXT_BYTES = 2 * 1024 * 1024;
 const CHILD_LINK_TTL_SECONDS = 6 * 60 * 60;
@@ -60,6 +81,9 @@ let playbackCatalogCache = {
   expiresAt: 0,
   records: null,
 };
+
+// One entry per shard: shard name -> { expiresAt, records }.
+const playbackShardCache = new Map();
 
 const TEXT_TYPES = new Set(["hls", "dash", "subtitle"]);
 const STREAM_TYPES = new Set([
@@ -1169,45 +1193,79 @@ function normalizePlaybackId(value) {
   return /^ctv_[a-f0-9]{32}$/.test(id) ? id : "";
 }
 
+async function fetchShardRecords(shard, { bypassCache } = {}) {
+  const url = bypassCache
+    ? `${CATALOG_SHARD_URL(shard)}?refresh=${Date.now()}`
+    : CATALOG_SHARD_URL(shard);
+  const response = await fetch(url, {
+    headers: bypassCache
+      ? { Accept: "application/json", "Cache-Control": "no-cache" }
+      : { Accept: "application/json" },
+    ...(bypassCache ? { cache: "no-store" } : {}),
+    cf: bypassCache
+      ? { cacheEverything: false, cacheTtl: 0 }
+      : { cacheEverything: true, cacheTtl: 300 },
+  });
+  if (!response.ok) return null;
+  const payload = await response.json();
+  if (!payload || typeof payload !== "object") return null;
+  return payload.records && typeof payload.records === "object" ? payload.records : null;
+}
+
+async function loadLegacyCatalogRecords(now) {
+  // Only reached while a repository still carries the pre-shard single file.
+  // Keeping this path means the Worker can be deployed before the first
+  // sharded scan lands without playback going dark in between.
+  if (playbackCatalogCache.records && playbackCatalogCache.expiresAt > now) {
+    return playbackCatalogCache.records;
+  }
+  const response = await fetch(PLAYBACK_CATALOG_URL, {
+    headers: { Accept: "application/json" },
+    cf: { cacheEverything: true, cacheTtl: 300 },
+  });
+  if (!response.ok) return null;
+  const payload = await response.json();
+  if (!payload || typeof payload !== "object") return null;
+  if (!payload.records || typeof payload.records !== "object") return null;
+  playbackCatalogCache = { expiresAt: now + CATALOG_CACHE_MS, records: payload.records };
+  return payload.records;
+}
+
 async function loadPlaybackProfile(playbackId) {
   if (!playbackId) return null;
   const now = Date.now();
-  let records = playbackCatalogCache.records;
+  const shard = catalogShardFor(playbackId);
+  let records = null;
   try {
-    if (!records || playbackCatalogCache.expiresAt <= now) {
-      const response = await fetch(PLAYBACK_CATALOG_URL, {
-        headers: { Accept: "application/json" },
-        cf: { cacheEverything: true, cacheTtl: 60 },
-      });
-      if (!response.ok) return null;
-      const payload = await response.json();
-      if (!payload || typeof payload !== "object" || !payload.records || typeof payload.records !== "object") {
-        return null;
+    const cached = playbackShardCache.get(shard);
+    if (cached && cached.expiresAt > now) {
+      records = cached.records;
+    } else {
+      records = await fetchShardRecords(shard);
+      if (records) {
+        playbackShardCache.set(shard, { expiresAt: now + CATALOG_CACHE_MS, records });
       }
-      records = payload.records;
-      playbackCatalogCache = { expiresAt: now + CATALOG_CACHE_MS, records };
     }
 
-    // Pages and Workers do not update atomically. On a catalogue ID miss,
-    // bypass both cache layers once before declaring the player route absent.
-    if (!records[playbackId]) {
-      const refreshUrl = `${PLAYBACK_CATALOG_URL}?refresh=${encodeURIComponent(playbackId)}`;
-      const response = await fetch(refreshUrl, {
-        headers: { Accept: "application/json", "Cache-Control": "no-cache" },
-        cache: "no-store",
-        cf: { cacheEverything: false, cacheTtl: 0 },
-      });
-      if (response.ok) {
-        const payload = await response.json();
-        if (payload && typeof payload === "object" && payload.records && typeof payload.records === "object") {
-          records = payload.records;
-          playbackCatalogCache = { expiresAt: Date.now() + CATALOG_CACHE_MS, records };
-        }
+    // Pages and Workers do not update atomically. On a shard ID miss, bypass
+    // both cache layers once before declaring the player route absent. This is
+    // now one small shard rather than the entire catalogue.
+    if (!records || !records[playbackId]) {
+      const fresh = await fetchShardRecords(shard, { bypassCache: true });
+      if (fresh) {
+        records = fresh;
+        playbackShardCache.set(shard, { expiresAt: Date.now() + CATALOG_CACHE_MS, records });
       }
+    }
+
+    if (!records || !records[playbackId]) {
+      const legacy = await loadLegacyCatalogRecords(now);
+      if (legacy && legacy[playbackId]) records = legacy;
     }
   } catch (_) {
     return null;
   }
+  if (!records) return null;
   const profile = records[playbackId];
   if (!profile || typeof profile !== "object" || profile.status !== "active") return null;
   if (Number(profile.expires_at || 0) > 0 && Number(profile.expires_at) < Math.floor(Date.now() / 1000)) {

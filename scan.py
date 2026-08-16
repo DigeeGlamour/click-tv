@@ -723,36 +723,22 @@ def _process_events_for_mode(
             "process_events() must return a dictionary"
         )
 
-    if mode in {
-        "today",
-        "today_match",
-    }:
-        payload = event_result.get(
-            "today_match"
-        )
-
-        if not isinstance(payload, dict):
-            raise ValueError(
-                "process_events() did not return 'today_match' payload"
-            )
-
-        return {
-            "today_match": payload
-        }
-
-    if mode == "upcoming":
-        payload = event_result.get(
-            "upcoming"
-        )
-
-        if not isinstance(payload, dict):
-            raise ValueError(
-                "process_events() did not return 'upcoming' payload"
-            )
-
-        return {
-            "upcoming": payload
-        }
+    # Today Match and Upcoming are no longer decided by which source file an
+    # entry came from - a live fixture is Today Match wherever it was
+    # configured, and a not-started one is Upcoming. Both modes therefore
+    # collect both event source groups and publish both surfaces; restricting
+    # a mode to one output would silently discard every card that the schedule
+    # status routed to the other side.
+    if mode in {"today", "today_match", "upcoming"}:
+        published: Dict[str, Dict[str, Any]] = {}
+        for key in ("today_match", "upcoming"):
+            payload = event_result.get(key)
+            if not isinstance(payload, dict):
+                raise ValueError(
+                    f"process_events() did not return '{key}' payload"
+                )
+            published[key] = payload
+        return published
 
     return event_result
 

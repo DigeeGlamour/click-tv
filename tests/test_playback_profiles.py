@@ -4,7 +4,10 @@ import unittest
 from pathlib import Path
 
 from scanner.output import publish_scan_outputs
-from scanner.playback_profiles import PlaybackProfileCollector
+from scanner.playback_profiles import (
+    PlaybackProfileCollector,
+    load_public_catalog_records,
+)
 
 
 class PlaybackProfileTests(unittest.TestCase):
@@ -64,10 +67,14 @@ class PlaybackProfileTests(unittest.TestCase):
                 scan_mode="channels",
             )
             public = json.loads((root / "data" / "channels" / "bangla.json").read_text(encoding="utf-8"))
-            bundle = json.loads((root / "data" / "playback-sources.json").read_text(encoding="utf-8"))
+            index = json.loads((root / "data" / "playback-sources.json").read_text(encoding="utf-8"))
+            # The catalogue is sharded: the index only declares the shards, and
+            # the credentialed record lives in data/playback/<prefix>.json.
+            records = load_public_catalog_records(root / "data")
             self.assertNotIn("secret", json.dumps(public))
-            self.assertEqual(bundle["count"], 1)
-            self.assertIn("secret", json.dumps(bundle))
+            self.assertEqual(index["count"], 1)
+            self.assertEqual(len(records), 1)
+            self.assertIn("secret", json.dumps(records))
             self.assertTrue((root / "reports" / "scan-summary-channels.json").exists())
 
     def test_allowed_hosts_include_protected_media_license_certificate_and_standby(self):
