@@ -198,7 +198,11 @@ def _item_routes(item: Dict[str, Any]) -> List[str]:
 def item_is_browser_reachable(item: Dict[str, Any]) -> bool:
     routes = _item_routes(item)
     if not routes:
-        return False
+        # No link at all is not this gate's decision. Upcoming matches are
+        # published on purpose without one ("stream link will be added before
+        # the match starts") and carry verification_status "metadata_only";
+        # judging them here silently emptied the Upcoming tab.
+        return True
     return any(route_is_browser_reachable(route) for route in routes)
 
 
