@@ -2,12 +2,18 @@ name: Live Signal Scanner
 
 on:
   schedule:
-    # Today Match: প্রতি ১৫ মিনিট; rotating links/status স্বয়ংক্রিয়ভাবে refresh হয়।
-    - cron: "2,17,32,47 * * * *"
+    # Requirement 4 — Today Match: প্রতি ২০ মিনিট।
+    - cron: "0,20,40 * * * *"
       timezone: "Asia/Dhaka"
 
-    # Upcoming Match: প্রতি ৩০ মিনিট; schedule/link changes দ্রুত publish হয়।
-    - cron: "9,39 * * * *"
+    # Requirement 4 — Upcoming targeted scan: প্রতি ৫ মিনিটে চলে, কিন্তু
+    # scanner শুধু সেই fixture-গুলোর link খোঁজে যেগুলো ১৫ মিনিটের মধ্যে
+    # শুরু হবে। বাকি future fixture অযথা scan হয় না।
+    - cron: "*/5 * * * *"
+      timezone: "Asia/Dhaka"
+
+    # Upcoming full refresh: দিনে দুবার পুরো fixture তালিকা আনে।
+    - cron: "9 5,17 * * *"
       timezone: "Asia/Dhaka"
 
     # TV Channels: প্রতি ৬ ঘণ্টা
@@ -28,6 +34,7 @@ on:
         options:
           - channels
           - today
+          - upcoming-targeted
           - upcoming
           - movies
           - all
@@ -168,9 +175,11 @@ jobs:
 
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             MODE="${{ inputs.mode }}"
-          elif [[ "${{ github.event.schedule }}" == "2,17,32,47 * * * *" ]]; then
+          elif [[ "${{ github.event.schedule }}" == "0,20,40 * * * *" ]]; then
             MODE="today"
-          elif [[ "${{ github.event.schedule }}" == "9,39 * * * *" ]]; then
+          elif [[ "${{ github.event.schedule }}" == "*/5 * * * *" ]]; then
+            MODE="upcoming-targeted"
+          elif [[ "${{ github.event.schedule }}" == "9 5,17 * * *" ]]; then
             MODE="upcoming"
           elif [[ "${{ github.event.schedule }}" == "17 0,6,12,18 * * *" ]]; then
             MODE="channels"
