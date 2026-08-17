@@ -140,9 +140,56 @@ class WorkflowSafetyTests(unittest.TestCase):
         self.assertIn('cron: "0,20,40 * * * *"', workflow)
         self.assertIn('cron: "*/5 * * * *"', workflow)
         self.assertIn('cron: "9 5,17 * * *"', workflow)
-        self.assertIn("test -f config/event-fixtures.json", workflow)
-        self.assertIn("test -f scanner/schedule_resolver.py", workflow)
-        self.assertIn("test -f tests/test_schedule_resolver.py", workflow)
+        # The requirement is that the workflow refuses to run without these
+        # files, not that it uses one particular shell idiom to check them.
+        for required in (
+            "config/event-fixtures.json",
+            "scanner/schedule_resolver.py",
+            "tests/test_schedule_resolver.py",
+        ):
+            self.assertIn(required, self._required_files(workflow), required)
+
+    @staticmethod
+    def _required_files(workflow: str) -> set:
+        """The paths the Validate step will not start without."""
+        block = workflow.split("REQUIRED_FILES=(", 1)
+        if len(block) != 2:
+            return set()
+        listing = block[1].split(")", 1)[0]
+        return {line.strip() for line in listing.splitlines() if line.strip()}
+
+    def test_a_missing_file_is_named_rather_than_just_exiting_one(self):
+        """Five un-uploaded config files cost hours because the step said only
+        "Process completed with exit code 1"."""
+        workflow = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
+        required = self._required_files(workflow)
+        self.assertGreater(len(required), 40, len(required))
+        # Every config file the scanner loads has to be on the list, because
+        # these are exactly the ones that went missing.
+        for config in (
+            "config/settings.json", "config/sources.json",
+            "config/event-fixtures.json", "config/channel-aliases.json",
+            "config/channel-categories.json", "config/header-profiles.json",
+        ):
+            self.assertIn(config, required, config)
+        # And the failure has to report all of them, not stop at the first.
+        self.assertIn("MISSING+=", workflow)
+        self.assertIn("::error", workflow)
+        self.assertIn("MISSING  $GONE", workflow)
+        self.assertNotIn("test -f config/", workflow)
+
+    def test_the_new_scanner_modules_cannot_be_left_behind(self):
+        workflow = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
+        required = self._required_files(workflow)
+        for module in (
+            "scanner/channel_resolver.py", "scanner/channel_groups.py",
+            "scanner/event_lifecycle.py", "scanner/streamed_provider.py",
+            "scanner/live_protection.py", "scanner/snapshot_publish.py",
+            "scanner/targeted_scan.py", "site/assets/css/embed-player.css",
+            "site/sw.js", "tests/test_sports_channel_system.py",
+            "tests/test_event_fixture_catalogue.py",
+        ):
+            self.assertIn(module, required, module)
 
     def test_every_workflow_uses_node24_action_majors(self):
         workflows = "\n".join(

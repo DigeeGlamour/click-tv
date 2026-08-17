@@ -15,6 +15,7 @@ class FinalDesignContractTests(unittest.TestCase):
         cls.reference_css = (cls.root / "site/assets/css/reference-design.css").read_text(encoding="utf-8")
         cls.app = (cls.root / "site/assets/js/app.js").read_text(encoding="utf-8")
         cls.event_css = (cls.root / "site/assets/css/event-cards.css").read_text(encoding="utf-8")
+        cls.channel_css = (cls.root / "site/assets/css/event-channel-cards.css").read_text(encoding="utf-8")
         cls.filter_css = (cls.root / "site/assets/css/smart-filter.css").read_text(encoding="utf-8")
         cls.service_worker = (cls.root / "site/sw.js").read_text(encoding="utf-8")
 
@@ -56,8 +57,8 @@ class FinalDesignContractTests(unittest.TestCase):
 
     def test_reference_design_is_external_and_preserves_the_three_column_contract(self) -> None:
         self.assertIn("reference-design.css?v=20260816-movie-controls-notice-v4", self.index)
-        self.assertIn("app.js?v=20260817-atomic-snapshot-v1", self.index)
-        self.assertIn('CACHE_VERSION = "click-tv-design-playback-20260817-v28-atomic-snapshot"', self.service_worker)
+        self.assertIn("app.js?v=20260818-event-channel-cards-v1", self.index)
+        self.assertIn('CACHE_VERSION = "click-tv-event-channel-cards-20260818-v30"', self.service_worker)
         self.assertIn('class="desktop-category-rail"', self.index)
         self.assertIn('id="desktopCategoryTitle"', self.index)
         self.assertIn('id="mobileBottomSearchBtn"', self.index)

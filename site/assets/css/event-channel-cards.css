@@ -1,0 +1,257 @@
+/* Card design sections 1-20: one event card, plus a compact channel selector.
+ *
+ * Section 2 is the reason this is a separate file rather than an edit to
+ * event-cards.css. The main event row is hard locked - 152px, three columns,
+ * every element inside it placed - and the selector must not move any of it. So
+ * the row is left exactly as it was and the selector is added as a SIBLING
+ * inside a shell:
+ *
+ *   .event-card-shell            the flex item the list lays out
+ *     .event-ref-card            untouched, still 152px, still uniform
+ *     .event-channel-strip       new, appears only when a channel is resolved
+ *
+ * Nothing here names the player, the video element, the header, the sidebar
+ * width or the main navigation - the strip cannot reach them, and a hard-lock
+ * test asserts their absence.
+ *
+ * Everything is scoped to .sidebar-section.event-list-mode, so the channel
+ * grid, the movie grid and the series list are untouched by construction.
+ */
+
+/* ── The shell ───────────────────────────────────────────────────────────── */
+/* The list is a flex column with a gap between items. The shell becomes that
+   item, so the gap now separates one event from the next rather than separating
+   a card from its own channels. */
+.sidebar-section.event-list-mode .event-card-shell{
+  display:flex!important;flex-direction:column!important;gap:0!important;
+  width:100%!important;min-width:0!important;
+  /* No height of its own: the locked row sets it, and the strip adds to it only
+     when there is a strip. */
+  height:auto!important;
+}
+
+/* Section 8. The playing event reads as playing, lightweightly: one soft ring,
+   no scale, no shadow bloom, nothing that could shift a neighbour. */
+.sidebar-section.event-list-mode .event-card-shell.is-playing-event{
+  border-radius:12px!important;
+  box-shadow:0 0 0 1px rgba(37,230,165,.28)!important;
+}
+
+/* ── The strip ───────────────────────────────────────────────────────────── */
+/* Section 4. Desktop 2-4 per row by available width, mobile 2 - expressed as
+   auto-fit so the count follows the real width instead of a guess, and capped
+   at four so a wide sidebar does not shrink the chips into illegibility. */
+.sidebar-section.event-list-mode .event-channel-strip{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(128px,1fr))!important;
+  gap:6px!important;
+  box-sizing:border-box!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  margin:0!important;padding:6px!important;
+  /* Section 14: the strip can never be the thing that scrolls the list
+     sideways. */
+  overflow:hidden!important;
+  border:1px solid rgba(120,150,190,.16)!important;
+  border-top:0!important;
+  border-radius:0 0 12px 12px!important;
+  background:linear-gradient(180deg,rgba(14,22,36,.72),rgba(10,16,27,.86))!important;
+}
+
+@supports (grid-template-columns:repeat(auto-fit,minmax(128px,1fr))){
+  .sidebar-section.event-list-mode .event-channel-strip{
+    grid-template-columns:repeat(auto-fit,minmax(128px,1fr))!important;
+  }
+}
+
+/* Four is the ceiling section 4 sets for a row. */
+.sidebar-section.event-list-mode .event-channel-strip[data-columns="4"]{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+.sidebar-section.event-list-mode .event-channel-strip[data-columns="3"]{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+.sidebar-section.event-list-mode .event-channel-strip[data-columns="2"]{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+.sidebar-section.event-list-mode .event-channel-strip[data-columns="1"]{
+  grid-template-columns:minmax(0,1fr)!important;
+}
+
+/* ── One channel chip ────────────────────────────────────────────────────── */
+/* Section 4: visually secondary to the event row. Section 5: icon, name,
+   summary - and nothing else. */
+.sidebar-section.event-list-mode .event-channel-chip{
+  display:grid!important;
+  grid-template-columns:26px minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  align-items:center!important;
+  gap:1px 7px!important;
+  box-sizing:border-box!important;
+  width:100%!important;min-width:0!important;
+  /* Section 14: a usable tap target on a phone, without making the desktop chip
+     tall enough to compete with the event row. */
+  min-height:42px!important;
+  margin:0!important;padding:5px 7px!important;
+  border:1px solid rgba(120,150,190,.20)!important;
+  border-radius:9px!important;
+  background:rgba(20,30,48,.72)!important;
+  color:#dfe8f5!important;
+  font:inherit!important;
+  text-align:left!important;
+  cursor:pointer!important;
+  appearance:none!important;-webkit-appearance:none!important;
+  transition:border-color .16s ease,background .16s ease!important;
+}
+
+.sidebar-section.event-list-mode .event-channel-chip:hover{
+  border-color:rgba(150,185,230,.38)!important;
+  background:rgba(26,38,60,.86)!important;
+}
+.sidebar-section.event-list-mode .event-channel-chip:focus-visible{
+  outline:2px solid rgba(84,233,189,.75)!important;outline-offset:1px!important;
+}
+
+/* Section 6. Selected reads immediately, and in the theme's own green. */
+.sidebar-section.event-list-mode .event-channel-chip.is-selected{
+  border-color:rgba(37,230,165,.62)!important;
+  background:linear-gradient(180deg,rgba(20,68,56,.80),rgba(13,42,35,.86))!important;
+}
+.sidebar-section.event-list-mode .event-channel-chip.is-selected .event-channel-chip-name{
+  color:#8ff3d0!important;
+}
+.sidebar-section.event-list-mode .event-channel-chip.is-selected .event-channel-chip-icon{
+  border-color:rgba(37,230,165,.55)!important;
+  background:rgba(24,80,66,.9)!important;color:#a8f7dc!important;
+}
+
+/* Section 8. Selected is a choice; playing is a fact. The playing chip keeps the
+   selected styling and adds the equaliser, so the two never contradict. */
+.sidebar-section.event-list-mode .event-channel-chip.is-playing .event-channel-chip-eq{
+  display:inline-flex!important;
+}
+
+.sidebar-section.event-list-mode .event-channel-chip-icon{
+  display:flex!important;grid-row:1 / span 2!important;
+  width:26px!important;height:26px!important;
+  align-items:center!important;justify-content:center!important;
+  overflow:hidden!important;
+  border:1px solid rgba(120,150,190,.24)!important;border-radius:7px!important;
+  background:rgba(30,44,68,.9)!important;
+  color:#a9c2e2!important;
+  font-size:9px!important;font-weight:950!important;letter-spacing:.3px!important;
+  line-height:1!important;
+}
+/* Section 10's rule applies to a channel logo too: contain, never stretch. */
+.sidebar-section.event-list-mode .event-channel-chip-icon img{
+  width:100%!important;height:100%!important;
+  object-fit:contain!important;object-position:center!important;display:block!important;
+}
+
+/* Section 14: long channel names ellipsise, they never wrap the chip taller. */
+.sidebar-section.event-list-mode .event-channel-chip-name{
+  display:block!important;grid-column:2!important;grid-row:1!important;
+  min-width:0!important;max-width:100%!important;
+  overflow:hidden!important;
+  color:#eaf2ff!important;
+  font-size:10.5px!important;font-weight:900!important;line-height:1.25!important;
+  text-overflow:ellipsis!important;white-space:nowrap!important;
+}
+
+/* Section 5/15. The stream summary, secondary by size and colour. */
+.sidebar-section.event-list-mode .event-channel-chip-sub{
+  display:flex!important;grid-column:2!important;grid-row:2!important;
+  align-items:center!important;gap:6px!important;
+  min-width:0!important;max-width:100%!important;
+  overflow:hidden!important;
+  font-size:8.5px!important;font-weight:800!important;line-height:1.3!important;
+  white-space:nowrap!important;
+}
+.sidebar-section.event-list-mode .event-channel-chip-sub span{
+  flex:0 1 auto!important;min-width:0!important;
+  overflow:hidden!important;text-overflow:ellipsis!important;
+}
+.sidebar-section.event-list-mode .event-channel-chip-primary{color:#6fe7c0!important}
+.sidebar-section.event-list-mode .event-channel-chip-backups{color:#93a6bd!important}
+.sidebar-section.event-list-mode .event-channel-chip-dupes{color:#c8a45f!important}
+
+.sidebar-section.event-list-mode .event-channel-chip-eq{
+  display:none!important;flex:0 0 auto!important;
+  align-items:flex-end!important;gap:1.5px!important;height:7px!important;
+}
+.sidebar-section.event-list-mode .event-channel-chip-eq i{
+  display:block!important;width:2px!important;height:100%!important;
+  border-radius:1px!important;background:#54e9bd!important;
+  animation:eventChannelEq .9s ease-in-out infinite!important;
+}
+.sidebar-section.event-list-mode .event-channel-chip-eq i:nth-child(2){animation-delay:.18s!important}
+.sidebar-section.event-list-mode .event-channel-chip-eq i:nth-child(3){animation-delay:.36s!important}
+
+@keyframes eventChannelEq{
+  0%,100%{transform:scaleY(.35)}
+  50%{transform:scaleY(1)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .sidebar-section.event-list-mode .event-channel-chip{transition:none!important}
+  .sidebar-section.event-list-mode .event-channel-chip-eq i{animation:none!important;transform:scaleY(.7)!important}
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+/* Section 4/14. Two per row on a phone, always, and a tap target that grows
+   rather than the text shrinking to nothing. */
+@media (max-width:1000px){
+  /* The attribute selector is carried through deliberately: without it the
+     desktop [data-columns="4"] cap out-specifies this rule and a phone lays out
+     four chips in one row. */
+  .sidebar-section.event-list-mode .event-channel-strip,
+  .sidebar-section.event-list-mode .event-channel-strip[data-columns]{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:5px!important;padding:5px!important;
+  }
+  .sidebar-section.event-list-mode .event-channel-chip{min-height:44px!important}
+}
+
+@media (max-width:480px){
+  .sidebar-section.event-list-mode .event-channel-strip,
+  .sidebar-section.event-list-mode .event-channel-strip[data-columns]{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:4px!important;padding:4px!important;
+  }
+  .sidebar-section.event-list-mode .event-channel-chip{
+    grid-template-columns:22px minmax(0,1fr)!important;
+    gap:1px 6px!important;padding:5px 6px!important;
+    min-height:44px!important;
+  }
+  .sidebar-section.event-list-mode .event-channel-chip-icon{
+    width:22px!important;height:22px!important;font-size:8px!important;
+  }
+  .sidebar-section.event-list-mode .event-channel-chip-name{font-size:10px!important}
+  .sidebar-section.event-list-mode .event-channel-chip-sub{font-size:8px!important;gap:5px!important}
+}
+
+@media (max-width:380px){
+  .sidebar-section.event-list-mode .event-channel-strip,
+  .sidebar-section.event-list-mode .event-channel-strip[data-columns]{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:4px!important;padding:4px!important;
+  }
+  .sidebar-section.event-list-mode .event-channel-chip-name{font-size:9.5px!important}
+  /* The dupe note is the least important thing on the chip, so it is the first
+     to go when there is genuinely no room for it. */
+  .sidebar-section.event-list-mode .event-channel-chip-dupes{display:none!important}
+}
+
+/* A short landscape phone has almost no vertical room, so the strip goes to one
+   compact row of chips rather than stealing two rows from the list. */
+@media (max-width:980px) and (orientation:landscape) and (max-height:500px){
+  .sidebar-section.event-list-mode .event-channel-strip,
+  .sidebar-section.event-list-mode .event-channel-strip[data-columns]{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:4px!important;padding:4px!important;
+  }
+  .sidebar-section.event-list-mode .event-channel-chip{
+    grid-template-rows:auto!important;min-height:40px!important;padding:4px 6px!important;
+  }
+  .sidebar-section.event-list-mode .event-channel-chip-sub{display:none!important}
+  .sidebar-section.event-list-mode .event-channel-chip-name{grid-row:1!important;font-size:9.5px!important}
+}

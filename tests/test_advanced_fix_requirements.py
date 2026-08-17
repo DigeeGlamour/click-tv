@@ -205,15 +205,34 @@ class Requirement6LiveProtection(unittest.TestCase):
         self.assertEqual(stats["released_exhausted"], 0)
         self.assertEqual(stats["probe_alive"], 1)
 
-    def test_a_genuinely_dead_link_is_released(self):
+    def test_a_dead_link_alone_no_longer_releases_it(self):
+        """Superseded by section 21. A dead link is now one of three
+        signals, not a verdict: the estimated end must also have passed and
+        several consecutive scans must have seen no live signal. One dead probe
+        moves the card to END_PENDING, which still publishes it.
+        """
         with tempfile.TemporaryDirectory() as tmp:
             state = Path(tmp) / "protection.json"
             items, stats = protect_live_events(
                 [], [self._previous()], state_path=state, now=NOW,
                 probe=lambda card: False,
             )
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["lifecycle_state"], "END_PENDING")
+        self.assertEqual(stats["end_pending"], 1)
+        self.assertEqual(stats["released_dead_link"], 0)
+
+    def test_a_dead_link_with_the_full_confirmation_set_releases_it(self):
+        ended = self._previous(end_time=(NOW - timedelta(hours=5)).isoformat())
+        with tempfile.TemporaryDirectory() as tmp:
+            state = Path(tmp) / "protection.json"
+            for _ in range(3):
+                items, stats = protect_live_events(
+                    [], [ended], state_path=state, now=NOW,
+                    probe=lambda card: False,
+                )
         self.assertEqual(items, [])
-        self.assertEqual(stats["released_dead_link"], 1)
+        self.assertEqual(stats["released_confirmed"], 1)
 
     def test_an_inconclusive_probe_preserves_the_card(self):
         """"Cannot tell" must never be read as "confirmed dead"."""
@@ -257,13 +276,21 @@ class Requirement6LiveProtection(unittest.TestCase):
         self.assertEqual(stats["carried_forward"], 1)
         self.assertEqual(items[0].get("carried_forward_misses"), 1)
 
-    def test_past_its_end_time_a_dead_link_is_retired_as_stale(self):
+    def test_past_its_end_time_a_dead_link_is_retired_once_confirmed(self):
+        """Section 21: the estimate passing is a supporting signal, so it
+        still needs the repeated confirming scans before the card goes.
+        """
+        stale = self._previous(end_time=(NOW - timedelta(hours=4)).isoformat())
         with tempfile.TemporaryDirectory() as tmp:
             state = Path(tmp) / "protection.json"
-            stale = self._previous(end_time=(NOW - timedelta(hours=4)).isoformat())
-            items, stats = protect_live_events(
+            first, _ = protect_live_events(
                 [], [stale], state_path=state, now=NOW, probe=lambda card: False,
             )
+            self.assertEqual(first[0]["lifecycle_state"], "END_PENDING")
+            for _ in range(2):
+                items, stats = protect_live_events(
+                    [], [stale], state_path=state, now=NOW, probe=lambda card: False,
+                )
         self.assertEqual(items, [])
         self.assertEqual(stats["released_stale"], 1)
 

@@ -256,15 +256,36 @@ class Correction2LivePreservation(unittest.TestCase):
         self.assertEqual(stats["released_ended"], 1)
         self.assertEqual(probed, [], "an ended match must not be probed")
 
-    def test_a_dead_link_removes_it(self):
+    def test_a_dead_link_now_needs_section_21_confirmation(self):
+        """The correction said "only END/FT or a genuinely dead link".
+        Section 21 keeps the first half and tightens the second: a dead link
+        drops the card to END_PENDING and it is retired only once the estimated
+        end has passed and repeated scans agree. Strictly more protective, in the
+        same direction.
+        """
         with tempfile.TemporaryDirectory() as tmp:
             state = Path(tmp) / "protection.json"
             items, stats = protect_live_events(
                 [], [self._card()], state_path=state, now=NOW,
                 probe=lambda card: False,
             )
-        self.assertEqual(items, [])
-        self.assertEqual(stats["released_dead_link"], 1)
+            self.assertEqual(len(items), 1)
+            self.assertEqual(items[0]["lifecycle_state"], "END_PENDING")
+
+            # Now the estimated end really has passed too. The card is retired
+            # on the scan that completes the third confirmation, not before.
+            past = dict(self._card())
+            past["end_time"] = (NOW - timedelta(hours=6)).isoformat()
+            states = []
+            for _ in range(4):
+                items, stats = protect_live_events(
+                    [], [past], state_path=state, now=NOW, probe=lambda card: False,
+                )
+                states.append("ENDED" if not items else items[0]["lifecycle_state"])
+                if not items:
+                    break
+        self.assertEqual(states, ["END_PENDING", "ENDED"], states)
+        self.assertEqual(stats["released_confirmed"], 1)
 
     def test_the_carried_card_records_why_it_survived(self):
         with tempfile.TemporaryDirectory() as tmp:

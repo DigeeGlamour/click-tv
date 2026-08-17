@@ -13,6 +13,7 @@ const STORAGE_KEYS = Object.freeze({
   movieNetworkMode: 'clicktv_movie_network_mode_v2',
   proxyHealth: 'clicktv_proxy_health_v1',
   routePreferences: 'clicktv_route_preferences_v1',
+  channelSelection: 'clicktv_channel_selection_v1',
   playbackHistory: 'clicktv_playback_history_v1',
   recentItems: 'clicktv_recent_items_v1',
   favorites: 'clicktv_favorites_v1',
@@ -193,6 +194,11 @@ const state = {
   playbackPositions: readJsonStorage(STORAGE_KEYS.positions, {}),
   proxyHealth: readJsonStorage(STORAGE_KEYS.proxyHealth, {}),
   routePreferences: readJsonStorage(STORAGE_KEYS.routePreferences, {}),
+  // Section 13. The channel a viewer picked, per event. Separate from the
+  // scanner's default on purpose: a background scan may re-rank the channels
+  // all it likes, and a viewer's choice still wins.
+  channelSelection: readJsonStorage(STORAGE_KEYS.channelSelection, {}),
+  embedSession: null,
   mobileNativeFullscreen: false,
   performanceMonitorTimer: null,
   performanceSample: null,
@@ -2221,7 +2227,7 @@ const EVENT_SPORTS = [
   ['VOLLEYBALL', 'fa-volleyball', /\b(?:volleyball|beach\s+volley)\b/i],
   ['HOCKEY', 'fa-hockey-puck', /\b(?:ice\s+hockey|nhl|khl|field\s+hockey)\b/i],
   ['RACING', 'fa-horse', /\b(?:horse\s+racing|racecourse|steeplechase|greyhound)\b/i],
-  ['FOOTBALL', 'fa-futbol', /\b(?:football|soccer|bundesliga|eredivisie|serie\s+[ab]|la\s?liga|ligue\s?\d|s[üu]per\s+lig|lig\b|liga|uefa|fifa|afc|caf|concacaf|champions|europa|efl|efbet|championship|friendlies|frauenliga|ekstraklasa|allsvenskan|superliga|eliteserien|primeira|segunda|coppa|copa|coupe|pokal|hnl|nwsl|npl|mls|[akj][\s-]?league|cup|league|divisi[oó]n|division|fc\b|sc\b|utd\b|united)\b/i]
+  ['FOOTBALL', 'fa-futbol', /\b(?:football|soccer|bundesliga|eredivisie|serie\s+[ab]|la\s?liga|ligue\s?\d|s[üu]per\s+lig|lig\b|liga|uefa|fifa|afc|caf|concacaf|champions|europa|efl|efbet|championship|friendlies|frauenliga|ekstraklasa|allsvenskan|superliga|eliteserien|primeira|segunda|coppa|copa|coupe|pokal|hnl|nwsl|npl|mls|eerste\s+divisie|primera\s+(?:nacional|[a-d])\b|\d\s*deild|[uú]rvalsdeild|nb\s+i\b|jong\b|[akj][\s-]?league|cup|league|divisi[oó]n|division|fc\b|sc\b|utd\b|united)\b/i]
 ];
 
 // Guide 5. The scanner's own category wins when it is specific; the generic
@@ -2689,9 +2695,18 @@ function reconcileEventCards() {
   applyFilterAndSort();
   renderEventSportFilter();
 
+  // Section 18. The keyed node is the shell when there is one, because that is
+  // what the list lays out - keying on the inner card would re-parent the card
+  // out of its own shell and orphan its channel strip.
   const existing = new Map(
-    qsa('.event-ref-card[data-uid]', sidebarList).map((node) => [node.dataset.uid, node])
+    qsa('[data-event-shell], .event-ref-card[data-uid]', sidebarList)
+      .filter((node) => node.classList.contains('event-card-shell')
+        || !node.closest('.event-card-shell'))
+      .map((node) => [node.dataset.uid, node])
   );
+  // Section 18. A selection whose channel has genuinely gone is retired here,
+  // before anything is drawn, so the strip and the playback plan agree.
+  pruneStaleChannelSelections(state.filteredItems);
   // Nothing on screen yet, or nothing left to show: the full render owns both
   // the first paint and the empty-state message, so hand back to it. Diffing an
   // empty list would leave a blank panel with no explanation.
@@ -2708,9 +2723,17 @@ function reconcileEventCards() {
     const previous = existing.get(item._uid);
     if (previous && isPinnedSession(item)) {
       // The playing card keeps its exact node: no innerHTML, no listeners
-      // rebuilt, nothing for the player to notice.
-      previous.querySelector('.sidebar-channel-num').textContent = String(index + 1);
+      // rebuilt, nothing for the player to notice. Section 18 extends that to
+      // the channel strip - the chip the viewer chose keeps its DOM and its
+      // selected state, so a background refresh cannot un-choose it.
+      const inner = previous.classList.contains('event-ref-card')
+        ? previous
+        : previous.querySelector('.event-ref-card');
+      const numbering = inner?.querySelector('.sidebar-channel-num');
+      if (numbering) numbering.textContent = String(index + 1);
+      if (inner) inner.dataset.itemIndex = String(index);
       previous.dataset.itemIndex = String(index);
+      updateEventChannelStrip(previous, item);
       fragment.appendChild(previous);
       existing.delete(item._uid);
       state.renderedUids.add(item._uid);
@@ -2801,6 +2824,153 @@ async function refreshActiveEventCatalogue() {
 // the details popup. The two card kinds share one shape so the list keeps a
 // single rhythm, and differ by accent, by which clock is emphasised and by
 // which action they offer.
+// ── Card design sections 4-9: the compact channel selector ────────────────
+// Everything below reads the published channels[] / streams[] contract and
+// nothing else. No channel is invented, no count is guessed, and no raw URL,
+// header, cookie, token or DRM field is ever read - section 16.
+
+// Section 5. The chip's one-line summary, built from the stream roles the
+// scanner published rather than from any assumption about how many there are.
+function channelChipSummary(channel) {
+  const streams = Array.isArray(channel?.streams) ? channel.streams : [];
+  const primary = streams.filter((entry) => entry?.role === 'primary').length
+    || (Number(channel?.stream_count) > 0 ? 1 : 0);
+  const backups = Number.isFinite(Number(channel?.backup_count))
+    ? Math.max(0, Number(channel.backup_count))
+    : Math.max(0, streams.length - primary);
+  // Only the scanner can know how many exact duplicates it removed, so the note
+  // appears only when it actually reported some.
+  const dupes = Math.max(0, Number(channel?.dropped_variant_count) || 0);
+  const parts = [
+    { cls: 'event-channel-chip-primary', text: `${primary} Primary` },
+    { cls: 'event-channel-chip-backups', text: `${backups} ${backups === 1 ? 'Backup' : 'Backups'}` }
+  ];
+  if (dupes > 0) {
+    parts.push({ cls: 'event-channel-chip-dupes', text: `${dupes} Dupes removed` });
+  }
+  return parts;
+}
+
+// Section 5. A small icon: the channel's own logo when it published one,
+// otherwise its initials. Never a provider name, never a renderer label.
+function channelChipIconHtml(channel) {
+  const logo = String(channel?.logo || '').trim();
+  if (/^https?:\/\//i.test(logo)) {
+    return `<span class="event-channel-chip-icon"><img src="${escapeHtml(logo)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-channel-art="1"></span>`;
+  }
+  const name = String(channel?.name || '').trim();
+  const words = name.replace(/[^A-Za-z0-9\s]/g, ' ').split(/\s+/).filter(Boolean);
+  let initials = '?';
+  if (words.length === 1) {
+    initials = words[0].slice(0, 2).toUpperCase();
+  } else if (words.length > 1) {
+    // A trailing feed number is the part that tells two feeds of one
+    // broadcaster apart, so it is kept in preference to a second initial.
+    const last = words[words.length - 1];
+    initials = /^\d+$/.test(last)
+      ? `${words[0][0]}${last}`.toUpperCase()
+      : words.slice(0, 2).map((word) => word[0]).join('').toUpperCase();
+  }
+  return `<span class="event-channel-chip-icon">${escapeHtml(initials)}</span>`;
+}
+
+// Section 9. No reliable channel name means no selector area at all - not an
+// empty box, not a placeholder bar, not a fake name. The main card stays exactly
+// as it is. Section 13 says the same for an Upcoming card with nothing attached
+// yet, and the same emptiness answers both.
+function eventChannelStripHtml(item) {
+  const channels = eventChannels(item);
+  if (channels.length < 1) return '';
+  const active = activeChannelId(item);
+  const columns = Math.min(4, Math.max(1, channels.length));
+  const chips = channels.map((channel) => {
+    const selected = String(channel.id) === String(active);
+    const summary = channelChipSummary(channel)
+      .map((part) => `<span class="${part.cls}">${escapeHtml(part.text)}</span>`)
+      .join('');
+    const label = String(channel.name || '').trim();
+    return `<button type="button" class="event-channel-chip${selected ? ' is-selected' : ''}"
+      data-channel-id="${escapeHtml(String(channel.id))}"
+      title="${escapeHtml(label)}"
+      aria-pressed="${selected ? 'true' : 'false'}"
+      aria-label="${escapeHtml(label)}">${channelChipIconHtml(channel)}<span class="event-channel-chip-name">${escapeHtml(label)}</span><span class="event-channel-chip-sub">${summary}<span class="event-channel-chip-eq" aria-hidden="true"><i></i><i></i><i></i></span></span></button>`;
+  }).join('');
+  return `<div class="event-channel-strip" data-channel-strip="1" data-columns="${columns}" role="group" aria-label="Channel options">${chips}</div>`;
+}
+
+// Section 6/8/18. Selection and playing state are refreshed in place. Rebuilding
+// the strip on every selection would throw away the DOM the viewer just touched
+// and, on the playing card, the node the player is bound to.
+function updateEventChannelStrip(shell, item) {
+  const strip = shell?.querySelector('[data-channel-strip]');
+  if (!strip) return;
+  const active = activeChannelId(item);
+  const playingHere = isPinnedSession(item) || item?._uid === state.currentItem?._uid;
+  qsa('.event-channel-chip', strip).forEach((chip) => {
+    const selected = chip.dataset.channelId === String(active);
+    chip.classList.toggle('is-selected', selected);
+    chip.classList.toggle('is-playing', selected && Boolean(playingHere));
+    chip.setAttribute('aria-pressed', selected ? 'true' : 'false');
+  });
+}
+
+// Section 18. The channel list can change under a card between scans. An
+// existing selection that still names a healthy published channel is kept; only
+// a selection whose channel has genuinely gone is dropped, and the scanner's own
+// default takes over from there.
+function pruneStaleChannelSelections(items) {
+  if (!Array.isArray(items) || !state.channelSelection) return;
+  let changed = false;
+  items.forEach((item) => {
+    const key = eventChannelId(item);
+    const chosen = state.channelSelection[key];
+    if (!chosen) return;
+    const channels = eventChannels(item);
+    // No channels published this scan is not evidence the choice is stale - the
+    // event may simply be between snapshots. Only a populated list that omits
+    // the choice retires it.
+    if (!channels.length) return;
+    if (!channels.some((entry) => String(entry.id) === String(chosen))) {
+      delete state.channelSelection[key];
+      changed = true;
+    }
+  });
+  if (changed) writeJsonStorage(STORAGE_KEYS.channelSelection, state.channelSelection);
+}
+
+// Section 7. A click selects the channel group and starts its Primary; the
+// player's own plan handles Primary -> that channel's Backups. Nothing here
+// refetches the catalogue or rebuilds the list, so the click costs one playback
+// start and nothing else.
+function bindEventChannelStrip(shell, item) {
+  const strip = shell?.querySelector('[data-channel-strip]');
+  if (!strip) return;
+  strip.addEventListener('click', async (event) => {
+    const chip = event.target?.closest?.('.event-channel-chip');
+    if (!chip || !strip.contains(chip)) return;
+    // The chip is its own control: the click must not also be read as "play the
+    // event card", which would restart playback on the default channel.
+    event.preventDefault();
+    event.stopPropagation();
+    const channelId = chip.dataset.channelId;
+    if (!channelId) return;
+    const ok = await selectEventChannel(eventChannelId(item), channelId);
+    if (!ok) return;
+    updateEventChannelStrip(shell, item);
+  });
+  qsa('img[data-channel-art]', strip).forEach((image) => {
+    image.addEventListener('error', () => {
+      // A broken channel logo falls back to that channel's initials rather than
+      // leaving a hole in the chip.
+      const chip = image.closest('.event-channel-chip');
+      const holder = image.parentElement;
+      const channel = eventChannels(item)
+        .find((entry) => String(entry.id) === String(chip?.dataset.channelId));
+      if (holder && channel) holder.replaceWith(...htmlToNodes(channelChipIconHtml(channel)));
+    }, { once: true });
+  });
+}
+
 function createEventCard(item, visualIndex) {
   const card = document.createElement('div');
   const playable = isPlayable(item);
@@ -2920,7 +3090,25 @@ function createEventCard(item, visualIndex) {
   });
   qs('.card-fav-btn', card)?.addEventListener('click', (event) => toggleFavorite(item._uid, event));
   qs('.card-remind-btn', card)?.addEventListener('click', (event) => toggleEventReminder(item._uid, event));
-  return card;
+
+  // Sections 1/2/4. One real fixture is one main card, and the selector goes
+  // under it - inside a shell, so the locked 152px row above keeps its exact
+  // geometry and every card in the list keeps the same height as every other.
+  // A card with no resolved channel returns the bare row it always was.
+  const stripHtml = eventChannelStripHtml(item);
+  if (!stripHtml) {
+    card.classList.add('event-card-no-channels');
+    return card;
+  }
+  const shell = document.createElement('div');
+  shell.className = 'event-card-shell';
+  shell.dataset.uid = item._uid;
+  shell.dataset.eventShell = '1';
+  shell.appendChild(card);
+  shell.append(...htmlToNodes(stripHtml));
+  bindEventChannelStrip(shell, item);
+  updateEventChannelStrip(shell, item);
+  return shell;
 }
 
 function htmlToNodes(html) {
@@ -3143,7 +3331,11 @@ function maybePreconnect(url) {
 
 sidebarList.addEventListener('click', (event) => {
   const card = event.target.closest('[data-uid]');
-  if (!card || event.target.closest('.card-fav-btn, .card-remind-btn')) return;
+  // Card design section 7. The channel strip is its own control surface. Without
+  // this the shell's data-uid would catch a click on the strip's padding and
+  // restart playback on the default channel - the opposite of what the viewer
+  // asked for by reaching into the selector.
+  if (!card || event.target.closest('.card-fav-btn, .card-remind-btn, .event-channel-strip')) return;
   const item = state.currentItems.find((entry) => entry._uid === card.dataset.uid);
   if (!item) return;
   if (seriesModule?.handleCatalogClick(item)) return;
@@ -3410,11 +3602,240 @@ function buildProxyUrl(proxy, source) {
   return output;
 }
 
+// ---------------------------------------------------------------------------
+// Sections 6-14 and 26-30: channels, channel selection, and the embed renderer.
+// Additive only. Native playback keeps every route it has today; channels change
+// the ORDER those routes are tried in, and an embed is tried only after all of
+// them have failed.
+// ---------------------------------------------------------------------------
+
+function eventChannels(item) {
+  const channels = item?.channels;
+  return Array.isArray(channels) ? channels.filter((entry) => entry && entry.id) : [];
+}
+
+function eventChannelId(item) {
+  return String(item?.id || item?._uid || '');
+}
+
+// Section 13. Which channel is in force: the viewer's pick if there is one,
+// otherwise the scanner's default.
+function activeChannelId(item) {
+  const channels = eventChannels(item);
+  if (!channels.length) return '';
+  const chosen = state.channelSelection[eventChannelId(item)];
+  if (chosen && channels.some((entry) => entry.id === chosen)) return chosen;
+  const preferred = String(item.default_channel_id || '');
+  if (preferred && channels.some((entry) => entry.id === preferred)) return preferred;
+  return channels[0].id;
+}
+
+function isChannelUserSelected(item) {
+  const chosen = state.channelSelection[eventChannelId(item)];
+  return Boolean(chosen && eventChannels(item).some((entry) => entry.id === chosen));
+}
+
+// Section 14. Selected channel primary, its backups, then the next independent
+// healthy channel and its backups. Without a selection the scanner's own channel
+// order is used, which already puts one channel's primary before another's.
+function channelStreamOrder(item) {
+  const channels = eventChannels(item);
+  if (!channels.length) return [];
+  const selected = activeChannelId(item);
+  const ordered = [...channels].sort((left, right) =>
+    Number(right.id === selected) - Number(left.id === selected));
+  const routes = [];
+  ordered.forEach((channel) => {
+    (channel.streams || []).forEach((stream) => {
+      routes.push({ channel, stream });
+    });
+  });
+  return routes;
+}
+
+// Section 27. Native first, always. A channel-ordered native route list, then
+// whatever native sources the channels did not mention, and embeds nowhere near
+// either of them - they are handled only after every native route has failed.
+function orderSourcesByChannel(item, sources) {
+  const routes = channelStreamOrder(item);
+  if (!routes.length || !Array.isArray(sources) || sources.length < 2) return sources;
+
+  const rank = new Map();
+  routes.forEach(({ stream }, index) => {
+    const id = String(stream.playback_id || '');
+    if (id && !rank.has(id)) rank.set(id, index);
+  });
+  if (!rank.size) return sources;
+
+  return [...sources].sort((left, right) => {
+    const leftRank = rank.has(String(left.playback_id || '')) ? rank.get(String(left.playback_id || '')) : 9999;
+    const rightRank = rank.has(String(right.playback_id || '')) ? rank.get(String(right.playback_id || '')) : 9999;
+    return leftRank - rightRank;
+  });
+}
+
+// Section 26. Embed routes, which exist only as the last resort.
+function embedRoutes(item) {
+  const routes = [];
+  const seen = new Set();
+  const add = (url, label) => {
+    const clean = String(url || '').trim();
+    if (!clean || seen.has(clean) || !/^https?:\/\//i.test(clean)) return;
+    seen.add(clean);
+    routes.push({ url: clean, label: String(label || 'Embed') });
+  };
+  eventChannels(item).forEach((channel) => {
+    (channel.streams || []).forEach((stream) => {
+      if (stream.playback_type === 'embed') add(stream.embed_url, channel.name);
+    });
+  });
+  (item?.embed_backups || []).forEach((entry) => add(entry.embed_url, entry.name));
+  return routes;
+}
+
+// Section 28. The embed renderer lives inside the existing player shell. The
+// iframe is absolutely positioned to fill #videoContainer, so the container's
+// width, height, aspect ratio and position are exactly what they were - nothing
+// here touches the shell's geometry.
+function mountEmbedRenderer(route, item) {
+  if (!route?.url) return false;
+  unmountEmbedRenderer();
+
+  const frame = document.createElement('iframe');
+  frame.className = 'embed-renderer';
+  frame.id = 'embedRenderer';
+  frame.src = route.url;
+  frame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
+  frame.allowFullscreen = true;
+  frame.setAttribute('referrerpolicy', 'origin-when-cross-origin');
+  frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
+  frame.setAttribute('title', `${item?.name || 'Event'} - ${route.label}`);
+
+  // Section 28: the native renderer is suspended, not destroyed, so switching
+  // back does not have to rebuild it.
+  try {
+    video.pause();
+    video.removeAttribute('autoplay');
+  } catch (_) { /* a paused element that refuses to pause is still paused enough */ }
+
+  videoContainer.appendChild(frame);
+  document.body.classList.add('embed-mode');
+  videoContainer.classList.add('embed-active');
+
+  state.embedSession = {
+    url: route.url,
+    label: route.label,
+    itemUid: item?._uid || '',
+    startedAt: Date.now(),
+    loaded: false
+  };
+
+  // Section 30. A cross-origin iframe cannot tell us whether video is playing,
+  // and pretending otherwise produces a flapping loop. "load" means the renderer
+  // loaded - nothing more is claimed, and nothing auto-switches on a guess.
+  frame.addEventListener('load', () => {
+    if (state.embedSession && state.embedSession.url === route.url) {
+      state.embedSession.loaded = true;
+    }
+    hidePlayerMessage();
+  }, { once: true });
+
+  applyEmbedControlMode(true);
+  return true;
+}
+
+function unmountEmbedRenderer() {
+  const existing = document.getElementById('embedRenderer');
+  if (existing) {
+    // Blank it before removal so a provider player cannot keep audio alive.
+    try { existing.src = 'about:blank'; } catch (_) { /* ignore */ }
+    existing.remove();
+  }
+  document.body.classList.remove('embed-mode');
+  videoContainer.classList.remove('embed-active');
+  state.embedSession = null;
+  applyEmbedControlMode(false);
+}
+
+// Section 29. Native-only controls cannot reach inside a cross-origin iframe, so
+// in embed mode they are disabled rather than left looking functional. They keep
+// their space in the layout - no shift - and are restored on the way back.
+function applyEmbedControlMode(active) {
+  const nativeOnly = ['qualityBtn', 'networkBtn'];
+  nativeOnly.forEach((id) => {
+    const control = document.getElementById(id);
+    if (!control) return;
+    if (active) {
+      control.setAttribute('data-embed-disabled', '1');
+      control.setAttribute('aria-disabled', 'true');
+      control.disabled = true;
+    } else if (control.getAttribute('data-embed-disabled')) {
+      control.removeAttribute('data-embed-disabled');
+      control.removeAttribute('aria-disabled');
+      control.disabled = false;
+    }
+  });
+}
+
+function isEmbedActive() {
+  return Boolean(state.embedSession);
+}
+
+// Section 27 priority 5. Called only when every native route is gone.
+function tryEmbedFallback(item, reason) {
+  const routes = embedRoutes(item);
+  if (!routes.length) return false;
+  const attempted = state.embedSession?.url || '';
+  const next = routes.find((route) => route.url !== attempted) || routes[0];
+  if (!next) return false;
+  console.warn('Native routes exhausted, using embed fallback', { reason, label: next.label });
+  showPlayerMessage(`${next.label} embed player চালু হচ্ছে…`);
+  return mountEmbedRenderer(next, item);
+}
+
+// Section 13/14. The channel selector the Card/UI phase will call. Pinning a
+// channel restarts playback on it; picking the one already playing does nothing,
+// so a stray click cannot interrupt a healthy stream.
+async function selectEventChannel(eventId, channelId) {
+  const item = state.currentItem && eventChannelId(state.currentItem) === String(eventId)
+    ? state.currentItem
+    : (state.currentItems || []).find((entry) => eventChannelId(entry) === String(eventId));
+  if (!item) return false;
+  const channels = eventChannels(item);
+  if (!channels.some((entry) => entry.id === String(channelId))) return false;
+  if (activeChannelId(item) === String(channelId) && state.currentItem === item && !isEmbedActive()) {
+    return true;
+  }
+
+  state.channelSelection[eventChannelId(item)] = String(channelId);
+  writeJsonStorage(STORAGE_KEYS.channelSelection, state.channelSelection);
+  unmountEmbedRenderer();
+  await startPlayback(item, true);
+  return true;
+}
+
+function clearEventChannelSelection(eventId) {
+  if (!eventId) return;
+  delete state.channelSelection[String(eventId)];
+  writeJsonStorage(STORAGE_KEYS.channelSelection, state.channelSelection);
+}
+
+window.selectEventChannel = selectEventChannel;
+window.clearEventChannelSelection = clearEventChannelSelection;
+window.eventChannels = eventChannels;
+window.activeChannelId = activeChannelId;
+window.isEmbedActive = isEmbedActive;
+
+
 function buildAttemptPlan(item) {
   const plan = [];
   const preferred = state.routePreferences[itemPlaybackKey(item)] || null;
   const rankedSources = item._sources?.length ? item._sources : rankSources(item);
-  const sources = [...rankedSources].sort((left, right) => {
+  // Sections 14/27. Channel order first, native routes only. The list itself is
+  // unchanged - every route the player would have tried is still here, and an
+  // embed is not in it at all.
+  const channelOrdered = orderSourcesByChannel(item, rankedSources);
+  const sources = [...channelOrdered].sort((left, right) => {
     if (!preferred?.sourceKey) return 0;
     return Number(sourcePlaybackKey(right) === preferred.sourceKey) - Number(sourcePlaybackKey(left) === preferred.sourceKey);
   });
@@ -3938,6 +4359,10 @@ function clearPlaybackTimers() {
 }
 
 async function cleanupPlayerEngine() {
+  // Section 28. Embed -> native: the iframe is blanked and removed, so no stale
+  // provider session or audio survives the switch, and the native controls come
+  // back with it.
+  unmountEmbedRenderer();
   clearPlaybackTimers();
   stopStallDetector();
   clearTimeout(state.liveStartupRampTimer);
@@ -5274,6 +5699,11 @@ function recordPlaybackSuccess() {
 
 function handlePlaybackPlanExhausted(reason) {
   const session = state.playbackSession;
+  // Section 27 priority 5. Every native route has failed; an embed backup is the
+  // last thing to try, and only now.
+  if (session?.item && !isEmbedActive() && tryEmbedFallback(session.item, reason)) {
+    return;
+  }
   if (session) {
     session.attemptToken += 1;
     const uid = session.item?._uid;
@@ -6816,6 +7246,15 @@ function updateMetadata(item) {
 }
 
 function updateActiveCards() {
+  // Card design section 8. The playing event reads as playing on the shell, and
+  // its selected chip picks up the equaliser - both in place, so nothing the
+  // player is bound to is rebuilt.
+  qsa('[data-event-shell]', sidebarList).forEach((shell) => {
+    const item = (state.currentItems || []).find((entry) => entry._uid === shell.dataset.uid);
+    const playing = shell.dataset.uid === state.currentItem?._uid;
+    shell.classList.toggle('is-playing-event', playing);
+    if (item) updateEventChannelStrip(shell, item);
+  });
   qsa('[data-uid]', sidebarList).forEach((card) => {
     const active = card.dataset.uid === state.currentItem?._uid;
     card.classList.toggle('active', active);

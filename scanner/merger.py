@@ -470,6 +470,145 @@ SPORT_ORDER: Tuple[str, ...] = ("cricket", "football")
 _EVENT_PIPELINES = frozenset({"today_match", "upcoming"})
 
 
+# "A vs B" as a whole word, for the fixture-title checks below. Defined as a
+# named pattern because a literal backslash-b written through a shell heredoc
+# silently became a backspace character here once already.
+_VERSUS_WORD = re.compile(r"\b(?:vs|v|versus)\b", re.IGNORECASE)
+
+
+def fixture_identity_key(item: Dict[str, Any], aliases: Optional[Dict[str, str]] = None) -> str:
+    """Section 5. One real fixture, one key - whatever channel carried it.
+
+    Source playlists routinely append the broadcaster to the fixture title:
+
+        "Al Nassr Vs Al Fateh FANCODE"
+        "Al Nassr Vs Al Fateh FOX DEPORTES"
+        "Al Nassr Vs Al Fateh SporTV BR"
+
+    Those are one match on three channels, but normalize_event_key() sees three
+    different names and produces three keys - so the merge published three main
+    cards for one fixture, which is exactly what section 5 forbids. The channel
+    resolver already knows how to pick the broadcaster out of a title, so the
+    broadcaster is removed here before the key is computed.
+
+    The removal is deliberately conservative: it only applies when a channel was
+    actually resolved, when the name really appears in the title, and when what
+    is left still looks like a fixture. Anything else keeps today's key, because
+    over-merging two different matches would be far worse than leaving a title
+    with a channel suffix on it.
+    """
+    name = str(item.get("name") or "")
+    base = normalize_event_key(name)
+    if not name.strip():
+        return base
+
+    layer = _channel_layer()
+    if layer is None:
+        return base
+    try:
+        from scanner.channel_resolver import resolve_channel_name
+    except Exception:  # pragma: no cover - optional layer
+        return base
+
+    try:
+        channel = resolve_channel_name(item, name, aliases or {})
+    except Exception:  # pragma: no cover - never break grouping over a name
+        return base
+    if not channel.resolved or not channel.name:
+        return base
+
+    # The broadcaster sits at the end of the title, and so does whatever trails
+    # it - a region or language marker like "FOX DEPORTES" or "SporTV BR". Both
+    # belong to the channel, not to the fixture, so the key is truncated at the
+    # broadcaster rather than having its name spliced out: splicing left "Al
+    # Nassr Vs Al Fateh DEPORTES" and still produced a second card.
+    tokens = base.split("-") if base else []
+    channel_tokens = [part for part in channel.normalized.split("-") if part]
+    if not tokens or not channel_tokens:
+        return base
+
+    head = channel_tokens[0]
+    cut = -1
+    for index in range(len(tokens) - 1, -1, -1):
+        if tokens[index] == head:
+            cut = index
+            break
+    if cut <= 0:
+        return base
+
+    kept = tokens[:cut]
+    # Refuse a truncation that would leave something that is no longer a fixture:
+    # a broadcaster word can legitimately appear inside a team name, and cutting
+    # there would merge unrelated matches.
+    if "vs" not in kept and len(kept) < 3:
+        return base
+    if "vs" in kept and kept.index("vs") >= len(kept) - 1:
+        return base
+
+    candidate = "-".join(kept)
+    return candidate if len(candidate) >= 4 else base
+
+
+def fixture_display_name(item, aliases=None) -> str:
+    """Section 5. The fixture's own title, without the broadcaster on the end.
+
+    A card titled "Al Nassr Vs Al Fateh SporTV BR" names one channel out of three
+    in its own headline, which is misleading once the channels sit underneath it.
+    The broadcaster is trimmed off for display; if trimming would leave something
+    that no longer reads like a fixture, the original title is kept.
+    """
+    name = str(item.get("name") or "").strip()
+    if not name:
+        return name
+    try:
+        from scanner.channel_resolver import resolve_channel_name
+    except Exception:  # pragma: no cover - optional layer
+        return name
+    try:
+        channel = resolve_channel_name(item, name, aliases or {})
+    except Exception:  # pragma: no cover
+        return name
+    if not channel.resolved or not channel.name:
+        return name
+
+    trimmed = re.sub(
+        r"[\s|:,-]*" + re.escape(channel.name) + r"[\s|:,-]*.*$",
+        "",
+        name,
+        flags=re.IGNORECASE,
+    )
+    trimmed = " ".join(trimmed.split()).strip(" -|:,")
+    if len(trimmed) < 6 or not _VERSUS_WORD.search(trimmed):
+        return name
+    return trimmed
+
+
+def _channel_layer():
+    """The Fixture -> Channels[] -> Streams[] builder, imported lazily.
+
+    Lazy because scanner.channel_groups imports the channel resolver, which
+    reaches back into this module for lineage - and because a merge must still
+    work if the channel layer is unavailable for any reason.
+    """
+    try:
+        from scanner.channel_groups import (
+            build_event_channels,
+            default_channel_id,
+            stream_variant_identity,
+            summarize_channels,
+        )
+        from scanner.channel_resolver import load_alias_map
+    except Exception:  # pragma: no cover - never break a merge over channels
+        return None
+    return {
+        "build": build_event_channels,
+        "default_id": default_channel_id,
+        "variant": stream_variant_identity,
+        "summary": summarize_channels,
+        "aliases": load_alias_map,
+    }
+
+
 def event_sport(item: Dict[str, Any]) -> str:
     """Canonical sport for one event candidate."""
     declared = str(item.get("source_category") or "").strip()
@@ -536,7 +675,7 @@ def kickoffs_within_tolerance(
 def _normalized_competition(item: Dict[str, Any]) -> str:
     text = str(item.get("competition") or "").strip().casefold()
     text = re.sub(r"[^a-z0-9]+", " ", text)
-    text = re.sub(r"(?:20\d{2}|19\d{2})", " ", text)
+    text = re.sub(r"\b(?:20\d{2}|19\d{2})\b", " ", text)
     return " ".join(text.split())
 
 
@@ -559,15 +698,118 @@ def canonical_event_identity(
     )
 
 
+def participant_fold_key(
+    item: Dict[str, Any], aliases: Optional[Dict[str, str]] = None
+) -> str:
+    """Sections 1/3/5. The two participants, in no particular order.
+
+    normalize_event_key preserves the order and the round wording a source
+    happened to use, so one live match arrived as three cards:
+
+        "Sri Lanka vs India 1st Test"   (fixture feed, round spelled out)
+        "Sri Lanka vs India"            (playlist, no round)
+        "India vs Sri Lanka Willow"     (playlist, sides swapped, broadcaster)
+
+    Each held streams the other two did not, so the broadcasters that should have
+    been channels of one event were split across three cards instead. This key
+    exists to recognise that case and nothing more: the broadcaster is removed,
+    the round descriptor is removed, the two sides are sorted.
+
+    It is deliberately not the identity key. It is offered to the reconciler as a
+    weaker second opinion, and the sport, competition and kickoff-tolerance
+    checks still have to agree before anything folds - which is what keeps the
+    same two teams meeting on two dates as two fixtures.
+    """
+    try:
+        from scanner.schedule_resolver import team_pair_key, _gender
+    except Exception:  # pragma: no cover - optional layer
+        return ""
+    name = ""
+    try:
+        name = fixture_display_name(item, aliases)
+    except Exception:  # pragma: no cover - never break grouping over a name
+        name = ""
+    raw_name = str(item.get("name") or "")
+    key = team_pair_key(name or raw_name)
+    if "|" not in key:
+        return ""
+    left, right = (part.strip() for part in key.split("|", 1))
+    # "Cpl T20 Vs Cpl T20" is a tournament placeholder wearing a fixture's
+    # clothes, not a match between two sides.
+    if not left or not right or left == right:
+        return ""
+    if len(left) < 3 or len(right) < 3:
+        return ""
+    # "Trent Rockets Women vs Oval Women" and "Trent Rockets vs Oval" are two
+    # different fixtures on the same day. The participants-only key cannot see
+    # the difference because "women" is one of the words it removes, so the
+    # gender is carried in the key explicitly and a neutral title never folds
+    # into a gendered one.
+    return "|".join(sorted((left, right))) + "#" + _gender(raw_name or name)
+
+
+def event_id_without_broadcaster(
+    card_id: str, channels: List[Dict[str, Any]]
+) -> str:
+    """Sections 5/10. Take the broadcaster back out of the event id.
+
+    The card id comes from whichever candidate ranked highest, and a playlist
+    puts the broadcaster in the id as well as the title. So one fixture served by
+    three channels published as
+
+        id                 al-nassr-vs-al-fateh-sportv-br
+        channels[].id      al-nassr-vs-al-fateh-sportv-br--fancode
+
+    which reads as though FANCODE were a sub-feed of SporTV BR, and moves the
+    whole event's id whenever the top-ranked feed changes. Cutting the resolved
+    broadcaster off leaves the fixture, which is what both the event id and the
+    channel namespace are supposed to be.
+
+    Returns "" when there is nothing safe to cut - the caller then keeps the id
+    it already had.
+    """
+    segments = [part for part in str(card_id or "").split("-") if part]
+    if len(segments) < 3:
+        return ""
+    heads = {
+        normalized.split("-")[0]
+        for channel in channels or []
+        for normalized in [str(channel.get("normalized_name") or "")]
+        if normalized
+    }
+    heads.discard("")
+    if not heads:
+        return ""
+    cut = -1
+    for index in range(len(segments) - 1, 0, -1):
+        if segments[index] in heads:
+            cut = index
+            break
+    if cut <= 0:
+        return ""
+    kept = segments[:cut]
+    # The same conservatism as the identity key: only accept a result that still
+    # reads like a fixture, so a broadcaster-shaped team word cannot gut an id.
+    if "vs" not in kept and len(kept) < 3:
+        return ""
+    return "-".join(kept)
+
+
 def _identity_compatible(
     left: Tuple[str, str, str, Optional[int]],
     right: Tuple[str, str, str, Optional[int]],
     kickoff_tolerance_minutes: int = KICKOFF_TOLERANCE_MINUTES,
+    left_fold: str = "",
+    right_fold: str = "",
 ) -> bool:
     """Same participants/round, a compatible sport and competition, and two
     kickoffs close enough to be the same fixture."""
     if not left[1] or left[1] != right[1]:
-        return False
+        # Same two participants, written differently. Everything below still has
+        # to pass, so this widens what counts as the same name and relaxes
+        # nothing else.
+        if not left_fold or left_fold != right_fold:
+            return False
     # "other" means the sport could not be determined, so it must behave like a
     # missing field rather than a value that contradicts a known sport.
     blank = {"", "other"}
@@ -578,6 +820,31 @@ def _identity_compatible(
             return False
     return kickoffs_within_tolerance(
         left[3], right[3], kickoff_tolerance_minutes
+    )
+
+
+def same_real_fixture(
+    left: Dict[str, Any],
+    right: Dict[str, Any],
+    aliases: Optional[Dict[str, str]] = None,
+) -> bool:
+    """Whether two cards are the same real fixture, by the group loop's own rule.
+
+    Live protection carries a missed event forward after the merge has finished,
+    so a card that arrives that way has never been through the grouping above and
+    can duplicate a card this scan already published - "India vs Sri Lanka
+    Willow" beside "Sri Lanka vs India 1st Test". The reconciler needs exactly the
+    decision the group loop makes, so it asks the same question through the same
+    helpers rather than forming a second opinion that could drift away from this
+    one. Sport, competition and kickoff tolerance all still have to agree.
+    """
+    if not isinstance(left, dict) or not isinstance(right, dict):
+        return False
+    return _identity_compatible(
+        canonical_event_identity(left),
+        canonical_event_identity(right),
+        left_fold=participant_fold_key(left, aliases),
+        right_fold=participant_fold_key(right, aliases),
     )
 
 
@@ -882,7 +1149,7 @@ def _channel_lineage(stream: Dict[str, Any]) -> str:
     except ValueError:
         path = ""
     path = re.sub(r"/[^/]*\.(?:m3u8|mpd|ts|m4s)$", "/", path, flags=re.IGNORECASE)
-    path = re.sub(r"(?:\d{3,4}p|hd|sd|fhd|uhd|low|high|backup|server\s*\d+)", "", path, flags=re.IGNORECASE)
+    path = re.sub(r"\b(?:\d{3,4}p|hd|sd|fhd|uhd|low|high|backup|server\s*\d+)\b", "", path, flags=re.IGNORECASE)
     path = re.sub(r"[^a-z0-9/]+", "", path.lower())
     source = str(stream.get("source_id") or "").strip().lower()
     return f"{host}|{path}" if host else f"{source}|{path}"
@@ -1094,7 +1361,8 @@ def rank_and_select_streams(
 
 
 def _reconcile_event_groups(
-    grouped: Dict[str, List[Dict[str, Any]]]
+    grouped: Dict[str, List[Dict[str, Any]]],
+    aliases: Optional[Dict[str, str]] = None,
 ) -> Dict[str, List[Dict[str, Any]]]:
     """Fold event groups whose canonical identities are compatible."""
     event_keys = [key for key in grouped if key.split(":", 1)[0] in _EVENT_PIPELINES]
@@ -1102,11 +1370,16 @@ def _reconcile_event_groups(
         return grouped
 
     identities: Dict[str, Tuple[str, str, str, Optional[int]]] = {}
+    folds: Dict[str, str] = {}
     for key in event_keys:
         members = grouped[key]
         if not members:
             continue
         identities[key] = canonical_event_identity(members[0])
+        # A group's fold key is only used if every member agrees on it, so a
+        # group that already mixes participants cannot pull another one in.
+        member_folds = {participant_fold_key(member, aliases) for member in members}
+        folds[key] = member_folds.pop() if len(member_folds) == 1 else ""
 
     # Every candidate group is compared against the group that leads it, never
     # against a group that has already been folded in. Kickoff tolerance is not
@@ -1122,7 +1395,12 @@ def _reconcile_event_groups(
                 continue
             if key.split(":", 1)[0] != other.split(":", 1)[0]:
                 continue
-            if _identity_compatible(identities[key], identities[other]):
+            if _identity_compatible(
+                identities[key],
+                identities[other],
+                left_fold=folds.get(key, ""),
+                right_fold=folds.get(other, ""),
+            ):
                 merged_into[other] = key
 
     if not merged_into:
@@ -1180,11 +1458,18 @@ def merge_candidates(
 
     # 1. Check Today Match events with STRONGLY VERIFIED playable streams
     strongly_verified_today_event_keys: set[str] = set()
+    _prefilter_layer = _channel_layer()
+    _prefilter_aliases: Dict[str, str] = (
+        _prefilter_layer["aliases"]() if _prefilter_layer else {}
+    )
     for c in candidates:
         if not isinstance(c, dict):
             continue
         if _is_strongly_verified_today_match(c):
-            key = normalize_event_key(c.get("name", ""))
+            # The same channel-stripped key the grouping uses, or a Today match
+            # carrying a broadcaster suffix would not recognise its own Upcoming
+            # duplicate.
+            key = fixture_identity_key(c, _prefilter_aliases)
             if key:
                 strongly_verified_today_event_keys.add(key)
 
@@ -1195,10 +1480,17 @@ def merge_candidates(
             continue
 
         if c.get("source_pipeline") == "upcoming":
-            key = normalize_event_key(c.get("name", ""))
+            key = fixture_identity_key(c, _prefilter_aliases)
             if key in strongly_verified_today_event_keys:
                 continue
         filtered_candidates.append(c)
+
+    # One alias-map read for the whole merge: grouping and channel building both
+    # need it, and it is read from disk.
+    _grouping_layer = _channel_layer()
+    grouping_aliases: Dict[str, str] = (
+        _grouping_layer["aliases"]() if _grouping_layer else {}
+    )
 
     grouped: Dict[str, List[Dict[str, Any]]] = {}
     for c in filtered_candidates:
@@ -1206,7 +1498,10 @@ def merge_candidates(
         raw_id = str(c.get("id") or "").strip()
 
         if pipeline in ("today_match", "upcoming"):
-            evt_key = normalize_event_key(c.get("name", ""))
+            # Section 5. The broadcaster is stripped out first, so the same match
+            # on Willow, Sony Ten and T Sports is one fixture with three channels
+            # rather than three main cards.
+            evt_key = fixture_identity_key(c, grouping_aliases)
             fallback_key = (
                 raw_id
                 or str(c.get("tvg_id") or "").strip()
@@ -1235,9 +1530,11 @@ def merge_candidates(
     # together when those parts agree or are missing on one side, and stay
     # apart when they genuinely disagree - which is what keeps "England vs
     # Pakistan" on two different dates as two fixtures.
-    grouped = _reconcile_event_groups(grouped)
+    grouped = _reconcile_event_groups(grouped, grouping_aliases)
 
     merged_results: List[Dict[str, Any]] = []
+
+    channel_alias_map: Dict[str, str] = grouping_aliases
 
     for group_key, stream_candidates in grouped.items():
         if not stream_candidates:
@@ -1288,6 +1585,26 @@ def merge_candidates(
         if not isinstance(card_headers, dict):
             card_headers = {}
 
+        # Sections 6-10. One fixture, its broadcasters, and each broadcaster's
+        # stream variants. Built from the whole publishable pool rather than the
+        # primary/backup shortlist, because a channel the event-level ranking did
+        # not pick is still a channel the viewer may want to select.
+        event_channels: List[Dict[str, Any]] = []
+        channel_stats: Dict[str, Any] = {}
+        if group_pipeline in _EVENT_PIPELINES:
+            layer = _channel_layer()
+            if layer is not None:
+                try:
+                    event_channels, channel_stats = layer["build"](
+                        base_item.get("id", "") or group_key,
+                        base_item.get("name", ""),
+                        publishable_candidates,
+                        aliases=channel_alias_map,
+                        default_variant_key=layer["variant"](primary),
+                    )
+                except Exception as error:  # pragma: no cover - reporting only
+                    event_channels, channel_stats = [], {"error": str(error)}
+
         is_metadata_only = primary.get("metadata_only") is True
         v_mode = str(
             primary.get("verification_mode")
@@ -1295,9 +1612,30 @@ def merge_candidates(
         )
         v_status = _verification_label(primary)
 
+        display_name = (
+            fixture_display_name(base_item, channel_alias_map)
+            if group_pipeline in _EVENT_PIPELINES and event_channels
+            else base_item.get("name", "")
+        )
+
+        # The channel ids are namespaced by this, so the broadcaster has to come
+        # out of it first - see event_id_without_broadcaster.
+        card_id = str(base_item.get("id", "") or "")
+        if group_pipeline in _EVENT_PIPELINES and event_channels:
+            trimmed_id = event_id_without_broadcaster(card_id, event_channels)
+            if trimmed_id:
+                card_id = trimmed_id
+                event_channels, channel_stats = layer["build"](
+                    card_id,
+                    base_item.get("name", ""),
+                    publishable_candidates,
+                    aliases=channel_alias_map,
+                    default_variant_key=layer["variant"](primary),
+                )
+
         merged_card: Dict[str, Any] = {
-            "id": base_item.get("id", ""),
-            "name": base_item.get("name", ""),
+            "id": card_id,
+            "name": display_name,
             # Requirement 16 reads this back next scan to keep a healthy
             # primary in place; requirement 11 sorts on the sport.
             "primary_stream_key": _stream_identity_key(primary),
@@ -1329,6 +1667,21 @@ def merge_candidates(
             "available_link_count": 1 + len(backups),
             "backups": backups,
         }
+
+        # Section 17/18. channels[] is additive: every field the frontend, the
+        # tests and the Worker already read stays exactly where it was, and a
+        # card whose broadcaster could not be resolved simply carries no
+        # channels[] at all (section 12).
+        if event_channels:
+            layer = _channel_layer()
+            merged_card["channels"] = event_channels
+            merged_card["channel_count"] = len(event_channels)
+            merged_card["default_channel_id"] = (
+                layer["default_id"](event_channels, layer["variant"](primary))
+                if layer is not None else str(event_channels[0].get("id") or "")
+            )
+        if channel_stats:
+            merged_card["channel_stats"] = channel_stats
 
         standby_candidates = primary.get("_standby_candidates")
         if isinstance(standby_candidates, list) and standby_candidates:

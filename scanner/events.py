@@ -18,9 +18,16 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 try:
     from scanner.live_protection import probe_card_is_playable, protect_live_events
+    from scanner.event_lifecycle import authority_says_live, classify_state
     from scanner.targeted_scan import fixture_key, has_valid_link
     from scanner.source_coverage import build_source_coverage, write_source_coverage
-    from scanner.merger import event_sport, sport_sort_index, load_previous_primary_keys, merge_candidates
+    from scanner.merger import (
+        event_sport,
+        load_previous_primary_keys,
+        merge_candidates,
+        normalize_event_key,
+        sport_sort_index,
+    )
     from scanner.schedule_resolver import (
         DEFAULT_FIXTURE_AUTHORITY_SOURCES,
         DEFAULT_PROVIDER_EVENT_HOURS,
@@ -33,9 +40,16 @@ except ImportError:
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
     from live_protection import probe_card_is_playable, protect_live_events
+    from event_lifecycle import authority_says_live, classify_state
     from targeted_scan import fixture_key, has_valid_link
     from source_coverage import build_source_coverage, write_source_coverage
-    from merger import event_sport, sport_sort_index, load_previous_primary_keys, merge_candidates
+    from merger import (
+        event_sport,
+        load_previous_primary_keys,
+        merge_candidates,
+        normalize_event_key,
+        sport_sort_index,
+    )
     from schedule_resolver import (
         DEFAULT_FIXTURE_AUTHORITY_SOURCES,
         DEFAULT_PROVIDER_EVENT_HOURS,
@@ -401,6 +415,297 @@ def _payload(
     }
 
 
+def _stamp_channel_names(candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Sections 6 and 11. Record each stream's broadcaster before the title changes.
+
+    The schedule resolver rewrites a candidate's name to the canonical fixture
+    title, which is what makes one match one card - and which also deletes the
+    broadcaster the source had appended to it. "Al Nassr Vs Al Fateh FANCODE"
+    becomes "Al Nassr vs Al Fateh", and by merge time there is nothing left to
+    tell FANCODE from FOX DEPORTES.
+
+    So the channel is resolved here, on the raw titles, and written to the
+    explicit `channel_name` field - which is priority 1 of section 11's order, so
+    every later stage simply reads it instead of guessing again.
+    """
+    try:
+        from scanner.channel_resolver import load_alias_map, resolve_channel_name
+    except Exception:  # pragma: no cover - optional layer
+        return {"stamped": 0, "unresolved": 0}
+
+    aliases = load_alias_map()
+    stats = {"stamped": 0, "unresolved": 0, "names": {}}
+    for candidate in candidates:
+        if not isinstance(candidate, dict):
+            continue
+        if str(candidate.get("channel_name") or "").strip():
+            continue
+        try:
+            channel = resolve_channel_name(candidate, candidate.get("name"), aliases)
+        except Exception:  # pragma: no cover - never break a scan over a name
+            continue
+        if not channel.resolved:
+            stats["unresolved"] += 1
+            continue
+        candidate["channel_name"] = channel.name
+        candidate["channel_normalized_name"] = channel.normalized
+        candidate["channel_name_confidence"] = channel.confidence
+        candidate["channel_name_source"] = channel.source_field
+        stats["stamped"] += 1
+        stats["names"][channel.name] = int(stats["names"].get(channel.name, 0)) + 1
+    return stats
+
+
+def _streamed_enrichment(
+    settings: Dict[str, Any],
+    reference_now: datetime,
+    targeted_window_minutes: int,
+) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """Sections 22-25 and 31-33. What Streamed adds to this scan, if anything.
+
+    Returns (fixture candidates, report). Every failure path returns an empty
+    list: section 32 requires that an unavailable or slow provider leaves the
+    existing GitHub/native pipeline behaving exactly as it does without it, so
+    nothing here is allowed to raise or to block.
+    """
+    try:
+        from scanner.streamed_provider import (
+            collect_streamed_candidates,
+            write_health,
+        )
+    except Exception as error:  # pragma: no cover - optional layer
+        return [], {"available": False, "reason": f"module unavailable: {error}"}
+
+    try:
+        candidates, health = collect_streamed_candidates(
+            settings,
+            targeted_window_minutes=targeted_window_minutes,
+            now=reference_now,
+        )
+        try:
+            write_health(health)
+        except Exception:  # pragma: no cover - reporting only
+            pass
+        return candidates, health.report()
+    except Exception as error:  # pragma: no cover - never break a scan
+        return [], {"available": False, "reason": f"unexpected: {type(error).__name__}"}
+
+
+def _append_embed_channels(card: Dict[str, Any]) -> int:
+    """Sections 19/26/27. A provider feed is a channel too - listed last.
+
+    The provider's feeds are the reason an event can have several selectable
+    broadcasters at all when the native playlists only carry one. They are built
+    with the same channel builder as the native side so a reader sees one
+    structure, and then appended strictly behind every native channel.
+
+    Section 27 is enforced by construction here: the embed channels go on the
+    end, the existing default_channel_id is not touched while any native channel
+    exists, and nothing already in channels[] is reordered or removed. So a
+    healthy native primary is never demoted by a provider answering.
+    """
+    embeds = card.get("embed_backups")
+    if not isinstance(embeds, list) or not embeds:
+        return 0
+    try:
+        from scanner.channel_groups import build_event_channels, default_channel_id
+    except Exception:  # pragma: no cover - optional layer
+        return 0
+
+    existing = card.get("channels")
+    existing = list(existing) if isinstance(existing, list) else []
+    native_ids = {str(channel.get("id") or "") for channel in existing}
+
+    try:
+        embed_channels, _ = build_event_channels(
+            str(card.get("id") or ""),
+            str(card.get("name") or ""),
+            [
+                {
+                    **entry,
+                    "renderer": "embed",
+                    "name": entry.get("name"),
+                    "channel_name": entry.get("name"),
+                    "source_id": f"streamed:{entry.get('provider') or 'streamed'}",
+                }
+                for entry in embeds
+                if isinstance(entry, dict)
+            ],
+            aliases={},
+        )
+    except Exception:  # pragma: no cover - a provider must never break a scan
+        return 0
+
+    added = [
+        channel for channel in embed_channels
+        if str(channel.get("id") or "") not in native_ids
+    ]
+    if not added:
+        return 0
+
+    card["channels"] = existing + added
+    card["channel_count"] = len(card["channels"])
+    card["embed_channel_count"] = len(added)
+
+    # Section 27, the part that is easy to get wrong. "No native channel" is not
+    # the same as "no native stream": section 12 refuses to name a broadcaster it
+    # cannot identify, so a card can have a perfectly healthy native primary and
+    # still no native entry in channels[]. Making an embed the default there
+    # would reorder the playback plan and demote that primary - exactly the
+    # demotion section 27 forbids. So the default is only offered to an embed
+    # when the card has no native stream of its own to play.
+    has_native_primary = bool(
+        str(card.get("playback_id") or "").strip()
+        or str(card.get("url") or "").strip()
+    ) and card.get("metadata_only") is not True
+    if not str(card.get("default_channel_id") or "").strip() and not has_native_primary:
+        card["default_channel_id"] = default_channel_id(card["channels"])
+    return len(added)
+
+
+def _apply_streamed_enrichment(
+    cards: List[Dict[str, Any]],
+    provider_candidates: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """Attach provider artwork and embed backups to the canonical cards.
+
+    Matching is by the existing canonical event key, so section 23 holds: the
+    provider's own match id never becomes the Click TV event_id, it only points
+    at the fixture the existing matcher already resolved.
+
+    Section 27: an embed lands in embed_backups[], strictly after every native
+    option, and never inside backups[] - those are native URLs the player and the
+    proxy Worker already know how to handle, and a healthy native primary is
+    never demoted because a provider answered.
+    """
+    if not provider_candidates:
+        return {"matched": 0, "artwork": 0, "embed_backups": 0,
+                "embed_channels": 0, "unmatched": 0}
+
+    by_key: Dict[str, Dict[str, Any]] = {}
+    for candidate in provider_candidates:
+        key = normalize_event_key(candidate.get("name", ""))
+        if key:
+            by_key.setdefault(key, candidate)
+
+    stats = {"matched": 0, "artwork": 0, "embed_backups": 0,
+             "embed_channels": 0, "unmatched": 0}
+    used: set = set()
+    for card in cards:
+        key = normalize_event_key(card.get("name", ""))
+        provider = by_key.get(key)
+        if provider is None:
+            continue
+        used.add(key)
+        stats["matched"] += 1
+        card["provider_enriched"] = "streamed"
+        card["provider_event_id"] = str(provider.get("provider_event_id") or "")
+
+        # Section 25. Provider badges/posters go in front of the existing artwork
+        # chain as candidates to try, never as a replacement for it.
+        artwork = provider.get("provider_artwork")
+        if isinstance(artwork, list) and artwork:
+            existing = card.get("artwork_candidates")
+            merged = list(artwork) + (existing if isinstance(existing, list) else [])
+            seen: set = set()
+            card["artwork_candidates"] = [
+                url for url in merged
+                if str(url).strip() and not (str(url) in seen or seen.add(str(url)))
+            ]
+            stats["artwork"] += 1
+
+        embeds = provider.get("provider_embed_streams")
+        if isinstance(embeds, list) and embeds:
+            card["embed_backups"] = [
+                {
+                    "name": str(entry.get("name") or "Streamed"),
+                    "provider": str(entry.get("provider") or "streamed"),
+                    "playback_type": "embed",
+                    "embed_url": str(entry.get("embed_url") or ""),
+                    "language": str(entry.get("language") or ""),
+                    "hd": bool(entry.get("hd")),
+                    "verification_status": "provider_embed",
+                    "verified": False,
+                }
+                for entry in embeds
+                if str(entry.get("embed_url") or "").strip()
+            ]
+            card["embed_backup_count"] = len(card["embed_backups"])
+            stats["embed_backups"] += len(card["embed_backups"])
+            stats["embed_channels"] += _append_embed_channels(card)
+
+        # Section 24: the provider is a routing hint, never a status authority.
+        hint = str(provider.get("provider_routing_hint") or "")
+        if hint:
+            card["provider_routing_hint"] = hint
+
+    stats["unmatched"] = len([k for k in by_key if k not in used])
+    return stats
+
+
+def _authority_states(
+    candidates: List[Dict[str, Any]],
+    previous_items: List[Dict[str, Any]],
+) -> Dict[str, Optional[bool]]:
+    """Section 21. What the fixture authority says in THIS scan, per event id.
+
+    A carried-forward card still holds the status its last successful scan wrote,
+    which is a memory rather than a statement. So the verdict is taken from this
+    scan's enriched candidates - which include fixtures the schedule resolver
+    knows about even when no stream was found for them - and matched to the
+    previously published cards by id and by normalized name. An event nothing in
+    this scan mentions has no verdict at all, and section 21 treats that as
+    "authority unavailable" rather than "finished".
+    """
+    by_id: Dict[str, Optional[bool]] = {}
+    by_name: Dict[str, Optional[bool]] = {}
+    for candidate in candidates:
+        if not isinstance(candidate, dict):
+            continue
+        verdict = authority_says_live(candidate)
+        if verdict is None:
+            continue
+        event_id = str(candidate.get("id") or "")
+        if event_id:
+            by_id.setdefault(event_id, verdict)
+        key = normalize_event_key(candidate.get("name", ""))
+        if key:
+            by_name.setdefault(key, verdict)
+
+    states: Dict[str, Optional[bool]] = {}
+    for previous in previous_items:
+        if not isinstance(previous, dict):
+            continue
+        event_id = str(previous.get("id") or "")
+        if not event_id:
+            continue
+        if event_id in by_id:
+            states[event_id] = by_id[event_id]
+            continue
+        key = normalize_event_key(previous.get("name", ""))
+        if key and key in by_name:
+            states[event_id] = by_name[key]
+    return states
+
+
+def _playing_event_ids(path: str | Path = "state/playing-sessions.json") -> set:
+    """Section 21. The events a viewer is watching right now.
+
+    The frontend writes this when playback starts and clears it when playback
+    stops; the file is optional and an unreadable one simply means "nobody is
+    known to be watching", which costs nothing because every other protection
+    still applies.
+    """
+    try:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return set()
+    values: Any = payload.get("event_ids") if isinstance(payload, dict) else payload
+    if not isinstance(values, list):
+        return set()
+    return {str(value).strip() for value in values if str(value).strip()}
+
+
 def process_events(
     bd_results_path: str = "working/bd-results.json",
     settings_path: str = "config/settings.json",
@@ -483,6 +788,30 @@ def process_events(
     )
 
     reference_now = now or _utc_now_dt()
+
+    # Sections 22-23. Streamed fixtures join the same unified candidate pool and
+    # go through the same canonical matcher as everything else. They are metadata
+    # only, so they can enrich a fixture but never contribute a native stream.
+    streamed_candidates, streamed_report = _streamed_enrichment(
+        settings, reference_now, targeted_window_minutes
+    )
+    if streamed_candidates:
+        raw_event_candidates = raw_event_candidates + [
+            dict(candidate) for candidate in streamed_candidates
+        ]
+
+    # Sections 6/11. Resolve the broadcaster while the raw titles still carry it.
+    channel_stamp_stats = _stamp_channel_names(raw_event_candidates)
+
+    # Sections 6/11 root cause. The enrichment gate correctly refuses to let a
+    # stream-only playlist entry publish an event card of its own, but it used to
+    # delete the candidate as well - and those entries are exactly the ones whose
+    # titles carry a broadcaster. They were destroyed one stage before the stage
+    # that exists to marry a stream to a fixture, so a card and its channels were
+    # both in the scan and never met. The pool keeps them alive without letting
+    # any of them past the gate.
+    attachment_pool: List[Dict[str, Any]] = []
+
     event_candidates, schedule_stats = enrich_event_candidates(
         raw_event_candidates,
         fixture_path=fixture_path,
@@ -491,6 +820,7 @@ def process_events(
         future_days=upcoming_future_days,
         authority_source_ids=authority_source_ids,
         provider_event_hours=provider_event_hours,
+        attachment_pool=attachment_pool,
     )
 
     # Guide 30.7: the fixture exists first, then a matching stream is attached
@@ -499,6 +829,7 @@ def process_events(
     event_candidates, attach_stats = attach_streams_to_fixtures(
         event_candidates,
         authority_source_ids or set(DEFAULT_FIXTURE_AUTHORITY_SOURCES),
+        attachment_pool=attachment_pool,
     )
     schedule_stats.update(attach_stats)
 
@@ -542,6 +873,8 @@ def process_events(
                 or card_copy.get("status")
                 or ("CHANNEL_LIVE" if card_copy.get("today_source_channel") else "LIVE_NOW")
             )
+            # Section 21's lifecycle, stamped on a card this scan actually saw.
+            card_copy["lifecycle_state"] = classify_state(card_copy, now)
             today_items.append(card_copy)
 
         elif pipeline == "upcoming":
@@ -557,6 +890,7 @@ def process_events(
             card_copy["status"] = str(
                 card_copy.get("schedule_status") or card_copy.get("status") or "UPCOMING"
             )
+            card_copy["lifecycle_state"] = classify_state(card_copy, now)
             upcoming_items.append(card_copy)
 
     # Requirement 4, corrected. A targeted trigger publishes the snapshot it
@@ -679,8 +1013,21 @@ def process_events(
             today_items,
             previous_today_items,
             probe=probe_card_is_playable,
+            # Section 21: a fresh authority verdict, and the sessions a viewer is
+            # watching - the strongest protection there is.
+            authority_states=_authority_states(event_candidates, previous_today_items),
+            playing_event_ids=_playing_event_ids(),
         )
         schedule_stats["live_protection"] = protection_stats
+
+    # Sections 24-27. Artwork and embed backups are attached after routing, so a
+    # provider that vanished from its own listing cannot influence which section
+    # a card landed in, nor remove it.
+    schedule_stats["channel_names"] = channel_stamp_stats
+    schedule_stats["streamed_provider"] = streamed_report
+    schedule_stats["streamed_enrichment"] = _apply_streamed_enrichment(
+        today_items + upcoming_items, streamed_candidates
+    )
 
     result = {
         "today_match": _payload(

@@ -15,7 +15,7 @@ import os
 import re
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from scanner.security import redact_sensitive_text
@@ -217,22 +217,7 @@ class PlaybackProfileCollector:
         context: str,
         headers: Mapping[str, str],
     ) -> str:
-        identity = {
-            # The ID represents the complete playable configuration. Header,
-            # Cookie/token and DRM values are intentionally included because
-            # this project stores them in its public Git/Pages catalogue and
-            # equal URLs with different credentials must never collide.
-            "url": source_url,
-            "headers": dict(sorted((str(name), str(value)) for name, value in headers.items())),
-            "drm": item.get("drm") if isinstance(item.get("drm"), Mapping) else {},
-            "header_profile": str(item.get("header_profile") or ""),
-            "stream_type": str(item.get("stream_type") or item.get("type") or ""),
-            "inherit_manifest_query": bool(item.get("inherit_manifest_query")),
-        }
-        digest = hashlib.sha256(
-            json.dumps(identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
-        ).hexdigest()
-        return f"ctv_{digest[:32]}"
+        return stable_playback_id(item, source_url, headers)
 
     def catalog_bundle(self) -> Dict[str, Any]:
         return {
@@ -259,6 +244,43 @@ try:
     from scanner.snapshot_publish import ORDER_PLAYBACK_INDEX, ORDER_PLAYBACK_SHARD
 except ImportError:  # pragma: no cover - direct module execution
     from snapshot_publish import ORDER_PLAYBACK_INDEX, ORDER_PLAYBACK_SHARD
+
+def stable_playback_id(
+    item: Mapping[str, Any],
+    source_url: str = "",
+    headers: Optional[Mapping[str, str]] = None,
+) -> str:
+    """The playback_id for one stream configuration.
+
+    A pure function of the complete playable configuration, so any stage of the
+    scan can compute the id a stream *will* be published under without waiting
+    for the publish step. The channel layer needs exactly that: it builds
+    channels[] during the merge, long before the collector runs, and a channel
+    stream without the right playback_id would be unplayable.
+
+    Header, cookie/token and DRM values are deliberately part of the identity -
+    this project keeps them in its public catalogue, and equal URLs with
+    different credentials must never collide.
+    """
+    url = str(source_url or "").strip()
+    if not url:
+        _, url = _url_from_item(item)
+    if not url:
+        return ""
+    header_map = headers if headers is not None else _headers_from_item(item)
+    identity = {
+        "url": url,
+        "headers": dict(sorted((str(name), str(value)) for name, value in header_map.items())),
+        "drm": item.get("drm") if isinstance(item.get("drm"), Mapping) else {},
+        "header_profile": str(item.get("header_profile") or ""),
+        "stream_type": str(item.get("stream_type") or item.get("type") or ""),
+        "inherit_manifest_query": bool(item.get("inherit_manifest_query")),
+    }
+    digest = hashlib.sha256(
+        json.dumps(identity, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    return f"ctv_{digest[:32]}"
+
 
 CATALOG_SHARD_DIRECTORY = "playback"
 CATALOG_SHARD_KEY = "playback_id_prefix_2"

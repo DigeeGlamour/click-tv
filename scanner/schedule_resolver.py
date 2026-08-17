@@ -612,9 +612,29 @@ _TEAM_TAIL_NOISE = re.compile(
     r"championship|cup|trophy|series|test|odi|t20|tnpl|cpl|ipl|bpl|"
     r"friendl(?:y|ies)|qualif(?:ier|ying)|round|matchday|group|women|men|"
     r"willow|crichd|criclife|tapmad|fancode|sony|star|fox|ptv|supersport|"
-    r"server|hd|fhd|uhd|sd|live|stream"
+    r"server|hd|fhd|uhd|sd|live|stream|"
+    # Labels a playlist puts on a link rather than on a team: "Braves vs
+    # Diamondbacks Quality", "R Racing Club vs Villarreal Link 1".
+    r"quality|link|alt|mirror|option|backup|feed"
     r")\b"
 )
+
+
+# A round descriptor can sit in FRONT of the participants as easily as behind
+# them: cricket playlists write "1st Test Australia vs Bangladesh" while the
+# fixture feed writes "Australia vs Bangladesh 2nd Test". Cutting at the first
+# noise word handles the second shape and destroys the first - "1st Test
+# Australia" collapses to "1st", so the two never meet and the stream can never
+# be hung on its fixture. This pattern is removed from the front instead.
+_TEAM_LEADING_ROUND = re.compile(
+    r"(?i)^\s*(?:\d{1,3}(?:st|nd|rd|th)\s+)?"
+    r"(?:tests?|odis?|t20i?s?|t10|matches?|match|legs?|rounds?|days?|"
+    r"semi[-\s]?finals?|quarter[-\s]?finals?|finals?|qf|sf)\s+(?=\S)"
+)
+
+# "Bangladesh 2nd" after the tail cut is still the fixture's round, not a team.
+# Only an explicit ordinal is removed, so "Felgueiras 1932" keeps its year.
+_TEAM_TRAILING_ORDINAL = re.compile(r"(?i)\s+\d{1,3}(?:st|nd|rd|th)$")
 
 
 def team_pair_key(name: str) -> str:
@@ -635,11 +655,13 @@ def team_pair_key(name: str) -> str:
 
     def clean(side: str) -> str:
         side = re.split(r"\s+-\s+", side, maxsplit=1)[0]
+        side = _TEAM_LEADING_ROUND.sub("", side, count=1)
         noise = _TEAM_TAIL_NOISE.search(side)
         if noise:
             side = side[: noise.start()]
         side = re.sub(r"[^\w\s]", " ", side)
-        return " ".join(side.split())
+        side = " ".join(side.split())
+        return _TEAM_TRAILING_ORDINAL.sub("", side).strip()
 
     left, right = clean(parts[0]), clean(parts[1])
     if not left or not right:
@@ -647,9 +669,83 @@ def team_pair_key(name: str) -> str:
     return f"{left}|{right}"
 
 
+def _key_sides(key: str) -> Optional[Tuple[frozenset, frozenset, str, str]]:
+    """Split a participants key into the word sets and the distinctive word."""
+    if "|" not in key:
+        return None
+    left, right = (part.split() for part in key.split("|", 1))
+    if not left or not right:
+        return None
+    return frozenset(left), frozenset(right), left[-1], right[-1]
+
+
+def _side_matches(
+    stream: Tuple[frozenset, str], fixture: Tuple[frozenset, str]
+) -> bool:
+    """Whether two spellings name the same club.
+
+    One side may name the club more fully than the other - "Orioles" against
+    "Baltimore Orioles" - so containment either way is allowed. Two guards keep
+    that from becoming a wildcard: the last word has to be the same, so "Sox"
+    cannot answer to both "Boston Red Sox" and "Chicago White Sox"; and the words
+    they share must include a real one, so a pair of initials cannot match.
+    """
+    stream_tokens, stream_last = stream
+    fixture_tokens, fixture_last = fixture
+    if not stream_tokens or not fixture_tokens:
+        return False
+    if stream_tokens == fixture_tokens:
+        return True
+    if not (stream_tokens <= fixture_tokens or fixture_tokens <= stream_tokens):
+        return False
+    if stream_last != fixture_last:
+        return False
+    return any(len(token) >= 4 for token in stream_tokens & fixture_tokens)
+
+
+def _pairs_match(
+    stream: Tuple[frozenset, frozenset, str, str],
+    fixture: Tuple[frozenset, frozenset, str, str],
+) -> bool:
+    """The same two clubs, in either order - the fixture supplies the order."""
+    s_left, s_right, s_left_last, s_right_last = stream
+    f_left, f_right, f_left_last, f_right_last = fixture
+    same_order = (
+        _side_matches((s_left, s_left_last), (f_left, f_left_last))
+        and _side_matches((s_right, s_right_last), (f_right, f_right_last))
+    )
+    if same_order:
+        return True
+    return (
+        _side_matches((s_left, s_left_last), (f_right, f_right_last))
+        and _side_matches((s_right, s_right_last), (f_left, f_left_last))
+    )
+
+
+def _display_name_without_broadcaster(item: Dict[str, Any]) -> str:
+    """The title with the trailing broadcaster removed, if that layer is loaded.
+
+    A playlist writes the broadcaster into the title - "Sevilla Vs Rayo
+    Vallecano beiN ENGLISH" - so the participants-only key still ends up with
+    "bein english" glued to the second team. Section 5's helper already knows
+    how to cut a resolved broadcaster off a title, so it is reused here rather
+    than reimplemented. Imported lazily and defensively: attachment must keep
+    working on the raw title if the channel layer is absent.
+    """
+    try:
+        from scanner.merger import fixture_display_name
+    except Exception:  # pragma: no cover - optional layer
+        return ""
+    try:
+        return str(fixture_display_name(item) or "")
+    except Exception:  # pragma: no cover - never break attachment over a name
+        return ""
+
+
 def attach_streams_to_fixtures(
     items: List[Dict[str, Any]],
     authority_source_ids: set,
+    attachment_pool: Optional[List[Dict[str, Any]]] = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, int]]:
     """Guide 30.7: build the fixture first, then hang matching streams on it.
 
@@ -659,6 +755,13 @@ def attach_streams_to_fixtures(
     Re-labelling a matching stream with its fixture's identity lets the ordinary
     merge fold them into one card with primary and backups, which is exactly the
     structure the guide asks for.
+
+    attachment_pool carries the stream-only candidates that the enrichment gate
+    refused to publish - see the note on enrich_event_candidates. They are
+    offered a fixture here and nothing else: a pool item joins the output only
+    when an authority or catalogue fixture claims it, and it arrives wearing that
+    fixture's identity, clock and status. So the pool can add broadcasters to an
+    event authority already established, and can never bring an event of its own.
     """
     fixtures_by_team = {}
     for item in items:
@@ -668,13 +771,21 @@ def attach_streams_to_fixtures(
         if key:
             fixtures_by_team.setdefault(key, item)
 
-    stats = {"streams_attached": 0, "fixtures_with_stream": 0}
+    stats = {
+        "streams_attached": 0,
+        "fixtures_with_stream": 0,
+        "pool_offered": len(attachment_pool or []),
+        "pool_attached": 0,
+        "pool_unclaimed": 0,
+    }
     if not fixtures_by_team:
+        stats["pool_unclaimed"] = stats["pool_offered"]
         return items, stats
 
     # Longest first so "Arsenal|Manchester City" is preferred over a shorter
     # fixture that happens to share a prefix.
     fixture_keys = sorted(fixtures_by_team, key=len, reverse=True)
+    fixture_sides = {key: _key_sides(key) for key in fixture_keys}
 
     def find_fixture(stream_key: str):
         exact = fixtures_by_team.get(stream_key)
@@ -687,7 +798,42 @@ def attach_streams_to_fixtures(
         for key in fixture_keys:
             if stream_key.startswith(key) and stream_key[len(key):len(key) + 1] == " ":
                 return fixtures_by_team[key]
-        return None
+
+        # The two feeds routinely name the same club at different lengths, and in
+        # either order. The fixture feed says "Baltimore Orioles vs Tampa Bay
+        # Rays"; the playlist says "Rays vs Orioles". Neither equality nor a
+        # prefix can see that those are one game, which is why an entire slate of
+        # fixtures published with nothing to play beside streams nobody could
+        # place. Matched on the club words instead, with the distinctive word
+        # required to agree and an all-or-nothing uniqueness rule.
+        stream_sides = _key_sides(stream_key)
+        if stream_sides is None:
+            return None
+        found = None
+        for key in fixture_keys:
+            sides = fixture_sides.get(key)
+            if sides is None or not _pairs_match(stream_sides, sides):
+                continue
+            if found is not None and found is not fixtures_by_team[key]:
+                # More than one fixture answers to these club words, so there is
+                # no honest way to pick. Attach to none of them.
+                return None
+            found = fixtures_by_team[key]
+        return found
+
+    def match_fixture(item: Dict[str, Any]):
+        """Try the title as given, then the title with its broadcaster removed."""
+        for candidate_name in (
+            item.get("name"),
+            _display_name_without_broadcaster(item),
+        ):
+            key = team_pair_key(candidate_name)
+            if not key:
+                continue
+            fixture = find_fixture(key)
+            if fixture is not None:
+                return fixture, key
+        return None, ""
 
     enriched_fixture_keys = set()
     output: List[Dict[str, Any]] = []
@@ -699,8 +845,7 @@ def attach_streams_to_fixtures(
             output.append(item)
             continue
 
-        key = team_pair_key(item.get("name"))
-        fixture = find_fixture(key) if key else None
+        fixture, key = match_fixture(item)
         if fixture is None:
             output.append(item)
             continue
@@ -731,6 +876,40 @@ def attach_streams_to_fixtures(
         stats["streams_attached"] += 1
         enriched_fixture_keys.add(key)
 
+    # The suppressed pool gets exactly the same treatment, and only that.
+    for item in attachment_pool or []:
+        if not isinstance(item, dict) or not _stream_is_usable(item):
+            stats["pool_unclaimed"] += 1
+            continue
+        fixture, key = match_fixture(item)
+        if fixture is None:
+            # No fixture claims it, so it stays suppressed - which is the
+            # behaviour it had before the pool existed.
+            stats["pool_unclaimed"] += 1
+            continue
+
+        attached = copy.deepcopy(item)
+        attached["name"] = fixture["name"]
+        for field in (
+            "competition", "fixture_id", "start_time", "start_at", "end_time",
+            "schedule_status", "status", "schedule_verified",
+            "schedule_source_url", "time_verification", "schedule_authority",
+        ):
+            if field in fixture:
+                attached[field] = fixture[field]
+        if str(fixture.get("schedule_status") or "").upper() == "LINK_UPDATING":
+            attached["schedule_status"] = "LIVE_NOW"
+            attached["status"] = "LIVE_NOW"
+            attached["promoted_from_upcoming"] = True
+        attached["stream_attached_to_fixture"] = True
+        # Auditability: this stream reached the public output only because a
+        # fixture claimed it, and a report can say which ones those were.
+        attached["attached_from_suppressed_pool"] = True
+        output.append(attached)
+        stats["streams_attached"] += 1
+        stats["pool_attached"] += 1
+        enriched_fixture_keys.add(key)
+
     stats["fixtures_with_stream"] = len(enriched_fixture_keys)
     return output, stats
 
@@ -743,7 +922,26 @@ def enrich_event_candidates(
     future_days: int = 120,
     authority_source_ids: Optional[set] = None,
     provider_event_hours: int = DEFAULT_PROVIDER_EVENT_HOURS,
+    attachment_pool: Optional[List[Dict[str, Any]]] = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, int]]:
+    """Decide which candidates may become public event cards.
+
+    This is a publish gate, and it stays one: a stream-only playlist entry with
+    no catalogue fixture and no fixture-authority feed behind it does not become
+    a card. What it must not also be is a shredder. A candidate refused here used
+    to be deleted, and deleting it is what silently cost the published cards
+    their broadcasters: the very entries that carry a broadcaster in the title
+    are the ones a playlist supplies, so they were gone before
+    attach_streams_to_fixtures - the stage whose whole job is to hang a stream on
+    a fixture - ever saw them. Both halves of the card were present in the same
+    scan and never introduced.
+
+    So when attachment_pool is given, a refused stream-only candidate is placed
+    in it rather than dropped. The gate is unchanged: nothing in the pool is in
+    the returned output, and a pool item can only ever re-enter through a fixture
+    that authority or the catalogue already established. Pass no pool and the
+    old behaviour is exactly what happens.
+    """
     now_utc = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     source_zone = _zone(timezone_name, "Asia/Dhaka", "+06:00")
     fixtures = load_fixtures(fixture_path)
@@ -835,6 +1033,14 @@ def enrich_event_candidates(
         fallback = _today_source_channel_fallback(item)
         if fallback is not None:
             output.append(fallback)
+        elif attachment_pool is not None and _stream_is_usable(item):
+            # Refused as a card, offered as a broadcaster. It only becomes
+            # public if a fixture claims it in attach_streams_to_fixtures, and
+            # then it is that fixture's event, not this candidate's. Items that
+            # already produced a channel-card fallback are deliberately excluded
+            # so the same link cannot arrive twice by two different routes.
+            stats["pooled_for_attachment"] = int(stats.get("pooled_for_attachment", 0)) + 1
+            attachment_pool.append(item)
 
     for fixture in relevant:
         if fixture["fixture_id"] in matched_fixture_ids:
