@@ -1,7 +1,7 @@
 {
   "category": "Foreign News",
-  "updated_at": "2026-08-17T01:58:06.134484+00:00",
-  "count": 31,
+  "updated_at": "2026-08-17T07:18:47.068727+00:00",
+  "count": 30,
   "channels": [
     {
       "id": "92-news",
@@ -87,14 +87,14 @@
     },
     {
       "id": "al-jazeera",
-      "name": "AL JAZEERA",
-      "logo": "https://i.ibb.co/6Rz0XFtV/Al-Jazeera.png",
+      "name": "AL Jazeera",
+      "logo": "https://otapp.store/uploads/tv_image/sm/al-jazeera.png",
       "category": "Foreign News",
-      "url": "https://live-hls-web-aje-gcp.thehlive.com/AJE/index.m3u8",
+      "url": "https://cdn-7.pishow.tv/live/429/master.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
+      "proxy_mode": "direct_first",
       "stream_type": "hls",
-      "requires_headers": true,
+      "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -105,23 +105,42 @@
       "original_source_pipeline": "tv",
       "content_kind": "live_tv",
       "routing_reason": "configured_tv_pipeline",
-      "source_id": "smartplaytv-worker-stream",
+      "source_id": "sm-iptv-combined",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "https://live-hls-web-aje-gcp.thehlive.com/AJE/index.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "smartplaytv-worker-stream",
+          "host": "live-hls-web-aje-gcp.thehlive.com",
+          "resolution": "FHD",
+          "playback_id": "ctv_a93523cf3f57145a06b5125409ec83d5"
+        }
+      ],
       "source_provenance": [
         {
-          "source_id": "smartplaytv-worker-stream",
-          "source_name": "SmartPlay TV Worker Stream",
-          "source_url": "https://cloud.smartplaytv.workers.dev/?u=admin&s=5&p=4545&f=.m3u8"
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
         }
       ],
       "source_ids": [
-        "smartplaytv-worker-stream"
+        "sm-iptv-combined"
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
-      "playback_id": "ctv_a93523cf3f57145a06b5125409ec83d5"
+      "playback_id": "ctv_4e968203dd02c0370d39232056981a72"
     },
     {
       "id": "almasira-mubasher",
@@ -372,11 +391,17 @@
           "source_id": "abusaeeidx-mrgify-bdix",
           "source_name": "Mrgify BDIX IPTV",
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
+        },
+        {
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
         }
       ],
       "source_ids": [
         "manual-playlist-1",
-        "abusaeeidx-mrgify-bdix"
+        "abusaeeidx-mrgify-bdix",
+        "sm-iptv-combined"
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
@@ -731,44 +756,6 @@
       "playback_id": "ctv_36c342f8160cac222b084f264fe9c42a"
     },
     {
-      "id": "public-news",
-      "name": "PUBLIC NEWS",
-      "logo": "",
-      "category": "Foreign News",
-      "url": "https://s4.ideationtec.live/Public_News_HD/Public_News_HD.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1"
-      ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "playback_id": "ctv_a5458ba3f7ed416c911acd9f5f42561f"
-    },
-    {
       "id": "rs-news",
       "name": "RS News",
       "logo": "",
@@ -840,8 +827,8 @@
       "source_ids": [
         "manual-playlist-1"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "playback_id": "ctv_aa2ff291682ab02157af551ea2458772"
     },
     {
