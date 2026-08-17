@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import hashlib
 import re
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 from urllib.parse import urlparse
@@ -441,6 +442,145 @@ def normalize_event_key(name: str) -> str:
     return " ".join(text.split()).strip().replace(" ", "-")
 
 
+# Requirement 1 and 11. One canonical sport per event, resolved from the
+# source's own category first, then the competition, then the name. Anything
+# unrecognised stays "other" - nothing is invented.
+_SPORT_RULES: Tuple[Tuple[str, str], ...] = (
+    ("esports", r"esports?|e[\s-]?sports?|pubg|dota|valorant|counter[\s-]?strike|league\s+of\s+legends|mobile\s+legends|free\s+fire"),
+    ("cricket", r"cricket|\bcric(?:life|hd)\b|t20i?|\bodi\b|test\s+match|\d{1,2}(?:st|nd|rd|th)\s+(?:test|odi|t20i?)|the\s+hundred|\bbbl\b|\bipl\b|\bpsl\b|\bcpl\b|ashes|vitality\s+blast|\btnpl\b"),
+    ("motorsport", r"motorsport|formula\s?e?\b|\bf1\b|e[\s-]?prix|moto\s?gp|nascar|rally|grand\s+prix|race\s+\d|race\s+day|\bgt4\b|\bgt3\b|\badac\b|superbike|\bmxgp\b|motocross|indycar|cycling|\buci\b|tour\s+de"),
+    ("golf", r"\bgolf\b|\bpga\b|\blpga\b|dp\s+world\s+tour|ryder\s+cup"),
+    ("tennis", r"tennis|\batp\b|\bwta\b|padel|badminton|squash|roland\s+garros|wimbledon|\b[a-z]+\s+open\b(?!\s+cup)"),
+    ("rugby", r"rugby|currie\s+cup|six\s+nations|super\s+rugby|\bnfl\b|american\s+football"),
+    ("baseball", r"\bmlb\b|baseball|world\s+series|\bnpb\b"),
+    ("basketball", r"basketball|\bnba\b|\bwnba\b|euroleague|basket"),
+    ("volleyball", r"volleyball|beach\s+volley"),
+    ("hockey", r"ice\s+hockey|\bnhl\b|\bkhl\b|field\s+hockey"),
+    ("racing", r"horse\s+racing|racecourse|steeplechase|greyhound"),
+    ("football", r"football|soccer|bundesliga|eredivisie|serie\s+[ab]|la\s?liga|ligue\s?\d|s[uü]per\s+lig|\blig\b|liga|uefa|fifa|\bafc\b|\bcaf\b|concacaf|champions|europa|\befl\b|championship|friendlies|frauenliga|ekstraklasa|allsvenskan|superliga|eliteserien|primeira|segunda|coppa|copa|coupe|pokal|\bhnl\b|\bnwsl\b|\bnpl\b|\bmls\b|[akj][\s-]?league|\bcup\b|league|divisi[oó]n|division|\bfc\b|\bsc\b|united"),
+)
+
+_SPORT_PATTERNS: Tuple[Tuple[str, Any], ...] = tuple(
+    (name, re.compile(pattern, re.IGNORECASE)) for name, pattern in _SPORT_RULES
+)
+
+# Requirement 11. Cricket first, football second, everything else after.
+SPORT_ORDER: Tuple[str, ...] = ("cricket", "football")
+
+_EVENT_PIPELINES = frozenset({"today_match", "upcoming"})
+
+
+def event_sport(item: Dict[str, Any]) -> str:
+    """Canonical sport for one event candidate."""
+    declared = str(item.get("source_category") or "").strip()
+    if declared and not re.fullmatch(r"live|sports?|event|other|general", declared, re.IGNORECASE):
+        for name, pattern in _SPORT_PATTERNS:
+            if pattern.search(declared):
+                return name
+    haystack = " ".join(
+        str(item.get(field) or "") for field in ("source_category", "competition", "name")
+    )
+    for name, pattern in _SPORT_PATTERNS:
+        if pattern.search(haystack):
+            return name
+    return "other"
+
+
+def sport_sort_index(sport: str) -> int:
+    """Requirement 11 ordering: cricket, football, then the rest."""
+    value = str(sport or "other").strip().lower()
+    if value in SPORT_ORDER:
+        return SPORT_ORDER.index(value)
+    return len(SPORT_ORDER)
+
+
+# Requirement 1, corrected. Two sources rarely agree on a kickoff to the minute,
+# so identity comparison tolerates a difference rather than demanding equality.
+# A fixed-width bucket cannot express that: two sources four minutes apart land
+# in different buckets whenever the boundary falls between them, and the same
+# match publishes twice. The tolerance is compared directly instead, so the
+# allowance is the same wherever on the clock the kickoff happens to sit.
+KICKOFF_TOLERANCE_MINUTES = 90
+
+
+def _kickoff_epoch(item: Dict[str, Any]) -> Optional[int]:
+    """Requirement 1. The fixture's kickoff as a UTC epoch, or None when the
+    source did not state one - a missing kickoff is a wildcard, not a value."""
+    raw = str(item.get("start_at") or item.get("start_time") or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return int(parsed.timestamp())
+
+
+def kickoffs_within_tolerance(
+    left: Optional[int],
+    right: Optional[int],
+    tolerance_minutes: int = KICKOFF_TOLERANCE_MINUTES,
+) -> bool:
+    """True when two kickoffs are close enough to be the same fixture.
+
+    A missing kickoff on either side cannot contradict the other one, so it
+    compares as compatible.
+    """
+    if left is None or right is None:
+        return True
+    return abs(int(left) - int(right)) <= max(0, int(tolerance_minutes)) * 60
+
+
+def _normalized_competition(item: Dict[str, Any]) -> str:
+    text = str(item.get("competition") or "").strip().casefold()
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    text = re.sub(r"(?:20\d{2}|19\d{2})", " ", text)
+    return " ".join(text.split())
+
+
+def canonical_event_identity(
+    item: Dict[str, Any]
+) -> Tuple[str, str, str, Optional[int]]:
+    """Requirement 1: sport + normalized participants/round + competition +
+    kickoff time. Each part is returned separately so a missing part can act
+    as a wildcard when groups are reconciled, instead of splitting one real
+    fixture into two cards just because one source omitted a field.
+
+    The fourth part is the exact kickoff epoch (or None). It is compared with a
+    tolerance rather than for equality - see kickoffs_within_tolerance.
+    """
+    return (
+        event_sport(item),
+        normalize_event_key(item.get("name", "")),
+        _normalized_competition(item),
+        _kickoff_epoch(item),
+    )
+
+
+def _identity_compatible(
+    left: Tuple[str, str, str, Optional[int]],
+    right: Tuple[str, str, str, Optional[int]],
+    kickoff_tolerance_minutes: int = KICKOFF_TOLERANCE_MINUTES,
+) -> bool:
+    """Same participants/round, a compatible sport and competition, and two
+    kickoffs close enough to be the same fixture."""
+    if not left[1] or left[1] != right[1]:
+        return False
+    # "other" means the sport could not be determined, so it must behave like a
+    # missing field rather than a value that contradicts a known sport.
+    blank = {"", "other"}
+    for a, b in ((left[0], right[0]), (left[2], right[2])):
+        if a in blank or b in blank:
+            continue
+        if a != b:
+            return False
+    return kickoffs_within_tolerance(
+        left[3], right[3], kickoff_tolerance_minutes
+    )
+
+
 def _is_t_sports(channel: Dict[str, Any]) -> bool:
     name = str(channel.get("name", "")).lower()
     name_clean = re.sub(
@@ -728,6 +868,47 @@ def _effective_publish_allowed(stream: Dict[str, Any]) -> bool:
     )
 
 
+
+def _channel_lineage(stream: Dict[str, Any]) -> str:
+    """Requirement 2. Two entries belong to the same channel when they come
+    from the same host and the same stream path, whatever their token, cookie,
+    DRM or "Server 2" label happens to be. Those variants are still legitimate
+    candidates, but a backup list filled with five of them gives the viewer
+    nothing to fall back to when that one channel goes down."""
+    url = str(stream.get("url") or "")
+    host = _extract_hostname(url)
+    try:
+        path = urlparse(url).path or ""
+    except ValueError:
+        path = ""
+    path = re.sub(r"/[^/]*\.(?:m3u8|mpd|ts|m4s)$", "/", path, flags=re.IGNORECASE)
+    path = re.sub(r"(?:\d{3,4}p|hd|sd|fhd|uhd|low|high|backup|server\s*\d+)", "", path, flags=re.IGNORECASE)
+    path = re.sub(r"[^a-z0-9/]+", "", path.lower())
+    source = str(stream.get("source_id") or "").strip().lower()
+    return f"{host}|{path}" if host else f"{source}|{path}"
+
+
+def _apply_lineage_diversity(
+    streams: List[Dict[str, Any]], limit: int
+) -> List[Dict[str, Any]]:
+    """One stream per channel first, then same-channel variants fill what is
+    left. Nothing is discarded - only reordered - so a card still keeps every
+    backup it earned when no independent alternative exists."""
+    if not streams or limit <= 0:
+        return []
+    first_of_lineage: List[Dict[str, Any]] = []
+    rest: List[Dict[str, Any]] = []
+    seen: Set[str] = set()
+    for stream in streams:
+        lineage = _channel_lineage(stream)
+        if lineage and lineage in seen:
+            rest.append(stream)
+            continue
+        seen.add(lineage)
+        first_of_lineage.append(stream)
+    return (first_of_lineage + rest)[:limit]
+
+
 def _apply_host_diversity(streams: List[Dict[str, Any]], limit: int) -> List[Dict[str, Any]]:
     if not streams or limit <= 0:
         return []
@@ -755,6 +936,8 @@ def rank_and_select_streams(
     prefer_https: bool = True,
     allow_http_fallback: bool = True,
     prefer_different_hosts: bool = True,
+    previous_primary_identity: str = "",
+    hysteresis_margin: int = 1,
 ) -> Tuple[Optional[Dict[str, Any]], List[Dict[str, Any]]]:
     if not streams:
         return None, []
@@ -844,8 +1027,30 @@ def rank_and_select_streams(
     if not selected_streams:
         return None, []
 
+    # Requirement 16. A primary that is still healthy keeps its place. Ranking
+    # is allowed to reorder everything behind it, but swapping the primary on
+    # every scan because a rival was a few milliseconds faster is what makes a
+    # running stream flap. Only a clearly better candidate takes over.
+    if previous_primary_identity:
+        held = next(
+            (
+                index
+                for index, stream in enumerate(selected_streams)
+                if _stream_identity_key(stream) == previous_primary_identity
+            ),
+            -1,
+        )
+        if held > 0:
+            incumbent = selected_streams[held]
+            challenger = selected_streams[0]
+            if _playback_readiness(incumbent) > 0 and _verification_tier_score(incumbent) >= _verification_tier_score(challenger) - hysteresis_margin:
+                selected_streams.insert(0, selected_streams.pop(held))
+
     primary = dict(selected_streams[0])
-    backup_candidates = selected_streams[1 : max_backups + 1]
+    # Requirement 2. Independent channels get the backup slots first; a second
+    # variant of the channel already playing only fills a slot nothing else
+    # wanted.
+    backup_candidates = _apply_lineage_diversity(selected_streams[1:], max_backups)
 
     selected_identities = {
         _stream_identity_key(stream) for stream in selected_streams
@@ -887,9 +1092,69 @@ def rank_and_select_streams(
     return primary, backups
 
 
+
+def _reconcile_event_groups(
+    grouped: Dict[str, List[Dict[str, Any]]]
+) -> Dict[str, List[Dict[str, Any]]]:
+    """Fold event groups whose canonical identities are compatible."""
+    event_keys = [key for key in grouped if key.split(":", 1)[0] in _EVENT_PIPELINES]
+    if len(event_keys) < 2:
+        return grouped
+
+    identities: Dict[str, Tuple[str, str, str, Optional[int]]] = {}
+    for key in event_keys:
+        members = grouped[key]
+        if not members:
+            continue
+        identities[key] = canonical_event_identity(members[0])
+
+    # Every candidate group is compared against the group that leads it, never
+    # against a group that has already been folded in. Kickoff tolerance is not
+    # transitive - three fixtures 80 minutes apart would otherwise chain into
+    # one card - so anchoring the comparison on the leader is what keeps a
+    # merge decision bounded by the leader's own kickoff.
+    merged_into: Dict[str, str] = {}
+    for index, key in enumerate(event_keys):
+        if key in merged_into or key not in identities:
+            continue
+        for other in event_keys[index + 1:]:
+            if other in merged_into or other not in identities:
+                continue
+            if key.split(":", 1)[0] != other.split(":", 1)[0]:
+                continue
+            if _identity_compatible(identities[key], identities[other]):
+                merged_into[other] = key
+
+    if not merged_into:
+        return grouped
+
+    for source, target in merged_into.items():
+        grouped[target].extend(grouped[source])
+        grouped.pop(source, None)
+    return grouped
+
+
+def load_previous_primary_keys(data_root: str | Path = "data") -> Dict[str, str]:
+    """Requirement 16. Map each published event to the fingerprint of the
+    primary it is already serving, so the next scan can keep it."""
+    keys: Dict[str, str] = {}
+    root = Path(data_root)
+    for name in ("today-match.json", "upcoming.json"):
+        payload = _load_json_file(root / name)
+        for item in payload.get("items") or []:
+            if not isinstance(item, dict):
+                continue
+            fingerprint = str(item.get("primary_stream_key") or "").strip()
+            event_key = normalize_event_key(item.get("name", ""))
+            if fingerprint and event_key:
+                keys[event_key] = fingerprint
+    return keys
+
+
 def merge_candidates(
     candidates: List[Dict[str, Any]],
     settings_path: str = "config/settings.json",
+    previous_primary_keys: Optional[Dict[str, str]] = None,
 ) -> List[Dict[str, Any]]:
     settings = _load_json_file(settings_path)
     link_policy = settings.get("link_policy", {})
@@ -964,6 +1229,14 @@ def merge_candidates(
             grouped[group_key] = []
         grouped[group_key].append(c)
 
+    # Requirement 1. The group key above is built from participants and round
+    # only, because that is the one part every source supplies. Sport,
+    # competition and kickoff window are then reconciled here: two groups fold
+    # together when those parts agree or are missing on one side, and stay
+    # apart when they genuinely disagree - which is what keeps "England vs
+    # Pakistan" on two different dates as two fixtures.
+    grouped = _reconcile_event_groups(grouped)
+
     merged_results: List[Dict[str, Any]] = []
 
     for group_key, stream_candidates in grouped.items():
@@ -991,6 +1264,12 @@ def merge_candidates(
             movie_max_backups if group_pipeline == "movies" else max_backups
         )
 
+        remembered_primary = ""
+        if previous_primary_keys and group_pipeline in _EVENT_PIPELINES:
+            remembered_primary = previous_primary_keys.get(
+                normalize_event_key(base_item.get("name", "")), ""
+            )
+
         primary, backups = rank_and_select_streams(
             publishable_candidates,
             max_total=selected_max_total,
@@ -998,6 +1277,7 @@ def merge_candidates(
             prefer_https=prefer_https,
             allow_http_fallback=allow_http_fallback,
             prefer_different_hosts=prefer_different_hosts,
+            previous_primary_identity=remembered_primary,
         )
 
         if not primary:
@@ -1018,6 +1298,10 @@ def merge_candidates(
         merged_card: Dict[str, Any] = {
             "id": base_item.get("id", ""),
             "name": base_item.get("name", ""),
+            # Requirement 16 reads this back next scan to keep a healthy
+            # primary in place; requirement 11 sorts on the sport.
+            "primary_stream_key": _stream_identity_key(primary),
+            "sport_type": event_sport(base_item) if group_pipeline in _EVENT_PIPELINES else "",
             "logo": base_item.get("logo", ""),
             "category": base_item.get("category", ""),
             "url": card_url,

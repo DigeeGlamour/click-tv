@@ -104,6 +104,8 @@ const state = {
   // Smart Filter. Purely a view over the final merged cards: it never reaches
   // the scanner, never refetches and never touches playback.
   eventSportFilter: 'all',
+  // Requirement 7: the active playback session, pinned against catalogue churn.
+  pinnedSession: null,
   movieIndex: null,
   moviePageCursor: 0,
   moviePageLoading: false,
@@ -1757,7 +1759,15 @@ function applyFilterAndSort() {
     items.sort((a, b) => b.name.localeCompare(a.name));
   } else if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
     const statusRank = { LIVE_NOW: 0, CHANNEL_LIVE: 1, STARTING_SOON: 2, LINK_UPDATING: 3, UPCOMING: 4, TIME_UNVERIFIED: 5 };
+    // Requirement 11. Cricket first, Football second, every other sport after
+    // - then the existing status and kickoff order inside each sport.
+    const sportRank = (item) => {
+      const sport = itemSportType(item);
+      return sport === 'cricket' ? 0 : sport === 'football' ? 1 : 2;
+    };
     items.sort((a, b) => {
+      const sportDifference = sportRank(a) - sportRank(b);
+      if (sportDifference) return sportDifference;
       const statusDifference = (statusRank[eventUiStatus(a)] ?? 9) - (statusRank[eventUiStatus(b)] ?? 9);
       if (statusDifference) return statusDifference;
       const aTime = eventStartDate(a)?.getTime() ?? Number.MAX_SAFE_INTEGER;
@@ -1783,6 +1793,35 @@ function applyFilterAndSort() {
   }
 
   state.filteredItems = items;
+}
+
+
+// Guide 23. The headline count answers "how many", the breakdown answers "of
+// what" - and the breakdown is desktop-only so it never crowds a phone. Kept
+// as its own function because requirement 8's diff path needs it too.
+function setEventListCount() {
+  const events = state.filteredItems;
+  if (state.view === VIEW.EVENT) {
+    const channels = events.filter((entry) => isChannelOnlyEventCard(entry)).length;
+    const matches = events.length - channels;
+    const detail = [
+      matches ? `${matches} Match${matches === 1 ? '' : 'es'}` : '',
+      channels ? `${channels} Channel${channels === 1 ? '' : 's'}` : ''
+    ].filter(Boolean).join(' • ');
+    setSidebarCount(`${events.length} Live`, events.length ? detail : '');
+    return;
+  }
+  const todayKey = eventDhakaDayKey(new Date());
+  const todayCount = events.filter((entry) => {
+    const start = eventStartDate(entry);
+    return start ? eventDhakaDayKey(start) === todayKey : false;
+  }).length;
+  const later = events.length - todayCount;
+  const detail = [
+    todayCount ? `${todayCount} Today` : '',
+    later ? `${later} Later` : ''
+  ].filter(Boolean).join(' • ');
+  setSidebarCount(`${events.length} Upcoming`, events.length ? detail : '');
 }
 
 function renderCurrentList(reset = true, options = {}) {
@@ -1837,31 +1876,8 @@ function renderCurrentList(reset = true, options = {}) {
       setSidebarCount(`${manualText}${state.currentItems.length}/${totalKnown} Movies loaded`);
     }
   } else if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
-    // Guide 23. The headline count answers "how many", the breakdown answers
-    // "of what" — and the breakdown is desktop-only so it never crowds a phone.
     sidebarList.classList.remove('movie-grid');
-    const events = state.filteredItems;
-    if (state.view === VIEW.EVENT) {
-      const channels = events.filter((entry) => isChannelOnlyEventCard(entry)).length;
-      const matches = events.length - channels;
-      const detail = [
-        matches ? `${matches} Match${matches === 1 ? '' : 'es'}` : '',
-        channels ? `${channels} Channel${channels === 1 ? '' : 's'}` : ''
-      ].filter(Boolean).join(' • ');
-      setSidebarCount(`${events.length} Live`, events.length ? detail : '');
-    } else {
-      const todayKey = eventDhakaDayKey(new Date());
-      const todayCount = events.filter((entry) => {
-        const start = eventStartDate(entry);
-        return start ? eventDhakaDayKey(start) === todayKey : false;
-      }).length;
-      const later = events.length - todayCount;
-      const detail = [
-        todayCount ? `${todayCount} Today` : '',
-        later ? `${later} Later` : ''
-      ].filter(Boolean).join(' • ');
-      setSidebarCount(`${events.length} Upcoming`, events.length ? detail : '');
-    }
+    setEventListCount();
     state.eventUiFingerprint = eventUiFingerprint();
   } else if (state.view === VIEW.FAVORITE) {
     sidebarList.classList.remove('movie-grid');
@@ -2092,6 +2108,76 @@ function eventLivePhaseText(item) {
 }
 
 // Guide 18. User-facing wording for what the scanner already recorded.
+
+// Requirement 12. The card speaks the site's language, and it says the
+// countdown once. Bengali numerals throughout, because mixing "18" into a
+// Bangla sentence reads as a different voice.
+const BANGLA_DIGITS = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+
+function toBanglaDigits(value) {
+  return String(value).replace(/[0-9]/g, (d) => BANGLA_DIGITS[Number(d)]);
+}
+
+function eventCountdownTextBn(item) {
+  const start = eventStartDate(item);
+  if (!start) return '';
+  const diff = start.getTime() - Date.now();
+  if (diff <= 0) return '';
+  const minutes = Math.round(diff / 60000);
+  if (minutes < 60) return `শুরু হবে ${toBanglaDigits(Math.max(1, minutes))} মিনিট পর`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) {
+    const rest = minutes % 60;
+    return rest
+      ? `শুরু হবে ${toBanglaDigits(hours)} ঘণ্টা ${toBanglaDigits(rest)} মিনিট পর`
+      : `শুরু হবে ${toBanglaDigits(hours)} ঘণ্টা পর`;
+  }
+  const days = Math.round(hours / 24);
+  return days <= 1 ? 'শুরু হবে আগামীকাল' : `শুরু হবে ${toBanglaDigits(days)} দিন পর`;
+}
+
+// Requirement 12's compact metadata row: day, exact BDT clock, stream state.
+function eventMetaRowTextBn(item, streams) {
+  const start = eventStartDate(item);
+  const parts = [];
+  if (start) {
+    const time = eventDhakaTime(start);
+    const todayKey = eventDhakaDayKey(new Date());
+    const key = eventDhakaDayKey(start);
+    let day = '';
+    if (key === todayKey) day = 'আজ';
+    else if (key === eventDhakaDayKey(new Date(Date.now() + 86400000))) day = 'আগামীকাল';
+    else day = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'short' }).format(start);
+    parts.push(`${day} · ${toBanglaDigits(time)} BDT`);
+  }
+  if (streams) parts.push(streams.ready ? streams.shortBn : 'স্ট্রিমের অপেক্ষায়');
+  return parts.join(' · ');
+}
+
+function eventLivePhaseTextBn(item) {
+  const start = eventStartDate(item);
+  if (!start) return '';
+  const diff = Date.now() - start.getTime();
+  if (diff < 0) return '';
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return 'এইমাত্র শুরু';
+  if (minutes < 60) return `${toBanglaDigits(minutes)} মিনিট`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest
+    ? `${toBanglaDigits(hours)} ঘণ্টা ${toBanglaDigits(rest)} মিনিট`
+    : `${toBanglaDigits(hours)} ঘণ্টা`;
+}
+
+function eventStartedTextBn(item) {
+  const start = eventStartDate(item);
+  if (!start) return '';
+  const time = `${toBanglaDigits(eventDhakaTime(start))} BDT`;
+  if (eventDhakaDayKey(start) === eventDhakaDayKey(new Date())) return time;
+  const date = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'short' }).format(start);
+  return `${date} · ${time}`;
+}
+
 function eventVerificationLabel(item) {
   const mode = String(item?.time_verification || '').toLowerCase();
   if (mode === 'official_catalogue') return 'Fixture Verified';
@@ -2106,13 +2192,14 @@ function eventVerificationLabel(item) {
 // "Primary". The full wording goes to the details popup, which has the room.
 function eventStreamSummary(item) {
   if (item?.metadata_only === true || !isPlayable(item)) {
-    return { short: 'Waiting', text: 'Waiting for Stream', ready: false };
+    return { short: 'Waiting', shortBn: 'স্ট্রিমের অপেক্ষায়', text: 'Waiting for Stream', ready: false };
   }
   const backups = Array.isArray(item?.backups) ? item.backups.length : 0;
   const total = Math.max(Number(item?.available_link_count || 0), backups + 1);
-  if (backups <= 0) return { short: '1 Stream', text: 'Stream Ready', ready: true };
+  if (backups <= 0) return { short: '1 Stream', shortBn: '১ স্ট্রিম', text: 'Stream Ready', ready: true };
   return {
     short: `${total} Streams`,
+    shortBn: `${toBanglaDigits(total)} স্ট্রিম`,
     text: `Primary • +${backups} Backup${backups > 1 ? 's' : ''}`,
     ready: true
   };
@@ -2123,7 +2210,7 @@ function eventStreamSummary(item) {
 // the football rule that has to accept a bare "League".
 const EVENT_SPORTS = [
   ['ESPORTS', 'fa-gamepad', /\b(?:esports?|e[\s-]?sports?|pubg|dota|valorant|counter[\s-]?strike|cs\s?2|league\s+of\s+legends|mobile\s+legends|free\s+fire|rocket\s+league|fifa\s+e)\b/i],
-  ['CRICKET', 'fa-baseball', /\b(?:cricket|t20i?|odi|test\s+match|\d{1,2}(?:st|nd|rd|th)\s+(?:test|odi|t20i?)|the\s+hundred|bbl|ipl|psl|cpl|ashes|county|vitality\s+blast)\b/i],
+  ['CRICKET', 'fa-baseball', /\b(?:cricket|cric(?:life|hd)|t20i?|odi|test\s+match|\d{1,2}(?:st|nd|rd|th)\s+(?:test|odi|t20i?)|the\s+hundred|bbl|ipl|psl|cpl|ashes|county|vitality\s+blast)\b/i],
   ['MOTORSPORT', 'fa-flag-checkered', /\b(?:motorsport|formula\s?e?|f1|e[\s-]?prix|moto\s?gp|nascar|rally|grand\s+prix|race\s+\d|race\s+day|gt4|gt3|adac|superbike|mxgp|motocross|indycar|cycling|uci\b|tour\s+de)\b/i],
   ['GOLF', 'fa-golf-ball-tee', /\b(?:golf|pga|lpga|dp\s+world\s+tour|ryder\s+cup)\b/i],
   // "<place> Open" is a tennis tournament; "<x> Open Cup" is not.
@@ -2134,7 +2221,7 @@ const EVENT_SPORTS = [
   ['VOLLEYBALL', 'fa-volleyball', /\b(?:volleyball|beach\s+volley)\b/i],
   ['HOCKEY', 'fa-hockey-puck', /\b(?:ice\s+hockey|nhl|khl|field\s+hockey)\b/i],
   ['RACING', 'fa-horse', /\b(?:horse\s+racing|racecourse|steeplechase|greyhound)\b/i],
-  ['FOOTBALL', 'fa-futbol', /\b(?:football|soccer|bundesliga|eredivisie|serie\s+[ab]|la\s?liga|ligue\s?\d|s[üu]per\s+lig|lig\b|liga|uefa|fifa|afc|caf|concacaf|champions|europa|efl|efbet|championship|friendlies|frauenliga|ekstraklasa|allsvenskan|superliga|eliteserien|primeira|segunda|coppa|copa|coupe|pokal|hnl|nwsl|npl|mls|[akj][\s-]?league|cup|league|division|fc\b|sc\b|utd\b|united)\b/i]
+  ['FOOTBALL', 'fa-futbol', /\b(?:football|soccer|bundesliga|eredivisie|serie\s+[ab]|la\s?liga|ligue\s?\d|s[üu]per\s+lig|lig\b|liga|uefa|fifa|afc|caf|concacaf|champions|europa|efl|efbet|championship|friendlies|frauenliga|ekstraklasa|allsvenskan|superliga|eliteserien|primeira|segunda|coppa|copa|coupe|pokal|hnl|nwsl|npl|mls|[akj][\s-]?league|cup|league|divisi[oó]n|division|fc\b|sc\b|utd\b|united)\b/i]
 ];
 
 // Guide 5. The scanner's own category wins when it is specific; the generic
@@ -2204,9 +2291,12 @@ function eventSportCounts(items) {
     counts.set(key, (counts.get(key) || 0) + 1);
   });
   // Channels last, then biggest group first, then alphabetically.
+  // Requirement 11: Cricket, Football, then everything else; channels last.
+  const rank = (sport) => (sport === 'cricket' ? 0 : sport === 'football' ? 1 : sport === 'channel' ? 3 : 2);
   return [...counts.entries()]
     .sort((a, b) => {
-      if ((a[0] === 'channel') !== (b[0] === 'channel')) return a[0] === 'channel' ? 1 : -1;
+      const byRank = rank(a[0]) - rank(b[0]);
+      if (byRank) return byRank;
       return b[1] - a[1] || a[0].localeCompare(b[0]);
     })
     .map(([sport, count]) => ({ sport, count, label: eventSportLabel(sport), icon: eventSportIcon(sport) }));
@@ -2508,6 +2598,10 @@ function eventUiFingerprint() {
 }
 
 function refreshEventCardsForClock() {
+  // Requirement 10. A hidden tab keeps decoding audio but has no visible
+  // clock to update, so the tick stops rather than re-laying out the list
+  // every 30 seconds in the background.
+  if (document.hidden) return;
   if (state.view !== VIEW.UPCOMING && state.view !== VIEW.EVENT) return;
   const nextFingerprint = eventUiFingerprint();
   if (nextFingerprint === state.eventUiFingerprint) {
@@ -2518,7 +2612,153 @@ function refreshEventCardsForClock() {
   renderCurrentList(true, { preserveScroll: true });
 }
 
+
+// ── Requirements 7, 8 and 14: playback survives a catalogue refresh ────────
+
+// The session the viewer started. It is pinned the moment playback begins and
+// released only when they choose something else, so no amount of background
+// scanning, republishing, reordering or promotion can disturb it.
+function pinPlaybackSession(item) {
+  if (!item) return;
+  state.pinnedSession = {
+    uid: item._uid,
+    id: item.id || '',
+    name: item.name || '',
+    url: item.url || '',
+    playbackId: item.playback_id || '',
+    snapshot: item
+  };
+}
+
+function releasePlaybackSession() {
+  state.pinnedSession = null;
+}
+
+function isPinnedSession(item) {
+  const pinned = state.pinnedSession;
+  if (!pinned || !item) return false;
+  return item._uid === pinned.uid
+    || (Boolean(pinned.id) && item.id === pinned.id)
+    || (Boolean(pinned.playbackId) && item.playback_id === pinned.playbackId);
+}
+
+// Requirement 14: while the pinned stream is still the one playing, a newly
+// ranked primary updates the card's backup ordering but does not replace the
+// URL under an active session. Requirement 7: if the event has left the
+// catalogue entirely, its card is kept so playback is not orphaned.
+function preservePlayingSession(nextItems) {
+  const pinned = state.pinnedSession;
+  if (!pinned || !Array.isArray(nextItems)) return nextItems;
+  const video = $('videoPlayer');
+  const stillPlaying = Boolean(video) && !video.ended && (video.currentTime > 0 || !video.paused);
+  if (!stillPlaying) return nextItems;
+
+  const match = nextItems.find((item) => isPinnedSession(item));
+  if (!match) {
+    const carried = { ...pinned.snapshot, _carried_pinned_session: true };
+    return [carried, ...nextItems];
+  }
+  if (pinned.url && match.url && match.url !== pinned.url) {
+    // Keep the working URL; the fresh ranking still arrives as backups.
+    const rerankedPrimary = {
+      name: 'Backup-0',
+      url: match.url,
+      headers: match.headers || {},
+      header_profile: match.header_profile || '',
+      proxy_mode: match.proxy_mode || 'auto',
+      stream_type: match.stream_type || '',
+      verification_status: match.verification_status || '',
+      publish_allowed: true
+    };
+    match.backups = [rerankedPrimary, ...(match.backups || [])].slice(0, 5);
+    match.url = pinned.url;
+    match.playback_id = pinned.playbackId || match.playback_id;
+    match._pinned_primary = true;
+  }
+  return nextItems;
+}
+
+// Requirement 8. Keyed reconciliation: cards that are unchanged keep their DOM
+// node, new ones are inserted in place, departed ones are removed - and the
+// card that is playing is never re-created.
+function reconcileEventCards() {
+  if (state.view !== VIEW.UPCOMING && state.view !== VIEW.EVENT) {
+    renderCurrentList(true, { preserveScroll: true });
+    return;
+  }
+  applyFilterAndSort();
+  renderEventSportFilter();
+
+  const existing = new Map(
+    qsa('.event-ref-card[data-uid]', sidebarList).map((node) => [node.dataset.uid, node])
+  );
+  // Nothing on screen yet, or nothing left to show: the full render owns both
+  // the first paint and the empty-state message, so hand back to it. Diffing an
+  // empty list would leave a blank panel with no explanation.
+  if (!existing.size || !state.filteredItems.length) {
+    renderCurrentList(true, { preserveScroll: true });
+    return;
+  }
+
+  const wanted = state.filteredItems.slice(0, Math.max(state.renderedCount, CHANNEL_INITIAL_CHUNK));
+  const fragment = document.createDocumentFragment();
+  state.renderedUids.clear();
+
+  wanted.forEach((item, index) => {
+    const previous = existing.get(item._uid);
+    if (previous && isPinnedSession(item)) {
+      // The playing card keeps its exact node: no innerHTML, no listeners
+      // rebuilt, nothing for the player to notice.
+      previous.querySelector('.sidebar-channel-num').textContent = String(index + 1);
+      previous.dataset.itemIndex = String(index);
+      fragment.appendChild(previous);
+      existing.delete(item._uid);
+      state.renderedUids.add(item._uid);
+      return;
+    }
+    fragment.appendChild(createEventCard(item, index));
+    state.renderedUids.add(item._uid);
+    if (previous) existing.delete(item._uid);
+  });
+
+  existing.forEach((node) => node.remove());
+  sidebarList.replaceChildren(fragment);
+  state.renderedCount = state.renderedUids.size;
+  updateFavoriteUi();
+  updateReminderUi();
+  updateActiveCards();
+  setEventListCount();
+}
+
+// Requirement 15. The scanner publishes each snapshot into its own versioned
+// slot and then moves one pointer - data/manifest.json - with a single rename.
+// Re-reading that pointer before every refresh is what makes this reader see
+// either the whole previous snapshot or the whole new one: the event URL it
+// follows always comes from one single read of one single file. Keeping the URL
+// captured at page load would instead pin the tab to a snapshot that gets
+// recycled a few scans later.
+async function resolveEventSnapshotPath(expectedView, fallbackPath) {
+  const pointerPath = state.runtime?.data_manifest || '/data/manifest.json';
+  try {
+    const manifest = await fetchJson(pointerPath, { cache: 'no-store', fresh: true, timeoutMs: 5000 });
+    if (!manifest || typeof manifest !== 'object') return fallbackPath;
+    const entry = expectedView === VIEW.UPCOMING ? manifest.upcoming : manifest.today_match;
+    const next = entry && typeof entry.url === 'string' ? entry.url.trim() : '';
+    if (!next) return fallbackPath;
+    state.manifest = manifest;
+    state.manifestVersion = String(manifest.updated_at || state.manifestVersion);
+    return next;
+  } catch (error) {
+    // An unreachable pointer must not stop the refresh; the snapshot already in
+    // use stays valid until it is recycled.
+    console.debug('Snapshot pointer unavailable, keeping current path', error?.message || error);
+    return fallbackPath;
+  }
+}
+
 async function refreshActiveEventCatalogue() {
+  // Requirement 10: no catalogue fetch or re-render behind a hidden tab.
+  if (document.hidden) return;
   if (state.eventCatalogRefreshActive) return;
   if (state.view !== VIEW.UPCOMING && state.view !== VIEW.EVENT) return;
   const path = state.currentDataPath;
@@ -2526,15 +2766,28 @@ async function refreshActiveEventCatalogue() {
   const expectedView = state.view;
   state.eventCatalogRefreshActive = true;
   try {
-    const data = await fetchJson(path, { cache: 'no-store', fresh: true, timeoutMs: 7000 });
+    const snapshotPath = await resolveEventSnapshotPath(expectedView, path);
     if (state.view !== expectedView || state.currentDataPath !== path) return;
+    const data = await fetchJson(snapshotPath, { cache: 'no-store', fresh: true, timeoutMs: 7000 });
+    if (state.view !== expectedView || state.currentDataPath !== path) return;
+    state.currentDataPath = snapshotPath;
     const raw = Array.isArray(data) ? data : (data.channels || data.items || data.events || []);
-    const nextItems = normalizeList(raw, expectedView);
+    let nextItems = normalizeList(raw, expectedView);
     const signature = (items) => JSON.stringify(items.map((item) => [item._uid, item.url, item.status, item.start_time, item.end_time]));
     if (signature(nextItems) === signature(state.currentItems)) return;
+
+    // Requirement 7 and 14. A background refresh must never take the playing
+    // event off the list or swap the stream under it. If the new catalogue no
+    // longer carries what is on screen, the pinned session is kept in place;
+    // if it carries it with a different primary, the URL that is actually
+    // playing is preserved so hls.js is never asked to re-attach.
+    nextItems = preservePlayingSession(nextItems);
+
     const scrollTop = getSidebarScrollTop();
     state.currentItems = nextItems;
-    renderCurrentList(true, { preserveScroll: true });
+    // Requirement 8. Diff the list against what is on screen instead of
+    // rebuilding it, so the playing card's DOM - and the player - are untouched.
+    reconcileEventCards();
     restoreSidebarScroll(scrollTop);
   } catch (error) {
     console.debug('Event catalogue refresh deferred', error?.message || error);
@@ -2568,9 +2821,10 @@ function createEventCard(item, visualIndex) {
 
   // The live card leads with when it began; the upcoming card leads with when
   // it starts and how long that is away.
-  const scheduleText = liveLike ? (eventStartedText(item) || '') : eventScheduleText(item);
-  const countdown = upcoming ? eventCountdownText(item) : '';
-  const phase = liveLike ? eventLivePhaseText(item) : '';
+  const scheduleText = liveLike ? (eventStartedTextBn(item) || '') : '';
+  const countdown = upcoming ? eventCountdownTextBn(item) : '';
+  const phase = liveLike ? eventLivePhaseTextBn(item) : '';
+  const metaText = upcoming ? eventMetaRowTextBn(item, streams) : '';
   const verification = eventVerificationLabel(item);
 
   card.className = [
@@ -2625,12 +2879,14 @@ function createEventCard(item, visualIndex) {
   const verifiedTick = upcoming
     ? `<i class="fas ${verification === 'Verification Pending' ? 'fa-circle-question' : 'fa-circle-check'} event-verified-tick ${verification === 'Verification Pending' ? 'pending' : 'ok'}" aria-hidden="true"></i>`
     : '';
-  const metaRow = [
-    scheduleText
-      ? `<span class="event-card-time" data-clock="schedule" title="${escapeHtml([scheduleText, verification].filter(Boolean).join(' · '))}"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(scheduleText)}${verifiedTick}</span>`
-      : '',
-    `<span class="event-card-streams ${streams.ready ? 'ready' : 'waiting'}" title="${escapeHtml(streams.text)}"><i class="fas ${streams.ready ? 'fa-circle-play' : 'fa-hourglass-start'}" aria-hidden="true"></i>${escapeHtml(streams.short)}</span>`
-  ].filter(Boolean).join('');
+  const metaRow = upcoming
+    ? `<span class="event-card-time" data-clock="meta" title="${escapeHtml([metaText, verification].filter(Boolean).join(' · '))}"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(metaText)}${verifiedTick}</span>`
+    : [
+      scheduleText
+        ? `<span class="event-card-time" data-clock="schedule"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(scheduleText)}</span>`
+        : '',
+      `<span class="event-card-streams ${streams.ready ? 'ready' : 'waiting'}" title="${escapeHtml(streams.text)}"><i class="fas ${streams.ready ? 'fa-circle-play' : 'fa-hourglass-start'}" aria-hidden="true"></i>${escapeHtml(streams.shortBn || streams.short)}</span>`
+    ].filter(Boolean).join('');
 
   card.innerHTML = `
     <span class="sidebar-channel-num">${visualIndex + 1}</span>
@@ -2693,11 +2949,17 @@ function updateEventCardClocks() {
         node.setAttribute('hidden', '');
       }
     };
-    const countdown = liveLike ? '' : eventCountdownText(item);
+    const countdown = liveLike ? '' : eventCountdownTextBn(item);
     // The clock chip keeps its verification tick across a tick update.
+    const metaNode = qs('[data-clock="meta"]', card);
+    if (metaNode && !liveLike) {
+      const icon = qs('i', metaNode)?.outerHTML || '';
+      const tickHtml = qs('.event-verified-tick', metaNode)?.outerHTML || '';
+      metaNode.innerHTML = `${icon}${escapeHtml(eventMetaRowTextBn(item, eventStreamSummary(item)))}${tickHtml}`;
+    }
     const scheduleNode = qs('[data-clock="schedule"]', card);
     const tick = scheduleNode ? qs('.event-verified-tick', scheduleNode)?.outerHTML || '' : '';
-    write('[data-clock="schedule"]', liveLike ? eventStartedText(item) : eventScheduleText(item));
+    write('[data-clock="schedule"]', liveLike ? eventStartedTextBn(item) : '');
     if (tick && scheduleNode && !qs('.event-verified-tick', scheduleNode)) {
       scheduleNode.insertAdjacentHTML('beforeend', tick);
     }
@@ -2717,7 +2979,7 @@ function updateEventCardClocks() {
         write('[data-clock="countdown"]', countdown);
       }
     }
-    write('[data-clock="phase"]', liveLike ? eventLivePhaseText(item) : '');
+    write('[data-clock="phase"]', liveLike ? eventLivePhaseTextBn(item) : '');
     card.classList.toggle('has-countdown', Boolean(countdown));
   });
 }
@@ -3461,7 +3723,13 @@ function hlsConfigFor(mode, isMovie, _fastStart = false) {
     fragLoadingTimeOut: 8000,
     manifestLoadingTimeOut: 8000,
     levelLoadingTimeOut: 8000,
-    startLevel: -1,
+    // Requirement 9. The staged cap below already holds a live stream at its
+    // first low stage, but hls.js still chose the *initial* level from a
+    // bandwidth guess made before any data arrived - so the very first segment
+    // could be a 1080p one and the picture took seconds to appear. Live
+    // playback now starts at the lowest level and climbs from measured
+    // bandwidth; a movie keeps automatic selection.
+    startLevel: isMovie ? -1 : 0,
     capLevelToPlayerSize: true,
     capLevelOnFPSDrop: true,
     maxStarvationDelay: 2.5,
@@ -3749,6 +4017,11 @@ function playbackAttemptBudgetMs(item) {
 async function startPlayback(item, userInitiated = true) {
   if (!item || !isPlayable(item)) return;
   seriesModule?.handlePlaybackSelection?.(item);
+  // Requirement 7. From here the session belongs to the viewer: catalogue
+  // refreshes, republished JSON, card reordering and Upcoming -> Today
+  // promotion all have to work around it.
+  pinPlaybackSession(item);
+  markPlaybackActive(true);
 
   clearAutoNextTimer();
   if (userInitiated) resetManualRetryState(item);
@@ -6483,6 +6756,13 @@ function updateContextualPlayerButtons() {
   else $('speedMenu')?.classList.remove('show');
 }
 
+// Requirement 10. One flag on <body> while a stream is decoding, so the
+// stylesheet can stand the expensive decorative work down instead of the
+// feature being removed.
+function markPlaybackActive(active) {
+  document.body.classList.toggle('playback-active', Boolean(active));
+}
+
 function setupPlayerUi(item) {
   const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
   setMovieControlsLocked(false);
@@ -8037,7 +8317,12 @@ async function bootstrap() {
   restorePlayerPreferences();
   updateMuteUi();
   updateClock();
-  setInterval(updateClock, effectivePerformanceClass() === 'normal' ? 1000 : 30000);
+  setInterval(() => {
+    // Requirement 10. Skip the repaint when nothing can see it, and drop to a
+    // slower cadence on a phone that is already decoding video.
+    if (document.hidden) return;
+    updateClock();
+  }, effectivePerformanceClass() === 'normal' ? 1000 : 30000);
   setInterval(refreshEventCardsForClock, 30000);
   setInterval(refreshActiveEventCatalogue, EVENT_CATALOG_REFRESH_MS);
   await setupServiceWorker();

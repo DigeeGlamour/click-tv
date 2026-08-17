@@ -26,6 +26,12 @@ from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
+from scanner.snapshot_publish import (
+    ORDER_ALLOWED_HOSTS,
+    ORDER_EVENT_FILE,
+    ORDER_MANIFEST,
+    SnapshotPublisher,
+)
 from scanner.playback_profiles import (
     PlaybackProfileCollector,
     merge_public_catalog,
@@ -211,9 +217,29 @@ def _iter_public_source_urls(value: Any) -> Iterable[str]:
                 yield from _iter_public_source_urls(child)
 
 
-def _collect_allowed_hosts_from_data(data_root: Path) -> List[str]:
-    """Build the playback proxy initial-host allowlist from published JSON."""
+def _collect_allowed_hosts_from_data(
+    data_root: Path,
+    overrides: Optional[Dict[Path, Any]] = None,
+) -> List[str]:
+    """Build the playback proxy initial-host allowlist from published JSON.
+
+    Requirement 15: while a snapshot is staged, the files it is about to publish
+    are the ones that matter. Reading their published predecessors instead would
+    produce an allowlist describing the previous snapshot - missing exactly the
+    hosts the new cards need.
+    """
     hosts: set[str] = set()
+    staged = {
+        (path.resolve() if path.is_absolute() else path): payload
+        for path, payload in (overrides or {}).items()
+    }
+
+    def read(file_path: Path) -> Dict[str, Any]:
+        key = file_path.resolve() if file_path.is_absolute() else file_path
+        if key in staged:
+            payload = staged[key]
+            return payload if isinstance(payload, dict) else {}
+        return _load_json_file(file_path)
 
     json_files: List[Path] = []
     channels_dir = data_root / "channels"
@@ -239,8 +265,18 @@ def _collect_allowed_hosts_from_data(data_root: Path) -> List[str]:
     if playback_dir.exists():
         json_files.extend(sorted(playback_dir.glob("*.json")))
 
+    # A staged file that does not exist on disk yet - the very first scan writes
+    # every shard for the first time - would otherwise be invisible here, and
+    # the allowlist would ship without the hosts those new profiles need.
+    if staged:
+        already = {
+            (path.resolve() if path.is_absolute() else path)
+            for path in json_files
+        }
+        json_files.extend(sorted(path for path in staged if path not in already))
+
     for file_path in json_files:
-        payload = _load_json_file(file_path)
+        payload = read(file_path)
         candidate_lists: List[Any] = []
         for key in ("channels", "items", "movies", "events", "matches"):
             if isinstance(payload.get(key), list):
@@ -281,14 +317,29 @@ def _collect_allowed_hosts_from_data(data_root: Path) -> List[str]:
     return sorted(hosts)
 
 
-def _write_allowed_hosts_file(data_root: Path, timestamp: str) -> Dict[str, Any]:
-    hosts = _collect_allowed_hosts_from_data(data_root)
+def _write_allowed_hosts_file(
+    data_root: Path,
+    timestamp: str,
+    snapshot: Any = None,
+) -> Dict[str, Any]:
+    hosts = _collect_allowed_hosts_from_data(
+        data_root,
+        overrides=(snapshot.overrides() if snapshot is not None else None),
+    )
     payload = {
         "updated_at": timestamp,
         "count": len(hosts),
         "hosts": hosts,
     }
-    _atomic_write_json(data_root / "allowed-hosts.json", payload)
+    if snapshot is not None:
+        snapshot.stage(
+            data_root / "allowed-hosts.json",
+            payload,
+            order=ORDER_ALLOWED_HOSTS,
+            kind="allowed_hosts",
+        )
+    else:
+        _atomic_write_json(data_root / "allowed-hosts.json", payload)
     return payload
 
 
@@ -740,6 +791,7 @@ def send_telegram_alert(
 def _reconcile_manifest_counts(
     manifest: Dict[str, Any],
     data_root: Path,
+    overrides: Optional[Dict[Path, Any]] = None,
 ) -> None:
     """Force every manifest count to match the file that is actually on disk.
 
@@ -760,6 +812,18 @@ def _reconcile_manifest_counts(
     actual files this run is about to publish, right before the final write.
     """
 
+    staged = {
+        (path.resolve() if path.is_absolute() else path): payload
+        for path, payload in (overrides or {}).items()
+    }
+
+    def read(file_path: Path) -> Dict[str, Any]:
+        key = file_path.resolve() if file_path.is_absolute() else file_path
+        if key in staged:
+            payload = staged[key]
+            return payload if isinstance(payload, dict) else {}
+        return _load_json_file(file_path)
+
     def resolve(public_path: str) -> Path:
         # Manifest "url"/"index" fields are always the fixed public path the
         # site fetches ("data/channels/x.json"), independent of the data_dir
@@ -778,7 +842,7 @@ def _reconcile_manifest_counts(
             url = str(entry.get("url") or "")
             if not url:
                 continue
-            payload = _load_json_file(resolve(url))
+            payload = read(resolve(url))
             count = _channel_count(payload) if payload else 0
             entry["count"] = count
             entry["visible"] = count > 0
@@ -791,7 +855,7 @@ def _reconcile_manifest_counts(
             index_path = str(entry.get("index") or "")
             if not index_path:
                 continue
-            index_payload = _load_json_file(resolve(index_path))
+            index_payload = read(resolve(index_path))
             count = _safe_int(index_payload.get("count"), 0, 0) if index_payload else 0
             entry["count"] = count
             entry["visible"] = count > 0
@@ -813,7 +877,7 @@ def _reconcile_manifest_counts(
         url = str(entry.get("url") or "")
         if not url:
             continue
-        payload = _load_json_file(resolve(url))
+        payload = read(resolve(url))
         # _event_count() trusts the file's own declared "count"/"total" field
         # first, which is exactly the stale value this reconciliation exists
         # to correct. Count the actual list instead.
@@ -837,6 +901,57 @@ def refresh_allowed_hosts(
     return _write_allowed_hosts_file(data_root, _utc_now())
 
 
+
+def validate_event_snapshot(
+    events_data: Optional[Dict[str, Dict[str, Any]]],
+    previous_today_count: int,
+    previous_upcoming_count: int,
+) -> Tuple[bool, str]:
+    """Requirement 15 - the validation stage between a scan and a publish.
+
+    A scan that crashed halfway, or whose sources all timed out, produces a
+    structurally valid but empty payload. Writing that over a good production
+    snapshot is the one failure mode that takes the whole Live Sports section
+    down at once, so the publish is refused instead.
+    """
+    if events_data is None:
+        return True, "no event payload in this scan"
+    if not isinstance(events_data, dict):
+        return False, "event payload is not a mapping"
+
+    for key in ("today_match", "upcoming"):
+        payload = events_data.get(key)
+        if payload is None:
+            continue
+        if not isinstance(payload, dict):
+            return False, f"{key} payload is not a mapping"
+        items = payload.get("items")
+        if not isinstance(items, list):
+            return False, f"{key} payload has no item list"
+        if int(payload.get("count") or 0) != len(items):
+            return False, (
+                f"{key} count {payload.get('count')} does not match "
+                f"{len(items)} items"
+            )
+        for item in items:
+            if not isinstance(item, dict) or not str(item.get("id") or "").strip():
+                return False, f"{key} contains an item with no id"
+
+    today_items = (events_data.get("today_match") or {}).get("items")
+    if isinstance(today_items, list) and previous_today_count > 0 and not today_items:
+        return False, (
+            f"today_match came back empty while {previous_today_count} events "
+            "are published - refusing to replace a good snapshot"
+        )
+    upcoming_items = (events_data.get("upcoming") or {}).get("items")
+    if isinstance(upcoming_items, list) and previous_upcoming_count > 0 and not upcoming_items:
+        return False, (
+            f"upcoming came back empty while {previous_upcoming_count} events "
+            "are published - refusing to replace a good snapshot"
+        )
+    return True, "event snapshot is complete"
+
+
 def publish_scan_outputs(
     channels_data: Optional[Dict[str, List[Dict[str, Any]]]] = None,
     movies_data: Optional[Dict[str, Dict[str, Any]]] = None,
@@ -858,6 +973,18 @@ def publish_scan_outputs(
     """
     global _ACTIVE_PLAYBACK_COLLECTOR
 
+    # Requirement 15. Validate the complete event snapshot first; only a scan
+    # that produced a consistent one is allowed to touch production data.
+    data_root_probe = Path(data_dir)
+    previous_today = _event_count(_load_json_file(data_root_probe / "today-match.json"))
+    previous_upcoming = _event_count(_load_json_file(data_root_probe / "upcoming.json"))
+    snapshot_ok, snapshot_reason = validate_event_snapshot(
+        events_data, previous_today, previous_upcoming
+    )
+    if not snapshot_ok:
+        print(f"   Publish refused (requirement 15): {snapshot_reason}")
+        events_data = None
+
     mode_clean = str(scan_mode or "all").strip().lower()
     mode_aliases = {
         "tv": "channels",
@@ -865,6 +992,8 @@ def publish_scan_outputs(
         "movies-discovery": "movies",
         "full-audit": "all",
         "today_match": "today",
+        "upcoming-targeted": "upcoming",
+        "upcoming_targeted": "upcoming",
     }
     mode_clean = mode_aliases.get(mode_clean, mode_clean)
     supported_modes = {
@@ -983,6 +1112,10 @@ def publish_scan_outputs(
     timestamp = _utc_now()
     playback_collector = PlaybackProfileCollector(mode_clean, timestamp)
     _ACTIVE_PLAYBACK_COLLECTOR = playback_collector
+    # Requirement 15, corrected. Today/Upcoming, the playback catalogue and its
+    # shards, the host allowlist and the manifest are one snapshot: staged here,
+    # validated as a set below, and swapped in together or not at all.
+    snapshot = SnapshotPublisher(timestamp=timestamp, data_root=data_root)
     manifest_file = data_root / "manifest.json"
     manifest = _ensure_manifest(_load_json_file(manifest_file))
     manifest["updated_at"] = timestamp
@@ -1188,7 +1321,12 @@ def publish_scan_outputs(
                     final_payload["count"] = len(final_payload[item_key])
                     break
             final_payload.setdefault("updated_at", timestamp)
-            _atomic_write_json(target_file, final_payload)
+            snapshot.stage(
+                target_file,
+                final_payload,
+                order=ORDER_EVENT_FILE,
+                kind="event",
+            )
 
             count = _event_count(final_payload)
             manifest[event_key] = {
@@ -1200,16 +1338,71 @@ def publish_scan_outputs(
     # 4. Public Git/Pages playback catalogue, manifest, host allowlist, reports.
     # This deliberately keeps URL/header/DRM configuration in one public data
     # file so all four Workers can resolve playback_id without KV or secrets.
-    playback_catalog = merge_public_catalog(data_root, playback_collector)
+    playback_catalog = merge_public_catalog(
+        data_root, playback_collector, snapshot=snapshot
+    )
     playback_report = playback_collector.public_report()
     playback_report["total_catalogued_sources"] = _safe_int(
         playback_catalog.get("count"), 0, 0
     )
     _atomic_write_json(reports_root / "playback-profiles.json", playback_report)
 
-    _reconcile_manifest_counts(manifest, data_root)
-    _atomic_write_json(manifest_file, manifest)
-    allowed_hosts_payload = _write_allowed_hosts_file(data_root, timestamp)
+    _reconcile_manifest_counts(manifest, data_root, overrides=snapshot.overrides())
+    snapshot.stage(manifest_file, manifest, order=ORDER_MANIFEST, kind="manifest")
+    allowed_hosts_payload = _write_allowed_hosts_file(
+        data_root, timestamp, snapshot=snapshot
+    )
+
+    # Validate the staged snapshot as a whole before any of it is published.
+    snapshot_ok, snapshot_detail = snapshot.validate()
+    if not snapshot_ok:
+        # The inconsistency always comes from the event side - the catalogue and
+        # the manifest are derived from it - so the event files are dropped and
+        # the rest of the snapshot still publishes. Production keeps the last
+        # good Today/Upcoming pair rather than gaining a card that cannot play.
+        print(f"   Snapshot validation failed (requirement 15): {snapshot_detail}")
+        for event_file, _ in snapshot.of_kind("event"):
+            snapshot.drop(event_file)
+        previous_manifest = _ensure_manifest(_load_json_file(manifest_file))
+        for event_key in ("today_match", "upcoming"):
+            if isinstance(previous_manifest.get(event_key), dict):
+                manifest[event_key] = previous_manifest[event_key]
+        _reconcile_manifest_counts(manifest, data_root, overrides=snapshot.overrides())
+        snapshot.stage(manifest_file, manifest, order=ORDER_MANIFEST, kind="manifest")
+        allowed_hosts_payload = _write_allowed_hosts_file(
+            data_root, timestamp, snapshot=snapshot
+        )
+        source_errors.append(
+            {
+                "type": "snapshot_validation_failed",
+                "error": (
+                    "Event snapshot was inconsistent and was not published: "
+                    f"{snapshot_detail}"
+                ),
+                "timestamp": timestamp,
+            }
+        )
+        retry_ok, retry_detail = snapshot.validate()
+        if not retry_ok:
+            snapshot.abandon()
+            print(
+                "   Snapshot abandoned entirely; published data is unchanged: "
+                f"{retry_detail}"
+            )
+
+    commit_summary = snapshot.commit() if snapshot.files else {"files": 0}
+    if commit_summary.get("files"):
+        print(
+            f"   Snapshot {commit_summary.get('id') or commit_summary.get('generation')} "
+            f"published to data/snapshots/{commit_summary.get('slot')} "
+            f"({commit_summary.get('slot_files')} files), then "
+            f"{commit_summary.get('pointer')} switched in one rename"
+        )
+        if commit_summary.get("carried_forward"):
+            print(
+                "   Carried forward unchanged: "
+                + ", ".join(commit_summary["carried_forward"])
+            )
 
     _atomic_write_json(
         reports_root / "source-errors.json",

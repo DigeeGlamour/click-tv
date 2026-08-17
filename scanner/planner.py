@@ -28,7 +28,7 @@ import time
 import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Sequence, Set, Tuple
+from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Set, Tuple
 
 
 VALID_TV_CATEGORIES = {
@@ -281,9 +281,13 @@ def _pipeline_for_mode(mode: str) -> Set[str]:
     # live cards the previous scan had proven.
     if mode_clean in {
         "all", "full-audit", "events", "today", "today_match", "upcoming",
+        "upcoming-targeted", "upcoming_targeted",
     }:
         active.add("today_match")
-    if mode_clean in {"all", "full-audit", "events", "today", "today_match", "upcoming"}:
+    if mode_clean in {
+        "all", "full-audit", "events", "today", "today_match", "upcoming",
+        "upcoming-targeted", "upcoming_targeted",
+    }:
         active.add("upcoming")
 
     return active
@@ -524,6 +528,7 @@ def plan_candidates(
     mode: str,
     settings_path: str = "config/settings.json",
     report_path: str = "reports/preverification-plan.json",
+    targeted_filter: Optional[Callable[[Dict[str, Any]], bool]] = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
     Build ranked candidate pools for adaptive verification.
@@ -532,6 +537,12 @@ def plan_candidates(
     ``scanner.fast_pipeline`` verifies the first wave and expands a group only
     when it still lacks enough publishable links. This keeps correctness while
     avoiding unnecessary backup checks.
+
+    targeted_filter implements requirement 4: when a targeted Upcoming trigger
+    supplies one, an event candidate it rejects is dropped before verification.
+    No stream is probed on behalf of a fixture that is still hours away. The
+    predicate itself lives in scanner.targeted_scan, which owns the window and
+    the resolved-fixture ledger.
     """
     if not isinstance(candidates, list):
         raise ValueError("Planner input must be a list")
@@ -646,6 +657,7 @@ def plan_candidates(
     rejected_pipeline = 0
     rejected_unknown_tv = 0
     rejected_no_identity = 0
+    rejected_not_targeted = 0
     unknown_samples: List[Dict[str, Any]] = []
     rerouted_counts: Dict[str, int] = {}
 
@@ -665,6 +677,16 @@ def plan_candidates(
 
         if pipeline not in active_pipelines:
             rejected_pipeline += 1
+            continue
+
+        # Requirement 4. Outside the targeted set this candidate is not scan
+        # work at all, so it never reaches the verifier.
+        if (
+            targeted_filter is not None
+            and pipeline in {"upcoming", "today_match"}
+            and not targeted_filter(item)
+        ):
+            rejected_not_targeted += 1
             continue
 
         if pipeline == "tv":
@@ -829,7 +851,9 @@ def plan_candidates(
             "exact_duplicates": duplicate_exact,
             "per_item_cap": group_cap_dropped,
             "global_cap": global_cap_dropped,
+            "not_targeted": rejected_not_targeted,
         },
+        "targeted_filter_active": targeted_filter is not None,
         "unknown_tv_samples": unknown_samples,
     }
 

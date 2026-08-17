@@ -255,6 +255,11 @@ class PlaybackProfileCollector:
         }
 
 
+try:
+    from scanner.snapshot_publish import ORDER_PLAYBACK_INDEX, ORDER_PLAYBACK_SHARD
+except ImportError:  # pragma: no cover - direct module execution
+    from snapshot_publish import ORDER_PLAYBACK_INDEX, ORDER_PLAYBACK_SHARD
+
 CATALOG_SHARD_DIRECTORY = "playback"
 CATALOG_SHARD_KEY = "playback_id_prefix_2"
 CATALOG_SHARD_PATH_TEMPLATE = "data/playback/{shard}.json"
@@ -325,6 +330,7 @@ def load_public_catalog_records(data_root: str | Path) -> Dict[str, Any]:
 def merge_public_catalog(
     data_root: str | Path,
     collector: PlaybackProfileCollector,
+    snapshot: Any = None,
 ) -> Dict[str, Any]:
     """Merge one partial scan into the public Pages playback catalogue.
 
@@ -334,6 +340,10 @@ def merge_public_catalog(
     Worker's CPU budget; re-parsing the previous single 17 MB file on every
     request did not, and that is what stalled live playback. Splitting it also
     keeps each scan's git diff to the few shards that actually changed.
+
+    Requirement 15: given a SnapshotPublisher, every shard and the index are
+    staged into it instead of being written here, so they are published in the
+    same single consistent swap as the event files that reference them.
     """
     root = Path(data_root)
     root.mkdir(parents=True, exist_ok=True)
@@ -348,21 +358,34 @@ def merge_public_catalog(
     shard_dir = root / CATALOG_SHARD_DIRECTORY
     shard_dir.mkdir(parents=True, exist_ok=True)
     for shard, shard_records in sorted(grouped.items()):
-        _atomic_write(shard_dir / f"{shard}.json", {
+        shard_payload = {
             "schema_version": 1,
             "shard": shard,
             "generated_at": collector.timestamp,
             "count": len(shard_records),
             "records": shard_records,
-        })
+        }
+        if snapshot is not None:
+            snapshot.stage(
+                shard_dir / f"{shard}.json",
+                shard_payload,
+                order=ORDER_PLAYBACK_SHARD,
+                kind="playback_shard",
+            )
+        else:
+            _atomic_write(shard_dir / f"{shard}.json", shard_payload)
 
     # A shard that lost its last record must not linger with stale credentials.
     for stale in shard_dir.glob("*.json"):
-        if stale.stem not in grouped:
-            try:
-                stale.unlink()
-            except OSError:
-                pass
+        if stale.stem in grouped:
+            continue
+        if snapshot is not None:
+            snapshot.stage_deletion(stale)
+            continue
+        try:
+            stale.unlink()
+        except OSError:
+            pass
 
     payload = {
         "schema_version": 2,
@@ -375,5 +398,13 @@ def merge_public_catalog(
         "count": len(records),
         "shards": {shard: len(items) for shard, items in sorted(grouped.items())},
     }
-    _atomic_write(root / "playback-sources.json", payload)
+    if snapshot is not None:
+        snapshot.stage(
+            root / "playback-sources.json",
+            payload,
+            order=ORDER_PLAYBACK_INDEX,
+            kind="playback_index",
+        )
+    else:
+        _atomic_write(root / "playback-sources.json", payload)
     return payload

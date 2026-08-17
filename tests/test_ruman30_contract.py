@@ -167,8 +167,10 @@ class RuntimeContractTests(unittest.TestCase):
 
     def test_scheduled_event_refresh_is_automatic(self):
         workflow = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
-        self.assertIn('cron: "2,17,32,47 * * * *"', workflow)
-        self.assertIn('cron: "9,39 * * * *"', workflow)
+        # Requirement 4 replaced the old 15/30 minute pair.
+        self.assertIn('cron: "0,20,40 * * * *"', workflow)
+        self.assertIn('cron: "*/5 * * * *"', workflow)
+        self.assertIn('cron: "9 5,17 * * *"', workflow)
 
     def test_uncertain_movies_are_not_publishable(self):
         settings = (ROOT / "config/settings.json").read_text(encoding="utf-8")

@@ -385,3 +385,55 @@
 .sidebar-section.event-list-mode .event-sport-badge{
   background:rgba(5,11,20,.72)!important;border-color:rgba(255,255,255,.1)!important;color:#b8c6d8!important;
 }
+
+/* ── Requirement 13: artwork safe-area ──────────────────────────────────────
+ * A source poster is never stretched or cropped to fill the tile. It is
+ * contained inside a padded safe area, so the ugly generic "LIVE" graphic some
+ * feeds ship stops dominating the row, and a real crest still reads clearly.
+ * The tile keeps the size reference-design.css gave it.
+ */
+.sidebar-section.event-list-mode .event-card-art{
+  display:grid!important;place-items:center!important;
+}
+.sidebar-section.event-list-mode .event-card-art img{
+  width:100%!important;height:100%!important;
+  object-fit:contain!important;object-position:center!important;
+  padding:8px!important;box-sizing:border-box!important;
+}
+/* A single logo sits centred in the safe area; a team pair splits it. */
+.sidebar-section.event-list-mode .event-art-versus,
+.sidebar-section.event-list-mode .event-art-fallback{
+  padding:6px!important;box-sizing:border-box!important;
+}
+
+/* Requirement 12: the one Bangla status line, and the compact metadata row
+   under it. Bengali needs a little more line height than Latin at this size. */
+.sidebar-section.event-list-mode .event-status-pill{
+  line-height:1.5!important;
+}
+.sidebar-section.event-list-mode .event-card-time[data-clock="meta"]{
+  color:#b9c4d2!important;font-size:9.5px!important;line-height:1.45!important;
+}
+.sidebar-section.event-list-mode .event-upcoming-card .event-card-time[data-clock="meta"]{
+  color:#c8d3e2!important;
+}
+
+@media (max-width:1000px){
+  .sidebar-section.event-list-mode .event-card-art img{padding:6px!important}
+}
+@media (max-width:480px){
+  .sidebar-section.event-list-mode .event-card-art img{padding:5px!important}
+}
+
+/* Requirement 10. While a stream is decoding, the decorative animations stand
+   down. Nothing is removed - the marquee, the pulse and the equalizer all
+   still exist and resume the moment playback stops - they simply stop asking
+   a phone's GPU for work it needs for video.
+   Motion is also honoured for anyone who asked the OS to reduce it. */
+body.playback-active .marquee-text{animation-duration:38s!important}
+body.playback-active .sidebar-section.event-list-mode .event-ref-card{transition:none!important}
+body.playback-active .sidebar-section.event-list-mode .event-ref-card:hover{transform:none!important}
+body.playback-active .sidebar-section.event-list-mode .event-status-pill.live .pulse-dot{animation-duration:3s!important}
+body.playback-active .sidebar-section.event-list-mode .event-now-playing .playing-equalizer span{animation-duration:1.6s!important}
+body.playback-active .sidebar-section.event-list-mode .event-sport-badge,
+body.playback-active .sidebar-section.event-list-mode .event-filter-menu{backdrop-filter:none!important}

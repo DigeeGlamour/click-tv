@@ -1009,6 +1009,35 @@ def validate_channel_category(
     COUNTS["channels"] += actual_count
 
 
+def validate_snapshot_pointer(manifest: dict[str, Any]) -> None:
+    """Requirement 15. data/manifest.json is the snapshot pointer.
+
+    A pointer that names a slot must name one that exists and holds the whole
+    snapshot, because that single file is the entire switch: whatever it names
+    is what every reader will follow the instant it is published.
+    """
+    snapshot = manifest.get("snapshot")
+    if snapshot is None:
+        return  # a pre-snapshot manifest is still valid
+
+    if not isinstance(snapshot, dict):
+        add_error("manifest.snapshot object নয়")
+        return
+
+    slot = str(snapshot.get("slot") or "").strip()
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", slot):
+        add_error(f"manifest.snapshot.slot ভুল: {slot}")
+        return
+
+    for name in ("today-match.json", "upcoming.json", "allowed-hosts.json",
+                 "playback-sources.json", "manifest.json"):
+        member = resolve_public_path(
+            f"data/snapshots/{slot}/{name}", f"snapshot {slot}/{name}"
+        )
+        if member is None or not member.is_file():
+            add_error(f"Snapshot slot অসম্পূর্ণ: data/snapshots/{slot}/{name}")
+
+
 def validate_event_file(
     manifest: dict[str, Any],
     manifest_key: str,
@@ -1029,10 +1058,41 @@ def validate_event_file(
     if event_path is None:
         return
 
-    if relative_path(event_path) != expected_path:
+    # Requirement 15. The manifest is the snapshot pointer: its event URL names
+    # the live versioned slot, e.g. data/snapshots/s1/today-match.json. The flat
+    # data/<name>.json stays as a compatibility mirror, so either form is valid -
+    # but nothing else is.
+    actual_path = relative_path(event_path)
+    flat_name = expected_path.split("/")[-1]
+    slot_pattern = re.compile(
+        r"^data/snapshots/[A-Za-z0-9_-]+/" + re.escape(flat_name) + r"$"
+    )
+    if actual_path != expected_path and not slot_pattern.match(actual_path):
         add_error(
-            f"manifest.{manifest_key}.url ভুল: {relative_path(event_path)}"
+            f"manifest.{manifest_key}.url ভুল: {actual_path}"
         )
+
+    # A versioned snapshot must always carry its flat mirror, and the two must
+    # agree - a reader on either surface has to see the same event list.
+    if slot_pattern.match(actual_path):
+        mirror = resolve_public_path(expected_path, f"{manifest_key} mirror")
+        if mirror is None or not mirror.is_file():
+            add_error(f"Snapshot mirror পাওয়া যায়নি: {expected_path}")
+        else:
+            mirror_data = load_json(mirror, expected_path)
+            snapshot_items = get_items(
+                load_json(event_path, actual_path), "items", "events"
+            )
+            mirror_items = get_items(mirror_data, "items", "events")
+            if (
+                isinstance(snapshot_items, list)
+                and isinstance(mirror_items, list)
+                and len(snapshot_items) != len(mirror_items)
+            ):
+                add_error(
+                    f"{expected_path} mirror ({len(mirror_items)}) এবং "
+                    f"{actual_path} ({len(snapshot_items)}) mismatch"
+                )
 
     if not event_path.is_file():
         add_error(f"Event JSON পাওয়া যায়নি: {relative_path(event_path)}")
@@ -1382,6 +1442,7 @@ def validate_data_manifest() -> None:
                 movie_manifest[category_name],
             )
 
+    validate_snapshot_pointer(manifest)
     validate_event_file(
         manifest,
         "today_match",

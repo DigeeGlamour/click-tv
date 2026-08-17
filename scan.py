@@ -32,6 +32,14 @@ from scanner.normalizer import normalize_all_candidates
 from scanner.planner import plan_candidates
 from scanner.source_loader import collect_candidates
 from scanner.security import redact_sensitive_text
+from scanner.targeted_scan import (
+    DEFAULT_WINDOW_MINUTES as TARGETED_WINDOW_MINUTES,
+    TargetPlan,
+    load_ledger,
+    plan_targeted_upcoming_scan,
+    record_outcome,
+    save_ledger,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -43,6 +51,14 @@ SUCCESS_SOURCE_STATUSES = {
     "success",
     "success_empty",
     "disabled",
+}
+
+# Requirement 4. The five-minute trigger that only chases the links of fixtures
+# about to start. Spelled both ways because a workflow input and a CLI argument
+# have historically used different separators.
+TARGETED_UPCOMING_MODES = {
+    "upcoming-targeted",
+    "upcoming_targeted",
 }
 
 
@@ -252,6 +268,7 @@ def _guard_empty_collection(
 
 def _normalize_candidate_payload(
     candidate_payload: Dict[str, Any],
+    targeted_filter: Any = None,
 ) -> Dict[str, Any]:
     """
     Normalize source-loader output and replace working/candidates.json.
@@ -286,13 +303,14 @@ def _normalize_candidate_payload(
     planned_items, planning_summary = plan_candidates(
         normalized_items,
         mode=mode,
+        targeted_filter=targeted_filter,
     )
 
     preserve_existing_output = False
     preservation_reason = ""
 
     if not planned_items:
-        if mode in {"today", "upcoming"}:
+        if mode in {"today", "upcoming"} | TARGETED_UPCOMING_MODES:
             # A sports-event feed can legitimately have no currently publishable
             # fixture after date/category planning.  This is not a scanner
             # failure: keep the last known-good event JSON and allow an `all`
@@ -400,9 +418,80 @@ def _complete_preserved_event_run(
     return summary
 
 
+def _complete_untargeted_run(
+    mode: str,
+    plan: TargetPlan,
+    run_started_at: datetime,
+) -> Dict[str, Any]:
+    """Finish a targeted trigger that had no fixture to chase.
+
+    Requirement 4: no fixture inside the -15 minute window means no source is
+    fetched, nothing is verified and nothing is published. The existing
+    Today/Upcoming snapshot is left exactly as it is.
+    """
+    manifest_path = PROJECT_ROOT / "data" / "manifest.json"
+    manifest = _load_required_json(manifest_path)
+    summary = {
+        "last_scan": _utc_now(),
+        "status": "completed_no_target",
+        "mode": mode,
+        "preserved_existing_output": True,
+        "preservation_reason": (
+            "No Upcoming fixture is inside the "
+            f"{plan.window_minutes}-minute targeted window, or every fixture in "
+            "it has already had its one targeted scan"
+        ),
+        "targeted_scan": plan.summary(),
+        "raw_candidate_count": 0,
+        "normalized_candidate_count": 0,
+        "planned_candidate_count": 0,
+        "source_errors": 0,
+        "totals": {
+            "channels": sum(
+                int((entry or {}).get("count") or 0)
+                for entry in (manifest.get("channels") or {}).values()
+                if isinstance(entry, dict)
+            ),
+            "movies": sum(
+                int((entry or {}).get("count") or 0)
+                for entry in (manifest.get("movies") or {}).values()
+                if isinstance(entry, dict)
+            ),
+            "today_match": int(((manifest.get("today_match") or {}).get("count") or 0)),
+            "upcoming": int(((manifest.get("upcoming") or {}).get("count") or 0)),
+        },
+        "manifest_summary": manifest,
+    }
+    reports_root = PROJECT_ROOT / "reports"
+    _atomic_write_json(reports_root / "scan-summary.json", summary)
+    _atomic_write_json(reports_root / f"scan-summary-{mode}.json", summary)
+    _write_scan_progress(
+        mode,
+        "completed_no_target",
+        started_at=run_started_at.isoformat(),
+        summary_status=summary["status"],
+        targets=len(plan.targets),
+        already_attempted_skipped=plan.already_attempted,
+        outside_window_skipped=plan.outside_window,
+    )
+    print("\n==================================================")
+    print("TARGETED SCAN SKIPPED - NOTHING TO CHASE")
+    print(f"   Mode: {mode}")
+    print(f"   Window: -{plan.window_minutes} minutes")
+    print(
+        f"   Fixtures considered: {plan.considered}; "
+        f"outside window: {plan.outside_window}; "
+        f"already scanned once: {plan.already_attempted}"
+    )
+    print("   No source was fetched and no published data was replaced.")
+    print("==================================================")
+    return summary
+
+
 def run_collection_and_normalization(
     mode: str,
     started_at: datetime | None = None,
+    targeted_filter: Any = None,
 ) -> Dict[str, Any]:
     """
     Collect current sources, validate collection health, then normalize.
@@ -427,7 +516,8 @@ def run_collection_and_normalization(
     )
 
     return _normalize_candidate_payload(
-        collected
+        collected,
+        targeted_filter=targeted_filter,
     )
 
 
@@ -705,6 +795,7 @@ def _sanitize_channel_quarantine(
 
 def _process_events_for_mode(
     mode: str,
+    targeted_plan: TargetPlan | None = None,
 ) -> Dict[str, Dict[str, Any]]:
     """
     Process Today Match and Upcoming Match separately according to mode.
@@ -716,7 +807,18 @@ def _process_events_for_mode(
             "scanner/events.py is required for all/today/upcoming mode"
         ) from error
 
-    event_result = process_events()
+    # Requirement 4: the -15 minute targeted upcoming scan. The plan names the
+    # individual fixtures this trigger may touch; every other Upcoming card is
+    # republished exactly as it already stands.
+    targeted_window = (
+        targeted_plan.window_minutes
+        if targeted_plan is not None
+        else (TARGETED_WINDOW_MINUTES if mode in TARGETED_UPCOMING_MODES else 0)
+    )
+    event_result = process_events(
+        targeted_window_minutes=targeted_window,
+        targeted_keys=(targeted_plan.targets if targeted_plan is not None else None),
+    )
 
     if not isinstance(event_result, dict):
         raise ValueError(
@@ -729,7 +831,7 @@ def _process_events_for_mode(
     # collect both event source groups and publish both surfaces; restricting
     # a mode to one output would silently discard every card that the schedule
     # status routed to the other side.
-    if mode in {"today", "today_match", "upcoming"}:
+    if mode in {"today", "today_match", "upcoming"} | TARGETED_UPCOMING_MODES:
         published: Dict[str, Dict[str, Any]] = {}
         for key in ("today_match", "upcoming"):
             payload = event_result.get(key)
@@ -759,6 +861,9 @@ def run_pipeline(
         "channels",
         "today",
         "upcoming",
+        # Requirement 4: the same upcoming pipeline, but only the fixtures about
+        # to start are treated as scan targets.
+        "upcoming-targeted",
         "movies",
         "all",
     }
@@ -817,6 +922,35 @@ def run_pipeline(
     run_started_at = datetime.now(
         timezone.utc
     )
+    # Requirement 4, corrected. The targeting decision is taken BEFORE anything
+    # is fetched, from local files only: the published Upcoming cards and the
+    # ledger of fixtures already resolved. A trigger with no target does no
+    # source work at all, which is what makes a five-minute cron affordable and
+    # what stops the same fixture being re-scanned every five minutes.
+    targeted_plan: TargetPlan | None = None
+    if mode_clean in TARGETED_UPCOMING_MODES:
+        targeted_plan = plan_targeted_upcoming_scan(
+            data_dir=PROJECT_ROOT / "data",
+            fixture_path=PROJECT_ROOT / "config" / "event-fixtures.json",
+            state_path=PROJECT_ROOT / "state" / "upcoming-targeting.json",
+            now=run_started_at,
+            window_minutes=TARGETED_WINDOW_MINUTES,
+        )
+        print(
+            f"   Targeted window: -{targeted_plan.window_minutes} minutes; "
+            f"targets={len(targeted_plan.targets)}, "
+            f"already scanned once={targeted_plan.already_attempted}, "
+            f"outside window={targeted_plan.outside_window}"
+        )
+        for name in targeted_plan.target_names:
+            print(f"      target: {name}")
+        if not targeted_plan.should_scan:
+            return _complete_untargeted_run(
+                mode_clean,
+                targeted_plan,
+                run_started_at,
+            )
+
     _write_scan_progress(mode_clean, "source_collection", started_at=run_started_at.isoformat())
 
     print(
@@ -826,6 +960,9 @@ def run_pipeline(
     normalized = run_collection_and_normalization(
         mode_clean,
         started_at=run_started_at,
+        targeted_filter=(
+            targeted_plan.accepts if targeted_plan is not None else None
+        ),
     )
 
     if normalized.get("preserve_existing_output") is True:
@@ -998,7 +1135,7 @@ def run_pipeline(
         "today",
         "upcoming",
         "all",
-    }:
+    } | TARGETED_UPCOMING_MODES:
         if mode_clean == "today":
             print(
                 "\n[Step 4c/5] Processing Today Match only..."
@@ -1009,6 +1146,11 @@ def run_pipeline(
                 "\n[Step 4c/5] Processing Upcoming Match only..."
             )
 
+        elif mode_clean in TARGETED_UPCOMING_MODES:
+            print(
+                "\n[Step 4c/5] Processing the targeted Upcoming fixtures only..."
+            )
+
         else:
             print(
                 "\n[Step 4c/5] Processing Today Match "
@@ -1016,7 +1158,8 @@ def run_pipeline(
             )
 
         events_data = _process_events_for_mode(
-            mode_clean
+            mode_clean,
+            targeted_plan,
         )
 
     print(
@@ -1038,6 +1181,44 @@ def run_pipeline(
         extra_quarantine_items=verifier_quarantine,
         scan_mode=mode_clean,
     )
+
+    # Requirement 4. Remember what this trigger achieved. A fixture that now has
+    # a valid link is marked resolved and is never targeted again; one that came
+    # back empty keeps its attempt count and stays targetable on the next tick.
+    if targeted_plan is not None:
+        # Today Match counts too: a fixture whose link was found right at
+        # kickoff is routed straight to Today, and that is the clearest possible
+        # proof it no longer needs chasing.
+        published_upcoming = []
+        if isinstance(events_data, dict):
+            for key in ("upcoming", "today_match"):
+                payload = events_data.get(key)
+                if isinstance(payload, dict) and isinstance(payload.get("items"), list):
+                    published_upcoming.extend(
+                        item for item in payload["items"] if isinstance(item, dict)
+                    )
+        ledger_path = PROJECT_ROOT / "state" / "upcoming-targeting.json"
+        ledger = record_outcome(
+            load_ledger(ledger_path),
+            targeted_plan,
+            published_upcoming,
+            now=run_started_at,
+        )
+        save_ledger(ledger, ledger_path)
+        resolved_now = sum(
+            1
+            for key in targeted_plan.targets
+            if (ledger.get("fixtures") or {}).get(key, {}).get("resolved") is True
+        )
+        summary["targeted_scan"] = {
+            **targeted_plan.summary(),
+            "resolved_after_this_scan": resolved_now,
+        }
+        print(
+            f"   Targeted fixtures resolved: {resolved_now}/"
+            f"{len(targeted_plan.targets)}; every target is now marked "
+            "attempted and will not be scanned again"
+        )
 
     if prepared_series is not None:
         from scanner.series import publish_prepared_series
@@ -1096,11 +1277,14 @@ def main() -> int:
             "channels",
             "today",
             "upcoming",
+            "upcoming-targeted",
             "movies",
             "all",
         ],
         help=(
-            "Scanner mode: channels, today, upcoming, movies, or all"
+            "Scanner mode: channels, today, upcoming, upcoming-targeted, "
+            "movies, or all. upcoming-targeted only chases links for fixtures "
+            "that are about to start (requirement 4)."
         ),
     )
 

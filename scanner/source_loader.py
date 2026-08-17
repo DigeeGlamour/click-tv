@@ -959,12 +959,16 @@ def collect_candidates(mode: str = "all") -> Dict[str, Any]:
     # other surface from a partial pool and wipe good cards out of it.
     if mode_clean in {
         "all", "full-audit", "events", "today", "today_match", "upcoming",
+        "upcoming-targeted", "upcoming_targeted",
     }:
         active_pipelines.append("today_match")
     # Exact rotating event links can remain in provider Upcoming catalogues
     # after kickoff. A Today scan therefore collects both event source groups;
     # schedule resolution still publishes only the currently active fixture.
-    if mode_clean in {"all", "full-audit", "events", "today", "today_match", "upcoming"}:
+    if mode_clean in {
+        "all", "full-audit", "events", "today", "today_match", "upcoming",
+        "upcoming-targeted", "upcoming_targeted",
+    }:
         active_pipelines.append("upcoming")
 
     # Movie discovery also reads mixed TV sources, but the content router keeps

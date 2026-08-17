@@ -17,7 +17,10 @@ from typing import Any, Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 try:
-    from scanner.merger import merge_candidates
+    from scanner.live_protection import probe_card_is_playable, protect_live_events
+    from scanner.targeted_scan import fixture_key, has_valid_link
+    from scanner.source_coverage import build_source_coverage, write_source_coverage
+    from scanner.merger import event_sport, sport_sort_index, load_previous_primary_keys, merge_candidates
     from scanner.schedule_resolver import (
         DEFAULT_FIXTURE_AUTHORITY_SOURCES,
         DEFAULT_PROVIDER_EVENT_HOURS,
@@ -29,7 +32,10 @@ except ImportError:
     module_dir = str(Path(__file__).resolve().parent)
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
-    from merger import merge_candidates
+    from live_protection import probe_card_is_playable, protect_live_events
+    from targeted_scan import fixture_key, has_valid_link
+    from source_coverage import build_source_coverage, write_source_coverage
+    from merger import event_sport, sport_sort_index, load_previous_primary_keys, merge_candidates
     from schedule_resolver import (
         DEFAULT_FIXTURE_AUTHORITY_SOURCES,
         DEFAULT_PROVIDER_EVENT_HOURS,
@@ -213,7 +219,10 @@ def _sort_time(
 def _event_sort_key(
     item: Dict[str, Any],
     default_timezone: timezone | ZoneInfo = timezone.utc,
-) -> Tuple[str, str, str]:
+) -> Tuple[int, str, str, str]:
+    # Requirement 11. Cricket first, football second, every other sport after -
+    # then the existing kickoff/competition/name order inside each group.
+    sport_rank = sport_sort_index(item.get("sport_type") or event_sport(item))
     start_time = _sort_time(item.get("start_time"), default_timezone)
     competition = re.sub(
         r"\s+",
@@ -225,7 +234,7 @@ def _event_sort_key(
         " ",
         str(item.get("name") or "").strip(),
     ).casefold()
-    return start_time, competition, name
+    return sport_rank, start_time, competition, name
 
 
 def _primary_url(item: Dict[str, Any]) -> str:
@@ -369,8 +378,15 @@ def _payload(
     filtered_unplayable: int,
     source_timezone: timezone | ZoneInfo = timezone.utc,
 ) -> Dict[str, Any]:
+    # Requirement 11. A card carried forward from a previous publish (see
+    # requirement 6) predates the sport field, so fill it in before sorting -
+    # otherwise those cards would all sort as "other" and land behind the rest.
+    candidates = [item for item in items if isinstance(item, dict)]
+    for item in candidates:
+        if not str(item.get("sport_type") or "").strip():
+            item["sport_type"] = event_sport(item)
     ordered = sorted(
-        [item for item in items if isinstance(item, dict)],
+        candidates,
         key=lambda item: _event_sort_key(item, source_timezone),
     )
     for item in ordered:
@@ -391,8 +407,23 @@ def process_events(
     fixture_path: str = "config/event-fixtures.json",
     *,
     now: Optional[datetime] = None,
+    targeted_window_minutes: int = 0,
+    targeted_keys: Optional[set] = None,
 ) -> Dict[str, Dict[str, Any]]:
-    """Return freshness-checked today_match and upcoming payloads."""
+    """Return freshness-checked today_match and upcoming payloads.
+
+    targeted_window_minutes implements requirement 4: with a window set, only
+    fixtures kicking off inside it are treated as scan targets. Every other
+    future fixture keeps the card it already has, so a five-minute trigger can
+    chase the links of the matches about to start without re-verifying a
+    hundred fixtures that are still hours away.
+
+    targeted_keys narrows that further, and is the corrected behaviour: the
+    caller has already decided which individual fixtures this trigger may work
+    on, having excluded the ones that produced a valid link on an earlier tick.
+    A fixture inside the window but absent from targeted_keys is therefore left
+    exactly as published - it is not re-scanned every five minutes.
+    """
     results = _load_required_results(bd_results_path)
     settings = _load_optional_json(settings_path)
     event_settings = settings.get("events") if isinstance(settings.get("events"), dict) else {}
@@ -474,6 +505,8 @@ def process_events(
     merged = merge_candidates(
         event_candidates,
         settings_path=settings_path,
+        # Requirement 16: a healthy primary keeps its place across scans.
+        previous_primary_keys=load_previous_primary_keys(),
     )
 
     # Guide 30.8: an event that moved from Upcoming to Today Match keeps the
@@ -481,6 +514,7 @@ def process_events(
     schedule_stats["reused_event_ids"] = reuse_published_event_ids(merged)
 
     now = reference_now
+    skip_live_protection = False
     today_items: List[Dict[str, Any]] = []
     upcoming_items: List[Dict[str, Any]] = []
     today_stale = 0
@@ -525,6 +559,129 @@ def process_events(
             )
             upcoming_items.append(card_copy)
 
+    # Requirement 4, corrected. A targeted trigger publishes the snapshot it
+    # already had, with only its targeted fixtures refreshed.
+    #
+    # This has to start from what is published rather than from what this scan
+    # produced. A targeted scan deliberately verifies a handful of candidates,
+    # so its merged output only ever contains the targeted fixtures - filtering
+    # that output would silently drop every other Upcoming card. Untargeted
+    # fixtures are therefore copied through verbatim, still freshness-checked so
+    # a finished match cannot linger, and a target that yielded nothing this time
+    # keeps the card it already had.
+    if targeted_window_minutes > 0:
+        horizon = reference_now + timedelta(minutes=targeted_window_minutes)
+        previous_upcoming_payload = _load_optional_json(Path("data") / "upcoming.json")
+        previous_upcoming_items = [
+            item
+            for item in (previous_upcoming_payload.get("items") or [])
+            if isinstance(item, dict)
+        ]
+
+        refreshed: Dict[str, Dict[str, Any]] = {}
+        targeted = 0
+        skipped_already_scanned = 0
+        skipped_outside_window = 0
+        for card in upcoming_items:
+            start = _parse_datetime(card.get("start_time"), source_timezone)
+            in_window = bool(start and reference_now <= start <= horizon)
+            if not in_window:
+                skipped_outside_window += 1
+                continue
+            if targeted_keys is not None and fixture_key(card) not in targeted_keys:
+                skipped_already_scanned += 1
+                continue
+            targeted += 1
+            refreshed[str(card.get("id") or "")] = card
+
+        kept: List[Dict[str, Any]] = []
+        seen_ids: set = set()
+        for previous in previous_upcoming_items:
+            event_id = str(previous.get("id") or "")
+            seen_ids.add(event_id)
+            fresh = refreshed.get(event_id)
+            if fresh is not None:
+                kept.append(fresh)
+                continue
+            carried = dict(previous)
+            carried["_source_timezone"] = source_timezone
+            if not _is_upcoming_fresh(
+                carried, now, upcoming_past_grace_hours, upcoming_future_days
+            ):
+                upcoming_stale += 1
+                continue
+            kept.append(carried)
+        for event_id, fresh in refreshed.items():
+            if event_id not in seen_ids:
+                kept.append(fresh)
+
+        upcoming_items = kept
+        schedule_stats["targeted_window_minutes"] = targeted_window_minutes
+        schedule_stats["targeted_fixtures"] = targeted
+        schedule_stats["targeted_skipped_already_scanned"] = skipped_already_scanned
+        schedule_stats["targeted_skipped_outside_window"] = skipped_outside_window
+        schedule_stats["targeted_carried_published_cards"] = len(
+            [card for card in kept if str(card.get("id") or "") not in refreshed]
+        )
+        schedule_stats["targeted_keys_supplied"] = (
+            -1 if targeted_keys is None else len(targeted_keys)
+        )
+        schedule_stats["targeted_resolved_now"] = sum(
+            1 for card in refreshed.values() if has_valid_link(card)
+        )
+
+        # Today Match is not this trigger's business either. Its published cards
+        # are copied through untouched - no re-verification and no liveness
+        # probing, both of which belong to the Today Match scan - except that a
+        # targeted fixture whose link arrived right at kickoff is allowed to
+        # promote into it, because that promotion IS the work being done.
+        previous_today_payload = _load_optional_json(Path("data") / "today-match.json")
+        previous_today_published = [
+            item
+            for item in (previous_today_payload.get("items") or [])
+            if isinstance(item, dict)
+        ]
+        promoted = {
+            str(card.get("id") or ""): card
+            for card in today_items
+            if targeted_keys is None or fixture_key(card) in targeted_keys
+        }
+        kept_today: List[Dict[str, Any]] = []
+        seen_today: set = set()
+        for previous in previous_today_published:
+            event_id = str(previous.get("id") or "")
+            seen_today.add(event_id)
+            kept_today.append(promoted.get(event_id) or dict(previous))
+        for event_id, card in promoted.items():
+            if event_id not in seen_today:
+                kept_today.append(card)
+        schedule_stats["targeted_promoted_to_today"] = len(
+            [key for key in promoted if key not in seen_today]
+        )
+        today_items = kept_today
+        skip_live_protection = True
+
+    # Requirement 6, corrected. A live event that this scan simply failed to
+    # fetch is carried forward with its previous card rather than deleted, for
+    # as many consecutive scans as it takes. Only an authoritative ENDED/FT, or
+    # a probe proving every link on the card is dead, actually retires it.
+    if skip_live_protection:
+        # A targeted trigger already published Today Match verbatim. Running
+        # protection here would probe cards this trigger never scanned and
+        # retire them on behalf of a scan that did not look for them.
+        schedule_stats["live_protection"] = {"skipped": "targeted scan"}
+    else:
+        previous_today = _load_optional_json(Path("data") / "today-match.json")
+        previous_today_items = [
+            item for item in (previous_today.get("items") or []) if isinstance(item, dict)
+        ]
+        today_items, protection_stats = protect_live_events(
+            today_items,
+            previous_today_items,
+            probe=probe_card_is_playable,
+        )
+        schedule_stats["live_protection"] = protection_stats
+
     result = {
         "today_match": _payload(
             today_items,
@@ -541,6 +698,29 @@ def process_events(
             source_timezone=source_timezone,
         ),
     }
+    # Requirement 3. One row per configured source, with the exact stage a
+    # contribution was lost at and why.
+    try:
+        coverage = build_source_coverage(
+            configured_sources=[
+                {"id": source_id}
+                for source_id in sorted({
+                    str(c.get("source_id") or "")
+                    for c in raw_event_candidates
+                    if str(c.get("source_id") or "")
+                })
+            ],
+            raw_candidates=raw_event_candidates,
+            parsed_candidates=raw_event_candidates,
+            matched_candidates=event_candidates,
+            published_items=today_items + upcoming_items,
+        )
+        write_source_coverage(coverage)
+        result_coverage = coverage
+    except Exception as error:  # pragma: no cover - reporting must never break a scan
+        result_coverage = {"error": str(error)}
+
+    result["source_coverage"] = result_coverage
     result["schedule"] = {
         "timezone": timezone_name,
         **schedule_stats,

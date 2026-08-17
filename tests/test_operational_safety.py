@@ -135,8 +135,11 @@ class WorkflowSafetyTests(unittest.TestCase):
 
     def test_actions_requires_complete_schedule_update(self):
         workflow = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
-        self.assertIn('cron: "2,17,32,47 * * * *"', workflow)
-        self.assertIn('cron: "9,39 * * * *"', workflow)
+        # Requirement 4: Today every 20 minutes, plus the 5-minute trigger
+        # that drives the targeted -15 minute Upcoming scan.
+        self.assertIn('cron: "0,20,40 * * * *"', workflow)
+        self.assertIn('cron: "*/5 * * * *"', workflow)
+        self.assertIn('cron: "9 5,17 * * *"', workflow)
         self.assertIn("test -f config/event-fixtures.json", workflow)
         self.assertIn("test -f scanner/schedule_resolver.py", workflow)
         self.assertIn("test -f tests/test_schedule_resolver.py", workflow)
