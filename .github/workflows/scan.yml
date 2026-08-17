@@ -106,47 +106,89 @@ jobs:
         run: |
           set -euo pipefail
 
-          test -f scan.py
-          test -f config/settings.json
-          test -f config/sources.json
-          test -f config/event-fixtures.json
-          test -f scanner/content_router.py
-          test -f scanner/channel_logos.py
-          test -f scanner/fast_pipeline.py
-          test -f scanner/source_loader.py
-          test -f scanner/normalizer.py
-          test -f scanner/planner.py
-          test -f scanner/verifier.py
-          test -f scanner/bd_verifier.py
-          test -f scanner/channels.py
-          test -f scanner/movies.py
-          test -f scanner/series.py
-          test -f manual/movies.txt
-          test -f manual/movies.json
-          test -f manual/channel-logos.json
-          test -f manual/movie-sources.json
-          test -f manual/movies-template.txt
-          test -f manual/movies-template.json
-          test -f state/manual-movie-posters.json
-          test -f state/manual-movie-remote-cache.json
-          test -f state/channel-logo-cache.json
-          test -f tests/test_manual_movies.py
-          test -f tests/test_manual_movie_sources.py
-          test -f tests/test_series_pipeline.py
-          test -f tests/test_final_design_contract.py
-          test -f tests/test_channel_logos.py
-          test -f tests/test_schedule_resolver.py
-          test -f scanner/events.py
-          test -f scanner/schedule_resolver.py
-          test -f scanner/output.py
-          test -f scanner/playback_profiles.py
-          test -f scanner/telegram_notify.py
-          test -f site/index.html
-          test -f site/assets/css/final-design.css
-          test -f site/assets/js/app.js
-          test -f site/assets/js/series.js
-          test -f data/playback-sources.json
-          test -f .gitattributes
+          # A bare `test -f` under `set -e` stops at the first missing file and
+          # prints nothing but "Process completed with exit code 1", which is how
+          # five un-uploaded config/ files cost hours to diagnose. Every required
+          # path is checked, every missing one is named, and the failure says what
+          # to do about it.
+          REQUIRED_FILES=(
+            scan.py
+            config/settings.json
+            config/sources.json
+            config/event-fixtures.json
+            config/channel-aliases.json
+            config/channel-categories.json
+            config/header-profiles.json
+            scanner/content_router.py
+            scanner/channel_logos.py
+            scanner/fast_pipeline.py
+            scanner/source_loader.py
+            scanner/normalizer.py
+            scanner/planner.py
+            scanner/verifier.py
+            scanner/bd_verifier.py
+            scanner/channels.py
+            scanner/movies.py
+            scanner/series.py
+            scanner/channel_resolver.py
+            scanner/channel_groups.py
+            scanner/event_lifecycle.py
+            scanner/streamed_provider.py
+            scanner/live_protection.py
+            scanner/snapshot_publish.py
+            scanner/targeted_scan.py
+            manual/movies.txt
+            manual/movies.json
+            manual/channel-logos.json
+            manual/movie-sources.json
+            manual/movies-template.txt
+            manual/movies-template.json
+            state/manual-movie-posters.json
+            state/manual-movie-remote-cache.json
+            state/channel-logo-cache.json
+            tests/test_manual_movies.py
+            tests/test_manual_movie_sources.py
+            tests/test_series_pipeline.py
+            tests/test_final_design_contract.py
+            tests/test_channel_logos.py
+            tests/test_schedule_resolver.py
+            tests/test_sports_channel_system.py
+            tests/test_event_fixture_catalogue.py
+            scanner/events.py
+            scanner/schedule_resolver.py
+            scanner/output.py
+            scanner/playback_profiles.py
+            scanner/telegram_notify.py
+            site/index.html
+            site/assets/css/final-design.css
+            site/assets/css/embed-player.css
+            site/assets/js/app.js
+            site/assets/js/series.js
+            site/sw.js
+            data/playback-sources.json
+            .gitattributes
+          )
+
+          MISSING=()
+          for REQUIRED in "${REQUIRED_FILES[@]}"; do
+            if [[ ! -f "$REQUIRED" ]]; then
+              MISSING+=("$REQUIRED")
+            fi
+          done
+
+          if (( ${#MISSING[@]} > 0 )); then
+            echo "::error title=Required files are missing from the repository::${#MISSING[@]} file(s) not found"
+            for GONE in "${MISSING[@]}"; do
+              echo "  MISSING  $GONE"
+              echo "::error file=$GONE::$GONE is required by the scanner but is not in the repository"
+            done
+            echo ""
+            echo "These files exist locally but were never uploaded, or were deleted."
+            echo "Upload them and re-run. Never delete config/sources.json."
+            exit 1
+          fi
+
+          echo "All ${#REQUIRED_FILES[@]} required files present."
 
           python - <<'PY'
           from pathlib import Path
