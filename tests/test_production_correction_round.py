@@ -321,19 +321,45 @@ class EveryCardCanNameItsBroadcasters(unittest.TestCase):
         cls.aliases = load_alias_map(ROOT / "config/channel-aliases.json")
 
     def test_each_event_feed_declares_the_broadcaster_it_relays(self):
+        """Only a genuine, independently-recognizable broadcaster is declared.
+
+        "Bingstream", "AX Sports", "CricketLive" and "CricHD" were declared here
+        once, and every one of them is just the feed maintainer's own GitHub
+        repo/aggregator name - not a channel a viewer would recognize on air. A
+        viewer correctly called this out: it read as a fabricated brand sitting
+        next to real ones like Willow and SonyLIV. Removed; the genuinely real
+        ones stay.
+        """
         declared = load_source_broadcasters(ROOT / "config")
-        self.assertGreaterEqual(len(declared), 8, declared)
+        self.assertGreaterEqual(len(declared), 4, declared)
+        fake = {"bingstream", "ax sports", "cricketlive", "crichd"}
         for source_id, name in declared.items():
             self.assertTrue(name.strip(), source_id)
             self.assertNotIn("hady", name.casefold(), "a maintainer is not a broadcaster")
             self.assertNotRegex(name.casefold(), r"^(playlist|events?|sports?|data)$")
+            self.assertNotIn(name.casefold(), fake,
+                             f"{name!r} is a feed/aggregator name, not a broadcaster")
+        # The genuinely real, independently-existing brands are still declared.
+        for real in ("Tapmad", "SonyLIV", "Willow"):
+            self.assertIn(real, declared.values(), declared)
 
     def test_a_stream_joins_a_channel_from_the_feed_it_arrived_in(self):
-        for source_id in ("srhady-bingstream-live", "sm-tapmad-auto", "srhady-willow-event-upcoming"):
+        for source_id in ("srhady-tapmad-bd-live", "sm-tapmad-auto", "srhady-willow-event-upcoming"):
             resolved = resolve_channel_name({"source_id": source_id},
                                             "Sri Lanka vs India 1st Test", self.aliases)
             self.assertTrue(resolved.resolved, source_id)
             self.assertTrue(resolved.name.strip(), source_id)
+
+    def test_a_removed_fake_declaration_resolves_to_nothing_not_a_new_lie(self):
+        """"Bingstream" is a repository name, not a channel. Removing its
+        declaration must leave the stream honestly unnamed - not silently
+        replaced by some other guess - when nothing else on the stream names it.
+        """
+        resolved = resolve_channel_name(
+            {"source_id": "srhady-bingstream-live"},
+            "Sri Lanka vs India 1st Test", self.aliases,
+        )
+        self.assertFalse(resolved.resolved)
 
     def test_a_title_that_names_its_channel_still_wins_over_the_feed(self):
         resolved = resolve_channel_name(

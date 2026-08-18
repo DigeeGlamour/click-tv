@@ -383,15 +383,55 @@ class Section12NoInventedChannels(unittest.TestCase):
             ).resolved
         )
 
-    def test_an_unresolved_event_publishes_no_channels_at_all(self):
+    def test_an_unresolved_but_genuinely_distinct_stream_becomes_a_labelled_server(self):
+        """Requirement, corrected by direct instruction: a stream whose real
+        broadcaster cannot be found is not invisible and is not given an
+        invented brand name either - it becomes an honestly-labelled "Server-N"
+        entry, numbered by health, provided it is a genuinely distinct feed.
+
+        This replaces an assertion that such an event published no channels at
+        all. That was section 12 taken further than it says: section 12 forbids
+        inventing a *name*, not hiding a real, distinct, playable stream from the
+        channel selector entirely.
+        """
+        channels, stats = build_event_channels(
+            "evt-1", "Sri Lanka vs India",
+            [stream("Sri Lanka vs India", "https://a.test/1.m3u8", resolution_height=1080),
+             stream("Sri Lanka vs India Server 2", "https://b.test/2.m3u8", resolution_height=480)],
+            aliases=ALIASES,
+        )
+        self.assertEqual(stats["unresolved_channel_streams"], 2)
+        self.assertEqual(stats["generic_server_channels"], 2)
+        names = [channel["name"] for channel in channels]
+        self.assertEqual(names, ["Server-1", "Server-2"])
+        for channel in channels:
+            self.assertEqual(channel["name_confidence"], "generic")
+        # The higher-resolution feed is numbered first.
+        self.assertEqual(channels[0]["streams"][0]["resolution_height"], 1080)
+
+    def test_the_same_link_under_two_feeds_never_becomes_two_server_slots(self):
+        """The exact rule requested: identical content is a backup, never a
+        second channel - whether the duplicate is unnamed or, worse, would have
+        been mistaken for a second broadcaster."""
         channels, stats = build_event_channels(
             "evt-1", "Sri Lanka vs India",
             [stream("Sri Lanka vs India", "https://a.test/1.m3u8"),
-             stream("Sri Lanka vs India Server 2", "https://b.test/2.m3u8")],
+             stream("Sri Lanka vs India mirror", "https://a.test/1.m3u8")],
             aliases=ALIASES,
         )
+        self.assertEqual(len(channels), 1)
+        self.assertEqual(channels[0]["stream_count"], 1)
+        self.assertGreaterEqual(stats["exact_duplicates_removed"], 1)
+
+    def test_a_genuinely_empty_stream_gets_no_server_slot_at_all(self):
+        """A metadata-only placeholder with nothing to play must never surface
+        as a channel, generic or otherwise."""
+        channels, stats = build_event_channels(
+            "evt-1", "Kingsmen vs Nevis Patriots",
+            [{"name": "AX Sports", "url": "", "metadata_only": True}],
+        )
         self.assertEqual(channels, [])
-        self.assertEqual(stats["unresolved_channel_streams"], 2)
+        self.assertEqual(stats["generic_server_channels"], 0)
 
 
 # ------------------------------------------------------------------ sections 13-14
@@ -1675,6 +1715,92 @@ class ReconcilingDoesNotWeakenRetirement(ACarriedCardIsReconciledNotDuplicated):
                 )
             misses = json.loads(state.read_text(encoding="utf-8")).get("misses") or {}
             self.assertNotIn("india-vs-sri-lanka-willow", misses, misses)
+
+
+class AZombieCardWithNoParticipantsIsStillReconciled(ACarriedCardIsReconciledNotDuplicated):
+    """The exact shape reported live: a carried card with no team names at all.
+
+    Production published "Sri Lanka vs India 1st Test" beside "Day 3 1st Test 17
+    Aug 2026 | India Tour of Sri Lanka 2026" as two cards, for 49 consecutive
+    scans. The title has no "vs"/"versus" separator, so participant_fold_key -
+    same_real_fixture's only fallback when the plain normalized name differs -
+    returns "" and the two are structurally unmatchable by name alone. The card
+    also had its fixture_id/competition/start_time already stripped by
+    _today_source_channel_fallback the first time it failed to match anything, so
+    there is nothing left to compare on those fields either.
+
+    The fix does not touch same_real_fixture's contract; it adds a second,
+    narrower question asked only when the first one says no: does the carried
+    card's *raw title text* name the same catalogue fixture the canonical card is
+    already bound to, by round and competition, while that fixture is actually
+    live right now.
+    """
+
+    def _canonical(self, **extra):
+        # Bound to a real config/event-fixtures.json entry - the catalogue round
+        # matcher only ever answers against a fixture it actually knows.
+        extra.setdefault(
+            "fixture_id",
+            "india-sri-lanka-tests-2026:sri-lanka-vs-india-1st-test",
+        )
+        extra.setdefault("competition", "India Tour of Sri Lanka 2026")
+        return super()._canonical(**extra)
+
+    def _zombie(self, **extra):
+        card = {
+            "id": "day-3-1st-test-17-aug-2026-india-tour-of-sri-lanka-2026",
+            "name": "Day 3 1st Test 17 Aug 2026 | India Tour of Sri Lanka 2026",
+            "sport_type": "cricket",
+            "status": "CHANNEL_LIVE",
+            "schedule_status": "CHANNEL_LIVE",
+            "lifecycle_state": "END_PENDING",
+            "today_source_channel": True,
+            "schedule_verified": False,
+            "source_id": "srhady-sonyliv-live",
+            "playback_id": "ctv_zombie_primary",
+            "url": "https://origin.test/zombie.m3u8",
+            "stream_type": "hls",
+            "verified": True,
+            "verification_status": "verified_global",
+            "available_link_count": 1,
+            # fixture_id / competition / start_time are absent, exactly as
+            # _today_source_channel_fallback leaves them - there is nothing on
+            # this card for a field-by-field comparison to work with.
+        }
+        card.update(extra)
+        return card
+
+    def test_same_real_fixture_cannot_see_it_this_is_the_gap(self):
+        """Documents why the plain check fails, so the fix is not mistaken for
+        a change to same_real_fixture's own contract."""
+        self.assertEqual(participant_fold_key(self._zombie()), "")
+        self.assertFalse(same_real_fixture(self._canonical(), self._zombie(), ALIASES))
+
+    def test_the_catalogue_still_reconciles_it_into_one_card(self):
+        published, stats = self._run([self._canonical()], [self._zombie()])
+        self.assertEqual(len(published), 1, [c.get("name") for c in published])
+        self.assertEqual(published[0]["name"], "Sri Lanka vs India 1st Test")
+        self.assertEqual(stats["reconciled_into_canonical"], 1)
+        ids = {str(b.get("playback_id")) for b in published[0]["backups"]}
+        self.assertIn("ctv_zombie_primary", ids)
+
+    def test_a_zombie_naming_a_different_fixtures_round_is_not_folded(self):
+        """The round has to agree with the canonical fixture's own round, or a
+        stray "Day 2" label could fold into the wrong Test entirely."""
+        other_round = self._zombie(
+            name="Day 2 2nd Test 23 Aug 2026 | India Tour of Sri Lanka 2026",
+        )
+        published, stats = self._run([self._canonical()], [other_round])
+        self.assertEqual(len(published), 2)
+        self.assertEqual(stats["reconciled_into_canonical"], 0)
+
+    def test_a_zombie_with_no_round_label_at_all_is_not_folded(self):
+        """No round means no catalogue signal to bind on - refuse rather than
+        guess which live fixture a bare broadcaster label belongs to."""
+        no_round = self._zombie(name="SonyLIV Cricket Channel")
+        published, stats = self._run([self._canonical()], [no_round])
+        self.assertEqual(len(published), 2)
+        self.assertEqual(stats["reconciled_into_canonical"], 0)
 
 
 if __name__ == "__main__":

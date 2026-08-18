@@ -96,8 +96,20 @@ def stream_variant_identity(stream: Dict[str, Any]) -> str:
     Everything that changes what actually gets played is in here, including the
     credentials: two URLs that look identical but carry different tokens are
     different streams, and collapsing them would throw away a working backup.
+
+    A stream with no URL, no embed URL and no already-minted playback_id has
+    nothing to play at all - it used to still hash to a non-empty key here
+    (purely from header_profile/proxy_mode/etc.), so a metadata-only Upcoming
+    placeholder with zero real streams still bucketed into a "channel" and
+    published a broadcaster name next to a Primary role with nothing behind it.
     """
     if not isinstance(stream, dict):
+        return ""
+    if (
+        not str(stream.get("url") or stream.get("stream_url") or "").strip()
+        and not str(stream.get("embed_url") or "").strip()
+        and not str(stream.get("playback_id") or "").strip()
+    ):
         return ""
 
     headers = _normalized_headers(stream)
@@ -237,6 +249,66 @@ def _public_stream(
     return entry
 
 
+def _channel_entry_from_kept(
+    event_id: Any,
+    channel: "ChannelName",
+    kept: List[Dict[str, Any]],
+    dropped_count: int,
+    stats: Dict[str, Any],
+) -> Optional[Dict[str, Any]]:
+    """One published channel entry from its already-deduplicated stream list.
+
+    Shared by a named broadcaster bucket and a generic "Server-N" bucket, so
+    the two are built, capped and published identically - the only difference
+    between them is where the ChannelName came from.
+    """
+    identifier = channel_id_for(event_id, channel)
+    if not identifier or not kept:
+        return None
+
+    published: List[Dict[str, Any]] = []
+    for index, stream in enumerate(kept):
+        role = ROLE_PRIMARY if index == 0 else ROLE_BACKUP
+        stream_id = f"{identifier}--{index + 1}"
+        published.append(_public_stream(stream, stream_id, role))
+        if playback_type_of(stream) == PLAYBACK_EMBED:
+            stats["embed_variants"] += 1
+
+    entry: Dict[str, Any] = {
+        "id": identifier,
+        "name": channel.name,
+        "normalized_name": channel.normalized,
+        "logo": str(kept[0].get("logo") or kept[0].get("channel_logo") or ""),
+        "name_confidence": channel.confidence,
+        "name_source": channel.source_field,
+        "provider": str(kept[0].get("provider") or kept[0].get("source_id") or ""),
+        "source_ids": sorted({
+            str(stream.get("source_id") or "").strip()
+            for stream in kept
+            if str(stream.get("source_id") or "").strip()
+        }),
+        "primary_stream_id": published[0]["id"],
+        "stream_count": len(published),
+        "backup_count": max(0, len(published) - 1),
+        "verified": any(stream.get("verified") for stream in kept),
+        "verification_status": str(kept[0].get("verification_status") or ""),
+        "playback_types": sorted({playback_type_of(s) for s in kept}),
+        # Section 26, as a single value a reader can branch on. "mixed" only
+        # when one channel really does carry both kinds of stream.
+        "renderer": (
+            sorted({playback_type_of(s) for s in kept})[0]
+            if len({playback_type_of(s) for s in kept}) == 1
+            else "mixed"
+        ),
+        "streams": published,
+        "_health": stream_health_score(kept[0]),
+        "_variant_keys": {entry_["variant_key"] for entry_ in published},
+    }
+    if dropped_count:
+        entry["dropped_variant_count"] = dropped_count
+    return entry
+
+
 def build_event_channels(
     event_id: Any,
     event_name: Any,
@@ -250,10 +322,16 @@ def build_event_channels(
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Group one fixture's streams into channels. Returns (channels, stats).
 
-    Streams whose broadcaster could not be resolved are not forced into a group:
-    section 12 says an event with no reliable channel name keeps its ordinary
-    card, so they are counted and left out of channels[] while remaining exactly
-    as playable as they are today through the event-level primary/backups.
+    A stream whose broadcaster resolved by name goes into that broadcaster's
+    group, exactly as before. A stream that could not be named at all is not
+    silently dropped from channels[] either, provided it genuinely is a
+    distinct, playable feed: it becomes an honestly-labelled "Server-N" entry
+    rather than either an invented brand name or an invisible stream. What it
+    must never become is a second channel for content that is already
+    published under a real name - an unnamed stream whose *effective playback
+    configuration* is identical to an already-claimed one is a duplicate of
+    that channel, not a new one, and is folded away exactly like any other
+    exact duplicate.
     """
     alias_map = aliases if aliases is not None else load_alias_map()
     resolved = resolve_stream_channels(streams, event_name, alias_map)
@@ -265,13 +343,16 @@ def build_event_channels(
         "channels": 0,
         "variants": 0,
         "embed_variants": 0,
+        "generic_server_channels": 0,
     }
 
     # Section 7/8: one bucket per broadcaster, exact duplicates dropped on entry.
     buckets: Dict[str, Dict[str, Any]] = {}
+    unnamed_streams: List[Dict[str, Any]] = []
     for stream, channel in resolved:
         if not channel.resolved:
             stats["unresolved_channel_streams"] += 1
+            unnamed_streams.append(stream)
             continue
         variant_key = stream_variant_identity(stream)
         if not variant_key:
@@ -293,6 +374,7 @@ def build_event_channels(
             bucket["variants"][variant_key] = stream
 
     channels: List[Dict[str, Any]] = []
+    claimed_variant_keys: set = set()
     for bucket in buckets.values():
         channel: ChannelName = bucket["channel"]
         variants = sorted(
@@ -301,50 +383,64 @@ def build_event_channels(
         if not variants:
             continue
         kept = variants[: max(1, int(max_streams_per_channel))]
-        identifier = channel_id_for(event_id, channel)
-        if not identifier:
+        entry = _channel_entry_from_kept(
+            event_id, channel, kept, len(variants) - len(kept), stats
+        )
+        if entry is None:
             continue
+        claimed_variant_keys.update(bucket["variants"].keys())
+        channels.append(entry)
 
-        published: List[Dict[str, Any]] = []
-        for index, stream in enumerate(kept):
-            role = ROLE_PRIMARY if index == 0 else ROLE_BACKUP
-            stream_id = f"{identifier}--{index + 1}"
-            published.append(_public_stream(stream, stream_id, role))
-            if playback_type_of(stream) == PLAYBACK_EMBED:
-                stats["embed_variants"] += 1
+    # Everything a real broadcaster's name could not be found for. A stream
+    # whose exact configuration already belongs to a named channel above is a
+    # duplicate of that channel - not a new one - and is dropped here exactly
+    # as it would have been dropped inside that channel's own bucket. What
+    # survives is grouped by identical configuration too, so five copies of
+    # the same untraceable mirror still become one Server-N, not five.
+    server_groups: Dict[str, Dict[str, Any]] = {}
+    for stream in unnamed_streams:
+        variant_key = stream_variant_identity(stream)
+        if not variant_key:
+            # Nothing to play at all - a metadata-only placeholder, not a
+            # fourth kind of channel.
+            continue
+        if variant_key in claimed_variant_keys:
+            # The exact same feed a named channel already publishes. Counted,
+            # never duplicated as a channel of its own.
+            stats["exact_duplicates_removed"] += 1
+            continue
+        group = server_groups.setdefault(variant_key, {"variants": []})
+        group["variants"].append(stream)
 
-        entry: Dict[str, Any] = {
-            "id": identifier,
-            "name": channel.name,
-            "normalized_name": channel.normalized,
-            "logo": str(kept[0].get("logo") or kept[0].get("channel_logo") or ""),
-            "name_confidence": channel.confidence,
-            "name_source": channel.source_field,
-            "provider": str(kept[0].get("provider") or kept[0].get("source_id") or ""),
-            "source_ids": sorted({
-                str(stream.get("source_id") or "").strip()
-                for stream in kept
-                if str(stream.get("source_id") or "").strip()
-            }),
-            "primary_stream_id": published[0]["id"],
-            "stream_count": len(published),
-            "backup_count": max(0, len(published) - 1),
-            "verified": any(stream.get("verified") for stream in kept),
-            "verification_status": str(kept[0].get("verification_status") or ""),
-            "playback_types": sorted({playback_type_of(s) for s in kept}),
-            # Section 26, as a single value a reader can branch on. "mixed" only
-            # when one channel really does carry both kinds of stream.
-            "renderer": (
-                sorted({playback_type_of(s) for s in kept})[0]
-                if len({playback_type_of(s) for s in kept}) == 1
-                else "mixed"
-            ),
-            "streams": published,
-            "_health": stream_health_score(kept[0]),
-            "_variant_keys": {entry_["variant_key"] for entry_ in published},
-        }
-        if len(variants) > len(kept):
-            entry["dropped_variant_count"] = len(variants) - len(kept)
+    # Numbered in health order so "Server-1" is consistently the strongest of
+    # the unnamed feeds, not whichever happened to appear first in the source
+    # list.
+    ordered_groups = sorted(
+        server_groups.values(),
+        key=lambda group: stream_health_score(
+            max(group["variants"], key=stream_health_score)
+        ),
+        reverse=True,
+    )
+    for index, group in enumerate(ordered_groups, start=1):
+        variants = sorted(group["variants"], key=stream_health_score, reverse=True)
+        if len(variants) > 1:
+            stats["exact_duplicates_removed"] += len(variants) - 1
+        kept = variants[:1]
+        label = f"Server-{index}"
+        # This is a label being minted, not a title being parsed - it must not
+        # go through normalize_channel_name(), which correctly treats the word
+        # "server" as noise when it is stripping mirror/quality markers off a
+        # *real* stream title. Run through that path, "Server-1" normalized to
+        # "" and channel_id_for() silently refused to publish it at all.
+        generic = ChannelName(
+            name=label, normalized=f"server-{index}",
+            confidence="generic", source_field="generic",
+        )
+        entry = _channel_entry_from_kept(event_id, generic, kept, 0, stats)
+        if entry is None:
+            continue
+        stats["generic_server_channels"] += 1
         channels.append(entry)
 
     ordered = order_channels(

@@ -289,8 +289,12 @@ def _reconcile_layer():
         from scanner.merger import same_real_fixture
         from scanner.channel_groups import (
             ROLE_BACKUP, ROLE_PRIMARY, channel_id_for, _public_stream,
+            stream_health_score,
         )
         from scanner.channel_resolver import load_alias_map, resolve_channel_name
+        from scanner.schedule_resolver import (
+            _competition_round_fixture, load_fixtures,
+        )
     except Exception:  # pragma: no cover - optional layer
         return None
     return {
@@ -298,10 +302,56 @@ def _reconcile_layer():
         "channel_id_for": channel_id_for,
         "public_stream": _public_stream,
         "resolve_channel": resolve_channel_name,
+        "health_score": stream_health_score,
         "aliases": load_alias_map(),
         "primary": ROLE_PRIMARY,
         "backup": ROLE_BACKUP,
+        # A carried card with no participants in its title at all ("Day 3 1st
+        # Test 17 Aug 2026 | India Tour of Sri Lanka 2026") cannot be matched by
+        # same_fixture's participant_fold_key, which needs a "vs"/"versus"
+        # separator that simply is not there. The catalogue's own round+
+        # competition matcher is the fallback for exactly that case - see
+        # _same_fixture_via_catalogue below.
+        "round_fixture_matcher": _competition_round_fixture,
+        "fixtures": load_fixtures("config/event-fixtures.json"),
     }
+
+
+def _same_fixture_via_catalogue(
+    host: Dict[str, Any],
+    card: Dict[str, Any],
+    layer: Dict[str, Any],
+    now: datetime,
+) -> bool:
+    """Whether a team-less carried card is the same fixture as a catalogue host.
+
+    same_real_fixture structurally cannot answer this: it needs either matching
+    participant names or a matching normalized title, and a label like "Day 3
+    1st Test 17 Aug 2026 | India Tour of Sri Lanka 2026" has neither - it was
+    also already stripped of fixture_id/competition/start_time by
+    _today_source_channel_fallback the day it first failed to match anything, so
+    it carries no field this function can compare directly either.
+
+    What it still has is its raw title text, and that is enough: if the host is
+    itself bound to a catalogue fixture (has a real fixture_id) and the card's
+    title names that fixture's competition and round while that fixture is
+    actually live right now, they are the same match. This mirrors
+    schedule_resolver.enrich_event_candidates's own binding for a fresh
+    candidate - applied here to a card that never went through that pass
+    because it was carried forward instead of freshly scanned.
+    """
+    host_fixture_id = str(host.get("fixture_id") or "").strip()
+    if not host_fixture_id:
+        return False
+    fixtures = layer.get("fixtures") or []
+    matcher = layer.get("round_fixture_matcher")
+    if matcher is None:
+        return False
+    try:
+        matched = matcher({"name": card.get("name")}, fixtures, now)
+    except Exception:  # pragma: no cover - never break a scan over this
+        return False
+    return bool(matched) and str(matched.get("fixture_id") or "") == host_fixture_id
 
 
 # Exactly what a published backup entry carries. Copying a card wholesale into a
@@ -479,9 +529,11 @@ def _rebuild_card_channels(card: Dict[str, Any], layer: Dict[str, Any]) -> int:
     event_id = str(card.get("id") or "")
     event_name = str(card.get("name") or "")
     grouped: Dict[str, Dict[str, Any]] = {}
+    unnamed_streams: List[Dict[str, Any]] = []
     for stream in streams:
         resolved = layer["resolve_channel"](stream, event_name, layer["aliases"])
         if not resolved.resolved:
+            unnamed_streams.append(stream)
             continue
         channel_id = layer["channel_id_for"](event_id, resolved)
         if not channel_id:
@@ -520,7 +572,7 @@ def _rebuild_card_channels(card: Dict[str, Any], layer: Dict[str, Any]) -> int:
         if stream.get("_was_primary"):
             entry["_primary_first"] = True
 
-    if not grouped:
+    if not grouped and not unnamed_streams:
         return 0
 
     channels: List[Dict[str, Any]] = []
@@ -533,6 +585,59 @@ def _rebuild_card_channels(card: Dict[str, Any], layer: Dict[str, Any]) -> int:
         entry["stream_count"] = len(entry["streams"])
         entry["backup_count"] = max(0, len(entry["streams"]) - 1)
         channels.append(entry)
+
+    claimed_variant_keys = {
+        str(published.get("variant_key") or "")
+        for entry in channels
+        for published in entry["streams"]
+    } - {""}
+
+    # Everything a real broadcaster's name could not be found for. A stream
+    # whose playback_id already belongs to a named channel above is a
+    # duplicate of that channel, not a new one, and is dropped rather than
+    # published a second time under a generic label. What survives is grouped
+    # by playback_id too, so two identical mirrors still become one Server-N.
+    server_groups: Dict[str, List[Dict[str, Any]]] = {}
+    for stream in unnamed_streams:
+        variant_key = str(stream.get("playback_id") or "")
+        if not variant_key or variant_key in claimed_variant_keys:
+            continue
+        server_groups.setdefault(variant_key, []).append(stream)
+
+    ordered_groups = sorted(
+        server_groups.items(),
+        key=lambda pair: layer["health_score"](
+            max(pair[1], key=layer["health_score"])
+        ),
+        reverse=True,
+    )
+    for index, (variant_key, variants) in enumerate(ordered_groups, start=1):
+        best = max(variants, key=layer["health_score"])
+        label = f"Server-{index}"
+        channel_id = f"{event_id}--server-{index}"
+        published = layer["public_stream"](best, f"{channel_id}--1", layer["primary"])
+        published["variant_key"] = variant_key
+        channels.append({
+            "id": channel_id,
+            "name": label,
+            "normalized_name": f"server-{index}",
+            "logo": "",
+            "name_confidence": "generic",
+            "name_source": "generic",
+            "provider": str(best.get("source_id") or ""),
+            "source_ids": sorted({str(best.get("source_id") or "").strip()} - {""}),
+            "primary_stream_id": published["id"],
+            "stream_count": 1,
+            "backup_count": 0,
+            "verified": bool(best.get("verified")),
+            "verification_status": str(best.get("verification_status") or ""),
+            "playback_types": ["native"],
+            "renderer": "native",
+            "streams": [published],
+        })
+
+    if not channels:
+        return 0
 
     card["channels"] = channels
     card["channel_count"] = len(channels)
@@ -572,6 +677,7 @@ def _reconcile_carried_cards(
     misses: Dict[str, Any],
     stats: Dict[str, Any],
     layer: Dict[str, Any],
+    now: datetime,
 ) -> List[Dict[str, Any]]:
     """One real match, one card - including when both cards were carried.
 
@@ -616,6 +722,9 @@ def _reconcile_carried_cards(
                     break
             except Exception:  # pragma: no cover - never break a scan over this
                 continue
+            if _same_fixture_via_catalogue(host, card, layer, now):
+                canonical = host
+                break
         if canonical is None:
             hosts.append(card)
             kept.append(card)
@@ -795,7 +904,7 @@ def protect_live_events(
     # whether each event survives; this decides how many cards it survives as.
     if reconciler is not None and carried:
         carried = _reconcile_carried_cards(
-            today_items, carried, playing, misses, stats, reconciler
+            today_items, carried, playing, misses, stats, reconciler, reference
         )
 
     # Sections 6-10, applied to every card that is about to be published rather
