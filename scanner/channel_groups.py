@@ -466,14 +466,26 @@ def order_channels(
 ) -> List[Dict[str, Any]]:
     """Section 19's channel order.
 
-    Current selection first, then whichever channel carries the scanner's chosen
-    default stream, then healthy independent channels by quality, then the
-    groups whose name was only inferred.
+    Current selection first, then a real broadcaster name before a generic
+    "Server-N" one - regardless of which happens to carry the scanner's own
+    default stream - then whichever channel carries that default, then
+    healthy independent channels by quality, then the groups whose name was
+    only inferred.
+
+    The named-before-generic tier was added by direct request: the event's own
+    primary is often the one stream nobody could put a real name to (that is
+    exactly why it fell to "Server-1" in the first place), and ranking it by
+    "carries the default" alone put an anonymous label ahead of every real
+    broadcaster the viewer would actually recognize. Which stream plays by
+    default is still shown correctly - the NOW PLAYING badge and is-selected
+    styling do that - it just no longer decides the generic channel's position
+    in the list.
     """
     confidence_rank = {"explicit": 4, "metadata": 3, "alias": 2, "derived": 1}
 
     def sort_key(entry: Dict[str, Any]):
         selected = 1 if selected_channel_id and entry.get("id") == selected_channel_id else 0
+        named = 0 if str(entry.get("name_confidence")) == "generic" else 1
         carries_default = (
             1
             if default_variant_key and default_variant_key in (entry.get("_variant_keys") or set())
@@ -487,6 +499,7 @@ def order_channels(
         native = 1 if PLAYBACK_NATIVE in (entry.get("playback_types") or []) else 0
         return (
             -selected,
+            -named,
             -carries_default,
             -native,
             -confidence_rank.get(str(entry.get("name_confidence")), 0),

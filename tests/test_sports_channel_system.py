@@ -433,6 +433,25 @@ class Section12NoInventedChannels(unittest.TestCase):
         self.assertEqual(channels, [])
         self.assertEqual(stats["generic_server_channels"], 0)
 
+    def test_a_server_slot_never_outranks_a_named_channel_by_carrying_the_default(self):
+        """Production regression: the event's own scanner-selected default
+        stream is often the one nobody could put a real name to - that is
+        exactly why it became "Server-1" in the first place. Carrying that
+        default must not put it ahead of real broadcaster names in the
+        published order, or the viewer sees the anonymous label first."""
+        server_one = stream(
+            "Sri Lanka vs India", "https://a.test/server1.m3u8", resolution_height=720
+        )
+        channels, _ = build_event_channels(
+            "evt-1", "Sri Lanka vs India",
+            [server_one,
+             stream("Sri Lanka vs India Willow", "https://b.test/willow.m3u8", resolution_height=1080)],
+            aliases=ALIASES,
+            default_variant_key=stream_variant_identity(server_one),
+        )
+        names = [channel["name"] for channel in channels]
+        self.assertEqual(names, ["Willow", "Server-1"])
+
 
 # ------------------------------------------------------------------ sections 13-14
 class Section13And14SelectionAndFailover(unittest.TestCase):
