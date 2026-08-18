@@ -586,7 +586,6 @@ def _append_embed_channels(card: Dict[str, Any]) -> int:
 
     existing = card.get("channels")
     existing = list(existing) if isinstance(existing, list) else []
-    native_ids = {str(channel.get("id") or "") for channel in existing}
 
     try:
         embed_channels, _ = build_event_channels(
@@ -621,16 +620,46 @@ def _append_embed_channels(card: Dict[str, Any]) -> int:
             channel["name_confidence"] = "generic"
             channel["name_source"] = "generic"
 
-    added = [
-        channel for channel in embed_channels
-        if str(channel.get("id") or "") not in native_ids
-    ]
-    if not added:
+    if not embed_channels:
         return 0
 
-    card["channels"] = existing + added
+    # A card carried forward scan after scan (a long-running Test match the
+    # live playlist did not re-list this round) keeps whatever channels[] it
+    # already published, embed entries included - so an id already present
+    # here used to mean "skip it, it is already there", which also skipped
+    # ever refreshing it. That silently froze a stale embed channel's fields
+    # in place forever, including the "explicit"-confidence bug above: a
+    # card that got its embed channels before that fix landed kept showing
+    # them under their old raw "Streamed 1"/"Streamed 2" names on every
+    # later scan, because this function never got a chance to re-mark them.
+    # An id already published is refreshed with this scan's rebuild instead
+    # of being left untouched; only a genuinely new id is appended.
+    fresh_by_id = {
+        str(channel.get("id") or ""): channel
+        for channel in embed_channels
+        if isinstance(channel, dict) and channel.get("id")
+    }
+    refreshed = 0
+    merged: List[Dict[str, Any]] = []
+    for channel in existing:
+        channel_id = str(channel.get("id") or "") if isinstance(channel, dict) else ""
+        if channel_id in fresh_by_id:
+            merged.append(fresh_by_id.pop(channel_id))
+            refreshed += 1
+        else:
+            merged.append(channel)
+    added = list(fresh_by_id.values())
+    merged.extend(added)
+
+    if not added and not refreshed:
+        return 0
+
+    card["channels"] = merged
     card["channel_count"] = len(card["channels"])
-    card["embed_channel_count"] = len(added)
+    card["embed_channel_count"] = sum(
+        1 for channel in card["channels"]
+        if isinstance(channel, dict) and str(channel.get("renderer") or "") == "embed"
+    )
 
     # Section 27, the part that is easy to get wrong. "No native channel" is not
     # the same as "no native stream": section 12 refuses to name a broadcaster it

@@ -845,6 +845,34 @@ class AnHonestFallbackChannelGetsItsOwnBrand(unittest.TestCase):
         embed_channel = next(c for c in card["channels"] if c["id"] != "evt-1--willow")
         self.assertEqual(embed_channel["name_confidence"], "generic")
 
+    def test_an_already_published_embed_channel_is_refreshed_not_frozen(self):
+        """Production regression: a card carried forward scan after scan (a
+        long-running Test match the live playlist did not re-list this
+        round) keeps whatever channels[] it already published. An id already
+        present there used to mean "skip it, already there" - which also
+        skipped ever refreshing it, so a card that got its embed channels
+        before the generic-confidence fix landed kept showing them under
+        their old raw "Streamed 1"/"Streamed 2" names forever after, on
+        every later scan, because this function never got a chance to
+        re-mark them."""
+        card = {
+            "id": "evt-1", "name": "Alpha vs Beta", "playback_id": "ctv_" + "a" * 32,
+            "channels": [
+                {"id": "evt-1--willow", "name": "Willow", "name_confidence": "explicit",
+                 "streams": [{"playback_id": "ctv_" + "a" * 32}]},
+                {"id": "evt-1--streamed-1", "name": "Streamed 1", "name_confidence": "explicit",
+                 "renderer": "embed", "streams": [{"embed_url": "https://embed.st/old/1"}]},
+            ],
+            "embed_backups": [
+                {"name": "Streamed 1", "provider": "streamed", "embed_url": "https://embed.st/a/1"},
+            ],
+        }
+        _append_embed_channels(card)
+        stale = next(c for c in card["channels"] if c["id"] == "evt-1--streamed-1")
+        self.assertEqual(stale["name_confidence"], "generic")
+        _relabel_generic_channels(card)
+        self.assertEqual(stale["name"], "Click Live")
+
     def test_payload_relabels_every_items_generic_channels(self):
         items = [{
             "id": "evt-1", "name": "Alpha vs Beta",
