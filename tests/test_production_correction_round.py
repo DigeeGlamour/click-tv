@@ -447,6 +447,25 @@ class StreamedEnrichmentActuallyContributes(unittest.TestCase):
                          "https://p.example/api/images/badge/HOMEBADGE.webp")
         self.assertEqual(candidate["provider_artwork"][0], candidate["provider_poster_url"])
 
+    def test_a_full_path_poster_from_the_live_api_is_not_re_wrapped(self):
+        """The live endpoint does send its own `poster` field after all - a
+        complete path such as "/api/images/proxy/<token>.webp", not a bare
+        badge id. Running that back through the "{base}/poster/{id}.webp"
+        template nested one path inside another and appended a second
+        ".webp", so a match arriving this way still fell through to initials
+        even though the provider was handing back a working poster."""
+        candidate = normalize_match({
+            "id": "ppv-india-vs-sri-lanka-1-st-test",
+            "title": "India vs. Sri Lanka - 1st Test", "category": "cricket",
+            "date": 1787027400000, "popular": True,
+            "teams": {"home": {"name": "India", "badge": ""},
+                      "away": {"name": "Sri Lanka - 1st Test", "badge": ""}},
+            "poster": "/api/images/proxy/GwZg7AZpYEZgHCA.webp",
+        }, self.settings)
+        self.assertEqual(candidate["provider_poster_url"],
+                         "https://p.example/api/images/proxy/GwZg7AZpYEZgHCA.webp")
+        self.assertEqual(candidate["provider_artwork"][0], candidate["provider_poster_url"])
+
     def test_no_badges_means_no_artwork_claimed(self):
         candidate = normalize_match({
             "id": "m2", "title": "Alpha vs Beta", "category": "cricket", "date": 1786996800000,

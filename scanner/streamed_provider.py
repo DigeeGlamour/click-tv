@@ -324,7 +324,14 @@ def _badge_urls(
     away_id = str((raw.get("away") or {}).get("badge") or "").strip() if isinstance(raw.get("away"), dict) else ""
 
     poster = str(match.get("poster") or "").strip()
-    if poster and not poster.startswith("http"):
+    if poster.startswith("/"):
+        # The live endpoint sends a complete path of its own, e.g.
+        # "/api/images/proxy/<token>.webp" - already everything needed past
+        # the site origin. Running it back through "{base}/poster/{poster}.webp"
+        # nested that whole path inside another one and appended a second
+        # ".webp", so every match with this shape of poster 404'd.
+        poster = f"{settings.base_url}{poster}"
+    elif poster and not poster.startswith("http"):
         poster = f"{base}/poster/{poster}.webp"
     elif not poster and home_id and away_id:
         poster = f"{base}/poster/{home_id}/{away_id}.webp"
