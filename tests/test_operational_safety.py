@@ -38,6 +38,38 @@ class SecretRedactionTests(unittest.TestCase):
         self.assertIn("rendered = redact_runtime_secrets", source)
         self.assertIn("PRIVATE_MOVIE_SOURCE_TOKEN", source)
 
+    def test_colab_and_the_easy_launcher_both_offer_every_optional_api_key(self):
+        """The poster/logo and sports-data providers added this session each
+        read one env var (scanner/poster_providers.py,
+        scanner/sports_poster_providers.py) and the private sports source
+        reads scanner/source_loader.py's ${PRIVATE_SPORTS_SOURCE_TOKEN}. A
+        local PC run or a Colab run has no GitHub Actions secrets store, so
+        both entry points must offer to collect and forward the same six
+        names - otherwise those features silently degrade off-CI only.
+        """
+        optional_keys = (
+            "PRIVATE_SPORTS_SOURCE_TOKEN", "FANART_API_KEY", "OMDB_API_KEY",
+            "THESPORTSDB_API_KEY", "HIGHLIGHTLY_API_KEY", "SPORTMONKS_API_TOKEN",
+        )
+
+        notebook = json.loads(
+            (ROOT / "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb").read_text(encoding="utf-8")
+        )
+        source = "\n".join(
+            line
+            for cell in notebook.get("cells", [])
+            for line in cell.get("source", [])
+        )
+        for key in optional_keys:
+            self.assertIn(f'get_secret("{key}")', source, key)
+            self.assertIn(f'scan_environment["{key}"] = {key}', source, key)
+        self.assertIn("PRIVATE_SPORTS_SOURCE_TOKEN,", source.split("RUNTIME_SECRETS")[1])
+
+        launcher = (ROOT / "CLICK_TV_EASY_PAT_SCAN.cmd").read_text(encoding="utf-8")
+        for key in optional_keys:
+            self.assertIn(f"$env:{key} = ", launcher, key)
+            self.assertIn(f"'{key}'", launcher, key)
+
 
 class WorkflowSafetyTests(unittest.TestCase):
     def test_actions_removes_progress_before_clean_check(self):

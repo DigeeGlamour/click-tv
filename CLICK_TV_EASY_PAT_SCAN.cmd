@@ -5,7 +5,7 @@ cd /d "%~dp0"
 title Click TV - Easy PAT Scan and GitHub Push
 set "CLICKTV_SELF=%~f0"
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$raw=Get-Content -LiteralPath $env:CLICKTV_SELF -Raw; $marker='# CLICKTV_'+'POWERSHELL_BEGIN'; $at=$raw.IndexOf($marker); if($at -lt 0){throw 'Internal launcher code is missing'}; $code=$raw.Substring($at+$marker.Length); try { & ([scriptblock]::Create($code)) } catch { $safe=[string]$_; foreach($name in @('PRIVATE_MOVIE_SOURCE_TOKEN','CLICKTV_TEST_TOKEN','GIT_CONFIG_VALUE_0')){$secret=[Environment]::GetEnvironmentVariable($name); if($secret -and $secret.Length -ge 8){$safe=$safe.Replace($secret,'[REDACTED]')}}; [Console]::Error.WriteLine($safe); exit 1 }"
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$raw=Get-Content -LiteralPath $env:CLICKTV_SELF -Raw; $marker='# CLICKTV_'+'POWERSHELL_BEGIN'; $at=$raw.IndexOf($marker); if($at -lt 0){throw 'Internal launcher code is missing'}; $code=$raw.Substring($at+$marker.Length); try { & ([scriptblock]::Create($code)) } catch { $safe=[string]$_; foreach($name in @('PRIVATE_MOVIE_SOURCE_TOKEN','CLICKTV_TEST_TOKEN','GIT_CONFIG_VALUE_0','PRIVATE_SPORTS_SOURCE_TOKEN','FANART_API_KEY','OMDB_API_KEY','THESPORTSDB_API_KEY','HIGHLIGHTLY_API_KEY','SPORTMONKS_API_TOKEN')){$secret=[Environment]::GetEnvironmentVariable($name); if($secret -and $secret.Length -ge 8){$safe=$safe.Replace($secret,'[REDACTED]')}}; [Console]::Error.WriteLine($safe); exit 1 }"
 set "CLICKTV_EXIT=%ERRORLEVEL%"
 
 echo.
@@ -197,6 +197,28 @@ finally {
     $PlainToken = $null
     $BasicValue = $null
 }
+
+function Read-OptionalSecret {
+    param([string]$Label, [string]$TestEnvName, [string]$RealEnvName)
+    $TestValue = [Environment]::GetEnvironmentVariable($TestEnvName)
+    if ($TestValue) { return $TestValue }
+    return (Read-Host "$Label (blank = skip)").Trim()
+}
+
+Write-Host ""
+Write-Host "Optional: poster/logo and sports-data API keys (Enter to skip any of them)." -ForegroundColor DarkGray
+$PrivateSportsSourceToken = Read-OptionalSecret -Label "Private sports source token" -TestEnvName "CLICKTV_TEST_PRIVATE_SPORTS_SOURCE_TOKEN"
+$FanartApiKey = Read-OptionalSecret -Label "Fanart.tv API key" -TestEnvName "CLICKTV_TEST_FANART_API_KEY"
+$OmdbApiKey = Read-OptionalSecret -Label "OMDb API key" -TestEnvName "CLICKTV_TEST_OMDB_API_KEY"
+$TheSportsDbApiKey = Read-OptionalSecret -Label "TheSportsDB API key" -TestEnvName "CLICKTV_TEST_THESPORTSDB_API_KEY"
+$HighlightlyApiKey = Read-OptionalSecret -Label "Highlightly API key" -TestEnvName "CLICKTV_TEST_HIGHLIGHTLY_API_KEY"
+$SportmonksApiToken = Read-OptionalSecret -Label "Sportmonks API token" -TestEnvName "CLICKTV_TEST_SPORTMONKS_API_TOKEN"
+if ($PrivateSportsSourceToken) { $env:PRIVATE_SPORTS_SOURCE_TOKEN = $PrivateSportsSourceToken }
+if ($FanartApiKey) { $env:FANART_API_KEY = $FanartApiKey }
+if ($OmdbApiKey) { $env:OMDB_API_KEY = $OmdbApiKey }
+if ($TheSportsDbApiKey) { $env:THESPORTSDB_API_KEY = $TheSportsDbApiKey }
+if ($HighlightlyApiKey) { $env:HIGHLIGHTLY_API_KEY = $HighlightlyApiKey }
+if ($SportmonksApiToken) { $env:SPORTMONKS_API_TOKEN = $SportmonksApiToken }
 
 Write-Host ""
 Write-Host "Select scan mode:" -ForegroundColor Cyan
