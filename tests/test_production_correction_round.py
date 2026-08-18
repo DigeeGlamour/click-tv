@@ -31,7 +31,11 @@ from scanner.channel_resolver import (  # noqa: E402
 )
 from scanner.event_lifecycle import event_destination  # noqa: E402
 from scanner.events import _stamp_final_routing  # noqa: E402
-from scanner.live_protection import _rebuild_card_channels, _reconcile_layer  # noqa: E402
+from scanner.live_protection import (  # noqa: E402
+    _absorb_carried_card,
+    _rebuild_card_channels,
+    _reconcile_layer,
+)
 from scanner.merger import (  # noqa: E402
     authoritative_fixture_window,
     event_sport,
@@ -422,6 +426,84 @@ class EveryCardCanNameItsBroadcasters(unittest.TestCase):
         blob = json.dumps(card.get("channels") or [])
         for forbidden in ("secret.invalid", "token=abc", "Cookie", "session=zzz", "headers"):
             self.assertNotIn(forbidden, blob, forbidden)
+
+    def test_absorbing_a_channel_grouped_carried_card_keeps_its_broadcaster_names(self):
+        """Production regression: a long-running Test match already sorted into
+        named channels (Willow, CricLife 1, Sony Sports Ten...) got carried
+        forward across a scan, then reconciled into a freshly-routed host card
+        that only had one generic stream of its own. Absorption tried to name
+        ONE channel from the carried card's own title - "Sri Lanka vs India
+        1st Test" - which section 12 correctly refuses to resolve, so every
+        real broadcaster name was dropped and the raw streams survived only as
+        anonymous Backup-N entries. The published card lost every named
+        channel it had, down to just the host's own generic one."""
+        layer = _reconcile_layer()
+        canonical = {
+            "id": "sri-lanka-vs-india", "name": "Sri Lanka vs India",
+            "playback_id": "ctv_" + "a" * 32,
+            "channels": [{
+                "id": "sri-lanka-vs-india--server-1", "name": "Server-1",
+                "normalized_name": "server-1", "name_confidence": "generic",
+                "primary_stream_id": "sri-lanka-vs-india--server-1--1",
+                "stream_count": 1, "backup_count": 0,
+                "streams": [{
+                    "id": "sri-lanka-vs-india--server-1--1", "role": "primary",
+                    "playback_type": "native", "variant_key": "sv_host",
+                    "playback_id": "ctv_" + "a" * 32,
+                }],
+            }],
+            "channel_count": 1, "backups": [],
+            "default_channel_id": "sri-lanka-vs-india--server-1",
+        }
+        carried = {
+            "id": "sri-lanka-vs-india-1st-test", "name": "Sri Lanka vs India 1st Test",
+            "playback_id": "ctv_" + "b" * 32,
+            "channels": [
+                {"id": "sri-lanka-vs-india-1st-test--willow", "name": "Willow",
+                 "normalized_name": "willow", "name_confidence": "explicit",
+                 "primary_stream_id": "x--1", "stream_count": 1, "backup_count": 0,
+                 "streams": [{"id": "x--1", "role": "primary", "playback_type": "native",
+                              "variant_key": "sv_willow", "playback_id": "ctv_" + "c" * 32}]},
+                {"id": "sri-lanka-vs-india-1st-test--criclife-1", "name": "CricLife 1",
+                 "normalized_name": "criclife-1", "name_confidence": "explicit",
+                 "primary_stream_id": "y--1", "stream_count": 1, "backup_count": 0,
+                 "streams": [{"id": "y--1", "role": "primary", "playback_type": "native",
+                              "variant_key": "sv_criclife", "playback_id": "ctv_" + "d" * 32}]},
+            ],
+            "channel_count": 2,
+        }
+        absorbed = _absorb_carried_card(canonical, carried, layer)
+        self.assertEqual(absorbed, 2)
+        names = {channel["name"] for channel in canonical["channels"]}
+        self.assertEqual(names, {"Server-1", "Willow", "CricLife 1"})
+        self.assertEqual(canonical["channel_count"], 3)
+
+    def test_absorbing_the_same_carried_channel_twice_does_not_duplicate_it(self):
+        layer = _reconcile_layer()
+        canonical = {
+            "id": "x", "name": "Alpha vs Beta", "playback_id": "ctv_" + "a" * 32,
+            "channels": [{
+                "id": "x--willow", "name": "Willow", "normalized_name": "willow",
+                "name_confidence": "explicit", "primary_stream_id": "x--willow--1",
+                "stream_count": 1, "backup_count": 0,
+                "streams": [{"id": "x--willow--1", "role": "primary", "playback_type": "native",
+                             "variant_key": "sv_shared", "playback_id": "ctv_" + "b" * 32}],
+            }],
+            "channel_count": 1, "backups": [],
+        }
+        carried = {
+            "id": "y", "name": "Alpha vs Beta", "playback_id": "ctv_" + "b" * 32,
+            "channels": [{
+                "id": "y--willow", "name": "Willow", "normalized_name": "willow",
+                "name_confidence": "explicit", "primary_stream_id": "y--willow--1",
+                "stream_count": 1, "backup_count": 0,
+                "streams": [{"id": "y--willow--1", "role": "primary", "playback_type": "native",
+                             "variant_key": "sv_shared", "playback_id": "ctv_" + "b" * 32}],
+            }],
+            "channel_count": 1,
+        }
+        _absorb_carried_card(canonical, carried, layer)
+        self.assertEqual(canonical["channel_count"], 1)
 
 
 # ----------------------------------------------------------------- problem 4 / 5

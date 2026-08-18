@@ -393,10 +393,102 @@ def _carried_streams(card: Dict[str, Any]) -> List[Dict[str, Any]]:
         stream["_was_primary"] = is_primary
         streams.append(stream)
 
+    channels = [c for c in (card.get("channels") or []) if isinstance(c, dict)]
+    if channels:
+        # A channel-grouped card keeps its real streams inside channels[] -
+        # the merge that built them never also mirrors them onto the card's
+        # own primary/backups fields, so reading only those two would see
+        # almost nothing for a match that has already been sorted into named
+        # broadcaster channels.
+        default_channel_id = str(card.get("default_channel_id") or "")
+        for channel in channels:
+            is_default_channel = str(channel.get("id") or "") == default_channel_id
+            for index, stream in enumerate(channel.get("streams") or []):
+                add(stream, is_default_channel and index == 0)
+        return streams
+
     add(card, True)
     for backup in card.get("backups") or []:
         add(backup, False)
     return streams
+
+
+def _absorb_carried_channels(
+    canonical: Dict[str, Any],
+    carried: Dict[str, Any],
+    carried_channels: List[Dict[str, Any]],
+) -> None:
+    """Carry a channel-grouped card's own channels onto its canonical card.
+
+    Each of the carried card's channels already has a real name, so it is
+    kept as its own selectable channel of the canonical event rather than
+    dissolved into the anonymous backup list the way a nameless flat card's
+    streams are. A stream whose variant a canonical channel already publishes
+    is skipped, so a channel both cards happened to relay is not offered
+    twice.
+    """
+    channels = [c for c in (canonical.get("channels") or []) if isinstance(c, dict)]
+    known_variant_keys = {
+        str(stream.get("variant_key") or stream.get("playback_id") or "")
+        for channel in channels
+        for stream in (channel.get("streams") or [])
+        if isinstance(stream, dict)
+    }
+    known_variant_keys.discard("")
+    canonical_id = str(canonical.get("id") or "")
+    existing_ids = {str(c.get("id")) for c in channels}
+    changed = False
+
+    for carried_channel in carried_channels:
+        streams = [s for s in (carried_channel.get("streams") or []) if isinstance(s, dict)]
+        fresh_streams = [
+            s for s in streams
+            if str(s.get("variant_key") or s.get("playback_id") or "") not in known_variant_keys
+        ]
+        if not fresh_streams:
+            continue
+
+        suffix = str(
+            carried_channel.get("normalized_name")
+            or carried_channel.get("id")
+            or ""
+        ).strip().rsplit("--", 1)[-1]
+        base_id = f"{canonical_id}--{suffix}" if suffix and canonical_id else (
+            suffix or f"{canonical_id}--absorbed-{len(channels) + 1}"
+        )
+        channel_id, discriminator = base_id, 1
+        while channel_id in existing_ids:
+            discriminator += 1
+            channel_id = f"{base_id}-{discriminator}"
+
+        published = []
+        for index, stream in enumerate(fresh_streams):
+            entry = dict(stream)
+            entry["id"] = f"{channel_id}--{index + 1}"
+            entry["role"] = "primary" if index == 0 else "backup"
+            published.append(entry)
+            known_variant_keys.add(str(stream.get("variant_key") or stream.get("playback_id") or ""))
+
+        new_channel = {k: v for k, v in carried_channel.items() if k != "streams"}
+        new_channel.update({
+            "id": channel_id,
+            "primary_stream_id": published[0]["id"],
+            "stream_count": len(published),
+            "backup_count": max(0, len(published) - 1),
+            "streams": published,
+            "absorbed_from_event_id": str(carried.get("id") or ""),
+        })
+        channels.append(new_channel)
+        existing_ids.add(channel_id)
+        changed = True
+
+    if changed:
+        canonical["channels"] = channels
+        canonical["channel_count"] = len(channels)
+        # Section 27: the canonical card's own primary is not inside any of
+        # these absorbed channels, so naming one the default would reorder
+        # the playback plan and demote a working primary.
+        canonical.setdefault("default_channel_id", "")
 
 
 def _absorb_carried_card(
@@ -442,52 +534,63 @@ def _absorb_carried_card(
     canonical["backups"] = merged
     canonical["available_link_count"] = 1 + len(merged)
 
-    # Sections 6-10. The carried card's title is where its broadcaster lives.
-    channel_name = layer["resolve_channel"](
-        {"name": carried.get("name"), "channel_name": carried.get("channel_name")},
-        carried.get("name") or "",
-        layer["aliases"],
-    )
-    if channel_name.resolved:
-        channel_id = layer["channel_id_for"](canonical.get("id") or "", channel_name)
-        channels = [c for c in (canonical.get("channels") or []) if isinstance(c, dict)]
-        if channel_id and not any(str(c.get("id")) == channel_id for c in channels):
-            published = []
-            for index, stream in enumerate(incoming):
-                entry = layer["public_stream"](
-                    stream, f"{channel_id}--{index + 1}",
-                    layer["primary"] if index == 0 else layer["backup"],
-                )
-                # A carried stream has no URL to hash, so its content-addressed
-                # playback id is its variant identity.
-                entry["variant_key"] = str(stream.get("playback_id") or "")
-                published.append(entry)
-            channels.append({
-                "id": channel_id,
-                "name": channel_name.name,
-                "normalized_name": channel_name.normalized,
-                "logo": str(carried.get("logo") or ""),
-                "name_confidence": channel_name.confidence,
-                "name_source": channel_name.source_field,
-                "provider": str(carried.get("source_id") or ""),
-                "source_ids": sorted({str(carried.get("source_id") or "").strip()} - {""}),
-                "primary_stream_id": published[0]["id"],
-                "stream_count": len(published),
-                "backup_count": max(0, len(published) - 1),
-                "verified": bool(carried.get("verified")),
-                "verification_status": str(carried.get("verification_status") or ""),
-                "playback_types": ["native"],
-                "renderer": "native",
-                "streams": published,
-                "absorbed_from_event_id": str(carried.get("id") or ""),
-            })
-            canonical["channels"] = channels
-            canonical["channel_count"] = len(channels)
-            # Section 27's rule, in its other shape: the canonical card's own
-            # primary is not inside this channel, so making the channel the
-            # default would reorder the playback plan and demote a working
-            # primary. The default is left as it was.
-            canonical.setdefault("default_channel_id", "")
+    carried_channels = [c for c in (carried.get("channels") or []) if isinstance(c, dict)]
+    if carried_channels:
+        # Sections 6-10 already happened for this card, before it was ever
+        # carried - CricLife 1, Sony Sports Ten, Willow are its own
+        # channels[], not one blob under the match title. Resolving a single
+        # channel name from the *match title* (the branch below) always fails
+        # section 12's own-title guard, so every one of those real broadcaster
+        # names was silently dropped and only the raw streams survived as
+        # anonymous Backup-N entries above.
+        _absorb_carried_channels(canonical, carried, carried_channels)
+    else:
+        # Sections 6-10. The carried card's title is where its broadcaster lives.
+        channel_name = layer["resolve_channel"](
+            {"name": carried.get("name"), "channel_name": carried.get("channel_name")},
+            carried.get("name") or "",
+            layer["aliases"],
+        )
+        if channel_name.resolved:
+            channel_id = layer["channel_id_for"](canonical.get("id") or "", channel_name)
+            channels = [c for c in (canonical.get("channels") or []) if isinstance(c, dict)]
+            if channel_id and not any(str(c.get("id")) == channel_id for c in channels):
+                published = []
+                for index, stream in enumerate(incoming):
+                    entry = layer["public_stream"](
+                        stream, f"{channel_id}--{index + 1}",
+                        layer["primary"] if index == 0 else layer["backup"],
+                    )
+                    # A carried stream has no URL to hash, so its content-addressed
+                    # playback id is its variant identity.
+                    entry["variant_key"] = str(stream.get("playback_id") or "")
+                    published.append(entry)
+                channels.append({
+                    "id": channel_id,
+                    "name": channel_name.name,
+                    "normalized_name": channel_name.normalized,
+                    "logo": str(carried.get("logo") or ""),
+                    "name_confidence": channel_name.confidence,
+                    "name_source": channel_name.source_field,
+                    "provider": str(carried.get("source_id") or ""),
+                    "source_ids": sorted({str(carried.get("source_id") or "").strip()} - {""}),
+                    "primary_stream_id": published[0]["id"],
+                    "stream_count": len(published),
+                    "backup_count": max(0, len(published) - 1),
+                    "verified": bool(carried.get("verified")),
+                    "verification_status": str(carried.get("verification_status") or ""),
+                    "playback_types": ["native"],
+                    "renderer": "native",
+                    "streams": published,
+                    "absorbed_from_event_id": str(carried.get("id") or ""),
+                })
+                canonical["channels"] = channels
+                canonical["channel_count"] = len(channels)
+                # Section 27's rule, in its other shape: the canonical card's own
+                # primary is not inside this channel, so making the channel the
+                # default would reorder the playback plan and demote a working
+                # primary. The default is left as it was.
+                canonical.setdefault("default_channel_id", "")
 
     # Event-id continuity: whatever was pinned or bookmarked against the carried
     # id can still be resolved to the card that replaced it.
