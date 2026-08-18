@@ -251,6 +251,25 @@ class PrivateSourceAuthenticationTests(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertNotIn("Authorization", items[0].get("headers") or {})
 
+    def test_the_now_private_sports_sources_declare_the_placeholder(self):
+        """0matbank/trysports was confirmed private (a raw fetch without
+        auth now 404s, and the repository is invisible to an unauthenticated
+        GitHub API call) - each of its three registered sources must name
+        the placeholder, or a scan will start silently failing to fetch
+        them the moment the token stops being unnecessary."""
+        sources = source_loader.load_sources_config("config")
+        trysports = [
+            source for source in sources["today_match"] + sources["upcoming"]
+            if str(source.get("id") or "").startswith("0matbank-trysports")
+        ]
+        self.assertEqual(len(trysports), 3, trysports)
+        for source in trysports:
+            self.assertEqual(
+                source.get("fetch_headers", {}).get("Authorization"),
+                "token ${PRIVATE_SPORTS_SOURCE_TOKEN}",
+                source["id"],
+            )
+
 
 if __name__ == "__main__":
     unittest.main()
