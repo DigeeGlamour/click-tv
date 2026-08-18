@@ -69,7 +69,7 @@ def main() -> int:
             "year": item.get("year") if kind == "movie" else "",
             "category": str(item.get("category") or "Bangla"),
             "fingerprint": fingerprint,
-            "route_count": 1 + len(item.get("backups") or []) + len(item.get("standby") or []),
+            "backup_count": len(item.get("backups") or []) + len(item.get("standby") or []),
         })
 
     if missing:
@@ -80,7 +80,7 @@ def main() -> int:
 
     payload = {
         "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-        "policy": "exact visible card and route-set fingerprint must have a decoded browser frame",
+        "policy": "exact visible card's primary route fingerprint must have a decoded browser frame",
         "scope": {"channels": ["Bangla"], "movies": ["Bangla"]},
         "audit_reports": [str(path.relative_to(ROOT)).replace("\\", "/") for path in report_paths],
         "count": len(proofs),

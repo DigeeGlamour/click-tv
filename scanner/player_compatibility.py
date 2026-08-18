@@ -37,23 +37,24 @@ def _item_key(kind: str, item: Dict[str, Any]) -> Tuple[str, str, str]:
 
 
 def playback_fingerprint(item: Dict[str, Any]) -> str:
-    routes = []
-    candidates = [item]
-    for field in ("backups", "standby"):
-        candidates.extend(entry for entry in item.get(field) or [] if isinstance(entry, dict))
-    for route in candidates:
-        url = str(route.get("url") or "").split("|", 1)[0].strip()
-        if not url:
-            continue
-        routes.append({
-            "url": url,
-            "header_profile": str(route.get("header_profile") or ""),
-            "proxy_mode": str(route.get("proxy_mode") or "auto"),
-            "stream_type": str(route.get("stream_type") or ""),
-            "requires_headers": bool(route.get("requires_headers", False)),
-        })
-    encoded = json.dumps(sorted(routes, key=lambda route: json.dumps(route, sort_keys=True)), sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(encoded.encode("utf-8")).hexdigest() if routes else ""
+    # The real-browser audit (scripts/browser-full-bangla-playback-audit.mjs)
+    # only ever decodes the primary/serving route through the live player -
+    # backups and standby entries are fallback candidates it never touches.
+    # Folding them into the proof fingerprint made the "proof" invalidate
+    # itself whenever an untested mirror candidate merely appeared or
+    # disappeared between scans, even with the proven primary unchanged.
+    url = str(item.get("url") or "").split("|", 1)[0].strip()
+    if not url:
+        return ""
+    route = {
+        "url": url,
+        "header_profile": str(item.get("header_profile") or ""),
+        "proxy_mode": str(item.get("proxy_mode") or "auto"),
+        "stream_type": str(item.get("stream_type") or ""),
+        "requires_headers": bool(item.get("requires_headers", False)),
+    }
+    encoded = json.dumps(route, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
 
 
 @lru_cache(maxsize=8)

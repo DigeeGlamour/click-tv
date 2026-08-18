@@ -170,6 +170,49 @@ class FinalScannerContractTests(unittest.TestCase):
             self.assertFalse(changed["publish_allowed"])
             self.assertEqual(changed["verification_status"], "pending_player_proof")
 
+    def test_backup_mirror_churn_does_not_invalidate_an_unchanged_proven_primary(self):
+        """A real 2026-08-18 regression: ATN Bangla, NTV, RTV, Somoy TV and
+        Jago News 24 all had an unchanged, still-verified_global primary
+        stream, yet vanished from the published Bangla category because a
+        *backup* mirror candidate flaked (timed out, 500'd) or a new one
+        appeared between scans. The real-browser audit never decodes a
+        backup - only the primary - so proof must track the primary alone."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            ledger_path = Path(temp_dir) / "proof.json"
+            proven = {
+                "name": "Proven Channel",
+                "category": "Bangla",
+                "url": "https://media.example/working.m3u8",
+                "proxy_mode": "auto",
+                "stream_type": "hls",
+                "publish_allowed": True,
+                "backups": [{"url": "https://mirror-a.example/backup.m3u8"}],
+            }
+            ledger_path.write_text(json.dumps({
+                "proofs": [{
+                    "kind": "channel",
+                    "name": proven["name"],
+                    "fingerprint": playback_fingerprint(proven),
+                }],
+            }), encoding="utf-8")
+
+            backup_dropped = {**proven, "backups": []}
+            backup_added = {
+                **proven,
+                "backups": [
+                    {"url": "https://mirror-a.example/backup.m3u8"},
+                    {"url": "https://mirror-b.example/new-backup.m3u8"},
+                ],
+            }
+            self.assertEqual(
+                mark_unproven_player_items([backup_dropped], "channel", ledger_path), 0
+            )
+            self.assertTrue(backup_dropped["publish_allowed"])
+            self.assertEqual(
+                mark_unproven_player_items([backup_added], "channel", ledger_path), 0
+            )
+            self.assertTrue(backup_added["publish_allowed"])
+
     def test_final_source_registry_contains_only_agreed_remote_sources(self):
         from scanner.source_loader import load_sources_config
 
