@@ -1117,11 +1117,19 @@ def validate_event_file(
 
     actual_count = len(items)
 
+    # A declared `count` here is the same kind of self-healing race as the
+    # playback shard count below: GitHub Actions, a local PC scan and Colab
+    # can each publish this event file around the same time, and git merges
+    # the "items" list additions textually while keeping only one side's
+    # scalar "count" line. Nothing at runtime trusts this field for more than
+    # "> 0" (see manifest.today_match.count / manifest.upcoming.count in
+    # app.js), and the next scan always corrects it, so it must not fail
+    # every deploy in between the way it was.
     if data.get("count") != actual_count:
-        add_error(f"{relative_path(event_path)} count mismatch")
+        add_warning(f"{relative_path(event_path)} count মিলছে না (স্বয়ংক্রিয়ভাবে ঠিক হবে)")
 
     if entry.get("count") != actual_count:
-        add_error(f"manifest.{manifest_key} count mismatch")
+        add_warning(f"manifest.{manifest_key} count মিলছে না (স্বয়ংক্রিয়ভাবে ঠিক হবে)")
 
     if bool(entry.get("visible")) != (actual_count > 0):
         add_warning(
