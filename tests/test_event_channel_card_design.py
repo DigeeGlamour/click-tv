@@ -402,9 +402,16 @@ class TodayMatchCardV2(unittest.TestCase):
             body.index("showWatchAction"),
         )
 
-    def test_the_today_match_list_becomes_two_independent_css_columns(self):
-        self.assertIn("tm-columns", APP)
-        self.assertIn("column-count:2!important", EVENT_CSS)
+    def test_the_today_match_list_becomes_two_real_dom_columns(self):
+        # CSS column-count clips a negative-offset absolute child (the serial
+        # badge) to its column box regardless of overflow set up the
+        # ancestor chain - confirmed by direct testing. Two real DOM columns
+        # have no such clipping context, so app.js splits cards into them
+        # itself rather than relying on column-count.
+        self.assertIn("function ensureTodayMatchColumns()", APP)
+        self.assertIn("#sidebarList.tm-columns{", EVENT_CSS)
+        self.assertIn("grid-template-columns:repeat(2,minmax(0,1fr))!important", EVENT_CSS)
+        self.assertNotIn("column-count:2!important", EVENT_CSS)
 
     def test_the_masonry_columns_are_scoped_away_from_upcoming(self):
         # The class that turns the list into columns is toggled only for
@@ -415,7 +422,13 @@ class TodayMatchCardV2(unittest.TestCase):
         self.assertIn("sidebarList.classList.toggle('tm-columns', state.view === VIEW.EVENT)", body)
 
     def test_a_card_next_to_its_channel_grid_never_splits_across_columns(self):
-        self.assertIn("break-inside:avoid-column!important", EVENT_CSS)
+        # Each card (or its shell, when it has a channel strip) is one DOM
+        # node appended whole into exactly one of the two column containers -
+        # there is no mid-card break to guard against, by construction.
+        for fn_name in ("appendNextChunk", "reconcileEventCards"):
+            body = APP.split(f"function {fn_name}(", 1)[1].split("\nfunction ", 1)[0]
+            self.assertIn("index % 2", body, fn_name)
+            self.assertIn("ensureTodayMatchColumns()", body, fn_name)
 
 
 class NoPlaceholdersAreLeftBehind(unittest.TestCase):

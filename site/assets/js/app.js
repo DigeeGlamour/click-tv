@@ -1833,6 +1833,30 @@ function setEventListCount() {
   setSidebarCount(`${events.length} Upcoming`, events.length ? detail : '');
 }
 
+// Today Match redesign: two real DOM columns instead of CSS column-count.
+// column-count clips a negative-offset absolute child (the serial badge,
+// floated half outside the card's own top-left corner) to its column box
+// regardless of overflow set anywhere up the ancestor chain - confirmed by
+// direct testing. Two independent flex columns have no such clipping
+// context, so the badge can sit exactly where the reference puts it. Every
+// other view keeps appending flat children straight into #sidebarList,
+// unchanged.
+function ensureTodayMatchColumns() {
+  let left = sidebarList.querySelector(':scope > .tm-col[data-tm-col="0"]');
+  let right = sidebarList.querySelector(':scope > .tm-col[data-tm-col="1"]');
+  if (!left || !right) {
+    sidebarList.replaceChildren();
+    left = document.createElement('div');
+    left.className = 'tm-col';
+    left.dataset.tmCol = '0';
+    right = document.createElement('div');
+    right.className = 'tm-col';
+    right.dataset.tmCol = '1';
+    sidebarList.append(left, right);
+  }
+  return [left, right];
+}
+
 function renderCurrentList(reset = true, options = {}) {
   if (state.seriesDetailMode || seriesModule?.detailActive) return;
   if (state.view === VIEW.MOVIE && !state.selectedMovieCategory && !state.moviePreviewMode) {
@@ -1866,6 +1890,7 @@ function renderCurrentList(reset = true, options = {}) {
   if (reset) {
     cancelPendingImages(sidebarList);
     sidebarList.replaceChildren();
+    if (state.view === VIEW.EVENT) ensureTodayMatchColumns();
     state.renderedCount = 0;
     state.renderedUids.clear();
     if (!options.preserveScroll) scrollSidebarToTop();
@@ -1955,17 +1980,28 @@ function appendNextChunk(limit = null) {
   }
   if (!chunk.length) return;
 
-  const fragment = document.createDocumentFragment();
-  chunk.forEach(({ item, index }) => {
-    const card = state.view === VIEW.MOVIE
-      ? (seriesModule?.isSeriesItem(item)
-        ? seriesModule.createSeriesCard(item, index)
-        : createMovieCard(item, index))
-      : createChannelCard(item, index);
-    state.renderedUids.add(item._uid);
-    fragment.appendChild(card);
-  });
-  sidebarList.appendChild(fragment);
+  if (state.view === VIEW.EVENT) {
+    const [colLeft, colRight] = ensureTodayMatchColumns();
+    const fragments = [document.createDocumentFragment(), document.createDocumentFragment()];
+    chunk.forEach(({ item, index }) => {
+      fragments[index % 2].appendChild(createChannelCard(item, index));
+      state.renderedUids.add(item._uid);
+    });
+    colLeft.appendChild(fragments[0]);
+    colRight.appendChild(fragments[1]);
+  } else {
+    const fragment = document.createDocumentFragment();
+    chunk.forEach(({ item, index }) => {
+      const card = state.view === VIEW.MOVIE
+        ? (seriesModule?.isSeriesItem(item)
+          ? seriesModule.createSeriesCard(item, index)
+          : createMovieCard(item, index))
+        : createChannelCard(item, index);
+      state.renderedUids.add(item._uid);
+      fragment.appendChild(card);
+    });
+    sidebarList.appendChild(fragment);
+  }
   state.renderedCount = state.renderedUids.size;
   updateFavoriteUi();
   updateReminderUi();
@@ -2779,10 +2815,16 @@ function reconcileEventCards() {
   }
 
   const wanted = state.filteredItems.slice(0, Math.max(state.renderedCount, CHANNEL_INITIAL_CHUNK));
+  const isTodayMatch = state.view === VIEW.EVENT;
+  const [colLeft, colRight] = isTodayMatch ? ensureTodayMatchColumns() : [null, null];
   const fragment = document.createDocumentFragment();
+  const fragments = isTodayMatch
+    ? [document.createDocumentFragment(), document.createDocumentFragment()]
+    : null;
   state.renderedUids.clear();
 
   wanted.forEach((item, index) => {
+    const target = isTodayMatch ? fragments[index % 2] : fragment;
     const previous = existing.get(item._uid);
     if (previous && isPinnedSession(item)) {
       // The playing card keeps its exact node: no innerHTML, no listeners
@@ -2792,23 +2834,28 @@ function reconcileEventCards() {
       const inner = previous.classList.contains('event-ref-card')
         ? previous
         : previous.querySelector('.event-ref-card');
-      const numbering = inner?.querySelector('.sidebar-channel-num');
+      const numbering = inner?.querySelector('.sidebar-channel-num, .tm-serial');
       if (numbering) numbering.textContent = String(index + 1);
       if (inner) inner.dataset.itemIndex = String(index);
       previous.dataset.itemIndex = String(index);
       updateEventChannelStrip(previous, item);
-      fragment.appendChild(previous);
+      target.appendChild(previous);
       existing.delete(item._uid);
       state.renderedUids.add(item._uid);
       return;
     }
-    fragment.appendChild(createEventCard(item, index));
+    target.appendChild(createEventCard(item, index));
     state.renderedUids.add(item._uid);
     if (previous) existing.delete(item._uid);
   });
 
   existing.forEach((node) => node.remove());
-  sidebarList.replaceChildren(fragment);
+  if (isTodayMatch) {
+    colLeft.replaceChildren(fragments[0]);
+    colRight.replaceChildren(fragments[1]);
+  } else {
+    sidebarList.replaceChildren(fragment);
+  }
   state.renderedCount = state.renderedUids.size;
   updateFavoriteUi();
   updateReminderUi();

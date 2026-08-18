@@ -76,7 +76,7 @@ class Requirement7And8And14PlaybackContinuity(unittest.TestCase):
     def test_the_playing_card_keeps_its_dom_node(self):
         reconcile = self._body("reconcileEventCards")
         self.assertIn("isPinnedSession(item)", reconcile)
-        self.assertIn("fragment.appendChild(previous)", reconcile)
+        self.assertIn("target.appendChild(previous)", reconcile)
 
     def test_a_healthy_playing_stream_is_not_swapped(self):
         preserve = self._body("preservePlayingSession")

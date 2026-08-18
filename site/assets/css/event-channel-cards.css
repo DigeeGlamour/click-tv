@@ -363,23 +363,21 @@
   .sidebar-section.event-list-mode .event-art-versus span{font-size:11.5px!important}
 }
 
-/* ── Today Match redesign (v2): channel buttons ─────────────────────────────
- * Name only, two-column grid, green when selected, ash/grey otherwise - no
- * icon, no Primary/Backups summary, no equalizer. A single channel shows no
- * grid at all (see createTodayMatchCardV2 / eventChannelStripHtml(item,
+/* ── Today Match redesign (v2, Black + Crimson): channel buttons ────────────
+ * Name only, two-column grid, red when selected/playing, ash/grey otherwise -
+ * no icon, no Primary/Backups summary, no equalizer. A single channel shows
+ * no grid at all (see createTodayMatchCardV2 / eventChannelStripHtml(item,
  * true) in app.js) and plays as the card's plain default. */
 .sidebar-section.event-list-mode .tm-card-v2 .tm-poster img[data-event-art]{
   object-fit:cover!important;background:none!important;
 }
-/* The shared shell rule above draws one unified border and background around
-   a card plus its strip, and turns that border green while playing -
-   correct for the locked Upcoming row, where the card and the shell are
-   meant to read as one outlined box. This card and its channel grid each
-   draw their own border and radius instead (see .tm-card-v2 / .tm-channels),
-   so the shell's own decoration is switched off rather than doubled, and its
-   clip is lifted too - it otherwise cut off the serial badge, a known
-   limitation of column-count layout confirmed by testing overflow:visible at
-   every level and finding the badge still clipped regardless. */
+/* The shared shell rule above draws one unified border/background around a
+   card plus its strip - correct for the locked Upcoming row, where the card
+   and the shell are meant to read as one outlined box. This card (tm-card-v2)
+   and its channel grid (tm-channels) each draw their own border and radius
+   instead, and the hover/playing rules in event-cards.css target tm-shell
+   directly, so the shell's own decoration is switched off rather than
+   doubled. */
 .sidebar-section.event-list-mode .event-card-shell.tm-shell:has(.event-channel-strip),
 .sidebar-section.event-list-mode .event-card-shell.tm-shell{
   overflow:visible!important;
@@ -392,25 +390,45 @@
   display:grid!important;
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
   gap:5px!important;padding:7px!important;
-  border:1px solid #26384e!important;border-top:0!important;
+  border:1px solid #413039!important;border-top:0!important;
   border-radius:0 0 12px 12px!important;
-  background:#0b1522!important;
+  background:linear-gradient(180deg,#18171c 0%,#111216 100%)!important;
+}
+.sidebar-section.event-list-mode .tm-shell.is-playing-event .event-channel-strip.tm-channels{
+  border-color:#ff3158!important;
 }
 .sidebar-section.event-list-mode .event-channel-chip.tm-channel{
   display:block!important;
   min-width:0!important;min-height:27px!important;padding:5px 6px!important;
-  border:1px solid #526173!important;background:#2a3441!important;color:#d4dbe4!important;
+  border:1px solid #4d515a!important;
+  background:linear-gradient(180deg,#33363d 0%,#292c32 100%)!important;
+  color:#eceef2!important;
   border-radius:7px!important;font-size:10.5px!important;font-weight:850!important;
   text-align:center!important;
   overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  box-shadow:none!important;
   transition:.15s ease!important;
 }
 .sidebar-section.event-list-mode .event-channel-chip.tm-channel:hover{
-  background:#354252!important;border-color:#687a90!important;
+  background:linear-gradient(180deg,#3d4149 0%,#31343b 100%)!important;
+  border-color:#60656f!important;
 }
-.sidebar-section.event-list-mode .event-channel-chip.tm-channel.is-selected{
-  border-color:#16b887!important;background:#0d7a58!important;color:#fff!important;
-  box-shadow:inset 0 0 0 1px rgba(31,230,163,.14)!important;
+/* Section 6/8's existing rule: .is-selected marks a card's own stored/default
+   channel, independent of whether that card is the one actually playing -
+   correct for the full Upcoming card, where it is a quiet indicator. The
+   spec for this redesign is stricter: only one red button may exist across
+   the WHOLE Today Match list at a time, on whichever card is actually
+   playing right now. .is-playing already carries exactly that condition
+   (updateEventChannelStrip: selected && playingHere), so red keys off it
+   instead - every other card's channels, including its own stored default,
+   stay ash until it becomes the one playing. */
+.sidebar-section.event-list-mode .event-channel-chip.tm-channel.is-playing{
+  border-color:#ff496b!important;
+  background:linear-gradient(180deg,#ff355c 0%,#e3264a 100%)!important;
+  color:#fff!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 8px 18px rgba(255,49,88,.18)!important;
 }
 @media(max-width:460px){
   .sidebar-section.event-list-mode .tm-channels{gap:4px!important;padding:6px!important}
