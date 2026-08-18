@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $RepositoryRoot = Split-Path -Parent $PSScriptRoot
 
-$Launcher = Get-Content -LiteralPath (Join-Path $RepositoryRoot "CLICK_TV_EASY_PAT_SCAN.cmd") -Raw
+$Launcher = Get-Content -LiteralPath (Join-Path $RepositoryRoot "Local and Google Colab\CLICK_TV_EASY_PAT_SCAN.cmd") -Raw
 foreach ($Forbidden in @(
     '$FilesToSync',
     'Copy-Item -LiteralPath $Source',

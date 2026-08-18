@@ -9,6 +9,9 @@ from scanner.telegram_notify import build_failure_message
 
 
 ROOT = Path(__file__).resolve().parent.parent
+LOCAL_SCAN_TOOLS = ROOT / "Local and Google Colab"
+NOTEBOOK_PATH = LOCAL_SCAN_TOOLS / "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb"
+LAUNCHER_PATH = LOCAL_SCAN_TOOLS / "CLICK_TV_EASY_PAT_SCAN.cmd"
 
 
 class SecretRedactionTests(unittest.TestCase):
@@ -27,7 +30,7 @@ class SecretRedactionTests(unittest.TestCase):
 
     def test_colab_masks_all_runtime_output(self):
         notebook = json.loads(
-            (ROOT / "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb").read_text(encoding="utf-8")
+            NOTEBOOK_PATH.read_text(encoding="utf-8")
         )
         source = "\n".join(
             line
@@ -53,7 +56,7 @@ class SecretRedactionTests(unittest.TestCase):
         )
 
         notebook = json.loads(
-            (ROOT / "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb").read_text(encoding="utf-8")
+            NOTEBOOK_PATH.read_text(encoding="utf-8")
         )
         source = "\n".join(
             line
@@ -65,7 +68,7 @@ class SecretRedactionTests(unittest.TestCase):
             self.assertIn(f'scan_environment["{key}"] = {key}', source, key)
         self.assertIn("PRIVATE_SPORTS_SOURCE_TOKEN,", source.split("RUNTIME_SECRETS")[1])
 
-        launcher = (ROOT / "CLICK_TV_EASY_PAT_SCAN.cmd").read_text(encoding="utf-8")
+        launcher = LAUNCHER_PATH.read_text(encoding="utf-8")
         for key in optional_keys:
             self.assertIn(f"$env:{key} = ", launcher, key)
             self.assertIn(f"'{key}'", launcher, key)
@@ -123,7 +126,7 @@ class WorkflowSafetyTests(unittest.TestCase):
             self.assertFalse(progress.exists())
 
     def test_recommended_launcher_uses_virtualenv_without_legacy_cleanup(self):
-        launcher = (ROOT / "CLICK_TV_EASY_PAT_SCAN.cmd").read_text(encoding="utf-8")
+        launcher = LAUNCHER_PATH.read_text(encoding="utf-8")
         self.assertIn('Scripts\\python.exe', launcher)
         self.assertIn("$VenvPython -m pip install", launcher)
         self.assertNotIn("$PythonCommand.Source -m pip install -r", launcher)
@@ -238,7 +241,7 @@ class WorkflowSafetyTests(unittest.TestCase):
             self.assertNotIn(legacy, workflows)
 
     def test_colab_restores_temporary_settings_override(self):
-        notebook = (ROOT / "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb").read_text(
+        notebook = NOTEBOOK_PATH.read_text(
             encoding="utf-8"
         )
         self.assertIn(
