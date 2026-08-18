@@ -22,6 +22,7 @@ from scanner.channel_groups import (  # noqa: E402
     channel_id_for,
     default_channel_id,
     event_failover_order,
+    order_channels,
     playback_type_of,
     stream_variant_identity,
 )
@@ -451,6 +452,27 @@ class Section12NoInventedChannels(unittest.TestCase):
         )
         names = [channel["name"] for channel in channels]
         self.assertEqual(names, ["Willow", "Server-1"])
+
+    def test_server_slots_stay_in_their_own_numeric_order_even_if_one_tests_healthier(self):
+        """Production regression: a card assembled from more than one pass -
+        a fresh merge plus a carried card absorbed into it - can mint its
+        Server-N labels in separate batches that never compared health
+        against each other. "Server-2" then tested healthier than
+        "Server-1" and outranked it in the published order, so the viewer
+        saw them out of sequence. The number in the name is the one promise
+        a viewer can hold onto - it must decide the order outright."""
+        server_one = {
+            "id": "evt-1--server-1", "name": "Server-1", "normalized_name": "server-1",
+            "name_confidence": "generic", "_health": (0, 480, 0),
+            "stream_count": 1, "_variant_keys": set(),
+        }
+        server_two = {
+            "id": "evt-1--server-2", "name": "Server-2", "normalized_name": "server-2",
+            "name_confidence": "generic", "_health": (1, 1080, 1),
+            "stream_count": 1, "_variant_keys": set(),
+        }
+        ordered = order_channels([server_two, server_one])
+        self.assertEqual([entry["name"] for entry in ordered], ["Server-1", "Server-2"])
 
 
 # ------------------------------------------------------------------ sections 13-14

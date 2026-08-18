@@ -482,6 +482,21 @@ def order_channels(
     in the list.
     """
     confidence_rank = {"explicit": 4, "metadata": 3, "alias": 2, "derived": 1}
+    generic_number_pattern = re.compile(r"(\d+)$")
+
+    def generic_number(entry: Dict[str, Any]) -> int:
+        # "Server-1", "Server-2"... are minted in health order (§ build_event_
+        # channels), but a card assembled from more than one pass - a fresh
+        # merge plus a carried card absorbed into it - can mint its Server-N
+        # labels in separate batches that never compared health against each
+        # other. Sorting the *published* order by health again then re-shuffles
+        # them regardless of their own numbers - "Server-2" outranking
+        # "Server-1" because this batch's stream happened to test healthier.
+        # The number in the name is the one promise a viewer can hold onto, so
+        # it decides the generic tier's order outright instead of being purely
+        # decorative.
+        match = generic_number_pattern.search(str(entry.get("normalized_name") or ""))
+        return int(match.group(1)) if match else 0
 
     def sort_key(entry: Dict[str, Any]):
         selected = 1 if selected_channel_id and entry.get("id") == selected_channel_id else 0
@@ -502,6 +517,7 @@ def order_channels(
             -named,
             -carries_default,
             -native,
+            generic_number(entry) if named == 0 else 0,
             -confidence_rank.get(str(entry.get("name_confidence")), 0),
             tuple(-value for value in health),
             # A channel that has working backups is worth more to a viewer than
