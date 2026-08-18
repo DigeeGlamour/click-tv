@@ -3910,10 +3910,48 @@ window.activeChannelId = activeChannelId;
 window.isEmbedActive = isEmbedActive;
 
 
+// Section 14, corrected. A channel is only really selectable if its own
+// stream can end up in the attempt list at all. The event-level primary+
+// backups list is capped (MAX_PUBLISHED_BACKUPS on the scanner side), but a
+// fixture can publish more channels than that cap allows through - this
+// widens the candidate pool to every channel's own stream before ordering, so
+// a channel beyond the cap is exactly as reachable as one inside it.
+function sourcesReachableForEveryChannel(item, rankedSources) {
+  const base = Array.isArray(rankedSources) ? rankedSources.slice() : [];
+  const known = new Set(
+    base.map((source) => String(source.playback_id || source.url || '')).filter(Boolean)
+  );
+  eventChannels(item).forEach((channel) => {
+    (channel.streams || []).forEach((stream) => {
+      if (stream.playback_type === 'embed') return; // embeds are never in this list
+      const key = String(stream.playback_id || stream.url || '');
+      if (!key || known.has(key)) return;
+      known.add(key);
+      // A minimal, honest source: everything a playback_id-routed attempt
+      // needs, and nothing the public channel stream entry does not actually
+      // carry (headers/DRM/credentials stay resolved server-side, by design -
+      // see scanner/channel_groups.py:_public_stream).
+      base.push({
+        playback_id: stream.playback_id || '',
+        url: stream.url || '',
+        stream_type: stream.stream_type || '',
+        resolution: stream.resolution || '',
+        resolution_height: stream.resolution_height || 0,
+        host: stream.host || '',
+        verified: Boolean(stream.verified),
+        verification_status: stream.verification_status || '',
+      });
+    });
+  });
+  return base;
+}
+
 function buildAttemptPlan(item) {
   const plan = [];
   const preferred = state.routePreferences[itemPlaybackKey(item)] || null;
-  const rankedSources = item._sources?.length ? item._sources : rankSources(item);
+  const rankedSources = sourcesReachableForEveryChannel(
+    item, item._sources?.length ? item._sources : rankSources(item)
+  );
   // Sections 14/27. Channel order first, native routes only. The list itself is
   // unchanged - every route the player would have tried is still here, and an
   // embed is not in it at all.
@@ -8949,7 +8987,26 @@ if (['127.0.0.1', 'localhost'].includes(location.hostname)) {
         route: attempt.route,
         proxy: attempt.proxy,
         sourceIndex: attempt.sourceIndex,
+        playbackId: attempt.source?.playback_id || '',
+        url: attempt.source?.url || '',
       }));
+    },
+    // Diagnostic for section 14: does selecting a channel actually change
+    // which stream the attempt plan tries first? Used to catch the case where
+    // a channel exists in channels[] but its stream never made it into the
+    // event-level source list the player draws from.
+    channelSelectionResolvesTo(item, channelId) {
+      const key = eventChannelId(item);
+      const previous = state.channelSelection[key];
+      state.channelSelection[key] = String(channelId);
+      const attempts = buildAttemptPlan(item);
+      state.channelSelection[key] = previous;
+      const first = attempts[0];
+      return {
+        firstAttemptPlaybackId: first?.source?.playback_id || '',
+        firstAttemptUrl: first?.source?.url || '',
+        attemptCount: attempts.length,
+      };
     },
     markProxyFailure(proxy, targetUrl) {
       markProxyResult(proxy, targetUrl, false, 100);

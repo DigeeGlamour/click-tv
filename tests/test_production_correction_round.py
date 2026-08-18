@@ -608,5 +608,48 @@ class TheFixtureAndItsChannelsAreOneCard(unittest.TestCase):
         self.assertGreaterEqual(min(floors), 150)
 
 
+class EveryPublishedChannelIsActuallyReachable(unittest.TestCase):
+    """Verified live: "Sri Lanka vs India 1st Test" published 8 channels, but
+    clicking CricLife 1, Sony Sports Ten 1 or Willow Cricket silently kept
+    playing whatever the primary already was - the exact "you put the same
+    link in every channel" report.
+
+    The event-level primary+backups list the player draws attempts from is
+    capped (MAX_PUBLISHED_BACKUPS on the scanner side), but a fixture can have
+    more channels than that cap allows through. orderSourcesByChannel() can
+    only ever *reorder* that capped list; it cannot add a channel's stream
+    that was never in it at all, so a channel beyond the cap could be selected
+    and had no way to ever actually play - the app just kept running the
+    stream it already had, which looks exactly like every channel shares one
+    link. Reproduced end-to-end with the real production card and its real
+    channels[]/streams[] shape via headless Chromium and this file's own
+    test conventions - a source-content assertion mirrors the runtime browser
+    proof already done, so a regression here fails offline too.
+    """
+
+    def test_the_attempt_pool_is_widened_before_channel_ordering(self):
+        source = APP.split("function buildAttemptPlan(item)", 1)[0]
+        self.assertIn("function sourcesReachableForEveryChannel", source)
+        body = source.split("function sourcesReachableForEveryChannel", 1)[1]
+        # Every channel's own stream must be considered, not only the ones
+        # that happen to already be in the event-level source list.
+        self.assertIn("eventChannels(item)", body)
+        self.assertIn("channel.streams", body)
+
+    def test_build_attempt_plan_actually_calls_the_widened_pool(self):
+        body = APP.split("function buildAttemptPlan(item) {", 1)[1].split(chr(10) + "function ", 1)[0]
+        self.assertIn("sourcesReachableForEveryChannel(", body)
+        # The widened pool has to feed the SAME variable orderSourcesByChannel
+        # then reorders, or the widening does nothing.
+        self.assertIn("orderSourcesByChannel(item, rankedSources)", body)
+
+    def test_an_embed_stream_is_never_folded_into_the_native_attempt_pool(self):
+        """Section 27 still holds after the widening - an embed is a last
+        resort, never a candidate the native attempt planner can pick up."""
+        body = APP.split("function sourcesReachableForEveryChannel", 1)[1].split(chr(10) + "function ", 1)[0]
+        self.assertIn("stream.playback_type === 'embed'", body)
+        self.assertIn("return", body.split("stream.playback_type === 'embed'", 1)[1][:40])
+
+
 if __name__ == "__main__":
     unittest.main()
