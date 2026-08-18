@@ -824,6 +824,42 @@ class SelectingAnEmbedOnlyChannelActuallyPlaysIt(unittest.TestCase):
         self.assertIn("selectedChannel.name", body)
 
 
+class AnUnexpectedLiveEndedEventFailsOverInsteadOfFreezing(unittest.TestCase):
+    """A live event, upcoming fixture or TV channel has no legitimate end,
+    but some upstream sources hand out a short, EXT-X-ENDLIST-terminated
+    manifest snapshot instead of a genuinely rolling live window - confirmed
+    by fetching the origin directly, bypassing our own proxy entirely, and
+    finding the identical finite manifest there too on the real deployed
+    site. The player had no handling for this at all: the video element's
+    native "ended" event did nothing for a live item, leaving playback
+    frozen forever with no retry and no visible error - reproduced live as
+    "channel play hoiya 13 second e atka jassa." Reproduced fixed the same
+    way: intercepting the real production page's own app.js request with
+    the patch applied, selecting the affected channel, and watching it
+    correctly fail over to the next attempt instead of freezing.
+    """
+
+    def test_ended_on_a_live_item_escalates_straight_to_the_next_attempt(self):
+        body = APP.split("video.addEventListener('ended', () => {", 1)[1].split(
+            "\nvideo.addEventListener('waiting'", 1)[0]
+        self.assertIn("isLiveEventContext(item)", body)
+        self.assertIn("VIEW.CHANNEL", body)
+        self.assertIn("!isMoviePlaybackContext(item)", body)
+        # Must skip the "reload this same stream" recovery path (which would
+        # only ever reach the same ENDLIST again) via the same escalation
+        # flag the stall detector itself uses to give up on a stream.
+        self.assertIn("session.allowRouteFailover = true", body)
+        self.assertIn("failCurrentAttempt(", body)
+
+    def test_a_movie_or_series_ending_is_left_alone(self):
+        body = APP.split("video.addEventListener('ended', () => {", 1)[1].split(
+            "\nvideo.addEventListener('waiting'", 1)[0]
+        # The series auto-advance path returns early, before any of this
+        # code runs, and the failover branch explicitly excludes a movie.
+        self.assertIn("seriesModule?.handleEnded?.()) return", body)
+        self.assertIn("!isMoviePlaybackContext(item)", body)
+
+
 class AnHonestFallbackChannelGetsItsOwnBrand(unittest.TestCase):
     """"Server-1"/"Streamed-1" read as backend plumbing to a viewer, per
     direct request for a nicer, user-friendly alternative. Chosen and

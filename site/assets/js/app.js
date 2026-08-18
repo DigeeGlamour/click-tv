@@ -7640,6 +7640,28 @@ video.addEventListener('ended', () => {
   updateMobilePlaybackPerformance();
   clearMovieQualityGuidance();
   clearMovieAudioCompatibilityCheck();
+
+  // A live event, upcoming fixture or TV channel has no legitimate end.
+  // Some upstream sources hand out a short, EXT-X-ENDLIST-terminated
+  // snapshot instead of a genuinely rolling live window - confirmed by
+  // fetching the origin directly, bypassing our own proxy entirely, and
+  // finding the identical finite manifest there too. Reloading that same
+  // URL only ever reaches the same ENDLIST again, which is why this used
+  // to leave the player frozen forever with no retry and no visible
+  // error. Escalated the same way the stall detector gives up on a stream
+  // it cannot recover (see startStallDetector's own allowRouteFailover
+  // escalation): skip the "reload this same stream" recovery path
+  // entirely and move straight to the plan's next attempt.
+  const session = state.playbackSession;
+  const item = session?.item;
+  const isContinuousContext = Boolean(item) && (
+    isLiveEventContext(item) || item._sourceKind === VIEW.CHANNEL || state.view === VIEW.CHANNEL
+  );
+  if (session && isContinuousContext && !isMoviePlaybackContext(item)) {
+    session.allowRouteFailover = true;
+    session.success = false;
+    failCurrentAttempt('native_ended_on_continuous_stream');
+  }
 });
 video.addEventListener('waiting', () => {
   holdMovieAudioForVideoBuffering();
