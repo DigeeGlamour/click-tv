@@ -362,3 +362,57 @@
   .sidebar-section.event-list-mode .event-art-crests img{max-width:30px!important;max-height:26px!important}
   .sidebar-section.event-list-mode .event-art-versus span{font-size:11.5px!important}
 }
+
+/* ── Today Match redesign (v2): channel buttons ─────────────────────────────
+ * Name only, two-column grid, green when selected, ash/grey otherwise - no
+ * icon, no Primary/Backups summary, no equalizer. A single channel shows no
+ * grid at all (see createTodayMatchCardV2 / eventChannelStripHtml(item,
+ * true) in app.js) and plays as the card's plain default. */
+.sidebar-section.event-list-mode .tm-card-v2 .tm-poster img[data-event-art]{
+  object-fit:cover!important;background:none!important;
+}
+/* The shared shell rule above draws one unified border and background around
+   a card plus its strip, and turns that border green while playing -
+   correct for the locked Upcoming row, where the card and the shell are
+   meant to read as one outlined box. This card and its channel grid each
+   draw their own border and radius instead (see .tm-card-v2 / .tm-channels),
+   so the shell's own decoration is switched off rather than doubled, and its
+   clip is lifted too - it otherwise cut off the serial badge, a known
+   limitation of column-count layout confirmed by testing overflow:visible at
+   every level and finding the badge still clipped regardless. */
+.sidebar-section.event-list-mode .event-card-shell.tm-shell:has(.event-channel-strip),
+.sidebar-section.event-list-mode .event-card-shell.tm-shell{
+  overflow:visible!important;
+  border:0!important;background:transparent!important;border-radius:0!important;
+}
+.sidebar-section.event-list-mode .event-card-shell.tm-shell.is-playing-event{
+  border:0!important;box-shadow:none!important;
+}
+.sidebar-section.event-list-mode .event-channel-strip.tm-channels{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:5px!important;padding:7px!important;
+  border:1px solid #26384e!important;border-top:0!important;
+  border-radius:0 0 12px 12px!important;
+  background:#0b1522!important;
+}
+.sidebar-section.event-list-mode .event-channel-chip.tm-channel{
+  display:block!important;
+  min-width:0!important;min-height:27px!important;padding:5px 6px!important;
+  border:1px solid #526173!important;background:#2a3441!important;color:#d4dbe4!important;
+  border-radius:7px!important;font-size:10.5px!important;font-weight:850!important;
+  text-align:center!important;
+  overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  transition:.15s ease!important;
+}
+.sidebar-section.event-list-mode .event-channel-chip.tm-channel:hover{
+  background:#354252!important;border-color:#687a90!important;
+}
+.sidebar-section.event-list-mode .event-channel-chip.tm-channel.is-selected{
+  border-color:#16b887!important;background:#0d7a58!important;color:#fff!important;
+  box-shadow:inset 0 0 0 1px rgba(31,230,163,.14)!important;
+}
+@media(max-width:460px){
+  .sidebar-section.event-list-mode .tm-channels{gap:4px!important;padding:6px!important}
+  .sidebar-section.event-list-mode .event-channel-chip.tm-channel{font-size:9.5px!important;min-height:25px!important}
+}

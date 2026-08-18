@@ -347,6 +347,77 @@ class TheAssetsAreShippedAndVersionedTogether(unittest.TestCase):
                       f"cache version {cache.group(1)!r} does not name asset build {slug!r}")
 
 
+class TodayMatchCardV2(unittest.TestCase):
+    """The Today Match redesign, against a supplied reference file: a
+    minimal poster-led card - serial badge, category badge, league name,
+    title, channel buttons and nothing else - scoped to the Today Match tab
+    on a genuinely live item, with the Upcoming tab's existing card left
+    untouched in every respect. The rendered geometry and the real masonry
+    layout are proved in a real browser separately; these assertions are
+    what must hold even without one.
+    """
+
+    def test_the_minimal_card_is_only_reached_from_the_today_match_tab(self):
+        body = APP.split("function createEventCard(item, visualIndex) {", 1)[1].split(
+            "\nfunction ", 1)[0]
+        self.assertIn("state.view === VIEW.EVENT && liveLike", body)
+        self.assertIn("createTodayMatchCardV2(", body)
+
+    def test_the_minimal_card_carries_none_of_the_hidden_fields(self):
+        body = APP.split("function createTodayMatchCardV2(", 1)[1].split(
+            "\nfunction createEventCard", 1)[0]
+        for forbidden in (
+            "event-status-pill", "event-now-playing", "event-card-time",
+            "event-card-streams", "event-verified-tick", "card-fav-btn",
+            "card-remind-btn", "event-card-action", "event-card-phase",
+        ):
+            self.assertNotIn(forbidden, body, forbidden)
+
+    def test_the_minimal_card_keeps_serial_badge_category_league_and_title(self):
+        body = APP.split("function createTodayMatchCardV2(", 1)[1].split(
+            "\nfunction createEventCard", 1)[0]
+        for required in ("tm-serial", "tm-category", "tm-league", "tm-title", "tm-poster"):
+            self.assertIn(required, body)
+
+    def test_a_single_channel_hides_the_grid_entirely_in_the_minimal_strip(self):
+        body = APP.split("function eventChannelStripHtml(item, minimal = false) {", 1)[1].split(
+            "\nfunction ", 1)[0]
+        minimal_branch = body.split("if (minimal) {", 1)[1].split("\n  if (channels.length < 1)", 1)[0]
+        self.assertIn("channels.length < 2", minimal_branch)
+
+    def test_the_minimal_channel_button_carries_only_the_name(self):
+        body = APP.split("function eventChannelStripHtml(item, minimal = false) {", 1)[1].split(
+            "\nfunction ", 1)[0]
+        minimal_branch = body.split("if (minimal) {", 1)[1].split("\n  if (channels.length < 1)", 1)[0]
+        self.assertNotIn("channelChipIconHtml", minimal_branch)
+        self.assertNotIn("channelChipSummary", minimal_branch)
+
+    def test_the_early_return_precedes_the_full_cards_own_computations(self):
+        # Upcoming's own path runs exactly as it always has, only ever hit
+        # when the minimal-card branch's early return did not fire above it.
+        body = APP.split("function createEventCard(item, visualIndex) {", 1)[1].split(
+            "\nfunction ", 1)[0]
+        self.assertLess(
+            body.index("createTodayMatchCardV2("),
+            body.index("showWatchAction"),
+        )
+
+    def test_the_today_match_list_becomes_two_independent_css_columns(self):
+        self.assertIn("tm-columns", APP)
+        self.assertIn("column-count:2!important", EVENT_CSS)
+
+    def test_the_masonry_columns_are_scoped_away_from_upcoming(self):
+        # The class that turns the list into columns is toggled only for
+        # VIEW.EVENT - Upcoming keeps sidebar-list.upcoming-grid's existing
+        # single-column flex layout, unmodified.
+        body = APP.split("function renderCurrentList(reset = true, options = {}) {", 1)[1].split(
+            "\nfunction ", 1)[0]
+        self.assertIn("sidebarList.classList.toggle('tm-columns', state.view === VIEW.EVENT)", body)
+
+    def test_a_card_next_to_its_channel_grid_never_splits_across_columns(self):
+        self.assertIn("break-inside:avoid-column!important", EVENT_CSS)
+
+
 class NoPlaceholdersAreLeftBehind(unittest.TestCase):
     """The delivery rule: no TODO, no placeholder, no "later"."""
 

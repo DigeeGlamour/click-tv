@@ -155,7 +155,14 @@ class Requirement11And12And13CardUi(unittest.TestCase):
 
     def test_artwork_is_contained_in_a_padded_safe_area(self):
         self.assertIn("object-fit:contain!important", self.css)
-        self.assertNotIn("object-fit:cover", self.css)
+        # The Today Match v2 poster is the one deliberate exception: a full-
+        # width banner is meant to fill its frame the way the supplied
+        # reference does, not letterbox like the small locked-row tile this
+        # rule protects. Scoped strictly to .tm-poster, so the original
+        # small-tile artwork (event-card-art, the whole Upcoming row) still
+        # never crops.
+        self.assertNotIn("event-card-art img{\n  width:100%!important;height:100%!important;object-fit:cover", self.css)
+        self.assertIn(".tm-poster img{", self.css)
 
     def test_the_artwork_fallback_chain_is_intact(self):
         self.assertIn("event-art-versus", self.css)

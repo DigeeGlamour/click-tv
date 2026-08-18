@@ -1859,6 +1859,10 @@ function renderCurrentList(reset = true, options = {}) {
     'upcoming-grid',
     state.view === VIEW.UPCOMING || state.view === VIEW.EVENT
   );
+  // Today Match redesign: a two-column masonry list, by direct request -
+  // scoped to this one class so Upcoming keeps its existing single-column
+  // list exactly as it is.
+  sidebarList.classList.toggle('tm-columns', state.view === VIEW.EVENT);
   if (reset) {
     cancelPendingImages(sidebarList);
     sidebarList.replaceChildren();
@@ -2942,8 +2946,25 @@ function channelChipIconHtml(channel) {
 // empty box, not a placeholder bar, not a fake name. The main card stays exactly
 // as it is. Section 13 says the same for an Upcoming card with nothing attached
 // yet, and the same emptiness answers both.
-function eventChannelStripHtml(item) {
+function eventChannelStripHtml(item, minimal = false) {
   const channels = eventChannels(item);
+  // Today Match's minimal strip, by direct request: name only, no icon, no
+  // Primary/Backups summary - and no grid at all for a single channel, which
+  // is shown as the card's plain default rather than a one-button row.
+  if (minimal) {
+    if (channels.length < 2) return '';
+    const active = activeChannelId(item);
+    const chips = channels.map((channel) => {
+      const selected = String(channel.id) === String(active);
+      const label = String(channel.name || '').trim();
+      return `<button type="button" class="event-channel-chip tm-channel${selected ? ' is-selected' : ''}"
+        data-channel-id="${escapeHtml(String(channel.id))}"
+        title="${escapeHtml(label)}"
+        aria-pressed="${selected ? 'true' : 'false'}"
+        aria-label="${escapeHtml(label)}">${escapeHtml(label)}</button>`;
+    }).join('');
+    return `<div class="event-channel-strip tm-channels" data-channel-strip="1" role="group" aria-label="Channel options">${chips}</div>`;
+  }
   if (channels.length < 1) return '';
   const active = activeChannelId(item);
   const columns = Math.min(4, Math.max(1, channels.length));
@@ -3035,21 +3056,99 @@ function bindEventChannelStrip(shell, item) {
   });
 }
 
+// Today Match redesign, by direct request: a minimal poster-led card -
+// serial badge, category badge, league name, title, channel buttons and
+// nothing else. Everything the full card also carries (status pill,
+// countdown, clock, stream summary, verification tick, watch/favorite
+// actions) is left out on purpose, not merely hidden by CSS - the request
+// was for those fields to not exist on this card at all. Scoped to the
+// Today Match tab on a genuinely live item only (see the call site in
+// createEventCard), so the Upcoming tab keeps its existing card, unchanged,
+// in every respect.
+function createTodayMatchCardV2(item, visualIndex, ctx) {
+  const { card, playable, parts, channelOnly, sport } = ctx;
+  card.className = ['sidebar-item event-ref-card tv-focusable event-live-card tm-card-v2',
+    playable ? 'is-playable' : 'is-scheduled'].filter(Boolean).join(' ');
+  card.tabIndex = 0;
+  card.setAttribute('role', 'button');
+  card.setAttribute('aria-label', [parts.title, parts.competition].filter(Boolean).join('. '));
+  card.dataset.uid = item._uid;
+  card.dataset.itemIndex = String(visualIndex);
+  card.addEventListener('focus', () => {
+    state.lastFocusedUid = item._uid;
+    state.lastFocusedSelector = 'card';
+    maybePreconnect(item.url);
+  });
+
+  card.innerHTML = `
+    <span class="tm-serial">${visualIndex + 1}</span>
+    <div class="tm-poster">
+      ${eventArtHtml(item, parts)}
+      <span class="tm-category">${escapeHtml(channelOnly ? 'CHANNEL' : sport.label)}</span>
+      <div class="tm-info">
+        ${parts.competition ? `<div class="tm-league">${escapeHtml(parts.competition)}</div>` : ''}
+        <div class="tm-title">${escapeHtml(parts.title)}</div>
+      </div>
+    </div>`;
+
+  // Section 10's fallback chain is unchanged - only the shell around it is new.
+  const image = qs('img[data-event-art]', card);
+  image?.addEventListener('error', () => {
+    let remaining = [];
+    try { remaining = JSON.parse(image.dataset.artFallbacks || '[]'); } catch (_) { remaining = []; }
+    const next = Array.isArray(remaining) ? remaining.shift() : null;
+    if (next) {
+      image.dataset.artFallbacks = JSON.stringify(remaining);
+      image.src = next;
+      return;
+    }
+    if (image.parentElement) image.replaceWith(...htmlToNodes(eventArtFallbackHtml(item, parts)));
+  });
+  const crests = qs('[data-event-art-crests]', card);
+  if (crests) {
+    crests.querySelectorAll('img').forEach((crest) => {
+      crest.addEventListener('error', () => {
+        if (crests.parentElement) crests.replaceWith(...htmlToNodes(eventArtFallbackHtml(item, parts)));
+      });
+    });
+  }
+
+  const stripHtml = eventChannelStripHtml(item, true);
+  if (!stripHtml) {
+    card.classList.add('event-card-no-channels', 'tm-one-channel');
+    return card;
+  }
+  const shell = document.createElement('div');
+  shell.className = 'event-card-shell tm-shell';
+  shell.dataset.uid = item._uid;
+  shell.dataset.eventShell = '1';
+  shell.appendChild(card);
+  shell.append(...htmlToNodes(stripHtml));
+  bindEventChannelStrip(shell, item);
+  updateEventChannelStrip(shell, item);
+  return shell;
+}
+
 function createEventCard(item, visualIndex) {
   const card = document.createElement('div');
   const playable = isPlayable(item);
   const uiStatus = eventUiStatus(item);
   const liveLike = uiStatus === 'LIVE_NOW' || uiStatus === 'CHANNEL_LIVE';
   const upcoming = !liveLike;
+  const rawParts = eventDisplayParts(item);
+  const parts = { title: stripStreamNoise(rawParts.title), competition: rawParts.competition };
+  const channelOnly = isChannelOnlyEventCard(item);
+  const sport = eventSport(item);
+
+  if (state.view === VIEW.EVENT && liveLike) {
+    return createTodayMatchCardV2(item, visualIndex, { card, playable, parts, channelOnly, sport });
+  }
+
   // Guide 12. The action names what the click actually does. A card with a
   // verified link plays when tapped on either tab, so labelling it "Details"
   // there — as this card used to on the Upcoming tab — was a promise the
   // click handler did not keep. Cards with no link keep Details.
   const showWatchAction = playable;
-  const rawParts = eventDisplayParts(item);
-  const parts = { title: stripStreamNoise(rawParts.title), competition: rawParts.competition };
-  const channelOnly = isChannelOnlyEventCard(item);
-  const sport = eventSport(item);
   const streams = eventStreamSummary(item);
   const statusLabel = channelOnly && liveLike ? 'CHANNEL LIVE' : eventStatusLabel(uiStatus);
 
