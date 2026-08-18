@@ -196,6 +196,68 @@ def normalize_channel_name(value: Any) -> str:
     return "-".join(words)
 
 
+#: Which broadcaster each configured source relays, as {source_id: display name}.
+#: Read from the same per-category source files the loader uses, so there is one
+#: place to state it and no second copy to fall out of date.
+SOURCE_CONFIG_DIR = Path("config")
+
+
+def load_source_broadcasters(
+    config_dir: Path | str = SOURCE_CONFIG_DIR,
+) -> Dict[str, str]:
+    """{source_id: broadcaster} for every source that declares one.
+
+    Only an explicit `broadcaster` key counts. A source name is not used as a
+    substitute: "SR Hady Tapmad BD" names the person who maintains the playlist as
+    much as the channel, and inventing a broadcaster is exactly what section 12
+    forbids. A feed that relays many broadcasters simply declares nothing.
+    """
+    root = Path(config_dir)
+    paths = sorted((root / "sources").glob("*.json")) + [root / "sources.json"]
+    mapping: Dict[str, str] = {}
+    for path in paths:
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, json.JSONDecodeError):
+            continue
+        groups: List[Any] = []
+        if isinstance(payload, list):
+            groups.append(payload)
+        elif isinstance(payload, dict):
+            if isinstance(payload.get("sources"), list):
+                groups.append(payload["sources"])
+            groups.extend(v for v in payload.values() if isinstance(v, list))
+        for group in groups:
+            for entry in group:
+                if not isinstance(entry, dict):
+                    continue
+                source_id = str(entry.get("id") or "").strip()
+                broadcaster = str(entry.get("broadcaster") or "").strip()
+                if source_id and broadcaster:
+                    mapping.setdefault(source_id, broadcaster)
+    return mapping
+
+
+_SOURCE_BROADCASTERS: Optional[Dict[str, str]] = None
+
+
+def source_broadcaster_for(source_id: Any) -> str:
+    """The declared broadcaster for a source id, or "" when none is declared."""
+    global _SOURCE_BROADCASTERS
+    key = str(source_id or "").strip()
+    if not key:
+        return ""
+    if _SOURCE_BROADCASTERS is None:
+        _SOURCE_BROADCASTERS = load_source_broadcasters()
+    return _SOURCE_BROADCASTERS.get(key, "")
+
+
+def reset_source_broadcaster_cache() -> None:
+    """Forget the cached source map. Used by tests that write a config."""
+    global _SOURCE_BROADCASTERS
+    _SOURCE_BROADCASTERS = None
+
+
 def load_alias_map(path: Path | str = ALIAS_FILE) -> Dict[str, str]:
     """config/channel-aliases.json, as {normalized alias: display name}.
 
@@ -559,12 +621,28 @@ def resolve_channel_name(
     if value and looks_like_channel(strip_stream_noise(value, event_name) or value):
         return finish(value, "explicit", field)
 
+    def declared(value: str, confidence: str, field: str) -> Optional[ChannelName]:
+        """Accept a field that *states* the broadcaster rather than implying it.
+
+        Noise stripping exists for stream titles, where quality and region markers
+        have to come off. On a declared name it can take off too much: "AX Sports"
+        cleans down to the bare category "Sports", which is correctly refused as a
+        channel - and the declaration was then thrown away with it, so the stream
+        joined no channel at all. The cleaned form is still preferred; the raw
+        declaration is the fallback rather than a discard.
+        """
+        cleaned = strip_stream_noise(value, event_name)
+        for probe in (cleaned, value):
+            if probe and looks_like_channel(probe):
+                return finish(probe, confidence, field)
+        return None
+
     # 2. tvg-name.
     value, field = _first_nonempty(item, ("tvg_name", "tvg-name", "tvgName"))
     if value:
-        cleaned = strip_stream_noise(value, event_name)
-        if looks_like_channel(cleaned or value):
-            return finish(cleaned or value, "explicit", field)
+        resolved = declared(value, "explicit", field)
+        if resolved is not None:
+            return resolved
 
     # 3. Reliable source/provider metadata.
     value, field = _first_nonempty(
@@ -573,9 +651,9 @@ def resolve_channel_name(
          "today_source_channel", "source_channel"),
     )
     if value:
-        cleaned = strip_stream_noise(value, event_name)
-        if looks_like_channel(cleaned or value):
-            return finish(cleaned or value, "metadata", field)
+        resolved = declared(value, "metadata", field)
+        if resolved is not None:
+            return resolved
 
     # 4. group-title, but only when it reads like a channel rather than a
     #    category ("Sports", "Live Events" and friends are not broadcasters).
@@ -605,6 +683,30 @@ def resolve_channel_name(
         cleaned = strip_stream_noise(raw_title, event_name)
         if cleaned and looks_like_channel(cleaned, True, alias_map):
             return finish(cleaned, "derived", field)
+
+    # 7. Last resort: the feed this stream arrived in *is* one named broadcaster,
+    #    as stated by its own entry in config/sources/.
+    #
+    #    Sections 6-10 were architecturally complete but nearly empty in practice,
+    #    because every route above needs the *stream* to name its channel and a
+    #    playlist normally titles its entries after the fixture instead. A Today
+    #    Match card would publish three streams from three different broadcasters
+    #    and no channels[] at all. The feed is not a guess about the stream - a
+    #    Willow playlist carries Willow - so it is used here, after everything more
+    #    specific has declined, and never over a name the stream stated itself.
+    #
+    #    `source_broadcaster` is stamped at load time; `source_id` is the route for
+    #    a card carried forward by live protection, whose sanitised backups keep
+    #    their source id but not the load-time field.
+    value, field = _first_nonempty(item, ("source_broadcaster",))
+    if not value:
+        mapped = source_broadcaster_for(item.get("source_id"))
+        if mapped:
+            value, field = mapped, "source_id"
+    if value:
+        resolved = declared(value, "metadata", field)
+        if resolved is not None:
+            return resolved
 
     # Section 12: nothing reliable. No invented broadcaster.
     return ChannelName()

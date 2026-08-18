@@ -68,7 +68,19 @@ def _fixture_record(
         "name": name,
         "competition": str(competition.get("name") or "Live Sports"),
         "competition_id": str(competition.get("id") or ""),
-        "competition_aliases": [_norm(v) for v in competition.get("aliases", [])],
+        # The competition's own name counts as one of its aliases. It was left
+        # out, so a title that spelled the series exactly as the catalogue spells
+        # it - "... | India Tour of Sri Lanka 2026" - only matched when someone had
+        # also happened to repeat that string in `aliases`. When they had not, the
+        # broadcast published as its own card beside the fixture it was carrying.
+        "competition_aliases": sorted({
+            alias
+            for alias in (
+                [_norm(competition.get("name"))]
+                + [_norm(v) for v in competition.get("aliases", []) or []]
+            )
+            if alias
+        }),
         "start": start.astimezone(timezone.utc),
         "end": end.astimezone(timezone.utc),
         "venue": venue,
@@ -235,6 +247,85 @@ def _competition_matches(name: str, fixture: Dict[str, Any]) -> bool:
     return any(alias and alias in normalized for alias in fixture.get("competition_aliases", []))
 
 
+#: "1st Test", "2nd ODI", "6th Match" - which round of a series, spelled the way
+#: both a broadcaster label and a catalogue fixture name spell it.
+_ROUND_LABEL = re.compile(
+    r"(?i)\b(\d{1,3})(?:st|nd|rd|th)?\s+"
+    r"(test|odi|t20i?|match|leg|round|day|session)\b"
+)
+
+
+def _round_labels(value: str) -> set[Tuple[str, str]]:
+    """The (number, kind) rounds named in a title, e.g. {("1","test")}."""
+    return {
+        (match.group(1), match.group(2).casefold().rstrip("s"))
+        for match in _ROUND_LABEL.finditer(str(value or ""))
+    }
+
+
+def _competition_round_fixture(
+    item: Dict[str, Any],
+    fixtures: Iterable[Dict[str, Any]],
+    now: datetime,
+) -> Optional[Dict[str, Any]]:
+    """Bind a participant-less broadcast label to the fixture it is carrying.
+
+    A broadcaster that relays one day of a Test titles the feed after the day, not
+    after the teams:
+
+        "Day 3 1st Test 17 Aug 2026 | India Tour of Sri Lanka 2026"
+
+    There are no participants in that string, so team-token scoring cannot reach
+    it and normalisation reduces it to "1-test" - a key so generic that two
+    different series would collide on it. It published as its own card beside the
+    real fixture, which is the duplicate section 1 forbids.
+
+    The catalogue can identify it, and only the catalogue: the title names a
+    competition alias and a round, and the series says which fixture that is. All
+    four conditions must hold, so this never guesses:
+
+      * the title carries no usable participants - anything that does is left to
+        team scoring, which is stronger;
+      * the title contains one of the competition's aliases;
+      * the title's round matches the fixture's own round; and
+      * that fixture is running *now*, because a channel label is reused between
+        matches and only the live window proves which one is on air.
+
+    If two fixtures answer, none is chosen.
+    """
+    name = str(item.get("name") or "")
+    if not name.strip():
+        return None
+    # Anything with real participants is identified better by team scoring.
+    if _is_exact_event(name):
+        return None
+    rounds = _round_labels(name)
+    if not rounds:
+        return None
+    normalized = _norm(name)
+    now_utc = now.astimezone(timezone.utc)
+
+    matches: List[Dict[str, Any]] = []
+    for fixture in fixtures:
+        if not _competition_matches(name, fixture):
+            continue
+        if not (_round_labels(str(fixture.get("name") or "")) & rounds):
+            continue
+        if not fixture["start"] - timedelta(minutes=20) <= now_utc < fixture["end"]:
+            continue
+        matches.append(fixture)
+
+    unique = {str(fixture.get("fixture_id") or "") for fixture in matches}
+    if len(unique) != 1:
+        return None
+    # A gendered label must not be attached to the other gender's fixture.
+    candidate_gender = _candidate_gender(item) or _gender(normalized)
+    fixture_gender = _gender(str(matches[0].get("name") or ""))
+    if candidate_gender and fixture_gender and candidate_gender != fixture_gender:
+        return None
+    return matches[0]
+
+
 def _best_fixture(
     item: Dict[str, Any],
     fixtures: Iterable[Dict[str, Any]],
@@ -274,6 +365,26 @@ def _best_fixture(
                 return active[0]
             return None
     return scored[0][1]
+
+
+def _resolve_fixture(
+    item: Dict[str, Any],
+    fixtures: Iterable[Dict[str, Any]],
+    now: Optional[datetime] = None,
+) -> Optional[Dict[str, Any]]:
+    """The fixture this candidate is carrying, by team names or by series+round.
+
+    Team scoring is tried first and is unchanged. The competition+round path only
+    ever sees titles team scoring found nothing in, so it can add matches but
+    never change one.
+    """
+    fixture_list = list(fixtures)
+    resolved = _best_fixture(item, fixture_list, now)
+    if resolved is not None:
+        return resolved
+    return _competition_round_fixture(
+        item, fixture_list, now or datetime.now(timezone.utc)
+    )
 
 
 def _parse_source_time(value: Any, source_timezone: ZoneInfo, now: datetime) -> Optional[datetime]:
@@ -588,17 +699,39 @@ def reuse_published_event_ids(
     if not published:
         return 0
 
+    # Reuse must never hand a card an id that another card in this same scan is
+    # already using. It did: one fixture was published as both
+    # `sri-lanka-vs-india-1st-test` and `sri-lanka-vs-india`, because the second
+    # card's name matched a previously published entry whose id the first card had
+    # legitimately minted. Two cards then answered to overlapping identities and
+    # the frontend had no way to tell which one it had open.
+    claimed: Dict[str, str] = {}
+    for item in items:
+        event_id = str(item.get("id") or "").strip()
+        if event_id:
+            claimed.setdefault(event_id, _event_identity_name(item.get("name")))
+
     reused = 0
     for item in items:
         key = _event_identity_name(item.get("name"))
         previous = published.get(key)
         if not previous:
             continue
-        if str(item.get("id") or "").strip() != previous:
-            item["previous_event_id"] = str(item.get("id") or "")
-            item["id"] = previous
-            item["promoted_card"] = True
-            reused += 1
+        current = str(item.get("id") or "").strip()
+        if current == previous:
+            continue
+        owner = claimed.get(previous)
+        if owner is not None and owner != key:
+            # Another fixture in this scan owns that id. Keeping the freshly
+            # minted id is the safe answer: a card with its own identity is
+            # recoverable, two cards sharing one identity is not.
+            continue
+        item["previous_event_id"] = current
+        item["id"] = previous
+        item["promoted_card"] = True
+        claimed.pop(current, None)
+        claimed[previous] = key
+        reused += 1
     return reused
 
 
@@ -988,6 +1121,18 @@ def enrich_event_candidates(
             stats["matched"] += 1
             if item.get("time_verification") == "corrected":
                 stats["corrected"] += 1
+            output.append(item)
+            continue
+
+        # A label that names its own round identifies one fixture even when the
+        # series has several running at once, so it is asked before the broad
+        # "one live fixture in this competition" rule below.
+        round_match = _competition_round_fixture(item, relevant, now_utc)
+        if round_match is not None and str(item.get("url") or "").strip():
+            item = _classify(_apply_fixture(item, round_match, source_time), now_utc)
+            matched_fixture_ids.add(round_match["fixture_id"])
+            stats["matched"] += 1
+            stats["round_label_matched"] = int(stats.get("round_label_matched", 0)) + 1
             output.append(item)
             continue
 

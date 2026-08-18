@@ -211,7 +211,10 @@ const state = {
     successfulStarts: 0,
     stalls: 0,
     updatedAt: 0
-  })
+  }),
+  // What the player actually decided at runtime, for the stream-info panel and
+  // for a test to be able to read instead of guessing.
+  playbackDiagnostics: {}
 };
 
 const video = $('videoPlayer');
@@ -2233,6 +2236,18 @@ const EVENT_SPORTS = [
 // Guide 5. The scanner's own category wins when it is specific; the generic
 // "LIVE" bucket is not a sport, so the name and competition decide instead.
 function eventSport(item) {
+  // Requirement 11, corrected. The scanner already resolved this event's sport
+  // from the source category, the competition *and* the name, and published it as
+  // `sport_type`. This function only ever saw the name and the competition, so the
+  // two disagreed: the Smart Filter (which reads `sport_type` through
+  // itemSportType) counted a CONMEBOL Libertadores tie as football while the badge
+  // on the same card read OTHER. The published value is preferred, and the local
+  // patterns stay as the fallback for a card that predates the field.
+  const published = String(item?.sport_type || '').trim().toLowerCase();
+  if (published && published !== 'other' && published !== 'channel') {
+    const known = EVENT_SPORTS.find(([label]) => label.toLowerCase() === published);
+    if (known) return { label: known[0], icon: known[1] };
+  }
   const declared = cleanDisplayName(item?.source_category || '').replace(/^Untitled$/i, '');
   const haystack = [declared, item?.competition, item?.name].filter(Boolean).join(' ');
   if (declared && !/^(?:live|sports?|event|other|general)$/i.test(declared)) {
@@ -2345,10 +2360,54 @@ function eventArtFallbackHtml(item, parts) {
   return `<div class="event-art-fallback" aria-hidden="true"><i class="fas ${sport.icon}"></i><span>${escapeHtml(abbreviate(parts.title))}</span></div>`;
 }
 
+// Section 10/25. Every picture this fixture has, in the order to try them.
+//
+// The card used to read `item.logo` and nothing else, so a fixture that arrived
+// with team badges and an event poster still rendered two initials - the artwork
+// was published and then ignored. The chain is: the fixture's own logo, then the
+// provider poster, then anything in artwork_candidates. Initials are the last
+// resort only, which is what section 10 asks for.
+function eventArtworkChain(item) {
+  const urls = [];
+  const push = (value) => {
+    const url = String(value || '').trim();
+    if (url && !urls.includes(url)) urls.push(url);
+  };
+  push(item?.logo);
+  push(item?.provider_poster_url);
+  const candidates = item?.artwork_candidates;
+  if (Array.isArray(candidates)) candidates.forEach(push);
+  return urls;
+}
+
+function eventTeamBadges(item) {
+  const home = String(item?.home_badge_url || '').trim();
+  const away = String(item?.away_badge_url || '').trim();
+  return home && away ? { home, away } : null;
+}
+
 function eventArtHtml(item, parts) {
-  const logo = String(item?.logo || '').trim();
-  if (!logo) return eventArtFallbackHtml(item, parts);
-  return `<img src="${escapeHtml(logo)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-event-art="1">`;
+  // Section 10's two-crest layout. It was described as impossible because there
+  // was only one logo field; both badges are published now, so it is drawn.
+  const badges = eventTeamBadges(item);
+  if (badges) {
+    return (
+      '<div class="event-art-crests" data-event-art-crests="1">'
+      + `<img src="${escapeHtml(badges.home)}" alt="" loading="lazy" decoding="async"`
+      + ' referrerpolicy="no-referrer" data-event-badge="home">'
+      + '<em>vs</em>'
+      + `<img src="${escapeHtml(badges.away)}" alt="" loading="lazy" decoding="async"`
+      + ' referrerpolicy="no-referrer" data-event-badge="away">'
+      + '</div>'
+    );
+  }
+  const chain = eventArtworkChain(item);
+  if (!chain.length) return eventArtFallbackHtml(item, parts);
+  // The rest of the chain travels with the element, so a broken first choice
+  // tries the next real picture instead of dropping straight to initials.
+  const rest = chain.slice(1);
+  const fallbacks = rest.length ? ` data-art-fallbacks="${escapeHtml(JSON.stringify(rest))}"` : '';
+  return `<img src="${escapeHtml(chain[0])}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" data-event-art="1"${fallbacks}>`;
 }
 
 // Guide 20. Reminders are a local preference; nothing is sent anywhere.
@@ -2841,6 +2900,11 @@ function channelChipSummary(channel) {
   // Only the scanner can know how many exact duplicates it removed, so the note
   // appears only when it actually reported some.
   const dupes = Math.max(0, Number(channel?.dropped_variant_count) || 0);
+  // Section 5 lists both counts, and both are shown - including "0 Backups".
+  // Dropping the zero read tidier and was wrong: it is the design document's
+  // requirement, twenty-four viewport assertions check for it, and the reason it
+  // was cramped (three chips squeezed into a 375px strip) is fixed properly by the
+  // 150px column floor rather than by removing information.
   const parts = [
     { cls: 'event-channel-chip-primary', text: `${primary} Primary` },
     { cls: 'event-channel-chip-backups', text: `${backups} ${backups === 1 ? 'Backup' : 'Backups'}` }
@@ -3083,11 +3147,30 @@ function createEventCard(item, visualIndex) {
       ? `<button class="card-fav-btn" data-favorite-id="${escapeHtml(favoriteKey)}" type="button" title="Bookmark" aria-label="Bookmark ${escapeHtml(parts.title)}"><i class="far fa-star"></i></button>`
       : `<button class="card-remind-btn" data-reminder-id="${escapeHtml(reminderKey)}" type="button" title="Remind Me" aria-pressed="false" aria-label="Remind me about ${escapeHtml(parts.title)}"><i class="far fa-bell"></i></button>`}`;
 
+  // Section 10. A broken picture moves to the next real picture this fixture has,
+  // and only reaches initials when every one of them has failed.
   const image = qs('img[data-event-art]', card);
   image?.addEventListener('error', () => {
-    const wrap = image.parentElement;
-    if (wrap) image.replaceWith(...htmlToNodes(eventArtFallbackHtml(item, parts)));
+    let remaining = [];
+    try { remaining = JSON.parse(image.dataset.artFallbacks || '[]'); } catch (_) { remaining = []; }
+    const next = Array.isArray(remaining) ? remaining.shift() : null;
+    if (next) {
+      image.dataset.artFallbacks = JSON.stringify(remaining);
+      image.src = next;
+      return;
+    }
+    if (image.parentElement) image.replaceWith(...htmlToNodes(eventArtFallbackHtml(item, parts)));
   });
+  // A crest pair is only honest while both crests are there; if either fails the
+  // whole pair is replaced rather than leaving one team showing.
+  const crests = qs('[data-event-art-crests]', card);
+  if (crests) {
+    crests.querySelectorAll('img').forEach((crest) => {
+      crest.addEventListener('error', () => {
+        if (crests.parentElement) crests.replaceWith(...htmlToNodes(eventArtFallbackHtml(item, parts)));
+      });
+    });
+  }
   qs('.card-fav-btn', card)?.addEventListener('click', (event) => toggleFavorite(item._uid, event));
   qs('.card-remind-btn', card)?.addEventListener('click', (event) => toggleEventReminder(item._uid, event));
 
@@ -4162,6 +4245,75 @@ function hlsConfigFor(mode, isMovie, _fastStart = false) {
   };
 }
 
+// Requirement 9, corrected. How many whole segments of reserve a live stream
+// needs before playback is safe from an ordinary network hiccup.
+//
+// Today Match and Upcoming playback ran for roughly eight seconds, froze, ran
+// again and froze again, while Live TV on the same connection was fine. The cause
+// was here: the live profiles express the reserve in *seconds* with no reference
+// to how long a segment is. Event feeds ship four-second segments, so the event
+// profile's `maxBufferLength: 5` was one and a quarter fragments - hls.js stopped
+// loading ahead at five seconds, playback drained the two fragments it had, and
+// any latency spike inside the next four seconds emptied the buffer. Eight
+// seconds of media, then a stall, on repeat. Live TV channels use longer
+// segments and a non-low-latency profile, which is why they never showed it.
+//
+// Raising every buffer number would have hidden this rather than fixed it, and
+// would have cost startup time on streams that never had the problem. The reserve
+// is instead measured in fragments once the playlist states its own segment
+// length, and only ever widened - a stream with short segments keeps its fast
+// start because three of its fragments really is a small number of seconds.
+const LIVE_MIN_BUFFER_SEGMENTS = 3;
+const LIVE_MIN_MAX_BUFFER_SEGMENTS = 6;
+const LIVE_SEGMENT_AWARE_CEILING_S = 30;
+
+function applySegmentAwareLiveBuffer(hls, details) {
+  if (!hls || !hls.config || !details) return false;
+  const segment = Number(details.targetduration || 0)
+    || Number(details.averagetargetduration || 0)
+    || Number(details.fragments?.[0]?.duration || 0);
+  if (!Number.isFinite(segment) || segment <= 0) return false;
+
+  const floor = Math.min(
+    LIVE_SEGMENT_AWARE_CEILING_S,
+    Math.ceil(segment * LIVE_MIN_BUFFER_SEGMENTS),
+  );
+  const maxFloor = Math.min(
+    LIVE_SEGMENT_AWARE_CEILING_S * 2,
+    Math.ceil(segment * LIVE_MIN_MAX_BUFFER_SEGMENTS),
+  );
+
+  let changed = false;
+  if (Number(hls.config.maxBufferLength || 0) < floor) {
+    hls.config.maxBufferLength = floor;
+    changed = true;
+  }
+  if (Number(hls.config.maxMaxBufferLength || 0) < maxFloor) {
+    hls.config.maxMaxBufferLength = maxFloor;
+    changed = true;
+  }
+  // Chasing the live edge with a reserve this small is what turned an ordinary
+  // 250 ms manifest fetch into a visible freeze. Two fragments of target latency
+  // is not enough headroom when a fragment is several seconds long.
+  if (segment >= 3 && Number(hls.config.liveSyncDurationCount || 0) < 3) {
+    hls.config.liveSyncDurationCount = 3;
+    changed = true;
+  }
+  if (segment >= 3 && hls.config.lowLatencyMode) {
+    hls.config.lowLatencyMode = false;
+    changed = true;
+  }
+  if (changed) {
+    state.playbackDiagnostics.segmentAwareBuffer = {
+      segment_seconds: segment,
+      max_buffer_length: hls.config.maxBufferLength,
+      max_max_buffer_length: hls.config.maxMaxBufferLength,
+      live_sync_duration_count: hls.config.liveSyncDurationCount
+    };
+  }
+  return changed;
+}
+
 function shakaConfigFor(mode, isMovie, _fastStart = false) {
   const profile = networkProfile(mode, isMovie);
   const isEvent = isLiveEventContext();
@@ -4714,6 +4866,10 @@ function initHls(url, session, attemptToken) {
       });
     }
     buildQualityMenu(data.levels || hls.levels);
+  });
+  hls.on(Hls.Events.LEVEL_LOADED, (_, data) => {
+    if (!isActiveAttempt(session, attemptToken) || isMovie) return;
+    applySegmentAwareLiveBuffer(hls, data?.details);
   });
   hls.on(Hls.Events.FRAG_LOADED, () => {
     if (isActiveAttempt(session, attemptToken) && !session.success) markAttemptProgress('fragment loaded', attemptToken);
@@ -8838,6 +8994,40 @@ if (['127.0.0.1', 'localhost'].includes(location.hostname)) {
         currentRoute: session.currentAttempt?.route || '',
         success: Boolean(session.success),
       } : null;
+    },
+    // Requirement 9. What the live buffer actually became at runtime, and the
+    // ability to force the pre-fix numbers back on, so the eight-second freeze can
+    // be reproduced and the fix measured against it rather than asserted.
+    runtimeConfig() {
+      return { play_proxies: (state.runtime?.play_proxies || []).slice() };
+    },
+    liveBufferSnapshot() {
+      const config = state.hls?.config;
+      return {
+        diagnostics: state.playbackDiagnostics?.segmentAwareBuffer || null,
+        config: config ? {
+          maxBufferLength: config.maxBufferLength,
+          maxMaxBufferLength: config.maxMaxBufferLength,
+          liveSyncDurationCount: config.liveSyncDurationCount,
+          lowLatencyMode: Boolean(config.lowLatencyMode),
+        } : null,
+      };
+    },
+    forceLegacyLiveBuffer() {
+      const config = state.hls?.config;
+      if (!config) return false;
+      config.maxBufferLength = 5;
+      config.maxMaxBufferLength = 12;
+      config.liveSyncDurationCount = 2;
+      config.lowLatencyMode = true;
+      return true;
+    },
+    eventCardUid(eventId) {
+      const item = (state.currentItems || []).find((entry) => String(entry.id) === String(eventId));
+      return item ? String(item._uid || '') : '';
+    },
+    nowPlayingName() {
+      return String(state.playbackSession?.item?.name || state.currentItem?.name || '');
     },
     startAuditPlayback(item, sourceKind = 'movie') {
       const kind = sourceKind === 'channel' ? VIEW.CHANNEL : VIEW.MOVIE;

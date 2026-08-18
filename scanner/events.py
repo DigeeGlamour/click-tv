@@ -18,7 +18,13 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 try:
     from scanner.live_protection import probe_card_is_playable, protect_live_events
-    from scanner.event_lifecycle import authority_says_live, classify_state
+    from scanner.event_lifecycle import (
+        ROUTE_LIVE_STATUSES,
+        ROUTE_UPCOMING_STATUSES,
+        authority_says_live,
+        classify_state,
+        event_destination,
+    )
     from scanner.targeted_scan import fixture_key, has_valid_link
     from scanner.source_coverage import build_source_coverage, write_source_coverage
     from scanner.merger import (
@@ -26,6 +32,8 @@ try:
         load_previous_primary_keys,
         merge_candidates,
         normalize_event_key,
+        participant_fold_key,
+        same_real_fixture,
         sport_sort_index,
     )
     from scanner.schedule_resolver import (
@@ -40,7 +48,13 @@ except ImportError:
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
     from live_protection import probe_card_is_playable, protect_live_events
-    from event_lifecycle import authority_says_live, classify_state
+    from event_lifecycle import (
+        ROUTE_LIVE_STATUSES,
+        ROUTE_UPCOMING_STATUSES,
+        authority_says_live,
+        classify_state,
+        event_destination,
+    )
     from targeted_scan import fixture_key, has_valid_link
     from source_coverage import build_source_coverage, write_source_coverage
     from merger import (
@@ -48,6 +62,8 @@ except ImportError:
         load_previous_primary_keys,
         merge_candidates,
         normalize_event_key,
+        participant_fold_key,
+        same_real_fixture,
         sport_sort_index,
     )
     from schedule_resolver import (
@@ -358,31 +374,40 @@ def _is_upcoming_fresh(
     return True
 
 
-LIVE_SCHEDULE_STATUSES = frozenset({"LIVE_NOW", "LIVE", "CHANNEL_LIVE", "IN_PROGRESS"})
-UPCOMING_SCHEDULE_STATUSES = frozenset({
-    "UPCOMING", "STARTING_SOON", "LINK_UPDATING", "NOT_STARTED", "SCHEDULED",
-})
+#: Kept as module names because tests and older callers import them from here.
+#: The rule itself now lives in scanner/event_lifecycle.py so that the merge can
+#: group by the same destination this function routes to - see event_destination.
+LIVE_SCHEDULE_STATUSES = ROUTE_LIVE_STATUSES
+UPCOMING_SCHEDULE_STATUSES = ROUTE_UPCOMING_STATUSES
+
+#: Grouping and routing must agree, so there is exactly one implementation.
+_destination_for = event_destination
 
 
-def _destination_for(card: Dict[str, Any]) -> str:
-    """Decide Today Match vs Upcoming from the event, not from its source file.
+def _stamp_final_routing(card: Dict[str, Any], destination: str) -> None:
+    """Make the published fields agree with where the card actually went.
 
-    Routing used to read `source_pipeline`, so a match stayed wherever its
-    playlist happened to be configured. A live fixture that arrived from an
-    "upcoming" feed was therefore filed as Upcoming and then dropped for having
-    started in the past - which is how `Sri Lanka vs India 1st Test`, carrying
-    five working streams, vanished from both tabs. The schedule status is what
-    actually decides where an event belongs; the source group is only a hint
-    for anything with no resolved status at all.
+    `category` and `source_pipeline` were copied from the feed the candidate
+    arrived in and then never revisited, while `_destination_for` routes on the
+    schedule status. A live fixture configured under an "upcoming" feed therefore
+    published into Today Match still labelled `category: "upcoming"` - so the file
+    it sits in and the field describing it disagreed, and any consumer trusting
+    the field put the card in the wrong tab.
+
+    Provenance is not lost: the feed the candidate came from stays available as
+    `original_source_pipeline` and in `source_provenance`/`source_ids`.
     """
-    status = str(card.get("schedule_status") or card.get("status") or "").strip().upper()
-    if status in LIVE_SCHEDULE_STATUSES:
-        return "today_match"
-    if status in UPCOMING_SCHEDULE_STATUSES:
-        return "upcoming"
-    if status == "ENDED":
-        return "ended"
-    return str(card.get("source_pipeline") or "").strip().lower()
+    original = str(
+        card.get("original_source_pipeline") or card.get("source_pipeline") or ""
+    ).strip().lower()
+    if original:
+        card["original_source_pipeline"] = original
+    card["category"] = destination
+    card["source_pipeline"] = destination
+    card["event_type"] = destination
+    if original and original != destination:
+        card["routing_changed_from"] = original
+        card["routing_reason"] = "schedule_status_routing"
 
 
 def _payload(
@@ -583,20 +608,50 @@ def _apply_streamed_enrichment(
                 "embed_channels": 0, "unmatched": 0}
 
     by_key: Dict[str, Dict[str, Any]] = {}
+    # Sections 1/25, together. Matching on the plain name key alone meant the
+    # provider's "Sri Lanka vs India" never met the card the catalogue names
+    # "Sri Lanka vs India 1st Test", and the sides being listed the other way round
+    # missed too - so a fixture the provider had a poster, badges and an embed for
+    # published with none of them. The participants-only fold key is the same
+    # weaker second opinion the merge uses, and it is confirmed the same way:
+    # same_real_fixture still has to agree on sport, competition and kickoff before
+    # anything is attached.
+    by_fold: Dict[str, List[Dict[str, Any]]] = {}
     for candidate in provider_candidates:
         key = normalize_event_key(candidate.get("name", ""))
         if key:
             by_key.setdefault(key, candidate)
+        fold = participant_fold_key(candidate)
+        if fold:
+            by_fold.setdefault(fold, []).append(candidate)
+
+    def provider_for(card: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        exact = by_key.get(normalize_event_key(card.get("name", "")))
+        if exact is not None:
+            return exact
+        fold = participant_fold_key(card)
+        if not fold:
+            return None
+        # Only one provider fixture may answer, and it must pass the merge's own
+        # identity test. Two answers means the participants are ambiguous today.
+        agreeing = [
+            candidate for candidate in by_fold.get(fold, [])
+            if same_real_fixture(card, candidate)
+        ]
+        return agreeing[0] if len(agreeing) == 1 else None
 
     stats = {"matched": 0, "artwork": 0, "embed_backups": 0,
-             "embed_channels": 0, "unmatched": 0}
+             "embed_channels": 0, "unmatched": 0, "matched_by_participants": 0}
     used: set = set()
     for card in cards:
         key = normalize_event_key(card.get("name", ""))
-        provider = by_key.get(key)
+        provider = provider_for(card)
         if provider is None:
             continue
+        if by_key.get(key) is not provider:
+            stats["matched_by_participants"] += 1
         used.add(key)
+        used.add(normalize_event_key(provider.get("name", "")))
         stats["matched"] += 1
         card["provider_enriched"] = "streamed"
         card["provider_event_id"] = str(provider.get("provider_event_id") or "")
@@ -613,6 +668,20 @@ def _apply_streamed_enrichment(
                 if str(url).strip() and not (str(url) in seen or seen.add(str(url)))
             ]
             stats["artwork"] += 1
+
+        # Section 10. The two team badges and the event poster, named separately so
+        # the card can draw "home badge VS away badge" instead of two initials.
+        # Only filled in where the card has nothing of its own: a poster the
+        # playlist already supplied is the fixture's own artwork and stays.
+        for field in ("provider_poster_url", "home_badge_url", "away_badge_url"):
+            value = str(provider.get(field) or "").strip()
+            if value and not str(card.get(field) or "").strip():
+                card[field] = value
+        if not str(card.get("logo") or "").strip():
+            poster = str(provider.get("provider_poster_url") or "").strip()
+            if poster:
+                card["logo"] = poster
+                stats["poster_filled"] = int(stats.get("poster_filled", 0)) + 1
 
         embeds = provider.get("provider_embed_streams")
         if isinstance(embeds, list) and embeds:
@@ -867,7 +936,7 @@ def process_events(
             if not _is_today_fresh(card_copy, now, today_max_age_hours):
                 today_stale += 1
                 continue
-            card_copy["event_type"] = "today_match"
+            _stamp_final_routing(card_copy, "today_match")
             card_copy["status"] = str(
                 card_copy.get("schedule_status")
                 or card_copy.get("status")
@@ -886,7 +955,7 @@ def process_events(
             ):
                 upcoming_stale += 1
                 continue
-            card_copy["event_type"] = "upcoming"
+            _stamp_final_routing(card_copy, "upcoming")
             card_copy["status"] = str(
                 card_copy.get("schedule_status") or card_copy.get("status") or "UPCOMING"
             )

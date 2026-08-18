@@ -778,8 +778,32 @@ class Section22To25StreamedIsAdditive(unittest.TestCase):
         cricket = next(c for c in candidates if c["name"] == "Sri Lanka vs India")
         self.assertEqual(cricket["sport_type"], "cricket")
         self.assertTrue(cricket["start_time"])
-        self.assertEqual(len(cricket["provider_artwork"]), 2)
         self.assertTrue(health.artwork)
+        # Section 25/10. Both team badges, and the event poster addressed by the
+        # pair of them - the live API sends no `poster` field, so a poster built
+        # only from a `poster` key was never requested and every card fell through
+        # to initials. The poster leads, because it is one picture of this fixture.
+        artwork = cricket["provider_artwork"]
+        self.assertEqual(artwork[0], cricket["provider_poster_url"])
+        self.assertIn("/poster/", cricket["provider_poster_url"])
+        self.assertIn(cricket["home_badge_url"], artwork)
+        self.assertIn(cricket["away_badge_url"], artwork)
+        self.assertIn("/badge/", cricket["home_badge_url"])
+        self.assertIn("/badge/", cricket["away_badge_url"])
+        self.assertEqual(len(artwork), len(set(artwork)))
+
+    def test_a_match_without_badges_claims_no_artwork(self):
+        """Section 12's rule for pictures: nothing invented when nothing is sent."""
+        settings = StreamedSettings.from_settings(self.SETTINGS)
+        candidate = normalize_match(
+            {"id": "x1", "title": "Alpha vs Beta", "category": "cricket",
+             "date": 1786996800000,
+             "teams": {"home": {"name": "Alpha"}, "away": {"name": "Beta"}}},
+            settings,
+        )
+        self.assertNotIn("provider_artwork", candidate)
+        self.assertNotIn("provider_poster_url", candidate)
+        self.assertNotIn("home_badge_url", candidate)
 
     def test_a_provider_candidate_carries_no_native_stream(self):
         candidates, _ = self._collect(self._opener())
@@ -859,10 +883,39 @@ class Section33And34SnapshotAndNaming(unittest.TestCase):
         self.assertIn("_validate_playback_references", source)
         self.assertIn("playback profile", source)
 
-    def test_the_provider_is_disabled_by_default(self):
+    def test_the_provider_is_configured_before_it_is_enabled(self):
+        """An enabled provider must have somewhere real to call.
+
+        This replaces an assertion that the provider is disabled. It was true and
+        it was the problem: shipped disabled with an empty base_url, the whole
+        Streamed layer contributed nothing to production - no fixture enrichment,
+        no poster, no badge, no embed fallback - while every unit test passed
+        against hand-written payloads. What has to hold is not "off", it is
+        "configured, and additive when on", which the rest of this class asserts.
+        """
         settings = json.loads((ROOT / "config" / "settings.json").read_text(encoding="utf-8"))
         self.assertIn("streamed_provider", settings)
-        self.assertFalse(settings["streamed_provider"]["enabled"])
+        provider = settings["streamed_provider"]
+        if provider.get("enabled"):
+            self.assertTrue(str(provider.get("base_url") or "").startswith("https://"))
+            for key in ("matches_path", "upcoming_path", "streams_path", "images_base"):
+                self.assertTrue(str(provider.get(key) or "").strip(), key)
+            self.assertIn("{source}", provider["streams_path"])
+            self.assertIn("{id}", provider["streams_path"])
+        else:
+            self.assertEqual(str(provider.get("base_url") or ""), "")
+
+    def test_an_enabled_provider_never_becomes_the_native_primary(self):
+        """Section 27, restated as a config-level guard.
+
+        Turning the provider on must not be able to reorder playback: an embed is
+        only ever offered as a default when the card has no native stream at all.
+        """
+        source = (ROOT / "scanner" / "events.py").read_text(encoding="utf-8")
+        self.assertIn("has_native_primary", source)
+        self.assertIn("not has_native_primary", source)
+        self.assertIn('card["embed_backups"]', source)
+        self.assertNotIn('card["backups"] = card["embed_backups"]', source)
 
 
 # ------------------------------------------------------------------ hard locks

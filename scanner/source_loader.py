@@ -479,6 +479,39 @@ def process_single_source(
     visited_urls: Optional[Set[str]] = None,
     current_depth: int = 0,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """Download, parse, expand and credit one configured source.
+
+    Sections 6-10. The broadcaster a feed relays is stamped here, from the
+    source's own config entry, on whichever route the items arrived by - a fresh
+    fetch, a 304, or the stale cache. Doing it inside the body missed the cache
+    returns, which is the common case on a re-run.
+
+    The channel layer could previously name a broadcaster only when a *stream
+    title* happened to contain one, so a Today Match card usually published with
+    no channels[] at all even though each of its streams came from a feed that is
+    one named broadcaster. That name is stated in config, not inferred here.
+
+    It is written to `source_broadcaster`, which scanner/channel_resolver.py
+    consults *last*: a stream whose own title or tvg-name names its channel is
+    more specific than the feed it arrived in, and keeps it.
+    """
+    items, health = _fetch_and_parse_source(
+        source_info, settings, visited_urls, current_depth
+    )
+    declared = str((source_info or {}).get("broadcaster") or "").strip()
+    if declared:
+        for item in items:
+            if isinstance(item, dict):
+                item.setdefault("source_broadcaster", declared)
+    return items, health
+
+
+def _fetch_and_parse_source(
+    source_info: Dict[str, Any],
+    settings: Dict[str, Any],
+    visited_urls: Optional[Set[str]] = None,
+    current_depth: int = 0,
+) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Download, parse, and optionally expand one configured source."""
     source_info = dict(source_info or {})
     visited = visited_urls if visited_urls is not None else set()

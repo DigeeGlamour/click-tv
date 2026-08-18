@@ -97,6 +97,10 @@ class StreamedSettings:
     timeout_seconds: int = DEFAULT_TIMEOUT_SECONDS
     cache_seconds: int = DEFAULT_CACHE_SECONDS
     max_embed_streams: int = 2
+    #: What an embed fallback is called on the card. Provider-agnostic by
+    #: configuration: section 21 says the card must not hard-code one provider,
+    #: and section 16 says an internal server key must never reach the screen.
+    embed_label: str = "Streamed"
     headers: Dict[str, str] = field(default_factory=dict)
 
     @classmethod
@@ -117,6 +121,7 @@ class StreamedSettings:
             timeout_seconds=_safe_int(block.get("timeout_seconds"), DEFAULT_TIMEOUT_SECONDS, 2, 60),
             cache_seconds=_safe_int(block.get("cache_seconds"), DEFAULT_CACHE_SECONDS, 30, 3600),
             max_embed_streams=_safe_int(block.get("max_embed_streams"), 2, 0, 6),
+            embed_label=str(block.get("embed_label") or cls.embed_label).strip() or cls.embed_label,
             headers=headers if isinstance(headers, dict) else {},
         )
 
@@ -286,20 +291,46 @@ def _team_names(match: Dict[str, Any]) -> Tuple[str, str]:
     )
 
 
-def _badge_urls(match: Dict[str, Any], settings: StreamedSettings) -> List[str]:
-    """Section 25. Team/player badges first, then the event poster."""
+def _badge_urls(
+    match: Dict[str, Any], settings: StreamedSettings
+) -> Tuple[List[str], str, str, str]:
+    """Section 25 artwork, as (ordered candidates, poster, home badge, away badge).
+
+    The poster used to be read from a `poster` field on the match. The live API
+    does not send one: the poster is addressed by *both* team badges,
+    `/api/images/poster/{home}/{away}.webp`, so that field was always empty and no
+    poster was ever requested - which is why cards fell straight through to two
+    initials. The badges are also returned separately, because section 10 renders
+    the two of them side by side with a VS between rather than as one image.
+
+    Order: the event poster (one picture of this fixture), then each team's badge,
+    then whatever the card already had. Initials remain the last resort only.
+    """
     base = settings.images_base or f"{settings.base_url}/api/images"
-    urls: List[str] = []
     teams = match.get("teams") if isinstance(match.get("teams"), dict) else {}
-    for side in ("home", "away"):
+
+    def badge_of(side: str) -> str:
         entry = teams.get(side) if isinstance(teams.get(side), dict) else {}
-        badge = str(entry.get("badge") or "").strip()
-        if badge:
-            urls.append(badge if badge.startswith("http") else f"{base}/badge/{badge}.webp")
+        value = str(entry.get("badge") or "").strip()
+        if not value:
+            return ""
+        return value if value.startswith("http") else f"{base}/badge/{value}.webp"
+
+    home_badge = badge_of("home")
+    away_badge = badge_of("away")
+
+    raw = match.get("teams") if isinstance(match.get("teams"), dict) else {}
+    home_id = str((raw.get("home") or {}).get("badge") or "").strip() if isinstance(raw.get("home"), dict) else ""
+    away_id = str((raw.get("away") or {}).get("badge") or "").strip() if isinstance(raw.get("away"), dict) else ""
+
     poster = str(match.get("poster") or "").strip()
-    if poster:
-        urls.append(poster if poster.startswith("http") else f"{base}/poster/{poster}.webp")
-    return urls
+    if poster and not poster.startswith("http"):
+        poster = f"{base}/poster/{poster}.webp"
+    elif not poster and home_id and away_id:
+        poster = f"{base}/poster/{home_id}/{away_id}.webp"
+
+    urls = [url for url in (poster, home_badge, away_badge) if url]
+    return urls, poster, home_badge, away_badge
 
 
 def normalize_match(match: Dict[str, Any], settings: StreamedSettings) -> Optional[Dict[str, Any]]:
@@ -351,9 +382,17 @@ def normalize_match(match: Dict[str, Any], settings: StreamedSettings) -> Option
         candidate["home_team"] = home
     if away:
         candidate["away_team"] = away
-    artwork = _badge_urls(match, settings)
+    artwork, poster, home_badge, away_badge = _badge_urls(match, settings)
     if artwork:
         candidate["provider_artwork"] = artwork
+    # Section 10 draws the two badges side by side with a VS between them, so they
+    # are published separately as well as in the fallback chain.
+    if poster:
+        candidate["provider_poster_url"] = poster
+    if home_badge:
+        candidate["home_badge_url"] = home_badge
+    if away_badge:
+        candidate["away_badge_url"] = away_badge
     return candidate
 
 
@@ -384,11 +423,17 @@ def normalize_embed_streams(
             continue
         label = str(entry.get("source") or PROVIDER_ID).strip()
         number = entry.get("streamNo") or entry.get("stream_no")
+        # Sections 5/16. The provider's `source` key is an internal server name -
+        # "delta", "admin", "echo" - and it was being used as the channel's display
+        # name, so the card offered the viewer a chip reading "admin 1". That is
+        # internal plumbing on screen and it names no broadcaster at all. The
+        # fallback is labelled for what it is instead: the aggregator it came
+        # through, numbered when there is more than one. Section 34 still holds -
+        # this never claims to be the match's broadcaster - and the internal key
+        # stays in `provider_source` for reports, where it belongs.
+        display = settings.embed_label or "Streamed"
         streams.append({
-            # A channel name is only claimed when the provider actually supplies
-            # a broadcaster; section 34 forbids showing the provider's own name
-            # as a fake broadcaster.
-            "name": f"{label} {number}".strip() if number else label,
+            "name": f"{display} {number}".strip() if number else display,
             "provider": PROVIDER_ID,
             "provider_source": label,
             "playback_type": "embed",

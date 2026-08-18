@@ -336,3 +336,41 @@ def apply_verdict(card: Dict[str, Any], verdict: LifecycleVerdict) -> Dict[str, 
     if verdict.protections:
         updated["lifecycle_protections"] = list(verdict.protections)
     return updated
+
+
+# ── Where an event belongs, decided once ──────────────────────────────────────
+# Routing statuses. These live here rather than in scanner/events.py because the
+# merge has to group by the tab an event will *land in*, and the routing decision
+# is made from the schedule status. Two copies of this rule drifted apart once
+# already: grouping keyed on `source_pipeline` while routing keyed on status, so a
+# live fixture arriving from an "upcoming" feed was grouped away from the same
+# fixture arriving from a "today" feed and then routed into the same tab beside
+# it - one real match, two cards.
+ROUTE_LIVE_STATUSES = frozenset({"LIVE_NOW", "LIVE", "CHANNEL_LIVE", "IN_PROGRESS"})
+ROUTE_UPCOMING_STATUSES = frozenset({
+    "UPCOMING", "STARTING_SOON", "LINK_UPDATING", "NOT_STARTED", "SCHEDULED",
+})
+
+
+def event_destination(card: Dict[str, Any]) -> str:
+    """Decide Today Match vs Upcoming from the event, not from its source file.
+
+    Routing used to read `source_pipeline`, so a match stayed wherever its
+    playlist happened to be configured. A live fixture that arrived from an
+    "upcoming" feed was therefore filed as Upcoming and then dropped for having
+    started in the past - which is how `Sri Lanka vs India 1st Test`, carrying
+    five working streams, vanished from both tabs. The schedule status is what
+    actually decides where an event belongs; the source group is only a hint for
+    anything with no resolved status at all.
+
+    Returns "today_match", "upcoming", "ended", or whatever the source pipeline
+    says when no status resolved.
+    """
+    status = str(card.get("schedule_status") or card.get("status") or "").strip().upper()
+    if status in ROUTE_LIVE_STATUSES:
+        return "today_match"
+    if status in ROUTE_UPCOMING_STATUSES:
+        return "upcoming"
+    if status == "ENDED":
+        return "ended"
+    return str(card.get("source_pipeline") or "").strip().lower()

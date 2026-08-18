@@ -43,7 +43,7 @@
    at four so a wide sidebar does not shrink the chips into illegibility. */
 .sidebar-section.event-list-mode .event-channel-strip{
   display:grid!important;
-  grid-template-columns:repeat(auto-fit,minmax(128px,1fr))!important;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;
   gap:6px!important;
   box-sizing:border-box!important;
   width:100%!important;min-width:0!important;max-width:100%!important;
@@ -57,19 +57,21 @@
   background:linear-gradient(180deg,rgba(14,22,36,.72),rgba(10,16,27,.86))!important;
 }
 
-@supports (grid-template-columns:repeat(auto-fit,minmax(128px,1fr))){
+@supports (grid-template-columns:repeat(auto-fit,minmax(150px,1fr))){
   .sidebar-section.event-list-mode .event-channel-strip{
-    grid-template-columns:repeat(auto-fit,minmax(128px,1fr))!important;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr))!important;
   }
 }
 
-/* Four is the ceiling section 4 sets for a row. */
-.sidebar-section.event-list-mode .event-channel-strip[data-columns="4"]{
-  grid-template-columns:repeat(4,minmax(0,1fr))!important;
-}
-.sidebar-section.event-list-mode .event-channel-strip[data-columns="3"]{
-  grid-template-columns:repeat(3,minmax(0,1fr))!important;
-}
+/* Section 4/5, corrected. The exact-count rules for three and four columns are
+   gone. They overrode auto-fit, so three channels were squeezed into a 375px
+   sidebar at ~118px each and the summary line - the whole point of the chip -
+   ellipsised to "1 Pri... 0 Ba...". Auto-fit already expresses what section 4
+   asks for, "two to four per row by available width", and it honours the 150px
+   floor below which the summary stops being readable. A third channel wraps to a
+   second row on a narrow sidebar and sits beside the others on a wide one.
+
+   One and two are kept, because those only ever *reduce* the count. */
 .sidebar-section.event-list-mode .event-channel-strip[data-columns="2"]{
   grid-template-columns:repeat(2,minmax(0,1fr))!important;
 }
@@ -254,4 +256,109 @@
   }
   .sidebar-section.event-list-mode .event-channel-chip-sub{display:none!important}
   .sidebar-section.event-list-mode .event-channel-chip-name{grid-row:1!important;font-size:9.5px!important}
+}
+
+/* ── One card, not two boxes ──────────────────────────────────────────────── */
+/* Sections 2/3/15, corrected. The shell put the selector directly underneath the
+   row, but the row kept its own full border radius and its own status-coloured
+   bottom edge, so what the viewer saw was a finished card with a red line across
+   the bottom and a second, separate box below it. The fixture and its channels
+   are one card, so the seam between them is removed and the outer edge is drawn
+   once, around the pair.
+
+   Nothing here changes a box metric. The row keeps its 152px height, its three
+   columns and its border *widths*; only the bottom corner radii and the bottom
+   border's colour change, and neither participates in layout. The hard lock in
+   section 2 holds. */
+.sidebar-section.event-list-mode .event-card-shell:has(.event-channel-strip){
+  border:1px solid rgba(120,150,190,.18)!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+  background:rgba(10,16,27,.55)!important;
+}
+
+/* The row, when it is the top half of a card rather than a whole one. */
+.sidebar-section.event-list-mode .event-card-shell:has(.event-channel-strip) > .event-ref-card{
+  border-bottom-left-radius:0!important;
+  border-bottom-right-radius:0!important;
+  border-bottom-color:transparent!important;
+}
+
+/* The strip is now inside the shell's own border, so it draws none of its own
+   and no corner of its own. */
+.sidebar-section.event-list-mode .event-card-shell:has(.event-channel-strip) > .event-channel-strip{
+  border:0!important;
+  border-top:1px solid rgba(120,150,190,.14)!important;
+  border-radius:0!important;
+}
+
+/* Section 8. The playing ring belongs to the whole card. */
+.sidebar-section.event-list-mode .event-card-shell:has(.event-channel-strip).is-playing-event{
+  border-color:rgba(37,230,165,.45)!important;
+}
+
+/* :has() is widely supported, but a browser without it must not be left with two
+   boxes *and* a doubled border. Without :has() the shell simply stays invisible
+   and the strip keeps drawing its own rounded bottom, which is the old
+   appearance - correct, just not unified. */
+@supports not selector(:has(*)){
+  .sidebar-section.event-list-mode .event-card-shell{
+    border:0!important;background:transparent!important;
+  }
+}
+
+/* ── Section 10/15: the artwork tile is a thumbnail, not a slab ───────────── */
+/* The initials block was set at 17px/950 filling the whole 112px column, so on an
+   Upcoming card - where there is no poster - it read heavier than the fixture
+   title beside it and inverted the hierarchy section 15 asks for. The column
+   width is locked and unchanged; only the type scale and the padding move. */
+.sidebar-section.event-list-mode .event-art-versus{
+  padding:8px 6px!important;box-sizing:border-box!important;gap:2px!important;
+}
+.sidebar-section.event-list-mode .event-art-versus span{
+  font-size:13px!important;font-weight:900!important;letter-spacing:.3px!important;
+  color:#c9d7ea!important;
+}
+.sidebar-section.event-list-mode .event-art-versus em{
+  font-size:7.5px!important;letter-spacing:1.4px!important;color:#7787a0!important;
+}
+.sidebar-section.event-list-mode .event-art-fallback i{font-size:18px!important}
+.sidebar-section.event-list-mode .event-art-fallback span{
+  font-size:10px!important;font-weight:900!important;color:#c3d1e4!important;
+}
+
+/* Section 10. Two real crests with a VS between them, contained and padded -
+   never stretched, never cropped. */
+.sidebar-section.event-list-mode .event-art-crests{
+  display:flex!important;width:100%!important;height:100%!important;
+  box-sizing:border-box!important;
+  flex-direction:column!important;align-items:center!important;justify-content:center!important;
+  gap:2px!important;padding:7px 6px!important;
+  background:radial-gradient(circle at 50% 18%,rgba(90,168,255,.16),transparent 55%),
+             linear-gradient(145deg,#17253b,#0a111d)!important;
+}
+.sidebar-section.event-list-mode .event-art-crests img{
+  display:block!important;
+  width:100%!important;max-width:38px!important;height:auto!important;max-height:34px!important;
+  object-fit:contain!important;object-position:center!important;
+}
+.sidebar-section.event-list-mode .event-art-crests em{
+  color:#7787a0!important;font-size:7.5px!important;font-style:normal!important;font-weight:900!important;
+  letter-spacing:1.4px!important;text-transform:uppercase!important;
+}
+
+/* Section 10. A single picture is centred and contained, so a poster with a
+   different aspect ratio is never stretched to fill the tile. */
+.sidebar-section.event-list-mode .event-ref-card img[data-event-art]{
+  object-fit:contain!important;object-position:center!important;
+  background:linear-gradient(145deg,#141f31,#0a111d)!important;
+}
+
+@media (max-width:1000px){
+  .sidebar-section.event-list-mode .event-art-crests img{max-width:32px!important;max-height:28px!important}
+  .sidebar-section.event-list-mode .event-art-versus span{font-size:12px!important}
+}
+@media (max-width:480px){
+  .sidebar-section.event-list-mode .event-art-crests img{max-width:30px!important;max-height:26px!important}
+  .sidebar-section.event-list-mode .event-art-versus span{font-size:11.5px!important}
 }

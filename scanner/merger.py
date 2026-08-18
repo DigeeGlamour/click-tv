@@ -19,6 +19,11 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 from urllib.parse import urlparse
 
+try:  # The routing rule the merge has to group by. Stdlib-only module, no cycle.
+    from scanner.event_lifecycle import event_destination
+except ImportError:  # pragma: no cover - direct-module import path
+    from event_lifecycle import event_destination
+
 
 def _load_json_file(file_path: str | Path) -> Dict[str, Any]:
     path = Path(file_path)
@@ -371,6 +376,38 @@ def _strip_multi_day_labels(text: str) -> str:
     return " ".join(cleaned.split())
 
 
+#: A round descriptor or a season year sitting in FRONT of the participants.
+#: Providers write the series before the teams as often as after them:
+#:
+#:     "India tour of Sri Lanka 2026 1st Test Sri Lanka vs India"
+#:     "Copa America 2026 Brazil vs Argentina"
+#:
+#: The "team A vs team B" extraction below anchors at the start of the title, so
+#: the whole series name was swallowed into the left-hand side and the key came
+#: out as "india-tour-of-sri-lanka-2026-1-test-sri-lanka-vs-india" - a second card
+#: for a fixture already published as "sri-lanka-vs-india-1-test".
+_COMPETITION_PREFIX_MARKER = re.compile(
+    rf"(?i)\b(?:\d{{1,2}}\s+(?:{_FIXTURE_ORDINAL_KINDS})|(?:19|20)\d{{2}})\b"
+)
+
+
+def _strip_competition_prefix(left: str) -> str:
+    """Drop a series/season prefix from the left-hand side of "A vs B".
+
+    Only a *round ordinal* ("1 test", "2 odi") or a *four digit year* counts as
+    the marker, and only the text up to and including the last such marker is
+    removed. A team name does not carry either, so this cannot eat a participant;
+    if removing the prefix would leave nothing usable, the original is kept.
+    """
+    matches = list(_COMPETITION_PREFIX_MARKER.finditer(left))
+    if not matches:
+        return left
+    remainder = " ".join(left[matches[-1].end():].split())
+    if len(remainder) < 3:
+        return left
+    return remainder
+
+
 def normalize_event_key(name: str) -> str:
     text = str(name or "").casefold()
     text = text.replace("pheonix", "phoenix").replace("spirits", "spirit")
@@ -392,7 +429,7 @@ def normalize_event_key(name: str) -> str:
         r"(?:^|[-|])\s*([^-|]+?)\s+(?:versus|vs\.?|v\.?)\s+([^|]+)", text
     )
     if match:
-        left = match.group(1)
+        left = _strip_competition_prefix(match.group(1))
         right = match.group(2)
         right = re.split(r"\s+-\s+(?!(?:women|men)\b)", right, maxsplit=1)[0]
         gender = "women" if re.search(r"\bwom(?:e|a)n(?:'s|s)?\b", f"{left} {right}") else ""
@@ -455,9 +492,19 @@ _SPORT_RULES: Tuple[Tuple[str, str], ...] = (
     ("baseball", r"\bmlb\b|baseball|world\s+series|\bnpb\b"),
     ("basketball", r"basketball|\bnba\b|\bwnba\b|euroleague|basket"),
     ("volleyball", r"volleyball|beach\s+volley"),
-    ("hockey", r"ice\s+hockey|\bnhl\b|\bkhl\b|field\s+hockey"),
+    # "FIH Hockey World Cup" published as football, because the football rule
+    # matches a bare "Cup" and only "ice hockey"/"field hockey" were listed here.
+    # Hockey unqualified is still hockey.
+    ("hockey", r"ice\s+hockey|\bnhl\b|\bkhl\b|field\s+hockey|\bfih\b|hockey"),
     ("racing", r"horse\s+racing|racecourse|steeplechase|greyhound"),
-    ("football", r"football|soccer|bundesliga|eredivisie|serie\s+[ab]|la\s?liga|ligue\s?\d|s[uü]per\s+lig|\blig\b|liga|uefa|fifa|\bafc\b|\bcaf\b|concacaf|champions|europa|\befl\b|championship|friendlies|frauenliga|ekstraklasa|allsvenskan|superliga|eliteserien|primeira|segunda|coppa|copa|coupe|pokal|\bhnl\b|\bnwsl\b|\bnpl\b|\bmls\b|[akj][\s-]?league|\bcup\b|league|divisi[oó]n|division|\bfc\b|\bsc\b|united"),
+    # Requirement 11, corrected. These leagues published as sport_type "other",
+    # which meant the Smart Filter's Football tab hid them: Dutch "Eerste
+    # Divisie" (only "divisi[oó]n"/"division" were listed, never the Dutch
+    # "divisie"), Argentine "Primera Nacional"/"Primera C" (only the Portuguese
+    # "primeira" was listed), the Icelandic "-deild" tiers including
+    # "Urvalsdeild", Hungarian "NB I", and Dutch reserve sides "Jong AZ"/"Jong
+    # Ajax". Every one of them is football; none of them is a guess.
+    ("football", r"football|soccer|bundesliga|eredivisie|divisie|serie\s+[ab]|la\s?liga|ligue\s?\d|s[uü]per\s+lig|\blig\b|liga|uefa|fifa|\bafc\b|\bcaf\b|concacaf|conmebol|libertadores|sudamericana|champions|europa|\befl\b|championship|friendlies|frauenliga|ekstraklasa|allsvenskan|superliga|eliteserien|primeira|primera|segunda|coppa|copa|coupe|pokal|deild|torneo\s+federal|\bnb\s+i{1,3}\b|\bjong\b|\bhnl\b|\bnwsl\b|\bnpl\b|\bmls\b|[akj][\s-]?league|\bcup\b|league|divisi[oó]n|division|\bfc\b|\bsc\b|united"),
 )
 
 _SPORT_PATTERNS: Tuple[Tuple[str, Any], ...] = tuple(
@@ -672,11 +719,111 @@ def kickoffs_within_tolerance(
     return abs(int(left) - int(right)) <= max(0, int(tolerance_minutes)) * 60
 
 
+#: Words that describe *which round* of a competition, not which competition.
+#: A provider that has no series field routinely puts the round there instead:
+#: `Sri Lanka vs India` arrived with competition "1st Test" while the catalogue
+#: entry for the same match carried "India Tour of Sri Lanka 2026". Comparing
+#: those two as competitions made them contradict, so one live Test published as
+#: two cards. A round descriptor is therefore reduced to nothing, which makes it
+#: behave like the missing field it stands in for.
+_ROUND_ONLY_COMPETITION = re.compile(
+    r"(?i)\b(?:\d{1,3}(?:st|nd|rd|th)?|first|second|third|fourth|fifth|"
+    rf"only|final|finals|{_FIXTURE_ORDINAL_KINDS}|day|session|innings|inning|"
+    r"stage|group|matchday|week|game|fixture|pool|series)\b"
+)
+
+
+#: Shortest span that counts as a fixture running over more than one day.
+MULTI_DAY_WINDOW_SECONDS = 24 * 3600
+
+
+def _time_epoch(value: Any) -> Optional[int]:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    try:
+        parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return int(parsed.timestamp())
+
+
+def authoritative_fixture_window(
+    item: Dict[str, Any]
+) -> Optional[Tuple[int, int]]:
+    """The catalogue's own [start, end] for a fixture that runs over days.
+
+    A five-day Test is relayed once per day, so day 3 arrives with a kickoff two
+    days after day 1's. Kickoff tolerance is 90 minutes, so comparing the two
+    kickoffs said "different fixtures" and the same Test published as several
+    cards. What actually settles it is the fixture window the catalogue states,
+    which is exactly why `config/event-fixtures.json` carries an explicit `end`.
+
+    Only the catalogue is trusted for this. A provider estimate of the end time is
+    a guess - widening identity on a guess would merge two real matches - so a
+    window is returned only when the fixture id names a catalogue series or the
+    time was resolved against one, and only when it really spans a day or more.
+    """
+    start = _time_epoch(item.get("start_at") or item.get("start_time"))
+    end = _time_epoch(item.get("end_time") or item.get("end_at"))
+    if start is None or end is None or end - start < MULTI_DAY_WINDOW_SECONDS:
+        return None
+    fixture_id = str(item.get("fixture_id") or "").strip()
+    catalogue_fixture = bool(fixture_id) and not fixture_id.startswith("provider:")
+    verification = str(item.get("time_verification") or "").strip().casefold()
+    if not catalogue_fixture and verification not in {"official_catalogue", "corrected"}:
+        return None
+    return (start, end)
+
+
+def kickoffs_compatible(
+    left: Dict[str, Any],
+    right: Dict[str, Any],
+    tolerance_minutes: int = KICKOFF_TOLERANCE_MINUTES,
+) -> bool:
+    """Whether two candidates' start times can belong to the same fixture.
+
+    Either the two kickoffs are within tolerance of each other, or one side is a
+    catalogue fixture running over several days and the other side's kickoff falls
+    inside that window.
+    """
+    left_kick = _kickoff_epoch(left)
+    right_kick = _kickoff_epoch(right)
+    if kickoffs_within_tolerance(left_kick, right_kick, tolerance_minutes):
+        return True
+    grace = max(0, int(tolerance_minutes)) * 60
+    for window, kickoff in (
+        (authoritative_fixture_window(left), right_kick),
+        (authoritative_fixture_window(right), left_kick),
+    ):
+        if window is None or kickoff is None:
+            continue
+        if window[0] - grace <= kickoff <= window[1] + grace:
+            return True
+    return False
+
+
 def _normalized_competition(item: Dict[str, Any]) -> str:
     text = str(item.get("competition") or "").strip().casefold()
     text = re.sub(r"[^a-z0-9]+", " ", text)
     text = re.sub(r"\b(?:20\d{2}|19\d{2})\b", " ", text)
-    return " ".join(text.split())
+    text = " ".join(text.split())
+    if not text:
+        return ""
+    # If every word in the field is a round descriptor then the provider stated a
+    # round, not a competition, and there is nothing here to contradict with.
+    # What a round word leaves behind is often its designator - "Group A" leaves
+    # "a", "Round II" leaves "ii" - and a bare letter or roman numeral is part of
+    # the round, not the name of a competition.
+    remainder = [
+        word for word in _ROUND_ONLY_COMPETITION.sub(" ", text).split()
+        if not re.fullmatch(r"[a-z]|[ivx]{1,4}|\d+", word)
+    ]
+    if not remainder:
+        return ""
+    return text
 
 
 def canonical_event_identity(
@@ -801,9 +948,15 @@ def _identity_compatible(
     kickoff_tolerance_minutes: int = KICKOFF_TOLERANCE_MINUTES,
     left_fold: str = "",
     right_fold: str = "",
+    left_window: Optional[Tuple[int, int]] = None,
+    right_window: Optional[Tuple[int, int]] = None,
 ) -> bool:
     """Same participants/round, a compatible sport and competition, and two
-    kickoffs close enough to be the same fixture."""
+    kickoffs close enough to be the same fixture.
+
+    The windows are optional and only ever *widen* the kickoff check, for a
+    catalogue fixture that runs over several days - see kickoffs_compatible.
+    Passing neither reproduces the plain kickoff-tolerance behaviour exactly."""
     if not left[1] or left[1] != right[1]:
         # Same two participants, written differently. Everything below still has
         # to pass, so this widens what counts as the same name and relaxes
@@ -818,9 +971,15 @@ def _identity_compatible(
             continue
         if a != b:
             return False
-    return kickoffs_within_tolerance(
-        left[3], right[3], kickoff_tolerance_minutes
-    )
+    if kickoffs_within_tolerance(left[3], right[3], kickoff_tolerance_minutes):
+        return True
+    grace = max(0, int(kickoff_tolerance_minutes)) * 60
+    for window, kickoff in ((left_window, right[3]), (right_window, left[3])):
+        if window is None or kickoff is None:
+            continue
+        if window[0] - grace <= kickoff <= window[1] + grace:
+            return True
+    return False
 
 
 def same_real_fixture(
@@ -845,6 +1004,8 @@ def same_real_fixture(
         canonical_event_identity(right),
         left_fold=participant_fold_key(left, aliases),
         right_fold=participant_fold_key(right, aliases),
+        left_window=authoritative_fixture_window(left),
+        right_window=authoritative_fixture_window(right),
     )
 
 
@@ -1371,6 +1532,7 @@ def _reconcile_event_groups(
 
     identities: Dict[str, Tuple[str, str, str, Optional[int]]] = {}
     folds: Dict[str, str] = {}
+    windows: Dict[str, Optional[Tuple[int, int]]] = {}
     for key in event_keys:
         members = grouped[key]
         if not members:
@@ -1380,6 +1542,18 @@ def _reconcile_event_groups(
         # group that already mixes participants cannot pull another one in.
         member_folds = {participant_fold_key(member, aliases) for member in members}
         folds[key] = member_folds.pop() if len(member_folds) == 1 else ""
+        # The widest catalogue window any member states. A multi-day fixture is
+        # one card even though each day's relay starts at a different hour.
+        spans = [
+            span
+            for span in (authoritative_fixture_window(member) for member in members)
+            if span is not None
+        ]
+        windows[key] = (
+            (min(span[0] for span in spans), max(span[1] for span in spans))
+            if spans
+            else None
+        )
 
     # Every candidate group is compared against the group that leads it, never
     # against a group that has already been folded in. Kickoff tolerance is not
@@ -1400,6 +1574,8 @@ def _reconcile_event_groups(
                 identities[other],
                 left_fold=folds.get(key, ""),
                 right_fold=folds.get(other, ""),
+                left_window=windows.get(key),
+                right_window=windows.get(other),
             ):
                 merged_into[other] = key
 
@@ -1507,7 +1683,17 @@ def merge_candidates(
                 or str(c.get("tvg_id") or "").strip()
                 or f"{c.get('source_id', 'unknown')}:{c.get('stream_index', 0)}"
             )
-            group_key = f"{pipeline}:{evt_key or fallback_key}"
+            # Section 1. Group by the tab the event will land in, not by the feed
+            # it arrived from. Routing decides Today vs Upcoming from the schedule
+            # status, so grouping on `source_pipeline` split one live fixture into
+            # two groups whenever one relay was configured under an "upcoming"
+            # feed and another under a "today" feed - and then routed both into
+            # Today Match, side by side, as two cards for one match.
+            destination = event_destination(c)
+            bucket = (
+                destination if destination in ("today_match", "upcoming") else pipeline
+            )
+            group_key = f"{bucket}:{evt_key or fallback_key}"
         elif pipeline in {"movies", "movie", "vod", "film"}:
             group_key = f"movies:{_movie_identity_key(c)}"
         else:

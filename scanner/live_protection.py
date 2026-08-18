@@ -453,6 +453,95 @@ def _absorb_carried_card(
     return len(incoming)
 
 
+def _rebuild_card_channels(card: Dict[str, Any], layer: Dict[str, Any]) -> int:
+    """Group a carried card's own streams into channels[]. Returns channels added.
+
+    Sections 6-10 were only ever applied during the merge, and a card carried
+    forward by live protection does not go through the merge - that is the whole
+    point of carrying it. So the longest-running live fixtures, the ones most
+    likely to be carried across several scans, were exactly the ones that
+    published with no channels[] at all, while short fixtures rebuilt every scan
+    had them. `Sri Lanka vs India 1st Test` carried three streams from three
+    different broadcasters and offered the viewer no way to choose between them.
+
+    Only cards that have no channels are touched, so a grouping the merge already
+    produced is never overwritten. Each stream's channel is resolved by the normal
+    rules; a stream whose broadcaster cannot be named is left out of channels[]
+    rather than given an invented one, and it stays reachable as a backup either
+    way.
+    """
+    if card.get("channels"):
+        return 0
+    streams = _carried_streams(card)
+    if not streams:
+        return 0
+
+    event_id = str(card.get("id") or "")
+    event_name = str(card.get("name") or "")
+    grouped: Dict[str, Dict[str, Any]] = {}
+    for stream in streams:
+        resolved = layer["resolve_channel"](stream, event_name, layer["aliases"])
+        if not resolved.resolved:
+            continue
+        channel_id = layer["channel_id_for"](event_id, resolved)
+        if not channel_id:
+            continue
+        entry = grouped.setdefault(channel_id, {
+            "id": channel_id,
+            "name": resolved.name,
+            "normalized_name": resolved.normalized,
+            "logo": "",
+            "name_confidence": resolved.confidence,
+            "name_source": resolved.source_field,
+            "provider": str(stream.get("source_id") or ""),
+            "source_ids": [],
+            "playback_types": ["native"],
+            "renderer": "native",
+            "verified": False,
+            "verification_status": "",
+            "streams": [],
+            "_primary_first": False,
+        })
+        published = layer["public_stream"](
+            stream,
+            f"{channel_id}--{len(entry['streams']) + 1}",
+            layer["primary"] if not entry["streams"] else layer["backup"],
+        )
+        # A published stream has no URL to hash, so its content-addressed playback
+        # id is its variant identity.
+        published["variant_key"] = str(stream.get("playback_id") or "")
+        entry["streams"].append(published)
+        source_id = str(stream.get("source_id") or "").strip()
+        if source_id and source_id not in entry["source_ids"]:
+            entry["source_ids"].append(source_id)
+        if stream.get("verified"):
+            entry["verified"] = True
+            entry["verification_status"] = str(stream.get("verification_status") or "")
+        if stream.get("_was_primary"):
+            entry["_primary_first"] = True
+
+    if not grouped:
+        return 0
+
+    channels: List[Dict[str, Any]] = []
+    # The channel holding the card's own primary leads, so the strip reads in the
+    # same order as the playback plan.
+    for entry in sorted(grouped.values(), key=lambda c: 0 if c["_primary_first"] else 1):
+        entry.pop("_primary_first", None)
+        entry["source_ids"] = sorted(entry["source_ids"])
+        entry["primary_stream_id"] = entry["streams"][0]["id"]
+        entry["stream_count"] = len(entry["streams"])
+        entry["backup_count"] = max(0, len(entry["streams"]) - 1)
+        channels.append(entry)
+
+    card["channels"] = channels
+    card["channel_count"] = len(channels)
+    # Requirement 16/27: the card's primary already decides what plays. Naming a
+    # default here would reorder that plan for no reason.
+    card.setdefault("default_channel_id", "")
+    return len(channels)
+
+
 def _canonicalness(card: Dict[str, Any], layer: Dict[str, Any]) -> Tuple[int, int, int]:
     """How well this card can stand as the event's single card.
 
@@ -708,6 +797,16 @@ def protect_live_events(
         carried = _reconcile_carried_cards(
             today_items, carried, playing, misses, stats, reconciler
         )
+
+    # Sections 6-10, applied to every card that is about to be published rather
+    # than only to the ones the merge happened to rebuild this scan.
+    if reconciler is not None:
+        rebuilt = 0
+        for card in carried:
+            if isinstance(card, dict):
+                rebuilt += 1 if _rebuild_card_channels(card, reconciler) else 0
+        if rebuilt:
+            stats["carried_channels_rebuilt"] = rebuilt
 
     _atomic_write(path, {"updated_at": reference.isoformat(), "misses": misses})
     return today_items + carried, stats

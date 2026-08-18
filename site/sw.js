@@ -3,7 +3,7 @@
  * Live stream, video segment ও playback proxy request স্পর্শ করবে না।
  */
 
-const CACHE_VERSION = "click-tv-event-channel-cards-20260818-v30";
+const CACHE_VERSION = "click-tv-unified-card-playback-20260819-v31";
 const APP_CACHE = `${CACHE_VERSION}-app`;
 const DATA_CACHE = `${CACHE_VERSION}-data`;
 

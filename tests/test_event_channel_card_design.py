@@ -119,9 +119,24 @@ class Section4And5TheChannelChip(unittest.TestCase):
         self.assertIn("if (dupes > 0)", APP)
 
     def test_desktop_gives_two_to_four_per_row_and_mobile_two(self):
-        self.assertIn("repeat(auto-fit,minmax(128px,1fr))", CHANNEL_CSS)
-        self.assertIn('[data-columns="4"]', CHANNEL_CSS)
+        """Section 4, asserted as the rule rather than as one literal.
+
+        The floor is what decides the count, and it used to be pinned at 128px -
+        which is narrower than the chip's own summary needs, so three chips fitted
+        the grid and then ellipsised their text to "1 Pri... 0 Ba...". The floor is
+        therefore checked as a minimum, and no rule may ask for more than four.
+        """
+        floors = [
+            int(value)
+            for value in re.findall(r"repeat\(auto-fit,minmax\((\d+)px,1fr\)\)", CHANNEL_CSS)
+        ]
+        self.assertTrue(floors, "the strip must size itself with auto-fit")
+        self.assertGreaterEqual(min(floors), 128, "a chip narrower than this cannot show its summary")
+        # Only rules that *reduce* the count may pin an exact number.
+        for count in re.findall(r"grid-template-columns:repeat\((\d+),", CHANNEL_CSS):
+            self.assertLessEqual(int(count), 4, "section 4 caps a row at four chips")
         self.assertIn('[data-columns="2"]', CHANNEL_CSS)
+        self.assertIn('[data-columns="1"]', CHANNEL_CSS)
         mobile = CHANNEL_CSS.split("@media (max-width:1000px)", 1)[1]
         self.assertIn("repeat(2,minmax(0,1fr))", mobile)
 
@@ -305,11 +320,31 @@ class TheAssetsAreShippedAndVersionedTogether(unittest.TestCase):
         self.assertIn('"/assets/css/event-channel-cards.css"', SW)
 
     def test_every_versioned_asset_moves_in_lockstep(self):
-        version = "20260818-event-channel-cards-v1"
+        """All four assets carry one version, and the worker cache moves with it.
+
+        The version is read out of index.html rather than written here. Pinning the
+        literal made this test fail on every deliberate bump and pass again as soon
+        as someone edited the string - so it never actually checked the thing that
+        matters, which is that no asset is left behind on the old version.
+        """
+        versions = dict(
+            re.findall(r"(event-cards\.css|event-channel-cards\.css|embed-player\.css|app\.js)\?v=([\w.-]+)", INDEX)
+        )
         for asset in ("event-cards.css", "event-channel-cards.css",
                       "embed-player.css", "app.js"):
-            self.assertIn(f"{asset}?v={version}", INDEX, asset)
-        self.assertIn("click-tv-event-channel-cards-20260818-v30", SW)
+            self.assertIn(asset, versions, f"{asset} must be version-stamped")
+        self.assertEqual(
+            len(set(versions.values())), 1,
+            f"every asset must move together, got {versions}",
+        )
+        cache = re.search(r'CACHE_VERSION\s*=\s*"([^"]+)"', SW)
+        self.assertIsNotNone(cache, "the service worker must declare a cache version")
+        stamp = next(iter(set(versions.values())))
+        # The asset stamp is "<date>-<slug>-vN" and the cache is
+        # "click-tv-<slug>-<date>-vNN"; the slug is what ties them together.
+        slug = "-".join(stamp.split("-")[1:-1])
+        self.assertIn(slug, cache.group(1),
+                      f"cache version {cache.group(1)!r} does not name asset build {slug!r}")
 
 
 class NoPlaceholdersAreLeftBehind(unittest.TestCase):
