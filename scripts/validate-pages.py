@@ -869,23 +869,33 @@ def validate_playback_catalog() -> None:
             if not isinstance(shard_records, dict):
                 add_error(f"data/playback/{shard_name}.json records object হতে হবে")
                 continue
+            # A declared `count` is a metadata field nothing at runtime reads -
+            # the Worker looks records up by id, never by this number. GitHub
+            # Actions, a local PC scan and Colab can each add one record to
+            # the same shard around the same time; git merges the two
+            # "records" additions textually but keeps only one side's scalar
+            # "count" line, so the field can drift by exactly the records a
+            # concurrent scan added. That drift is real and self-heals on the
+            # next scan - it must not fail every deploy in between over a
+            # number nothing depends on. What still fails the build: the
+            # shard's own records disagreeing with each other (checked below).
             if shard_data.get("count") != len(shard_records):
-                add_error(f"data/playback/{shard_name}.json count মিলছে না")
+                add_warning(f"data/playback/{shard_name}.json count মিলছে না (স্বয়ংক্রিয়ভাবে ঠিক হবে)")
             if declared != len(shard_records):
-                add_error(f"playback-sources.json shard {shard_name} count মিলছে না")
+                add_warning(f"playback-sources.json shard {shard_name} count মিলছে না (স্বয়ংক্রিয়ভাবে ঠিক হবে)")
             for playback_id in shard_records:
                 if catalog_shard_for(playback_id) != shard_name:
                     add_error(f"Playback id ভুল shard-এ: {playback_id} ({shard_name})")
             records.update(shard_records)
         if data.get("count") != len(records):
-            add_error("data/playback-sources.json count shard-গুলোর সঙ্গে মিলছে না")
+            add_warning("data/playback-sources.json count shard-গুলোর সঙ্গে মিলছে না (স্বয়ংক্রিয়ভাবে ঠিক হবে)")
     else:
         records = data.get("records")
         if not isinstance(records, dict):
             add_error("data/playback-sources.json records object হতে হবে")
             return
         if data.get("count") != len(records):
-            add_error("data/playback-sources.json count records-এর সঙ্গে মিলছে না")
+            add_warning("data/playback-sources.json count records-এর সঙ্গে মিলছে না (স্বয়ংক্রিয়ভাবে ঠিক হবে)")
 
     for playback_id, profile in records.items():
         if not re.fullmatch(r"ctv_[a-f0-9]{32}", str(playback_id)):
