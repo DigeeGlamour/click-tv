@@ -59,6 +59,45 @@ CHANNEL_SLUGS = {
     "Other": "other",
 }
 
+# A fixed serial order for these named Sports channels, by direct request:
+# never re-sorted by health, verification status or which scan happened to
+# discover them first - the position is the identity, always in this order
+# whenever the channel is present. A channel found this scan that is not on
+# this list keeps its existing relative order, appended after every pinned
+# name that was actually found.
+PINNED_SPORTS_CHANNEL_ORDER = (
+    "T Sports", "PTV Sports", "Willow", "Willow 2", "Star Sports 1 Hindi",
+    "Star Sports 2", "A Sports", "Star Sports Select 2", "UNITE8 SPORTS 2",
+    "Pk Sports", "BEIN SPORTS", "BEIN Sports 2", "BEIN Sports 3",
+    "BEIN Sports 4", "BEIN Sports 5", "Bein Sports Extra", "BeIN Sports Xtra",
+    "Bein Sports Xtra - *2", "Live Sports", "GOAL TV", "M Sports",
+)
+
+
+def _pinned_channel_name_key(name: Any) -> str:
+    text = str(name or "").strip().casefold()
+    text = text.replace("–", "-").replace("—", "-")
+    return " ".join(text.split())
+
+
+_PINNED_SPORTS_ORDER_INDEX = {
+    _pinned_channel_name_key(name): index
+    for index, name in enumerate(PINNED_SPORTS_CHANNEL_ORDER)
+}
+
+
+def _apply_pinned_sports_order(cards: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    pinned: List[Tuple[int, Dict[str, Any]]] = []
+    rest: List[Dict[str, Any]] = []
+    for card in cards:
+        index = _PINNED_SPORTS_ORDER_INDEX.get(_pinned_channel_name_key(card.get("name")))
+        if index is None:
+            rest.append(card)
+        else:
+            pinned.append((index, card))
+    pinned.sort(key=lambda pair: pair[0])
+    return [card for _, card in pinned] + rest
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -1157,6 +1196,8 @@ def publish_scan_outputs(
                 item for item in raw_cards
                 if isinstance(item, dict)
             ]
+            if str(category_name) == "Sports":
+                cards = _apply_pinned_sports_order(cards)
 
             manifest_entry, drop_error = _publish_channel_category(
                 category_name=str(category_name),
