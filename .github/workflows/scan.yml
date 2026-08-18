@@ -76,15 +76,27 @@ jobs:
         shell: bash
         env:
           PRIVATE_MOVIE_SOURCE_TOKEN: ${{ secrets.PRIVATE_MOVIE_SOURCE_TOKEN }}
+          PRIVATE_SPORTS_SOURCE_TOKEN: ${{ secrets.PRIVATE_SPORTS_SOURCE_TOKEN }}
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          FANART_API_KEY: ${{ secrets.FANART_API_KEY }}
+          OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
+          THESPORTSDB_API_KEY: ${{ secrets.THESPORTSDB_API_KEY }}
+          HIGHLIGHTLY_API_KEY: ${{ secrets.HIGHLIGHTLY_API_KEY }}
+          SPORTMONKS_API_TOKEN: ${{ secrets.SPORTMONKS_API_TOKEN }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
           for VALUE in \
             "$PRIVATE_MOVIE_SOURCE_TOKEN" \
+            "$PRIVATE_SPORTS_SOURCE_TOKEN" \
             "$TMDB_API_KEY" \
             "$TMDB_API_TOKEN" \
+            "$FANART_API_KEY" \
+            "$OMDB_API_KEY" \
+            "$THESPORTSDB_API_KEY" \
+            "$HIGHLIGHTLY_API_KEY" \
+            "$SPORTMONKS_API_TOKEN" \
             "$TELEGRAM_BOT_TOKEN" \
             "$TELEGRAM_CHAT_ID"; do
             if [[ -n "$VALUE" ]]; then
@@ -287,6 +299,12 @@ jobs:
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
           PRIVATE_MOVIE_SOURCE_TOKEN: ${{ secrets.PRIVATE_MOVIE_SOURCE_TOKEN }}
+          PRIVATE_SPORTS_SOURCE_TOKEN: ${{ secrets.PRIVATE_SPORTS_SOURCE_TOKEN }}
+          FANART_API_KEY: ${{ secrets.FANART_API_KEY }}
+          OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
+          THESPORTSDB_API_KEY: ${{ secrets.THESPORTSDB_API_KEY }}
+          HIGHLIGHTLY_API_KEY: ${{ secrets.HIGHLIGHTLY_API_KEY }}
+          SPORTMONKS_API_TOKEN: ${{ secrets.SPORTMONKS_API_TOKEN }}
         run: |
           set -euo pipefail
 

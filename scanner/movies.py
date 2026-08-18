@@ -18,6 +18,9 @@ Manual movie rules:
   2. cached poster from state/manual-movie-posters.json;
   3. matching poster already present in generated movie pages;
   4. TMDB search using TMDB_API_TOKEN or TMDB_API_KEY;
+  5. only once TMDB has nothing at all (scanner/poster_providers.py):
+     Fanart.tv/Cinemeta when an id is already known, then OMDb, TVMaze
+     and AniList by title;
 - a poster lookup failure never removes the movie;
 - pagination output remains compatible with scanner/output.py.
 """
@@ -44,12 +47,14 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 try:
     from scanner.merger import _movie_identity_key, merge_candidates
     from scanner.player_compatibility import is_confirmed_player_failure, is_player_proven, load_failure_keys, load_proof_keys, mark_confirmed_player_failures, mark_unproven_player_items
+    from scanner.poster_providers import supplementary_poster_lookup
 except ImportError:
     module_dir = str(Path(__file__).resolve().parent)
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
     from merger import _movie_identity_key, merge_candidates
     from player_compatibility import is_confirmed_player_failure, is_player_proven, load_failure_keys, load_proof_keys, mark_confirmed_player_failures, mark_unproven_player_items
+    from poster_providers import supplementary_poster_lookup
 
 
 VALID_MOVIE_CATEGORIES = (
@@ -1031,6 +1036,18 @@ def _resolve_manual_poster(
             return poster
 
     poster = _tmdb_poster_lookup(name, year)
+    if not poster:
+        # TMDB simply does not have this title at all - Fanart.tv/Cinemeta
+        # (only when an id already reached this item), then OMDb, TVMaze and
+        # AniList by title, first non-empty result wins. Never blocks: any
+        # provider failure (missing key, network error, outage) degrades to
+        # "" exactly like the TMDB lookup above it.
+        poster = supplementary_poster_lookup(
+            name, year,
+            tmdb_id=raw_item.get("tmdb_id"),
+            imdb_id=raw_item.get("imdb_id"),
+            media_kind=raw_item.get("tmdb_media_type") or "movie",
+        )
     if poster:
         cache[identity] = poster
     return poster

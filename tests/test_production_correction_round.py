@@ -19,6 +19,7 @@ import sys
 import unittest
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -32,6 +33,7 @@ from scanner.channel_resolver import (  # noqa: E402
 from scanner.event_lifecycle import event_destination  # noqa: E402
 from scanner.events import (  # noqa: E402
     _append_embed_channels,
+    _apply_supplementary_sports_artwork,
     _payload,
     _relabel_generic_channels,
     _stamp_final_routing,
@@ -592,6 +594,66 @@ class StreamedEnrichmentActuallyContributes(unittest.TestCase):
         self.assertIn("participant_fold_key", source)
         self.assertIn("same_real_fixture(card, candidate)", source)
         self.assertIn("matched_by_participants", source)
+
+
+class SupplementarySportsArtworkFillsWhatStreamedDidNot(unittest.TestCase):
+    """TheSportsDB/Highlightly/Sportmonks, added by direct request as extra
+    sports artwork sources - tried only once Streamed has already had its
+    turn and a card still has no poster or badges of its own."""
+
+    def test_a_card_streamed_already_gave_a_poster_is_left_alone(self):
+        card = {"name": "Arsenal vs Chelsea", "logo": "https://example.test/existing.jpg",
+                "home_badge_url": "https://example.test/home.png", "away_badge_url": "https://example.test/away.png"}
+        with patch("scanner.sports_poster_providers.thesportsdb_event_artwork") as lookup:
+            stats = _apply_supplementary_sports_artwork([card])
+        lookup.assert_not_called()
+        self.assertEqual(card["logo"], "https://example.test/existing.jpg")
+        self.assertEqual(stats["attempted"], 0)
+
+    def test_thesportsdb_fills_a_missing_poster_from_the_cards_own_title(self):
+        card = {"name": "Arsenal vs Chelsea"}
+        with patch(
+            "scanner.sports_poster_providers.thesportsdb_event_artwork",
+            return_value={"poster": "https://example.test/poster.jpg",
+                          "home_badge": "https://example.test/home.png",
+                          "away_badge": "https://example.test/away.png"},
+        ) as lookup:
+            stats = _apply_supplementary_sports_artwork([card])
+        self.assertEqual(lookup.call_args.args, ("arsenal", "chelsea"))
+        self.assertEqual(card["logo"], "https://example.test/poster.jpg")
+        self.assertEqual(card["home_badge_url"], "https://example.test/home.png")
+        self.assertEqual(stats["poster_filled"], 1)
+
+    def test_highlightly_is_only_tried_once_thesportsdb_has_nothing(self):
+        card = {"name": "Arsenal vs Chelsea", "sport_type": "football", "start_time": "2026-08-18T20:00:00+00:00"}
+        with (
+            patch("scanner.sports_poster_providers.thesportsdb_event_artwork", return_value={}),
+            patch(
+                "scanner.sports_poster_providers.highlightly_match_artwork",
+                return_value={"home_badge": "https://example.test/hl-home.png"},
+            ) as highlightly,
+        ):
+            stats = _apply_supplementary_sports_artwork([card])
+        highlightly.assert_called_once()
+        self.assertEqual(card["home_badge_url"], "https://example.test/hl-home.png")
+        self.assertEqual(stats["badge_filled"], 1)
+
+    def test_a_title_with_no_two_sides_is_skipped_not_guessed_at(self):
+        card = {"name": "Cricket World Cup Highlights"}
+        with patch("scanner.sports_poster_providers.thesportsdb_event_artwork") as lookup:
+            stats = _apply_supplementary_sports_artwork([card])
+        lookup.assert_not_called()
+        self.assertEqual(stats["attempted"], 0)
+
+    def test_a_provider_error_never_breaks_the_scan(self):
+        card = {"name": "Arsenal vs Chelsea"}
+        with patch(
+            "scanner.sports_poster_providers.thesportsdb_event_artwork",
+            side_effect=RuntimeError("boom"),
+        ):
+            stats = _apply_supplementary_sports_artwork([card])
+        self.assertNotIn("logo", card)
+        self.assertEqual(stats["poster_filled"], 0)
 
 
 # -------------------------------------------------------------------- problem 9

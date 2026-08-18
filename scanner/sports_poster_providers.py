@@ -1,0 +1,197 @@
+"""Supplementary sports artwork (match poster, team/league badges), tried
+only when the existing Streamed enrichment (scanner/streamed_provider.py)
+did not already give a card a poster.
+
+Live-tested findings this was built against:
+  - TheSportsDB's own event search already returns the event poster/
+    thumbnail/banner *and* both team badges *and* the league badge in one
+    call - "Poster -> Thumbnail -> Fanart -> Team Logos" (the priority the
+    key was handed over with) is read directly off that one response, not
+    assembled from several lookups.
+  - Highlightly has no name-search endpoint; its matches endpoint takes a
+    date (or a league id), not team names, so a fixture is found by pulling
+    that date's matches and matching team names against it - the same
+    reason the Streamed integration matches by participants rather than by
+    the provider's own id.
+  - Cloudflare in front of Highlightly rejects a bare/non-browser
+    User-Agent outright (its own error code 1010); the browser-like
+    default here is required, not decorative.
+  - Sportmonks authenticates correctly with the key handed over, but its
+    free plan is restricted to two specific leagues (Danish Superliga,
+    Scottish Premiership) - even a team search for a club that plays in one
+    of those two returned no results against the live API, so in practice
+    this provider contributes for almost nothing Click TV actually carries.
+    Implemented anyway, degrading to "" like every other provider here,
+    per direct request that nothing be left out.
+"""
+
+from __future__ import annotations
+
+import json
+import os
+import urllib.error
+import urllib.parse
+import urllib.request
+from typing import Any, Dict, List, Optional
+
+REQUEST_TIMEOUT_SECONDS = 10
+_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
+THESPORTSDB_EVENT_SEARCH_URL = "https://www.thesportsdb.com/api/v1/json/{key}/searchevents.php"
+THESPORTSDB_TEAM_SEARCH_URL = "https://www.thesportsdb.com/api/v1/json/{key}/searchteams.php"
+# TheSportsDB's own published open test key - not a private credential, and
+# not something to store as a secret the way the other providers' keys are.
+THESPORTSDB_DEFAULT_KEY = "123"
+
+HIGHLIGHTLY_BASE_URLS = {
+    "football": "https://soccer.highlightly.net",
+    "soccer": "https://soccer.highlightly.net",
+    "cricket": "https://cricket.highlightly.net",
+}
+
+SPORTMONKS_TEAM_SEARCH_URL = "https://api.sportmonks.com/v3/football/teams/search/{query}"
+
+
+def _get_json(url: str, *, headers: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+    request_headers = {"Accept": "application/json", "User-Agent": _USER_AGENT}
+    request_headers.update(headers or {})
+    request = urllib.request.Request(url, headers=request_headers)
+    try:
+        with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
+            raw = response.read(2_000_000)
+        payload = json.loads(raw.decode("utf-8", errors="replace"))
+        return payload if isinstance(payload, dict) else {}
+    except (
+        urllib.error.HTTPError,
+        urllib.error.URLError,
+        TimeoutError,
+        OSError,
+        UnicodeError,
+        json.JSONDecodeError,
+        ValueError,
+    ):
+        return {}
+
+
+def thesportsdb_event_artwork(home_team: str, away_team: str) -> Dict[str, str]:
+    """One TheSportsDB event search, read for poster, thumbnail, banner,
+    both team badges and the league badge at once. Returns {} rather than
+    partial keys when the event itself is not found."""
+    home = str(home_team or "").strip()
+    away = str(away_team or "").strip()
+    if not home or not away:
+        return {}
+    key = os.getenv("THESPORTSDB_API_KEY", "").strip() or THESPORTSDB_DEFAULT_KEY
+    query = f"{home}_vs_{away}".replace(" ", "_")
+    url = THESPORTSDB_EVENT_SEARCH_URL.format(key=key) + "?" + urllib.parse.urlencode({"e": query})
+    payload = _get_json(url)
+    events = payload.get("event")
+    if not isinstance(events, list) or not events or not isinstance(events[0], dict):
+        return {}
+    event = events[0]
+    result = {
+        "poster": str(event.get("strPoster") or "").strip(),
+        "thumbnail": str(event.get("strThumb") or "").strip(),
+        "banner": str(event.get("strBanner") or "").strip(),
+        "home_badge": str(event.get("strHomeTeamBadge") or "").strip(),
+        "away_badge": str(event.get("strAwayTeamBadge") or "").strip(),
+        "league_badge": str(event.get("strLeagueBadge") or "").strip(),
+    }
+    return {k: v for k, v in result.items() if v}
+
+
+def thesportsdb_best_poster(home_team: str, away_team: str) -> str:
+    """Poster -> Thumbnail -> Fanart(banner) -> team logos, as handed over."""
+    artwork = thesportsdb_event_artwork(home_team, away_team)
+    for field in ("poster", "thumbnail", "banner", "home_badge", "away_badge"):
+        if artwork.get(field):
+            return artwork[field]
+    return ""
+
+
+def thesportsdb_team_badge(team_name: str) -> str:
+    name = str(team_name or "").strip()
+    if not name:
+        return ""
+    key = os.getenv("THESPORTSDB_API_KEY", "").strip() or THESPORTSDB_DEFAULT_KEY
+    url = THESPORTSDB_TEAM_SEARCH_URL.format(key=key) + "?" + urllib.parse.urlencode({"t": name})
+    payload = _get_json(url)
+    teams = payload.get("teams")
+    if isinstance(teams, list) and teams and isinstance(teams[0], dict):
+        return str(teams[0].get("strBadge") or teams[0].get("strLogo") or "").strip()
+    return ""
+
+
+def _highlightly_base_url(sport: str) -> str:
+    return HIGHLIGHTLY_BASE_URLS.get(str(sport or "").strip().casefold(), "")
+
+
+def highlightly_match_artwork(
+    home_team: str, away_team: str, sport: str = "football", date: str = ""
+) -> Dict[str, str]:
+    """Highlightly has no name-search endpoint - a fixture is found by
+    pulling one date's matches and matching team names against it, the same
+    reason the Streamed integration matches by participants rather than by
+    the provider's own id. `date` is YYYY-MM-DD; the caller supplies it."""
+    api_key = os.getenv("HIGHLIGHTLY_API_KEY", "").strip()
+    base_url = _highlightly_base_url(sport)
+    home = str(home_team or "").strip().casefold()
+    away = str(away_team or "").strip().casefold()
+    if not api_key or not base_url or not home or not away or not date:
+        return {}
+    url = base_url + "/matches?" + urllib.parse.urlencode({"date": date, "limit": 50})
+    payload = _get_json(url, headers={"x-rapidapi-key": api_key})
+    matches = payload.get("data")
+    if not isinstance(matches, list):
+        return {}
+    for match in matches:
+        if not isinstance(match, dict):
+            continue
+        match_home = str((match.get("homeTeam") or {}).get("name") or "").strip().casefold()
+        match_away = str((match.get("awayTeam") or {}).get("name") or "").strip().casefold()
+        if {match_home, match_away} != {home, away}:
+            continue
+        result = {
+            "home_badge": str((match.get("homeTeam") or {}).get("logo") or "").strip(),
+            "away_badge": str((match.get("awayTeam") or {}).get("logo") or "").strip(),
+            "league_badge": str((match.get("league") or {}).get("logo") or "").strip(),
+        }
+        return {k: v for k, v in result.items() if v}
+    return {}
+
+
+def sportmonks_team_badge(team_name: str) -> str:
+    """Authenticates correctly with the key handed over, but the free plan
+    covers only two leagues (Danish Superliga, Scottish Premiership) - a
+    team search outside those returns nothing, confirmed live, so this
+    contributes for almost nothing Click TV actually carries in practice."""
+    name = str(team_name or "").strip()
+    api_token = os.getenv("SPORTMONKS_API_TOKEN", "").strip()
+    if not name or not api_token:
+        return ""
+    url = SPORTMONKS_TEAM_SEARCH_URL.format(query=urllib.parse.quote(name)) + "?" + urllib.parse.urlencode(
+        {"api_token": api_token}
+    )
+    payload = _get_json(url)
+    data = payload.get("data")
+    if isinstance(data, list) and data and isinstance(data[0], dict):
+        return str(data[0].get("image_path") or "").strip()
+    return ""
+
+
+def supplementary_sports_poster_lookup(
+    home_team: str, away_team: str, *, sport: str = "football", date: str = ""
+) -> str:
+    """First non-empty poster/badge wins, tried in the order above."""
+    for lookup in (
+        lambda: thesportsdb_best_poster(home_team, away_team),
+        lambda: (highlightly_match_artwork(home_team, away_team, sport, date) or {}).get("home_badge", ""),
+        lambda: sportmonks_team_badge(home_team),
+    ):
+        try:
+            poster = lookup()
+        except Exception:  # pragma: no cover - a provider must never break a scan
+            poster = ""
+        if poster:
+            return poster
+    return ""

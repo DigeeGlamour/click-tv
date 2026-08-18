@@ -10,6 +10,7 @@ from unittest.mock import patch
 from scanner.movies import (
     TMDB_MULTI_SEARCH_URL,
     _parse_manual_movies_text,
+    _resolve_manual_poster,
     _resolve_missing_manual_years,
     _tmdb_exact_year_lookup,
     _tmdb_poster_lookup,
@@ -204,6 +205,28 @@ class ManualMovieIntegrityTests(unittest.TestCase):
         with patch("scanner.movies._tmdb_request_json", return_value=movie_result):
             poster = _tmdb_poster_lookup("You, Always", 2026)
         self.assertEqual(poster, "https://image.tmdb.org/t/p/w500/poster.jpg")
+
+    def test_a_title_tmdb_never_had_falls_to_the_supplementary_chain(self) -> None:
+        with (
+            patch("scanner.movies._tmdb_poster_lookup", return_value=""),
+            patch("scanner.movies.supplementary_poster_lookup", return_value="https://example.test/fallback.jpg") as fallback,
+        ):
+            poster = _resolve_manual_poster(
+                {"name": "A Totally Unknown Title", "imdb_id": "tt9999999"},
+                cache={}, generated_posters={},
+            )
+        self.assertEqual(poster, "https://example.test/fallback.jpg")
+        fallback.assert_called_once()
+        self.assertEqual(fallback.call_args.kwargs.get("imdb_id"), "tt9999999")
+
+    def test_the_supplementary_chain_is_never_tried_once_tmdb_already_has_a_poster(self) -> None:
+        with (
+            patch("scanner.movies._tmdb_poster_lookup", return_value="https://example.test/tmdb.jpg"),
+            patch("scanner.movies.supplementary_poster_lookup") as fallback,
+        ):
+            poster = _resolve_manual_poster({"name": "Inception", "year": 2010}, cache={}, generated_posters={})
+        self.assertEqual(poster, "https://example.test/tmdb.jpg")
+        fallback.assert_not_called()
 
     def test_malformed_tmdb_source_poster_is_normalized(self) -> None:
         self.assertEqual(

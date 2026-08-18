@@ -820,6 +820,81 @@ def _apply_streamed_enrichment(
     return stats
 
 
+def _apply_supplementary_sports_artwork(cards: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """TheSportsDB/Highlightly/Sportmonks, tried only where Streamed left a
+    card with no poster of its own at all.
+
+    Unlike Streamed, none of these three are matched against a fetched
+    catalogue - TheSportsDB's and Sportmonks' lookups are genuine team-name
+    searches, and Highlightly has no name search at all (matched by pulling
+    one date's matches and comparing team names, same as here). The two
+    sides are read off the card's own title with the same participants-only
+    split the merge itself uses (team_pair_key), so nothing here needs a
+    second identity check the way Streamed's fold-key match does.
+    """
+    stats = {"attempted": 0, "poster_filled": 0, "badge_filled": 0}
+    try:
+        from scanner.schedule_resolver import team_pair_key
+        from scanner.sports_poster_providers import (
+            thesportsdb_event_artwork,
+            highlightly_match_artwork,
+        )
+    except Exception:  # pragma: no cover - optional layer
+        return stats
+
+    for card in cards:
+        if not isinstance(card, dict):
+            continue
+        has_poster = bool(
+            str(card.get("logo") or "").strip()
+            or str(card.get("provider_poster_url") or "").strip()
+        )
+        has_badges = bool(
+            str(card.get("home_badge_url") or "").strip()
+            and str(card.get("away_badge_url") or "").strip()
+        )
+        if has_poster and has_badges:
+            continue
+
+        pair = team_pair_key(str(card.get("name") or ""))
+        if "|" not in pair:
+            continue
+        home_team, away_team = pair.split("|", 1)
+        stats["attempted"] += 1
+
+        try:
+            artwork = thesportsdb_event_artwork(home_team, away_team)
+        except Exception:  # pragma: no cover - never break a scan
+            artwork = {}
+        if not artwork:
+            sport = str(card.get("sport_type") or "football")
+            start = str(card.get("start_time") or "")
+            date = start[:10] if len(start) >= 10 and start[4] == "-" else ""
+            try:
+                artwork = highlightly_match_artwork(home_team, away_team, sport, date)
+            except Exception:  # pragma: no cover - never break a scan
+                artwork = {}
+
+        if not artwork:
+            continue
+
+        best_poster = artwork.get("poster") or artwork.get("thumbnail") or artwork.get("banner") or ""
+        if best_poster and not has_poster:
+            card.setdefault("provider_poster_url", best_poster)
+            if not str(card.get("logo") or "").strip():
+                card["logo"] = best_poster
+            stats["poster_filled"] += 1
+
+        if artwork.get("home_badge") and not str(card.get("home_badge_url") or "").strip():
+            card["home_badge_url"] = artwork["home_badge"]
+            stats["badge_filled"] += 1
+        if artwork.get("away_badge") and not str(card.get("away_badge_url") or "").strip():
+            card["away_badge_url"] = artwork["away_badge"]
+            stats["badge_filled"] += 1
+
+    return stats
+
+
 def _authority_states(
     candidates: List[Dict[str, Any]],
     previous_items: List[Dict[str, Any]],
@@ -1204,6 +1279,9 @@ def process_events(
     schedule_stats["streamed_provider"] = streamed_report
     schedule_stats["streamed_enrichment"] = _apply_streamed_enrichment(
         today_items + upcoming_items, streamed_candidates
+    )
+    schedule_stats["sports_poster_enrichment"] = _apply_supplementary_sports_artwork(
+        today_items + upcoming_items
     )
 
     result = {
