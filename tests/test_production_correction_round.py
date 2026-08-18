@@ -651,5 +651,39 @@ class EveryPublishedChannelIsActuallyReachable(unittest.TestCase):
         self.assertIn("return", body.split("stream.playback_type === 'embed'", 1)[1][:40])
 
 
+class TheStickyRouteMemoryCannotOverrideAChannelSwitch(unittest.TestCase):
+    """The widening fix alone was NOT enough - reported and reproduced live.
+
+    Verified on the real deployed site by tracing buildAttemptPlan step by
+    step: sourcesReachableForEveryChannel, channelStreamOrder and
+    orderSourcesByChannel all correctly put the selected channel's stream
+    first, every time - but buildAttemptPlan then re-sorted that already-
+    correct list by state.routePreferences[itemPlaybackKey(item)], a single
+    "this stream worked last time" memory slot keyed by the WHOLE EVENT, not
+    by channel. That memory belongs to an older, single-source stickiness
+    feature written before multi-channel selection existed: once any one
+    channel's stream had ever succeeded, every later channel switch for that
+    same event was silently re-sorted back to it. Reproduced by seeding the
+    exact production condition (a remembered preference for one channel's
+    stream) and confirming every other channel still resolved to it; the same
+    scenario, rerun after this fix, resolves each channel to itself.
+    """
+
+    def test_the_preference_is_checked_against_the_active_channel(self):
+        body = APP.split("function buildAttemptPlan(item) {", 1)[1].split(chr(10) + "function ", 1)[0]
+        self.assertIn("activeChannelId(item)", body)
+        self.assertIn("belongsToActiveChannel", body)
+        # The override must actually happen - a preference outside the active
+        # channel is discarded, not merely noted.
+        self.assertIn("preferred = null", body)
+
+    def test_a_single_channel_item_keeps_its_original_stickiness(self):
+        """A movie or plain TV feed has no channels[] at all - channels.length
+        is 0, so the guard must not touch its behaviour."""
+        body = APP.split("function buildAttemptPlan(item) {", 1)[1].split(chr(10) + "function ", 1)[0]
+        guard = body.split("const channels = eventChannels(item);", 1)[1].split("const sources = ", 1)[0]
+        self.assertIn("channels.length", guard)
+
+
 if __name__ == "__main__":
     unittest.main()

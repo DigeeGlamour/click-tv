@@ -3948,7 +3948,7 @@ function sourcesReachableForEveryChannel(item, rankedSources) {
 
 function buildAttemptPlan(item) {
   const plan = [];
-  const preferred = state.routePreferences[itemPlaybackKey(item)] || null;
+  let preferred = state.routePreferences[itemPlaybackKey(item)] || null;
   const rankedSources = sourcesReachableForEveryChannel(
     item, item._sources?.length ? item._sources : rankSources(item)
   );
@@ -3956,6 +3956,23 @@ function buildAttemptPlan(item) {
   // unchanged - every route the player would have tried is still here, and an
   // embed is not in it at all.
   const channelOrdered = orderSourcesByChannel(item, rankedSources);
+  // Section 14, corrected. routePreferences remembers one "this stream worked
+  // last time" slot per EVENT, from the older single-source stickiness feature
+  // - it knows nothing about channels. Left unscoped, the very first channel
+  // that ever succeeded got remembered and then re-sorted back to the front on
+  // every later buildAttemptPlan call, silently overriding any other channel
+  // the viewer picked afterwards. The memory is honored only when it names a
+  // stream that belongs to the channel actually selected right now; otherwise
+  // it is set aside so the channel order above is what actually plays. A
+  // single-channel item (no channels[] at all - a movie, a plain TV feed) has
+  // no "active channel" to check against, so its stickiness is unchanged.
+  const channels = eventChannels(item);
+  if (preferred?.sourceKey && channels.length) {
+    const activeChannel = channels.find((entry) => entry.id === activeChannelId(item));
+    const belongsToActiveChannel = Boolean(activeChannel) && (activeChannel.streams || [])
+      .some((stream) => sourcePlaybackKey(stream) === preferred.sourceKey);
+    if (!belongsToActiveChannel) preferred = null;
+  }
   const sources = [...channelOrdered].sort((left, right) => {
     if (!preferred?.sourceKey) return 0;
     return Number(sourcePlaybackKey(right) === preferred.sourceKey) - Number(sourcePlaybackKey(left) === preferred.sourceKey);
