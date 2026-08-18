@@ -67,6 +67,7 @@ GROUP_KEYS = (
 
 START_KEYS = (
     "bd_time",
+    "start_time_bd",
     "start_time",
     "startTime",
     "start",
@@ -113,6 +114,7 @@ DIRECT_STREAM_KEYS = (
     "url",
     "link",
     "stream_url",
+    "direct_stream_url",
     "stream",
     "playback_url",
     "playbackUrl",
@@ -237,6 +239,7 @@ def _normalize_status(value: Any) -> str:
         "INT": "LIVE",         # interrupted, expected to resume
         "SUSP": "LIVE",        # suspended, expected to resume
         "LIVE": "LIVE",
+        "LIVE_NOW": "LIVE",
 
         "NOT STARTED": "UPCOMING",
         "NOT_STARTED": "UPCOMING",
@@ -864,6 +867,7 @@ def parse_json_content(
                 stream_metadata,
                 (
                     "provider",
+                    "channel_name",
                     "server",
                     "language",
                     "quality",

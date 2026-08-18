@@ -158,6 +158,21 @@ def _parse_datetime(
     if not text:
         return None
 
+    # "18 Aug 2026, 10:00 PM (BD Time)" names its own timezone explicitly -
+    # unlike the bare "7 PM BDT" case below, which is anchored to whatever
+    # timezone the caller already supplies for this source, a feed that
+    # states its offset must be read in that offset regardless of what the
+    # caller passes, or every kickoff would be misread by up to six hours.
+    explicit_bd_time = bool(
+        re.search(r"(?i)\(\s*(?:BD\s*Time|BDT)\s*\)\s*$", text)
+    )
+    # A parenthetical timezone label, rather than the bare trailing
+    # "BDT"/"UTC" token every pattern below already tolerates, would
+    # otherwise defeat all of them at once.
+    text = re.sub(r"(?i)\s*\((?:BD\s*Time|BDT|BST|UTC|GMT)\)\s*$", "", text).strip()
+    if explicit_bd_time:
+        default_timezone = timezone(timedelta(hours=6), name="BDT")
+
     normalized = text.replace("Z", "+00:00")
     try:
         parsed = datetime.fromisoformat(normalized)
@@ -174,6 +189,10 @@ def _parse_datetime(
             "%d-%m-%Y %H:%M",
             "%d-%m-%Y %I:%M:%S %p",
             "%d-%m-%Y %I:%M %p",
+            "%d %b %Y, %H:%M:%S",
+            "%d %b %Y, %H:%M",
+            "%d %b %Y, %I:%M:%S %p",
+            "%d %b %Y, %I:%M %p",
         ):
             try:
                 parsed = datetime.strptime(text, pattern)

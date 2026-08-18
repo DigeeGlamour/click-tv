@@ -2,7 +2,7 @@ import json
 import os
 import tempfile
 import unittest
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from scanner.events import _parse_datetime
@@ -174,8 +174,11 @@ class FinalScannerContractTests(unittest.TestCase):
         from scanner.source_loader import load_sources_config
 
         payload = load_sources_config("config")
-        self.assertEqual(len(payload["upcoming"]), 5)
-        self.assertEqual(len(payload["today_match"]), 8)
+        # Added by direct request: 0matbank/trysports (cricket live, football
+        # live and upcoming) as an extra, lower-priority source - two land in
+        # today_match, one in upcoming.
+        self.assertEqual(len(payload["upcoming"]), 6)
+        self.assertEqual(len(payload["today_match"]), 10)
         self.assertEqual(len(payload["tv"]), 11)
         self.assertEqual(len(payload["movies"]), 2)
         self.assertEqual(
@@ -188,6 +191,62 @@ class FinalScannerContractTests(unittest.TestCase):
             payload["tv"][1]["url"],
             "https://raw.githubusercontent.com/sm-monirulislam/RoarZone-Auto-Update-playlist/refs/heads/main/RoarZone.m3u",
         )
+
+    def test_0matbank_trysports_cricket_schema_is_read(self):
+        """The new source's per-stream URL lives under "direct_stream_url"
+        and its real channel name under "channel_name" - neither was in this
+        parser's recognised key lists, so every stream from this source
+        would otherwise have parsed as metadata with no playable URL and no
+        broadcaster identity at all."""
+        content = json.dumps({"matches": [{
+            "id": "admin-willow-cricket",
+            "title": "Willow Cricket",
+            "category": "cricket",
+            "status": "LIVE_NOW",
+            "poster": "https://example.test/poster.webp",
+            "headers": {"User-Agent": "UA/1.0", "Referer": "https://embed.st/"},
+            "streams": [
+                {"channel_name": "Willow Cricket (HD)", "hd": True,
+                 "direct_stream_url": "https://example.test/willow-hd.m3u8"},
+                {"channel_name": "Willow 2 (HD)", "hd": True,
+                 "direct_stream_url": "https://example.test/willow-2.m3u8"},
+            ],
+        }]})
+        items = parse_json_content(content, {
+            "id": "0matbank-trysports-cricket-live",
+            "pipeline": "today_match",
+            "status_filter": ["LIVE"],
+        })
+        self.assertEqual(len(items), 2)
+        self.assertEqual({item["url"] for item in items},
+                          {"https://example.test/willow-hd.m3u8", "https://example.test/willow-2.m3u8"})
+        self.assertEqual({item["provider"] for item in items}, {"Willow Cricket (HD)", "Willow 2 (HD)"})
+        for item in items:
+            self.assertEqual(item["headers"]["Referer"], "https://embed.st/")
+
+    def test_0matbank_trysports_upcoming_schedule_is_read(self):
+        """The schedule text names its own timezone explicitly -
+        "(BD Time)" - rather than the bare trailing "BDT" every other
+        pattern already tolerates; misreading it as the caller's default
+        timezone instead would put every kickoff up to six hours off."""
+        content = json.dumps({"matches": [{
+            "id": "heidenheim-vs-bayern-munich",
+            "title": "Heidenheim vs Bayern Munich",
+            "category": "football",
+            "status": "UPCOMING",
+            "start_time_bd": "18 Aug 2026, 10:00 PM (BD Time)",
+            "poster": "https://example.test/poster.webp",
+        }]})
+        items = parse_json_content(content, {
+            "id": "0matbank-trysports-football-upcoming",
+            "pipeline": "upcoming",
+            "status_filter": ["UPCOMING"],
+            "allow_without_stream": True,
+        })
+        self.assertEqual(len(items), 1)
+        parsed = _parse_datetime(items[0]["start_time"], timezone.utc)
+        self.assertIsNotNone(parsed)
+        self.assertEqual(parsed, datetime(2026, 8, 18, 16, 0, tzinfo=timezone.utc))
 
     def test_same_url_with_different_cookie_or_drm_survives(self):
         base = {
