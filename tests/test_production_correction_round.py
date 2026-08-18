@@ -791,6 +791,39 @@ class TheStickyRouteMemoryCannotOverrideAChannelSwitch(unittest.TestCase):
         self.assertIn("channels.length", guard)
 
 
+class SelectingAnEmbedOnlyChannelActuallyPlaysIt(unittest.TestCase):
+    """Section 27 tries an embed only once every native route has failed -
+    correct when an embed is a fallback nobody chose, wrong the moment a
+    Streamed-provider channel with no native stream of its own became a
+    directly clickable entry in the channel strip. buildAttemptPlan's pool is
+    every *reachable* channel's native stream, not just the selected one's,
+    so clicking such a channel still built a full plan out of every other
+    channel's native routes and played whichever was healthiest - never what
+    was actually clicked. Reproduced live: clicking "Click Max"/"Click Ultra"
+    on the real deployed site never showed their embed at all, because some
+    other channel's native stream always answered first."""
+
+    def test_a_selected_embed_only_channel_is_mounted_before_the_native_plan_runs(self):
+        body = APP.split("async function startPlayback(item, userInitiated = true) {", 1)[1].split(
+            chr(10) + "async function ", 1)[0]
+        self.assertIn("selectedChannelEmbedStream", body)
+        self.assertIn("mountEmbedRenderer(", body)
+        # It must run before the native plan is given a chance to succeed on
+        # some other channel's stream, not after.
+        self.assertLess(
+            body.index("selectedChannelEmbedStream"),
+            body.index("if (!plan.length)"),
+        )
+
+    def test_the_mounted_route_belongs_to_the_channel_actually_selected(self):
+        body = APP.split("async function startPlayback(item, userInitiated = true) {", 1)[1].split(
+            chr(10) + "async function ", 1)[0]
+        # Not "the first embed route on the card" (that is tryEmbedFallback's
+        # job) - specifically the selected channel's own stream.
+        self.assertIn("activeChannelId(item)", body)
+        self.assertIn("selectedChannel.name", body)
+
+
 class AnHonestFallbackChannelGetsItsOwnBrand(unittest.TestCase):
     """"Server-1"/"Streamed-1" read as backend plumbing to a viewer, per
     direct request for a nicer, user-friendly alternative. Chosen and

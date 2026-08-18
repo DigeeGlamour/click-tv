@@ -4713,6 +4713,27 @@ async function startPlayback(item, userInitiated = true) {
     nativeErrorTimer: null
   };
 
+  // Section 27 says embeds are tried only once every native route is gone -
+  // correct when an embed is a fallback nobody chose. It stopped being
+  // correct the moment a Streamed-provider channel with no native stream of
+  // its own became a first-class, directly clickable entry in the channel
+  // strip: buildAttemptPlan's pool is every *reachable* channel's native
+  // stream, not just the selected one's, so picking that channel explicitly
+  // still built a full plan out of every other channel's native routes and
+  // played whichever one was healthiest - never what was actually clicked.
+  // The selected channel having no native stream at all is checked directly,
+  // so its own embed is tried now instead of after failing routes that were
+  // never its own.
+  const selectedChannel = eventChannels(item).find((entry) => entry.id === activeChannelId(item));
+  const selectedChannelEmbedStream = selectedChannel &&
+    !(selectedChannel.streams || []).some((stream) => stream.playback_type !== 'embed') &&
+    (selectedChannel.streams || []).find((stream) => stream.playback_type === 'embed' && stream.embed_url);
+  if (selectedChannelEmbedStream) {
+    if (mountEmbedRenderer({ url: selectedChannelEmbedStream.embed_url, label: selectedChannel.name }, item)) {
+      return;
+    }
+  }
+
   if (!plan.length) {
     handlePlaybackPlanExhausted('no_playable_route');
     return;

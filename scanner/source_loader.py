@@ -12,6 +12,7 @@ import concurrent.futures
 import hashlib
 import json
 import os
+import re
 import ssl
 import time
 import urllib.error
@@ -346,6 +347,34 @@ def _save_source_cache(
 # Network download
 # ---------------------------------------------------------------------------
 
+_ENV_PLACEHOLDER = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
+
+
+def _resolve_fetch_headers(raw_headers: Any) -> Dict[str, str]:
+    """A source's own ``fetch_headers``, with ``${ENV_VAR}`` filled from
+    the environment, for authenticating the request that downloads the
+    source's index file itself - a private repo's PAT, say.
+
+    This is a config file checked into a public repository, so the token
+    itself can never live in it - only a placeholder naming the environment
+    variable a scan run is expected to export. Deliberately a separate
+    field from ``headers``: that one is merged into every *stream's* own
+    published/playback headers (see _merge_nested_headers), sent onward to
+    third-party CDNs and exposed in the public playback catalogue. A GitHub
+    token belongs in neither place.
+    """
+    resolved: Dict[str, str] = {}
+    if not isinstance(raw_headers, dict):
+        return resolved
+    for key, value in raw_headers.items():
+        if value is None or isinstance(value, (dict, list)):
+            continue
+        resolved[str(key)] = _ENV_PLACEHOLDER.sub(
+            lambda match: os.environ.get(match.group(1), ""), str(value)
+        )
+    return resolved
+
+
 def _fetch_url_with_retry(
     url: str,
     headers: Dict[str, str],
@@ -646,9 +675,17 @@ def _fetch_and_parse_source(
         if last_modified:
             source_headers.setdefault("If-Modified-Since", last_modified)
 
+    # Kept apart from source_headers, which is also merged into every
+    # stream's own published/playback headers (see _merge_nested_headers) -
+    # a private index's own auth token must reach only the request that
+    # downloads that index, never a third-party CDN or the public playback
+    # catalogue.
+    index_fetch_headers = dict(source_headers)
+    index_fetch_headers.update(_resolve_fetch_headers(source_info.get("fetch_headers")))
+
     content, error, status_code, elapsed_ms, attempts, response_meta = _fetch_url_with_retry(
         request_url,
-        headers=source_headers,
+        headers=index_fetch_headers,
         timeout=timeout,
         retries=retries,
         delays=delays,
@@ -671,7 +708,7 @@ def _fetch_and_parse_source(
     if status_code == 304 and not cached_items:
         unconditional_headers = {
             key: value
-            for key, value in source_headers.items()
+            for key, value in index_fetch_headers.items()
             if str(key).casefold() not in {"if-none-match", "if-modified-since"}
         }
         (

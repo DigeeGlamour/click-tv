@@ -1,3 +1,4 @@
+import os
 import unittest
 import json
 from pathlib import Path
@@ -185,6 +186,70 @@ class TodayEventSourceTests(unittest.TestCase):
         self.assertEqual(health["attempts"], 2)
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["source_pipeline"], "upcoming")
+
+
+class PrivateSourceAuthenticationTests(unittest.TestCase):
+    """A private repository's own index file needs an Authorization header to
+    fetch at all, but the config that names it is checked into a public repo
+    - the token itself can never live there, only a placeholder naming the
+    environment variable a scan run is expected to export. That header must
+    reach the request that downloads the index and nowhere else: source-level
+    `headers` is also merged into every *stream's* own published/playback
+    headers (see _merge_nested_headers), sent onward to third-party CDNs and
+    exposed in the public playback catalogue - a repo-access token has no
+    business in either place.
+    """
+
+    def test_env_placeholder_resolves_from_the_environment(self):
+        with patch.dict(os.environ, {"TEST_PRIVATE_TOKEN": "secret-value-123"}):
+            resolved = source_loader._resolve_fetch_headers(
+                {"Authorization": "token ${TEST_PRIVATE_TOKEN}"}
+            )
+        self.assertEqual(resolved["Authorization"], "token secret-value-123")
+
+    def test_an_unset_variable_resolves_to_empty_not_the_literal_placeholder(self):
+        os.environ.pop("TEST_PRIVATE_TOKEN_UNSET", None)
+        resolved = source_loader._resolve_fetch_headers(
+            {"Authorization": "token ${TEST_PRIVATE_TOKEN_UNSET}"}
+        )
+        self.assertEqual(resolved["Authorization"], "token ")
+
+    def test_fetch_headers_reach_the_index_request_but_not_a_published_stream(self):
+        source = {
+            "id": "private-sports-source",
+            "name": "Private Sports Source",
+            "url": "https://example.test/private/live.m3u",
+            "pipeline": "today_match",
+            "enabled": True,
+            "fetch_headers": {"Authorization": "token ${TEST_PRIVATE_TOKEN}"},
+        }
+        settings = {
+            "source_timeout_seconds": 5,
+            "source_cache": {"enabled": False},
+            "network": {
+                "retry_attempts": 1,
+                "retry_delays_seconds": [],
+                "retry_status_codes": [],
+                "verify_ssl": True,
+            },
+        }
+        playlist = '#EXTM3U\n#EXTINF:-1,Example Event\nhttps://media.test/live.m3u8\n'
+
+        with (
+            patch.dict(os.environ, {"TEST_PRIVATE_TOKEN": "secret-value-123"}),
+            patch.object(
+                source_loader,
+                "_fetch_url_with_retry",
+                return_value=(playlist, None, 200, 3, 1, {}),
+            ) as fetch,
+        ):
+            items, health = source_loader.process_single_source(source, settings)
+
+        fetch_headers = fetch.call_args.kwargs["headers"]
+        self.assertEqual(fetch_headers.get("Authorization"), "token secret-value-123")
+        self.assertEqual(health["status"], "success")
+        self.assertEqual(len(items), 1)
+        self.assertNotIn("Authorization", items[0].get("headers") or {})
 
 
 if __name__ == "__main__":
