@@ -30,7 +30,12 @@ from scanner.channel_resolver import (  # noqa: E402
     load_alias_map,
 )
 from scanner.event_lifecycle import event_destination  # noqa: E402
-from scanner.events import _stamp_final_routing  # noqa: E402
+from scanner.events import (  # noqa: E402
+    _append_embed_channels,
+    _payload,
+    _relabel_generic_channels,
+    _stamp_final_routing,
+)
 from scanner.live_protection import (  # noqa: E402
     _absorb_carried_card,
     _rebuild_card_channels,
@@ -784,6 +789,69 @@ class TheStickyRouteMemoryCannotOverrideAChannelSwitch(unittest.TestCase):
         body = APP.split("function buildAttemptPlan(item) {", 1)[1].split(chr(10) + "function ", 1)[0]
         guard = body.split("const channels = eventChannels(item);", 1)[1].split("const sources = ", 1)[0]
         self.assertIn("channels.length", guard)
+
+
+class AnHonestFallbackChannelGetsItsOwnBrand(unittest.TestCase):
+    """"Server-1"/"Streamed-1" read as backend plumbing to a viewer, per
+    direct request for a nicer, user-friendly alternative. Chosen and
+    ordered by the same request: Click Live, Click Plus, Click Max, Click
+    Ultra, Click Prime, Click Pro, Click Edge, Click X, then Click One,
+    Click Go, Click Now, Click Play if a card genuinely has more than eight."""
+
+    def test_native_and_embed_generic_channels_share_one_sequence_in_order(self):
+        card = {
+            "id": "evt-1",
+            "channels": [
+                {"id": "evt-1--willow", "name": "Willow", "name_confidence": "explicit"},
+                {"id": "evt-1--server-1", "name": "Server-1", "name_confidence": "generic"},
+                {"id": "evt-1--server-2", "name": "Server-2", "name_confidence": "generic"},
+                {"id": "evt-1--streamed-1", "name": "Streamed 1", "name_confidence": "generic"},
+            ],
+        }
+        _relabel_generic_channels(card)
+        names = [channel["name"] for channel in card["channels"]]
+        self.assertEqual(names, ["Willow", "Click Live", "Click Plus", "Click Max"])
+
+    def test_a_named_channel_is_never_relabelled(self):
+        card = {"channels": [{"id": "x", "name": "Sony Sports Ten 3", "name_confidence": "explicit"}]}
+        _relabel_generic_channels(card)
+        self.assertEqual(card["channels"][0]["name"], "Sony Sports Ten 3")
+
+    def test_more_generic_channels_than_the_named_series_still_publishes_something(self):
+        card = {"channels": [
+            {"id": f"x{i}", "name": f"Server-{i}", "name_confidence": "generic"}
+            for i in range(1, 14)
+        ]}
+        _relabel_generic_channels(card)
+        names = [channel["name"] for channel in card["channels"]]
+        self.assertEqual(len(names), len(set(names)), names)
+        self.assertEqual(names[-1], "Click 13")
+
+    def test_a_streamed_embed_channel_is_marked_generic_not_explicit(self):
+        """The provider's own embed API carries no broadcaster field at all,
+        so every embed channel it produces is an honest-fallback placeholder
+        - never a genuinely resolved name - even though passing its
+        auto-generated label through as an explicit channel_name would
+        otherwise earn it "explicit" confidence from the resolver."""
+        card = {
+            "id": "evt-1", "name": "Alpha vs Beta", "playback_id": "ctv_" + "a" * 32,
+            "channels": [{"id": "evt-1--willow", "name": "Willow", "name_confidence": "explicit",
+                          "streams": [{"playback_id": "ctv_" + "a" * 32}]}],
+            "embed_backups": [
+                {"name": "Streamed 1", "provider": "streamed", "embed_url": "https://embed.st/a/1"},
+            ],
+        }
+        _append_embed_channels(card)
+        embed_channel = next(c for c in card["channels"] if c["id"] != "evt-1--willow")
+        self.assertEqual(embed_channel["name_confidence"], "generic")
+
+    def test_payload_relabels_every_items_generic_channels(self):
+        items = [{
+            "id": "evt-1", "name": "Alpha vs Beta",
+            "channels": [{"id": "evt-1--server-1", "name": "Server-1", "name_confidence": "generic"}],
+        }]
+        payload = _payload(items, "today_match", filtered_stale=0, filtered_unplayable=0)
+        self.assertEqual(payload["items"][0]["channels"][0]["name"], "Click Live")
 
 
 if __name__ == "__main__":

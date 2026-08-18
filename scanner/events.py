@@ -410,6 +410,52 @@ def _stamp_final_routing(card: Dict[str, Any], destination: str) -> None:
         card["routing_reason"] = "schedule_status_routing"
 
 
+#: Section 12's honest-fallback naming, given its own brand rather than the
+#: backend-plumbing "Server-1"/"Streamed-1" a viewer has no reason to
+#: recognise. Chosen and ordered by direct request. Sorted best-quality-first
+#: exactly like the numbers they replace, so this only reads sensibly for as
+#: long as that ordering promise holds.
+GENERIC_CHANNEL_NAMES: Tuple[str, ...] = (
+    "Click Live", "Click Plus", "Click Max", "Click Ultra",
+    "Click Prime", "Click Pro", "Click Edge", "Click X",
+    "Click One", "Click Go", "Click Now", "Click Play",
+)
+
+
+def _generic_channel_label(index: int) -> str:
+    if 0 <= index < len(GENERIC_CHANNEL_NAMES):
+        return GENERIC_CHANNEL_NAMES[index]
+    # More generic channels on one card than the named series covers is not
+    # expected in practice, but a card must still publish something rather
+    # than run out of names.
+    return f"Click {index + 1}"
+
+
+def _relabel_generic_channels(card: Dict[str, Any]) -> None:
+    """Rename every honest-fallback channel to its place in the shared brand.
+
+    channels[] is already in final publish order by the time this runs -
+    ordering, carried-card absorption and embed appending have all already
+    happened - so a channel whose real broadcaster could not be named is
+    simply relabelled in the order it already appears: native generic slots
+    ahead of provider-embed ones, exactly as published, sharing one sequence
+    rather than two separately-numbered ones.
+    """
+    channels = card.get("channels")
+    if not isinstance(channels, list):
+        return
+    index = 0
+    for channel in channels:
+        if not isinstance(channel, dict):
+            continue
+        if str(channel.get("name_confidence")) != "generic":
+            continue
+        label = _generic_channel_label(index)
+        channel["name"] = label
+        channel["normalized_name"] = label.casefold().replace(" ", "-")
+        index += 1
+
+
 def _payload(
     items: List[Dict[str, Any]],
     event_type: str,
@@ -430,6 +476,7 @@ def _payload(
     )
     for item in ordered:
         item.pop("_source_timezone", None)
+        _relabel_generic_channels(item)
     return {
         "type": event_type,
         "updated_at": _utc_now(),
@@ -560,6 +607,19 @@ def _append_embed_channels(card: Dict[str, Any]) -> int:
         )
     except Exception:  # pragma: no cover - a provider must never break a scan
         return 0
+
+    # The provider's own embed API carries no broadcaster field at all - only
+    # an internal server key, a stream number and a URL - so "name" here is
+    # always the same honest placeholder normalize_embed_streams() built
+    # ("Streamed 1", "Streamed 2"...), never a genuinely resolved broadcaster.
+    # Passing it through as an explicit channel_name earns it "explicit"
+    # confidence from the resolver, same as a real name would get, which
+    # keeps it out of the generic-channel relabelling pass below. It is
+    # exactly the case that pass exists for, so it is marked as such here.
+    for channel in embed_channels:
+        if isinstance(channel, dict):
+            channel["name_confidence"] = "generic"
+            channel["name_source"] = "generic"
 
     added = [
         channel for channel in embed_channels
