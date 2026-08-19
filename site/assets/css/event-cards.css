@@ -539,11 +539,7 @@ body.playback-active .sidebar-section.event-list-mode .event-filter-menu{backdro
 .sidebar-section.event-list-mode .tm-shell.is-playing-event .tm-card-v2,
 .sidebar-section.event-list-mode .tm-card-v2.tm-one-channel.active{
   border-color:#ff3158!important;
-  box-shadow:
-    inset 2px 0 0 #ff3158,
-    0 0 0 1px rgba(255,49,88,.18),
-    0 0 22px rgba(255,49,88,.12),
-    0 14px 30px rgba(0,0,0,.32)!important;
+  animation:tmCardPlayingPulse 2.2s ease-in-out infinite!important;
 }
 .sidebar-section.event-list-mode .tm-shell.is-playing-event:hover .tm-card-v2,
 .sidebar-section.event-list-mode .tm-card-v2.tm-one-channel.active:hover{
@@ -552,6 +548,40 @@ body.playback-active .sidebar-section.event-list-mode .event-filter-menu{backdro
     0 0 0 1px rgba(255,49,88,.30),
     0 0 24px rgba(255,49,88,.20),
     0 16px 32px rgba(0,0,0,.36)!important;
+}
+@keyframes tmCardPlayingPulse{
+  0%,100%{
+    box-shadow:
+      inset 2px 0 0 #ff3158,
+      0 0 0 1px rgba(255,49,88,.18),
+      0 0 16px rgba(255,49,88,.10),
+      0 14px 30px rgba(0,0,0,.32);
+  }
+  50%{
+    box-shadow:
+      inset 2px 0 0 #ff3158,
+      0 0 0 1px rgba(255,49,88,.34),
+      0 0 28px rgba(255,49,88,.30),
+      0 14px 30px rgba(0,0,0,.32);
+  }
+}
+/* Wordless "this one, right now" cue on the playing card's own category
+   badge - no NOW PLAYING text, per the card's minimal-fields rule, but a
+   pulsing dot is exactly as unambiguous without adding a word. */
+.sidebar-section.event-list-mode .tm-shell.is-playing-event .tm-category::before,
+.sidebar-section.event-list-mode .tm-card-v2.tm-one-channel.active .tm-category::before{
+  content:""!important;
+  display:inline-block!important;
+  width:6px!important;height:6px!important;border-radius:999px!important;
+  margin-right:5px!important;
+  background:#ff3158!important;
+  box-shadow:0 0 6px rgba(255,49,88,.9)!important;
+  animation:tmPlayingDot 1.4s ease-in-out infinite!important;
+  vertical-align:middle!important;
+}
+@keyframes tmPlayingDot{
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.4;transform:scale(.72)}
 }
 
 .sidebar-section.event-list-mode .tm-poster{
@@ -582,14 +612,20 @@ body.playback-active .sidebar-section.event-list-mode .event-filter-menu{backdro
 }
 
 /* Two real DOM columns (see #sidebarList.tm-columns above), so this badge
-   can safely float half outside the card's own corner - nothing clips it. */
+   can safely float half outside the card's own corner - nothing clips it.
+   A light ring around the dark fill, not just the 2px dark border alone, so
+   the number reads clearly even against a poster whose own top-left corner
+   is similarly dark - without it the badge could look like a hollow outline
+   with nothing legible inside it. */
 .sidebar-section.event-list-mode .tm-serial{
-  position:absolute!important;top:-7px!important;left:-7px!important;z-index:8!important;
-  width:22px!important;height:22px!important;border-radius:999px!important;
+  position:absolute!important;top:-8px!important;left:-8px!important;z-index:8!important;
+  width:25px!important;height:25px!important;border-radius:999px!important;
   display:grid!important;place-items:center!important;
-  border:2px solid #07101a!important;background:#182432!important;color:#f5f8fc!important;
-  font-size:10px!important;font-weight:900!important;
-  box-shadow:0 3px 10px rgba(0,0,0,.35)!important;
+  border:2px solid #07101a!important;background:#212d3d!important;color:#ffffff!important;
+  font-size:11.5px!important;font-weight:900!important;line-height:1!important;
+  box-shadow:
+    0 0 0 1.5px rgba(255,255,255,.35),
+    0 3px 10px rgba(0,0,0,.45)!important;
 }
 .sidebar-section.event-list-mode .tm-category{
   position:absolute!important;top:8px!important;right:8px!important;z-index:3!important;

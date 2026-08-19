@@ -66,7 +66,10 @@ class Section2TheHardLockHolds(unittest.TestCase):
             self.assertNotIn(selector, CHANNEL_CSS, selector)
 
     def test_every_rule_is_scoped_to_the_event_list(self):
-        allowed = (".sidebar-section.event-list-mode", "@keyframes eventChannelEq")
+        allowed = (
+            ".sidebar-section.event-list-mode", "@keyframes eventChannelEq",
+            "@keyframes tmChannelPulse", "@keyframes tmChannelSwitching",
+        )
         for line in CHANNEL_CSS.splitlines():
             stripped = line.strip()
             if not stripped.startswith((".", "@keyframes")):

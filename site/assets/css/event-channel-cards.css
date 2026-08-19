@@ -429,6 +429,25 @@
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.10),
     0 8px 18px rgba(255,49,88,.18)!important;
+  animation:tmChannelPulse 1.8s ease-in-out infinite!important;
+}
+/* A click's own immediate feedback, from the moment it registers until the
+   new route either plays or fails - the request the button doesn't turn red
+   until a decoded frame arrives, or a still-buffering switch reads as "the
+   click did nothing, same channel as before". */
+.sidebar-section.event-list-mode .event-channel-chip.tm-channel.is-switching{
+  border-color:#ff9db0!important;
+  color:#fff!important;
+  background:linear-gradient(180deg,#5a2e3a 0%,#3c2029 100%)!important;
+  animation:tmChannelSwitching .9s ease-in-out infinite!important;
+}
+@keyframes tmChannelPulse{
+  0%,100%{box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 18px rgba(255,49,88,.18)}
+  50%{box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 8px 22px rgba(255,49,88,.42)}
+}
+@keyframes tmChannelSwitching{
+  0%,100%{opacity:.72}
+  50%{opacity:1}
 }
 @media(max-width:460px){
   .sidebar-section.event-list-mode .tm-channels{gap:4px!important;padding:6px!important}

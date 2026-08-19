@@ -3086,7 +3086,13 @@ function bindEventChannelStrip(shell, item) {
     event.stopPropagation();
     const channelId = chip.dataset.channelId;
     if (!channelId) return;
+    // Immediate feedback the click registered at all - without it, a switch
+    // into a stream that takes a moment to decode its first frame looks
+    // indistinguishable from "nothing happened, still the old channel".
+    qsa('.event-channel-chip', strip).forEach((entry) => entry.classList.remove('is-switching'));
+    chip.classList.add('is-switching');
     const ok = await selectEventChannel(eventChannelId(item), channelId);
+    chip.classList.remove('is-switching');
     if (!ok) return;
     updateEventChannelStrip(shell, item);
   });
