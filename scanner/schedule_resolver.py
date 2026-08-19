@@ -781,7 +781,20 @@ def team_pair_key(name: str) -> str:
     """
     text = str(name or "").casefold()
     if "|" in text:
-        text = text.split("|", 1)[0]
+        pipe_parts = [p.strip() for p in text.split("|") if p.strip()]
+        for p in pipe_parts:
+            if re.search(r"\b(?:vs|v|versus|tour\s+of)\b", p):
+                text = p
+                break
+        else:
+            text = pipe_parts[0] if pipe_parts else text
+
+    tour_match = re.search(r"([a-z\s]+?)\s+tour\s+of\s+([a-z\s]+?)(?:\s+\d{4})?(?:\s|$)", text)
+    if tour_match and not re.search(r"\b(?:vs|v|versus)\b", text):
+        team1 = tour_match.group(1).strip()
+        team2 = tour_match.group(2).strip()
+        text = f"{team1} vs {team2}"
+
     parts = TEAM_SEPARATOR.split(text, maxsplit=1)
     if len(parts) != 2:
         return ""
