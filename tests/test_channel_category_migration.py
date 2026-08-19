@@ -192,5 +192,101 @@ class PinnedSportsChannelOrderTests(unittest.TestCase):
             )
 
 
+class PublishedCardsAreNeverDuplicatedTests(unittest.TestCase):
+    """2026-08-19 production incident: back-to-back GitHub Actions scan runs
+    started failing the Pages validator's "duplicate channel name" and
+    "count mismatch" checks for Sports, Indian and Cartoon alike - every
+    scheduled run, for hours. Whatever upstream step handed two cards for the
+    same channel id to the publish step (the exact mechanism was never
+    pinned down with certainty), the publish step itself must never let a
+    duplicate identity out the door: the declared count is len() of the same
+    list that ships, so a duplicate card is simultaneously a duplicate-name
+    failure and a count-mismatch failure."""
+
+    def _card(self, identity: str, name: str, category: str = "Sports") -> dict:
+        return {
+            "id": identity,
+            "name": name,
+            "url": f"https://example.test/{identity}.m3u8",
+            "category": category,
+            "source_pipeline": "tv",
+            "verified": True,
+            "publish_allowed": True,
+        }
+
+    @staticmethod
+    def _write(path: Path, payload: object) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+    def test_a_duplicate_id_never_reaches_the_public_json(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            state = root / "state"
+            reports = root / "reports"
+            settings = root / "config" / "settings.json"
+            self._write(settings, {})
+
+            duplicated = [
+                self._card("willow", "Willow"),
+                self._card("willow-2", "Willow 2"),
+                self._card("willow", "Willow"),  # exact re-send of the same id
+                self._card("willow-2", "Willow 2"),
+                self._card("t-sports", "T Sports"),
+            ]
+            result = publish_scan_outputs(
+                channels_data={"Sports": duplicated},
+                settings_path=str(settings),
+                data_dir=str(data),
+                state_dir=str(state),
+                reports_dir=str(reports),
+                scan_mode="channels",
+            )
+            payload = json.loads((data / "channels" / "sports.json").read_text(encoding="utf-8"))
+            names = [c["name"] for c in payload["channels"]]
+            self.assertEqual(sorted(names), ["T Sports", "Willow", "Willow 2"])
+            # The failure mode was exactly this: declared count and the real
+            # array length silently disagreeing once a duplicate slipped in.
+            self.assertEqual(payload["count"], len(payload["channels"]))
+            self.assertEqual(
+                result["manifest_summary"]["channels"]["Sports"]["count"],
+                len(payload["channels"]),
+            )
+
+    def test_the_pinned_sports_reorder_does_not_reintroduce_a_dropped_duplicate(self) -> None:
+        """The reorder groups pinned channels together; confirm that grouping
+        does not, by itself, make a pre-existing duplicate survive twice."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            state = root / "state"
+            reports = root / "reports"
+            settings = root / "config" / "settings.json"
+            self._write(settings, {})
+
+            duplicated = [
+                self._card("t-sports", "T Sports"),
+                self._card("willow", "Willow"),
+                self._card("willow", "Willow"),
+                self._card("star-sports-1-hindi", "Star Sports 1 Hindi"),
+            ]
+            publish_scan_outputs(
+                channels_data={"Sports": duplicated},
+                settings_path=str(settings),
+                data_dir=str(data),
+                state_dir=str(state),
+                reports_dir=str(reports),
+                scan_mode="channels",
+            )
+            payload = json.loads((data / "channels" / "sports.json").read_text(encoding="utf-8"))
+            names = [c["name"] for c in payload["channels"]]
+            self.assertEqual(names.count("Willow"), 1)
+            self.assertEqual(payload["count"], len(payload["channels"]))
+
+
 if __name__ == "__main__":
     unittest.main()

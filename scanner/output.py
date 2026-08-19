@@ -24,7 +24,7 @@ import urllib.request
 from urllib.parse import urlparse
 from datetime import datetime, timezone
 from pathlib import Path, PurePosixPath
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 from scanner.snapshot_publish import (
     ORDER_ALLOWED_HOSTS,
@@ -202,6 +202,24 @@ def _sanitize_public_item(item: Dict[str, Any]) -> Dict[str, Any]:
     return clean
 
 
+def _dedupe_public_items(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Last-gate identity dedup. Whatever produced two cards for the same
+    channel/movie upstream, the public JSON's declared count (len of this
+    same list) must always match what actually ships - a duplicate id here
+    is exactly what turns into a Pages-validator "count mismatch" plus a
+    "duplicate channel name" failure at once."""
+    seen: Set[str] = set()
+    deduped: List[Dict[str, Any]] = []
+    for item in items:
+        identity = str(item.get("id") or item.get("url") or "").strip()
+        if identity and identity in seen:
+            continue
+        if identity:
+            seen.add(identity)
+        deduped.append(item)
+    return deduped
+
+
 def _sanitize_public_items(value: Any) -> List[Dict[str, Any]]:
     if not isinstance(value, list):
         return []
@@ -214,11 +232,12 @@ def _sanitize_public_items(value: Any) -> List[Dict[str, Any]]:
     # green "Verified" badge: no viewer route at all (http:// on a bare IP), or a
     # status like "stale_last_good" that means "this run's check failed, reusing
     # the old link". Neither is allowed out.
-    return [
+    reachable = [
         item for item in sanitized
         if item_is_browser_reachable(item)
         and (item_is_proven_live(item) if requires_same_run_proof(item) else True)
     ]
+    return _dedupe_public_items(reachable)
 
 
 
