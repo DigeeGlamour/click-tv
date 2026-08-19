@@ -144,6 +144,11 @@ find "${DIST_DIR}" \
   -prune \
   -exec rm -rf {} +
 
+# Clean any accidentally copied private directories from dist root
+for forbidden_dir in "scanner" "config" "manual" "reports" "state" "working" "tests" "workers" ".github"; do
+  rm -rf "${DIST_DIR}/${forbidden_dir}"
+done
+
 log "Private বা secret file dist-এর মধ্যে গেছে কি না পরীক্ষা করা হচ্ছে"
 
 FORBIDDEN_NAMES=(
