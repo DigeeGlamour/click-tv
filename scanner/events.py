@@ -492,8 +492,6 @@ def _payload(
         candidates = [
             item for item in candidates
             if str(item.get("sport_type") or "").lower() in allowed_set
-            or item.get("today_source_channel") is True
-            or str(item.get("status") or "").upper() == "CHANNEL_LIVE"
         ]
     ordered = sorted(
         candidates,
@@ -705,6 +703,7 @@ def _append_embed_channels(card: Dict[str, Any]) -> int:
 def _apply_streamed_enrichment(
     cards: List[Dict[str, Any]],
     provider_candidates: List[Dict[str, Any]],
+    attach_embed_streams: bool = False,
 ) -> Dict[str, Any]:
     """Attach provider artwork and embed backups to the canonical cards.
 
@@ -797,25 +796,26 @@ def _apply_streamed_enrichment(
                 card["logo"] = poster
                 stats["poster_filled"] = int(stats.get("poster_filled", 0)) + 1
 
-        embeds = provider.get("provider_embed_streams")
-        if isinstance(embeds, list) and embeds:
-            card["embed_backups"] = [
-                {
-                    "name": str(entry.get("name") or "Streamed"),
-                    "provider": str(entry.get("provider") or "streamed"),
-                    "playback_type": "embed",
-                    "embed_url": str(entry.get("embed_url") or ""),
-                    "language": str(entry.get("language") or ""),
-                    "hd": bool(entry.get("hd")),
-                    "verification_status": "provider_embed",
-                    "verified": False,
-                }
-                for entry in embeds
-                if str(entry.get("embed_url") or "").strip()
-            ]
-            card["embed_backup_count"] = len(card["embed_backups"])
-            stats["embed_backups"] += len(card["embed_backups"])
-            stats["embed_channels"] += _append_embed_channels(card)
+        if attach_embed_streams:
+            embeds = provider.get("provider_embed_streams")
+            if isinstance(embeds, list) and embeds:
+                card["embed_backups"] = [
+                    {
+                        "name": str(entry.get("name") or "Streamed"),
+                        "provider": str(entry.get("provider") or "streamed"),
+                        "playback_type": "embed",
+                        "embed_url": str(entry.get("embed_url") or ""),
+                        "language": str(entry.get("language") or ""),
+                        "hd": bool(entry.get("hd")),
+                        "verification_status": "provider_embed",
+                        "verified": False,
+                    }
+                    for entry in embeds
+                    if str(entry.get("embed_url") or "").strip()
+                ]
+                card["embed_backup_count"] = len(card["embed_backups"])
+                stats["embed_backups"] += len(card["embed_backups"])
+                stats["embed_channels"] += _append_embed_channels(card)
 
         # Section 24: the provider is a routing hint, never a status authority.
         hint = str(provider.get("provider_routing_hint") or "")
@@ -1278,20 +1278,21 @@ def process_events(
         )
         schedule_stats["live_protection"] = protection_stats
 
-    # Sections 24-27. Artwork and embed backups are attached after routing, so a
-    # provider that vanished from its own listing cannot influence which section
-    # a card landed in, nor remove it.
+    attach_embed_streams = False
+    events_cfg = settings.get("events")
+    if isinstance(events_cfg, dict):
+        attach_embed_streams = bool(events_cfg.get("attach_embed_streams", False))
+
     schedule_stats["channel_names"] = channel_stamp_stats
     schedule_stats["streamed_provider"] = streamed_report
     schedule_stats["streamed_enrichment"] = _apply_streamed_enrichment(
-        today_items + upcoming_items, streamed_candidates
+        today_items + upcoming_items, streamed_candidates, attach_embed_streams=attach_embed_streams
     )
     schedule_stats["sports_poster_enrichment"] = _apply_supplementary_sports_artwork(
         today_items + upcoming_items
     )
 
     allowed_sports = None
-    events_cfg = settings.get("events")
     if isinstance(events_cfg, dict):
         allowed_sports = events_cfg.get("allowed_sports")
 
