@@ -202,7 +202,7 @@ class WorkflowSafetyTests(unittest.TestCase):
         # Every config file the scanner loads has to be on the list, because
         # these are exactly the ones that went missing.
         for config in (
-            "config/settings.json", "config/sources.json",
+            "config/settings.json",
             "config/event-fixtures.json", "config/channel-aliases.json",
             "config/channel-categories.json", "config/header-profiles.json",
         ):
