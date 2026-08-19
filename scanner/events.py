@@ -481,14 +481,18 @@ def _payload(
     filtered_stale: int,
     filtered_unplayable: int,
     source_timezone: timezone | ZoneInfo = timezone.utc,
+    allowed_sports: Optional[Iterable[str]] = None,
 ) -> Dict[str, Any]:
-    # Requirement 11. A card carried forward from a previous publish (see
-    # requirement 6) predates the sport field, so fill it in before sorting -
-    # otherwise those cards would all sort as "other" and land behind the rest.
     candidates = [item for item in items if isinstance(item, dict)]
     for item in candidates:
         if not str(item.get("sport_type") or "").strip():
             item["sport_type"] = event_sport(item)
+    if allowed_sports is not None:
+        allowed_set = {str(s).strip().lower() for s in allowed_sports if str(s).strip()}
+        candidates = [
+            item for item in candidates
+            if str(item.get("sport_type") or "").lower() in allowed_set
+        ]
     ordered = sorted(
         candidates,
         key=lambda item: _event_sort_key(item, source_timezone),
@@ -1284,6 +1288,11 @@ def process_events(
         today_items + upcoming_items
     )
 
+    allowed_sports = None
+    events_cfg = settings.get("events")
+    if isinstance(events_cfg, dict):
+        allowed_sports = events_cfg.get("allowed_sports")
+
     result = {
         "today_match": _payload(
             today_items,
@@ -1291,6 +1300,7 @@ def process_events(
             filtered_stale=today_stale,
             filtered_unplayable=today_unplayable,
             source_timezone=source_timezone,
+            allowed_sports=allowed_sports,
         ),
         "upcoming": _payload(
             upcoming_items,
@@ -1298,6 +1308,7 @@ def process_events(
             filtered_stale=upcoming_stale,
             filtered_unplayable=0,
             source_timezone=source_timezone,
+            allowed_sports=allowed_sports,
         ),
     }
     # Requirement 3. One row per configured source, with the exact stage a
