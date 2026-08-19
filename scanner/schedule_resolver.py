@@ -788,6 +788,7 @@ def team_pair_key(name: str) -> str:
 
     def clean(side: str) -> str:
         side = re.split(r"\s+-\s+", side, maxsplit=1)[0]
+        side = re.sub(r"(?i)^.*?\b(?:tour\s+of\s+[a-z\s]+?(?:\s+\d{4})?|series|trophy|cup|championship)\b\s*", "", side)
         side = _TEAM_LEADING_ROUND.sub("", side, count=1)
         noise = _TEAM_TAIL_NOISE.search(side)
         if noise:

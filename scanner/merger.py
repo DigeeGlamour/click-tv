@@ -412,7 +412,13 @@ def normalize_event_key(name: str) -> str:
     text = str(name or "").casefold()
     text = text.replace("pheonix", "phoenix").replace("spirits", "spirit")
     if "|" in text:
-        text = text.split("|", 1)[0].strip()
+        parts = [p.strip() for p in text.split("|") if p.strip()]
+        for p in parts:
+            if re.search(r"\b(?:vs|v|versus|tour of)\b", p):
+                text = p
+                break
+        else:
+            text = parts[0] if parts else text
     text = _strip_multi_day_labels(text)
     # Held aside because the "team A vs team B" extraction below cuts the title
     # at the first " - ", which is exactly where a title like
@@ -430,12 +436,14 @@ def normalize_event_key(name: str) -> str:
     )
     if match:
         left = _strip_competition_prefix(match.group(1))
+        left = re.sub(r".*?\b(?:tour of|series|trophy|cup|championship)\b\s*", "", left, flags=re.IGNORECASE)
+        left = re.sub(r".*?\b(?:\d+(?:st|nd|rd|th)?\s+(?:test|odi|t20i?|match))\b\s*", "", left, flags=re.IGNORECASE)
         right = match.group(2)
         right = re.split(r"\s+-\s+(?!(?:women|men)\b)", right, maxsplit=1)[0]
         gender = "women" if re.search(r"\bwom(?:e|a)n(?:'s|s)?\b", f"{left} {right}") else ""
         left = re.sub(r"\bwom(?:e|a)n(?:'s|s)?\b", " ", left)
         right = re.sub(r"\bwom(?:e|a)n(?:'s|s)?\b", " ", right)
-        text = f"{left} vs {right} {gender}"
+        text = f"{left.strip()} vs {right.strip()} {gender}"
 
     if ordinal and not _CANONICAL_ORDINAL.search(text):
         text = f"{text} {ordinal.group(1)} {ordinal.group(2)}"
