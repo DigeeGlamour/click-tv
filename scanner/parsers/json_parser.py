@@ -876,13 +876,37 @@ def parse_json_content(
                 ),
             )
 
+            channel_name = _first_text(
+                stream_metadata,
+                (
+                    "channel_name",
+                    "channel",
+                    "channel_title",
+                    "tvg_name",
+                    "broadcaster",
+                ),
+            )
+            if not channel_name and provider:
+                channel_name = provider
+
+            stream_logo = _first_text(
+                stream_metadata,
+                (
+                    "channel_poster",
+                    "channel_logo",
+                    "poster",
+                    "logo",
+                    "image",
+                ),
+            )
+
             item: Dict[str, Any] = {
                 "name": (
                     name
                     or "Unknown Event"
                 ),
 
-                "logo": logo,
+                "logo": stream_logo or logo,
                 "group_title": group_title,
 
                 "url": stream_url,
@@ -898,10 +922,11 @@ def parse_json_content(
                 "event_url": event_url,
 
                 "provider": provider,
+                "channel_name": channel_name or "",
                 "stream_index": stream_index,
 
                 "tvg_id": tvg_id,
-                "tvg_name": tvg_name,
+                "tvg_name": tvg_name or channel_name or "",
 
                 "parser": "json",
 

@@ -680,6 +680,12 @@ def resolve_channel_name(
     # 6. The cleaned stream title, accepted only if it still looks like a channel.
     raw_title, field = _first_nonempty(item, ("name", "title", "stream_name"))
     if raw_title:
+        if " - " in raw_title:
+            parts = [p.strip() for p in raw_title.split(" - ") if p.strip()]
+            for part in reversed(parts[1:]):
+                cleaned_part = strip_stream_noise(part, event_name) or part
+                if cleaned_part and looks_like_channel(cleaned_part, True, alias_map):
+                    return finish(cleaned_part, "derived", field)
         cleaned = strip_stream_noise(raw_title, event_name)
         if cleaned and looks_like_channel(cleaned, True, alias_map):
             return finish(cleaned, "derived", field)
