@@ -207,14 +207,34 @@ def _dedupe_public_items(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     channel/movie upstream, the public JSON's declared count (len of this
     same list) must always match what actually ships - a duplicate id here
     is exactly what turns into a Pages-validator "count mismatch" plus a
-    "duplicate channel name" failure at once."""
-    seen: Set[str] = set()
+    "duplicate channel name" failure at once.
+
+    `id` alone is not a safe identity: two genuinely different channels can
+    share one slugified id ("Aaj Tak" and "Aaj Tak Bangla" both slugify to
+    "aaj-tak"), and dropping the second would trade one incident for a worse
+    one. Requiring `id` *and* name together fixes that false match while
+    still catching the real one: two published cards for the same channel
+    name discovered through two different backup-worthy sources share id and
+    name but not necessarily url - the validator rightly rejects two cards
+    for one channel name regardless, so identity is (id, name), not a url a
+    genuine duplicate is not even guaranteed to share. `url` alone is the
+    fallback only when there is no id to key on at all.
+    """
+    seen: Set[Tuple[str, ...]] = set()
     deduped: List[Dict[str, Any]] = []
     for item in items:
-        identity = str(item.get("id") or item.get("url") or "").strip()
-        if identity and identity in seen:
-            continue
-        if identity:
+        identity: Optional[Tuple[str, ...]] = None
+        identity_id = str(item.get("id") or "").strip()
+        identity_name = str(item.get("name") or item.get("title") or "").strip()
+        if identity_id and identity_name:
+            identity = ("id+name", identity_id, identity_name)
+        else:
+            url = str(item.get("url") or "").strip()
+            if url:
+                identity = ("url", url)
+        if identity is not None:
+            if identity in seen:
+                continue
             seen.add(identity)
         deduped.append(item)
     return deduped

@@ -83,7 +83,12 @@ class OrphanedPlaybackIdTests(unittest.TestCase):
 
     def test_an_orphan_that_still_has_its_own_url_is_kept(self):
         """The url is the playable route; a stale playback_id beside it is
-        harmless and must not cost the viewer a working channel."""
+        harmless to the viewer, but not to scripts/validate-pages.py - it
+        rejects any playback_id absent from the catalogue outright, url or
+        no url ("Mix movie page 2 item #54 playback_id catalogue-এ নেই:
+        Kannur Squad (2023) Dual ORG" was exactly this, a real url present
+        the whole time). The stale field must be cleared, not merely
+        tolerated, or the item survives here and still fails there."""
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             data = root / "data"
@@ -103,6 +108,8 @@ class OrphanedPlaybackIdTests(unittest.TestCase):
             payload = json.loads((data / "channels" / "bangla.json").read_text(encoding="utf-8"))
 
         self.assertEqual(len(payload["channels"]), 1)
+        self.assertFalse(payload["channels"][0].get("playback_id"))
+        self.assertEqual(payload["channels"][0]["url"], "https://ok.test/live.m3u8")
 
     def test_a_metadata_only_fixture_card_is_kept(self):
         """An announced match publishes deliberately without a link; its stream
@@ -241,6 +248,136 @@ class CleanRepositoryIsUntouchedTests(unittest.TestCase):
 
         self.assertTrue(unchanged)
         self.assertIn("nothing to reconcile", output)
+
+
+class RebaseDuplicatedOrMiscountedCollectionTests(unittest.TestCase):
+    """2026-08-19 production incident: `git rebase -X theirs origin/main`
+    left data/channels/sports.json with Willow, Willow 2, Star Sports 1
+    Hindi and Star Sports 2 each appearing twice - a plain line-based merge
+    of a big reordered JSON array keeping both sides' copy of an entry that
+    only moved - and left Indian/Cartoon's declared "count" one off from
+    their real (undisturbed, non-duplicated) array length, exactly per this
+    script's own docstring about the scalar count field being a real merge
+    conflict independent of the collection it describes. Every scheduled
+    scan failed the Pages validator on this for hours because nothing ever
+    deduplicated the collection or unconditionally re-synced its count."""
+
+    def test_a_duplicated_channel_id_from_a_rebase_merge_is_collapsed(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            _write(data / "channels" / "sports.json", {
+                "count": 2,
+                "channels": [
+                    {"id": "t-sports", "name": "T Sports", "url": "https://ok.test/t.m3u8"},
+                    {"id": "willow", "name": "Willow", "url": "https://ok.test/willow.m3u8"},
+                    {"id": "willow", "name": "Willow", "url": "https://ok.test/willow.m3u8"},
+                ],
+            })
+
+            _run(root)
+
+            payload = json.loads((data / "channels" / "sports.json").read_text(encoding="utf-8"))
+            names = [c["name"] for c in payload["channels"]]
+            self.assertEqual(names.count("Willow"), 1)
+            self.assertEqual(payload["count"], len(payload["channels"]))
+
+    def test_a_stale_count_with_no_duplicates_still_gets_resynced(self):
+        """Indian/Cartoon's own failure mode: nothing to drop or dedupe, the
+        collection itself is exactly right - only the scalar count lags."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            _write(data / "channels" / "indian.json", {
+                "count": 195,
+                "channels": [
+                    {"id": f"ch-{i}", "name": f"Channel {i}", "url": f"https://ok.test/{i}.m3u8"}
+                    for i in range(194)
+                ],
+            })
+
+            _run(root)
+
+            payload = json.loads((data / "channels" / "indian.json").read_text(encoding="utf-8"))
+            self.assertEqual(payload["count"], 194)
+            self.assertEqual(len(payload["channels"]), 194)
+
+    def test_two_different_channels_sharing_one_slugified_id_are_both_kept(self):
+        """A live, real-data near-miss: running an earlier id-only version of
+        this dedupe against production data deleted "Aaj Tak Bangla" because
+        it shares a slugified id ("aaj-tak") with the unrelated "Aaj Tak" -
+        a pre-existing id collision with nothing to do with any rebase."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            _write(data / "channels" / "other.json", {
+                "count": 2,
+                "channels": [
+                    {"id": "aaj-tak", "name": "Aaj Tak", "url": "https://ok.test/aajtak.m3u8"},
+                    {"id": "aaj-tak", "name": "Aaj Tak Bangla", "url": "https://ok.test/bangla.m3u8"},
+                ],
+            })
+
+            _run(root)
+
+            payload = json.loads((data / "channels" / "other.json").read_text(encoding="utf-8"))
+            names = sorted(c["name"] for c in payload["channels"])
+            self.assertEqual(names, ["Aaj Tak", "Aaj Tak Bangla"])
+            self.assertEqual(payload["count"], 2)
+
+    def test_same_id_and_name_with_a_different_url_is_still_collapsed(self):
+        """The actual production incident's own shape: two "Star Sports 2"
+        cards from two different backup-worthy sources, same id and name,
+        different url. Unlike Aaj Tak above (different name), this must
+        collapse to one - the validator rejects two cards for one channel
+        name regardless of whether their url happens to differ."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            _write(data / "channels" / "sports.json", {
+                "count": 2,
+                "channels": [
+                    {"id": "star-sports-2", "name": "Star Sports 2", "url": "https://a.test/s2.m3u8"},
+                    {"id": "star-sports-2", "name": "Star Sports 2", "url": "https://b.test/s2-mirror.m3u8"},
+                ],
+            })
+
+            _run(root)
+
+            payload = json.loads((data / "channels" / "sports.json").read_text(encoding="utf-8"))
+            self.assertEqual([c["name"] for c in payload["channels"]], ["Star Sports 2"])
+            self.assertEqual(payload["count"], 1)
+
+
+class AllowedHostsStaleCountTests(unittest.TestCase):
+    """data/allowed-hosts.json is derived from the same channel/movie files
+    the tests above correct, and its own declared count went stale by the
+    exact same rebase mechanism - one file later in the same incident
+    ("data/allowed-hosts.json count mismatch" alongside the channel
+    failures). Re-deriving it fresh, not patching the scalar in isolation,
+    is what actually keeps it honest about the corrected data."""
+
+    def test_a_stale_allowed_hosts_count_is_rederived_from_current_data(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            _write(data / "channels" / "sports.json", {
+                "count": 1,
+                "channels": [
+                    {"id": "a", "name": "A", "url": "https://host-a.test/live.m3u8"},
+                ],
+            })
+            _write(data / "allowed-hosts.json", {
+                "updated_at": "2020-01-01T00:00:00+00:00",
+                "count": 5,
+                "hosts": ["host-a.test", "stale-b.test", "stale-c.test", "stale-d.test", "stale-e.test"],
+            })
+
+            _run(root)
+
+            payload = json.loads((data / "allowed-hosts.json").read_text(encoding="utf-8"))
+            self.assertEqual(payload["hosts"], ["host-a.test"])
+            self.assertEqual(payload["count"], 1)
 
 
 if __name__ == "__main__":

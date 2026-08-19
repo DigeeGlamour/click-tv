@@ -28,7 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from scanner.output import _reconcile_manifest_counts  # noqa: E402
+from scanner.output import _reconcile_manifest_counts, refresh_allowed_hosts  # noqa: E402
 
 
 def _load(path: Path) -> dict:
@@ -95,12 +95,37 @@ def _item_is_playable(item: dict, playback_ids: set) -> bool:
     return True
 
 
+def _scrub_stale_playback_id(item: dict, playback_ids: set) -> bool:
+    """A url fallback keeps an item playable per `_item_is_playable` above,
+    but scripts/validate-pages.py rejects ANY playback_id absent from the
+    catalogue outright, url or no url - it does not know one was offered as
+    a fallback. Clearing the now-meaningless field (the url is the real
+    route now) is what actually satisfies that check. Returns whether it
+    changed anything.
+    """
+    if not isinstance(item, dict) or item.get("metadata_only") is True:
+        return False
+    playback_id = str(item.get("playback_id") or "").strip()
+    if not playback_id or playback_id in playback_ids:
+        return False
+    has_url = any(
+        str(item.get(key) or "").strip()
+        for key in ("url", "stream_url", "link")
+    )
+    if not has_url:
+        return False
+    item["playback_id"] = ""
+    return True
+
+
 def _drop_orphaned_items(
     data_root: Path,
     playback_ids: set,
     changed: list,
 ) -> tuple:
-    """Remove every published item whose only playback route went missing.
+    """Remove every published item whose only playback route went missing,
+    collapse any identity a rebase's line-based merge duplicated, and sync
+    each collection's own "count" field to its real, post-fix length.
 
     Returns (removed_count, movie_category_dirs_touched) so the index rebuild
     below only rewrites categories that actually lost something.
@@ -132,6 +157,7 @@ def _drop_orphaned_items(
             continue
 
         dropped_here = 0
+        changed_here = False
         for list_key in ("channels", "movies", "items", "matches", "events"):
             values = payload.get(list_key)
             if not isinstance(values, list):
@@ -142,13 +168,55 @@ def _drop_orphaned_items(
                 if not isinstance(item, dict)
                 or _item_is_playable(item, playback_ids)
             ]
-            if len(kept) != len(values):
-                dropped_here += len(values) - len(kept)
-                payload[list_key] = kept
-                if isinstance(payload.get("count"), int):
-                    payload["count"] = len(kept)
+            for item in kept:
+                if _scrub_stale_playback_id(item, playback_ids):
+                    changed_here = True
+            # A rebase merges non-overlapping edits to this same collection
+            # line-by-line, with no idea it is JSON - it can just as easily
+            # duplicate an entry (both sides kept it, at different positions)
+            # as drop one. An identity seen twice is never legitimate here -
+            # but `id` alone is not that identity: two genuinely different
+            # channels ("Aaj Tak" and "Aaj Tak Bangla") were found sharing one
+            # slugified id, and deleting the second would have been a second,
+            # worse incident. Requiring `id` *and* name together fixes that
+            # false match while still catching the real one: two published
+            # "Star Sports 2" cards, discovered through two different
+            # backup-worthy sources, share id and name but not url - the
+            # validator rightly rejects two cards for one channel name
+            # regardless, so identity is (id, name), not a url a genuine
+            # duplicate stream is not even guaranteed to share. `url` alone
+            # is the fallback only when there is no id to key on at all.
+            deduped: list = []
+            seen_identities: set = set()
+            for item in kept:
+                identity = None
+                if isinstance(item, dict):
+                    identity_id = str(item.get("id") or "").strip()
+                    identity_name = str(item.get("name") or item.get("title") or "").strip()
+                    if identity_id and identity_name:
+                        identity = ("id+name", identity_id, identity_name)
+                    else:
+                        url = str(item.get("url") or "").strip()
+                        if url:
+                            identity = ("url", url)
+                if identity is not None:
+                    if identity in seen_identities:
+                        continue
+                    seen_identities.add(identity)
+                deduped.append(item)
+            if len(deduped) != len(values):
+                dropped_here += max(len(values) - len(deduped), 0)
+                payload[list_key] = deduped
+                changed_here = True
+            # Whether or not the collection itself changed, the scalar
+            # "count" describing it is exactly the field a rebase's 3-way
+            # text merge resolves independently of the list - sync it
+            # unconditionally rather than only when something was dropped.
+            if isinstance(payload.get("count"), int) and payload["count"] != len(payload[list_key]):
+                payload["count"] = len(payload[list_key])
+                changed_here = True
 
-        if dropped_here and _write_if_changed(path, before, payload):
+        if changed_here and _write_if_changed(path, before, payload):
             removed += dropped_here
             changed.append(str(path.relative_to(data_root.parent)).replace("\\", "/"))
             if path.parent.parent.name == "movies":
@@ -237,6 +305,19 @@ def main() -> int:
         _reconcile_manifest_counts(manifest, data_root)
         if _write_if_changed(manifest_path, before, manifest):
             changed.append("data/manifest.json")
+
+    # allowed-hosts.json is derived, not scanner state, from the exact same
+    # channels/movies/today-match/playback files just corrected above - its
+    # own declared "count" going stale by the same rebase mechanism is the
+    # same failure mode, just one file later. Re-deriving it fresh is the
+    # correct fix, not patching its scalar count in isolation.
+    allowed_hosts_path = data_root / "allowed-hosts.json"
+    if allowed_hosts_path.is_file():
+        before = allowed_hosts_path.read_text(encoding="utf-8")
+        refresh_allowed_hosts(data_root)
+        after = allowed_hosts_path.read_text(encoding="utf-8")
+        if after != before:
+            changed.append("data/allowed-hosts.json")
 
     catalog_path = data_root / "playback-sources.json"
     if catalog_path.is_file():

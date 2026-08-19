@@ -287,6 +287,85 @@ class PublishedCardsAreNeverDuplicatedTests(unittest.TestCase):
             self.assertEqual(names.count("Willow"), 1)
             self.assertEqual(payload["count"], len(payload["channels"]))
 
+    def test_two_different_channels_sharing_one_slugified_id_are_both_kept(self) -> None:
+        """The fix's own near-miss: "Aaj Tak" and "Aaj Tak Bangla" both
+        slugify to id "aaj-tak" - a real, pre-existing collision unrelated to
+        any rebase. An id-only identity would have deleted the second one as
+        a false "duplicate", which is exactly the mistake an id+name (or
+        url-first) identity must not repeat."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            state = root / "state"
+            reports = root / "reports"
+            settings = root / "config" / "settings.json"
+            self._write(settings, {})
+
+            cards = [
+                {
+                    "id": "aaj-tak", "name": "Aaj Tak",
+                    "url": "https://example.test/aajtak.m3u8",
+                    "category": "Sports", "source_pipeline": "tv",
+                    "verified": True, "publish_allowed": True,
+                },
+                {
+                    "id": "aaj-tak", "name": "Aaj Tak Bangla",
+                    "url": "https://example.test/aajtakbangla.m3u8",
+                    "category": "Sports", "source_pipeline": "tv",
+                    "verified": True, "publish_allowed": True,
+                },
+            ]
+            publish_scan_outputs(
+                channels_data={"Sports": cards},
+                settings_path=str(settings),
+                data_dir=str(data),
+                state_dir=str(state),
+                reports_dir=str(reports),
+                scan_mode="channels",
+            )
+            payload = json.loads((data / "channels" / "sports.json").read_text(encoding="utf-8"))
+            names = sorted(c["name"] for c in payload["channels"])
+            self.assertEqual(names, ["Aaj Tak", "Aaj Tak Bangla"])
+
+    def test_same_id_and_name_with_a_different_url_is_still_a_duplicate(self) -> None:
+        """The other real production case: two "Star Sports 2" cards from
+        two different backup-worthy sources, same id and name, different
+        url. The validator rejects two cards for one channel name regardless
+        of url, so this must collapse to one - unlike the Aaj Tak case above,
+        where the name (not just the url) genuinely differs."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            state = root / "state"
+            reports = root / "reports"
+            settings = root / "config" / "settings.json"
+            self._write(settings, {})
+
+            cards = [
+                {
+                    "id": "star-sports-2", "name": "Star Sports 2",
+                    "url": "https://a.test/star2.m3u8",
+                    "category": "Sports", "source_pipeline": "tv",
+                    "verified": True, "publish_allowed": True,
+                },
+                {
+                    "id": "star-sports-2", "name": "Star Sports 2",
+                    "url": "https://b.test/star2-mirror.m3u8",
+                    "category": "Sports", "source_pipeline": "tv",
+                    "verified": True, "publish_allowed": True,
+                },
+            ]
+            publish_scan_outputs(
+                channels_data={"Sports": cards},
+                settings_path=str(settings),
+                data_dir=str(data),
+                state_dir=str(state),
+                reports_dir=str(reports),
+                scan_mode="channels",
+            )
+            payload = json.loads((data / "channels" / "sports.json").read_text(encoding="utf-8"))
+            self.assertEqual([c["name"] for c in payload["channels"]], ["Star Sports 2"])
+
 
 if __name__ == "__main__":
     unittest.main()
