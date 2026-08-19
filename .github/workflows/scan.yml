@@ -29,13 +29,13 @@ on:
       mode:
         description: "Select Scan Mode"
         required: true
-        default: "channels"
+        default: "today"
         type: choice
         options:
-          - channels
           - today
-          - upcoming-targeted
           - upcoming
+          - upcoming-targeted
+          - channels
           - movies
           - all
 
@@ -413,8 +413,8 @@ jobs:
             # count from the file it actually describes, right after the
             # rebase that could have introduced the drift.
             "$PYTHON_BIN" scripts/reconcile-generated-counts.py
-            if ! git diff --quiet -- data/manifest.json data/playback-sources.json; then
-              git add data/manifest.json data/playback-sources.json
+            if ! git diff --quiet -- data/; then
+              git add data/
               git commit --amend --no-edit
             fi
           }
