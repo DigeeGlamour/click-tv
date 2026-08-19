@@ -200,7 +200,7 @@ class TodayEventSourceTests(unittest.TestCase):
         self.assertEqual(items[0]["source_pipeline"], "upcoming")
 
 
-class TapmadRelaySlotDisabledTests(unittest.TestCase):
+class TapmadRelaySlotEnabledAsOwnChannelTests(unittest.TestCase):
     """2026-08-19 incident: a Today Match card titled "Spain vs Belgium W |
     FIH Hockey World Cup 2026" decoded a completely different sport on
     playback. Traced to two Tapmad "auto playlist" mirrors that are not
@@ -211,12 +211,18 @@ class TapmadRelaySlotDisabledTests(unittest.TestCase):
     still read ".../ZIMvsIND-.../master.m3u8" from a wholly unrelated earlier
     match, while an older scan's stale event ("Spain vs Belgium...") that
     this same reused URL had once been matched to was still being carried
-    forward by live-event protection. Disabled at the source rather than
-    patched downstream: a URL whose real-world content the maintainer swaps
-    by hand cannot be trusted to keep meaning the fixture it was first seen
-    under."""
+    forward by live-event protection.
 
-    def test_the_tapmad_relay_slot_mirrors_are_disabled_with_a_reason(self):
+    Per explicit follow-up instruction, these sources are not disabled: their
+    content is shown as its own channel under whatever name it currently
+    holds. The real fix lives in live_protection.py
+    (UNSCHEDULABLE_RELAY_SOURCE_IDS / _is_from_unschedulable_relay_source),
+    which stops a card traced to one of these sources from ever being
+    carried forward under a stale title once a scan stops seeing it - see
+    tests/test_advanced_fix_requirements.py::UnschedulableRelaySourceLiveProtectionTests.
+    """
+
+    def test_the_tapmad_relay_slot_mirrors_are_enabled(self):
         sources = source_loader.load_sources_config("config")
         by_id = {
             source["id"]: source
@@ -227,8 +233,7 @@ class TapmadRelaySlotDisabledTests(unittest.TestCase):
         }
         self.assertEqual(len(by_id), 3, by_id.keys())
         for source_id, source in by_id.items():
-            self.assertFalse(source.get("enabled"), source_id)
-            self.assertTrue(str(source.get("disabled_reason") or "").strip(), source_id)
+            self.assertTrue(source.get("enabled"), source_id)
 
 
 class PrivateSourceAuthenticationTests(unittest.TestCase):

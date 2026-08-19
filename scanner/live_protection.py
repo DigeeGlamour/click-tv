@@ -57,6 +57,37 @@ DEFAULT_GRACE_MINUTES = 90
 MAX_PUBLISHED_BACKUPS = 5
 ENDED_STATUSES = frozenset({"ENDED", "FT", "FINISHED", "COMPLETED", "AET", "PEN", "AWD", "WO"})
 
+# 2026-08-19 incident. These sources are not per-fixture playlists: each file
+# always holds exactly one #EXTINF entry that its maintainer hand-retitles
+# whenever they personally switch what they are watching on one shared
+# account, while the underlying URL - the only thing event identity is keyed
+# on - does not necessarily change with it. A grace-period carry-forward is
+# correct for a real fixture a scan merely failed to re-fetch, because the
+# fixture is still genuinely happening on its own external schedule
+# regardless of what this scan saw. It is wrong here: there is no external
+# schedule grounding this card at all, only the source's own self-reported
+# title - and once this scan's title no longer matches, that source has
+# already withdrawn the only claim that ever supported the old card.
+UNSCHEDULABLE_RELAY_SOURCE_IDS = frozenset({
+    "sm-tapmad-auto", "srhady-tapmad-bd-live", "sm-tapmad-auto-blob-alias",
+})
+
+
+def _is_from_unschedulable_relay_source(card: Dict[str, Any]) -> bool:
+    channels = card.get("channels")
+    if not isinstance(channels, list):
+        return False
+    for channel in channels:
+        if not isinstance(channel, dict):
+            continue
+        identifiers = {str(channel.get("provider") or "").strip()}
+        source_ids = channel.get("source_ids")
+        if isinstance(source_ids, list):
+            identifiers.update(str(value).strip() for value in source_ids)
+        if identifiers & UNSCHEDULABLE_RELAY_SOURCE_IDS:
+            return True
+    return False
+
 # A probe verdict. True = the link is live and playable, False = confirmed dead,
 # None = could not be determined and therefore must not remove anything.
 LinkProbe = Callable[[Dict[str, Any]], Optional[bool]]
@@ -928,7 +959,11 @@ def protect_live_events(
         count = int(record.get("count") or 0) + 1
 
         # A strong end signal retires the card without asking the link anything.
-        strong_end = has_strong_end_signal(previous) or is_authoritatively_ended(previous)
+        strong_end = (
+            has_strong_end_signal(previous)
+            or is_authoritatively_ended(previous)
+            or _is_from_unschedulable_relay_source(previous)
+        )
 
         verdict: Optional[bool] = None
         if not strong_end and probe is not None:

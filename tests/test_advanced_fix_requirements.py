@@ -16,6 +16,7 @@ sys.path.insert(0, str(ROOT))
 from scanner.live_protection import (  # noqa: E402
     card_link_urls,
     protect_live_events,
+    UNSCHEDULABLE_RELAY_SOURCE_IDS,
 )
 from scanner.merger import (  # noqa: E402
     _channel_lineage,
@@ -305,6 +306,74 @@ class Requirement6LiveProtection(unittest.TestCase):
             )
         self.assertEqual(len(items), 1)
         self.assertEqual(stats["released_stale"], 0)
+
+
+class UnschedulableRelaySourceLiveProtectionTests(unittest.TestCase):
+    """2026-08-19 incident. Some sources (the Tapmad relay-slot mirrors) are
+    not per-fixture playlists: the file always holds exactly one #EXTINF
+    entry that its maintainer hand-retitles whenever they personally switch
+    what they are watching on one shared account, and the underlying URL -
+    the only thing event identity is keyed on - does not necessarily change
+    with it. Carrying such a card forward on a missed scan (even with a
+    perfectly reachable link) republishes a stale, human-picked title over
+    whatever that source happens to be streaming now. Per the follow-up
+    instruction, these sources stay enabled and their content is shown as
+    its own channel under its own current name; the fix is that a card
+    traced to one of them must retire immediately on a miss, never carried
+    forward, so a stale title never survives past the scan that stopped
+    seeing it."""
+
+    def _previous_from_relay_source(self, source_id, **extra):
+        card = {
+            "id": "evt-tapmad-relay",
+            "name": "Spain vs Belgium W | FIH Hockey World Cup 2026",
+            "schedule_status": "LIVE_NOW",
+            "end_time": (NOW + timedelta(hours=2)).isoformat(),
+            "channels": [{"provider": source_id}],
+        }
+        card.update(extra)
+        return card
+
+    def test_a_relay_source_card_is_never_carried_forward_on_a_miss(self):
+        for source_id in UNSCHEDULABLE_RELAY_SOURCE_IDS:
+            with self.subTest(source_id=source_id):
+                with tempfile.TemporaryDirectory() as tmp:
+                    state = Path(tmp) / "protection.json"
+                    previous = [self._previous_from_relay_source(source_id)]
+                    items, stats = protect_live_events(
+                        [], previous, state_path=state, now=NOW,
+                        # Even a link that still answers "alive" must not
+                        # save the card: the probe is never the question.
+                        probe=lambda card: True,
+                    )
+                self.assertEqual(items, [])
+                self.assertEqual(stats["released_ended"], 1)
+                self.assertEqual(stats["carried_forward"], 0)
+
+    def test_a_relay_source_card_still_seen_this_scan_is_unaffected(self):
+        """The fix only stops a MISSING card from being carried forward
+        under a stale title; a card the current scan still reports (under
+        whatever name it holds right now) is untouched by this rule."""
+        with tempfile.TemporaryDirectory() as tmp:
+            state = Path(tmp) / "protection.json"
+            current = self._previous_from_relay_source(
+                "sm-tapmad-auto", name="Fresh Current Title",
+            )
+            items, stats = protect_live_events(
+                [current], [current], state_path=state, now=NOW,
+            )
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["name"], "Fresh Current Title")
+
+    def test_a_channel_from_an_unrelated_source_is_not_affected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            state = Path(tmp) / "protection.json"
+            previous = [self._previous_from_relay_source("srhady-sonyliv-live")]
+            items, stats = protect_live_events(
+                [], previous, state_path=state, now=NOW,
+            )
+        self.assertEqual(len(items), 1)
+        self.assertEqual(stats["carried_forward"], 1)
 
 
 class Requirement11SportOrdering(unittest.TestCase):
