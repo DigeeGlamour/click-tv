@@ -3943,7 +3943,6 @@ function mountEmbedRenderer(route, item) {
   frame.allow = 'autoplay; fullscreen; encrypted-media; picture-in-picture';
   frame.allowFullscreen = true;
   frame.setAttribute('referrerpolicy', 'origin-when-cross-origin');
-  frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation allow-popups');
   frame.setAttribute('title', `${item?.name || 'Event'} - ${route.label}`);
 
   // Section 28: the native renderer is suspended, not destroyed, so switching
