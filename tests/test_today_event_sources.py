@@ -13,7 +13,16 @@ class TodayEventSourceTests(unittest.TestCase):
         sources = source_loader.load_sources_config("config")
         configured = sources["today_match"] + sources["upcoming"]
         self.assertTrue(configured)
-        self.assertTrue(all(source.get("enabled") is True for source in configured))
+        # A source may be turned off deliberately (2026-08-19: the three
+        # Tapmad relay-slot mirrors, see their disabled_reason) - the guard
+        # here is against silently forgetting to flip one back on by
+        # accident, not against a documented, intentional disable.
+        for source in configured:
+            if source.get("enabled") is not True:
+                self.assertTrue(
+                    str(source.get("disabled_reason") or "").strip(),
+                    f"{source.get('id')} is disabled without a disabled_reason",
+                )
         ids = [source["id"] for source in configured]
         self.assertEqual(len(ids), len(set(ids)))
 
@@ -86,11 +95,14 @@ class TodayEventSourceTests(unittest.TestCase):
         """
         settings = {"source_workers": 2, "source_cache": {"enabled": False}}
         sources = source_loader.load_sources_config("config")
+        # collect_candidates submits every configured source (this test mocks
+        # process_single_source itself, so a disabled one's own internal
+        # "return early with status=disabled" never runs here) - dedup by
+        # distinct URL happens regardless of the enabled flag.
         configured = [
             source
             for pipeline in ("today_match", "upcoming")
             for source in sources[pipeline]
-            if source.get("enabled") is True
         ]
         expected_urls = {source["url"] for source in configured}
         submitted_ids = set()
@@ -186,6 +198,37 @@ class TodayEventSourceTests(unittest.TestCase):
         self.assertEqual(health["attempts"], 2)
         self.assertEqual(len(items), 1)
         self.assertEqual(items[0]["source_pipeline"], "upcoming")
+
+
+class TapmadRelaySlotDisabledTests(unittest.TestCase):
+    """2026-08-19 incident: a Today Match card titled "Spain vs Belgium W |
+    FIH Hockey World Cup 2026" decoded a completely different sport on
+    playback. Traced to two Tapmad "auto playlist" mirrors that are not
+    per-fixture sources at all - the file always holds exactly one #EXTINF
+    entry that a human retitles by hand whenever they switch what they are
+    watching on one shared premium account. That day it read
+    "Sri Lanka vs India | India Tour of Sri Lanka 2026" over a URL path that
+    still read ".../ZIMvsIND-.../master.m3u8" from a wholly unrelated earlier
+    match, while an older scan's stale event ("Spain vs Belgium...") that
+    this same reused URL had once been matched to was still being carried
+    forward by live-event protection. Disabled at the source rather than
+    patched downstream: a URL whose real-world content the maintainer swaps
+    by hand cannot be trusted to keep meaning the fixture it was first seen
+    under."""
+
+    def test_the_tapmad_relay_slot_mirrors_are_disabled_with_a_reason(self):
+        sources = source_loader.load_sources_config("config")
+        by_id = {
+            source["id"]: source
+            for source in sources["today_match"]
+            if source["id"] in {
+                "sm-tapmad-auto", "srhady-tapmad-bd-live", "sm-tapmad-auto-blob-alias",
+            }
+        }
+        self.assertEqual(len(by_id), 3, by_id.keys())
+        for source_id, source in by_id.items():
+            self.assertFalse(source.get("enabled"), source_id)
+            self.assertTrue(str(source.get("disabled_reason") or "").strip(), source_id)
 
 
 class PrivateSourceAuthenticationTests(unittest.TestCase):
