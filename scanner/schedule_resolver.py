@@ -49,6 +49,7 @@ def _fixture_record(
     start_text: str,
     venue: str = "",
     end_text: str = "",
+    aliases: Optional[List[str]] = None,
 ) -> Dict[str, Any]:
     source_zone = _zone(
         competition.get("timezone"), "UTC", competition.get("utc_offset", "+00:00")
@@ -81,6 +82,9 @@ def _fixture_record(
             )
             if alias
         }),
+        "aliases": sorted({
+            _norm(a) for a in (aliases or []) if a
+        }),
         "start": start.astimezone(timezone.utc),
         "end": end.astimezone(timezone.utc),
         "venue": venue,
@@ -105,6 +109,7 @@ def load_fixtures(path: str | Path) -> List[Dict[str, Any]]:
                     str(entry["start"]),
                     str(entry.get("venue") or ""),
                     str(entry.get("end") or ""),
+                    entry.get("aliases"),
                 ))
         for entry in competition.get("double_headers", []):
             if not isinstance(entry, dict):
@@ -244,7 +249,10 @@ def _fixture_score(
 
 def _competition_matches(name: str, fixture: Dict[str, Any]) -> bool:
     normalized = _norm(name)
-    return any(alias and alias in normalized for alias in fixture.get("competition_aliases", []))
+    if any(alias and alias in normalized for alias in fixture.get("competition_aliases", [])):
+        return True
+    fixture_aliases = [_norm(a) for a in fixture.get("aliases", [])]
+    return any(a and (a in normalized or normalized in a) for a in fixture_aliases)
 
 
 #: "1st Test", "2nd ODI", "6th Match" - which round of a series, spelled the way
