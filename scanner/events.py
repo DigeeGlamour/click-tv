@@ -492,6 +492,8 @@ def _payload(
         candidates = [
             item for item in candidates
             if str(item.get("sport_type") or "").lower() in allowed_set
+            or item.get("today_source_channel") is True
+            or str(item.get("status") or "").upper() == "CHANNEL_LIVE"
         ]
     ordered = sorted(
         candidates,

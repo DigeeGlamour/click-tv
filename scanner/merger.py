@@ -484,7 +484,7 @@ def normalize_event_key(name: str) -> str:
 # unrecognised stays "other" - nothing is invented.
 _SPORT_RULES: Tuple[Tuple[str, str], ...] = (
     ("esports", r"esports?|e[\s-]?sports?|pubg|dota|valorant|counter[\s-]?strike|league\s+of\s+legends|mobile\s+legends|free\s+fire"),
-    ("cricket", r"cricket|\bcric(?:life|hd)\b|t20i?|\bodi\b|test\s+match|\d{1,2}(?:st|nd|rd|th)\s+(?:test|odi|t20i?)|the\s+hundred|\bbbl\b|\bipl\b|\bpsl\b|\bcpl\b|ashes|vitality\s+blast|\btnpl\b"),
+    ("cricket", r"cricket|\bcric(?:life|hd)\b|t20i?|\bodi\b|test\s+match|\d{1,2}(?:st|nd|rd|th)\s+(?:test|odi|t20i?)|the\s+hundred|\bbbl\b|\bipl\b|\bpsl\b|\bcpl\b|\bbpl\b|\bdpl\b|ashes|vitality\s+blast|\btnpl\b|willow|star\s+sports|sony\s+sports|sony\s+ten|t\s+sports|tsports|ptv\s+sports|a\s+sports|sky\s+sports\s+cricket|sky\s+cricket|fox\s+cricket|astro\s+cricket|super\s*sport\s+cricket|icc|asia\s+cup|ranji|duleep|trophy|tri[\s-]series"),
     ("motorsport", r"motorsport|formula\s?e?\b|\bf1\b|e[\s-]?prix|moto\s?gp|nascar|rally|grand\s+prix|race\s+\d|race\s+day|\bgt4\b|\bgt3\b|\badac\b|superbike|\bmxgp\b|motocross|indycar|cycling|\buci\b|tour\s+de"),
     ("golf", r"\bgolf\b|\bpga\b|\blpga\b|dp\s+world\s+tour|ryder\s+cup"),
     ("tennis", r"tennis|\batp\b|\bwta\b|padel|badminton|squash|roland\s+garros|wimbledon|\b[a-z]+\s+open\b(?!\s+cup)"),
@@ -492,19 +492,9 @@ _SPORT_RULES: Tuple[Tuple[str, str], ...] = (
     ("baseball", r"\bmlb\b|baseball|world\s+series|\bnpb\b"),
     ("basketball", r"basketball|\bnba\b|\bwnba\b|euroleague|basket"),
     ("volleyball", r"volleyball|beach\s+volley"),
-    # "FIH Hockey World Cup" published as football, because the football rule
-    # matches a bare "Cup" and only "ice hockey"/"field hockey" were listed here.
-    # Hockey unqualified is still hockey.
     ("hockey", r"ice\s+hockey|\bnhl\b|\bkhl\b|field\s+hockey|\bfih\b|hockey"),
     ("racing", r"horse\s+racing|racecourse|steeplechase|greyhound"),
-    # Requirement 11, corrected. These leagues published as sport_type "other",
-    # which meant the Smart Filter's Football tab hid them: Dutch "Eerste
-    # Divisie" (only "divisi[oó]n"/"division" were listed, never the Dutch
-    # "divisie"), Argentine "Primera Nacional"/"Primera C" (only the Portuguese
-    # "primeira" was listed), the Icelandic "-deild" tiers including
-    # "Urvalsdeild", Hungarian "NB I", and Dutch reserve sides "Jong AZ"/"Jong
-    # Ajax". Every one of them is football; none of them is a guess.
-    ("football", r"football|soccer|bundesliga|eredivisie|divisie|serie\s+[ab]|la\s?liga|ligue\s?\d|s[uü]per\s+lig|\blig\b|liga|uefa|fifa|\bafc\b|\bcaf\b|concacaf|conmebol|libertadores|sudamericana|champions|europa|\befl\b|championship|friendlies|frauenliga|ekstraklasa|allsvenskan|superliga|eliteserien|primeira|primera|segunda|coppa|copa|coupe|pokal|deild|torneo\s+federal|\bnb\s+i{1,3}\b|\bjong\b|\bhnl\b|\bnwsl\b|\bnpl\b|\bmls\b|[akj][\s-]?league|\bcup\b|league|divisi[oó]n|division|\bfc\b|\bsc\b|united"),
+    ("football", r"football|soccer|premier\s+league|\bepl\b|bundesliga|eredivisie|divisie|serie\s+[ab]|la\s?liga|laliga|ligue\s?\d|s[uü]per\s+lig|\blig\b|liga|uefa|fifa|\bafc\b|\bcaf\b|concacaf|conmebol|libertadores|sudamericana|champions\s+league|europa\s+league|\befl\b|championship|friendlies|frauenliga|ekstraklasa|allsvenskan|superliga|eliteserien|primeira|primera|segunda|coppa|copa|coupe|pokal|deild|torneo\s+federal|\bnb\s+i{1,3}\b|\bjong\b|\bhnl\b|\bnwsl\b|\bnpl\b|\bmls\b|[akj][\s-]?league|\bcup\b|league|divisi[oó]n|division|\bfc\b|\bsc\b|united|manchester|liverpool|arsenal|chelsea|real\s+madrid|barcelona|bayern|juventus|milan|inter|psg|dortmund|atletico|tottenham|napoli|roma|bengaluru\s+fc|mohun\s+bagan|east\s+bengal|\bisl\b"),
 )
 
 _SPORT_PATTERNS: Tuple[Tuple[str, Any], ...] = tuple(
@@ -658,13 +648,16 @@ def _channel_layer():
 
 def event_sport(item: Dict[str, Any]) -> str:
     """Canonical sport for one event candidate."""
-    declared = str(item.get("source_category") or "").strip()
-    if declared and not re.fullmatch(r"live|sports?|event|other|general", declared, re.IGNORECASE):
+    declared = str(item.get("source_category") or item.get("group_title") or item.get("category") or "").strip()
+    if declared and not re.fullmatch(r"live|sports?|event|events?|other|general|channel|today\s*match|upcoming", declared, re.IGNORECASE):
         for name, pattern in _SPORT_PATTERNS:
             if pattern.search(declared):
                 return name
     haystack = " ".join(
-        str(item.get(field) or "") for field in ("source_category", "competition", "name")
+        str(item.get(field) or "") for field in (
+            "source_category", "group_title", "category", "competition",
+            "tournament", "league", "channel_name", "broadcaster", "name", "title"
+        )
     )
     for name, pattern in _SPORT_PATTERNS:
         if pattern.search(haystack):
