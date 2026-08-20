@@ -217,10 +217,12 @@ class FinalScannerContractTests(unittest.TestCase):
         from scanner.source_loader import load_sources_config
 
         payload = load_sources_config("config")
-        # Added by direct request: 0matbank/trysports (cricket live, football
-        # live and upcoming) as an extra, lower-priority source - two land in
-        # today_match, one in upcoming.
-        self.assertEqual(len(payload["upcoming"]), 6)
+        # Added by direct request: 0matbank/trysports as an extra source -
+        # cricket live and football live land in today_match, football upcoming
+        # and cricket upcoming in upcoming. cricket/upcoming.json was published
+        # by the provider from the start but had never been registered, so its
+        # fixtures could not reach the Upcoming tab at all.
+        self.assertEqual(len(payload["upcoming"]), 7)
         self.assertEqual(len(payload["today_match"]), 10)
         self.assertEqual(len(payload["tv"]), 11)
         self.assertEqual(len(payload["movies"]), 2)
