@@ -944,12 +944,15 @@ class AnUnexpectedLiveEndedEventFailsOverInsteadOfFreezing(unittest.TestCase):
         self.assertIn("!isMoviePlaybackContext(item)", body)
 
 
-class AnHonestFallbackChannelGetsItsOwnBrand(unittest.TestCase):
-    """"Server-1"/"Streamed-1" read as backend plumbing to a viewer, per
-    direct request for a nicer, user-friendly alternative. Chosen and
-    ordered by the same request: Click Live, Click Plus, Click Max, Click
-    Ultra, Click Prime, Click Pro, Click Edge, Click X, then Click One,
-    Click Go, Click Now, Click Play if a card genuinely has more than eight."""
+class AnHonestFallbackChannelIsANumberedServer(unittest.TestCase):
+    """A stream whose broadcaster the source never stated is "Server-N".
+
+    This was a "Click Live"/"Click Plus"/"Click Max" series for a while, and it
+    read as a set of real Click TV channels - so a card showing "Willow, Click
+    Live, Click Plus, Click Max" looked like four broadcasters when three were
+    unnamed mirrors of the same feed. Reverted to numbered servers by direct
+    request: a real name whenever one can be recovered, and Server-N when it
+    cannot. Numbered from 1 in publish order, which is best-quality-first."""
 
     def test_native_and_embed_generic_channels_share_one_sequence_in_order(self):
         card = {
@@ -963,7 +966,7 @@ class AnHonestFallbackChannelGetsItsOwnBrand(unittest.TestCase):
         }
         _relabel_generic_channels(card)
         names = [channel["name"] for channel in card["channels"]]
-        self.assertEqual(names, ["Willow", "Click Live", "Click Plus", "Click Max"])
+        self.assertEqual(names, ["Willow", "Server-1", "Server-2", "Server-3"])
 
     def test_a_named_channel_is_never_relabelled(self):
         card = {"channels": [{"id": "x", "name": "Sony Sports Ten 3", "name_confidence": "explicit"}]}
@@ -978,7 +981,7 @@ class AnHonestFallbackChannelGetsItsOwnBrand(unittest.TestCase):
         _relabel_generic_channels(card)
         names = [channel["name"] for channel in card["channels"]]
         self.assertEqual(len(names), len(set(names)), names)
-        self.assertEqual(names[-1], "Click 13")
+        self.assertEqual(names[-1], "Server-13")
 
     def test_a_streamed_embed_channel_is_marked_generic_not_explicit(self):
         """The provider's own embed API carries no broadcaster field at all,
@@ -1024,7 +1027,7 @@ class AnHonestFallbackChannelGetsItsOwnBrand(unittest.TestCase):
         stale = next(c for c in card["channels"] if c["id"] == "evt-1--streamed-1")
         self.assertEqual(stale["name_confidence"], "generic")
         _relabel_generic_channels(card)
-        self.assertEqual(stale["name"], "Click Live")
+        self.assertEqual(stale["name"], "Server-1")
 
     def test_payload_relabels_every_items_generic_channels(self):
         items = [{
@@ -1032,7 +1035,7 @@ class AnHonestFallbackChannelGetsItsOwnBrand(unittest.TestCase):
             "channels": [{"id": "evt-1--server-1", "name": "Server-1", "name_confidence": "generic"}],
         }]
         payload = _payload(items, "today_match", filtered_stale=0, filtered_unplayable=0)
-        self.assertEqual(payload["items"][0]["channels"][0]["name"], "Click Live")
+        self.assertEqual(payload["items"][0]["channels"][0]["name"], "Server-1")
 
 
 if __name__ == "__main__":

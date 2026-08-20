@@ -438,5 +438,147 @@ class RuleFourCricketChannelsSortFirst(unittest.TestCase):
                 self.assertEqual(event_sport({"name": name}), "cricket")
 
 
+class AnUnnamedStreamIsANumberedServer(unittest.TestCase):
+    """A real name whenever one can be recovered, Server-N when it cannot.
+
+    The fallback was a "Click Live"/"Click Plus"/"Click Max" series, which read
+    as a set of real Click TV channels: a card showing "Willow, Click Live,
+    Click Plus, Click Max" looked like four broadcasters when three of them were
+    unnamed mirrors of one feed. Reverted to numbered servers by direct request.
+    """
+
+    def test_the_labels_are_numbered_servers_from_one(self):
+        from scanner.events import _generic_channel_label
+
+        self.assertEqual(
+            [_generic_channel_label(i) for i in range(4)],
+            ["Server-1", "Server-2", "Server-3", "Server-4"],
+        )
+
+    def test_the_series_never_runs_out(self):
+        from scanner.events import _generic_channel_label
+
+        labels = [_generic_channel_label(i) for i in range(40)]
+        self.assertEqual(len(labels), len(set(labels)))
+        self.assertEqual(labels[-1], "Server-40")
+
+    def test_no_click_branded_label_is_produced_any_more(self):
+        from scanner.events import _generic_channel_label
+
+        for index in range(40):
+            with self.subTest(index=index):
+                self.assertNotIn("Click", _generic_channel_label(index))
+
+    def test_a_named_channel_is_never_renumbered(self):
+        from scanner.events import _relabel_generic_channels
+
+        card = {
+            "channels": [
+                {"id": "a", "name": "Willow", "name_confidence": "explicit"},
+                {"id": "b", "name": "Server-9", "name_confidence": "generic"},
+                {"id": "c", "name": "T Sports", "name_confidence": "explicit"},
+                {"id": "d", "name": "Streamed 1", "name_confidence": "generic"},
+            ]
+        }
+        _relabel_generic_channels(card)
+        self.assertEqual(
+            [entry["name"] for entry in card["channels"]],
+            ["Willow", "Server-1", "T Sports", "Server-2"],
+        )
+
+    def test_a_real_name_wins_and_the_rest_are_numbered(self):
+        from scanner.events import _payload
+        from scanner.merger import merge_candidates
+
+        def entry(channel_name, url):
+            item = {
+                "name": "Sri Lanka vs India 1st Test",
+                "url": url,
+                "source_id": "x",
+                "source_pipeline": "today_match",
+                "category": "today_match",
+                "force_output": "today_match",
+                "status": "LIVE_NOW",
+                "schedule_status": "LIVE_NOW",
+                "start_time": "2026-08-20T04:30:00+00:00",
+                "end_time": "2026-08-20T12:30:00+00:00",
+                "resolution": "HD",
+                "resolution_height": 720,
+                "verification_status": "verified_global",
+                "verified": True,
+                "publish_allowed": True,
+                "stream_type": "hls",
+                "headers": {},
+                "source_priority": 150,
+            }
+            if channel_name:
+                item["channel_name"] = channel_name
+            return item
+
+        cards = merge_candidates(
+            [
+                entry("Willow", "https://w1.example/x.m3u8"),
+                entry("Willow", "https://w2.example/x.m3u8"),
+                entry("T Sports", "https://t1.example/x.m3u8"),
+                entry(None, "https://u1.example/x.m3u8"),
+                entry(None, "https://u2.example/x.m3u8"),
+            ],
+            settings_path=str(ROOT / "config" / "settings.json"),
+        )
+        item = _payload(cards, "today_match", 0, 0)["items"][0]
+        names = [entry["name"] for entry in item["channels"]]
+        self.assertIn("Willow", names)
+        self.assertIn("T Sports", names)
+        self.assertIn("Server-1", names)
+        self.assertIn("Server-2", names)
+        for name in names:
+            self.assertNotIn("Click", name)
+        willow = next(e for e in item["channels"] if e["name"] == "Willow")
+        self.assertEqual(
+            [stream["role"] for stream in willow["streams"]], ["primary", "backup"]
+        )
+
+
+class FiveCopiesOfOneChannelAreOneButton(unittest.TestCase):
+    """Same match, one channel repeated: one primary and the rest backups."""
+
+    def test_five_willow_streams_plus_two_others_are_three_buttons(self):
+        aliases = load_alias_map()
+        streams = [stream("Willow", f"https://w{i}.example/x.m3u8") for i in range(5)]
+        streams.append(stream("T Sports", "https://ts.example/x.m3u8"))
+        streams.append(stream("Star Sports 1", "https://ss.example/x.m3u8"))
+        channels, stats = build_event_channels("sl", MATCH, streams, aliases=aliases)
+        self.assertEqual(
+            sorted(entry["name"] for entry in channels),
+            ["Star Sports 1", "T Sports", "Willow"],
+        )
+        willow = next(e for e in channels if e["name"] == "Willow")
+        roles = [item["role"] for item in willow["streams"]]
+        self.assertEqual(roles[0], "primary")
+        self.assertTrue(all(role == "backup" for role in roles[1:]))
+        self.assertGreaterEqual(len(roles), 2)
+        self.assertEqual(stats["channels"], 3)
+
+
+class TheArtworkKeySourceIsReported(unittest.TestCase):
+    def test_the_public_test_key_is_named_as_such(self):
+        import os
+        from scanner.sports_poster_providers import thesportsdb_key_source
+
+        saved = os.environ.pop("THESPORTSDB_API_KEY", None)
+        try:
+            self.assertEqual(thesportsdb_key_source(), "public_test_key")
+            os.environ["THESPORTSDB_API_KEY"] = "a-real-key"
+            self.assertEqual(thesportsdb_key_source(), "env")
+        finally:
+            os.environ.pop("THESPORTSDB_API_KEY", None)
+            if saved is not None:
+                os.environ["THESPORTSDB_API_KEY"] = saved
+
+    def test_events_puts_it_in_the_provider_block(self):
+        source = (ROOT / "scanner" / "events.py").read_text(encoding="utf-8")
+        self.assertIn('stats["provider"]["thesportsdb_key"]', source)
+
+
 if __name__ == "__main__":
     unittest.main()

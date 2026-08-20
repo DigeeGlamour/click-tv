@@ -429,25 +429,24 @@ def _stamp_final_routing(card: Dict[str, Any], destination: str) -> None:
         card["routing_reason"] = "schedule_status_routing"
 
 
-#: Section 12's honest-fallback naming, given its own brand rather than the
-#: backend-plumbing "Server-1"/"Streamed-1" a viewer has no reason to
-#: recognise. Chosen and ordered by direct request. Sorted best-quality-first
-#: exactly like the numbers they replace, so this only reads sensibly for as
-#: long as that ordering promise holds.
-GENERIC_CHANNEL_NAMES: Tuple[str, ...] = (
-    "Click Live", "Click Plus", "Click Max", "Click Ultra",
-    "Click Prime", "Click Pro", "Click Edge", "Click X",
-    "Click One", "Click Go", "Click Now", "Click Play",
-)
+#: Section 12's honest-fallback naming, for a stream whose broadcaster the
+#: source never stated and no alias could recover.
+#:
+#: This was a "Click Live"/"Click Plus"/"Click Max" series for a while, which
+#: read as a set of real Click TV channels and so implied a broadcaster that
+#: does not exist - a card showing "Willow, Click Live, Click Plus, Click Max"
+#: looked like four broadcasters when three of them were unnamed mirrors of the
+#: same feed. Numbered servers say exactly what they are: this is server N, and
+#: nobody claimed to know whose it is. Changed by direct request.
+#:
+#: Numbered from 1 in publish order, which is best-quality-first, so Server-1 is
+#: the one to try first.
+GENERIC_CHANNEL_LABEL_PREFIX = "Server"
 
 
 def _generic_channel_label(index: int) -> str:
-    if 0 <= index < len(GENERIC_CHANNEL_NAMES):
-        return GENERIC_CHANNEL_NAMES[index]
-    # More generic channels on one card than the named series covers is not
-    # expected in practice, but a card must still publish something rather
-    # than run out of names.
-    return f"Click {index + 1}"
+    """"Server-1", "Server-2", ... for the Nth unnamed stream on a card."""
+    return f"{GENERIC_CHANNEL_LABEL_PREFIX}-{max(0, int(index)) + 1}"
 
 
 def _relabel_generic_channels(card: Dict[str, Any]) -> None:
@@ -863,6 +862,7 @@ def _apply_supplementary_sports_artwork(
             highlightly_match_artwork,
             reset_lookup_stats,
             thesportsdb_event_artwork_with_retry,
+            thesportsdb_key_source,
         )
     except Exception:  # pragma: no cover - optional layer
         return stats
@@ -961,6 +961,7 @@ def _apply_supplementary_sports_artwork(
         entries = dict(list(entries.items())[-ARTWORK_CACHE_MAX_ENTRIES:])
     stats["cached_entries"] = len(entries)
     stats["provider"] = dict(LOOKUP_STATS)
+    stats["provider"]["thesportsdb_key"] = thesportsdb_key_source()
     try:
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.write_text(

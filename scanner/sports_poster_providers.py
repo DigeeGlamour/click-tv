@@ -82,6 +82,20 @@ def reset_lookup_stats() -> None:
     _host_state.clear()
 
 
+def thesportsdb_key_source() -> str:
+    """Which key the next lookup will use: "env" or "public_test_key".
+
+    THESPORTSDB_DEFAULT_KEY is TheSportsDB's own published open key. It works,
+    and it is rate-limited hard: on 2026-08-20 the first calls of a scan
+    returned full artwork and after roughly forty the host answered HTTP 429 to
+    everything, including queries that had just succeeded. Nothing said so,
+    because the key is substituted silently. A scan that is running on the
+    public key is a scan whose artwork coverage is capped by someone else's
+    quota, so it is reported rather than assumed.
+    """
+    return "env" if os.getenv("THESPORTSDB_API_KEY", "").strip() else "public_test_key"
+
+
 def _host_of(url: str) -> str:
     try:
         return urllib.parse.urlsplit(url).netloc.casefold()
