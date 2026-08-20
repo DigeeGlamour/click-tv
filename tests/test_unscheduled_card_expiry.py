@@ -42,7 +42,11 @@ from scanner.event_lifecycle import (
     estimate_passed,
     estimated_end,
 )
-from scanner.live_protection import DEFAULT_UNSCHEDULED_CARRY_HOURS, protect_live_events
+from scanner.live_protection import (
+    DEFAULT_UNSCHEDULED_CARRY_CONFIRMATIONS,
+    DEFAULT_UNSCHEDULED_CARRY_HOURS,
+    protect_live_events,
+)
 
 NOW = datetime(2026, 8, 20, 7, 30, tzinfo=timezone.utc)
 
@@ -250,6 +254,109 @@ class UnscheduledCarryExpiryTests(unittest.TestCase):
         gone, stats = self._run([card], misses, hours=1)
         self.assertEqual(gone, [], "1h window must retire a 2h-old miss")
         self.assertEqual(stats["released_unscheduled_expired"], 1)
+
+
+class TheClockSurvivesAStateReset(unittest.TestCase):
+    """State and payload can diverge, and the window must not restart.
+
+    An event mode that does not republish today-match.json can still rewrite
+    state/live-event-protection.json. When it retires a card the miss entry is
+    popped while the card survives in the published payload, so the next scan
+    reads no record and starts over. Measured on run #584 (upcoming-targeted):
+    cards standing at 225 consecutive misses came back at 1, and would have
+    restarted a fresh window on every five-minute trigger for ever.
+
+    So both halves of the evidence are carried on the card itself, which travels
+    with the payload: `carried_forward_misses` and
+    `carried_forward_first_missed_at`.
+    """
+
+    def setUp(self):
+        self.state_path = Path(tempfile.mkdtemp()) / "live-event-protection.json"
+
+    def _run(self, previous, *, now, misses=None):
+        self.state_path.write_text(
+            json.dumps({"updated_at": now.isoformat(), "misses": misses or {}}),
+            encoding="utf-8",
+        )
+        return protect_live_events(
+            [], previous, probe=lambda card: False,
+            state_path=self.state_path, now=now,
+            authority_states={}, playing_event_ids=set(),
+        )
+
+    def test_the_card_carries_the_stamp_forward(self):
+        card = unscheduled_card("Batman Petrolspor vs Boluspor 1 Lig", "bp")
+        items, _ = self._run([card], now=NOW)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(
+            items[0]["carried_forward_first_missed_at"], NOW.isoformat()
+        )
+
+    def test_an_empty_state_file_does_not_restart_the_window(self):
+        card = unscheduled_card("Batman Petrolspor vs Boluspor 1 Lig", "bp")
+        card["carried_forward_first_missed_at"] = (
+            NOW - timedelta(hours=5)
+        ).isoformat()
+        card["carried_forward_misses"] = 225
+        items, stats = self._run([card], now=NOW)
+        self.assertEqual(items, [], "a 5h-old stamp must retire the card")
+        self.assertEqual(stats["released_unscheduled_expired"], 1)
+
+    def test_an_empty_state_file_does_not_restart_the_miss_count(self):
+        card = unscheduled_card("Reading vs Wycombe EFL Trophy", "rw")
+        card["carried_forward_misses"] = 40
+        items, _ = self._run([card], now=NOW)
+        self.assertEqual(items, [], "40 misses is past the confirmation ceiling")
+
+    def test_a_long_run_of_misses_stands_in_for_a_missing_stamp(self):
+        card = unscheduled_card("FCSB vs FC Botosani Liga I", "fcsb")
+        card["carried_forward_misses"] = DEFAULT_UNSCHEDULED_CARRY_CONFIRMATIONS
+        items, stats = self._run([card], now=NOW)
+        self.assertEqual(items, [])
+        self.assertEqual(stats["released_unscheduled_expired"], 1)
+
+    def test_just_below_the_ceiling_with_no_stamp_is_still_carried(self):
+        card = unscheduled_card("FCSB vs FC Botosani Liga I", "fcsb")
+        card["carried_forward_misses"] = (
+            DEFAULT_UNSCHEDULED_CARRY_CONFIRMATIONS - 2
+        )
+        items, stats = self._run([card], now=NOW)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(stats["released_unscheduled_expired"], 0)
+
+    def test_the_window_runs_down_even_if_the_state_is_wiped_every_scan(self):
+        """The production worst case, played out run by run."""
+        card = unscheduled_card("Batman Petrolspor vs Boluspor 1 Lig", "bp")
+        card["carried_forward_misses"] = 2
+        start = datetime(2026, 8, 20, 8, 30, tzinfo=timezone.utc)
+        items = [card]
+        retired_at = None
+        for minutes in (0, 20, 40, 60, 120, 180):
+            now = start + timedelta(minutes=minutes)
+            items, stats = self._run(items, now=now)
+            if not items:
+                retired_at = minutes
+                break
+            self.assertEqual(
+                items[0]["carried_forward_first_missed_at"], start.isoformat(),
+                "the stamp must not move",
+            )
+        self.assertEqual(retired_at, 180)
+
+    def test_a_garbage_miss_count_on_the_card_is_ignored(self):
+        card = unscheduled_card("Reading vs Wycombe EFL Trophy", "rw")
+        card["carried_forward_misses"] = "not a number"
+        items, _ = self._run([card], now=NOW)
+        self.assertEqual(len(items), 1)
+
+    def test_settings_declare_the_confirmation_ceiling(self):
+        settings = json.loads(
+            (ROOT / "config" / "settings.json").read_text(encoding="utf-8")
+        )
+        lifecycle = settings["event_lifecycle"]
+        self.assertIn("unscheduled_carry_confirmations", lifecycle)
+        self.assertGreaterEqual(lifecycle["unscheduled_carry_confirmations"], 1)
 
 
 class LifecycleSettingsAreReadTests(unittest.TestCase):

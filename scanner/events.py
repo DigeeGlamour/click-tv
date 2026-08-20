@@ -1361,6 +1361,9 @@ def process_events(
             unscheduled_carry_hours=_safe_int(
                 lifecycle_cfg.get("unscheduled_carry_hours"), 3, 1, 240
             ),
+            unscheduled_carry_confirmations=_safe_int(
+                lifecycle_cfg.get("unscheduled_carry_confirmations"), 36, 1, 100000
+            ),
             # Section 21: a fresh authority verdict, and the sessions a viewer is
             # watching - the strongest protection there is.
             authority_states=_authority_states(event_candidates, previous_today_items),

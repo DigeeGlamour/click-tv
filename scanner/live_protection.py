@@ -67,6 +67,12 @@ DEFAULT_GRACE_MINUTES = 90
 # from its source for 225 consecutive scans over 2.5 days with every probe dead,
 # and was still publishing as Today Match with a green "Verified" badge.
 DEFAULT_UNSCHEDULED_CARRY_HOURS = 3
+# The same window expressed in consecutive misses, for the case where no usable
+# timestamp survives. The fastest trigger runs every five minutes, so three
+# hours is on the order of thirty-six scans; a card that has been missing for
+# hundreds of them with every link dead has already answered the question the
+# window exists to ask, and should not wait for a fresh clock to run down.
+DEFAULT_UNSCHEDULED_CARRY_CONFIRMATIONS = 36
 # The published contract: one primary plus at most five backups.
 MAX_PUBLISHED_BACKUPS = 5
 ENDED_STATUSES = frozenset({"ENDED", "FT", "FINISHED", "COMPLETED", "AET", "PEN", "AWD", "WO"})
@@ -903,6 +909,7 @@ def protect_live_events(
     authority_states: Optional[Dict[str, Optional[bool]]] = None,
     confirmations_required: int = 3,
     unscheduled_carry_hours: int = DEFAULT_UNSCHEDULED_CARRY_HOURS,
+    unscheduled_carry_confirmations: int = DEFAULT_UNSCHEDULED_CARRY_CONFIRMATIONS,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Carry forward a previously published live event that this scan missed.
 
@@ -974,7 +981,16 @@ def protect_live_events(
             continue
 
         record = misses.get(event_id) if isinstance(misses.get(event_id), dict) else {}
-        count = int(record.get("count") or 0) + 1
+        # The card's own tally counts too. An event mode that rewrites this
+        # state file without republishing today-match.json can pop an entry
+        # while the card survives in the payload, and reading only the state
+        # then restarted the confirmation count from zero - which is why
+        # cards that had stood at 225 misses came back at 1 after run #584.
+        try:
+            carried_count = int(previous.get("carried_forward_misses") or 0)
+        except (TypeError, ValueError):
+            carried_count = 0
+        count = max(int(record.get("count") or 0), carried_count) + 1
 
         # A strong end signal retires the card without asking the link anything.
         strong_end = (
@@ -1012,11 +1028,33 @@ def protect_live_events(
         # because otherwise it has no clock and can never retire.
         schedule_expired = estimate_passed(previous, reference, grace_minutes)
         unscheduled_expired = False
+        first_missed = reference
         if not schedule_expired and estimated_end(previous) is None:
-            first_missed = parse_time(record.get("first_missed_at")) or reference
-            unscheduled_expired = reference >= first_missed + timedelta(
+            # The clock is read from the card first and the state file second.
+            # An event mode that does not republish today-match.json can still
+            # rewrite this state file, and when it retires a card the entry is
+            # popped while the card survives in the published payload - so the
+            # next scan saw a first miss and restarted the window. Measured on
+            # run #584 (upcoming-targeted): every carried card came back with
+            # count 1 after having stood at 225. Carrying the stamp on the card
+            # makes the window survive that divergence, because the card and the
+            # payload travel together.
+            first_missed = (
+                parse_time(previous.get("carried_forward_first_missed_at"))
+                or parse_time(record.get("first_missed_at"))
+                or reference
+            )
+            window_passed = reference >= first_missed + timedelta(
                 hours=max(1, int(unscheduled_carry_hours))
             )
+            # A very long run of consecutive misses stands in for the clock when
+            # no usable stamp survived. Without this a card that had been absent
+            # for 226 scans over 2.5 days restarted a fresh three-hour window
+            # the first time this rule ran.
+            confirmations_passed = count >= max(
+                1, int(unscheduled_carry_confirmations)
+            )
+            unscheduled_expired = window_passed or confirmations_passed
             schedule_expired = unscheduled_expired
 
         signals = LifecycleSignals(
@@ -1051,9 +1089,14 @@ def protect_live_events(
             continue
 
         # LIVE or END_PENDING: the card is published either way.
+        state_first_missed = (
+            record.get("first_missed_at")
+            or str(previous.get("carried_forward_first_missed_at") or "")
+            or reference.isoformat()
+        )
         misses[event_id] = {
             "count": count,
-            "first_missed_at": record.get("first_missed_at") or reference.isoformat(),
+            "first_missed_at": state_first_missed,
             "last_probe": (
                 "alive" if verdict is True
                 else ("dead" if verdict is False else "inconclusive")
@@ -1064,6 +1107,10 @@ def protect_live_events(
         preserved = apply_verdict(previous, decision)
         preserved["carried_forward_misses"] = count
         preserved["carried_forward_reason"] = decision.reason
+        # Travels with the payload, so the retirement window cannot be reset by
+        # a scan mode that rewrites this state file without republishing the
+        # card list it was measured against.
+        preserved["carried_forward_first_missed_at"] = state_first_missed
         carried.append(preserved)
         stats["carried_forward"] += 1
         if decision.state == END_PENDING:

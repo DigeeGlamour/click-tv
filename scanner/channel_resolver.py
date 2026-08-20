@@ -588,6 +588,67 @@ def _first_nonempty(item: Dict[str, Any], fields: Iterable[str]) -> Tuple[str, s
     return "", ""
 
 
+#: Quality and resolution tags, for the *display* spelling. normalize_channel_
+#: name already drops these from the comparison key, which is what makes
+#: "Willow (HD)" and "Willow (SD)" one channel with a primary and a backup
+#: rather than two buttons. The label kept the tag of whichever variant happened
+#: to be ranked first, so a group holding both published as "Willow (HD)" - a
+#: button promising HD that fails over to SD, and three buttons reading
+#: "Willow (HD)", "Willow 2 (HD)", "Willow Sports (HD)" where the "(HD)" says
+#: nothing about which channel it is. Each stream carries its own `resolution`,
+#: so the group name does not need to.
+_DISPLAY_QUALITY = re.compile(
+    r"\s*[\(\[\{]\s*(?:4k|2k|8k|uhd|fhd|full\s*hd|hd|sd|hq|lq)\s*[\)\]\}]"
+    r"|\s*[\(\[\{]\s*\d{3,4}\s*p\s*[\)\]\}]"
+    r"|\s+(?:4k|2k|8k|uhd|fhd|full\s*hd|hd|sd|hq|lq)\b"
+    r"|\s+\d{3,4}\s*p\b"
+    r"|^(?:4k|2k|8k|uhd|fhd|full\s*hd|hd|sd|hq|lq)\s+(?=\S)"
+    , re.IGNORECASE,
+)
+
+
+def display_channel_label(value: Any) -> str:
+    """The broadcaster's name without a quality tag, never emptied.
+
+    "Willow (HD)" -> "Willow", "Star Sports 1 HD" -> "Star Sports 1",
+    "Willow Sports (SD)" -> "Willow Sports". A name that is *only* a quality
+    tag has nothing else to fall back on and is returned unchanged.
+    """
+    text = " ".join(str(value or "").split())
+    if not text:
+        return ""
+    stripped = _DISPLAY_QUALITY.sub("", text).strip(" -–—:|")
+    stripped = " ".join(stripped.split())
+    return stripped or text
+
+
+#: Trailing feed numbers, peeled one at a time to find a curated base brand.
+#: "t-sports-2" is not in the alias file but "t-sports" is, and the brand is the
+#: same - so the raw name is trusted while "Ten 1" and "Ten 3" stay distinct,
+#: because only the *lookup* is trimmed and never the published name.
+_TRAILING_FEED_NUMBER = re.compile(r"-\d{1,2}$")
+
+
+def _curated_alias_key(value: Any, alias_map: Dict[str, str]) -> str:
+    """The alias-file key this name matches, directly or by its base brand."""
+    if not alias_map:
+        return ""
+    key = normalize_channel_name(display_channel_label(value))
+    if not key:
+        return ""
+    if key in alias_map:
+        return key
+    trimmed = key
+    for _ in range(2):
+        shorter = _TRAILING_FEED_NUMBER.sub("", trimmed)
+        if shorter == trimmed:
+            break
+        trimmed = shorter
+        if trimmed in alias_map:
+            return trimmed
+    return ""
+
+
 def resolve_channel_name(
     item: Dict[str, Any],
     event_name: Any = "",
@@ -600,6 +661,7 @@ def resolve_channel_name(
 
     def finish(name: str, confidence: str, field: str) -> ChannelName:
         display = " ".join(str(name).split()).strip(" -â€“â€”:|")
+        display = display_channel_label(display)
         normalized = normalize_channel_name(display)
         if not display or not normalized:
             return ChannelName()
@@ -617,7 +679,19 @@ def resolve_channel_name(
         return ChannelName(display, normalized, confidence, field)
 
     # 1. An explicit channel name.
+    #
+    # A curated alias is stronger evidence than the heuristic cleaner, and it is
+    # asked first because the cleaner can destroy a real name: _keeps_a_word
+    # drops any alphabetic fragment of two letters or less as fixture debris, so
+    # strip_stream_noise("T Sports") returned "Sports", looks_like_channel
+    # rejected that as a bare category, and Bangladesh's main sports channel -
+    # pinned in settings, aliased in config/channel-aliases.json - could never
+    # form a channel group. Three sources carrying one "T Sports" feed for one
+    # match published as three buttons reading "Server-1", "Server-2",
+    # "Server-3" instead of one T Sports with a primary and two backups.
     value, field = _first_nonempty(item, ("channel_name", "channelName", "channel"))
+    if value and _curated_alias_key(value, alias_map):
+        return finish(value, "explicit", field)
     if value and looks_like_channel(strip_stream_noise(value, event_name) or value):
         return finish(value, "explicit", field)
 
