@@ -217,8 +217,19 @@ class LiveProjectConfigTests(unittest.TestCase):
             (ROOT / "config" / "settings.json").read_text(encoding="utf-8")
         )
         configured = settings["events"]["fixture_authority_sources"]
-        self.assertIn("srhady-axsports-upcoming", configured)
-        self.assertIn("srhady-willow-event-upcoming", configured)
+        # Every event feed is an authority now. All eleven state a status per
+        # record - the reason the registry no longer needs an -upcoming twin of
+        # each source - so any of them can be the one that says a fixture has
+        # started or finished.
+        registered = {
+            source["id"]
+            for source in json.loads(
+                (ROOT / "config" / "sources" / "today-match.json")
+                .read_text(encoding="utf-8")
+            )["sources"]
+        }
+        self.assertEqual(len(registered), 11)
+        self.assertEqual(set(configured), registered)
 
 
 if __name__ == "__main__":

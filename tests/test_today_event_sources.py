@@ -34,10 +34,17 @@ class TodayEventSourceTests(unittest.TestCase):
             for source in sources[pipeline]
         }
         self.assertTrue({
-            "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.m3u",
-            "https://raw.githubusercontent.com/srhady/crichd-speical-live-event/refs/heads/main/Live_Events.m3u",
+            "https://raw.githubusercontent.com/srhady/SonyLiv/refs/heads/main/sonyliv_playlist.json",
+            "https://raw.githubusercontent.com/srhady/axsports/refs/heads/main/live_sports.json",
+            "https://raw.githubusercontent.com/srhady/tapmad-bd/refs/heads/main/tapmad_bd.json",
+            "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+            "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+            "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+            "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+            "https://raw.githubusercontent.com/srhady/crichd-speical-live-event/refs/heads/main/Footy_Live.json",
             "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
-        }.issubset(urls))
+        }.issubset(urls), sorted(urls))
+        self.assertEqual(len(urls), 11, sorted(urls))
 
     def test_today_planner_accepts_upcoming_event_candidates(self):
         self.assertEqual(
@@ -144,10 +151,11 @@ class TodayEventSourceTests(unittest.TestCase):
             len(submitted_urls), len(set(submitted_urls)),
             f"a playlist was fetched more than once: {submitted_urls}",
         )
-        self.assertLess(
-            len(submitted_ids), len(configured),
-            "the duplicate alias entries should have been folded away",
-        )
+        # No alias entries are left to fold: the eleven feeds are eleven
+        # distinct URLs registered once each, which is what the dedup above is
+        # now protecting rather than repairing.
+        self.assertEqual(len(submitted_ids), len(configured))
+        self.assertEqual(len(submitted_urls), len(expected_urls))
 
     def test_empty_304_cache_retries_without_conditional_headers(self):
         source = {
@@ -222,18 +230,22 @@ class TapmadRelaySlotEnabledAsOwnChannelTests(unittest.TestCase):
     tests/test_advanced_fix_requirements.py::UnschedulableRelaySourceLiveProtectionTests.
     """
 
-    def test_the_tapmad_relay_slot_mirrors_are_enabled(self):
+    def test_the_tapmad_relay_slot_is_enabled(self):
+        """One tapmad feed, not three mirrors of it.
+
+        sm-tapmad-auto and sm-tapmad-auto-blob-alias were the same URL under two
+        ids, and both are gone with the rest of the previous registry. The
+        surviving feed is the metadata JSON, which is also the only one of the
+        three that stated a status and a kickoff.
+        """
         sources = source_loader.load_sources_config("config")
-        by_id = {
-            source["id"]: source
-            for source in sources["today_match"]
-            if source["id"] in {
-                "sm-tapmad-auto", "srhady-tapmad-bd-live", "sm-tapmad-auto-blob-alias",
-            }
-        }
-        self.assertEqual(len(by_id), 3, by_id.keys())
-        for source_id, source in by_id.items():
-            self.assertTrue(source.get("enabled"), source_id)
+        tapmad = [
+            source for source in sources["today_match"]
+            if "tapmad" in source["id"]
+        ]
+        self.assertEqual([source["id"] for source in tapmad], ["srhady-tapmad-bd"])
+        self.assertTrue(tapmad[0].get("enabled"))
+        self.assertTrue(tapmad[0]["url"].endswith("/tapmad_bd.json"))
 
 
 class PrivateSourceAuthenticationTests(unittest.TestCase):
@@ -310,7 +322,10 @@ class PrivateSourceAuthenticationTests(unittest.TestCase):
             source for source in sources["today_match"] + sources["upcoming"]
             if str(source.get("id") or "").startswith("0matbank-trysports")
         ]
-        self.assertEqual(len(trysports), 4, trysports)
+        # Two files now: cricket/live.json and football/live.json. The two
+        # -upcoming files are gone with the rest of the previous registry -
+        # each live file already states a status per record.
+        self.assertEqual(len(trysports), 2, trysports)
         for source in trysports:
             self.assertEqual(
                 source.get("fetch_headers", {}).get("Authorization"),

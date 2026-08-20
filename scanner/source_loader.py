@@ -23,6 +23,11 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from urllib.parse import parse_qsl, urlparse
 
 from scanner.parsers.direct_stream import parse_direct_stream_content
+from scanner.parsers.event_adapters import (
+    adapter_report,
+    parse_event_source_flat,
+    reset_adapter_stats,
+)
 from scanner.parsers.json_parser import parse_json_content
 from scanner.parsers.m3u_parser import parse_m3u_content
 from scanner.parsers.url_list_parser import parse_url_list_content
@@ -275,6 +280,14 @@ def parse_source_content(
         source_info.get("format", "auto"),
         str(source_info.get("url") or source_info.get("location") or ""),
     )
+
+    # A source that declares its own reader gets it. The eleven Today Match /
+    # Upcoming feeds each have their own layout, and a shape-guessing parser
+    # measurably loses data on six of them - four returned nothing at all. See
+    # scanner/parsers/event_adapters.py for what each reader handles.
+    adapted = parse_event_source_flat(content, source_info)
+    if adapted is not None:
+        return adapted, detected or "json"
 
     if detected == "json":
         return parse_json_content(content, source_info), detected
@@ -1012,6 +1025,124 @@ def _merge_health_history(
 # Public entry point
 # ---------------------------------------------------------------------------
 
+def _report_row_from_candidates(
+    candidates: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """Reconstruct one source's accounting from the candidates it produced.
+
+    Used only for a source served from cache, where the adapter did not run this
+    scan. Every candidate an adapter emits carries `stream_index`, numbered from
+    zero within its own record, so counting the zeroes counts the records - the
+    one number that cannot be read off a flat list any other way.
+    """
+    records = sum(1 for item in candidates if int(item.get("stream_index") or 0) == 0)
+    streams = sum(1 for item in candidates if str(item.get("url") or "").strip())
+    metadata_only = sum(1 for item in candidates if item.get("metadata_only") is True)
+    ended = sum(
+        1 for item in candidates
+        if item.get("source_says_ended") is True
+        and int(item.get("stream_index") or 0) == 0
+    )
+    upcoming = sum(
+        1 for item in candidates
+        if str(item.get("source_pipeline") or "").lower() == "upcoming"
+        and int(item.get("stream_index") or 0) == 0
+        and item.get("source_says_ended") is not True
+    )
+    return {
+        "total_records": records,
+        "parsed": records,
+        "skipped": 0,
+        "channels": len({
+            str(item.get("channel_name") or "") for item in candidates
+            if str(item.get("url") or "").strip()
+        }),
+        "servers": streams,
+        "metadata_only": metadata_only,
+        "with_drm": sum(1 for item in candidates if item.get("drm")),
+        "with_headers": sum(1 for item in candidates if item.get("headers")),
+        "source_says_ended": ended,
+        "recovered_by_deep_scan": 0,
+        "routed_today": max(0, records - upcoming - ended),
+        "routed_upcoming": upcoming,
+        "routed_ended": ended,
+        "candidates": len(candidates),
+        "status_counts": {},
+        "skip_reasons": {},
+        "unknown_fields": {},
+        "from_cache": True,
+    }
+
+
+def _write_source_parse_report(
+    mode: str,
+    candidates: Optional[List[Dict[str, Any]]] = None,
+) -> Dict[str, Any]:
+    """reports/source-parse-report.json: what each event feed actually gave us.
+
+    Every line is counted by the adapter that read the feed, so the totals are
+    the parser's own accounting rather than a second guess made afterwards. A
+    record that could not be read appears in `skipped` with the reason, which is
+    what keeps "nothing is skipped silently" checkable instead of asserted.
+    """
+    per_source = adapter_report()
+
+    # Fill in the sources whose adapter did not run because a 304 let the
+    # loader reuse the candidates it had already parsed.
+    by_source: Dict[str, List[Dict[str, Any]]] = {}
+    for item in candidates or []:
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("parser") or "") != "event_adapter":
+            continue
+        by_source.setdefault(str(item.get("source_id") or ""), []).append(item)
+    for source_id, items in by_source.items():
+        if source_id and source_id not in per_source:
+            per_source[source_id] = _report_row_from_candidates(items)
+
+    if not per_source:
+        # A collection that read no event feed at all - "all" runs one per
+        # pipeline group, and the movies pass reads none - has nothing to say
+        # about them. Writing an empty report here overwrote the real one.
+        return {}
+    totals = {
+        key: 0
+        for key in (
+            "total_records", "parsed", "skipped", "channels", "servers",
+            "metadata_only", "with_drm", "with_headers", "source_says_ended",
+            "routed_today", "routed_upcoming", "routed_ended", "candidates",
+        )
+    }
+    for entry in per_source.values():
+        for key in totals:
+            totals[key] += int(entry.get(key) or 0)
+
+    report = {
+        "generated_at": _utc_now(),
+        "mode": mode,
+        "source_count": len(per_source),
+        "totals": totals,
+        "sources": per_source,
+        "table": [
+            {
+                "source": source_id,
+                "from_cache": bool(entry.get("from_cache")),
+                "total_records": entry.get("total_records", 0),
+                "parsed": entry.get("parsed", 0),
+                "today": entry.get("routed_today", 0),
+                "upcoming": entry.get("routed_upcoming", 0),
+                "ended": entry.get("routed_ended", 0),
+                "streams_found": entry.get("servers", 0),
+                "skipped": entry.get("skipped", 0),
+                "skip_reasons": entry.get("skip_reasons", {}),
+            }
+            for source_id, entry in sorted(per_source.items())
+        ],
+    }
+    _atomic_write_json("reports/source-parse-report.json", report)
+    return report
+
+
 def collect_candidates(mode: str = "all") -> Dict[str, Any]:
     """Fetch active pipelines and write working/candidates.json."""
     sources_config = load_sources_config("config")
@@ -1056,6 +1187,10 @@ def collect_candidates(mode: str = "all") -> Dict[str, Any]:
 
     if not active_pipelines:
         raise ValueError(f"Unsupported scan mode: {mode_clean}")
+
+    # The adapters count per source as they parse. Cleared here so the report
+    # written below describes this collection only.
+    reset_adapter_stats()
 
     sources_to_process: List[Dict[str, Any]] = []
     # One physical playlist must be fetched once, however many times it is
@@ -1157,6 +1292,7 @@ def collect_candidates(mode: str = "all") -> Dict[str, Any]:
     }
 
     _atomic_write_json("working/candidates.json", output_data)
+    _write_source_parse_report(mode_clean, all_candidates)
 
     previous_health = _load_json_file("state/source-health.json")
     merged_health = _merge_health_history(previous_health, current_health)

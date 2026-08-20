@@ -246,6 +246,16 @@ def _is_publishable_stream(stream: Dict[str, Any]) -> bool:
     if stream.get("publish_allowed") is False:
         return False
 
+    # Section 21. A feed stating the match is over is the strongest
+    # verdict there is, and five of the eleven event feeds supply one:
+    # sm-sportsdata's FINISHED (75 records on 2026-08-20), axsports and
+    # bingstream with has_ended, footy-live with an End time already
+    # past. Verified playback proves the URL still answers, not that the
+    # match is still on, so the ended verdict is read ahead of
+    # verification rather than after it.
+    if stream.get("source_says_ended") is True:
+        return False
+
     if stream.get("metadata_only", False):
         return (
             pipeline == "upcoming"
@@ -443,7 +453,16 @@ def normalize_event_key(name: str) -> str:
         gender = "women" if re.search(r"\bwom(?:e|a)n(?:'s|s)?\b", f"{left} {right}") else ""
         left = re.sub(r"\bwom(?:e|a)n(?:'s|s)?\b", " ", left)
         right = re.sub(r"\bwom(?:e|a)n(?:'s|s)?\b", " ", right)
-        text = f"{left.strip()} vs {right.strip()} {gender}"
+        # An event with no two sides, written as if it had two. sm-sportsdata
+        # builds every name as "teamA Vs teamB" and sets both to the same string
+        # on 8 of its records, so "Horse Racing" and "Horse Racing Vs Horse
+        # Racing" are one fixture under two spellings - the adapter writes the
+        # short form now, and a card published under the long one before that
+        # has to fold into it rather than sit beside it.
+        if left.strip() and left.strip() == right.strip():
+            text = f"{left.strip()} {gender}"
+        else:
+            text = f"{left.strip()} vs {right.strip()} {gender}"
 
     if ordinal and not _CANONICAL_ORDINAL.search(text):
         text = f"{text} {ordinal.group(1)} {ordinal.group(2)}"
@@ -492,7 +511,7 @@ def normalize_event_key(name: str) -> str:
 # unrecognised stays "other" - nothing is invented.
 _SPORT_RULES: Tuple[Tuple[str, str], ...] = (
     ("esports", r"esports?|e[\s-]?sports?|pubg|dota|valorant|counter[\s-]?strike|league\s+of\s+legends|mobile\s+legends|free\s+fire"),
-    ("cricket", r"cricket|\bcric(?:life|hd)\b|t20i?|\bodi\b|test\s+match|\d{1,2}(?:st|nd|rd|th)\s+(?:test|odi|t20i?)|the\s+hundred|\bbbl\b|\bipl\b|\bpsl\b|\bcpl\b|\bbpl\b|\bdpl\b|ashes|vitality\s+blast|\btnpl\b|willow|star\s+sports|sony\s+sports|sony\s+ten|t\s+sports|tsports|ptv\s+sports|a\s+sports|sky\s+sports\s+cricket|sky\s+cricket|fox\s+cricket|astro\s+cricket|super\s*sport\s+cricket|icc|asia\s+cup|ranji|duleep|trophy|tri[\s-]series"),
+    ("cricket", r"cricket|\bcric(?:life|hd)\b|t20i?|\bodi\b|test\s+match|\d{1,2}(?:st|nd|rd|th)\s+(?:test|odi|t20i?)|the\s+hundred|\bbbl\b|\bipl\b|\bpsl\b|\bcpl\b|\bbpl\b|\bdpl\b|ashes|vitality\s+blast|\btnpl\b|caribbean\s+premier\s+league|bangladesh\s+premier\s+league|indian\s+premier\s+league|lanka\s+premier\s+league|pakistan\s+super\s+league|big\s+bash(?:\s+league)?|major\s+league\s+cricket|county\s+championship|sheffield\s+shield|plunket\s+shield|tests?\s+series|willow|star\s+sports|sony\s+sports|sony\s+ten|t\s+sports|tsports|ptv\s+sports|a\s+sports|sky\s+sports\s+cricket|sky\s+cricket|fox\s+cricket|astro\s+cricket|super\s*sport\s+cricket|icc|asia\s+cup|ranji|duleep|trophy|tri[\s-]series"),
     ("motorsport", r"motorsport|formula\s?e?\b|\bf1\b|e[\s-]?prix|moto\s?gp|nascar|rally|grand\s+prix|race\s+\d|race\s+day|\bgt4\b|\bgt3\b|\badac\b|superbike|\bmxgp\b|motocross|indycar|cycling|\buci\b|tour\s+de"),
     ("golf", r"\bgolf\b|\bpga\b|\blpga\b|dp\s+world\s+tour|ryder\s+cup"),
     ("tennis", r"tennis|\batp\b|\bwta\b|padel|badminton|squash|roland\s+garros|wimbledon|\b[a-z]+\s+open\b(?!\s+cup)"),
@@ -947,6 +966,47 @@ def event_id_without_broadcaster(
     return "-".join(kept)
 
 
+def _competitions_compatible(
+    left: str,
+    right: str,
+    left_kickoff: Optional[int] = None,
+    right_kickoff: Optional[int] = None,
+) -> bool:
+    """Whether two competition names can describe one fixture.
+
+    String equality split real fixtures in two. Measured on the eleven feeds at
+    2026-08-20T16:40, all four duplicated Upcoming cards had the same
+    participants and the same kickoff to the second, and differed only here:
+
+        "caribbean premier league"  vs "caribbean premier league 16th match"
+        "caribbean premier league"  vs "caribbean premier league 17th match"
+        "icc world test championship"        vs "india tour of sri lanka"
+        "australia vs bangladesh test series" vs "bangladesh tour of australia"
+
+    The first two are one name with the round appended, so a whole-word prefix
+    counts as the same competition. The last two are two different true
+    descriptions of one tour, and no string work relates them - but two sides
+    that share participants and share a kickoff to the second cannot be playing
+    two different competitions at once, so the kickoff settles those.
+
+    A kickoff merely within tolerance is deliberately not enough: that is the
+    double-header case, where two legs really are two fixtures.
+    """
+    blank = {"", "other"}
+    if left in blank or right in blank:
+        return True
+    if left == right:
+        return True
+    shorter, longer = sorted((left, right), key=len)
+    if longer.startswith(shorter) and longer[len(shorter):len(shorter) + 1] in ("", " "):
+        return True
+    return (
+        left_kickoff is not None
+        and right_kickoff is not None
+        and left_kickoff == right_kickoff
+    )
+
+
 def _identity_compatible(
     left: Tuple[str, str, str, Optional[int]],
     right: Tuple[str, str, str, Optional[int]],
@@ -971,11 +1031,12 @@ def _identity_compatible(
     # "other" means the sport could not be determined, so it must behave like a
     # missing field rather than a value that contradicts a known sport.
     blank = {"", "other"}
-    for a, b in ((left[0], right[0]), (left[2], right[2])):
-        if a in blank or b in blank:
-            continue
-        if a != b:
-            return False
+    if left[0] not in blank and right[0] not in blank and left[0] != right[0]:
+        return False
+    # Competition is compared as a name rather than as a string - see
+    # _competitions_compatible for the four fixtures that needed it.
+    if not _competitions_compatible(left[2], right[2], left[3], right[3]):
+        return False
     if kickoffs_within_tolerance(left[3], right[3], kickoff_tolerance_minutes):
         return True
     grace = max(0, int(kickoff_tolerance_minutes)) * 60

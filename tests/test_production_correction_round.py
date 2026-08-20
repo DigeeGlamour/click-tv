@@ -355,7 +355,9 @@ class EveryCardCanNameItsBroadcasters(unittest.TestCase):
             self.assertIn(real, declared.values(), declared)
 
     def test_a_stream_joins_a_channel_from_the_feed_it_arrived_in(self):
-        for source_id in ("srhady-tapmad-bd-live", "sm-tapmad-auto", "srhady-willow-event-upcoming"):
+        for source_id in (
+            "srhady-tapmad-bd", "srhady-willow-event", "srhady-sonyliv-live",
+        ):
             resolved = resolve_channel_name({"source_id": source_id},
                                             "Sri Lanka vs India 1st Test", self.aliases)
             self.assertTrue(resolved.resolved, source_id)

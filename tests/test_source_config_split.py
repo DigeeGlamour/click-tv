@@ -40,7 +40,13 @@ class PerCategorySourceFileTests(unittest.TestCase):
         config = load_sources_config(ROOT / "config")
         for pipeline in ("tv", "movies", "today_match", "upcoming"):
             self.assertIsInstance(config[pipeline], list)
+        for pipeline in ("tv", "movies", "today_match"):
             self.assertTrue(config[pipeline], f"{pipeline} is empty")
+        # upcoming.json is intentionally an empty list: every event feed is
+        # registered once under today_match, and a record reaches Today or
+        # Upcoming by the status it carries. Listing the same URL in both files
+        # only fetched and parsed it twice.
+        self.assertEqual(config["upcoming"], [])
         self.assertIsInstance(config["manual"], dict)
 
     def test_source_ids_are_unique_across_every_category(self):
@@ -53,14 +59,18 @@ class PerCategorySourceFileTests(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)))
 
     def test_the_two_requested_live_event_sources_are_registered_for_today(self):
+        """Both are read as JSON now. The m3u mirror of the same playlist
+        carries a name and a URL per line and nothing else; the JSON carries the
+        status, the kickoff, the league and team logos, and every server rather
+        than one."""
         config = load_sources_config(ROOT / "config")
         urls = {source["url"] for source in config["today_match"]}
         self.assertIn(
-            "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.m3u",
+            "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
             urls,
         )
         self.assertIn(
-            "https://raw.githubusercontent.com/srhady/axsports/refs/heads/main/playlist.m3u",
+            "https://raw.githubusercontent.com/srhady/axsports/refs/heads/main/live_sports.json",
             urls,
         )
 

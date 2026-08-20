@@ -217,13 +217,13 @@ class FinalScannerContractTests(unittest.TestCase):
         from scanner.source_loader import load_sources_config
 
         payload = load_sources_config("config")
-        # Added by direct request: 0matbank/trysports as an extra source -
-        # cricket live and football live land in today_match, football upcoming
-        # and cricket upcoming in upcoming. cricket/upcoming.json was published
-        # by the provider from the start but had never been registered, so its
-        # fixtures could not reach the Upcoming tab at all.
-        self.assertEqual(len(payload["upcoming"]), 7)
-        self.assertEqual(len(payload["today_match"]), 10)
+        # Replaced wholesale by direct request: the event registry is now the
+        # eleven JSON feeds, registered once each under today_match. upcoming
+        # is deliberately empty - a source listed in both files was fetched and
+        # parsed twice, and which tab a record reaches is decided by the status
+        # that record carries, not by the file its source sits in.
+        self.assertEqual(len(payload["upcoming"]), 0)
+        self.assertEqual(len(payload["today_match"]), 11)
         self.assertEqual(len(payload["tv"]), 11)
         self.assertEqual(len(payload["movies"]), 2)
         self.assertEqual(

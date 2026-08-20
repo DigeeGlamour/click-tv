@@ -1163,7 +1163,16 @@ def _authority_states(
     for candidate in candidates:
         if not isinstance(candidate, dict):
             continue
-        verdict = authority_says_live(candidate)
+        # Four of the eleven feeds state the end themselves - axsports and
+        # bingstream with has_ended, sm-sportsdata with status FINISHED,
+        # footy-live with an End time already past - and the adapters carry
+        # that through as source_says_ended. A feed saying "this is over" is
+        # exactly the authoritative finished verdict section 21 wants, so it
+        # is read before the live/not-live reading below.
+        if candidate.get("source_says_ended") is True:
+            verdict: Optional[bool] = False
+        else:
+            verdict = authority_says_live(candidate)
         if verdict is None:
             continue
         event_id = str(candidate.get("id") or "")

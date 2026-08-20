@@ -118,8 +118,8 @@ class TrySportsRegistrationTests(unittest.TestCase):
     def test_trysports_feeds_are_fixture_authorities(self):
         authority = set(self.settings["events"]["fixture_authority_sources"])
         for source_id in (
-            "0matbank-trysports-football-upcoming",
-            "0matbank-trysports-cricket-upcoming",
+            "0matbank-trysports-football-live",
+            "0matbank-trysports-cricket-live",
         ):
             with self.subTest(source_id=source_id):
                 self.assertIn(source_id, authority)
@@ -132,11 +132,25 @@ class TrySportsRegistrationTests(unittest.TestCase):
         self.assertEqual(len(football), 1)
         self.assertTrue(football[0]["url"].endswith("/football/live.json"))
         self.assertEqual(football[0]["format"], "json")
-        self.assertIn("LIVE", football[0]["status_filter"])
+        # status_filter is gone from this source: the adapter reads the status
+        # off each record and routes it, so filtering the file down to one
+        # status would throw away the rows that belong in the other tab.
+        self.assertEqual(football[0].get("adapter"), "named_streams")
 
-    def test_cricket_upcoming_is_registered(self):
-        ids = {source["id"] for source in self.sources["upcoming"]}
-        self.assertIn("0matbank-trysports-cricket-upcoming", ids)
+    def test_cricket_is_registered_and_keeps_its_upcoming_rows(self):
+        """The provider's cricket/upcoming.json is no longer registered, and
+        its fixtures are not lost with it: cricket/live.json carries every row
+        with its own status, and a row that says UPCOMING is routed to the
+        Upcoming tab by the adapter rather than by which file it came from."""
+        ids = {source["id"] for source in self.sources["today_match"]}
+        self.assertIn("0matbank-trysports-cricket-live", ids)
+        self.assertEqual(self.sources["upcoming"], [])
+
+        from scanner.parsers.event_adapters import record_pipeline
+
+        self.assertEqual(
+            record_pipeline({"status_raw": "UPCOMING", "channels": []}), "upcoming"
+        )
 
     def test_every_private_trysports_source_still_carries_the_token(self):
         registered = [
@@ -144,7 +158,7 @@ class TrySportsRegistrationTests(unittest.TestCase):
             for source in self.sources["today_match"] + self.sources["upcoming"]
             if source["id"].startswith("0matbank-trysports")
         ]
-        self.assertEqual(len(registered), 4)
+        self.assertEqual(len(registered), 2)
         for source in registered:
             with self.subTest(source_id=source["id"]):
                 self.assertEqual(
