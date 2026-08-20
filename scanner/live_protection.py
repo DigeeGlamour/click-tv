@@ -36,7 +36,9 @@ try:
         authority_says_live,
         decide as decide_lifecycle,
         estimate_passed,
+        estimated_end,
         has_strong_end_signal,
+        parse_time,
     )
 except ImportError:  # pragma: no cover - direct module execution
     from event_lifecycle import (  # type: ignore
@@ -48,11 +50,23 @@ except ImportError:  # pragma: no cover - direct module execution
         authority_says_live,
         decide as decide_lifecycle,
         estimate_passed,
+        estimated_end,
         has_strong_end_signal,
+        parse_time,
     )
 
 STATE_FILE = Path("state/live-event-protection.json")
 DEFAULT_GRACE_MINUTES = 90
+# How long a card with no schedule at all may keep being carried once the
+# source stopped listing it. `estimate_passed` is measured from the card's own
+# end time, and a "CHANNEL_LIVE" fallback card (a today_match source that named
+# a channel but no kickoff) has neither a start nor an end - so estimated_end
+# returned None, estimate_passed was permanently False, and the multi-signal
+# retirement path could never be reached however dead the links were.
+# Measured on 2026-08-20: "Batman Petrolspor vs Boluspor 1 Lig" had been absent
+# from its source for 225 consecutive scans over 2.5 days with every probe dead,
+# and was still publishing as Today Match with a green "Verified" badge.
+DEFAULT_UNSCHEDULED_CARRY_HOURS = 3
 # The published contract: one primary plus at most five backups.
 MAX_PUBLISHED_BACKUPS = 5
 ENDED_STATUSES = frozenset({"ENDED", "FT", "FINISHED", "COMPLETED", "AET", "PEN", "AWD", "WO"})
@@ -888,6 +902,7 @@ def protect_live_events(
     playing_event_ids: Optional[Set[str]] = None,
     authority_states: Optional[Dict[str, Optional[bool]]] = None,
     confirmations_required: int = 3,
+    unscheduled_carry_hours: int = DEFAULT_UNSCHEDULED_CARRY_HOURS,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Carry forward a previously published live event that this scan missed.
 
@@ -925,6 +940,9 @@ def protect_live_events(
         "released_ended": 0,
         "released_dead_link": 0,
         "released_stale": 0,
+        # Retired by the no-schedule fallback below rather than by a real end
+        # time. Counted separately so a spike is visible in the scan report.
+        "released_unscheduled_expired": 0,
         # Retired by the corrected rule. Kept at zero so existing reports and
         # dashboards that read this key keep working.
         "released_exhausted": 0,
@@ -988,13 +1006,26 @@ def protect_live_events(
         if fresh_authority is None and authority_says_live(previous) is False:
             fresh_authority = False
 
+        # Section 21's clock signal. A card that carries a real end time is
+        # measured against it exactly as before. A card with no schedule at all
+        # is measured against how long its source has been silent instead,
+        # because otherwise it has no clock and can never retire.
+        schedule_expired = estimate_passed(previous, reference, grace_minutes)
+        unscheduled_expired = False
+        if not schedule_expired and estimated_end(previous) is None:
+            first_missed = parse_time(record.get("first_missed_at")) or reference
+            unscheduled_expired = reference >= first_missed + timedelta(
+                hours=max(1, int(unscheduled_carry_hours))
+            )
+            schedule_expired = unscheduled_expired
+
         signals = LifecycleSignals(
             authority_live=fresh_authority,
             strong_end=strong_end,
             primary_playable=verdict,
             backup_playable=verdict,
             currently_playing=event_id in playing,
-            estimate_passed=estimate_passed(previous, reference, grace_minutes),
+            estimate_passed=schedule_expired,
             consecutive_non_live_scans=count,
             seen_in_this_scan=False,
         )
@@ -1012,6 +1043,8 @@ def protect_live_events(
             elif signals.estimate_passed:
                 stats["released_stale"] += 1
                 stats["released_confirmed"] += 1
+                if unscheduled_expired:
+                    stats["released_unscheduled_expired"] += 1
             else:
                 stats["released_dead_link"] += 1
                 stats["released_confirmed"] += 1

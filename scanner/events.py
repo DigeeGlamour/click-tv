@@ -826,7 +826,21 @@ def _apply_streamed_enrichment(
     return stats
 
 
-def _apply_supplementary_sports_artwork(cards: List[Dict[str, Any]]) -> Dict[str, Any]:
+#: Resolved artwork, remembered between scans. Injectable so a test never
+#: writes into the repository's real state directory - which is exactly how
+#: "arsenal|chelsea -> example.test" ended up being read back as real data.
+ARTWORK_CACHE_PATH = Path("state") / "sports-artwork-cache.json"
+
+#: A fixture list turns over; an unbounded cache does not. Oldest entries are
+#: dropped once the file would grow past this.
+ARTWORK_CACHE_MAX_ENTRIES = 4000
+
+
+def _apply_supplementary_sports_artwork(
+    cards: List[Dict[str, Any]],
+    *,
+    cache_path: Optional[Path] = None,
+) -> Dict[str, Any]:
     """TheSportsDB/Highlightly/Sportmonks, tried only where Streamed left a
     card with no poster of its own at all.
 
@@ -838,15 +852,27 @@ def _apply_supplementary_sports_artwork(cards: List[Dict[str, Any]]) -> Dict[str
     split the merge itself uses (team_pair_key), so nothing here needs a
     second identity check the way Streamed's fold-key match does.
     """
-    stats = {"attempted": 0, "poster_filled": 0, "badge_filled": 0}
+    stats = {
+        "attempted": 0, "poster_filled": 0, "badge_filled": 0,
+        "badge_used_as_logo": 0, "cache_hits": 0, "cached_entries": 0,
+    }
     try:
         from scanner.schedule_resolver import team_pair_key
         from scanner.sports_poster_providers import (
-            thesportsdb_event_artwork,
+            LOOKUP_STATS,
             highlightly_match_artwork,
+            reset_lookup_stats,
+            thesportsdb_event_artwork_with_retry,
         )
     except Exception:  # pragma: no cover - optional layer
         return stats
+
+    reset_lookup_stats()
+    cache_path = Path(cache_path) if cache_path is not None else ARTWORK_CACHE_PATH
+    cache = _load_optional_json(cache_path)
+    entries = cache.get("entries")
+    if not isinstance(entries, dict):
+        entries = {}
 
     for card in cards:
         if not isinstance(card, dict):
@@ -868,23 +894,56 @@ def _apply_supplementary_sports_artwork(cards: List[Dict[str, Any]]) -> Dict[str
         home_team, away_team = pair.split("|", 1)
         stats["attempted"] += 1
 
-        try:
-            artwork = thesportsdb_event_artwork(home_team, away_team)
-        except Exception:  # pragma: no cover - never break a scan
-            artwork = {}
-        if not artwork:
-            sport = str(card.get("sport_type") or "football")
-            start = str(card.get("start_time") or "")
-            date = start[:10] if len(start) >= 10 and start[4] == "-" else ""
+        # A fixture's artwork does not change between scans, and the free
+        # TheSportsDB tier runs out of requests long before the card list runs
+        # out of fixtures. Remembering what was already found - and not
+        # remembering a miss, so a fixture whose artwork is published later is
+        # still picked up - is what makes the quota reach the whole list.
+        artwork = entries.get(pair) if isinstance(entries.get(pair), dict) else None
+        if artwork:
+            stats["cache_hits"] += 1
+        else:
             try:
-                artwork = highlightly_match_artwork(home_team, away_team, sport, date)
+                artwork = thesportsdb_event_artwork_with_retry(home_team, away_team)
             except Exception:  # pragma: no cover - never break a scan
                 artwork = {}
+            if not artwork:
+                sport = str(card.get("sport_type") or "football")
+                start = str(card.get("start_time") or "")
+                date = start[:10] if len(start) >= 10 and start[4] == "-" else ""
+                try:
+                    artwork = highlightly_match_artwork(home_team, away_team, sport, date)
+                except Exception:  # pragma: no cover - never break a scan
+                    artwork = {}
+            if artwork:
+                entries[pair] = artwork
 
         if not artwork:
             continue
 
-        best_poster = artwork.get("poster") or artwork.get("thumbnail") or artwork.get("banner") or ""
+        # The module documents the priority as "Poster -> Thumbnail -> Fanart ->
+        # Team Logos", and thesportsdb_best_poster implements exactly that - but
+        # this path never called it and stopped at the banner, so a fixture whose
+        # only artwork was the two team badges filled `home_badge_url` and left
+        # the card with no logo at all. Measured 2026-08-20: 8 of 37 logo-less
+        # Upcoming cards had a badge in hand while publishing without a logo.
+        best_poster = (
+            artwork.get("poster")
+            or artwork.get("thumbnail")
+            or artwork.get("banner")
+            or ""
+        )
+        badge_logo = ""
+        if not best_poster:
+            badge_logo = (
+                artwork.get("home_badge")
+                or artwork.get("away_badge")
+                or artwork.get("league_badge")
+                or ""
+            )
+            best_poster = badge_logo
+        if best_poster and badge_logo and not has_poster:
+            stats["badge_used_as_logo"] += 1
         if best_poster and not has_poster:
             card.setdefault("provider_poster_url", best_poster)
             if not str(card.get("logo") or "").strip():
@@ -898,6 +957,21 @@ def _apply_supplementary_sports_artwork(cards: List[Dict[str, Any]]) -> Dict[str
             card["away_badge_url"] = artwork["away_badge"]
             stats["badge_filled"] += 1
 
+    if len(entries) > ARTWORK_CACHE_MAX_ENTRIES:
+        entries = dict(list(entries.items())[-ARTWORK_CACHE_MAX_ENTRIES:])
+    stats["cached_entries"] = len(entries)
+    stats["provider"] = dict(LOOKUP_STATS)
+    try:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(
+            json.dumps(
+                {"updated_at": _utc_now(), "entries": entries},
+                ensure_ascii=False, indent=2,
+            ),
+            encoding="utf-8",
+        )
+    except OSError:  # pragma: no cover - a cache must never break a scan
+        pass
     return stats
 
 
@@ -1267,10 +1341,26 @@ def process_events(
         previous_today_items = [
             item for item in (previous_today.get("items") or []) if isinstance(item, dict)
         ]
+        # config/settings.json declared event_lifecycle for a while without
+        # anything reading it, so the tuned values were inert and the function
+        # defaults were what actually ran. They are read here now, which is
+        # also what makes unscheduled_carry_hours configurable.
+        lifecycle_cfg = settings.get("event_lifecycle")
+        if not isinstance(lifecycle_cfg, dict):
+            lifecycle_cfg = {}
         today_items, protection_stats = protect_live_events(
             today_items,
             previous_today_items,
             probe=probe_card_is_playable,
+            grace_minutes=_safe_int(
+                lifecycle_cfg.get("estimate_grace_minutes"), 90, 0, 24 * 60
+            ),
+            confirmations_required=_safe_int(
+                lifecycle_cfg.get("confirmations_required"), 3, 1, 100
+            ),
+            unscheduled_carry_hours=_safe_int(
+                lifecycle_cfg.get("unscheduled_carry_hours"), 3, 1, 240
+            ),
             # Section 21: a fresh authority verdict, and the sessions a viewer is
             # watching - the strongest protection there is.
             authority_states=_authority_states(event_candidates, previous_today_items),
@@ -1341,6 +1431,39 @@ def process_events(
         "timezone": timezone_name,
         **schedule_stats,
     }
+
+    # scan.py returns only the today_match/upcoming payloads for an event mode,
+    # so everything measured above - live protection, artwork lookups, provider
+    # rate limits - was computed and then dropped on the floor. Writing it as a
+    # report is what makes "34 cards have no logo" answerable without rerunning
+    # the scan by hand.
+    try:
+        report_path = Path("reports") / "event-schedule.json"
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        report_path.write_text(
+            json.dumps(
+                {
+                    "generated_at": _utc_now(),
+                    "today_match_count": result["today_match"]["count"],
+                    "upcoming_count": result["upcoming"]["count"],
+                    "today_missing_logo": [
+                        str(item.get("name") or "")
+                        for item in result["today_match"]["items"]
+                        if not str(item.get("logo") or "").strip()
+                    ],
+                    "upcoming_missing_logo": [
+                        str(item.get("name") or "")
+                        for item in result["upcoming"]["items"]
+                        if not str(item.get("logo") or "").strip()
+                    ],
+                    **result["schedule"],
+                },
+                ensure_ascii=False, indent=2, default=str,
+            ),
+            encoding="utf-8",
+        )
+    except OSError:  # pragma: no cover - reporting must never break a scan
+        pass
     return result
 
 

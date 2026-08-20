@@ -601,11 +601,23 @@ class SupplementarySportsArtworkFillsWhatStreamedDidNot(unittest.TestCase):
     sports artwork sources - tried only once Streamed has already had its
     turn and a card still has no poster or badges of its own."""
 
+    def setUp(self):
+        # Resolved artwork is cached between scans now. Without a private cache
+        # per test these wrote "arsenal|chelsea -> example.test" into the real
+        # state/ file and later read it straight back as a provider answer.
+        import tempfile
+        self.cache_path = (
+            Path(tempfile.mkdtemp()) / "sports-artwork-cache.json"
+        )
+
+    def _enrich(self, cards):
+        return _apply_supplementary_sports_artwork(cards, cache_path=self.cache_path)
+
     def test_a_card_streamed_already_gave_a_poster_is_left_alone(self):
         card = {"name": "Arsenal vs Chelsea", "logo": "https://example.test/existing.jpg",
                 "home_badge_url": "https://example.test/home.png", "away_badge_url": "https://example.test/away.png"}
         with patch("scanner.sports_poster_providers.thesportsdb_event_artwork") as lookup:
-            stats = _apply_supplementary_sports_artwork([card])
+            stats = self._enrich([card])
         lookup.assert_not_called()
         self.assertEqual(card["logo"], "https://example.test/existing.jpg")
         self.assertEqual(stats["attempted"], 0)
@@ -618,7 +630,7 @@ class SupplementarySportsArtworkFillsWhatStreamedDidNot(unittest.TestCase):
                           "home_badge": "https://example.test/home.png",
                           "away_badge": "https://example.test/away.png"},
         ) as lookup:
-            stats = _apply_supplementary_sports_artwork([card])
+            stats = self._enrich([card])
         self.assertEqual(lookup.call_args.args, ("arsenal", "chelsea"))
         self.assertEqual(card["logo"], "https://example.test/poster.jpg")
         self.assertEqual(card["home_badge_url"], "https://example.test/home.png")
@@ -633,15 +645,22 @@ class SupplementarySportsArtworkFillsWhatStreamedDidNot(unittest.TestCase):
                 return_value={"home_badge": "https://example.test/hl-home.png"},
             ) as highlightly,
         ):
-            stats = _apply_supplementary_sports_artwork([card])
+            stats = self._enrich([card])
         highlightly.assert_called_once()
         self.assertEqual(card["home_badge_url"], "https://example.test/hl-home.png")
         self.assertEqual(stats["badge_filled"], 1)
+        # Corrected 2026-08-20: a badge is the documented last step of
+        # "Poster -> Thumbnail -> Fanart -> Team Logos", and this path used to
+        # stop at the banner - so a fixture whose only artwork was a badge
+        # published with no logo at all. 8 of 37 logo-less Upcoming cards were
+        # exactly that case.
+        self.assertEqual(card["logo"], "https://example.test/hl-home.png")
+        self.assertEqual(stats["badge_used_as_logo"], 1)
 
     def test_a_title_with_no_two_sides_is_skipped_not_guessed_at(self):
         card = {"name": "Cricket World Cup Highlights"}
         with patch("scanner.sports_poster_providers.thesportsdb_event_artwork") as lookup:
-            stats = _apply_supplementary_sports_artwork([card])
+            stats = self._enrich([card])
         lookup.assert_not_called()
         self.assertEqual(stats["attempted"], 0)
 
@@ -650,8 +669,11 @@ class SupplementarySportsArtworkFillsWhatStreamedDidNot(unittest.TestCase):
         with patch(
             "scanner.sports_poster_providers.thesportsdb_event_artwork",
             side_effect=RuntimeError("boom"),
+        ), patch(
+            "scanner.sports_poster_providers.highlightly_match_artwork",
+            return_value={},
         ):
-            stats = _apply_supplementary_sports_artwork([card])
+            stats = self._enrich([card])
         self.assertNotIn("logo", card)
         self.assertEqual(stats["poster_filled"], 0)
 

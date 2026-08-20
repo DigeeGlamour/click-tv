@@ -52,17 +52,81 @@ HIGHLIGHTLY_BASE_URLS = {
 SPORTMONKS_TEAM_SEARCH_URL = "https://api.sportmonks.com/v3/football/teams/search/{query}"
 
 
+#: Per-host state for this process. A provider that starts rate-limiting is
+#: asked once more and then left alone for the rest of the scan.
+#:
+#: Measured 2026-08-20: THESPORTSDB_API_KEY was not set, so every lookup used
+#: THESPORTSDB_DEFAULT_KEY. The first calls returned full artwork (poster,
+#: thumbnail and both team badges); after roughly forty the host answered
+#: HTTP 429 to everything, including queries that had just succeeded. Because
+#: every error was swallowed into {}, a rate-limited scan was indistinguishable
+#: from "this fixture has no artwork", so 34 of 37 Upcoming cards published with
+#: no logo and nothing anywhere said why.
+_RATE_LIMIT_STATUSES = frozenset({429, 503})
+_host_state: Dict[str, Dict[str, Any]] = {}
+
+#: Filled in by the caller so a scan report can show what actually happened.
+LOOKUP_STATS: Dict[str, int] = {
+    "requests": 0,
+    "hits": 0,
+    "empty": 0,
+    "rate_limited": 0,
+    "errors": 0,
+    "skipped_rate_limited": 0,
+}
+
+
+def reset_lookup_stats() -> None:
+    for key in LOOKUP_STATS:
+        LOOKUP_STATS[key] = 0
+    _host_state.clear()
+
+
+def _host_of(url: str) -> str:
+    try:
+        return urllib.parse.urlsplit(url).netloc.casefold()
+    except ValueError:
+        return url[:64]
+
+
+def provider_is_rate_limited(url: str) -> bool:
+    """Whether this host has already answered "too many requests" this scan."""
+    return bool(_host_state.get(_host_of(url), {}).get("rate_limited"))
+
+
 def _get_json(url: str, *, headers: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+    host = _host_of(url)
+    state = _host_state.setdefault(host, {"rate_limited": False, "strikes": 0})
+    if state["rate_limited"]:
+        # Asking again costs a round trip and returns the same 429. Every later
+        # lookup for this host is skipped for the rest of the scan.
+        LOOKUP_STATS["skipped_rate_limited"] += 1
+        return {}
+
     request_headers = {"Accept": "application/json", "User-Agent": _USER_AGENT}
     request_headers.update(headers or {})
     request = urllib.request.Request(url, headers=request_headers)
+    LOOKUP_STATS["requests"] += 1
     try:
         with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
             raw = response.read(2_000_000)
         payload = json.loads(raw.decode("utf-8", errors="replace"))
-        return payload if isinstance(payload, dict) else {}
+        if isinstance(payload, dict):
+            LOOKUP_STATS["hits" if payload else "empty"] += 1
+            return payload
+        LOOKUP_STATS["empty"] += 1
+        return {}
+    except urllib.error.HTTPError as error:
+        if error.code in _RATE_LIMIT_STATUSES:
+            LOOKUP_STATS["rate_limited"] += 1
+            state["strikes"] += 1
+            # Two in a row is the host, not this one query.
+            if state["strikes"] >= 2:
+                state["rate_limited"] = True
+        else:
+            LOOKUP_STATS["errors"] += 1
+        return {}
     except (
-        urllib.error.HTTPError,
         urllib.error.URLError,
         TimeoutError,
         OSError,
@@ -70,7 +134,48 @@ def _get_json(url: str, *, headers: Optional[Dict[str, str]] = None) -> Dict[str
         json.JSONDecodeError,
         ValueError,
     ):
+        LOOKUP_STATS["errors"] += 1
         return {}
+
+
+#: Club affixes a source spells out and TheSportsDB usually does not, and the
+#: reverse. Measured against the 2026-08-20 Upcoming list: "FC Sion vs Ajax",
+#: "FC Lugano vs Maccabi Tel Aviv", "Rangers vs FK Jablonec", "FC Midtjylland
+#: vs HNK Rijeka" and "Motherwell vs SC Freiburg" all failed on the verbatim
+#: name and are the shape this retry exists for.
+_CLUB_AFFIXES = (
+    "fc", "fk", "sc", "cd", "ac", "as", "afc", "cf", "sk", "hnk", "nk",
+    "us", "ss", "ssc", "sv", "vfl", "vfb", "bsc", "club", "cs", "ca",
+)
+
+
+def _strip_club_affixes(name: str) -> str:
+    """"FC Sion" -> "Sion", "HNK Rijeka" -> "Rijeka", "Al Hilal Saudi FC" ->
+    "Al Hilal Saudi". Never empties the name."""
+    words = [w for w in str(name or "").split() if w]
+    if len(words) > 1 and words[0].strip(".").casefold() in _CLUB_AFFIXES:
+        words = words[1:]
+    if len(words) > 1 and words[-1].strip(".").casefold() in _CLUB_AFFIXES:
+        words = words[:-1]
+    return " ".join(words).strip() or str(name or "").strip()
+
+
+def thesportsdb_event_artwork_with_retry(
+    home_team: str, away_team: str
+) -> Dict[str, str]:
+    """The verbatim pair first, then the same pair with club affixes removed.
+
+    One extra request only when the first found nothing, and none at all once
+    the host is rate-limited.
+    """
+    artwork = thesportsdb_event_artwork(home_team, away_team)
+    if artwork:
+        return artwork
+    home = _strip_club_affixes(home_team)
+    away = _strip_club_affixes(away_team)
+    if (home, away) == (str(home_team or "").strip(), str(away_team or "").strip()):
+        return {}
+    return thesportsdb_event_artwork(home, away)
 
 
 def thesportsdb_event_artwork(home_team: str, away_team: str) -> Dict[str, str]:
