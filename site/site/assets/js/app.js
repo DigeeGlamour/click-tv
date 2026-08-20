@@ -55,9 +55,9 @@ const MOVIE_ORDER = Object.freeze([
 const CHANNEL_INITIAL_CHUNK = 30;
 const CHANNEL_NEXT_CHUNK = 20;
 const MOVIE_CHUNK_SIZE = 20;
-const CHANNEL_ATTEMPT_BUDGET_MS = 16000;
+const CHANNEL_ATTEMPT_BUDGET_MS = 14000;
 const MOVIE_ATTEMPT_BUDGET_MS = 110000;
-const EVENT_ATTEMPT_BUDGET_MS = 38000;
+const EVENT_ATTEMPT_BUDGET_MS = 26000;
 const MIDPLAY_RECOVERY_BUDGET_MS = 16000;
 const QUALITY_LOCK_MAX_MS = 6500;
 const AUTO_NEXT_LIMIT = 3;
@@ -72,8 +72,8 @@ const MOVIE_PROMPT_TEXT = 'মুভি দেখতে একটি বিভ�
 const MOVIE_PREVIEW_LIMIT = 18;
 const MOBILE_SEARCH_AUTO_CLOSE_MS = 5000;
 const LIVE_FAST_START_RAMP_MS = 6000;
-const LIVE_CHANNEL_STALL_FAILOVER_MS = 14000;
-const LIVE_EVENT_STALL_FAILOVER_MS = 20000;
+const LIVE_CHANNEL_STALL_FAILOVER_MS = 8000;
+const LIVE_EVENT_STALL_FAILOVER_MS = 11000;
 const LIVE_FULLSCREEN_GRACE_MS = 14000;
 const MOVIE_STALL_FAILOVER_MS = 30000;
 const MOVIE_4K_STALL_FAILOVER_MS = 42000;
@@ -3902,9 +3902,26 @@ function orderSourcesByChannel(item, sources) {
   });
   if (!rank.size) return sources;
 
+  // A source the channel strip does not mention used to sort to 9999 and then
+  // fall outside the six-attempt slice - which is where the scanner's own
+  // verified primary lives whenever a fixture publishes more channels than the
+  // event-level backup cap allows. Measured 2026-08-20 on "Sri Lanka vs India
+  // 1st Test": every channel-listed route answered 403/404 and the one route
+  // that returned a playable manifest was the event primary, ranked last.
+  // Unlisted-but-verified sources are interleaved right after the selected
+  // channel's own routes instead of being exiled to the tail.
+  const selectedRouteCount = channelStreamOrder(item)
+    .filter(({ channel }) => channel.id === activeChannelId(item)).length;
+  const fallbackRank = (source) => (
+    source.verified === true || String(source.verification_status || '').startsWith('verified')
+      ? selectedRouteCount + 0.5
+      : 9999
+  );
   return [...sources].sort((left, right) => {
-    const leftRank = rank.has(String(left.playback_id || '')) ? rank.get(String(left.playback_id || '')) : 9999;
-    const rightRank = rank.has(String(right.playback_id || '')) ? rank.get(String(right.playback_id || '')) : 9999;
+    const leftKey = String(left.playback_id || '');
+    const rightKey = String(right.playback_id || '');
+    const leftRank = rank.has(leftKey) ? rank.get(leftKey) : fallbackRank(left);
+    const rightRank = rank.has(rightKey) ? rank.get(rightKey) : fallbackRank(right);
     return leftRank - rightRank;
   });
 }
@@ -4099,6 +4116,7 @@ function sourcesReachableForEveryChannel(item, rankedSources) {
 
 function buildAttemptPlan(item) {
   const plan = [];
+  const secondSweep = [];
   let preferred = state.routePreferences[itemPlaybackKey(item)] || null;
   const rankedSources = sourcesReachableForEveryChannel(
     item, item._sources?.length ? item._sources : rankSources(item)
@@ -4159,10 +4177,19 @@ function buildAttemptPlan(item) {
     // direct; credentialed or URL-hidden sources must use the ID-aware proxy.
     if (playbackId && (!sourceUrl || protectedSource)) mode = 'proxy_only';
 
-    let proxies = rankHealthyProxies(healthTarget, false).slice(0, 2);
+    // Two proxies per source doubled the cost of a source that is dead at the
+    // origin - both proxies fetch the same upstream URL and both get the same
+    // 404. The healthiest proxy goes in the first sweep; the second is
+    // appended after every source has had one turn, so a working source is
+    // reached before a dead one is retried.
+    const proxyDepth = sources.length > 1 ? 1 : 2;
+    let proxies = rankHealthyProxies(healthTarget, false).slice(0, proxyDepth);
     if (!proxies.length && mode !== 'direct_only') {
-      proxies = rankHealthyProxies(healthTarget, true).slice(0, 2);
+      proxies = rankHealthyProxies(healthTarget, true).slice(0, proxyDepth);
     }
+    const secondProxy = proxyDepth === 1
+      ? rankHealthyProxies(healthTarget, true).filter((entry) => entry !== proxies[0])[0]
+      : null;
 
     const canDirect = Boolean(sourceUrl) && !mixedContent && mode !== 'proxy_only';
     const canProxy = mode !== 'direct_only' && proxies.length > 0;
@@ -4178,7 +4205,12 @@ function buildAttemptPlan(item) {
     else if (mode === 'proxy_only') addProxies();
     else if (mode === 'proxy_first' || source.force_proxy) { addProxies(); addDirect(); }
     else { addDirect(); addProxies(); }
+
+    if (secondProxy && mode !== 'direct_only') {
+      secondSweep.push({ source, sourceIndex, route: 'proxy', proxy: secondProxy });
+    }
   });
+  plan.push(...secondSweep);
 
   const seen = new Set();
   const deduplicated = plan.filter((attempt) => {
@@ -5904,11 +5936,16 @@ function attemptTimeoutFor(attempt, format, item) {
     return attempt?.route === 'proxy' ? 24000 : 28000;
   }
 
-  if (isEvent && isDrmDash) return attempt?.route === 'proxy' ? 12000 : 9500;
-  if (isEvent && format === 'dash') return attempt?.route === 'proxy' ? 10500 : 8500;
-  if (format === 'dash') return attempt?.route === 'proxy' ? 9000 : 8000;
-  if (attempt?.route === 'direct') return attempt?.sourceIndex === 0 ? 4200 : 4500;
-  return 4800;
+  // A live event has no "correct" wait: the manifest either answers in a
+  // couple of seconds or the route is gone. Long per-attempt waits do not
+  // rescue a dead link, they only stop the next route from being reached
+  // inside the session budget, so each route gets just enough time to prove
+  // itself and the budget buys breadth instead.
+  if (isEvent && isDrmDash) return attempt?.route === 'proxy' ? 7000 : 6000;
+  if (isEvent && format === 'dash') return attempt?.route === 'proxy' ? 6500 : 5500;
+  if (format === 'dash') return attempt?.route === 'proxy' ? 7000 : 6500;
+  if (attempt?.route === 'direct') return attempt?.sourceIndex === 0 ? 3600 : 3800;
+  return 4000;
 }
 
 function acceptPlaybackRoute(session) {
