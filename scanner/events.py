@@ -1032,6 +1032,118 @@ def _apply_supplementary_sports_artwork(
     return stats
 
 
+#: Finished-fixture verdicts fetched from the sports API, remembered between
+#: scans. A "finished" answer never becomes untrue, so caching it is safe and
+#: keeps the request count down; a "not finished" answer is deliberately not
+#: cached, because that is exactly the one that changes.
+FIXTURE_STATUS_CACHE_PATH = Path("state") / "fixture-status-cache.json"
+
+
+def _fixture_finished_states(
+    previous_items: List[Dict[str, Any]],
+    known: Dict[str, Optional[bool]],
+    *,
+    cache_path: Optional[Path] = None,
+) -> Tuple[Dict[str, Optional[bool]], Dict[str, Any]]:
+    """Ask the sports API which carried fixtures have actually finished.
+
+    Section 21 retires a card at once on an authoritative "finished", and waits
+    out a clock otherwise. Until now the only authority was the source playlists
+    themselves, so a match nobody mentioned any more sat in Today Match until a
+    timer ran down - measured on 2026-08-20, "Portland Timbers vs San Diego FC"
+    was published as live while TheSportsDB had it at FT 3-1.
+
+    Only cards this scan has no verdict for are asked about, so a busy scan
+    spends nothing here, and only a positive finished verdict is returned. A
+    missing answer, a rate limit, an unknown status and "still playing" are all
+    the same thing to the caller: no verdict, keep the existing behaviour.
+    """
+    stats = {"asked": 0, "finished": 0, "unplayable": 0, "cache_hits": 0, "no_verdict": 0}
+    verdicts: Dict[str, Optional[bool]] = {}
+    if not previous_items:
+        return verdicts, stats
+
+    try:
+        from scanner.schedule_resolver import team_pair_key
+        from scanner.sports_poster_providers import (
+            provider_is_rate_limited,
+            thesportsdb_event_status,
+        )
+    except Exception:  # pragma: no cover - optional layer
+        return verdicts, stats
+
+    path = Path(cache_path) if cache_path is not None else FIXTURE_STATUS_CACHE_PATH
+    cache = _load_optional_json(path)
+    entries = cache.get("entries")
+    if not isinstance(entries, dict):
+        entries = {}
+
+    for previous in previous_items:
+        if not isinstance(previous, dict):
+            continue
+        event_id = str(previous.get("id") or "")
+        if not event_id or known.get(event_id) is not None:
+            # This scan's own sources already answered for this fixture.
+            continue
+        pair = team_pair_key(str(previous.get("name") or ""))
+        if "|" not in pair:
+            # No two sides to look up: a channel card, not a fixture.
+            continue
+
+        cached = entries.get(pair)
+        if isinstance(cached, dict) and cached.get("finished") is True:
+            verdicts[event_id] = False
+            stats["cache_hits"] += 1
+            stats["finished"] += 1
+            continue
+
+        if provider_is_rate_limited(
+            "https://www.thesportsdb.com/api/v1/json/x/searchevents.php"
+        ):
+            stats["no_verdict"] += 1
+            continue
+
+        home, away = pair.split("|", 1)
+        stats["asked"] += 1
+        try:
+            status = thesportsdb_event_status(home, away)
+        except Exception:  # pragma: no cover - never break a scan
+            status = {}
+        if status.get("finished") is True:
+            verdicts[event_id] = False
+            stats["finished"] += 1
+            entries[pair] = {
+                "finished": True,
+                "status": status.get("status", ""),
+                "score": f"{status.get('home_score','')}-{status.get('away_score','')}",
+                "seen_at": _utc_now(),
+            }
+        elif status.get("unplayable") is True:
+            verdicts[event_id] = False
+            stats["unplayable"] += 1
+            entries[pair] = {
+                "finished": True,
+                "status": status.get("status", ""),
+                "seen_at": _utc_now(),
+            }
+        else:
+            stats["no_verdict"] += 1
+
+    if entries:
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(
+                json.dumps(
+                    {"updated_at": _utc_now(), "entries": entries},
+                    ensure_ascii=False, indent=2,
+                ),
+                encoding="utf-8",
+            )
+        except OSError:  # pragma: no cover - a cache must never break a scan
+            pass
+    return verdicts, stats
+
+
 def _authority_states(
     candidates: List[Dict[str, Any]],
     previous_items: List[Dict[str, Any]],
@@ -1074,6 +1186,19 @@ def _authority_states(
         key = normalize_event_key(previous.get("name", ""))
         if key and key in by_name:
             states[event_id] = by_name[key]
+    return states
+
+
+def _event_authority_with_api(
+    candidates: List[Dict[str, Any]],
+    previous_items: List[Dict[str, Any]],
+    stats: Dict[str, Any],
+) -> Dict[str, Optional[bool]]:
+    """This scan's own verdicts, then the sports API for whatever is left."""
+    states = _authority_states(candidates, previous_items)
+    api_states, api_stats = _fixture_finished_states(previous_items, states)
+    stats["fixture_status_api"] = api_stats
+    states.update(api_states)
     return states
 
 
@@ -1423,7 +1548,9 @@ def process_events(
             ),
             # Section 21: a fresh authority verdict, and the sessions a viewer is
             # watching - the strongest protection there is.
-            authority_states=_authority_states(event_candidates, previous_today_items),
+            authority_states=_event_authority_with_api(
+                event_candidates, previous_today_items, schedule_stats
+            ),
             playing_event_ids=_playing_event_ids(),
         )
         schedule_stats["live_protection"] = protection_stats

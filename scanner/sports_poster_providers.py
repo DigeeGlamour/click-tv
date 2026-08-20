@@ -32,7 +32,7 @@ import os
 import urllib.error
 import urllib.parse
 import urllib.request
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 REQUEST_TIMEOUT_SECONDS = 10
 _USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
@@ -226,6 +226,106 @@ def thesportsdb_best_poster(home_team: str, away_team: str) -> str:
         if artwork.get(field):
             return artwork[field]
     return ""
+
+
+#: TheSportsDB's own status vocabulary for a finished fixture. "FT" is full
+#: time, "AET" after extra time, "PEN" decided on penalties, "AWD" awarded and
+#: "WO" a walkover - all of them mean the match is over and nothing turns it
+#: back on. Anything else, including "NS" (not started) and an empty string,
+#: says nothing useful and is reported as unknown rather than guessed at.
+THESPORTSDB_FINISHED_STATUSES = frozenset({
+    "FT", "AET", "PEN", "AWD", "WO", "FINISHED", "MATCH FINISHED", "ENDED",
+})
+
+#: Postponed, cancelled or abandoned. Also not live, but deliberately kept
+#: separate: these are not "the match was played and is over".
+THESPORTSDB_DEAD_STATUSES = frozenset({
+    "PST", "POSTP", "POSTPONED", "CANC", "CANCELLED", "ABD", "ABANDONED",
+})
+
+
+def thesportsdb_event_status(home_team: str, away_team: str) -> Dict[str, Any]:
+    """Whether TheSportsDB says this fixture has finished.
+
+    Returns {} when the fixture is not found, the host is rate-limited, or the
+    status is one this does not recognise - "no answer" and "still playing" are
+    deliberately the same to the caller, because only a positive finished
+    verdict is allowed to retire anything.
+
+    Read off the same searchevents response the artwork lookup already uses, so
+    a fixture whose artwork was fetched this scan costs no extra request when the
+    caller passes the cached payload back in.
+    """
+    home = str(home_team or "").strip()
+    away = str(away_team or "").strip()
+    if not home or not away:
+        return {}
+    key = os.getenv("THESPORTSDB_API_KEY", "").strip() or THESPORTSDB_DEFAULT_KEY
+    query = f"{home}_vs_{away}".replace(" ", "_")
+    url = THESPORTSDB_EVENT_SEARCH_URL.format(key=key) + "?" + urllib.parse.urlencode({"e": query})
+    payload = _get_json(url)
+    events = payload.get("event")
+    if not isinstance(events, list) or not events or not isinstance(events[0], dict):
+        return {}
+    return _read_event_status(events[0])
+
+
+def _read_event_status(event: Dict[str, Any]) -> Dict[str, Any]:
+    """Split one searchevents entry into a status verdict."""
+    if not isinstance(event, dict):
+        return {}
+    status = str(event.get("strStatus") or "").strip().upper()
+    postponed = str(event.get("strPostponed") or "").strip().casefold() == "yes"
+    if not status and not postponed:
+        return {}
+    finished = status in THESPORTSDB_FINISHED_STATUSES
+    unplayable = postponed or status in THESPORTSDB_DEAD_STATUSES
+    if not finished and not unplayable:
+        # "NS", a live period, or a vocabulary this does not know. No verdict.
+        return {"status": status, "finished": False, "unplayable": False}
+    return {
+        "status": status or ("PST" if postponed else ""),
+        "finished": finished,
+        "unplayable": unplayable,
+        "home_score": str(event.get("intHomeScore") or "").strip(),
+        "away_score": str(event.get("intAwayScore") or "").strip(),
+        "event_name": str(event.get("strEvent") or "").strip(),
+    }
+
+
+def thesportsdb_event_artwork_and_status(
+    home_team: str, away_team: str
+) -> Tuple[Dict[str, str], Dict[str, Any]]:
+    """One request, both answers - artwork and status off the same response.
+
+    The artwork pass already searches this fixture every scan, so asking for the
+    status separately would double the request count against a quota that is
+    already the limiting factor.
+    """
+    home = str(home_team or "").strip()
+    away = str(away_team or "").strip()
+    if not home or not away:
+        return {}, {}
+    key = os.getenv("THESPORTSDB_API_KEY", "").strip() or THESPORTSDB_DEFAULT_KEY
+    query = f"{home}_vs_{away}".replace(" ", "_")
+    url = THESPORTSDB_EVENT_SEARCH_URL.format(key=key) + "?" + urllib.parse.urlencode({"e": query})
+    payload = _get_json(url)
+    events = payload.get("event")
+    if not isinstance(events, list) or not events or not isinstance(events[0], dict):
+        return {}, {}
+    event = events[0]
+    artwork = {
+        "poster": str(event.get("strPoster") or "").strip(),
+        "thumbnail": str(event.get("strThumb") or "").strip(),
+        "banner": str(event.get("strBanner") or "").strip(),
+        "home_badge": str(event.get("strHomeTeamBadge") or "").strip(),
+        "away_badge": str(event.get("strAwayTeamBadge") or "").strip(),
+        "league_badge": str(event.get("strLeagueBadge") or "").strip(),
+    }
+    return (
+        {k: v for k, v in artwork.items() if v},
+        _read_event_status(event),
+    )
 
 
 def thesportsdb_team_badge(team_name: str) -> str:
