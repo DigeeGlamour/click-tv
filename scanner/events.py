@@ -474,6 +474,72 @@ def _relabel_generic_channels(card: Dict[str, Any]) -> None:
         index += 1
 
 
+#: Embed players are not published, at all, by direct request: "kono embed url
+#: add hoba na". A card must play through the native pipeline or not at all.
+#:
+#: A config flag is not enough on its own. Once an embed reaches
+#: data/today-match.json it survives every later scan through live protection,
+#: which carries a previously published card forward verbatim - so switching the
+#: flag off left "Sri Lanka vs India 1st Test" publishing two embed buttons
+#: indefinitely. The strip runs on the way out instead, over carried and freshly
+#: merged cards alike, so no path and no leftover state can reintroduce one.
+def _strip_embed_streams(card: Dict[str, Any]) -> int:
+    """Remove every embed channel, stream and backup from one card."""
+    if not isinstance(card, dict):
+        return 0
+    removed = 0
+
+    for field in ("embed_backups", "embed_backup_count"):
+        if field in card:
+            value = card.pop(field)
+            if isinstance(value, list):
+                removed += len(value)
+
+    channels = card.get("channels")
+    if isinstance(channels, list):
+        kept_channels = []
+        for channel in channels:
+            if not isinstance(channel, dict):
+                continue
+            streams = channel.get("streams")
+            if isinstance(streams, list):
+                native = [
+                    stream for stream in streams
+                    if isinstance(stream, dict)
+                    and str(stream.get("playback_type") or "") != "embed"
+                    and not str(stream.get("embed_url") or "").strip()
+                ]
+                dropped = len(streams) - len(native)
+                removed += dropped
+                if streams and not native:
+                    # Every stream on this channel was an embed, so the channel
+                    # itself only existed to carry one. A channel that never had
+                    # a streams list is a different thing and is left alone -
+                    # some callers build channels[] before the streams.
+                    removed += 1
+                    continue
+                channel["streams"] = native
+                channel["stream_count"] = len(native)
+                channel["backup_count"] = max(0, len(native) - 1)
+                channel["playback_types"] = sorted({
+                    str(stream.get("playback_type") or "native")
+                    for stream in native
+                }) or ["native"]
+            if channel.get("renderer") == "embed":
+                channel["renderer"] = "native"
+            kept_channels.append(channel)
+        card["channels"] = kept_channels
+        if card.get("default_channel_id") and not any(
+            entry.get("id") == card.get("default_channel_id")
+            for entry in kept_channels
+        ):
+            card["default_channel_id"] = (
+                kept_channels[0]["id"] if kept_channels else ""
+            )
+
+    return removed
+
+
 def _payload(
     items: List[Dict[str, Any]],
     event_type: str,
@@ -498,6 +564,9 @@ def _payload(
     )
     for item in ordered:
         item.pop("_source_timezone", None)
+        # Strip first: relabelling numbers the generic channels that remain, so
+        # removing one afterwards would leave a gap in the Server-N sequence.
+        _strip_embed_streams(item)
         _relabel_generic_channels(item)
     return {
         "type": event_type,
@@ -795,26 +864,13 @@ def _apply_streamed_enrichment(
                 card["logo"] = poster
                 stats["poster_filled"] = int(stats.get("poster_filled", 0)) + 1
 
+        # The provider's embed streams are deliberately not attached. See
+        # _strip_embed_streams: embeds are not published at all, so there is no
+        # flag to turn this back on by accident.
         if attach_embed_streams:
-            embeds = provider.get("provider_embed_streams")
-            if isinstance(embeds, list) and embeds:
-                card["embed_backups"] = [
-                    {
-                        "name": str(entry.get("name") or "Streamed"),
-                        "provider": str(entry.get("provider") or "streamed"),
-                        "playback_type": "embed",
-                        "embed_url": str(entry.get("embed_url") or ""),
-                        "language": str(entry.get("language") or ""),
-                        "hd": bool(entry.get("hd")),
-                        "verification_status": "provider_embed",
-                        "verified": False,
-                    }
-                    for entry in embeds
-                    if str(entry.get("embed_url") or "").strip()
-                ]
-                card["embed_backup_count"] = len(card["embed_backups"])
-                stats["embed_backups"] += len(card["embed_backups"])
-                stats["embed_channels"] += _append_embed_channels(card)
+            stats["embed_backups_refused"] = int(
+                stats.get("embed_backups_refused", 0)
+            ) + len(provider.get("provider_embed_streams") or [])
 
         # Section 24: the provider is a routing hint, never a status authority.
         hint = str(provider.get("provider_routing_hint") or "")

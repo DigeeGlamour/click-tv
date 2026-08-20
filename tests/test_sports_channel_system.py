@@ -995,7 +995,13 @@ class Section33And34SnapshotAndNaming(unittest.TestCase):
         source = (ROOT / "scanner" / "events.py").read_text(encoding="utf-8")
         self.assertIn("has_native_primary", source)
         self.assertIn("not has_native_primary", source)
-        self.assertIn('card["embed_backups"]', source)
+        # Stronger than the original guarantee: an embed cannot become the
+        # native primary because an embed is not published at all. The attach
+        # path was removed and _strip_embed_streams runs over every published
+        # card, carried ones included.
+        self.assertIn("def _strip_embed_streams(", source)
+        self.assertIn("_strip_embed_streams(item)", source)
+        self.assertNotIn('card["embed_backups"] = [', source)
         self.assertNotIn('card["backups"] = card["embed_backups"]', source)
 
 

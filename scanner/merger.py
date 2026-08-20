@@ -637,6 +637,8 @@ def _channel_layer():
     """
     try:
         from scanner.channel_groups import (
+            DEFAULT_MAX_CHANNELS_PER_EVENT,
+            DEFAULT_MAX_STREAMS_PER_CHANNEL,
             build_event_channels,
             default_channel_id,
             stream_variant_identity,
@@ -651,6 +653,8 @@ def _channel_layer():
         "variant": stream_variant_identity,
         "summary": summarize_channels,
         "aliases": load_alias_map,
+        "max_streams_default": DEFAULT_MAX_STREAMS_PER_CHANNEL,
+        "max_channels_default": DEFAULT_MAX_CHANNELS_PER_EVENT,
     }
 
 
@@ -1707,6 +1711,32 @@ def merge_candidates(
         _grouping_layer["aliases"]() if _grouping_layer else {}
     )
 
+    # settings.channel_layer declared these for a while with nothing reading
+    # them, so the function defaults were what actually ran and editing the
+    # config had no effect. The per-channel cap matters: at 4 a channel that a
+    # match carries five times published a primary and three backups and threw
+    # the fifth link away, when the rule is that every link of the same channel
+    # becomes a backup. 6 matches link_policy.maximum_total_links.
+    channel_layer_cfg = settings.get("channel_layer")
+    if not isinstance(channel_layer_cfg, dict):
+        channel_layer_cfg = {}
+    default_max_streams = (
+        _grouping_layer["max_streams_default"] if _grouping_layer else 4
+    )
+    default_max_channels = (
+        _grouping_layer["max_channels_default"] if _grouping_layer else 8
+    )
+    max_streams_per_channel = _safe_int(
+        channel_layer_cfg.get("max_streams_per_channel", default_max_streams),
+        default_max_streams,
+        1,
+    )
+    max_channels_per_event = _safe_int(
+        channel_layer_cfg.get("max_channels_per_event", default_max_channels),
+        default_max_channels,
+        1,
+    )
+
     grouped: Dict[str, List[Dict[str, Any]]] = {}
     for c in filtered_candidates:
         pipeline = str(c.get("source_pipeline", "tv")).strip().casefold() or "tv"
@@ -1837,6 +1867,8 @@ def merge_candidates(
                         publishable_candidates,
                         aliases=channel_alias_map,
                         default_variant_key=layer["variant"](primary),
+                        max_streams_per_channel=max_streams_per_channel,
+                        max_channels=max_channels_per_event,
                     )
                 except Exception as error:  # pragma: no cover - reporting only
                     event_channels, channel_stats = [], {"error": str(error)}
@@ -1867,6 +1899,8 @@ def merge_candidates(
                     publishable_candidates,
                     aliases=channel_alias_map,
                     default_variant_key=layer["variant"](primary),
+                    max_streams_per_channel=max_streams_per_channel,
+                    max_channels=max_channels_per_event,
                 )
 
         merged_card: Dict[str, Any] = {
