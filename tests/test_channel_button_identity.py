@@ -288,5 +288,155 @@ class RuleFourCricketIsOrderedFirst(unittest.TestCase):
         self.assertIn("return sport_rank, start_time, competition, name", source)
 
 
+class RuleThreeAChannelOnlySourceBecomesOneCardPerChannel(unittest.TestCase):
+    """A Today Match source that names a channel and no match.
+
+    fixture_identity_key has nothing to key on for such an entry - there is no
+    "A vs B" - so it returned "" and the grouping fell through to a per-source
+    fallback key. One T Sports feed relayed by three sources therefore became
+    three separate Today Match cards instead of one card with a primary and two
+    backups, and only whichever card won the race kept a logo.
+    """
+
+    @staticmethod
+    def channel_entry(name, url, source_id, logo=""):
+        return {
+            "name": name,
+            "channel_name": name,
+            "url": url,
+            "source_id": source_id,
+            "source_pipeline": "today_match",
+            "category": "today_match",
+            "force_output": "today_match",
+            "schedule_status": "CHANNEL_LIVE",
+            "status": "CHANNEL_LIVE",
+            "today_source_channel": True,
+            "resolution": "HD",
+            "resolution_height": 720,
+            "verification_status": "verified_global",
+            "verified": True,
+            "publish_allowed": True,
+            "stream_type": "hls",
+            "logo": logo,
+            "headers": {},
+            "source_priority": 150,
+        }
+
+    def _merge(self, entries):
+        from scanner.merger import merge_candidates
+
+        return merge_candidates(entries, settings_path=str(ROOT / "config" / "settings.json"))
+
+    def test_one_channel_from_three_sources_is_one_card(self):
+        cards = self._merge([
+            self.channel_entry("T Sports", "https://a.example/1.m3u8", "srhady-toffee-bd",
+                               logo="https://logo.example/ts.png"),
+            self.channel_entry("T Sports", "https://b.example/2.m3u8", "sm-toffee-auto-update"),
+            self.channel_entry("T Sports", "https://c.example/3.m3u8", "abusaeeidx-toffee-navigator"),
+        ])
+        self.assertEqual(len(cards), 1)
+        card = cards[0]
+        self.assertEqual(card["name"], "T Sports")
+        self.assertEqual(card["available_link_count"], 3)
+        self.assertEqual(len(card["backups"]), 2)
+
+    def test_that_card_keeps_the_logo_whichever_source_carried_it(self):
+        for logo_position in range(3):
+            with self.subTest(logo_position=logo_position):
+                entries = [
+                    self.channel_entry("T Sports", f"https://h{index}.example/x.m3u8", f"s{index}",
+                                       logo="https://logo.example/ts.png" if index == logo_position else "")
+                    for index in range(3)
+                ]
+                cards = self._merge(entries)
+                self.assertEqual(len(cards), 1)
+                self.assertEqual(cards[0]["logo"], "https://logo.example/ts.png")
+
+    def test_the_single_button_holds_a_primary_and_the_backups(self):
+        cards = self._merge([
+            self.channel_entry("T Sports", f"https://h{index}.example/x.m3u8", f"s{index}")
+            for index in range(3)
+        ])
+        channels = cards[0]["channels"]
+        self.assertEqual([entry["name"] for entry in channels], ["T Sports"])
+        self.assertEqual(
+            [item["role"] for item in channels[0]["streams"]],
+            ["primary", "backup", "backup"],
+        )
+
+    def test_different_channels_stay_different_cards(self):
+        cards = self._merge([
+            self.channel_entry("T Sports", "https://a.example/1.m3u8", "s1",
+                               logo="https://logo.example/ts.png"),
+            self.channel_entry("Willow Cricket", "https://b.example/2.m3u8", "s2",
+                               logo="https://logo.example/wc.png"),
+            self.channel_entry("Star Sports 1", "https://c.example/3.m3u8", "s3",
+                               logo="https://logo.example/ss.png"),
+        ])
+        self.assertEqual(
+            sorted(card["name"] for card in cards),
+            ["Star Sports 1", "T Sports", "Willow Cricket"],
+        )
+        for card in cards:
+            with self.subTest(card=card["name"]):
+                self.assertTrue(card["logo"], "every channel card keeps its logo")
+
+    def test_a_real_fixture_is_never_folded_into_a_channel_card(self):
+        fixture = {
+            "name": "Sri Lanka vs India 1st Test",
+            "channel_name": "T Sports",
+            "url": "https://f.example/x.m3u8",
+            "source_id": "s9",
+            "source_pipeline": "today_match",
+            "category": "today_match",
+            "status": "LIVE_NOW",
+            "schedule_status": "LIVE_NOW",
+            "start_time": "2026-08-20T04:30:00+00:00",
+            "end_time": "2026-08-20T12:30:00+00:00",
+            "verification_status": "verified_global",
+            "verified": True,
+            "publish_allowed": True,
+            "resolution": "HD",
+            "resolution_height": 720,
+            "stream_type": "hls",
+            "headers": {},
+        }
+        cards = self._merge([
+            fixture,
+            self.channel_entry("T Sports", "https://a.example/1.m3u8", "s1"),
+        ])
+        names = sorted(card["name"] for card in cards)
+        self.assertEqual(names, ["Sri Lanka vs India 1st Test", "T Sports"])
+
+
+class RuleFourCricketChannelsSortFirst(unittest.TestCase):
+    def test_cricket_broadcasters_lead_the_channel_cards(self):
+        from scanner.events import _payload
+        from scanner.merger import merge_candidates
+
+        entry = RuleThreeAChannelOnlySourceBecomesOneCardPerChannel.channel_entry
+        cards = merge_candidates(
+            [
+                entry("Bingstream", "https://a.example/1.m3u8", "s1"),
+                entry("beIN Sports 1", "https://b.example/1.m3u8", "s2"),
+                entry("Willow Cricket", "https://c.example/1.m3u8", "s3"),
+                entry("Apple TV", "https://d.example/1.m3u8", "s4"),
+                entry("T Sports", "https://e.example/1.m3u8", "s5"),
+            ],
+            settings_path=str(ROOT / "config" / "settings.json"),
+        )
+        ordered = _payload(cards, "today_match", 0, 0)["items"]
+        sports = [item["sport_type"] for item in ordered]
+        self.assertEqual(sports[:2], ["cricket", "cricket"])
+        self.assertNotIn("cricket", sports[2:])
+
+    def test_the_known_cricket_broadcasters_are_classified_as_cricket(self):
+        from scanner.merger import event_sport
+
+        for name in ("Willow Cricket", "T Sports", "Star Sports 1", "Sony Ten 3"):
+            with self.subTest(name=name):
+                self.assertEqual(event_sport({"name": name}), "cricket")
+
+
 if __name__ == "__main__":
     unittest.main()

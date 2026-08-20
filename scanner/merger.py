@@ -1051,6 +1051,25 @@ def _normalize_priority_name(value: Any) -> str:
     return " ".join(text.split())
 
 
+def _is_channel_only_event(item: Dict[str, Any]) -> bool:
+    """An event-pipeline entry that names a channel and no fixture.
+
+    Either the schedule resolver already marked it (`today_source_channel`, set
+    by _today_source_channel_fallback), or it simply has no fixture shape and no
+    kickoff to build one from. Both are the same thing for grouping: there is no
+    match here, only a broadcaster.
+    """
+    if not isinstance(item, dict):
+        return False
+    if item.get("today_source_channel") is True:
+        return True
+    status = str(item.get("schedule_status") or item.get("status") or "").strip().upper()
+    if status != "CHANNEL_LIVE":
+        return False
+    name = str(item.get("name") or "")
+    return not _VERSUS_WORD.search(name)
+
+
 def _channel_identity_key(item: Dict[str, Any]) -> str:
     """Return one card identity for a canonical channel brand.
 
@@ -1606,6 +1625,25 @@ def load_previous_primary_keys(data_root: str | Path = "data") -> Dict[str, str]
     return keys
 
 
+def _first_group_logo(
+    candidates: List[Dict[str, Any]],
+    base_item: Dict[str, Any],
+) -> str:
+    """The first real artwork any member of the merged group supplies.
+
+    The preferred item is asked first so a deliberate choice still wins; the
+    rest are a fallback for the common case where only one relay of a channel
+    carries a logo at all.
+    """
+    for item in [base_item, *(candidates or [])]:
+        if not isinstance(item, dict):
+            continue
+        logo = str(item.get("logo") or "").strip()
+        if logo:
+            return logo
+    return ""
+
+
 def merge_candidates(
     candidates: List[Dict[str, Any]],
     settings_path: str = "config/settings.json",
@@ -1679,6 +1717,17 @@ def merge_candidates(
             # on Willow, Sony Ten and T Sports is one fixture with three channels
             # rather than three main cards.
             evt_key = fixture_identity_key(c, grouping_aliases)
+            # A Today Match source also carries reusable sports channels, whose
+            # titles are a broadcaster and not "A vs B" - so fixture_identity_key
+            # has nothing to key on and returns "". The fallback below is
+            # per-source, so one T Sports feed relayed by three sources became
+            # three separate cards instead of one card with a primary and two
+            # backups, and only whichever card won the race kept a logo.
+            # A channel is grouped by its channel identity, exactly as the TV
+            # pipeline already does a few lines below; different channels stay
+            # different cards because the key is the channel name.
+            if not evt_key and _is_channel_only_event(c):
+                evt_key = f"channel:{_channel_identity_key(c)}"
             fallback_key = (
                 raw_id
                 or str(c.get("tvg_id") or "").strip()
@@ -1827,7 +1876,12 @@ def merge_candidates(
             # primary in place; requirement 11 sorts on the sport.
             "primary_stream_key": _stream_identity_key(primary),
             "sport_type": event_sport(base_item) if group_pipeline in _EVENT_PIPELINES else "",
-            "logo": base_item.get("logo", ""),
+            # Whichever member of the group actually carried artwork. The logo
+            # used to be read off base_item alone, so one T Sports feed relayed
+            # by three sources kept its logo only when the source that happened
+            # to rank first was the one carrying it - and the same card
+            # published without a logo on the next scan if the ranking moved.
+            "logo": _first_group_logo(publishable_candidates, base_item),
             "category": base_item.get("category", ""),
             "url": card_url,
             "headers": card_headers,
