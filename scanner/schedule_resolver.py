@@ -409,6 +409,15 @@ def _parse_source_time(value: Any, source_timezone: ZoneInfo, now: datetime) -> 
         pass
     cleaned = re.sub(r"(?i)^\s*live\s+at\s+", "", text)
     cleaned = re.sub(r"(?i)\s*(?:BDT|BST|UTC|GMT)\s*$", "", cleaned).strip()
+    # TrySports writes "20 Aug 2026, 05:00 PM (BD Time)". The trailing bracket
+    # is a timezone label, not part of the clock, and every pattern below failed
+    # on it - so all 163 of its fixtures were discarded for "no kickoff time".
+    cleaned = re.sub(
+        r"(?i)\s*\(\s*(?:BD|BST|BDT|UTC|GMT|LOCAL|IST)?\s*TIME\s*\)\s*$",
+        "",
+        cleaned,
+    ).strip()
+    cleaned = re.sub(r"(?i)\s*\((?:BD|BST|BDT|UTC|GMT|IST)\)\s*$", "", cleaned).strip()
     local_now = now.astimezone(source_timezone)
     day = local_now.date()
     if re.match(r"(?i)^tomorrow\b", cleaned):
@@ -421,6 +430,12 @@ def _parse_source_time(value: Any, source_timezone: ZoneInfo, now: datetime) -> 
         # not-started fixtures was discarded for having no schedule.
         "%I:%M %p %d-%m-%Y", "%I %p %d-%m-%Y", "%H:%M %d-%m-%Y",
         "%I:%M %p %Y-%m-%d", "%H:%M %Y-%m-%d",
+        # TrySports (0matbank/trysports) writes the month by name:
+        # "20 Aug 2026, 05:00 PM" and the comma-less variant.
+        "%d %b %Y, %I:%M %p", "%d %b %Y %I:%M %p",
+        "%d %B %Y, %I:%M %p", "%d %B %Y %I:%M %p",
+        "%d %b %Y, %H:%M", "%d %b %Y %H:%M",
+        "%b %d %Y, %I:%M %p", "%b %d, %Y %I:%M %p",
     ):
         try:
             parsed = datetime.strptime(cleaned, pattern).replace(tzinfo=source_timezone)

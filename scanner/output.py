@@ -596,6 +596,31 @@ def _channel_payload_has_vod(payload: Dict[str, Any]) -> bool:
     return False
 
 
+def _payload_age_hours(payload: Dict[str, Any], now: Optional[datetime] = None) -> float:
+    """Hours since the preserved payload was written; -1.0 when unknown.
+
+    Sudden-drop protection is meant to survive one bad scan, not to freeze a
+    category forever. It compares the incoming count against the *preserved*
+    count, so once preservation happens the preserved count becomes the new
+    baseline and every later scan is measured against it again - the category
+    can never recover on its own. Measured on 2026-08-20: data/channels/other
+    .json was still the 2026-08-17T09:24 payload, 433 cards, while three days
+    of scans kept arriving with 85-89 and being discarded. Age gives the rule
+    an exit.
+    """
+    stamp = str(payload.get("updated_at") or "").strip() if isinstance(payload, dict) else ""
+    if not stamp:
+        return -1.0
+    try:
+        parsed = datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+    except ValueError:
+        return -1.0
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    reference = now or datetime.now(timezone.utc)
+    return max(0.0, (reference - parsed).total_seconds() / 3600.0)
+
+
 def _publish_channel_category(
     category_name: str,
     card_list: List[Dict[str, Any]],
@@ -605,6 +630,7 @@ def _publish_channel_category(
     minimum_baseline_count: int,
     timestamp: str,
     force_replace: bool = False,
+    maximum_preserved_age_hours: int = 0,
 ) -> Tuple[Dict[str, Any], Optional[Dict[str, Any]]]:
     slug = CHANNEL_SLUGS.get(
         category_name,
@@ -622,8 +648,17 @@ def _publish_channel_category(
     current_count = len(public_cards)
     drop_pct = _drop_percentage(previous_count, current_count)
 
+    preserved_age_hours = _payload_age_hours(previous_payload)
+    preservation_expired = bool(
+        maximum_preserved_age_hours > 0
+        and preserved_age_hours >= 0
+        and preserved_age_hours >= maximum_preserved_age_hours
+        and current_count > 0
+    )
+
     should_preserve = (
         not force_replace
+        and not preservation_expired
         and previous_count >= minimum_baseline_count
         and drop_pct >= maximum_drop_percentage
     )
@@ -663,6 +698,17 @@ def _publish_channel_category(
         "count": current_count,
         "channels": public_cards,
     }
+    if preservation_expired:
+        payload["drop_protection_expired"] = {
+            "preserved_count": previous_count,
+            "preserved_age_hours": round(preserved_age_hours, 2),
+            "maximum_preserved_age_hours": maximum_preserved_age_hours,
+            "reason": (
+                "Sudden-drop protection released: the preserved payload was "
+                "older than the configured limit, so a stale catalogue is no "
+                "longer served in place of a fresh scan."
+            ),
+        }
 
     _atomic_write_json(target_file, payload)
     _atomic_write_json(last_good_file, payload)
@@ -1108,6 +1154,15 @@ def publish_scan_outputs(
         1,
         1_000_000,
     )
+    # 0 keeps the old behaviour (preserve forever). Anything above it releases
+    # a category whose preserved payload has gone stale, which is the only way
+    # a protected category can ever shrink back to reality.
+    maximum_preserved_age_hours = _safe_int(
+        failure_config.get("maximum_preserved_age_hours", 0),
+        0,
+        0,
+        24 * 365,
+    )
 
     movie_failure_config = settings.get("movie_failure_protection", {})
     if not isinstance(movie_failure_config, dict):
@@ -1250,6 +1305,7 @@ def publish_scan_outputs(
                     cleanup_migration_active
                     and str(category_name) in cleanup_categories
                 ),
+                maximum_preserved_age_hours=maximum_preserved_age_hours,
             )
             manifest["channels"][str(category_name)] = manifest_entry
 

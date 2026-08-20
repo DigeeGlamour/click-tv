@@ -155,6 +155,11 @@ def process_tv_channels(
     settings_payload = json.loads(Path(settings_path).read_text(encoding="utf-8"))
     bd_settings = settings_payload.get("bd_verification") if isinstance(settings_payload, dict) else {}
     strict_player_publish = isinstance(bd_settings, dict) and bool(bd_settings.get("strict_player_publish", False))
+    # Off by default: see the note beside the gate below for why an exact-URL
+    # proof ledger cannot be a publish requirement for a rotating IPTV source.
+    bangla_requires_player_proof = isinstance(bd_settings, dict) and bool(
+        bd_settings.get("bangla_requires_player_proof", False)
+    )
 
     tv_candidates: List[Dict[str, Any]] = []
     for item in candidates:
@@ -206,7 +211,18 @@ def process_tv_channels(
         card for card in known_cards
         if not is_confirmed_player_failure(card, "channel", failure_keys)
     ]
-    if strict_player_publish:
+    # The Bangla-only player-proof gate is a one-way ratchet unless it is
+    # opt-in. `is_player_proven` matches (name, url, header_profile, proxy_mode,
+    # stream_type, requires_headers) against a ledger that a human regenerates
+    # by hand (state/player-playback-proof.json, last built 2026-08-18). IPTV
+    # sources rotate their URLs constantly, so the fingerprint stops matching
+    # within days and the channel is hidden even though this run verified it -
+    # measured on 2026-08-20: 29 Bangla channels reached `verified_global`, 9
+    # published. Six of the 20 hidden ones (ATN Bangla, NTV, RTV, Somoy TV,
+    # Jago News 24, Channel S) were in the ledger by name and lost only to a
+    # changed URL. Confirmed browser failures are a separate, evidence-based
+    # gate and still apply to every category above.
+    if strict_player_publish and bangla_requires_player_proof:
         proof_keys = load_proof_keys()
         bangla_cards = [card for card in known_cards if str(card.get("category") or "") == "Bangla"]
         mark_unproven_player_items(bangla_cards, "channel")
