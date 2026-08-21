@@ -1148,7 +1148,7 @@ html.ultra-lite-performance .sticky-notice .marquee-text,
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen .controls-row,
   html.mobile-movie-controls .video-container-wrap:fullscreen .controls-row,
   html.mobile-movie-controls .video-container-wrap:-webkit-full-screen .controls-row{
-    grid-template-columns:repeat(12,minmax(24px,1fr))!important;height:54px!important;
+    grid-template-columns:repeat(10,minmax(24px,1fr))!important;height:54px!important;
   }
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen .controls-row .ctrl-btn,
   html.mobile-movie-controls .video-container-wrap:fullscreen .controls-row .ctrl-btn,
@@ -1167,45 +1167,47 @@ html.ultra-lite-performance .sticky-notice .marquee-text,
   html.mobile-movie-controls .video-container-wrap:fullscreen #playPauseBtn i,
   html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #playPauseBtn i{font-size:24px!important}
   /* The right cluster reads slightly smaller than the transport, as designed. */
-  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen :is(#speedBtn,#aspectBtn,#fullscreenBtn,#qualityBtn) i,
-  html.mobile-movie-controls .video-container-wrap:fullscreen :is(#speedBtn,#aspectBtn,#fullscreenBtn,#qualityBtn) i,
-  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen :is(#speedBtn,#aspectBtn,#fullscreenBtn,#qualityBtn) i{font-size:20px!important}
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen :is(#aspectBtn,#qualityBtn) i,
+  html.mobile-movie-controls .video-container-wrap:fullscreen :is(#aspectBtn,#qualityBtn) i,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen :is(#aspectBtn,#qualityBtn) i{font-size:20px!important}
 
-  /* Fullscreen restores the full transport row, with resolution taking the
-     one grid column the compact row leaves empty (after volume). */
+  /* Fullscreen restores the full transport row: lock, volume, seek/prev/
+     play/next/seek, then resolution and screen-fit. Speed and the
+     fullscreen-toggle are compact/desktop-only controls - not part of
+     this row. */
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #movieLockBtn,
   html.mobile-movie-controls .video-container-wrap:fullscreen #movieLockBtn,
   html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #movieLockBtn{grid-column:1!important;display:grid!important}
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #muteBtn,
   html.mobile-movie-controls .video-container-wrap:fullscreen #muteBtn,
   html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #muteBtn{grid-column:2!important;display:grid!important}
-  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #qualityBtn,
-  html.mobile-movie-controls .video-container-wrap:fullscreen #qualityBtn,
-  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #qualityBtn{grid-column:3!important}
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #skipBackBtn,
   html.mobile-movie-controls .video-container-wrap:fullscreen #skipBackBtn,
-  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #skipBackBtn{grid-column:4!important;display:grid!important}
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #skipBackBtn{grid-column:3!important;display:grid!important}
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #prevChBtn,
   html.mobile-movie-controls .video-container-wrap:fullscreen #prevChBtn,
-  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #prevChBtn{grid-column:5!important}
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #prevChBtn{grid-column:4!important}
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #playPauseBtn,
   html.mobile-movie-controls .video-container-wrap:fullscreen #playPauseBtn,
-  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #playPauseBtn{grid-column:6 / span 2!important}
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #playPauseBtn{grid-column:5 / span 2!important}
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #nextChBtn,
   html.mobile-movie-controls .video-container-wrap:fullscreen #nextChBtn,
-  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #nextChBtn{grid-column:8!important}
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #nextChBtn{grid-column:7!important}
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #skipFwdBtn,
   html.mobile-movie-controls .video-container-wrap:fullscreen #skipFwdBtn,
-  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #skipFwdBtn{grid-column:9!important;display:grid!important}
-  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #speedBtn,
-  html.mobile-movie-controls .video-container-wrap:fullscreen #speedBtn,
-  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #speedBtn{grid-column:10!important;display:grid!important}
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #skipFwdBtn{grid-column:8!important;display:grid!important}
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #qualityBtn,
+  html.mobile-movie-controls .video-container-wrap:fullscreen #qualityBtn,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #qualityBtn{grid-column:9!important}
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #aspectBtn,
   html.mobile-movie-controls .video-container-wrap:fullscreen #aspectBtn,
-  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #aspectBtn{grid-column:11!important;display:grid!important}
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #aspectBtn{grid-column:10!important;display:grid!important}
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #speedBtn,
+  html.mobile-movie-controls .video-container-wrap:fullscreen #speedBtn,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #speedBtn,
   html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #fullscreenBtn,
   html.mobile-movie-controls .video-container-wrap:fullscreen #fullscreenBtn,
-  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #fullscreenBtn{grid-column:12!important}
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #fullscreenBtn{display:none!important}
 
   /* The "10" glyph inside the seek buttons, kept from the previous layout. */
   html.mobile-movie-controls .video-container-wrap #skipBackBtn,

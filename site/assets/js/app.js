@@ -7597,7 +7597,9 @@ function updateContextualPlayerButtons() {
 
   setPlayerControlVisible('skipBackBtn', isMovie && !compactMobileMovie);
   setPlayerControlVisible('skipFwdBtn', isMovie && !compactMobileMovie);
-  setPlayerControlVisible('speedBtn', isMovie && !compactMobileMovie);
+  // Speed is a desktop-only control now; the mobile movie transport (compact
+  // or fullscreen) never shows it.
+  setPlayerControlVisible('speedBtn', isMovie && !mobileMovie);
   setPlayerControlVisible('networkBtn', !isMovie);
   // Screen Fit belongs to the mobile movie transport row and stays a normal
   // desktop control, but only once fullscreen in the compact bar.
