@@ -187,31 +187,61 @@ class RuntimeContractTests(unittest.TestCase):
         self.assertIn('class="fas fa-redo-alt"', index)
         self.assertIn('class="fas fa-clone"', index)
         self.assertIn('class="fas fa-arrows-alt-h"', index)
-        self.assertIn("grid-template-columns:repeat(12,minmax(24px,1fr))", css)
+        self.assertIn("grid-template-columns:repeat(11,minmax(24px,1fr))", css)
         self.assertIn('content:"10"!important', css)
         self.assertIn("video.requestPictureInPicture()", app)
-        self.assertIn("setPlayerControlVisible('pipBtn', mobileMovie)", app)
 
-        # Reference bottom row, left to right:
-        # lock, volume | -10s, prev, play, next, +10s | speed, screen fit, fullscreen.
+        # Rotate screen and Picture-in-Picture are removed from the movie
+        # player in every state, per direct user request.
+        self.assertIn("setPlayerControlVisible('movieRotateBtn', false)", app)
+        self.assertIn("setPlayerControlVisible('pipBtn', false)", app)
+        self.assertIn(
+            "html.mobile-movie-controls .video-container-wrap #movieRotateBtn,\n"
+            "  html.mobile-movie-controls .video-container-wrap #pipBtn{display:none!important}",
+            css,
+        )
+
+        # Compact (non-fullscreen) row, left to right:
+        # volume, prev, play, next, resolution, fullscreen.
         for column_rule in (
-            "#movieLockBtn{grid-column:1",
-            "#muteBtn{grid-column:2",
-            "#skipBackBtn{grid-column:4",
-            "#prevChBtn{grid-column:5",
-            "#playPauseBtn{grid-column:6 / span 2",
-            "#nextChBtn{grid-column:8",
-            "#skipFwdBtn{grid-column:9",
-            "#speedBtn{grid-column:10",
-            "#aspectBtn{grid-column:11",
-            "#fullscreenBtn{grid-column:12",
+            "#muteBtn{grid-column:1",
+            "#prevChBtn{grid-column:2",
+            "#playPauseBtn{grid-column:3",
+            "#nextChBtn{grid-column:4",
+            "#qualityBtn{grid-column:5",
+            "#fullscreenBtn{grid-column:6",
         ):
             self.assertIn(column_rule, css)
 
-        # Rotate, PiP and Quality keep working from the top-right overlay strip.
-        self.assertIn("html.mobile-movie-controls .video-container-wrap #qualityBtn{right:8px", css)
-        self.assertIn("html.mobile-movie-controls .video-container-wrap #pipBtn{right:48px", css)
-        self.assertIn("html.mobile-movie-controls .video-container-wrap #movieRotateBtn{right:88px", css)
+        # Fullscreen row, left to right:
+        # lock, volume, resolution | -10s, prev, play, next, +10s | screen fit, fullscreen.
+        for column_rule in (
+            "#movieLockBtn{grid-column:1",
+            "#muteBtn{grid-column:2",
+            "#skipBackBtn{grid-column:3",
+            "#prevChBtn{grid-column:4",
+            "#playPauseBtn{grid-column:5 / span 2",
+            "#nextChBtn{grid-column:7",
+            "#skipFwdBtn{grid-column:8",
+            "#qualityBtn{grid-column:9",
+            "#aspectBtn{grid-column:10",
+            "#fullscreenBtn{grid-column:11",
+        ):
+            self.assertIn(column_rule, css)
+
+        # Speed is compact/desktop-only now - never shown for the mobile
+        # movie transport, fullscreen included.
+        self.assertIn("setPlayerControlVisible('speedBtn', isMovie && !mobileMovie)", app)
+
+        # Lock dims the transport, which lives on .video-container-wrap (the
+        # element the class actually lands on), not the unrelated inner
+        # .video-container.
+        self.assertIn(".video-container-wrap.movie-controls-locked", css)
+
+        # The centred "tap to resume" overlay duplicates the transport's own
+        # play/pause button, so it never shows for the movie player.
+        self.assertIn("html.movie-playback-context #centerPlayBtn{display:none!important}", css)
+
         self.assertIn("classList.toggle('mobile-movie-controls', mobileMovie)", app)
 
     def test_notice_marquee_can_actually_scroll(self):
