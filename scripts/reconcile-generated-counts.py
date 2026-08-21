@@ -306,6 +306,31 @@ def main() -> int:
         if _write_if_changed(manifest_path, before, manifest):
             changed.append("data/manifest.json")
 
+        # The flat mirror (data/<name>.json) and the versioned snapshot slot
+        # (data/snapshots/<slot>/<name>.json) are two on-disk copies of the
+        # same event payload - snapshot_publish.py's commit() writes both
+        # from the same in-memory value, so they normally agree. A rebase
+        # has no idea they are supposed to match and can resolve them as two
+        # independent files, picking the mirror from one commit while the
+        # slot copy (and the manifest pointer naming it) comes from another.
+        # The slot is what every reader's pointer actually names, so it is
+        # the source of truth: resync the mirror to match it.
+        snapshot = manifest.get("snapshot") if isinstance(manifest, dict) else None
+        slot = str(snapshot.get("slot") or "").strip() if isinstance(snapshot, dict) else ""
+        if slot:
+            for name in ("today-match.json", "upcoming.json"):
+                slot_path = data_root / "snapshots" / slot / name
+                if not slot_path.is_file():
+                    continue
+                slot_text = slot_path.read_text(encoding="utf-8")
+                mirror_path = data_root / name
+                mirror_before = (
+                    mirror_path.read_text(encoding="utf-8") if mirror_path.is_file() else ""
+                )
+                if slot_text != mirror_before:
+                    mirror_path.write_text(slot_text, encoding="utf-8")
+                    changed.append(f"data/{name}")
+
     # allowed-hosts.json is derived, not scanner state, from the exact same
     # channels/movies/today-match/playback files just corrected above - its
     # own declared "count" going stale by the same rebase mechanism is the

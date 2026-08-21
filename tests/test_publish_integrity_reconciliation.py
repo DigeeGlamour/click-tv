@@ -380,5 +380,77 @@ class AllowedHostsStaleCountTests(unittest.TestCase):
             self.assertEqual(payload["count"], 1)
 
 
+class SnapshotMirrorDriftTests(unittest.TestCase):
+    """2026-08-21 production incident: requirement 15's snapshot publish
+    writes the flat compatibility mirror (data/today-match.json) and the
+    versioned slot it mirrors (data/snapshots/<slot>/today-match.json) from
+    the same in-memory payload in one commit, so they always agree - but a
+    rebase resolves them as two unrelated files, with no idea one is
+    supposed to be a copy of the other. The slot is what manifest.snapshot
+    actually points readers at, so it is the source of truth once the two
+    disagree ("data/today-match.json mirror (69) এবং
+    data/snapshots/s1/today-match.json (66) mismatch").
+    """
+
+    def test_a_stale_mirror_is_resynced_from_the_slot_the_pointer_names(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            slot_payload = {
+                "type": "event", "count": 2,
+                "items": [{"name": "Match A"}, {"name": "Match B"}],
+            }
+            _write(data / "snapshots" / "s0" / "today-match.json", slot_payload)
+            _write(data / "today-match.json", {
+                "type": "event", "count": 3,
+                "items": [{"name": "Match A"}, {"name": "Match B"}, {"name": "Stale Match C"}],
+            })
+            _write(data / "manifest.json", {
+                "snapshot": {"slot": "s0", "generation": 12},
+                "today_match": {"count": 2, "visible": True, "url": "data/snapshots/s0/today-match.json"},
+            })
+
+            _run(root)
+
+            mirror = json.loads((data / "today-match.json").read_text(encoding="utf-8"))
+            slot = json.loads((data / "snapshots" / "s0" / "today-match.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(mirror, slot)
+        self.assertEqual(len(mirror["items"]), 2)
+
+    def test_a_mirror_already_matching_its_slot_is_left_byte_for_byte(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            payload = {"type": "event", "count": 1, "items": [{"name": "Match A"}]}
+            _write(data / "snapshots" / "s1" / "upcoming.json", payload)
+            _write(data / "upcoming.json", payload)
+            _write(data / "manifest.json", {
+                "snapshot": {"slot": "s1", "generation": 4},
+                "upcoming": {"count": 1, "visible": True, "url": "data/snapshots/s1/upcoming.json"},
+            })
+            before = (data / "upcoming.json").read_bytes()
+
+            output = _run(root)
+
+            after = (data / "upcoming.json").read_bytes()
+
+        self.assertEqual(before, after)
+        self.assertNotIn("data/upcoming.json", output)
+
+    def test_no_snapshot_pointer_is_left_alone(self):
+        """A pre-snapshot manifest (or one with an unrelated slot the caller
+        never populated) must not make this reach for a file that isn't
+        there."""
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            data = root / "data"
+            _write(data / "manifest.json", {"channels": {}})
+
+            output = _run(root)
+
+        self.assertIn("nothing to reconcile", output)
+
+
 if __name__ == "__main__":
     unittest.main()
