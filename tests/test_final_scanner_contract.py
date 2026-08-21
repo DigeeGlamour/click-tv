@@ -224,7 +224,7 @@ class FinalScannerContractTests(unittest.TestCase):
         # that record carries, not by the file its source sits in.
         self.assertEqual(len(payload["upcoming"]), 0)
         self.assertEqual(len(payload["today_match"]), 11)
-        self.assertEqual(len(payload["tv"]), 11)
+        self.assertEqual(len(payload["tv"]), 16)
         self.assertEqual(len(payload["movies"]), 2)
         self.assertEqual(
             {entry["id"] for entry in payload["movies"]},
