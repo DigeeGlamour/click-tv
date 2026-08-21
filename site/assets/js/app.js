@@ -7586,21 +7586,26 @@ function updateContextualPlayerButtons() {
   const phonePlayer = isPhoneSizedPlayer();
   const mobileMovie = isMovie && phonePlayer;
   const mobileFullscreen = wrapperFullscreenElement() === videoContainer && phonePlayer;
+  // The compact (non-fullscreen) mobile movie bar keeps only play/pause,
+  // previous, next, resolution and fullscreen. The rest come back once
+  // fullscreen is entered.
+  const compactMobileMovie = mobileMovie && !mobileFullscreen;
   document.documentElement.classList.toggle('movie-playback-context', isMovie);
   // The mobile movie transport row is laid out entirely from CSS. This class is
   // what switches it on, so the row keeps one fixed button order.
   document.documentElement.classList.toggle('mobile-movie-controls', mobileMovie);
 
-  setPlayerControlVisible('skipBackBtn', isMovie);
-  setPlayerControlVisible('skipFwdBtn', isMovie);
-  setPlayerControlVisible('speedBtn', isMovie);
+  setPlayerControlVisible('skipBackBtn', isMovie && !compactMobileMovie);
+  setPlayerControlVisible('skipFwdBtn', isMovie && !compactMobileMovie);
+  setPlayerControlVisible('speedBtn', isMovie && !compactMobileMovie);
   setPlayerControlVisible('networkBtn', !isMovie);
   // Screen Fit belongs to the mobile movie transport row and stays a normal
-  // desktop control. It used to be reachable only in mobile fullscreen.
-  setPlayerControlVisible('aspectBtn', !phonePlayer || mobileMovie || mobileFullscreen);
-  setPlayerControlVisible('movieLockBtn', mobileMovie);
-  setPlayerControlVisible('movieRotateBtn', mobileMovie);
-  setPlayerControlVisible('pipBtn', mobileMovie);
+  // desktop control, but only once fullscreen in the compact bar.
+  setPlayerControlVisible('aspectBtn', !phonePlayer || mobileFullscreen);
+  setPlayerControlVisible('movieLockBtn', mobileMovie && mobileFullscreen);
+  // Rotate screen and Picture-in-Picture are not part of the movie player.
+  setPlayerControlVisible('movieRotateBtn', false);
+  setPlayerControlVisible('pipBtn', false);
 
   if (isMovie) $('networkMenu')?.classList.remove('show');
   else $('speedMenu')?.classList.remove('show');
