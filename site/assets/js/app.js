@@ -5357,6 +5357,13 @@ async function initMpegTs(url, session, attemptToken) {
   const mpegts = await ensureMpegTsLibrary();
   if (!mpegts.isSupported()) throw new Error('MPEGTS playback supported নয়');
   state.playerType = 'mpegts';
+  // A continuous re-streamed mpegts source (no HLS segments to skip past)
+  // stalls visibly on any brief hiccup once its buffer runs dry. Chasing
+  // live latency by trimming that buffer back down is worth it for a sports
+  // event, not for an ordinary TV channel, where a couple of seconds of
+  // extra cushion against a shaky upstream matters far more than staying
+  // within a second of real time.
+  const isLiveEvent = isLiveEventContext(session.item);
   const player = mpegts.createPlayer({
     type: 'mpegts',
     isLive: session.item._sourceKind !== VIEW.MOVIE,
@@ -5364,8 +5371,8 @@ async function initMpegTs(url, session, attemptToken) {
   }, {
     enableWorker: true,
     lazyLoad: true,
-    liveBufferLatencyChasing: true,
-    stashInitialSize: resolveAutoProfile() === 'lite' ? 128 * 1024 : 384 * 1024
+    liveBufferLatencyChasing: isLiveEvent,
+    stashInitialSize: resolveAutoProfile() === 'lite' ? 128 * 1024 : 1024 * 1024
   });
   state.mpegts = player;
   player.attachMediaElement(video);
