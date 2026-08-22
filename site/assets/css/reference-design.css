@@ -1225,3 +1225,35 @@ html.ultra-lite-performance .sticky-notice .marquee-text,
   html.mobile-movie-controls .video-container-wrap.movie-controls-locked .player-controls button:not(#movieLockBtn),
   html.mobile-movie-controls .video-container-wrap.movie-controls-locked .progress-container{opacity:.18!important;pointer-events:none!important}
 }
+
+/* ==========================================================================
+   NARROW-VIEWPORT FULLSCREEN TRANSPORT GUARD. KEEP LAST.
+
+   The fullscreen movie transport lays out 11 grid columns, but its control
+   sizing was fixed at 42px while the column width is viewport/11. On a phone
+   held in PORTRAIT while fullscreen is active (412px wide -> ~37px columns) the
+   42px buttons overflowed their cells and visibly overlapped - caught by
+   scripts/browser-target-matrix-check.py on the Android Chrome profile, not by
+   the landscape-only harness that preceded it.
+
+   Sizing the controls so 11 of them fit the narrowest supported viewport fixes
+   it without touching the landscape proportions, which remain as designed.
+   ========================================================================== */
+@media (max-width:560px){
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen .controls-row .ctrl-btn,
+  html.mobile-movie-controls .video-container-wrap:fullscreen .controls-row .ctrl-btn,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen .controls-row .ctrl-btn{
+    width:28px!important;min-width:28px!important;height:28px!important;font-size:15px!important;
+  }
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen .controls-row .ctrl-btn i,
+  html.mobile-movie-controls .video-container-wrap:fullscreen .controls-row .ctrl-btn i,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen .controls-row .ctrl-btn i{font-size:15px!important}
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #playPauseBtn,
+  html.mobile-movie-controls .video-container-wrap:fullscreen #playPauseBtn,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #playPauseBtn{
+    width:38px!important;min-width:38px!important;height:38px!important;font-size:17px!important;
+  }
+  html.mobile-movie-controls .video-container-wrap.clicktv-mobile-fullscreen #playPauseBtn i,
+  html.mobile-movie-controls .video-container-wrap:fullscreen #playPauseBtn i,
+  html.mobile-movie-controls .video-container-wrap:-webkit-full-screen #playPauseBtn i{font-size:17px!important}
+}
