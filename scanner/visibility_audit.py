@@ -186,6 +186,18 @@ def summary() -> Dict[str, Any]:
             "model_would_hide=false means the evidence this site acted on does "
             "not by itself support removing the item."
         ),
+        "hmac_key": {
+            "configured": rev.configured_hmac_key() is not None,
+            "key_id": rev.configured_hmac_key_id(),
+            "env_var": rev.HMAC_KEY_ENV,
+            "note": (
+                "A null key_id here means the secret was not in the environment "
+                "that produced this report - which is the normal state for a "
+                "local run, since the secret lives in the CI environment. It is "
+                "not a failure: without a key every keyed field reports "
+                "'unknown', and 'unknown' can never hide anything."
+            ),
+        },
         "locks": {
             "declared": rev.LOCKS_DECLARED,
             "target_matrix": list(rev.DECLARED_TARGET_MATRIX),

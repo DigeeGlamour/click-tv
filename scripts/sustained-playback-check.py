@@ -305,6 +305,10 @@ def run(argv: List[str]) -> int:
     ap.add_argument("--profile", default="desktop_chrome")
     ap.add_argument("--out", default="reports/sustained-playback.json")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--force-sessions", action="store_true",
+                    help="run every session even when the first verdict can "
+                         "neither promote nor demote; use when the point is "
+                         "to confirm reproducibility rather than reach a verdict")
     ap.add_argument("--resume", action="store_true",
                     help="keep measurements already in --out and skip those targets")
     ap.add_argument("--reclassify", default="",
@@ -524,7 +528,7 @@ def run(argv: List[str]) -> int:
                         decisive = (
                             mark == rev.PROVEN or rev.is_escalatable(str(mark))
                         )
-                        if not decisive and session == 0:
+                        if not decisive and session == 0 and not args.force_sessions:
                             record["sessions_skipped_reason"] = (
                                 f"verdict {mark} is neither provable nor "
                                 "escalatable; a second session cannot change it"
@@ -545,7 +549,7 @@ def run(argv: List[str]) -> int:
                             + (f" | note={str(notes[0])[:60]}" if notes else ""),
                             flush=True,
                         )
-                        if not decisive and session == 0:
+                        if not decisive and session == 0 and not args.force_sessions:
                             break
 
                 passes = [r for r in per_route if r["verdict"] == rev.PROVEN]

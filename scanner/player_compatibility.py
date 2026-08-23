@@ -14,6 +14,7 @@ import unicodedata
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Iterable, Set, Tuple
+from scanner import sustained_proof
 from scanner.visibility_audit import audit_hide_safe
 
 
@@ -123,6 +124,10 @@ def load_proof_keys(ledger_path: str | Path = DEFAULT_PROOF_LEDGER) -> Set[Tuple
 SUSTAINED_PLAYBACK_STATUSES = frozenset({"verified_sustained_playback"})
 
 
+def normalized_kind_for_proof(kind: str) -> str:
+    return str(kind or "").strip().casefold()
+
+
 def is_player_proven(
     item: Dict[str, Any],
     kind: str,
@@ -138,6 +143,13 @@ def is_player_proven(
     # This gate is currently off (bangla_requires_player_proof = false), so the
     # check is here to stop turning it back on from hiding proven channels.
     if str(item.get("verification_status") or "") in SUSTAINED_PLAYBACK_STATUSES:
+        return True
+    # The status above survives only until the next scan rebuilds the card, which
+    # was measured happening to all seven restored channels: the scan re-verified
+    # them, set verified_global, and erased the sustained-playback status - after
+    # which this gate would have hidden every one of them again. The durable
+    # record lives outside the card.
+    if sustained_proof.has_proof(item, normalized_kind_for_proof(kind)):
         return True
     normalized_kind = str(kind or "").strip().casefold()
     base = _item_key(normalized_kind, item)

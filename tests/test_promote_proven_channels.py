@@ -236,6 +236,47 @@ class RestoredStateTests(unittest.TestCase):
             self.assertTrue(item_is_browser_reachable(card), card.get("name"))
             self.assertTrue(item_is_proven_live(card), card.get("name"))
 
+    def test_the_proof_survives_a_scan_rebuilding_the_card(self):
+        """The durable record, and why a card cannot hold it.
+
+        Measured: the first scan after the restoration rebuilt each card from its
+        sources. Every field the restoration wrote - the status, the mode, the
+        note - was gone, one backup URL had changed, and the status-based
+        exemption stopped matching. All seven would have been hidden again.
+
+        The proof therefore lives outside the card, in
+        state/sustained-playback-proof.json, keyed by name rather than by a
+        fingerprint that contains the URL.
+        """
+        from scanner import sustained_proof  # noqa: PLC0415
+
+        registry = sustained_proof.load()
+        for card in _cards(CATALOGUE):
+            if str(card.get("name") or "") not in RESTORED:
+                continue
+            self.assertTrue(
+                sustained_proof.has_proof(card, "channel", registry),
+                card.get("name"),
+            )
+            proof = sustained_proof.proof_for(card, "channel", registry)
+            self.assertGreaterEqual(proof["pass_count"], 2, card.get("name"))
+            self.assertEqual(float(proof["window_seconds"]), 120.0)
+
+    def test_the_registry_refuses_a_claim_without_two_passes(self):
+        # It must not be possible to seed the registry with an assertion.
+        from scanner import sustained_proof  # noqa: PLC0415
+
+        for bad in (
+            {"pass_count": 1, "window_seconds": 120.0},
+            {"pass_count": 2},
+            {"window_seconds": 120.0},
+            {},
+        ):
+            written, why = sustained_proof.record(
+                "channel", "Fake Channel", bad, path="/dev/null"
+            )
+            self.assertFalse(written, f"{bad} was accepted: {why}")
+
     def test_a_genuinely_unproven_card_is_still_hidden(self):
         # The exemption must be narrow: it protects the sustained-playback
         # status, not everything.
@@ -257,8 +298,23 @@ class RestoredStateTests(unittest.TestCase):
         self.assertEqual(hidden, 1)
 
     def test_no_other_channel_was_touched(self):
-        # 31 before, 7 added, nothing else.
-        self.assertEqual(len(_cards(CATALOGUE)), 38)
+        # A fixed count was wrong here: the scanner adds and removes Bangla
+        # channels on its own schedule, and this test failed the moment a scan
+        # added a 39th. What must hold is that the restoration added exactly the
+        # seven, each exactly once, and nothing outside that set changed - which
+        # is what the other tests in this class check. So the invariant is the
+        # set, not the size.
+        names = [str(c.get("name") or "") for c in _cards(CATALOGUE)]
+        for name in RESTORED:
+            self.assertEqual(
+                names.count(name), 1, f"{name} appears {names.count(name)}x"
+            )
+        self.assertGreaterEqual(
+            len(names), len(RESTORED), "the catalogue lost the restored channels"
+        )
+        self.assertEqual(
+            len(names), len(set(names)), "the catalogue has duplicate names"
+        )
 
 
 if __name__ == "__main__":

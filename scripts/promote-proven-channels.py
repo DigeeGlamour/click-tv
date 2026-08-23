@@ -33,6 +33,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from scanner import route_evidence as rev  # noqa: E402
+from scanner import sustained_proof  # noqa: E402
 
 PHASE1 = "reports/phase1-sustained-playback.json"
 LEDGER = "reports/confirmed-player-failures.json"
@@ -116,6 +117,27 @@ def main() -> int:
         print(f"  {name:<18} {ev['pass_count']} full PASS, "
               f"media {ev['media_progress_seconds']}s, "
               f"stall {ev['cumulative_stall_seconds']}s")
+
+    # Record the proof OUTSIDE the card, before touching the catalogue. Measured:
+    # the first scan after the restoration rebuilt every card from its sources and
+    # erased the status, mode and note the restoration had written, so a card is
+    # not somewhere proof can live.
+    for name, ev in proven.items():
+        written, why = sustained_proof.record(
+            "channel",
+            name,
+            {
+                "pass_count": ev["pass_count"],
+                "window_seconds": ev["window_seconds"],
+                "session_separation_seconds": ev["sessions_separated_by"],
+                "browser_profile": ev["browser_profile"],
+                "media_progress_seconds": ev["media_progress_seconds"],
+                "cumulative_stall_seconds": ev["cumulative_stall_seconds"],
+                "evidence_report": PHASE1,
+            },
+            path=None if not args.dry_run else os.devnull,
+        )
+        print(f"  proof registry: {name} -> {'recorded' if written else why}")
 
     restored: List[str] = []
     skipped: List[str] = []

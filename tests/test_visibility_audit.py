@@ -151,6 +151,59 @@ class AuditDriverTests(unittest.TestCase):
                 self.fail(f"driver opens a file for writing directly: {line.strip()}")
 
 
+class HmacReportingTests(unittest.TestCase):
+    """The report must say whether a key was present, not leave it ambiguous.
+
+    A bare `hmac_key_id: null` was read as "the secret is not working". It
+    actually means the secret was absent from the environment that produced the
+    report, which is normal for a local run - the secret lives in CI. The report
+    now says which, so the distinction is not left to guesswork.
+    """
+
+    def setUp(self):
+        va.reset()
+        import os  # noqa: PLC0415
+
+        self._os = os
+        self._saved = {
+            n: os.environ.get(n)
+            for n in (rev.HMAC_KEY_ENV, rev.HMAC_KEY_ID_ENV)
+        }
+
+    def tearDown(self):
+        for name, value in self._saved.items():
+            if value is None:
+                self._os.environ.pop(name, None)
+            else:
+                self._os.environ[name] = value
+
+    def test_the_summary_says_whether_a_key_was_configured(self):
+        self._os.environ.pop(rev.HMAC_KEY_ENV, None)
+        va.audit_hide("unit.test", _item())
+        summary = va.summary()
+        self.assertIn("hmac_key", summary)
+        self.assertFalse(summary["hmac_key"]["configured"])
+        self.assertIn("never hide", summary["hmac_key"]["note"])
+
+    def test_a_configured_key_reaches_the_report(self):
+        self._os.environ[rev.HMAC_KEY_ENV] = "k" * 32
+        self._os.environ[rev.HMAC_KEY_ID_ENV] = "key-test"
+        va.audit_hide("unit.test", _item())
+        summary = va.summary()
+        self.assertTrue(summary["hmac_key"]["configured"])
+        self.assertEqual(summary["hmac_key"]["key_id"], "key-test")
+        self.assertEqual(summary["decisions"][0]["hmac_key_id"], "key-test")
+
+    def test_a_configured_key_produces_keyed_tenants(self):
+        # The whole point of the secret: the tenant field stops being unknown.
+        self._os.environ[rev.HMAC_KEY_ENV] = "k" * 32
+        domain = rev.failure_domain(
+            "https://tenant.example.net/x.m3u8", rev.configured_hmac_key()
+        )
+        self.assertIsNotNone(domain["failure_domain_tenant"])
+        self.assertNotEqual(domain["failure_domain_tenant"], rev.UNKNOWN)
+
+
 class AuditWithholdingTests(unittest.TestCase):
     """A bad row must cost that row, not the whole report."""
 

@@ -189,7 +189,12 @@ data/channels/ folder থেকে **সরিয়েই ফেলা হয�
 ২.৭  PHASE 3 — ওই ৭টি channel catalogue-এ ফেরানো হলো
 --------------------------------------------------------------------------------
 script: scripts/promote-proven-channels.py
-প্রমাণ: data/channels/bangla.json (৩১ → ৩৮ item)
+প্রমাণ: data/channels/bangla.json (৩১ → ৩৮ item, restoration-এর ঠিক পরে)
+
+  পরে scanner নিজেই আরও channel যোগ করেছে, তাই সংখ্যাটি স্থির নয়। প্রথমে
+  test-এ ৩৮ hardcode করেছিলাম এবং scan ৩৯তম যোগ করার সঙ্গে সঙ্গেই সেটি
+  fail করেছে। এখন test সংখ্যা নয়, **সেট** যাচাই করে: ওই ৭টি নাম ঠিক একবার
+  করে আছে, কোনো duplicate নেই।
 
 যে নিয়মগুলো script ভাঙতে পারে না (test দিয়ে বাঁধা):
   • proof ছাড়া কিছুই ফেরায় না — দুটি স্বাধীন পূর্ণ PASS বাধ্যতামূলক
@@ -640,6 +645,7 @@ BUG ৯ — CORS প্রত্যাখ্যান escalatable ছিল
   scanner/route_evidence.py            পুরো model (৭০৮ → ১২০০+ লাইন)
   scanner/visibility_audit.py          audit-only wiring
   scanner/persistence_store.py         cross-run persistence
+  scanner/sustained_proof.py           card-এর বাইরে টেকসই proof registry
   scripts/sustained-playback-check.py  ১২০s browser acceptance harness
   scripts/promote-proven-channels.py   Phase 3 restoration
   scripts/movie-route-probe.py         দ্রুত reachability probe
@@ -649,16 +655,24 @@ BUG ৯ — CORS প্রত্যাখ্যান escalatable ছিল
   config/phase0b-locks.json            Phase 0b-র চারটি locked মান
 
 --------------------------------------------------------------------------------
-৭.৩  TEST — মোট ১১৮৩ passed, ৯০৯ subtests, ০ failed
+৭.৩  TEST
 --------------------------------------------------------------------------------
+সংখ্যা এখানে ইচ্ছাকৃতভাবে লেখা নেই। এই file-এর আগের সংস্করণে "১১৮৩ passed,
+০ failed" লিখেছিলাম এবং সেটি সেই মুহূর্তে সত্যি হলেও পরের scan-এর পর ভুল
+হয়ে গিয়েছিল (ভাগ ১০ দেখুন)। একটি স্থির সংখ্যা লিখে রাখলে সেটি নীরবে
+পুরোনো হয়ে যায়, আর এই file-এর উদ্দেশ্যই হলো যাচাইযোগ্য থাকা।
+
+নিজে দেখতে চালান:   python3 -m pytest -q
+
+এই কাজে যোগ করা test file গুলো:
   tests/test_route_evidence.py                  67  মূল guard ও visibility নিয়ম
   tests/test_route_evidence_persistence.py      76  persistence, correlation, lock, decoder, vantage, redaction
-  tests/test_visibility_audit.py                23  audit invariance ও persistence integration
+  tests/test_visibility_audit.py                26  audit invariance, persistence ও hmac reporting
   tests/test_persistence_store.py               12  cross-run store
   tests/test_player_recovery_contract.py        13  raw-TS recovery contract
-  tests/test_promote_proven_channels.py         17  Phase 3 restoration ও চারটি hide path
+  tests/test_promote_proven_channels.py         19  Phase 3 restoration, চারটি hide path ও proof registry
   tests/test_movie_route_probe.py                9  probe-এর সীমা
-  মোট নতুন test                                217  এই কাজে যোগ করা
+  মোট নতুন test                                222  এই কাজে যোগ করা
 
 --------------------------------------------------------------------------------
 ৭.৪  MEASUREMENT REPORT (সব committed)
@@ -737,6 +751,173 @@ L6  cross-run persistence store এখনো কোনো আসল scan-এ ভ
 
 L7  vantage independence মাপা হয়নি (ভাগ ৬.১)। তাই may_hide()-এর কঠোর
     শর্ত এখনো পূরণযোগ্য নয়।
+
+
+================================================================================
+ভাগ ১০ — এই file-এর আগের সংস্করণের ভুল দাবি, এবং সংশোধন
+================================================================================
+
+এই file-এর প্রথম সংস্করণে লিখেছিলাম "১১৮৩ passed, ০ failed"। **সেটি ভুল
+ছিল।** যাচাই করতে বলা হলে full suite চালিয়ে দেখা গেল:
+
+    1180 passed, 3 failed
+
+তিনটি failure-ই আসল, এবং তিনটিই আমার নিজের কাজের ফাঁক। কী ঘটেছিল:
+
+আমি push করার পর scanner চলেছে (commit a966e6060, "Auto update: channels")।
+সেই scan ওই ৭টি channel **নতুন করে verify করেছে** — ভালো খবর, scan নিজেই
+প্রমাণ করেছে যে channel গুলো চলে। কিন্তু সেই সঙ্গে card গুলো **নতুন করে
+লিখেছে**: আমার বসানো verification_status = verified_sustained_playback মুছে
+গিয়ে verified_global হয়েছে, verification_note ও mode উধাও, এমনকি একটি
+backup URL-ও বদলে গেছে।
+
+ফলে আমার status-ভিত্তিক সুরক্ষা আর মেলে না, আর is_player_proven আবার False
+বলছে — অর্থাৎ **সেই bug-টাই ফিরে এসেছিল যেটা আমি BUG ৭ হিসেবে সারিয়েছি
+বলে দাবি করেছিলাম।**
+
+শিক্ষা, স্পষ্ট করে: card-এ কোনো field লিখে proof রাখা যায় না। পরের scan
+card নতুন করে বানায়, তাই card-এ রাখা যেকোনো কিছু ক্ষণস্থায়ী।
+
+--------------------------------------------------------------------------------
+১০.১  সংশোধন ১ — proof এখন card-এর বাইরে, টেকসই জায়গায়
+--------------------------------------------------------------------------------
+নতুন: scanner/sustained_proof.py
+      state/sustained-playback-proof.json
+
+registry (kind, name) দিয়ে keyed, fingerprint দিয়ে নয় — কারণ fingerprint-এ
+URL থাকে এবং source rotate হলেই মিল ভাঙে (২০২৬-০৮-২০-এ মাপা: ২৯টি Bangla
+channel verified_global হয়েছিল, প্রকাশ পেয়েছিল ৯টি; ছয়টি ledger-এ নামে
+ছিল, শুধু URL বদলের কারণে বাদ পড়েছিল)।
+
+name দিয়ে key করার একটি জানা দুর্বলতা আছে: ভবিষ্যতে ভিন্ন stream একই নাম
+নিয়ে proof পেয়ে যেতে পারে। দুটি কারণে এটি মেনে নেওয়া হয়েছে —
+  ১। এই registry কেবল proof **দেয়**, কখনো কাড়ে না। তাই সবচেয়ে খারাপ
+     ফলাফল হলো এমন কিছু রাখা যা পুনঃপরীক্ষা করা উচিত ছিল; কখনোই চালু
+     কিছু hide করা নয়। আর চালু কিছু hide হওয়াই এই পুরো system-এর
+     প্রতিরোধ্য শত্রু।
+  ২। proof-এর সময়ের fingerprint পাশে লেখা থাকে, তাই নাম মিললেও route
+     বদলেছে কিনা file-এ দেখা যায় — নীরবে ঘটে না।
+
+registry দাবি মানে না: pass_count < 2 হলে বা window না থাকলে লেখা প্রত্যাখ্যাত।
+
+মাপা ফল — চারটি hide path-ই এখন ৭টি রাখে:
+  mark_confirmed_player_failures      hide 0/7
+  mark_unproven_player_items          hide 0/7
+  mark_unproven_items                 hide 0/7
+  _apply_strict_player_visibility     hide 0/7
+
+আর ছাড়টি সংকীর্ণ: proof-হীন card-এ mark_unproven_player_items এখনো
+২২/৩২ hide করে।
+
+--------------------------------------------------------------------------------
+১০.২  সংশোধন ২ — hardcoded ৩৮ সরানো হলো
+--------------------------------------------------------------------------------
+test-এ bangla.json-এর item সংখ্যা ৩৮ hardcode করেছিলাম। scanner ৩৯তম channel
+যোগ করার সঙ্গে সঙ্গেই সেটি fail করেছে — এবং সেটি সঠিকভাবেই fail করেছে,
+কারণ দাবিটাই ভুল ছিল।
+
+এখন test সংখ্যা নয়, **অপরিবর্তনীয় শর্ত** যাচাই করে: ওই ৭টি নাম ঠিক একবার
+করে আছে, catalogue-এ কোনো duplicate নাম নেই, এবং restored channel হারায়নি।
+scanner স্বাধীনভাবে channel যোগ-বিয়োগ করতে পারবে, test ভাঙবে না।
+
+--------------------------------------------------------------------------------
+১০.৩  সংশোধন ৩ — hmac_key_id: null কেন, এবং কী করা হলো
+--------------------------------------------------------------------------------
+audit report-এ `"hmac_key_id": null` দেখে ধরে নেওয়া হচ্ছিল secret কাজ করছে
+না। আসল কারণ ভিন্ন: report-টি আমার **local shell** থেকে তৈরি, যেখানে env var
+নেই। Secret আছে GitHub Actions-এ।
+
+plumbing সত্যিই কাজ করে — env var দিয়ে চালিয়ে প্রমাণ করা হলো:
+    configured_hmac_key()      → আছে
+    key_id                     → key-2026-08
+    audit-এ hmac_key_id        → key-2026-08
+    failure_domain_tenant      → eb311e19a0096872479f077eca426baa
+                                 (null নয়, আসল keyed id)
+
+এবং committed audit report এখন key দিয়ে তৈরি, তাই সেখানে আসল keyed tenant
+id আছে এবং `hmac_key.key_id = "key-2026-08"`।
+
+report-এ একটি নতুন অংশ যোগ করা হয়েছে যা অস্পষ্টতা দূর করে:
+    "hmac_key": { "configured": true/false, "key_id": ..., "env_var": ...,
+                  "note": "null মানে ওই environment-এ secret ছিল না — local
+                           run-এ যা স্বাভাবিক। এটি ব্যর্থতা নয়: key ছাড়া
+                           প্রতিটি keyed field unknown বলে, আর unknown কখনো
+                           কিছু hide করতে পারে না।" }
+
+--------------------------------------------------------------------------------
+১০.৫  সংশোধন ৫ — ZEE BANGLA আসল browser-এ আবার দুইবার পরীক্ষা
+--------------------------------------------------------------------------------
+নির্দেশ ছিল: "Zee Bangla fix real browser-এ 120s দুইবার retest করো।"
+চালানো হলো: ২টি attempt route × ২টি session × ১২০ সেকেন্ড = ৪টি observation
+প্রমাণ: reports/zee-bangla-retest.json
+
+একটি জিনিস প্রথমে ঠিক করতে হয়েছে: harness আমার নিজের early-skip নিয়মের
+কারণে দ্বিতীয় session বাদ দিচ্ছিল (verdict escalatable নয় ও PASS নয়, তাই
+"সিদ্ধান্ত বদলাবে না")। কিন্তু এখানে উদ্দেশ্য সিদ্ধান্তে পৌঁছানো নয়,
+**পুনরুৎপাদনযোগ্যতা** যাচাই করা। তাই `--force-sessions` flag যোগ করা হলো,
+এবং পূর্ণ ৪টি session চালানো হলো।
+
+ফল:
+
+  attempt 0 session 0 (proxy)
+    verdict     advisory:device_or_browser_unsupported
+    announced   ['video', 'audio']
+    progressing ['video', 'audio']
+    progress    0s, stall 0s
+    fatal       media element error code 3
+  attempt 0 session 1 (proxy)
+    verdict     advisory:device_or_browser_unsupported
+    announced   ['video', 'audio']
+    progressing ['video', 'audio']
+    progress    0s, stall 0s
+    fatal       media element error code 3
+  attempt 1 session 0 (proxy)
+    verdict     advisory:device_or_browser_unsupported
+    announced   ['video', 'audio']
+    progressing ['audio']
+    progress    0s, stall 0s
+    fatal       media element error code 3
+  attempt 1 session 1 (proxy)
+    verdict     advisory:device_or_browser_unsupported
+    announced   ['video', 'audio']
+    progressing ['video', 'audio']
+    progress    0.08s, stall 120s
+    fatal       media element error code 3
+
+সিদ্ধান্ত: ৪টি observation-এর প্রতিটিতেই একই `media element error code 3`
+= MEDIA_ERR_DECODE। একটিও PASS নয়, pass_count = ০।
+
+অর্থাৎ ব্যর্থতা **সম্পূর্ণ পুনরুৎপাদনযোগ্য** — এলোমেলো নয়, network-এর
+খামখেয়াল নয়। প্রতিবারই byte আসে (announced video + audio, এমনকি কিছু
+observation-এ video track "progressing" দেখায়), কিন্তু media clock এগোয় না
+(০s বা ০.০৮s) এবং decoder error দেয়।
+
+**তাই আবারও স্পষ্ট করে বলছি: Zee Bangla-র stutter সারানো হয়নি।**
+এই retest সেটাই নিশ্চিত করেছে। যা অর্জিত হয়েছে:
+  • কারণ পুনরুৎপাদনযোগ্যভাবে প্রমাণিত (decoder, route নয়)
+  • verdict `advisory:device_or_browser_unsupported` — escalatable নয়,
+    সর্বোচ্চ environment scope, তাই এই কারণে channel কখনো hide হবে না
+  • ৪ বার পুনরাবৃত্তিতেও persistence counter এগোয় না (test দিয়ে বাঁধা)
+
+মেরামত করতে যা লাগবে (এই কাজের বাইরে): interlaced ও IDR-হীন stream-এর
+জন্য ভিন্ন player handling, অথবা ওই source-এর একটি progressive বিকল্প।
+
+--------------------------------------------------------------------------------
+১০.৪  সংশোধন ৪ — "সব solve হয়েছে" দাবি প্রত্যাহার
+--------------------------------------------------------------------------------
+আগের সংস্করণে সুরটা ছিল "তালিকার সব কাজ শেষ"। সেটি অতিরঞ্জিত ছিল, এবং
+ভাগ ৬-এ যা বাকি লেখা ছিল তার সঙ্গেও পুরোপুরি সঙ্গতিপূর্ণ নয়।
+
+সঠিক অবস্থা:
+  ✅ যে কাজগুলো করার কথা ছিল, সেগুলো করা হয়েছে ও প্রমাণ আছে
+  ✅ ৭টি channel ফিরেছে এবং এখন চারটি hide path-এর কোনোটিই তাদের মুছবে না
+  ❌ Zee Bangla-র stutter সারানো হয়নি — কারণ প্রমাণিত, মেরামত নয়
+  ❌ visibility model এখনো audit-only, কর্তৃত্ব দেওয়া হয়নি
+  ❌ দ্বিতীয় vantage মাপা হয়নি
+  ❌ ২১১টি movie এই vantage থেকে অজানাই
+
+অর্থাৎ **"সব solve হয়েছে" দাবিটি ভুল**। যা সত্যি: নির্দিষ্ট কাজগুলো শেষ,
+প্রমাণ সহ; আর যা বাকি তা এই file-এ নাম ধরে লেখা।
 
 
 ================================================================================
