@@ -269,6 +269,44 @@ DECODE_CAPABILITY_MARKERS = (
 )
 
 
+#: Fatal-error signatures that describe the NETWORK, not the route's health.
+#: Measured on the Phase 5 movie run: a single mpegts NetworkError "Failed to
+#: fetch" was classifying as PLAYBACK_FAIL, the strongest escalatable class,
+#: which reaches hard_disqualified from two observations. One failed fetch is
+#: not a dead route - the whole reason advisory:transient_network exists is that
+#: a genuinely dead origin and a momentary network fault look identical once,
+#: and only persistence over the locked window tells them apart.
+TRANSIENT_ERROR_MARKERS = (
+    "failed to fetch",
+    "networkerror",
+    "network_error",
+    "err_network",
+    "err_connection",
+    "err_timed_out",
+    "fragloaderror",
+    "levelloaderror",
+    "manifestloaderror",
+    "keyloaderror",
+    "timeout",
+    "econnreset",
+    "connection reset",
+    "tls",
+    "ssl",
+    " 500",
+    " 502",
+    " 503",
+    " 504",
+)
+
+
+def describes_transient_network(errors: Iterable[Any]) -> bool:
+    """Whether a fatal-error list is about the network rather than the route."""
+    blob = " ".join(str(e or "") for e in (errors or ())).lower()
+    if not blob:
+        return False
+    return any(marker in blob for marker in TRANSIENT_ERROR_MARKERS)
+
+
 def describes_decoder_capability(errors: Iterable[Any]) -> bool:
     """Whether a fatal-error list is about this decoder, not about the route."""
     blob = " ".join(str(e or "") for e in (errors or ())).lower()
@@ -538,6 +576,14 @@ def classify_playback(metrics: Dict[str, Any]) -> Tuple[str, List[str]]:
                 "capped at environment scope and never escalatable"
             )
             return ADVISORY_DEVICE_UNSUPPORTED, reasons
+        if describes_transient_network(fatal):
+            # Still escalatable, but only through the persistence window: one
+            # failed fetch cannot reach hard_disqualified on its own.
+            reasons.append(
+                "fatal error describes the network; escalatable only through "
+                "the locked persistence window, never on a single observation"
+            )
+            return ADVISORY_TRANSIENT_NETWORK, reasons
         return PLAYBACK_FAIL, reasons
 
     # ---- PASS floor ----

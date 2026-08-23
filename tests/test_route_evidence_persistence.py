@@ -520,10 +520,16 @@ class DecoderCapabilityTests(unittest.TestCase):
             self.assertEqual(verdict, re_mod.ADVISORY_DEVICE_UNSUPPORTED, detail)
             self.assertFalse(re_mod.is_escalatable(verdict), detail)
 
-    def test_hls_network_errors_stay_route_failures(self):
-        # The mirror side: a load failure IS about the route and must keep its
-        # ability to escalate, or the model can never conclude anything.
+    def test_hls_network_errors_are_transient_not_route_failures(self):
+        # Corrected by the Phase 5 movie run, which classified a single mpegts
+        # "Failed to fetch" as PLAYBACK_FAIL - the strongest escalatable class,
+        # reachable to hard_disqualified from two observations. One failed fetch
+        # is not a dead route. These stay escalatable, but only through the
+        # locked persistence window, which is the whole reason
+        # advisory:transient_network exists: a dead origin and a momentary
+        # network fault look identical once, and only persistence separates them.
         for detail in (
+            "mpegts NetworkError/Exception {\"code\":-1,\"msg\":\"Failed to fetch\"}",
             "hls networkError/fragLoadError",
             "hls networkError/levelLoadError",
             "hls networkError/manifestLoadError",
@@ -531,6 +537,7 @@ class DecoderCapabilityTests(unittest.TestCase):
             self.assertFalse(
                 re_mod.describes_decoder_capability([detail]), detail
             )
+            self.assertTrue(re_mod.describes_transient_network([detail]), detail)
             verdict, _ = re_mod.classify_playback(
                 {
                     "announced_render_tracks": ["video", "audio"],
@@ -543,8 +550,32 @@ class DecoderCapabilityTests(unittest.TestCase):
                     "recovered_to_pass_floor": False,
                 }
             )
-            self.assertEqual(verdict, re_mod.PLAYBACK_FAIL, detail)
+            self.assertEqual(verdict, re_mod.ADVISORY_TRANSIENT_NETWORK, detail)
+            # Escalatable, so the model can still conclude something - but only
+            # across the window, never on one observation.
             self.assertTrue(re_mod.is_escalatable(verdict), detail)
+
+    def test_one_transient_alone_can_never_mature(self):
+        state = re_mod.persistence_state(
+            [_obs(0, verdict=re_mod.ADVISORY_TRANSIENT_NETWORK)], now=T0
+        )
+        self.assertEqual(state["state"], re_mod.UNKNOWN)
+
+    def test_a_failure_with_no_signature_is_still_a_route_failure(self):
+        # Nothing progressed, nothing to blame the network or the decoder for.
+        verdict, _ = re_mod.classify_playback(
+            {
+                "announced_render_tracks": ["video", "audio"],
+                "progressing_tracks": [],
+                "first_frame_seconds": None,
+                "startup_seconds": None,
+                "media_progress_seconds": 0.0,
+                "cumulative_stall_seconds": 120,
+                "fatal_errors": [],
+                "recovered_to_pass_floor": False,
+            }
+        )
+        self.assertEqual(verdict, re_mod.PLAYBACK_FAIL)
 
     def test_a_network_error_is_not_read_as_a_decoder_limit(self):
         self.assertFalse(

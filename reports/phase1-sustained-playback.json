@@ -1219,13 +1219,14 @@
             ],
             "recovered_to_pass_floor": false
           },
-          "verdict": "playback_fail",
+          "verdict": "advisory:transient_network",
           "reasons": [
             "playback never started within the window",
             "no first frame within 30s",
             "media progress 0s < 10s",
             "unrecovered fatal error: hls networkError/fragLoadError",
-            "no announced render track progressed"
+            "no announced render track progressed",
+            "fatal error describes the network; escalatable only through the locked persistence window, never on a single observation"
           ],
           "notes": [
             "playing proxy as hls",
@@ -1288,13 +1289,14 @@
             ],
             "recovered_to_pass_floor": false
           },
-          "verdict": "playback_fail",
+          "verdict": "advisory:transient_network",
           "reasons": [
             "playback never started within the window",
             "no first frame within 30s",
             "media progress 0s < 10s",
             "unrecovered fatal error: hls networkError/fragLoadError",
-            "no announced render track progressed"
+            "no announced render track progressed",
+            "fatal error describes the network; escalatable only through the locked persistence window, never on a single observation"
           ],
           "notes": [
             "playing proxy as hls",
@@ -2378,12 +2380,13 @@
             ],
             "recovered_to_pass_floor": false
           },
-          "verdict": "playback_fail",
+          "verdict": "advisory:transient_network",
           "reasons": [
             "playback never started within the window",
             "no first frame within 30s",
             "media progress 0s < 10s",
-            "unrecovered fatal error: hls networkError/manifestLoadError"
+            "unrecovered fatal error: hls networkError/manifestLoadError",
+            "fatal error describes the network; escalatable only through the locked persistence window, never on a single observation"
           ],
           "notes": [
             "playing proxy as hls",
@@ -2446,12 +2449,13 @@
             ],
             "recovered_to_pass_floor": false
           },
-          "verdict": "playback_fail",
+          "verdict": "advisory:transient_network",
           "reasons": [
             "playback never started within the window",
             "no first frame within 30s",
             "media progress 0s < 10s",
-            "unrecovered fatal error: hls networkError/manifestLoadError"
+            "unrecovered fatal error: hls networkError/manifestLoadError",
+            "fatal error describes the network; escalatable only through the locked persistence window, never on a single observation"
           ],
           "notes": [
             "playing proxy as hls",
@@ -2497,64 +2501,28 @@
   "reclassified": true,
   "reclassification_changes": [
     {
-      "name": "Zee Bangla",
-      "session": 0,
-      "from": "unknown",
-      "to": "advisory:device_or_browser_unsupported"
-    },
-    {
-      "name": "Zee Bangla",
-      "session": 1,
-      "from": "unknown",
-      "to": "advisory:device_or_browser_unsupported"
-    },
-    {
-      "name": "Asian TV",
-      "session": 0,
-      "from": "playback_fail",
-      "to": "advisory:device_or_browser_unsupported"
-    },
-    {
-      "name": "Asian TV",
-      "session": 1,
-      "from": "playback_fail",
-      "to": "advisory:device_or_browser_unsupported"
-    },
-    {
-      "name": "Channel 9",
-      "session": 0,
-      "from": "unknown",
-      "to": "advisory:device_or_browser_unsupported"
-    },
-    {
-      "name": "Channel 9",
-      "session": 1,
-      "from": "unknown",
-      "to": "advisory:device_or_browser_unsupported"
-    },
-    {
       "name": "Drama 24",
       "session": 0,
-      "from": "unknown",
-      "to": "playback_fail"
+      "from": "playback_fail",
+      "to": "advisory:transient_network"
     },
     {
       "name": "Drama 24",
       "session": 1,
-      "from": "unknown",
-      "to": "playback_fail"
+      "from": "playback_fail",
+      "to": "advisory:transient_network"
     },
     {
       "name": "NEWS 24",
       "session": 0,
-      "from": "unknown",
-      "to": "playback_fail"
+      "from": "playback_fail",
+      "to": "advisory:transient_network"
     },
     {
       "name": "NEWS 24",
       "session": 1,
-      "from": "unknown",
-      "to": "playback_fail"
+      "from": "playback_fail",
+      "to": "advisory:transient_network"
     }
   ],
   "reclassification_note": "Verdicts were recomputed from the recorded metrics after the classifier was corrected to treat a decoder limitation as advisory:device_or_browser_unsupported rather than playback_fail. The measurements themselves are unchanged."

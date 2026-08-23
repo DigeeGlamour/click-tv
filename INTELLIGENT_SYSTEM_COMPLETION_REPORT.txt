@@ -674,3 +674,41 @@ harness-এ যা যোগ করা হলো:
 
 এই report লেখার সময় run চলমান। এটি অসম্পূর্ণ বলে স্পষ্ট লিখে রাখা হলো;
 সম্পূর্ণ ফল ওই JSON file-এ জমা হবে।
+
+--------------------------------------------------------------------------------
+১৭. PHASE 5-এর measurement আরও একটি ভুল ধরিয়ে দিল — network vs route
+--------------------------------------------------------------------------------
+Phase 5-এর দ্বিতীয় movie-তেই দেখা গেল একটি মাত্র
+`mpegts NetworkError "Failed to fetch"` → `playback_fail` হচ্ছে, অর্থাৎ
+সবচেয়ে কঠোর escalatable শ্রেণি, যেখান থেকে মাত্র দুটি observation-এ
+hard_disqualified-এ পৌঁছানো যায়।
+
+একটি ব্যর্থ fetch মরা route নয়। `advisory:transient_network` শ্রেণিটির
+অস্তিত্বের কারণই এটা: সত্যিকারের মরা origin আর ক্ষণিকের network গোলযোগ
+একবার দেখলে হুবহু একরকম দেখায়, কেবল locked persistence window ওদের আলাদা
+করতে পারে।
+
+এখন classify_playback তিন স্তরে ভাগ করে:
+  decoder signature      → advisory:device_or_browser_unsupported
+                           (escalatable নয়, environment scope)
+  network signature      → advisory:transient_network
+                           (escalatable, কিন্তু শুধু persistence window দিয়ে)
+  কোনোটিই নয়             → playback_fail
+                           (escalatable, সরাসরি hard_disqualified-এ যেতে পারে)
+
+Phase 1-এর ফল এই সংশোধন দিয়ে re-classify করা হয়েছে (raw metric রাখা ছিল,
+তাই আবার মাপার দরকার হয়নি)। ফলাফল:
+
+  আগে: playback_fail ৮টি observation
+  পরে: playback_fail ৪টি, advisory:transient_network ৪টি
+
+Drama 24 ও NEWS 24 আর সরাসরি disqualify-যোগ্য নয় — তাদের persistence
+window পার হতে হবে, এবং সেই window-এ কোনো full sustained success না থাকলে
+তবেই candidate হবে। PROVEN সংখ্যা অপরিবর্তিত: ৭।
+
+চূড়ান্ত Phase 1 বিভাজন (৩৪টি observation):
+  proven                                    ১৪
+  advisory:device_or_browser_unsupported      ৬
+  unknown                                     ৬
+  playback_fail                               ৪
+  advisory:transient_network                  ৪
