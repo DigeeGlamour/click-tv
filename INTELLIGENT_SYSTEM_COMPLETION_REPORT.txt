@@ -970,3 +970,46 @@ Phase 5-এর browser ফল নতুন নিয়মে re-classify কর
 অর্থাৎ movie সংক্রান্ত সমস্ত browser evidence এখন non-escalatable — এই
 তথ্য দিয়ে একটি movie-ও কখনো hide করা যাবে না। Phase 1-এ কোনো verdict
 বদলায়নি (ওখানে direct-route fetch প্রত্যাখ্যান ছিল না)।
+
+--------------------------------------------------------------------------------
+২৫. PHASE 5 চূড়ান্ত — ৪টি জীবিত movie-র পূর্ণ browser acceptance
+--------------------------------------------------------------------------------
+probe-এ যে ৪টি route 403 দেয়নি, সেগুলোর প্রতিটিতে ৩টি attempt route ও
+২টি session করে পূর্ণ ১২০ সেকেন্ডের test চালানো হলো।
+ফল: reports/phase5-live-movie-playback.json
+
+  movie                        route    verdict
+  ---------------------------  -------  --------------------------------------
+  Rockstar                     direct   advisory:structurally_risky  (×৪)
+                               proxy    advisory:vantage_blocked
+  Abar Hawa Bodol              direct   advisory:structurally_risky  (×৪)
+                               proxy    advisory:vantage_blocked
+  Swastik Sanket               direct   advisory:structurally_risky  (×২)
+                               proxy    advisory:device_or_browser_unsupported (×২)
+  Hatyapuri (2022)             proxy    advisory:vantage_blocked     (×২)
+                               direct   advisory:structurally_risky  (×২)
+
+  সারসংক্ষেপ (১৮টি observation):
+    advisory:structurally_risky              ১২
+    advisory:vantage_blocked                  ৪
+    advisory:device_or_browser_unsupported     ২
+    ------------------------------------------
+    escalatable                               ০
+
+PROVEN: ০। কোনো movie promote করা হয়নি।
+hide: ০। **একটিও movie hide করা সম্ভবই নয়** — ১৮টি observation-এর একটিও
+escalatable নয়।
+
+লক্ষণীয়, Swastik Sanket-ই একমাত্র যেটি probe-এ ২০৬ দিয়েছিল, অর্থাৎ host
+সত্যিই byte দিচ্ছে। proxy route-এ তার verdict
+`advisory:device_or_browser_unsupported` — অর্থাৎ byte আসে কিন্তু এই browser
+decode করতে পারে না। ঠিক Zee Bangla-র মতো: route মরা নয়, decoder-এর সীমা।
+এটিও escalatable নয়, তাই এই তথ্যে movie-টি কখনো বাদ পড়বে না।
+
+================================================================================
+PHASE 5 সম্পূর্ণ। ২১৫টি movie record সম্পর্কে যা জানার ছিল তা জানা:
+  ২১১টি — একটিমাত্র host, এই egress থেকে 403 (vantage block, অস্পৃশ্য)
+    ৪টি — পূর্ণ browser acceptance চালানো, ১৮টি observation, সবই
+           non-escalatable, একটিও PROVEN নয়
+একটিও movie hide বা promote করা হয়নি, এবং এই evidence দিয়ে করা যাবেও না।
+================================================================================
