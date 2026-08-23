@@ -28,12 +28,74 @@ persistent-unavailable evidence and genuine playback FAILs can escalate.
 """
 from __future__ import annotations
 
+import datetime as _dt
 import hashlib
 import hmac
+import json as _json
+import os
 import re
 import urllib.parse
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
+
+# ---------------------------------------------------------------------------
+# Phase 0b locks. THE_EXCLUSIVE_UPDATE L7 names four values as deliberately
+# unspecified until locked in writing, and forbids classifier code before that.
+# They are loaded from config/phase0b-locks.json so the policy lives in one
+# auditable place rather than being retyped into each classifier.
+# ---------------------------------------------------------------------------
+_LOCKS_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "config",
+    "phase0b-locks.json",
+)
+
+
+def _load_locks() -> Dict[str, Any]:
+    try:
+        with open(_LOCKS_PATH, "r", encoding="utf-8") as handle:
+            return _json.load(handle)
+    except (OSError, ValueError):
+        # No locks on disk means nothing is locked. Every consumer below treats
+        # an absent lock as "undeclared", which makes verdicts weaker, never
+        # stronger - an unreadable file must not be able to hide a channel.
+        return {}
+
+
+LOCKS: Dict[str, Any] = _load_locks()
+
+#: True only when Phase 0b actually locked the four values.
+LOCKS_DECLARED = bool(LOCKS.get("lock_version"))
+
+
+def _lock(path: str, default: Any = None) -> Any:
+    node: Any = LOCKS
+    for part in path.split("."):
+        if not isinstance(node, dict) or part not in node:
+            return default
+        node = node[part]
+    return node
+
+
+#: The declared target-environment matrix. Empty when Phase 0b has not run,
+#: which makes global scope unreachable via route (b) by construction.
+DECLARED_TARGET_MATRIX: Tuple[str, ...] = tuple(
+    _lock("target_environment_matrix.profiles", []) or ()
+) if _lock("target_environment_matrix.declared") else ()
+
+#: Locked persistence window. Absent locks give 0, and a 0 TTL can never mature
+#: a candidate.
+PERSISTENCE_TTL_SECONDS: float = float(_lock("persistence.ttl_seconds", 0) or 0)
+PERSISTENCE_MIN_WINDOWS: int = int(_lock("persistence.min_separate_windows", 2) or 2)
+PERSISTENCE_MIN_WINDOW_SEPARATION_SECONDS: float = float(
+    _lock("persistence.min_window_separation_seconds", 0) or 0
+)
+
+#: Locked keyframe / media-window threshold. Absent locks give infinity, so no
+#: keyframe verdict can be reached - the "no classifier before 0b" rule.
+KEYFRAME_MIN_MEDIA_CLOCK_SECONDS: float = float(
+    _lock("keyframe_media_window.min_media_clock_seconds", float("inf"))
+)
 
 # ---------------------------------------------------------------------------
 # Source identity. The allowlist is CLOSED: a query parameter is removed only
@@ -42,18 +104,27 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 # channels into one identity.
 # ---------------------------------------------------------------------------
 REMOVABLE_QUERY_PARAMS = frozenset(
-    {
-        "token",
-        "signature",
-        "sig",
-        "expires",
-        "hdnts",
-        "session",
-        "sid",
-        "nonce",
-        "_t",
-        "cb",
-    }
+    _lock(
+        "normalization_allowlist.removable_query_params",
+        [
+            "token",
+            "signature",
+            "sig",
+            "expires",
+            "hdnts",
+            "session",
+            "sid",
+            "nonce",
+            "_t",
+            "cb",
+        ],
+    )
+)
+
+#: The allowlist is only authoritative once Phase 0b locked it. Before that the
+#: same names are used, but the policy is recorded as unlocked.
+NORMALIZATION_ALLOWLIST_LOCKED = bool(
+    _lock("normalization_allowlist.policy") == "closed" and LOCKS_DECLARED
 )
 
 #: Host labels that identify infrastructure rather than a tenant. A "cache" or
@@ -165,6 +236,47 @@ MANDATORY_EVIDENCE_FIELDS = (
     "verdict_scope",
 )
 
+#: Fatal-error signatures that describe the DECODER rather than the route.
+#: Measured on Zee Bangla, 2026-08-23, real Chromium, full 120 s window: audio
+#: decoded (384 bytes) while the video decoder produced zero frames and the
+#: media element reported error code 3 (MEDIA_ERR_DECODE), followed by repeated
+#: MediaMSEError code 11 appendBuffer failures because the element had already
+#: errored. That matches the Phase 0 structural finding for this route exactly:
+#: 1920x1080 INTERLACED H.264 (frame_mbs_only = 0) with ZERO IDR frames, only
+#: open-GOP I-slices. The bytes arrive perfectly; this browser cannot decode
+#: them. Classifying that as a route failure would hide a channel the owner
+#: watches, which is the exact mistake this module exists to prevent.
+DECODE_CAPABILITY_MARKERS = (
+    "media element error code 3",
+    "media element error code 4",
+    "media_err_decode",
+    "media_err_src_not_supported",
+    "mediamseerror",
+    "appendbuffer",
+    # hls.js spells the same condition the other way round, so the plain
+    # "appendbuffer" marker missed it - measured on Asian TV, Phase 1, which
+    # classified as an escalatable route failure on a SourceBuffer rejection.
+    # These three are all "the decoder would not take these bytes", which is a
+    # statement about this browser's MSE implementation, not about the origin.
+    "bufferappenderror",
+    "bufferaddcodecerror",
+    "bufferincompatiblecodecserror",
+    "not supported",
+    "unsupported",
+    "decode error",
+    "decodererror",
+    "codec",
+)
+
+
+def describes_decoder_capability(errors: Iterable[Any]) -> bool:
+    """Whether a fatal-error list is about this decoder, not about the route."""
+    blob = " ".join(str(e or "") for e in (errors or ())).lower()
+    if not blob:
+        return False
+    return any(marker in blob for marker in DECODE_CAPABILITY_MARKERS)
+
+
 #: Material that must never reach a committed report.
 FORBIDDEN_EVIDENCE_PATTERN = re.compile(
     r"(?:authorization|set-cookie|bearer\s|[?&](?:token|signature|sig|hdnts)=)",
@@ -268,6 +380,28 @@ def hmac_id(value: str, key: Optional[bytes], *, length: int = 32) -> Optional[s
     return digest.hexdigest()[:length]
 
 
+#: Grouping salt, generated per process. `failure_domain_tenant` is an HMAC and
+#: is therefore None whenever no key is configured - which would collapse every
+#: determined tenant on one provider into the single pair (provider, None) and
+#: report two independent tenants as redundancy 1. Undercounting redundancy
+#: makes hiding EASIER, so correlation and redundancy must keep using a value
+#: that distinguishes tenants even with no key present. This salt makes that
+#: value distinguishing in memory and meaningless if it is ever persisted, so it
+#: can never become a stable identifier by accident.
+_GROUPING_SALT = os.urandom(16)
+
+
+def tenant_grouping_key(tenant: Optional[str]) -> Optional[str]:
+    """In-memory only key that distinguishes tenants without identifying them.
+
+    Never write this into an evidence record: it is deliberately unstable across
+    processes so it cannot be used as an identity.
+    """
+    if not tenant:
+        return None
+    return hmac.new(_GROUPING_SALT, tenant.encode("utf-8"), hashlib.sha256).hexdigest()[:16]
+
+
 def failure_domain(url: str, key: Optional[bytes] = None) -> Dict[str, Any]:
     """Provider + tenant hierarchy.
 
@@ -283,6 +417,8 @@ def failure_domain(url: str, key: Optional[bytes] = None) -> Dict[str, Any]:
         "failure_domain_tenant": hmac_id(f"tenant|{tenant}", key) if tenant else UNKNOWN,
         "tenant_derivation_method": method,
         "tenant_determined": tenant is not None,
+        # Grouping only, never committed. See tenant_grouping_key.
+        "tenant_grouping_key": tenant_grouping_key(tenant),
     }
 
 
@@ -364,8 +500,18 @@ def classify_playback(metrics: Dict[str, Any]) -> Tuple[str, List[str]]:
     progress = metrics.get("media_progress_seconds")
     stall = metrics.get("cumulative_stall_seconds")
 
-    if progress is None or startup is None:
+    if progress is None:
         return UNKNOWN, ["incomplete playback metrics"]
+    if startup is None:
+        # Startup was watched for the whole window and never happened. That is a
+        # measurement, not a missing field, and calling it `unknown` hid a
+        # decoder failure we had actually observed: the Zee Bangla Phase 1 run
+        # reported MEDIA_ERR_DECODE with the media clock frozen at zero, and the
+        # earlier version returned `unknown` for it. Treated as "startup never
+        # reached" so the FAIL floor below can see it - which then routes a
+        # decoder signature to the non-escalatable device verdict.
+        startup = float("inf")
+        reasons.append("playback never started within the window")
 
     # ---- FAIL floor ----
     if first_frame is None or float(first_frame) > FAIL_MAX_FIRST_FRAME_SECONDS:
@@ -382,6 +528,16 @@ def classify_playback(metrics: Dict[str, Any]) -> Tuple[str, List[str]]:
     if announced and not progressing:
         reasons.append("no announced render track progressed")
     if reasons:
+        # A decoder that cannot handle the bytes is a statement about this
+        # browser, not about the stream's availability. The escalation matrix
+        # makes advisory:device_or_browser_unsupported non-escalatable and caps
+        # it at environment scope, so a channel can never be removed on it.
+        if describes_decoder_capability(fatal):
+            reasons.append(
+                "fatal error describes the decoder, not the route; "
+                "capped at environment scope and never escalatable"
+            )
+            return ADVISORY_DEVICE_UNSUPPORTED, reasons
         return PLAYBACK_FAIL, reasons
 
     # ---- PASS floor ----
@@ -414,7 +570,7 @@ def resolve_verdict_scope(
     browser_profile: str = "",
     vantage_id: str = "",
     environment_independent: bool = False,
-    declared_matrix: Sequence[str] = (),
+    declared_matrix: Optional[Sequence[str]] = None,
     failed_profiles: Sequence[str] = (),
 ) -> str:
     """How widely a verdict may be applied.
@@ -422,7 +578,13 @@ def resolve_verdict_scope(
     Two arbitrary browser profiles are not the world: this project targets
     TV-class devices explicitly, so global scope needs either an
     environment-independent failure or the complete declared target matrix.
+
+    `declared_matrix=None` uses the matrix locked in Phase 0b; an explicit empty
+    sequence means the matrix is undeclared, which makes route (b) to global
+    scope unreachable by construction.
     """
+    if declared_matrix is None:
+        declared_matrix = DECLARED_TARGET_MATRIX
     if verdict in {ADVISORY_DEVICE_UNSUPPORTED}:
         return f"environment:{browser_profile or UNKNOWN}"
     if verdict in {ADVISORY_VANTAGE_BLOCKED}:
@@ -455,7 +617,10 @@ def independent_redundancy(
         domain = failure_domain(url, key)
         if not domain["tenant_determined"]:
             return UNKNOWN
-        pairs.add((domain["failure_domain_provider"], domain["failure_domain_tenant"]))
+        # Grouped on tenant_grouping_key rather than failure_domain_tenant: the
+        # latter is None without an HMAC key, which would fuse every tenant on a
+        # shared CDN and report real redundancy as 1.
+        pairs.add((domain["failure_domain_provider"], domain["tenant_grouping_key"]))
     return len(pairs)
 
 
@@ -471,6 +636,294 @@ def distinct_sources(routes: Iterable[Dict[str, Any]]) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Tenant correlation (Correction 4)
+# ---------------------------------------------------------------------------
+#: Observation kinds that are explicitly not a sustained success. Named rather
+#: than inferred, because the whole investigation began with HTTP 200 being read
+#: as working playback.
+NON_RESETTING_OBSERVATION_KINDS = frozenset(
+    {
+        "http_status",
+        "head_request",
+        "manifest_fetch",
+        "playlist_fetch",
+        "byte_sample",
+        "short_probe",
+        "partial_startup",
+        "startup_then_failure",
+    }
+)
+
+#: The only two kinds that can reset a persistence counter.
+RESETTING_OBSERVATION_KINDS = frozenset(
+    {"full_playback_session", "sustained_media_delivery"}
+)
+
+
+def correlation_group(url: str, key: Optional[bytes] = None) -> Any:
+    """The correlated-event key for a route, or `unknown`.
+
+    An undetermined tenant means the route may neither be grouped into a
+    correlated event nor excluded from one, so this returns `unknown` instead of
+    inventing a group. `cache.devm3u.top` is the backup host for four of the
+    channels under investigation and lands here by measurement, not by choice.
+    """
+    domain = failure_domain(url, key)
+    if not domain["tenant_determined"]:
+        return UNKNOWN
+    return "{0}|{1}".format(
+        domain["failure_domain_provider"], domain["tenant_grouping_key"]
+    )
+
+
+def correlated_event(
+    routes: Iterable[Dict[str, Any]], key: Optional[bytes] = None
+) -> Dict[str, Any]:
+    """Group routes into correlated events, keeping undetermined ones apart.
+
+    Returns the determined groups plus the routes whose tenancy could not be
+    derived. Those are reported as `unknown`: never merged into a group, never
+    counted as their own group, and never reported as 0 or 1.
+    """
+    groups: Dict[str, List[str]] = {}
+    undetermined: List[str] = []
+    for route in routes or ():
+        url = (route or {}).get("url")
+        if not url:
+            continue
+        group = correlation_group(url, key)
+        if group == UNKNOWN:
+            undetermined.append(redact_public_template(url))
+            continue
+        groups.setdefault(group, []).append(redact_public_template(url))
+    return {
+        "groups": groups,
+        "determined_group_count": len(groups),
+        "undetermined_routes": undetermined,
+        "undetermined_count": len(undetermined),
+        # A caller that wants one number must be told it cannot have one.
+        "correlation": UNKNOWN if undetermined else len(groups),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Persistence counter (Correction 3)
+# ---------------------------------------------------------------------------
+def _parse_observed_at(value: Any) -> Optional[float]:
+    """Epoch seconds from an ISO-8601 timestamp or a number."""
+    if isinstance(value, (int, float)):
+        return float(value)
+    text = str(value or "").strip()
+    if not text:
+        return None
+    if text.endswith("Z"):
+        text = text[:-1] + "+00:00"
+    try:
+        parsed = _dt.datetime.fromisoformat(text)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=_dt.timezone.utc)
+    return parsed.timestamp()
+
+
+def resets_persistence(observation: Dict[str, Any]) -> Tuple[bool, str]:
+    """Whether one observation is a FULL SUSTAINED SUCCESS.
+
+    Only two things qualify: a complete 120 s PASS, or an equally long
+    continuous media-delivery measurement where a browser session is not
+    available. Everything the loose reading would have accepted - a 200, a
+    manifest, the 16 KiB sample, a truncated window, a startup that then failed
+    - is rejected by name.
+    """
+    if not isinstance(observation, dict):
+        return False, "not an observation record"
+
+    kind = str(observation.get("kind") or "").strip().lower()
+    if kind in NON_RESETTING_OBSERVATION_KINDS:
+        return False, f"observation kind '{kind}' is not a sustained success"
+
+    window = observation.get("window_seconds")
+    try:
+        window_seconds = float(window)
+    except (TypeError, ValueError):
+        window_seconds = 0.0
+    if window_seconds < WINDOW_SECONDS:
+        return False, (
+            f"observed window {window_seconds:.0f}s is shorter than the "
+            f"required {WINDOW_SECONDS:.0f}s"
+        )
+
+    if kind == "sustained_media_delivery":
+        # The browserless equivalent: continuous delivery for the same window.
+        gap = observation.get("max_delivery_gap_seconds")
+        try:
+            max_gap = float(gap)
+        except (TypeError, ValueError):
+            return False, "sustained delivery claimed without a measured gap"
+        if max_gap > STALL_MIN_STAGNANT_SECONDS:
+            return False, (
+                f"delivery gap {max_gap:.1f}s exceeds the "
+                f"{STALL_MIN_STAGNANT_SECONDS:.0f}s continuity limit"
+            )
+        if observation.get("fatal_errors"):
+            return False, "delivery interrupted by a fatal error"
+        return True, "continuous media delivery across the full window"
+
+    if kind and kind not in RESETTING_OBSERVATION_KINDS:
+        return False, f"observation kind '{kind}' is not a sustained success"
+
+    verdict, reasons = classify_playback(observation.get("playback_metrics") or {})
+    if verdict == PROVEN:
+        return True, "complete 120 s PASS"
+    return False, "; ".join(reasons) or "did not meet the PASS floor"
+
+
+def persistence_state(
+    observations: Sequence[Dict[str, Any]],
+    *,
+    now: Optional[float] = None,
+    ttl_seconds: Optional[float] = None,
+) -> Dict[str, Any]:
+    """Whether repeated escalatable evidence has matured into a candidate.
+
+    Maturity needs all of: escalatable evidence only, at least the locked number
+    of separate time windows, windows separated by more than the measured cache
+    TTL, everything inside the locked persistence TTL, and no full sustained
+    success anywhere in that span. Any full sustained success resets the counter
+    to zero and discards everything before it.
+    """
+    ttl = PERSISTENCE_TTL_SECONDS if ttl_seconds is None else float(ttl_seconds)
+    records = [o for o in (observations or ()) if isinstance(o, dict)]
+    stamped: List[Tuple[float, Dict[str, Any]]] = []
+    undated = 0
+    for record in records:
+        moment = _parse_observed_at(record.get("observed_at"))
+        if moment is None:
+            undated += 1
+            continue
+        stamped.append((moment, record))
+    stamped.sort(key=lambda pair: pair[0])
+
+    reference = now if now is not None else (stamped[-1][0] if stamped else 0.0)
+
+    # A reset discards everything at or before it.
+    reset_at: Optional[float] = None
+    reset_reason = ""
+    for moment, record in stamped:
+        resets, why = resets_persistence(record)
+        if resets:
+            reset_at = moment
+            reset_reason = why
+
+    considered = [
+        (moment, record)
+        for moment, record in stamped
+        if (reset_at is None or moment > reset_at) and (reference - moment) <= ttl
+    ]
+
+    escalatable = [
+        (moment, record)
+        for moment, record in considered
+        if is_escalatable(str(record.get("verdict") or ""))
+    ]
+    non_escalatable = len(considered) - len(escalatable)
+
+    # Distinct windows: greedily keep observations that are far enough apart to
+    # not be one cached response counted twice.
+    windows: List[float] = []
+    for moment, _record in escalatable:
+        if not windows or (moment - windows[-1]) >= PERSISTENCE_MIN_WINDOW_SEPARATION_SECONDS:
+            windows.append(moment)
+
+    span = (windows[-1] - windows[0]) if len(windows) >= 2 else 0.0
+    reasons: List[str] = []
+    state = UNKNOWN
+
+    if not LOCKS_DECLARED or ttl <= 0:
+        reasons.append(
+            "persistence TTL is not locked; no observation can mature into a candidate"
+        )
+    elif not escalatable:
+        reasons.append(
+            "no escalatable evidence in the span"
+            + (f" ({non_escalatable} non-escalatable observation(s) ignored)" if non_escalatable else "")
+        )
+    elif len(windows) < PERSISTENCE_MIN_WINDOWS:
+        reasons.append(
+            f"{len(windows)} separate window(s), {PERSISTENCE_MIN_WINDOWS} required "
+            f"at >= {PERSISTENCE_MIN_WINDOW_SEPARATION_SECONDS:.0f}s apart"
+        )
+    else:
+        state = PERSISTENT_UNAVAILABLE_CANDIDATE
+        reasons.append(
+            f"escalatable evidence in {len(windows)} separate windows spanning "
+            f"{span:.0f}s with no full sustained success"
+        )
+
+    if reset_at is not None:
+        reasons.append(f"counter reset by a full sustained success ({reset_reason})")
+    if undated:
+        reasons.append(f"{undated} observation(s) ignored for having no timestamp")
+
+    return {
+        "state": state,
+        "counter": len(windows),
+        "escalatable_observations": len(escalatable),
+        "non_escalatable_ignored": non_escalatable,
+        "window_span_seconds": span,
+        "ttl_seconds": ttl,
+        "reset_at": reset_at,
+        "reset_reason": reset_reason,
+        "locked": LOCKS_DECLARED,
+        "reasons": reasons,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Keyframe / media-window classifier. Permitted only because Phase 0b locked
+# the threshold; without a lock the floor is infinite and every answer is
+# `unknown`, which is the "no classifier code before 0b" rule expressed in code.
+# ---------------------------------------------------------------------------
+def keyframe_verdict(
+    *,
+    media_clock_seconds: Any,
+    keyframes_observed: Any = None,
+    open_gop_intra_observed: Any = None,
+) -> Tuple[str, str]:
+    """Structural keyframe finding, or `unknown` below the locked floor."""
+    try:
+        clock = float(media_clock_seconds)
+    except (TypeError, ValueError):
+        return UNKNOWN, "no measured media clock"
+    if clock < KEYFRAME_MIN_MEDIA_CLOCK_SECONDS:
+        return UNKNOWN, (
+            f"observed {clock:.1f}s of media clock, below the locked "
+            f"{KEYFRAME_MIN_MEDIA_CLOCK_SECONDS:.0f}s floor"
+        )
+    try:
+        keyframes = int(keyframes_observed)
+    except (TypeError, ValueError):
+        return UNKNOWN, "keyframe count not measured"
+    if keyframes > 0:
+        return PROVEN, f"{keyframes} keyframe(s) in {clock:.1f}s of media clock"
+    try:
+        intra = int(open_gop_intra_observed)
+    except (TypeError, ValueError):
+        intra = 0
+    if intra > 0:
+        # A structural risk, not a failure: it is why this stream needs a
+        # different player configuration, not why it should be hidden.
+        return ADVISORY_STRUCTURALLY_RISKY, (
+            f"no IDR keyframe in {clock:.1f}s, but {intra} open-GOP intra "
+            "slice(s) present; recoverable with an adjusted player, not a fault"
+        )
+    return ADVISORY_STRUCTURALLY_RISKY, (
+        f"no keyframe and no intra slice in {clock:.1f}s of media clock"
+    )
+
+
+# ---------------------------------------------------------------------------
 # Evidence completeness
 # ---------------------------------------------------------------------------
 def evidence_is_complete(record: Dict[str, Any]) -> Tuple[bool, List[str]]:
@@ -482,7 +935,11 @@ def evidence_is_complete(record: Dict[str, Any]) -> Tuple[bool, List[str]]:
 
 
 def evidence_contains_forbidden_material(record: Dict[str, Any]) -> bool:
-    """Reject a record that would commit a credential."""
+    """Reject a record that would commit a credential or an unstable key."""
+    if isinstance(record, dict) and "tenant_grouping_key" in record:
+        # Process-local and unstable: committing it would create an identifier
+        # that silently changes meaning between runs.
+        return True
     try:
         import json as _json
 
@@ -491,7 +948,19 @@ def evidence_contains_forbidden_material(record: Dict[str, Any]) -> bool:
         blob = str(record)
     if FORBIDDEN_EVIDENCE_PATTERN.search(blob):
         return True
-    return bool(re.search(r"[A-Za-z0-9+/=]{40,}", blob))
+    # A long opaque run is the signature of an embedded credential, but the
+    # plain length rule fired on ordinary prose: the Phase 0 sentence
+    # "TV/AndroidTV/AFT/SmartTV/BRAVIA/MiBOX/TV" is a 40-character run of this
+    # very character class. Since flush() withholds a report that trips this
+    # check, a false positive silently destroys a legitimate report - so the
+    # run must also look opaque rather than like words, which in practice means
+    # carrying at least one digit. Every opaque run measured in the real stream
+    # URLs of this repository (132-161 characters) satisfies that.
+    for match in re.finditer(r"[A-Za-z0-9+/=_-]{40,}", blob):
+        token = match.group()
+        if any(character.isdigit() for character in token):
+            return True
+    return False
 
 
 def vantages_are_independent(first: Dict[str, Any], second: Dict[str, Any]) -> bool:

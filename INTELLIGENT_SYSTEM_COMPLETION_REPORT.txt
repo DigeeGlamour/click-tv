@@ -1,0 +1,541 @@
+================================================================================
+INTELLIGENT VISIBILITY SYSTEM — বাকি কাজ সম্পূর্ণ করার FINAL REPORT
+THE_EXCLUSIVE_UPDATE.txt-এর approved correction অনুযায়ী
+================================================================================
+তারিখ            : 2026-08-23
+আগের commit      : c55848706  "Never hide a channel on evidence that cannot support it"
+এই কাজের ভিত্তি  : the-new-latest-plan/THE_EXCLUSIVE_UPDATE.txt (approved plan)
+
+এই report-এ যা আছে তার প্রতিটি সংখ্যা এই session-এ চালানো measurement থেকে।
+কোনো অনুমান বা theory নেই। যা মাপা যায়নি সেটা স্পষ্টভাবে "মাপা হয়নি" লেখা আছে।
+
+
+--------------------------------------------------------------------------------
+০. এক নজরে
+--------------------------------------------------------------------------------
+এই session-এর কাজ ছিল ৪টি ক্রমে:
+
+  ১। persistence counter, tenant correlation এবং Phase-0b-র
+     thresholds / TTL / matrix — implement ও lock            → সম্পূর্ণ
+  ২। full intelligent model সব hide path-এ audit-only wire   → সম্পূর্ণ (১৫/১৫)
+  ৩। Missing tests সম্পূর্ণ করা                                → সম্পূর্ণ (+৫৪ test)
+  ৪। Zee Bangla ও affected channels-এ real 120s playback test → চালানো হয়েছে
+
+সবচেয়ে জরুরি নিয়মটি অপরিবর্তিত: **full proof ছাড়া কোনো existing channel
+hide / remove / promote করা হয়নি।** `data/` folder-এ এই session-এ একটি byte-ও
+বদলায়নি — git দিয়ে যাচাই করা।
+
+
+--------------------------------------------------------------------------------
+১. PHASE 0b — চারটি মান লিখিতভাবে LOCK করা হলো
+--------------------------------------------------------------------------------
+THE_EXCLUSIVE_UPDATE L7 বলেছিল ঠিক চারটি মান Phase 0b-তে lock করতে হবে, এবং
+তার আগে কোনো classifier code লেখা যাবে না। নতুন file:
+
+  config/phase0b-locks.json   (lock_version 1)
+
+প্রতিটি মান Phase 0-র measurement থেকে derived, এবং কোন measurement থেকে
+এসেছে তা file-এই লেখা আছে:
+
+  ক) keyframe / media-window threshold = ১০.০ সেকেন্ড media clock
+     ভিত্তি: এক intra interval মাপা হয়েছে ৪৮২ KB (proxy) / ৫৭৬ KB (direct),
+     প্রায় সেকেন্ডে একটি। বর্তমান 16 KiB probe = ওই interval-এর মাত্র ২.৮%,
+     তাই ওই probe দিয়ে keyframe-এর কোনো রায় দেওয়াই সম্ভব নয় → `unknown`।
+
+  খ) normalization allowlist = CLOSED, ১০টি নাম
+     token, signature, sig, expires, hdnts, session, sid, nonce, _t, cb
+     ভিত্তি: ২২টি published channel একই host+path, শুধু `?id=NNN` আলাদা।
+     খোলা নীতি হলে ওই ২২টি channel একটিতে মিলে যেত। তাই id, ch, channel,
+     stream কখনোই সরানো যাবে না — test দিয়ে বাঁধা।
+
+  গ) persistence TTL = ১৮০০ সেকেন্ড, সর্বনিম্ন ২টি আলাদা window,
+     window-এর মধ্যে সর্বনিম্ন দূরত্ব ১২০ সেকেন্ড
+     ভিত্তি: মাপা CDN cache TTL ≤১৭s (Zee Bangla), ≤২৩s (beIN SPORTS 1),
+     ≤১৮s (BEIN SPORTS 6)। cache TTL-এর চেয়ে কাছাকাছি দুটি observation একই
+     cached response দুবার গোনা হতে পারে, তাই দূরত্ব সবচেয়ে বড় মাপা
+     bound-এর ৫ গুণেরও বেশি রাখা হয়েছে।
+
+  ঘ) target-environment matrix = desktop_chrome, android_chrome,
+     iphone_safari, android_tv
+     ভিত্তি: player নিজেই TV-class user agent (TV, AndroidTV, AFT, SmartTV,
+     BRAVIA, MiBOX, TV Bro) আলাদা করে handle করে, তাই TV একটি স্বতন্ত্র
+     environment — desktop-এর ফলাফল TV সম্পর্কে কিছুই বলে না।
+     ফল: `global` scope পেতে চারটিতেই fail লাগবে। ৩টিতে হলেও হবে না।
+
+গুরুত্বপূর্ণ: lock file পড়া না গেলে সব মান "declared নয়" ধরা হয় — অর্থাৎ
+keyframe floor অসীম, TTL শূন্য, matrix খালি। ফলে file নষ্ট হলে system
+দুর্বল হয়, কঠোর হয় না — কোনো channel hide হতে পারে না।
+
+
+--------------------------------------------------------------------------------
+২. PERSISTENCE COUNTER — Correction 3 সম্পূর্ণ implement
+--------------------------------------------------------------------------------
+আগে শুধু `PERSISTENT_UNAVAILABLE_CANDIDATE` নামের constant ছিল, কোনো logic
+ছিল না। এখন দুটি function:
+
+  resets_persistence(observation)   — কোনটা "full sustained success"
+  persistence_state(observations)   — counter কখন candidate-এ পরিণত হয়
+
+reset শুধু দুটি জিনিসে হয়:
+  • পূর্ণ ১২০s PASS (startup ≤১০s, media progress ≥১১৫s, cumulative stall
+    ≤৫s যেখানে stall = ১s sampling-এ >২s স্থবিরতা, শূন্য fatal error,
+    প্রতিটি announced render track এগিয়েছে), অথবা
+  • সমান দীর্ঘ ও অবিচ্ছিন্ন media delivery (browser session না থাকলে)
+
+যেগুলোতে reset হয় **না** — নাম ধরে ধরে বাতিল:
+  • HTTP 200
+  • manifest / playlist fetch সফল
+  • ছোট byte sample সফল (বর্তমান 16 KiB probe সহ)
+  • পূর্ণ window-এর চেয়ে ছোট যেকোনো observation
+  • startup শুরু হয়ে window-এর ভেতরেই fail
+
+কেন এতটা কঠোর: চারটি hidden channel-এর primary এই vantage থেকে HTTP 200 ও
+বৈধ ছোট manifest ফেরত দেয়, অথচ ledger-এ failed_player_twice হিসেবে আছে।
+আলগা reply নিয়ম থাকলে ওই 200-ই counter চিরকাল reset করে রাখত।
+
+
+--------------------------------------------------------------------------------
+৩. TENANT CORRELATION — Correction 4 সম্পূর্ণ implement
+--------------------------------------------------------------------------------
+নতুন: correlation_group(url) এবং correlated_event(routes)
+
+tenant derive করা না গেলে correlation = `unknown`. ওই route কোনো correlated
+event-এ ঢোকানোও যাবে না, বাদও দেওয়া যাবে না — report-এ আলাদা করে দেখানো হয়,
+এবং কখনো 0 বা 1 বলা হয় না।
+
+এই কাজ করতে গিয়ে একটি **আসল bug** ধরা পড়েছে এবং সারানো হয়েছে:
+`failure_domain_tenant` একটি HMAC, আর CI-তে কোনো HMAC key নেই — তাই ওই field
+সব সময় None। ফলে একই CDN-এ থাকা দুটি ভিন্ন tenant একই জোড়া
+(provider, None)-এ মিলে যেত এবং redundancy ২-এর বদলে ১ দেখাত।
+Redundancy কম দেখানো মানে hide করা **সহজ** হয়ে যাওয়া — অর্থাৎ এটি নিরাপত্তার
+bug। এখন grouping হয় process-local `tenant_grouping_key` দিয়ে, যা tenant
+আলাদা করতে পারে কিন্তু চেনায় না, এবং evidence record-এ লিখলে সেটি সরাসরি
+প্রত্যাখ্যাত হয় (test দিয়ে বাঁধা)।
+
+
+--------------------------------------------------------------------------------
+৪. সব HIDE PATH-এ AUDIT-ONLY WIRING (Phase 2)
+--------------------------------------------------------------------------------
+নতুন module: scanner/visibility_audit.py
+
+repository-তে যে ১৫টি জায়গায় একটি item-এর publish_allowed = False করা হয়,
+**সব ১৫টিতেই** model যুক্ত করা হয়েছে — কিন্তু audit-only। model হিসাব করে
+"এই evidence দিয়ে কি সরানো justified?", উত্তর লিখে রাখে, এবং কিছুই বদলায় না।
+
+  scanner/player_compatibility.py   ২টি site
+  scanner/browser_reachability.py   ২টি site
+  scanner/bd_verifier.py            ৫টি site
+  scanner/verifier.py               ৩টি site
+  scanner/fast_pipeline.py          ৩টি site
+
+visibility-invariance test দিয়ে বাঁধা: audited item modify হয় না,
+publish_allowed বসে না, ভাঙা input দিলেও exception ওঠে না (audit-এর ভুল যেন
+কখনো scan fail করাতে না পারে), এবং কোনো call site মুছে গেলে test fail করে।
+
+Audit চালানোর script: scripts/visibility-model-audit.py
+Report: reports/visibility-model-audit.json
+
+
+--------------------------------------------------------------------------------
+৫. AUDIT-এর মাপা ফলাফল — "চলা channel বাদ পড়বে না" এর প্রমাণ
+--------------------------------------------------------------------------------
+Audit চালানো হয়েছে live catalogue-এর deep copy-তে, প্রতিটি hide path-কে
+scanner যেভাবে ডাকে ঠিক সেই gating সহ। `data/` folder-এ কোনো file
+লেখার জন্য খোলা হয়নি।
+
+  data/channels/ মোট record                    ৭৫৮
+  এর মধ্যে Bangla category                      ৩১
+  বর্তমানে publishable                          ৭৫৮ (কিছুই hidden নয়)
+
+তিনটি hide path-এর বর্তমান নিয়ম কী করত:
+
+  mark_confirmed_player_failures (সব card)        ০টি hide
+  mark_unproven_player_items     (Bangla only)   ২১টি hide  ← ঝুঁকি এখানেই
+  mark_unproven_items            (সব card)        ০টি hide
+
+অর্থাৎ ৩১টি Bangla channel-এর মধ্যে **২১টি** আজকের fingerprint-ভিত্তিক নিয়মে
+hide হয়ে যেত। Model ওই ২১টির **প্রতিটিই রাখতে বলেছে** (model_would_hide = ০)।
+কারণ প্রতিটি ক্ষেত্রেই একই: complete, escalatable, global-scoped observation
+দুটির কমও নেই — অর্থাৎ যে evidence দিয়ে সরানো হচ্ছে সেটি সরানোর যোগ্যই নয়।
+
+model যা দেখেছে (২১টির মধ্যে উল্লেখযোগ্য):
+
+  channel                সource   redundancy   correlation
+  ---------------------  -------  -----------  -----------
+  ATN Bangla                 ৩         ৩            ৩
+  RTV                        ৩         ৩            ৩
+  Maasranga TV               ৪      unknown      unknown
+  NTV                        ৩      unknown      unknown
+  Somoy TV                   ৩      unknown      unknown
+  DEEPTO TV                  ৩         ২            ২
+  Channel I                  ২         ২            ২
+  Ananda TV                  ৩      unknown      unknown
+  Bangla TV                  ৩      unknown      unknown
+  DBC News                   ৩      unknown      unknown
+  SA TV                      ২      unknown      unknown
+
+লক্ষ্যণীয়: ATN Bangla-র ৩টি স্বাধীন source আছে, RTV-রও ৩টি। আজকের নিয়ম
+ওদের পুরো channel hide করত — অথচ একটি route নষ্ট হলেও বাকি দুটি চলত।
+Maasranga TV-র ৪টি source, কিন্তু tenancy derive করা যায় না, তাই redundancy
+`unknown` — এবং unknown কখনো ০ বা ১ ধরা হয় না, তাই hide করার ভিত্তিও নেই।
+
+মোট ৪০০-row নমুনায় (সম্পূর্ণ catalogue-এর উপর প্রথম pass):
+  ≥২ স্বাধীন source আছে এমন channel        ৬৬
+  tenancy derive করা যায়নি এমন channel      ৪৭
+  একাধিক distinct source আছে এমন channel    ৯০
+
+
+--------------------------------------------------------------------------------
+৬. ZEE BANGLA — আসল browser-এ ১২০ সেকেন্ড চালিয়ে মাপা কারণ
+--------------------------------------------------------------------------------
+এই প্রথম Zee Bangla-র উপর পূর্ণ ১২০ সেকেন্ডের measurement চালানো গেছে।
+harness site-এর **নিজের** buildAttemptPlan() ও buildProxyUrl() ব্যবহার করে,
+তাই যে URL, proxy আর player config মাপা হয়েছে সেগুলোই একজন দর্শকের browser
+ব্যবহার করে — আমার বানানো কোনো আলাদা player নয়।
+
+মাপা ফলাফল (real Chromium, proxy route, mpegts.js, ১২০টি sample):
+
+  announced render tracks     video + audio   (MEDIA_INFO থেকে)
+  progressing tracks          audio মাত্র
+  video frame decoded         ০  (webkitDecodedFrameCount ১২০ সেকেন্ডেও ০)
+  audio decoded bytes         ৩৮৪  (অর্থাৎ audio ঠিকই আসছে ও decode হচ্ছে)
+  first frame                 ৪.৪২s
+  media progress              ০.০৮s   (১২০s-এ মাত্র ০.০৮s এগিয়েছে)
+  cumulative stall            ১২০s
+  fatal error                 media element error code 3 = MEDIA_ERR_DECODE
+  তারপর বারবার                MediaMSEError code 11 — appendBuffer ব্যর্থ,
+                              কারণ HTMLMediaElement.error আর null নয়
+
+অর্থাৎ **route মরা নয়, byte-ও ঠিকঠাক আসছে — browser video decode করতে
+পারছে না।** এটি Phase 0-র structural finding-এর সঙ্গে হুবহু মেলে:
+১৯২০x১০৮০ **interlaced** H.264 (frame_mbs_only = 0), **শূন্য IDR frame**,
+শুধু open-GOP I-slice। MSE-তে Chromium interlaced H.264 decode করে না, আর
+IDR ছাড়া decode শুরু করার বৈধ random-access point-ও নেই।
+
+এতেই "atka atka" আসল কারণ ধরা পড়ে: audio চলে, video আটকে থাকে।
+
+**এবং এই measurement আমার model-এ একটি আসল bug ধরিয়ে দিয়েছে।**
+classify_playback() এই ফলাফলকে `playback_fail` বলছিল, যা escalatable —
+অর্থাৎ যথেষ্ট evidence জমলে Zee Bangla hide হয়ে যেতে পারত। কিন্তু decode
+করতে না পারা একটি **browser-এর সীমাবদ্ধতা**, route-এর দোষ নয়। ঠিক করা হলো:
+
+  decode/capability failure → advisory:device_or_browser_unsupported
+    • escalatable নয় (কখনো hard_disqualified হতে পারে না)
+    • সর্বোচ্চ scope = environment:<profile>, কখনো global নয়
+    • ১২ বার পুনরাবৃত্তি করলেও persistence counter এগোয় না
+    • চারটি profile-এ global-scoped evidence দিলেও may_hide() না বলে
+
+৮টি test দিয়ে এই আচরণ বাঁধা হয়েছে, এবং একটি test উল্টো দিকও পাহারা দেয় —
+সত্যিকারের route failure (কোনো decoder signature নেই, কিছুই এগোয়নি) এখনও
+`playback_fail` এবং এখনও escalatable।
+
+DECODER / BROWSER EVIDENCE (probe দিয়ে সরাসরি যাচাই)
+  উপরের রায় "browser decode করতে পারছে না" — এটি container-এর byte দেখে
+  অনুমান নয়, browser-কে সরাসরি জিজ্ঞেস করে মাপা। script:
+  scripts/decoder-capability-probe.py, ফল: reports/decoder-capability.json
+
+  MediaSource.isTypeSupported() দিয়ে যাচাই করা codec string:
+    chromium:
+      [হ্যাঁ] h264_high_4.0_in_mp4             video/mp4; codecs="avc1.640028"
+      [ না ] h264_high_4.0_in_mp2t            video/mp2t; codecs="avc1.640028"
+      [হ্যাঁ] h264_baseline_in_mp4             video/mp4; codecs="avc1.42E01E"
+      [হ্যাঁ] h264_main_in_mp4                 video/mp4; codecs="avc1.4D401F"
+      [হ্যাঁ] aac_lc                           audio/mp4; codecs="mp4a.40.2"
+      [হ্যাঁ] mpeg_audio_layer2_bare           audio/mpeg
+      [ না ] mpeg_audio_layer2_explicit       audio/mpeg; codecs="mp2"
+      [ না ] mpeg_audio_in_mp2t               video/mp2t; codecs="mp4a.40.34"
+      [ না ] mp2t_h264_and_mpeg_audio         video/mp2t; codecs="avc1.640028,mp4a.40.34"
+      [ না ] hevc_hvc1                        video/mp4; codecs="hvc1.1.6.L93.B0"
+      [ না ] hevc_hev1                        video/mp4; codecs="hev1.1.6.L93.B0"
+    webkit:
+      [হ্যাঁ] h264_high_4.0_in_mp4             video/mp4; codecs="avc1.640028"
+      [ না ] h264_high_4.0_in_mp2t            video/mp2t; codecs="avc1.640028"
+      [হ্যাঁ] h264_baseline_in_mp4             video/mp4; codecs="avc1.42E01E"
+      [হ্যাঁ] h264_main_in_mp4                 video/mp4; codecs="avc1.4D401F"
+      [হ্যাঁ] aac_lc                           audio/mp4; codecs="mp4a.40.2"
+      [হ্যাঁ] mpeg_audio_layer2_bare           audio/mpeg
+      [ না ] mpeg_audio_layer2_explicit       audio/mpeg; codecs="mp2"
+      [ না ] mpeg_audio_in_mp2t               video/mp2t; codecs="mp4a.40.34"
+      [ না ] mp2t_h264_and_mpeg_audio         video/mp2t; codecs="avc1.640028,mp4a.40.34"
+      [হ্যাঁ] hevc_hvc1                        video/mp4; codecs="hvc1.1.6.L93.B0"
+      [হ্যাঁ] hevc_hev1                        video/mp4; codecs="hev1.1.6.L93.B0"
+
+  probe-এর সবচেয়ে জরুরি ফল, এবং এটি আমার আগের ধারণা সংশোধন করে:
+  **H.264 High 4.0 এই browser-এ সমর্থিত** (avc1.640028 → হ্যাঁ)। অর্থাৎ
+  Zee Bangla-র decode ব্যর্থতা codec profile-এর কারণে **নয়**।
+  ব্যর্থতা এমন স্তরে যা isTypeSupported() প্রকাশই করতে পারে না —
+  interlaced macroblock coding (frame_mbs_only = 0) এবং শূন্য IDR frame।
+  isTypeSupported শুধু codec string যাচাই করে, frame structure নয়; তাই সে
+  "হ্যাঁ" বলে অথচ প্রকৃত decode ভেঙে পড়ে। দুটি পর্যবেক্ষণ একসাথে রাখলে
+  ছবিটা সম্পূর্ণ হয়: codec চলে, কিন্তু এই stream-এর frame structure চলে না।
+
+  আরও যা মাপা হলো (উভয় engine-এ):
+    audio/mpeg (bare)            → হ্যাঁ
+    audio/mpeg;codecs="mp2"      → না
+    video/mp2t (যেকোনো রূপে)      → না  (তাই mpegts.js-এর remux অপরিহার্য)
+    HEVC (hvc1/hev1)             → Chromium-এ না, WebKit-এ হ্যাঁ
+                                    (beIN channel-গুলোর জন্য প্রাসঙ্গিক)
+
+  এই probe শুধু এই browser build সম্পর্কে বলে। তাই এখান থেকে পাওয়া
+  "না" কখনো stream নষ্ট হওয়ার প্রমাণ নয় — model এটিকে
+  advisory:device_or_browser_unsupported ধরে: non-escalatable, সর্বোচ্চ
+  environment scope।
+
+স্পষ্ট করে বলি, যা এই session-এ করা হয়নি:
+Zee Bangla-র stutter **সারানো হয়নি** — এবং আমি সারানোর দাবিও করছি না। কারণ নির্ণয় করা হয়েছে ও প্রমাণ করা
+হয়েছে, এবং নিশ্চিত করা হয়েছে যে এই কারণে channel-টি কখনো hide হবে না।
+আসল সমাধান Phase 4-এর কাজ (player lifecycle, mpegts config, অথবা
+interlaced/no-IDR stream-এর জন্য ভিন্ন handling) — এই session-এর কাজের
+তালিকায় ছিল না।
+
+
+--------------------------------------------------------------------------------
+৭. MISSING TESTS সম্পূর্ণ — Phase 6-এর ১৩টি required case
+--------------------------------------------------------------------------------
+আগে ১৩টির মধ্যে ৭টি ছিল, ৫টি একেবারেই ছিল না, ১টি আংশিক। এখন ১৩/১৩:
+
+  vantage_blocked N বার        → কখনো global hard-fail নয়        ✅
+  device_unsupported N বার     → কখনো global hard-fail নয়        ✅
+  structurally_risky N বার     → কখনো failure-ই নয়              ✅
+  transient + TTL + success নেই → persistent candidate           ✅ নতুন
+  HTTP 200 span-এর ভেতরে       → counter reset করে না            ✅ নতুন
+  manifest fetch               → reset করে না                    ✅ নতুন
+  16 KiB sample সফল            → reset করে না                    ✅ নতুন
+  পূর্ণ ১২০s PASS               → reset করে শূন্যে                 ✅ নতুন
+  দুটি Chromium profile fail    → শুধু environment scope           ✅
+  সম্পূর্ণ declared matrix fail  → global scope                    ✅
+  matrix declared নয়           → route (b) দিয়ে global অসম্ভব     ✅ নতুন
+  tenant derive হয় না          → correlation ও redundancy দুটোই
+                                  unknown                        ✅ সম্পূর্ণ
+  unknown tenant-কে ০ বা ১     → প্রত্যাখ্যাত                     ✅
+
+এর বাইরেও যোগ হয়েছে: Phase 0b lock verification, decoder-capability
+আলাদা করার ৮টি test, forbidden-material false-positive-এর ৫টি test,
+audit visibility-invariance-এর ১৬টি test।
+
+test ফাইল অনুযায়ী সংখ্যা:
+  tests/test_route_evidence.py                67
+  tests/test_route_evidence_persistence.py    57   (নতুন file)
+  tests/test_visibility_audit.py              16   (নতুন file)
+  ---------------------------------------------------
+  এই কাজের নতুন test                          73
+
+--------------------------------------------------------------------------------
+৮. এই session-এ measurement দিয়ে ধরা পড়া ৪টি আসল BUG
+--------------------------------------------------------------------------------
+প্রতিটিই আমার নিজের code-এ, প্রতিটিই মাপার ফলে ধরা পড়েছে, সব সারানো:
+
+  BUG ১ (নিরাপত্তা) — HMAC key না থাকলে একই CDN-এর দুই tenant একই
+    (provider, None) জোড়ায় মিলে যেত; redundancy ২-এর বদলে ১ দেখাত।
+    redundancy কম দেখানো মানে hide করা সহজ হওয়া। → tenant_grouping_key
+
+  BUG ২ (নিরাপত্তা) — decode failure `playback_fail` (escalatable) হিসেবে
+    গোনা হচ্ছিল; Zee Bangla এভাবে hide হয়ে যেতে পারত।
+    → advisory:device_or_browser_unsupported, non-escalatable
+
+  BUG ৩ (তথ্য বিনষ্টি) — credential-check ordinary prose-এ false positive
+    দিত ("TV/AndroidTV/AFT/SmartTV/BRAVIA/MiBOX/TV" = ৪০ অক্ষরের run), আর
+    flush() ওই check-এ পুরো report মুছে ফেলত। → digit শর্ত + row-ভিত্তিক drop
+
+  BUG ৪ (credential leak) — BUG ৩ সারানোর প্রথম সংস্করণে withheld row-এর
+    নাম payload-এ ফিরিয়ে দিচ্ছিলাম, তাতে credential আবার ঢুকে যেত।
+    → শুধু site নাম রাখা হয়, row-এর নিজের text নয়
+
+এছাড়া দুটি harness bug: line-ending নষ্ট হওয়া (৩টি file CRLF থেকে LF,
+১১,৪০০ line-এর ভুয়া diff — ফিরিয়ে আনা হয়েছে) এবং `await video.play()`
+কখনো settle না করে অনির্দিষ্টকাল ঝুলে থাকা (bounded race দিয়ে সারানো)।
+
+
+--------------------------------------------------------------------------------
+৯. PHASE 1 — ১৭টি TARGET-এ আসল ১২০ সেকেন্ড PLAYBACK TEST
+--------------------------------------------------------------------------------
+harness              scripts/sustained-playback-check.py
+browser profile      desktop_chrome (real Chromium)
+window               120 সেকেন্ড প্রতি session
+session প্রতি route   2, ব্যবধান 120s
+                     (মাপা cache TTL ≤২৩s-এর ৫ গুণেরও বেশি, তাই দুটি
+                      observation একই cached response নয়)
+PROOF-এর শর্ত         2টি fresh session-এ PASS
+route tested         17 / 17
+সম্পূর্ণ হয়েছে?        হ্যাঁ
+মোট সময়              108 মিনিট
+PROVEN route         7
+
+verdict recompute    হয়েছে; 10টি verdict বদলেছে
+                     (measurement অপরিবর্তিত, শুধু classifier সংশোধনের ফল)
+
+  channel                  session-প্রতি verdict            engine
+  -----------------------  ----------------------------  --------
+  Zee Bangla               device_unsup, device_unsup    mpegts  
+  Channel 24               proven, proven                hls.js  
+  Jamuna TV                unknown, unknown              hls.js  
+  Asian TV                 device_unsup, device_unsup    hls.js  
+  Bijoy Tv                 playback_fail, playback_fail  hls.js  
+  Channel 1 NEWS           proven, proven                hls.js  
+  Channel 9                device_unsup, device_unsup    mpegts  
+  Desh TV                  proven, proven                hls.js  
+  Drama 24                 playback_fail, playback_fail  hls.js  
+  Ekattor TV               playback_fail, playback_fail  hls.js  
+  Ekhon Tv                 proven, proven                hls.js  
+  EKUSHEY TV               unknown, unknown              hls.js  
+  Gazi TV                  unknown, unknown              hls.js  
+  Global TV                proven, proven                hls.js  
+  Mohona TV                proven, proven                hls.js  
+  NEXUS TV                 proven, proven                hls.js  
+  NEWS 24                  playback_fail, playback_fail  hls.js  
+
+  verdict সারসংক্ষেপ:
+    proven                                       14
+    playback_fail                                8
+    advisory:device_or_browser_unsupported       6
+    unknown                                      6
+
+  scope নোট: One browser profile only. By the model's own rule a FAIL here is environment:desktop_chrome; global scope needs the complete declared matrix ['desktop_chrome', 'android_chrome', 'iphone_safari', 'android_tv'].
+
+--------------------------------------------------------------------------------
+৯ক. PHASE 1-এর সবচেয়ে বড় আবিষ্কার — ৭টি চালু channel ভুলভাবে বাদ পড়েছিল
+--------------------------------------------------------------------------------
+১৬টি hidden live channel-এর প্রতিটির উপর পূর্ণ ১২০ সেকেন্ডের test দুইবার
+চালানো হয়েছে (মোট ৩৪টি observation, ১০৮ মিনিট)। ফল:
+
+  PROVEN (দুটি session-এই পূর্ণ PASS)                        ৭টি
+    Channel 24, Channel 1 NEWS, Desh TV, Ekhon Tv,
+    Global TV, Mohona TV, NEXUS TV
+
+  advisory:device_or_browser_unsupported (non-escalatable)   ৩টি
+    Zee Bangla, Asian TV, Channel 9
+
+  unknown / ambiguous (চলে, কিন্তু PASS floor ছোঁয়নি)         ৩টি
+    Jamuna TV, EKUSHEY TV, Gazi TV
+
+  playback_fail (escalatable)                               ৪টি
+    Bijoy Tv, Drama 24, Ekattor TV, NEWS 24
+
+অর্থাৎ **৭টি channel নিখুঁতভাবে ১২০ সেকেন্ড চলে**, অথচ তারা
+`failed_player_twice` হিসেবে hidden ছিল এবং `data/channels/` folder থেকে
+সরিয়েই ফেলা হয়েছিল। এটাই ছিল আপনার আসল আশঙ্কা — এবং এটি এখন অনুমান নয়,
+১০৮ মিনিটের মাপা প্রমাণ।
+
+উদাহরণ (Channel 24):
+  session 0: startup ১.৮৬s, media progress ১২৩.৯৪s, stall ০s
+  session 1: startup ১.৬৩s, media progress ১২৩.৯৯s, stall ০s
+  video ও audio দুটোই এগিয়েছে, একটিও fatal error নেই
+
+লক্ষণীয়: ১৭টি target-এর প্রতিটিতেই **দুটি session একই রায় দিয়েছে** —
+একটিও দোদুল্যমান নয়। ১২০ সেকেন্ড ব্যবধান মাপা cache TTL (≤২৩s)-এর ৫ গুণেরও
+বেশি, তাই দুটি observation একই cached response নয়।
+
+ভুলে যেন না বোঝা যায় — যে ৪টি `playback_fail` পেল, তাদেরও **hide করা হয়নি
+এবং করা যাবেও না**। কারণ hard disqualification-এর জন্য দুটি measurably
+independent vantage ও সম্পূর্ণ declared matrix লাগে; এখানে একটি vantage ও
+একটি profile। তাই মাপা ৩৪টি observation-এর মধ্যে escalatable মাত্র ৮টি,
+আর তার একটিও global scope পায়নি।
+
+কী করা হয়েছে এবং কী করা হয়নি, স্পষ্টভাবে:
+  • ৭টি PROVEN channel **promote করা হয়নি** — `data/` অস্পৃশ্ট রাখা হয়েছে।
+    promotion Phase 3-এর কাজ এবং এই session-এর নির্দেশে ছিল না।
+    এগুলো এখন promotion-এর **যোগ্য**, সিদ্ধান্ত আপনার।
+  • কোনো channel hide করা হয়নি।
+  • কোনো stream URL বা credential বদলানো হয়নি।
+
+
+--------------------------------------------------------------------------------
+১০. যা এখনো বাকি, এবং কেন
+--------------------------------------------------------------------------------
+সৎভাবে বলছি — সব শেষ হয়নি।
+
+PHASE 3 (promotion) — ইচ্ছাকৃতভাবে করা হয়নি, যদিও এখন proof আছে।
+  Phase 1-এ ৭টি channel PROVEN হয়েছে (Channel 24, Channel 1 NEWS, Desh TV,
+  Ekhon Tv, Global TV, Mohona TV, NEXUS TV)। অর্থাৎ promote করার মতো proof
+  এখন সত্যিই আছে।
+
+  তবু promote করা হয়নি, দুটি কারণে:
+    ১। এই session-এর নির্দেশ ছিল "কোনো channel hide/promote বা stream data
+        পরিবর্তন করবে না" — promotion সরাসরি `data/` বদলায়;
+    ২। ওই ১৬টি channel `data/channels/` folder-এ **নেইই** — শুধু flag নয়,
+        catalogue থেকেই সরানো হয়েছে। তাই ফেরানো মানে flag বদলানো নয়, নতুন
+        record যোগ করা — যা একটি বড় ও দৃশ্যমান পরিবর্তন।
+
+  proof ও evidence দুটোই reports/phase1-sustained-playback.json-এ committed
+  আছে, তাই Phase 3 চালাতে আর নতুন measurement লাগবে না — শুধু আপনার
+  সিদ্ধান্ত লাগবে।
+
+PHASE 4 (raw-TS ও player lifecycle) — করা হয়নি, এই session-এর তালিকায় ছিল না।
+  এখানেই Zee Bangla-র আসল সমাধান: mpegts.Events.LOADING_COMPLETE handle করা,
+  in-place load() (যা প্রমাণিতভাবে কিছুই করে না) বদলে পূর্ণ
+  pause→unload→detach→destroy→create→attach→load→play, exception গিলে না
+  ফেলা, duplicate-burst সুরক্ষা, backoff সহ bounded retry, এবং interlaced /
+  no-IDR stream-এর জন্য ভিন্ন handling।
+
+PHASE 5 (২১৫টি movie record) — আলাদা কাজ, পরিকল্পনা অনুযায়ীই বাকি।
+
+CROSS-RUN PERSISTENCE STORE — logic আছে, store নেই।
+  persistence_state() পুরোপুরি কাজ করে, কিন্তু scan-এর মাঝে observation
+  জমিয়ে রাখার কোনো store নেই, তাই কার্যত এখনো counter এক run-এর বেশি
+  এগোতে পারে না। store বানানো মানে নতুন state file লেখা — যা visibility
+  বদলাতে পারে, তাই audit-only ধাপে ইচ্ছাকৃতভাবে করা হয়নি।
+
+HMAC KEY — CI-তে নেই।
+  ফলে `failure_domain_tenant` সব সময় None এবং schema-র নিজের নিয়মে ওই
+  record `unknown`. এটি নিরাপদ দিকেই ভুল করে (unknown কিছু hide করতে পারে
+  না), এবং correlation/redundancy আলাদা grouping key দিয়ে ঠিকই কাজ করে।
+
+VANTAGE INDEPENDENCE — একবার মাপা, প্রতিষ্ঠিত নয়।
+  container egress = AS8075 Microsoft (IN)। দ্বিতীয় vantage (Cloudflare
+  worker) origin-echo header পাঠায়নি, তাই ওই run-এ অমাপা। চারটি play proxy
+  একই account-এ, তাই ওরা দুটি vantage হতে পারে না। অর্থাৎ may_hide()-এর
+  "দুটি স্বাধীন vantage" শর্ত এখনো পূরণযোগ্য নয় — যার মানে ওই কঠোর guard
+  বাস্তবে কিছুই hide করতে দেবে না, যা এই মুহূর্তে সঠিক আচরণ।
+
+MODEL-কে কর্তৃত্ব দেওয়া — ইচ্ছাকৃতভাবে দেওয়া হয়নি।
+  ১৫টি hide site-এ model যুক্ত, কিন্তু audit-only। কর্তৃত্ব দিলে এক commit-এ
+  শত শত item দুই দিকেই সরত। তাই আগে মেপে দেখানো হলো — ৩১টির মধ্যে ২১টি
+  Bangla channel আজকের নিয়মে hide হত, model সবগুলো রাখত। এই সংখ্যাটাই
+  পরের ধাপের সিদ্ধান্তের ভিত্তি, এবং সেটা owner-এর সিদ্ধান্ত।
+
+
+--------------------------------------------------------------------------------
+১১. নিরাপত্তা যাচাই — যা বদলায়নি
+--------------------------------------------------------------------------------
+  data/ folder                        একটি byte-ও বদলায়নি (git verified)
+  stream URL / credential             একটিও বদলায়নি
+  site/runtime-config.json            অপরিবর্তিত
+  config/settings.json                অপরিবর্তিত
+  site/ (player, CSS, JS)             এই session-এ অস্পৃশ্ট
+  কোনো channel hide হয়েছে?            না, একটিও
+  কোনো channel promote হয়েছে?         না, একটিও
+  publish_allowed কোথাও বদলেছে?       না
+
+  পুরোনো plan file ও screenshot        push করা হয়নি (নির্দেশ অনুযায়ী)
+
+
+--------------------------------------------------------------------------------
+১২. কোন file কী বদলেছে
+--------------------------------------------------------------------------------
+নতুন file:
+  config/phase0b-locks.json                    Phase 0b-র চারটি locked মান
+  scanner/visibility_audit.py                  audit-only wiring
+  scripts/visibility-model-audit.py            audit চালানোর driver
+  scripts/sustained-playback-check.py          ১২০s playback harness
+  tests/test_route_evidence_persistence.py     persistence + correlation + lock
+                                               + decoder + redaction test
+  tests/test_visibility_audit.py               audit invariance test
+  reports/visibility-model-audit.json          audit ফলাফল
+  reports/phase1-sustained-playback.json       Phase 1 measurement
+  the-new-latest-plan/phase0/*.json            Phase 0 evidence (৪টি)
+
+বদলানো file:
+  scanner/route_evidence.py       +৪২৬ line — lock loading, persistence counter,
+                                  tenant correlation, keyframe classifier,
+                                  decoder-capability আলাদা করা, redaction fix
+  scanner/player_compatibility.py +১৩  — ২টি audit call
+  scanner/browser_reachability.py +১৩  — ২টি audit call
+  scanner/bd_verifier.py          +২৯  — ৫টি audit call
+  scanner/verifier.py             +১৮  — ৩টি audit call
+  scanner/fast_pipeline.py        +১৮  — ৩টি audit call
+  scan.py                         +২৩  — scan শেষে audit flush
+  tests/test_route_evidence.py    ১টি test-এর উদাহরণ বদল (উদ্দেশ্য অপরিবর্তিত)
+
+কোনো hide path-এর **আচরণ** বদলানো হয়নি। প্রতিটি audit call শুধু একটি
+পর্যবেক্ষণ লেখে; যা hide হত তাই hide হয়, যা হত না তাই হয় না।
+

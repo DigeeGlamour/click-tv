@@ -14,6 +14,7 @@ import unicodedata
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Iterable, Set, Tuple
+from scanner.visibility_audit import audit_hide_safe
 
 
 DEFAULT_FAILURE_REPORT = Path("reports/confirmed-player-failures.json")
@@ -140,6 +141,12 @@ def mark_unproven_player_items(
     for item in items:
         if not isinstance(item, dict) or is_player_proven(item, kind, proof_keys):
             continue
+        audit_hide_safe(
+            "player_compatibility.mark_unproven_player_items",
+            item,
+            kind=kind,
+            reason="no player proof for this exact card and route set",
+        )
         item["publish_allowed"] = False
         item["player_verified"] = False
         item["player_visibility"] = "hidden_pending_player_proof"
@@ -182,6 +189,12 @@ def mark_confirmed_player_failures(
         prior_status = str(item.get("verification_status") or "").strip()
         if prior_status and prior_status != "failed_player_twice":
             item["network_verification_status"] = prior_status
+        audit_hide_safe(
+            "player_compatibility.mark_confirmed_player_failures",
+            item,
+            kind=kind,
+            reason="failed_player_twice",
+        )
         item["publish_allowed"] = False
         item["player_verified"] = False
         item["player_visibility"] = "hidden_failed_player"

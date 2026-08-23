@@ -47,6 +47,7 @@ from scanner.verifier import (
     _extract_bd_rules as _extract_bd_rules_for_global,
     verify_single_stream,
 )
+from scanner.visibility_audit import audit_hide_safe
 
 
 def _utc_now() -> str:
@@ -127,6 +128,12 @@ def _path_group(item: Dict[str, Any], depth: int = 3) -> str:
 
 
 def _quarantine_404_result(item: Dict[str, Any], path_group: str) -> Dict[str, Any]:
+    audit_hide_safe(
+        "fast_pipeline.quarantine_404_path_sample",
+        item,
+        reason=f"404 path sample for group {path_group}",
+        status=404,
+    )
     result = dict(item)
     result.update(
         verified=False,
@@ -195,6 +202,12 @@ def _pipeline_budget(settings: Dict[str, Any], mode: str) -> int:
 
 
 def _failure_result(item: Dict[str, Any], message: str, kind: str = "") -> Dict[str, Any]:
+    audit_hide_safe(
+        "fast_pipeline.failure_result",
+        item,
+        reason=str(message or kind or "verification failed")[:160],
+        error_kind=str(kind or ""),
+    )
     result = dict(item)
     result.update(
         verified=False,
@@ -238,6 +251,11 @@ def _apply_strict_player_visibility(
         if item.get("verified") is True:
             continue
         if item.get("publish_allowed") is True:
+            audit_hide_safe(
+                "fast_pipeline.strict_player_publish",
+                item,
+                reason="same-run playable media not proven",
+            )
             item["publish_allowed"] = False
             item["player_visibility"] = "hidden_unverified"
             item["verification_note"] = (

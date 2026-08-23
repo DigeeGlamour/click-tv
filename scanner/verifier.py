@@ -26,6 +26,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from scanner.visibility_audit import audit_hide_safe
 
 
 DEFAULT_USER_AGENT = (
@@ -1935,6 +1936,13 @@ def verify_single_stream(
             )
         )
 
+        if not policy_ok:
+            audit_hide_safe(
+                "verifier.resolution_policy",
+                item,
+                reason=str(status or policy_error or "resolution_policy"),
+                status=item.get("http_status"),
+            )
         item["verified"] = policy_ok
         item["publish_allowed"] = policy_ok
         item["verification_status"] = status
@@ -2049,6 +2057,11 @@ def _budget_exhausted_result(
             ),
         )
     else:
+        audit_hide_safe(
+            "verifier.time_budget",
+            item,
+            reason="global verification time budget ended before this stream was checked",
+        )
         item.update(
             publish_allowed=False,
             verification_status="failed",
@@ -2169,6 +2182,11 @@ def verify_all_candidates(
                 try:
                     verified_item = future.result()
                 except Exception as error:
+                    audit_hide_safe(
+                        "verifier.worker_exception",
+                        original_item,
+                        reason=f"verification worker raised: {str(error)[:120]}",
+                    )
                     verified_item = dict(original_item)
                     verified_item.update(
                         verified=False,

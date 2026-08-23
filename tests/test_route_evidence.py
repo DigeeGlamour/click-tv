@@ -263,8 +263,16 @@ class PlaybackAcceptanceTests(unittest.TestCase):
         self.assertEqual(verdict, re_mod.UNKNOWN)
 
     def test_an_unrecovered_fatal_error_fails(self):
+        # The example is a network-level fatal error on purpose. A DECODE error
+        # is a statement about this browser's decoder, not about the route, and
+        # is classified as advisory:device_or_browser_unsupported - see
+        # DecoderCapabilityTests in test_route_evidence_persistence.py, which
+        # pins the Zee Bangla measurement that established the distinction.
         verdict, _ = re_mod.classify_playback(
-            self._metrics(fatal_errors=["MEDIA_ERR_DECODE"], media_progress_seconds=0.0)
+            self._metrics(
+                fatal_errors=["fragLoadError: connection closed"],
+                media_progress_seconds=0.0,
+            )
         )
         self.assertEqual(verdict, re_mod.PLAYBACK_FAIL)
 

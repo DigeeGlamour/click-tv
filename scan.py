@@ -1259,6 +1259,28 @@ def run_pipeline(
     return summary
 
 
+def _flush_visibility_audit() -> None:
+    """Write the audit-only record of what the route-evidence model would do.
+
+    Advisory output. It changed nothing during the run; see
+    scanner/visibility_audit.py for why the model is connected before it is
+    given authority.
+    """
+    try:
+        from scanner import visibility_audit
+
+        written = visibility_audit.flush()
+        if written:
+            summary = visibility_audit.summary()
+            print(
+                f"   visibility model audit: {summary['decisions_seen']} hide "
+                f"decision(s) seen, model would keep "
+                f"{summary['model_would_keep']} (advisory only)"
+            )
+    except Exception:  # noqa: BLE001 - auditing must never fail a scan
+        pass
+
+
 def main() -> int:
     _force_utf8_console()
 
@@ -1298,6 +1320,7 @@ def main() -> int:
         run_pipeline(
             mode_choice
         )
+        _flush_visibility_audit()
         return 0
 
     except KeyboardInterrupt:
