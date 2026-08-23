@@ -59,6 +59,14 @@ PROVEN_LIVE_STATUSES = frozenset({
     "verified_bd",
     "verified_proxy",
     "manual_trusted",
+    # The strongest evidence this project can produce: two independent real
+    # browser sessions, 120 s apart, each playing the card to the full PASS
+    # floor (startup <= 10 s, media progress >= 115 s, cumulative stall <= 5 s,
+    # every announced render track progressing). Every other status here is a
+    # network or manifest observation; this one is decoded frames. See
+    # reports/phase1-sustained-playback.json and
+    # scripts/promote-proven-channels.py.
+    "verified_sustained_playback",
 })
 
 # Not proven from a GitHub runner, but genuinely reachable for the Bangladeshi

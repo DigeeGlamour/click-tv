@@ -177,8 +177,23 @@ async ([item, seconds, attemptIndex]) => {
   let videoProgressed = false, audioProgressed = false;
   const total = Math.ceil(seconds);
 
+  // Early exit, and only on a verdict that is already decided. The FAIL floor
+  // says "no first frame within 30 s" is a failure, so once that is true AND an
+  // unrecovered fatal error is on record, the remaining 85 s cannot change the
+  // classification - it can only burn wall clock. A 215-target run is a day
+  // otherwise, most of it spent re-confirming failures already established.
+  // This never shortens a session that might still PASS: a stream that has
+  // produced a frame, or has no fatal error, runs the full window.
+  const EARLY_EXIT_AFTER_SECONDS = 35;
   for (let i = 0; i < total; i++) {
     await new Promise((r) => setTimeout(r, 1000));
+    if (i >= EARLY_EXIT_AFTER_SECONDS && firstFrameAt === null && out.fatal_errors.length) {
+      out.early_exit_reason =
+        'no first frame within ' + EARLY_EXIT_AFTER_SECONDS +
+        's and an unrecovered fatal error: the FAIL floor is already met';
+      out.observed_window_seconds = Math.round(elapsed());
+      break;
+    }
     const t = video.currentTime || 0;
     const frames = video.webkitDecodedFrameCount || 0;
     const abytes = video.webkitAudioDecodedByteCount || 0;
@@ -288,6 +303,8 @@ def run(argv: List[str]) -> int:
     ap.add_argument("--profile", default="desktop_chrome")
     ap.add_argument("--out", default="reports/sustained-playback.json")
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--resume", action="store_true",
+                    help="keep measurements already in --out and skip those targets")
     ap.add_argument("--reclassify", default="",
                     help="recompute verdicts in an existing report and exit")
     args = ap.parse_args(argv)
@@ -301,6 +318,22 @@ def run(argv: List[str]) -> int:
         targets = json.load(handle)
     if args.limit:
         targets = targets[: args.limit]
+
+    # Resume. A 215-target run is roughly a day of wall clock, so it will be
+    # interrupted; without this every interruption would restart from zero and
+    # the run could never finish. Targets already present in the output report
+    # keep their measurement and are not re-measured.
+    already: Dict[str, Any] = {}
+    if args.resume:
+        try:
+            with open(os.path.join(ROOT, args.out), "r", encoding="utf-8") as handle:
+                prior = json.load(handle)
+            for result in prior.get("results") or ():
+                already[str(result.get("name"))] = result
+        except (OSError, ValueError):
+            already = {}
+        if already:
+            print(f"resuming: {len(already)} target(s) already measured", flush=True)
 
     from playwright.sync_api import sync_playwright
 
@@ -342,8 +375,11 @@ def run(argv: List[str]) -> int:
     with sync_playwright() as pw:
         browser = pw.chromium.launch(args=CHROME_ARGS)
         try:
+            results.extend(already.values())
             for index, target in enumerate(targets, start=1):
                 name = str(target.get("name") or f"target-{index}")
+                if name in already:
+                    continue
                 item = {
                     "name": name,
                     "url": target.get("url"),
@@ -351,8 +387,14 @@ def run(argv: List[str]) -> int:
                     "proxy_mode": target.get("proxy_mode"),
                     "header_profile": target.get("header_profile"),
                     "backups": [{"url": u} for u in (target.get("backups") or [])],
-                    "_sourceKind": "channel",
-                    "content_kind": "live_tv",
+                    # A movie must not be presented as a live channel: the
+                    # attempt plan, the mpegts isLive flag and the player's own
+                    # contextual buttons all branch on this.
+                    "_sourceKind": str(target.get("kind") or "channel"),
+                    "content_kind": (
+                        "movie" if str(target.get("kind") or "") == "movie"
+                        else "live_tv"
+                    ),
                 }
                 per_route: List[Dict[str, Any]] = []
                 for attempt_index in range(max(1, args.attempts)):
@@ -423,7 +465,17 @@ def run(argv: List[str]) -> int:
                                 "plan_routes": raw.get("plan_routes"),
                                 "attempt_route": raw.get("attempt_route"),
                                 "proxied": raw.get("proxied"),
-                                "window_seconds": args.seconds,
+                                # The window actually observed, which is
+                                # shorter than the target only when the FAIL
+                                # floor was already met. A PASS always runs the
+                                # full window, so no reset can rely on a
+                                # shortened observation.
+                                "window_seconds": (
+                                    raw.get("observed_window_seconds")
+                                    or args.seconds
+                                ),
+                                "target_window_seconds": args.seconds,
+                                "early_exit_reason": raw.get("early_exit_reason"),
                                 "kind": "full_playback_session",
                                 "playback_metrics": metrics,
                                 "verdict": verdict,

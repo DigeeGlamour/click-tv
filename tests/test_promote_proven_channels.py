@@ -1,0 +1,159 @@
+"""Phase 3 restoration, and the conditions it must never relax.
+
+Seven channels were put back into the catalogue because a 120 s measurement, run
+twice, disproved the ledger entry they were removed on. That is the right outcome
+and also the most dangerous script in the repository: it writes to data/. The
+tests below pin the four things that keep it honest - proof required, record
+preserved verbatim, nothing hidden, no duplicates.
+"""
+import json
+import sys
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from scanner import route_evidence as rev  # noqa: E402
+
+SCRIPT = ROOT / "scripts" / "promote-proven-channels.py"
+PHASE1 = ROOT / "reports" / "phase1-sustained-playback.json"
+LEDGER = ROOT / "reports" / "confirmed-player-failures.json"
+CATALOGUE = ROOT / "data" / "channels" / "bangla.json"
+
+RESTORED = {
+    "Channel 24", "Channel 1 NEWS", "Desh TV", "Ekhon Tv",
+    "Global TV", "Mohona TV", "NEXUS TV",
+}
+
+
+def _cards(path):
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return payload if isinstance(payload, list) else (
+        payload.get("channels") or payload.get("items") or []
+    )
+
+
+class ScriptContractTests(unittest.TestCase):
+    def setUp(self):
+        self.source = SCRIPT.read_text(encoding="utf-8")
+
+    def test_restoration_requires_two_full_passes(self):
+        self.assertIn("REQUIRED_FRESH_SESSIONS", self.source)
+        self.assertIn("rev.PROVEN", self.source)
+
+    def test_the_script_never_hides_anything(self):
+        # It sets publish_allowed True and must have no path to False.
+        self.assertIn('card["publish_allowed"] = True', self.source)
+        self.assertNotIn("publish_allowed\"] = False", self.source)
+        self.assertNotIn("publish_allowed=False", self.source)
+
+    def test_the_stored_record_is_used_verbatim(self):
+        # No URL, credential, header profile or proxy mode may be invented.
+        self.assertIn('dict(item["record"])', self.source)
+        for invented in ("url =", "header_profile =", "proxy_mode ="):
+            self.assertNotIn(invented, self.source, f"script writes {invented}")
+
+    def test_a_dry_run_mode_exists(self):
+        self.assertIn("--dry-run", self.source)
+
+
+class RestoredStateTests(unittest.TestCase):
+    def test_every_restored_channel_is_proven_in_phase1(self):
+        phase1 = json.loads(PHASE1.read_text(encoding="utf-8"))
+        proven = {
+            str(r.get("name")) for r in phase1.get("results") or ()
+            if r.get("proven")
+        }
+        self.assertTrue(
+            RESTORED <= proven,
+            f"restored without proof: {sorted(RESTORED - proven)}",
+        )
+
+    def test_each_proof_is_two_independent_full_passes(self):
+        phase1 = json.loads(PHASE1.read_text(encoding="utf-8"))
+        for result in phase1.get("results") or ():
+            if str(result.get("name")) not in RESTORED:
+                continue
+            passes = [
+                o for o in (result.get("observations") or ())
+                if o.get("verdict") == rev.PROVEN
+            ]
+            self.assertGreaterEqual(
+                len(passes), rev.REQUIRED_FRESH_SESSIONS, str(result.get("name"))
+            )
+            for observation in passes:
+                metrics = observation.get("playback_metrics") or {}
+                self.assertGreaterEqual(
+                    float(metrics.get("media_progress_seconds") or 0),
+                    rev.PASS_MIN_MEDIA_PROGRESS_SECONDS,
+                    str(result.get("name")),
+                )
+
+    def test_the_restored_channels_are_in_the_catalogue_exactly_once(self):
+        names = [str(c.get("name") or "") for c in _cards(CATALOGUE)]
+        for name in RESTORED:
+            self.assertEqual(names.count(name), 1, f"{name} appears {names.count(name)}x")
+
+    def test_the_restored_channels_are_publishable(self):
+        for card in _cards(CATALOGUE):
+            if str(card.get("name") or "") in RESTORED:
+                self.assertIsNot(card.get("publish_allowed"), False, card.get("name"))
+
+    def test_the_disproved_ledger_entries_are_gone(self):
+        # Leaving them would let the next scan hide the channel again on the
+        # evidence that was just disproved.
+        ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
+        still = {
+            str((r.get("record") or {}).get("name") or "")
+            for r in ledger.get("records") or ()
+        }
+        self.assertFalse(
+            RESTORED & still, f"still in the failure ledger: {sorted(RESTORED & still)}"
+        )
+
+    def test_the_removal_is_recorded_rather_than_silent(self):
+        ledger = json.loads(LEDGER.read_text(encoding="utf-8"))
+        self.assertEqual(
+            set(ledger.get("phase1_disproved_removals") or []), RESTORED
+        )
+        self.assertIn("phase1_disproved_note", ledger)
+
+    def test_the_restored_status_counts_as_proven_live(self):
+        # Found by a failing test, not by reading: the restoration invented a new
+        # status string without registering it, so the publish gate saw seven
+        # published channels it considered unplayable and would have hidden them
+        # on the next scan - undoing the restoration with the measurement still
+        # sitting in the report.
+        from scanner.browser_reachability import (  # noqa: PLC0415
+            PROVEN_LIVE_STATUSES,
+            item_is_proven_live,
+        )
+
+        self.assertIn("verified_sustained_playback", PROVEN_LIVE_STATUSES)
+        for card in _cards(CATALOGUE):
+            if str(card.get("name") or "") in RESTORED:
+                self.assertTrue(item_is_proven_live(card), card.get("name"))
+
+    def test_the_status_written_is_the_status_registered(self):
+        # The script and the gate must not drift apart.
+        from scanner.browser_reachability import (  # noqa: PLC0415
+            PROVEN_LIVE_STATUSES,
+        )
+
+        source = SCRIPT.read_text(encoding="utf-8")
+        import re  # noqa: PLC0415
+
+        match = re.search(
+            r'card\["verification_status"\]\s*=\s*"([^"]+)"', source
+        )
+        self.assertIsNotNone(match, "the script no longer sets a literal status")
+        self.assertIn(match.group(1), PROVEN_LIVE_STATUSES)
+
+    def test_no_other_channel_was_touched(self):
+        # 31 before, 7 added, nothing else.
+        self.assertEqual(len(_cards(CATALOGUE)), 38)
+
+
+if __name__ == "__main__":
+    unittest.main()

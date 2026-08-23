@@ -5353,6 +5353,93 @@ function ensureMpegTsLibrary() {
   return mpegtsLoaderPromise;
 }
 
+//
+// Raw-TS recovery. A restreamed mpegts source is not a segmented playlist: when
+// it stalls or ends there is nothing to seek past, so the only recovery is a new
+// player on the same url. mpegts.js will not reload an instance in place -
+// load() on a loaded player is ignored - so the sequence below is the whole
+// point of this function: pause, unload, detach, destroy, create, attach, load,
+// play. Anything shorter is the no-op this replaced.
+//
+// Bounded on purpose. An origin that has genuinely gone away would otherwise be
+// hammered forever, and a burst of recreates on one stall looks exactly like a
+// working stream to every metric while showing the viewer nothing.
+const MPEGTS_RECOVERY_MAX_ATTEMPTS = 4;
+const MPEGTS_RECOVERY_BASE_DELAY_MS = 800;
+const MPEGTS_RECOVERY_MIN_GAP_MS = 1500;
+let mpegtsRecoveryState = { attempts: 0, lastAt: 0, inFlight: false };
+
+function resetMpegTsRecovery() {
+  mpegtsRecoveryState = { attempts: 0, lastAt: 0, inFlight: false };
+}
+
+async function recreateMpegTsPlayer(reason = 'recovery') {
+  const context = state.mpegtsContext;
+  if (!context || !context.url) return false;
+  if (!isActiveAttempt(context.session, context.attemptToken)) return false;
+  if (mpegtsRecoveryState.inFlight) return false;
+
+  const now = Date.now();
+  // Duplicate-burst protection: several signals (stall watchdog, error handler,
+  // LOADING_COMPLETE) can fire for one underlying event.
+  if (now - mpegtsRecoveryState.lastAt < MPEGTS_RECOVERY_MIN_GAP_MS) return false;
+
+  if (mpegtsRecoveryState.attempts >= MPEGTS_RECOVERY_MAX_ATTEMPTS) {
+    // Out of retries. This is a real failure of this route, so hand it to the
+    // attempt ladder rather than silently doing nothing - the previous code
+    // swallowed the exception and left the viewer on a frozen frame.
+    failCurrentAttempt(
+      `MPEGTS recovery exhausted after ${mpegtsRecoveryState.attempts} attempt(s): ${reason}`,
+      context.attemptToken
+    );
+    return false;
+  }
+
+  mpegtsRecoveryState.inFlight = true;
+  mpegtsRecoveryState.attempts += 1;
+  mpegtsRecoveryState.lastAt = now;
+  const attemptNumber = mpegtsRecoveryState.attempts;
+
+  // Exponential backoff, so a flapping origin is not hit four times in a second.
+  const delay = MPEGTS_RECOVERY_BASE_DELAY_MS * Math.pow(2, attemptNumber - 1);
+  try {
+    markAttemptProgress(
+      `MPEGTS recovery ${attemptNumber}/${MPEGTS_RECOVERY_MAX_ATTEMPTS} (${reason})`,
+      context.attemptToken
+    );
+  } catch (_) { /* progress reporting must never block a recovery */ }
+
+  const previous = state.mpegts;
+  state.mpegts = null;
+  // Teardown. Each step is guarded separately: a player that already errored can
+  // throw on pause() while still needing unload() and destroy(), and skipping
+  // those leaks a worker and a SourceBuffer per attempt.
+  for (const step of ['pause', 'unload', 'detachMediaElement', 'destroy']) {
+    try { previous?.[step]?.(); } catch (_) { /* continue tearing down */ }
+  }
+
+  await new Promise((resolve) => setTimeout(resolve, delay));
+  if (!isActiveAttempt(context.session, context.attemptToken)) {
+    mpegtsRecoveryState.inFlight = false;
+    return false;
+  }
+
+  try {
+    await initMpegTs(context.url, context.session, context.attemptToken);
+    return true;
+  } catch (error) {
+    // Deliberately NOT swallowed. A failed rebuild is information the attempt
+    // ladder needs; hiding it is what made the old recovery path invisible.
+    failCurrentAttempt(
+      `MPEGTS recovery failed: ${error?.message || error}`,
+      context.attemptToken
+    );
+    return false;
+  } finally {
+    mpegtsRecoveryState.inFlight = false;
+  }
+}
+
 async function initMpegTs(url, session, attemptToken) {
   const mpegts = await ensureMpegTsLibrary();
   if (!mpegts.isSupported()) throw new Error('MPEGTS playback supported নয়');
@@ -5375,11 +5462,28 @@ async function initMpegTs(url, session, attemptToken) {
     stashInitialSize: resolveAutoProfile() === 'lite' ? 128 * 1024 : 1024 * 1024
   });
   state.mpegts = player;
+  // Recreating an mpegts player needs the url and the attempt it belongs to.
+  // Without them the recovery path could only call load() on the existing
+  // instance, which mpegts.js ignores unless the source was unloaded first -
+  // measured, and the reason a stalled raw-TS channel never recovered.
+  state.mpegtsContext = { url, session, attemptToken };
   player.attachMediaElement(video);
   player.load();
   player.on(mpegts.Events.ERROR, (_, detail) => {
     if (isActiveAttempt(session, attemptToken) && !isQualityLocked()) failCurrentAttempt(detail || 'MPEGTS error', attemptToken);
   });
+  // A raw-TS "live" route can return a FINITE body and end cleanly. Measured on
+  // the Zee Bangla route: 10.6 MB then a clean early EOF, direct at 2.46 s and
+  // through the proxy at 4.46 s against a 60 s probe. Without this handler the
+  // stream simply stopped and nothing in the player knew the source had ended,
+  // so no recovery was ever attempted.
+  if (mpegts.Events.LOADING_COMPLETE) {
+    player.on(mpegts.Events.LOADING_COMPLETE, () => {
+      if (!isActiveAttempt(session, attemptToken)) return;
+      if (session.item?._sourceKind === VIEW.MOVIE) return; // a movie ending is normal
+      void recreateMpegTsPlayer('source ended early');
+    });
+  }
   markAttemptProgress('MPEGTS loader attached', attemptToken);
   await safePlay(session, attemptToken);
   buildQualityMenu();
@@ -6018,6 +6122,11 @@ function handlePlaybackSuccess() {
   acceptPlaybackRoute(session);
   session.startupBufferGateActive = false;
   session.startupBufferGateReleased = true;
+  // Playback is genuinely healthy again, so the raw-TS retry budget goes back to
+  // full. Without this the budget is spent once and never returns: a channel
+  // that recovered four times over an evening would be dropped on its fifth
+  // hiccup even though every earlier recovery worked.
+  resetMpegTsRecovery();
   finalizePlaybackSuccess(session);
 }
 
@@ -6300,12 +6409,13 @@ function tryLiveNetworkRecovery(force = false) {
       state.shaka.retryStreaming();
     }
   } catch (_) {}
-  try {
-    if (state.mpegts) {
-      state.mpegts.load();
-      state.mpegts.play();
-    }
-  } catch (_) {}
+  if (state.mpegts) {
+    // load() on a player that is already loaded does nothing in mpegts.js, so
+    // the old body here was a no-op wrapped in a silent catch: it looked like a
+    // recovery and never was. A real recovery has to tear the player down and
+    // build a new one.
+    void recreateMpegTsPlayer(force ? 'forced recovery' : 'stall recovery');
+  }
   void resumeVideoSafely('network recovery');
 }
 

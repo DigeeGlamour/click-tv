@@ -539,3 +539,138 @@ MODEL-কে কর্তৃত্ব দেওয়া — ইচ্ছাক�
 কোনো hide path-এর **আচরণ** বদলানো হয়নি। প্রতিটি audit call শুধু একটি
 পর্যবেক্ষণ লেখে; যা hide হত তাই hide হয়, যা হত না তাই হয় না।
 
+================================================================================
+দ্বিতীয় পর্ব — তালিকার বাকি সব কাজ
+================================================================================
+
+--------------------------------------------------------------------------------
+১৩. PHASE 3 — ৭টি প্রমাণিত channel catalogue-এ ফেরানো হলো
+--------------------------------------------------------------------------------
+script: scripts/promote-proven-channels.py
+
+Phase 1-এ যে ৭টি channel দুইবার পূর্ণ ১২০s PASS করেছে, তাদের
+data/channels/bangla.json-এ ফেরানো হয়েছে:
+
+  channel           দুই session-এর media progress      stall
+  ----------------  ---------------------------------  -----
+  Channel 24        ১২৩.৯৪s / ১২৩.৯৯s                  ০ / ০
+  Channel 1 NEWS    ১২৪.১২s / ১২৪.০৮s                  ০ / ০
+  Desh TV           ১২৪.০২s / ১২৪.০২s                  ০ / ০
+  Ekhon Tv          ১২৪.০০s / ১২৪.০১s                  ০ / ০
+  Global TV         ১২৩.৮৭s / ১২৪.০৪s                  ০ / ০
+  Mohona TV         ১২৩.৬৫s / ১২১.৯৩s                  ০ / ০
+  NEXUS TV          ১২৩.৯৫s / ১২৩.৯৯s                  ০ / ০
+
+bangla.json: ৩১ → ৩৮ item। অন্য কোনো channel ছোঁয়া হয়নি।
+
+যে নিয়মগুলো script ভাঙতে পারে না (test দিয়ে বাঁধা):
+  • proof ছাড়া কিছুই ফেরায় না — দুটি স্বাধীন পূর্ণ PASS বাধ্যতামূলক;
+  • ledger-এ সংরক্ষিত record **হুবহু** ব্যবহার করে — কোনো URL, credential,
+    header profile বা proxy mode বানায় না বা বদলায় না (git-এর পুরোনো
+    version-এর সঙ্গে মিলিয়ে byte-for-byte যাচাই করা হয়েছে);
+  • catalogue-এ আগে থেকে থাকা channel ছোঁয় না;
+  • কখনো কিছু hide করে না — publish_allowed = False লেখার কোনো পথই নেই।
+
+একটি ফাঁক test-ই ধরিয়ে দিল, পড়ে নয়: restoration একটি নতুন status string
+(`verified_sustained_playback`) লিখছিল কিন্তু সেটি
+`browser_reachability.PROVEN_LIVE_STATUSES`-এ নথিভুক্ত করা হয়নি। ফলে
+publish gate ওই ৭টি published channel-কে অচল ভাবত এবং পরের scan-এ আবার
+hide করে দিত — অর্থাৎ measurement report-এ পড়ে থাকতেই restoration
+নিজে থেকে উল্টে যেত। status এখন নথিভুক্ত, এবং দুটি test নিশ্চিত করে যে
+script যে status লেখে সেটিই gate চেনে — দুটি আর আলাদা হয়ে যেতে পারবে না।
+
+failure ledger থেকে ওই ৭টি entry সরানো হয়েছে, কারণ রেখে দিলে পরের scan
+আবার ওই একই — এখন মিথ্যা প্রমাণিত — evidence দেখে channel-গুলো hide করে
+দিত। সরানোর কথা ledger-এ `phase1_disproved_removals` হিসেবে লেখা আছে,
+নীরবে ফেলা হয়নি।
+
+
+--------------------------------------------------------------------------------
+১৪. PHASE 4 — RAW-TS RECOVERY: যে "recovery" আসলে কিছুই করত না
+--------------------------------------------------------------------------------
+পুরোনো code ছিল:
+
+    try { if (state.mpegts) { state.mpegts.load(); state.mpegts.play(); } }
+    catch (_) {}
+
+mpegts.js একটি ইতিমধ্যে-loaded player-এ `load()` **উপেক্ষা করে** — আগে
+unload করতে হয়। অর্থাৎ এই পথটি প্রতিটি log-এ recovery হিসেবে দেখা যেত এবং
+প্রতিটি run-এ ছিল সম্পূর্ণ নিষ্ক্রিয়। আর যা-ই ভুল হোক, exception খালি
+catch-এ হারিয়ে যেত।
+
+যা করা হলো — নতুন `recreateMpegTsPlayer()`:
+  • পূর্ণ teardown ও পুনর্নির্মাণ:
+    pause → unload → detachMediaElement → destroy → create → attach → load → play
+    (প্রতিটি teardown step আলাদা করে guarded — একটি errored player pause()-এ
+     throw করতে পারে অথচ তখনও unload/destroy দরকার, নইলে প্রতি attempt-এ
+     একটি worker ও SourceBuffer leak হয়)
+  • **LOADING_COMPLETE handler** — raw-TS "live" route যে finite body দিয়ে
+    clean EOF-এ শেষ হয় (মাপা: ১০.৬ MB, direct ২.৪৬s / proxy ৪.৪৬s,
+    ৬০s probe-এর বিপরীতে) সেটি এখন ধরা পড়ে। আগে stream থেমে যেত আর
+    player-এর কিছুই জানত না যে source শেষ হয়ে গেছে, তাই কোনো recovery
+    চেষ্টাই হত না। movie শেষ হওয়া স্বাভাবিক, তাই movie বাদ।
+  • bounded retry — সর্বোচ্চ ৪ বার, exponential backoff (৮০০ms × 2^n)
+  • duplicate-burst সুরক্ষা — stall watchdog, error handler ও
+    LOADING_COMPLETE তিনটিই একই ঘটনায় fire করতে পারে; ১৫০০ms-এর কম
+    ব্যবধানে দ্বিতীয় recovery হবে না, আর একসাথে দুটি চলবে না
+  • exception আর গিলে ফেলা হয় না — retry শেষ হলে বা rebuild ব্যর্থ হলে
+    `failCurrentAttempt()`-এ যায়, যাতে attempt ladder পরের route ধরতে পারে
+  • সত্যিকারের সফল playback-এ retry budget **ফিরে আসে**
+    (নইলে budget একবার খরচ হয়ে আর কখনো ফিরত না — যে channel সন্ধ্যায় চারবার
+     recover করেছে, সে পঞ্চম hiccup-এ বাদ পড়ত, যদিও প্রতিটি recovery কাজ করেছিল)
+
+test: tests/test_player_recovery_contract.py — ১৩টি। এর মধ্যে একটি সরাসরি
+পুরোনো no-op-এর আকৃতি খোঁজে, তাই ওটা ফিরে এলে test fail করবে।
+
+সৎ সীমাবদ্ধতা: এই repository-তে কোনো JS test runner নেই, তাই এগুলি app.js
+পড়ে যাচাই করে — অর্থাৎ code-এর আকৃতি সঠিক তা প্রমাণ করে, চলার সময় সঠিক
+তা প্রমাণ করে না। যেটা পাহারা দিচ্ছে সেটা অদৃশ্য ছিল, তাই এই দুর্বল
+রূপের test-ও না থাকার চেয়ে ভালো।
+
+
+--------------------------------------------------------------------------------
+১৫. CROSS-RUN PERSISTENCE STORE — escalation path সচল হলো
+--------------------------------------------------------------------------------
+নতুন: scanner/persistence_store.py (+ ১২টি test)
+
+কেন দরকার ছিল: locked window ১৮০০ সেকেন্ড, observation-গুলো কমপক্ষে ১২০
+সেকেন্ড দূরে — কোনো একক scan এত সময় ধরে না। তাই এই store-এর আগে counter
+১ পেরোতেই পারত না এবং পুরো escalation path কার্যত নিষ্ক্রিয় ছিল।
+
+মাপার সময় একটি bug ধরা পড়ল: store `playback_metrics` বাদ দিচ্ছিল, তাই
+`resets_persistence` PASS যাচাই করতে পারত না এবং **আসল পূর্ণ PASS-ও counter
+reset করত না**। এখন metric-গুলো whitelist করে রাখা হয়, কারণ reset সংখ্যা
+থেকে **পুনঃযাচাই** হতে হবে — সংরক্ষিত verdict-এর কথায় বিশ্বাস করা মানে
+সেই আলগা "success" পড়া, যা HTTP 200-কে working playback ভাবতে দিয়েছিল।
+
+আচরণ (test দিয়ে মাপা):
+  ৩টি transient, ৬০০s দূরে      → persistent_unavailable_candidate
+  তারপর আসল পূর্ণ PASS          → counter শূন্য, reset নথিভুক্ত
+  metric ছাড়া শুধু "PASS" দাবি    → reset হয় **না**
+  URL/credential দিলে            → store-এ ঢোকে না
+
+প্রতিটি failure mode ইচ্ছাকৃতভাবে এক দিকেই ভুল করে: অপাঠ্য file, নষ্ট
+record, timestamp-হীন observation — সবই evidence **কমায়**, বানায় না।
+evidence কমা মানে channel hide করা কঠিন হওয়া, সহজ নয়।
+
+
+--------------------------------------------------------------------------------
+১৬. PHASE 5 — ২১৫টি MOVIE record
+--------------------------------------------------------------------------------
+মাপা হলো: ২১৫টি movie record-এর প্রতিটিরই url আছে, সবগুলো stream_type
+`media`, এবং **সবগুলোই** catalogue থেকে সরানো (data/movies/ এ ৮১৭টি movie
+আছে, তাদের একটিও এই ২১৫-এর মধ্যে নয়)।
+
+harness-এ যা যোগ করা হলো:
+  • movie support — target-এর নিজের kind ব্যবহার হয়, "channel" ধরে নেওয়া হয়
+    না (attempt plan, mpegts-এর isLive flag ও player-এর contextual button
+    তিনটিই এর উপর নির্ভর করে)
+  • `--resume` — ইতিমধ্যে মাপা target বাদ দিয়ে এগোয়
+
+২১৫ × ২ session × ১২০s ≈ ২৪ ঘণ্টা wall clock। run শুরু করা হয়েছে এবং
+প্রতিটি target শেষ হলেই reports/phase5-movie-playback.json লেখা হয়, তাই
+বাধা পড়লেও কোনো measurement নষ্ট হয় না — `--resume` দিয়ে যেখান থেকে থেমেছে
+সেখান থেকেই চলবে।
+
+এই report লেখার সময় run চলমান। এটি অসম্পূর্ণ বলে স্পষ্ট লিখে রাখা হলো;
+সম্পূর্ণ ফল ওই JSON file-এ জমা হবে।
