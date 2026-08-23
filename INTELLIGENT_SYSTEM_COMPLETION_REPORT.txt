@@ -880,3 +880,93 @@ route-এর স্বাস্থ্য সম্পর্কে নয়। `
 পর্যবেক্ষকের দোষ নয়, তাই তার window-পথ অটুট।
 
 Phase 1 re-classify করা হলো: কোনো verdict বদলায়নি (ওখানে 403 ছিল না)।
+
+================================================================================
+২৩. PHASE 5 সম্পূর্ণ — ২১৫টি MOVIE, এবং কেন ১৩.৬ ঘণ্টা লাগেনি
+================================================================================
+
+browser sweep-এর প্রথম ৬টি movie-ই একইভাবে ব্যর্থ হচ্ছিল, প্রতিটিতে ২৩৫
+সেকেন্ড। বাকি ২০৯টির জন্য আরও ১৩.৬ ঘণ্টা লাগত। থামিয়ে কারণটা দেখলাম, এবং
+সেটাই ছিল সঠিক কাজ।
+
+দুটি স্পষ্ট প্যাটার্ন:
+  direct route  → "Failed to fetch"  (browser-এর CORS প্রত্যাখ্যান)
+  proxy route   → HTTP 403           (এই egress থেকে block)
+
+তাই সব ২১৫টি route-এর উপর একটি দ্রুত HTTP probe চালানো হলো
+(scripts/movie-route-probe.py) — ১৩.৬ ঘণ্টার বদলে **৩ মিনিটে**:
+
+  মোট route                                   ২১৫
+  HTTP 403                                    ২১১   → advisory:vantage_blocked
+  network error                                 ৩   → advisory:transient_network
+  HTTP 206 (সত্যিই byte দিল)                     ১   → unknown
+  ------------------------------------------------
+  escalatable                                    ৩ / ২১৫
+
+  CORS যা browser-এ direct fetch করতে দেয়        ০ / ২১৫
+  scheme                                     সব https
+
+**নির্ণায়ক তথ্য: ২১১টি 403-ই একটিমাত্র host-এ।**
+
+এটি ২১১টি মরা movie নয়। একটি host এই egress IP ব্লক করছে — vantage block-এর
+পাঠ্যপুস্তকীয় উদাহরণ। model-এর নিজের নিয়মে `advisory:vantage_blocked`
+**escalatable নয়** এবং সর্বোচ্চ vantage scope পায়। অর্থাৎ:
+
+  • এই ২১১টি movie এই evidence দিয়ে **কখনো hide করা যাবে না**;
+  • সমানভাবে, এই evidence দিয়ে **কখনো প্রমাণিতও হবে না**;
+  • browser sweep চালিয়ে গেলে ২০৯ বার একই IP-block নিশ্চিত করা হত,
+    কোনো নতুন তথ্য ছাড়াই।
+
+আরেকটি স্বাধীন তথ্য: ০/২১৫ route CORS header পাঠায়। অর্থাৎ direct route
+কোনো browser-এই কখনো কাজ করবে না — কারো জন্যই নয়। এই ২১৫টির একমাত্র
+সম্ভাব্য পথ proxy। এটি structural fact, IP-নিরপেক্ষ, তাই player configuration
+ও ranking-এ ব্যবহারযোগ্য — কিন্তু hide করার কারণ নয়।
+
+যেখানে browser test-এর এখনো মূল্য আছে সেই ৪টিতেই চালানো হলো (৩টি attempt
+route ও ২টি session করে), কারণ কেবল এখানেই ফলাফল ভিন্ন হতে পারে:
+  Rockstar, Abar Hawa Bodol, Swastik Sanket, Hatyapuri (2022)
+  — এর মধ্যে Swastik Sanket probe-এ 206 দিয়েছে, অর্থাৎ host সত্যিই byte দিচ্ছে।
+ফল: reports/phase5-live-movie-playback.json
+
+সৎ সীমাবদ্ধতা, স্পষ্ট করে: এই probe **playback প্রমাণ করে না**। ২০০ মানে
+চলমান movie নয় — প্রতিটি hidden channel-এর primary এই vantage থেকে ২০০ ও
+বৈধ manifest দিয়েও ledger-এ failed ছিল। probe কেবল reachability মাপে,
+model-এর একই classify_transport দিয়ে শ্রেণিভুক্ত হয়, এবং কিছুই hide বা
+promote করতে পারে না।
+
+Phase 5-এর সিদ্ধান্ত: ২১৫টি movie record-এর ব্যাপারে যা জানার ছিল তা এখন
+জানা — ২১১টি এই vantage থেকে ব্লকড (অতএব অস্পৃশ্য), ৩টি transient, ১টি
+জীবিত ও পরীক্ষাধীন। একটিও hide করা হয়নি, একটিও promote করা হয়নি।
+
+--------------------------------------------------------------------------------
+২৪. CORS প্রত্যাখ্যান — শেষ শ্রেণিবিভাগ সংশোধন
+--------------------------------------------------------------------------------
+probe-এর একটি ফল আরও একটি অনির্দিষ্টতা ধরিয়ে দিল: ০/২১৫ route
+Access-Control-Allow-Origin header পাঠায়। অর্থাৎ direct route কোনো
+browser-এই কখনো কাজ করবে না — কারো জন্যই নয়। এটি route-এর **configuration
+সংক্রান্ত স্থায়ী তথ্য**, কোনো outage নয়।
+
+অথচ "Failed to fetch" পড়ে model বলছিল `advisory:transient_network`, যা
+escalatable। সঠিক শ্রেণি `advisory:structurally_risky` — escalatable নয়,
+শুধু advisory: ranking ও player configuration বদলাবে ("এই route-এ proxy
+ব্যবহার করো"), visibility কখনোই নয়।
+
+সংশোধন: classify_playback এখন ঐচ্ছিকভাবে `delivery_path` নেয়।
+  direct route + HTTP status-ই আসেনি এমন fetch প্রত্যাখ্যান
+      → advisory:structurally_risky (escalatable নয়)
+  proxy route-এ একই বার্তা
+      → advisory:transient_network (proxy নিজেই header পাঠায়, তাই ওখানে
+        সত্যিই network অবস্থা)
+  direct route কিন্তু আসল status এসেছে (403 / 503)
+      → নিজের শ্রেণিতেই থাকে, নিয়মটি কেবল status-হীন request ঢাকে
+
+Phase 5-এর browser ফল নতুন নিয়মে re-classify করা হলো। ফলাফল:
+
+  advisory:vantage_blocked        ৯
+  advisory:structurally_risky     ৬
+  ------------------------------------
+  escalatable                     ০ / ১৫
+
+অর্থাৎ movie সংক্রান্ত সমস্ত browser evidence এখন non-escalatable — এই
+তথ্য দিয়ে একটি movie-ও কখনো hide করা যাবে না। Phase 1-এ কোনো verdict
+বদলায়নি (ওখানে direct-route fetch প্রত্যাখ্যান ছিল না)।

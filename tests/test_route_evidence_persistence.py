@@ -555,6 +555,82 @@ class DecoderCapabilityTests(unittest.TestCase):
             # across the window, never on one observation.
             self.assertTrue(re_mod.is_escalatable(verdict), detail)
 
+    def test_a_direct_fetch_refusal_is_structural_not_transient(self):
+        """A missing CORS header is a route configuration fact.
+
+        The movie probe measured 0 of 215 routes sending
+        Access-Control-Allow-Origin, so a direct fetch can never succeed in any
+        browser for any viewer. Calling that transient made it escalatable, when
+        what it actually means is "use the proxy for this route" - a ranking and
+        player-config fact that must never touch visibility.
+        """
+        metrics = {
+            "announced_render_tracks": ["video", "audio"],
+            "progressing_tracks": [],
+            "first_frame_seconds": None,
+            "startup_seconds": None,
+            "media_progress_seconds": 0.0,
+            "cumulative_stall_seconds": 35,
+            "fatal_errors": [
+                'mpegts NetworkError/Exception {"code":-1,"msg":"Failed to fetch"}'
+            ],
+            "recovered_to_pass_floor": False,
+        }
+        verdict, _ = re_mod.classify_playback(metrics, delivery_path="direct")
+        self.assertEqual(verdict, re_mod.ADVISORY_STRUCTURALLY_RISKY)
+        self.assertFalse(re_mod.is_escalatable(verdict))
+
+    def test_the_same_refusal_through_a_proxy_stays_transient(self):
+        # Through a proxy there is no CORS story to tell: the proxy sends the
+        # headers, so a refusal there really is a network condition.
+        metrics = {
+            "announced_render_tracks": ["video", "audio"],
+            "progressing_tracks": [],
+            "first_frame_seconds": None,
+            "startup_seconds": None,
+            "media_progress_seconds": 0.0,
+            "cumulative_stall_seconds": 35,
+            "fatal_errors": [
+                'mpegts NetworkError/Exception {"code":-1,"msg":"Failed to fetch"}'
+            ],
+            "recovered_to_pass_floor": False,
+        }
+        verdict, _ = re_mod.classify_playback(metrics, delivery_path="proxy")
+        self.assertEqual(verdict, re_mod.ADVISORY_TRANSIENT_NETWORK)
+
+    def test_a_real_status_on_a_direct_route_keeps_its_own_class(self):
+        # The structural rule must only cover requests that never reached a
+        # status; a 403 is still a vantage block and a 503 still transient.
+        base = {
+            "announced_render_tracks": ["video", "audio"],
+            "progressing_tracks": [],
+            "first_frame_seconds": None,
+            "startup_seconds": None,
+            "media_progress_seconds": 0.0,
+            "cumulative_stall_seconds": 35,
+            "recovered_to_pass_floor": False,
+        }
+        for detail, expected in (
+            ('mpegts NetworkError/HttpStatusCodeInvalid {"code":403}',
+             re_mod.ADVISORY_VANTAGE_BLOCKED),
+            ('mpegts NetworkError/HttpStatusCodeInvalid {"code":503}',
+             re_mod.ADVISORY_TRANSIENT_NETWORK),
+        ):
+            verdict, _ = re_mod.classify_playback(
+                dict(base, fatal_errors=[detail]), delivery_path="direct"
+            )
+            self.assertEqual(verdict, expected, detail)
+
+    def test_repeating_a_structural_refusal_never_matures(self):
+        state = re_mod.persistence_state(
+            [
+                _obs(i * 600, verdict=re_mod.ADVISORY_STRUCTURALLY_RISKY)
+                for i in range(12)
+            ],
+            now=T0 + 6600,
+        )
+        self.assertEqual(state["state"], re_mod.UNKNOWN)
+
     def test_a_403_in_a_fatal_error_is_a_vantage_block(self):
         """A geo-block must never accumulate toward disqualification.
 

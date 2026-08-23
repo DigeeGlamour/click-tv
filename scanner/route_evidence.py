@@ -584,7 +584,36 @@ def is_escalatable(verdict_class: str) -> bool:
 # ---------------------------------------------------------------------------
 # Playback acceptance
 # ---------------------------------------------------------------------------
-def classify_playback(metrics: Dict[str, Any]) -> Tuple[str, List[str]]:
+#: A fetch that never produced an HTTP status at all. On a DIRECT route this is
+#: the signature of the browser refusing the request rather than the origin
+#: failing - and the movie probe measured 0 of 215 routes sending an
+#: Access-Control-Allow-Origin header, so a direct fetch can never succeed in any
+#: browser for any viewer. That is a permanent property of the route's
+#: configuration, not an outage, so it belongs in advisory:structurally_risky:
+#: it should change ranking and player configuration (prefer the proxy) and must
+#: never change visibility.
+BARE_FETCH_REFUSAL_MARKERS = (
+    "failed to fetch",
+    "err_failed",
+    "load failed",
+    "networkerror when attempting to fetch",
+)
+
+
+def describes_bare_fetch_refusal(errors: Iterable[Any]) -> bool:
+    """A fetch that never reached an HTTP status."""
+    blob = " ".join(str(e or "") for e in (errors or ())).lower()
+    if not blob:
+        return False
+    if re.search(r'"?code"?\s*[:=]\s*"?[1-5]\d\d\b', blob):
+        # A real status came back, so the request was not refused outright.
+        return False
+    return any(marker in blob for marker in BARE_FETCH_REFUSAL_MARKERS)
+
+
+def classify_playback(
+    metrics: Dict[str, Any], *, delivery_path: str = ""
+) -> Tuple[str, List[str]]:
     """PASS / FAIL / AMBIGUOUS over one fixed 120 s observation.
 
     PASS requires every announced RENDER track to progress - not "audio and
@@ -651,6 +680,15 @@ def classify_playback(metrics: Dict[str, Any]) -> Tuple[str, List[str]]:
                 "capped at vantage scope and never escalatable"
             )
             return ADVISORY_VANTAGE_BLOCKED, reasons
+        if str(delivery_path or "").strip().lower() == "direct" and (
+            describes_bare_fetch_refusal(fatal)
+        ):
+            reasons.append(
+                "the browser refused a direct fetch that never reached an HTTP "
+                "status; a route configuration fact, advisory only - it should "
+                "change ranking and player config, never visibility"
+            )
+            return ADVISORY_STRUCTURALLY_RISKY, reasons
         if describes_transient_network(fatal):
             # Still escalatable, but only through the persistence window: one
             # failed fetch cannot reach hard_disqualified on its own.

@@ -250,7 +250,9 @@ def reclassify(path: str) -> int:
             if not metrics:
                 continue
             before = observation.get("verdict")
-            verdict, reasons = rev.classify_playback(metrics)
+            verdict, reasons = rev.classify_playback(
+                metrics, delivery_path=str(observation.get("attempt_route") or "")
+            )
             if verdict != before:
                 changes.append(
                     {
@@ -399,7 +401,14 @@ def run(argv: List[str]) -> int:
                 per_route: List[Dict[str, Any]] = []
                 for attempt_index in range(max(1, args.attempts)):
                     for session in range(max(1, args.sessions)):
-                        if per_route and args.separation > 0:
+                        # The 120 s separation exists so two SUCCESSES cannot
+                        # be one cached response counted twice. Re-confirming a
+                        # failure needs no such gap, and paying it anyway is
+                        # what made the movie sweep 235 s per title.
+                        previous_passed = bool(
+                            per_route and per_route[-1].get("verdict") == rev.PROVEN
+                        )
+                        if per_route and args.separation > 0 and previous_passed:
                             time.sleep(args.separation)
                         context = browser.new_context(
                             viewport={"width": 1366, "height": 768},
@@ -456,7 +465,12 @@ def run(argv: List[str]) -> int:
                                 "fatal_errors": raw.get("fatal_errors") or [],
                                 "recovered_to_pass_floor": False,
                             }
-                            verdict, reasons = rev.classify_playback(metrics)
+                            # The route matters: a bare fetch refusal on a
+                            # DIRECT route is a CORS fact, not an outage.
+                            verdict, reasons = rev.classify_playback(
+                                metrics,
+                                delivery_path=str(raw.get("attempt_route") or ""),
+                            )
                             record = {
                                 "attempt_index": attempt_index,
                                 "session": session,
@@ -501,6 +515,20 @@ def run(argv: List[str]) -> int:
                                 pass
                         per_route.append(record)
                         mark = record["verdict"]
+                        # A verdict that is neither PROVEN nor escalatable cannot
+                        # change anything: it can never promote the item and can
+                        # never hide it. Measured on the movie sweep, where every
+                        # title returned advisory:vantage_blocked (403 through the
+                        # proxy) or a CORS refusal on the direct route - a second
+                        # session re-confirms an unusable verdict at full price.
+                        decisive = (
+                            mark == rev.PROVEN or rev.is_escalatable(str(mark))
+                        )
+                        if not decisive and session == 0:
+                            record["sessions_skipped_reason"] = (
+                                f"verdict {mark} is neither provable nor "
+                                "escalatable; a second session cannot change it"
+                            )
                         detail = record.get("reasons") or []
                         notes = record.get("notes") or []
                         fatal = (record.get("playback_metrics") or {}).get(
@@ -517,6 +545,8 @@ def run(argv: List[str]) -> int:
                             + (f" | note={str(notes[0])[:60]}" if notes else ""),
                             flush=True,
                         )
+                        if not decisive and session == 0:
+                            break
 
                 passes = [r for r in per_route if r["verdict"] == rev.PROVEN]
                 results.append(
