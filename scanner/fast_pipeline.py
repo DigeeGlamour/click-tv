@@ -48,7 +48,7 @@ from scanner.verifier import (
     _extract_bd_rules as _extract_bd_rules_for_global,
     verify_single_stream,
 )
-from scanner.visibility_audit import audit_hide_safe
+from scanner.visibility_audit import audit_hide_safe, model_permits_hide
 
 
 def _utc_now() -> str:
@@ -260,11 +260,12 @@ def _apply_strict_player_visibility(
         if str(item.get("verification_status") or "") in PROVEN_LIVE_STATUSES:
             continue
         if item.get("publish_allowed") is True:
-            audit_hide_safe(
-                "fast_pipeline.strict_player_publish",
-                item,
-                reason="same-run playable media not proven",
+            allowed, why = model_permits_hide(
+                "fast_pipeline.strict_player_publish", item
             )
+            if not allowed:
+                item["model_blocked_hide"] = why
+                continue
             item["publish_allowed"] = False
             item["player_visibility"] = "hidden_unverified"
             item["verification_note"] = (

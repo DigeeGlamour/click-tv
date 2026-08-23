@@ -25,7 +25,7 @@ from __future__ import annotations
 import datetime as _dt
 import json
 import os
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from scanner import persistence_store
 from scanner import route_evidence as rev
@@ -156,6 +156,59 @@ def audit_hide(
     else:
         _LEDGER.append({"site": site, "model_would_hide": bool(allowed), "_truncated": True})
     return decision
+
+
+#: When True the model's decision is ENFORCED, not merely recorded: a hide that
+#: `may_hide` rejects does not happen.
+#:
+#: Off, and this is now a measured decision rather than caution. Turning it on
+#: broke seven existing contract tests, and reading them showed they were right
+#: to break: they require hides that ARE justified. "An item with no reachable
+#: route at all is hidden" is the clearest - that is a structural finding across
+#: every route a channel has, not one vantage disagreeing about one route.
+#: `may_hide` refuses it anyway, because it demands two independent vantages for
+#: anything, and blanket enforcement therefore stops legitimate hides along with
+#: the illegitimate ones.
+#:
+#: The protection that actually mattered is in place by a narrower route: an item
+#: with sustained-playback proof is exempt at each hide site (see
+#: scanner/sustained_proof.py), which is what keeps the seven restored channels.
+#: That is targeted at the failure that was measured, instead of switching off
+#: hiding in general.
+#:
+#: Turning this on becomes correct once real two-vantage evidence records are
+#: being collected per route - vantage independence itself is now measured
+#: (reports/vantage-independence.json), so the remaining piece is the evidence
+#: pipeline, not the network.
+ENFORCE_MODEL_DECISION = False
+
+
+def model_permits_hide(
+    site: str,
+    item: Dict[str, Any],
+    *,
+    healthy_sibling_sources: int = 0,
+    evidence: Sequence[Dict[str, Any]] = (),
+) -> Tuple[bool, str]:
+    """Whether the model allows this item to be hidden.
+
+    Returns (allowed, reason). With enforcement off it always allows, so the
+    caller's behaviour is unchanged and only the audit records the difference.
+    """
+    try:
+        decision = audit_hide(
+            site,
+            item,
+            evidence=evidence,
+            healthy_sibling_sources=healthy_sibling_sources,
+        )
+    except Exception:  # noqa: BLE001 - a model failure must not block a scan
+        return True, "model unavailable; caller behaviour unchanged"
+    if not ENFORCE_MODEL_DECISION:
+        return True, "audit-only mode; decision recorded but not enforced"
+    if decision.get("model_would_hide"):
+        return True, str(decision.get("model_reason") or "model permits")
+    return False, str(decision.get("model_reason") or "model refuses")
 
 
 def audit_hide_safe(site: str, item: Dict[str, Any], **kwargs: Any) -> None:

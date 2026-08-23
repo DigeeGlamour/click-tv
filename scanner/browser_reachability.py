@@ -36,7 +36,7 @@ from __future__ import annotations
 import ipaddress
 from typing import Any, Dict, Iterable, List, Tuple
 from urllib.parse import urlsplit
-from scanner.visibility_audit import audit_hide_safe
+from scanner.visibility_audit import audit_hide_safe, model_permits_hide
 
 
 UNREACHABLE_STATUS = "unreachable_from_browser"
@@ -140,12 +140,12 @@ def mark_unproven_items(
             continue
 
         status = str(item.get("verification_status") or "").strip()
-        audit_hide_safe(
-            "browser_reachability.mark_unproven_items",
-            item,
-            kind=kind,
-            reason=status or "unknown_status",
+        allowed, why = model_permits_hide(
+            "browser_reachability.mark_unproven_items", item
         )
+        if not allowed:
+            item["model_blocked_hide"] = why
+            continue
         item["network_verification_status"] = status
         item["publish_allowed"] = False
         item["player_visibility"] = "hidden_unproven_this_run"
@@ -274,12 +274,12 @@ def mark_browser_unreachable(
         prior_status = str(item.get("verification_status") or "").strip()
         if prior_status and prior_status != UNREACHABLE_STATUS:
             item["network_verification_status"] = prior_status
-        audit_hide_safe(
-            "browser_reachability.hide_browser_unreachable",
-            item,
-            kind=kind,
-            reason=prior_status or "browser_unreachable",
+        allowed, why = model_permits_hide(
+            "browser_reachability.hide_browser_unreachable", item
         )
+        if not allowed:
+            item["model_blocked_hide"] = why
+            continue
         item["publish_allowed"] = False
         item["player_verified"] = False
         item["player_visibility"] = "hidden_browser_unreachable"

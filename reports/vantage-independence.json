@@ -1,0 +1,56 @@
+{
+  "mode": "vantage_independence_probe",
+  "note": "Independence is shown by a host one vantage cannot reach at all while the other can. Status-code disagreements (200 vs 206) are excluded: the proxy normalises Range handling, so those reflect the proxy's own behaviour rather than a different network path.",
+  "hosts_surveyed": 70,
+  "attempts_per_host": 3,
+  "proxies_configured": 4,
+  "proxy_caveat": "All configured proxies sit on one provider account and are ONE vantage between them. This probe establishes scanner-egress vs proxy-egress, which is the pair the guard requires.",
+  "independent": true,
+  "decisive_hosts": 2,
+  "evidence": [
+    {
+      "name": "BTV News",
+      "host": "app24.jagobd.com.bd",
+      "direct": [
+        "URLError",
+        "URLError",
+        "URLError"
+      ],
+      "via_proxy": {
+        "https://raspy-meadow-9279.juelgrsan3679.workers.dev": [
+          "200",
+          "200",
+          "200"
+        ]
+      },
+      "why": "unreachable direct, reachable via proxy"
+    },
+    {
+      "name": "AL EKHBARIA",
+      "host": "shd-gcp-live.edgenextcdn.net",
+      "direct": [
+        "403",
+        "403",
+        "403"
+      ],
+      "via_proxy": {
+        "https://raspy-meadow-9279.juelgrsan3679.workers.dev": [
+          "200",
+          "200",
+          "200"
+        ]
+      },
+      "why": "unreachable direct, reachable via proxy"
+    }
+  ],
+  "direct_status_distribution": {
+    "206": 130,
+    "200": 74,
+    "URLError": 3,
+    "403": 3
+  },
+  "proxy_status_distribution": {
+    "206": 150,
+    "200": 60
+  }
+}
