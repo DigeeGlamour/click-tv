@@ -555,6 +555,64 @@ class DecoderCapabilityTests(unittest.TestCase):
             # across the window, never on one observation.
             self.assertTrue(re_mod.is_escalatable(verdict), detail)
 
+    def test_a_403_in_a_fatal_error_is_a_vantage_block(self):
+        """A geo-block must never accumulate toward disqualification.
+
+        Measured on the Phase 5 movie run: an mpegts
+        HttpStatusCodeInvalid {"code":403} classified as
+        advisory:transient_network, which IS escalatable - so a block from this
+        egress could have counted toward removing a route that works perfectly
+        for the audience. A published, owner-working channel was measured
+        returning 403 three times from this vantage; that measurement is why
+        this module exists, and the transient marker list had quietly undone it.
+        """
+        for detail, label in (
+            ('mpegts NetworkError/HttpStatusCodeInvalid {"code":403,"msg":""}', "403"),
+            ('mpegts NetworkError/HttpStatusCodeInvalid {"code":401}', "401"),
+            ('mpegts NetworkError/HttpStatusCodeInvalid {"code":429}', "429"),
+            ('mpegts NetworkError/HttpStatusCodeInvalid {"code":451}', "451"),
+            ("hls networkError/fragLoadError 403 Forbidden", "forbidden"),
+        ):
+            self.assertTrue(re_mod.describes_vantage_block([detail]), label)
+            verdict, _ = re_mod.classify_playback(
+                {
+                    "announced_render_tracks": ["video", "audio"],
+                    "progressing_tracks": [],
+                    "first_frame_seconds": None,
+                    "startup_seconds": None,
+                    "media_progress_seconds": 0.0,
+                    "cumulative_stall_seconds": 35,
+                    "fatal_errors": [detail],
+                    "recovered_to_pass_floor": False,
+                }
+            )
+            self.assertEqual(verdict, re_mod.ADVISORY_VANTAGE_BLOCKED, label)
+            self.assertFalse(re_mod.is_escalatable(verdict), label)
+
+    def test_a_vantage_block_is_capped_at_vantage_scope(self):
+        scope = re_mod.resolve_verdict_scope(
+            re_mod.ADVISORY_VANTAGE_BLOCKED, vantage_id="scanner-egress"
+        )
+        self.assertEqual(scope, "vantage:scanner-egress")
+
+    def test_repeating_a_403_forever_never_matures(self):
+        state = re_mod.persistence_state(
+            [_obs(i * 600, verdict=re_mod.ADVISORY_VANTAGE_BLOCKED) for i in range(12)],
+            now=T0 + 6600,
+        )
+        self.assertEqual(state["state"], re_mod.UNKNOWN)
+        self.assertEqual(state["escalatable_observations"], 0)
+
+    def test_a_server_error_is_still_transient_not_a_vantage_block(self):
+        # The distinction has to cut both ways: a 503 is the server's problem,
+        # not the observer's, and must keep its path through the window.
+        for detail in (
+            'mpegts NetworkError/HttpStatusCodeInvalid {"code":503}',
+            'mpegts NetworkError/HttpStatusCodeInvalid {"code":502}',
+        ):
+            self.assertFalse(re_mod.describes_vantage_block([detail]), detail)
+            self.assertTrue(re_mod.describes_transient_network([detail]), detail)
+
     def test_one_transient_alone_can_never_mature(self):
         state = re_mod.persistence_state(
             [_obs(0, verdict=re_mod.ADVISORY_TRANSIENT_NETWORK)], now=T0
@@ -689,6 +747,79 @@ class ForbiddenMaterialTests(unittest.TestCase):
             self.assertFalse(
                 re_mod.evidence_contains_forbidden_material(payload), str(path)
             )
+
+
+class HmacKeyConfigurationTests(unittest.TestCase):
+    """Adding the repository secret has to actually change the output.
+
+    Nothing read a key from anywhere before this: `failure_domain_tenant` was
+    unconditionally None, so setting the secret would have been inert while
+    looking like it was configured.
+    """
+
+    def setUp(self):
+        import os  # noqa: PLC0415
+
+        self._os = os
+        self._saved = {
+            name: os.environ.get(name)
+            for name in (re_mod.HMAC_KEY_ENV, re_mod.HMAC_KEY_ID_ENV)
+        }
+
+    def tearDown(self):
+        for name, value in self._saved.items():
+            if value is None:
+                self._os.environ.pop(name, None)
+            else:
+                self._os.environ[name] = value
+
+    def test_no_key_configured_is_a_supported_state(self):
+        self._os.environ.pop(re_mod.HMAC_KEY_ENV, None)
+        self.assertIsNone(re_mod.configured_hmac_key())
+        # And it must not become a hide: unknown can never remove anything.
+        domain = re_mod.failure_domain(
+            "https://tenant.example.net/x.m3u8", re_mod.configured_hmac_key()
+        )
+        self.assertIsNone(domain["failure_domain_tenant"])
+
+    def test_a_weak_key_is_treated_as_absent(self):
+        # A short key looks like an identity while being trivially reversible,
+        # which is worse than an honest `unknown`.
+        self._os.environ[re_mod.HMAC_KEY_ENV] = "short"
+        self.assertIsNone(re_mod.configured_hmac_key())
+
+    def test_a_valid_key_produces_a_keyed_tenant_id(self):
+        self._os.environ[re_mod.HMAC_KEY_ENV] = "k" * 32
+        key = re_mod.configured_hmac_key()
+        self.assertIsNotNone(key)
+        domain = re_mod.failure_domain("https://tenant.example.net/x.m3u8", key)
+        self.assertIsNotNone(domain["failure_domain_tenant"])
+
+    def test_two_tenants_stay_distinct_under_a_key(self):
+        self._os.environ[re_mod.HMAC_KEY_ENV] = "k" * 32
+        key = re_mod.configured_hmac_key()
+        first = re_mod.failure_domain("https://a.akamaized.net/x.m3u8", key)
+        second = re_mod.failure_domain("https://b.akamaized.net/y.m3u8", key)
+        self.assertNotEqual(
+            first["failure_domain_tenant"], second["failure_domain_tenant"]
+        )
+
+    def test_the_key_id_is_recorded_for_rotation(self):
+        self._os.environ[re_mod.HMAC_KEY_ID_ENV] = "key-2026-08"
+        self.assertEqual(re_mod.configured_hmac_key_id(), "key-2026-08")
+
+    def test_an_absent_key_id_is_none_not_a_placeholder(self):
+        self._os.environ.pop(re_mod.HMAC_KEY_ID_ENV, None)
+        self.assertIsNone(re_mod.configured_hmac_key_id())
+
+    def test_the_workflow_passes_the_secret_through(self):
+        # Without this the secret can be set in the repository and never reach
+        # the scanner.
+        workflow = (ROOT / ".github" / "workflows" / "scan.yml").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(re_mod.HMAC_KEY_ENV, workflow)
+        self.assertIn(re_mod.HMAC_KEY_ID_ENV, workflow)
 
 
 if __name__ == "__main__":

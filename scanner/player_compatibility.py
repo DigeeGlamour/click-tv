@@ -117,11 +117,28 @@ def load_proof_keys(ledger_path: str | Path = DEFAULT_PROOF_LEDGER) -> Set[Tuple
     return _load_proof_keys_cached(str(path), modified_ns)
 
 
+#: Statuses that are themselves proof of playback, independent of the
+#: fingerprint ledger. Kept as a local constant rather than imported so this
+#: module stays free of a dependency on browser_reachability.
+SUSTAINED_PLAYBACK_STATUSES = frozenset({"verified_sustained_playback"})
+
+
 def is_player_proven(
     item: Dict[str, Any],
     kind: str,
     proof_keys: Iterable[Tuple[str, str, str, str]] | None = None,
 ) -> bool:
+    # A sustained-playback proof stands on its own. The fingerprint ledger
+    # records one decoded frame for one exact card-and-route set, and the
+    # fingerprint includes the URL, so it stops matching as soon as a source
+    # rotates - which is how channels that this scan verified were still hidden.
+    # verified_sustained_playback records two independent real browser sessions
+    # each playing the card for a full 120 s to the PASS floor: strictly stronger
+    # evidence, and it must not be overridden by the absence of a weaker one.
+    # This gate is currently off (bangla_requires_player_proof = false), so the
+    # check is here to stop turning it back on from hiding proven channels.
+    if str(item.get("verification_status") or "") in SUSTAINED_PLAYBACK_STATUSES:
+        return True
     normalized_kind = str(kind or "").strip().casefold()
     base = _item_key(normalized_kind, item)
     fingerprint = playback_fingerprint(item)

@@ -150,6 +150,112 @@ class RestoredStateTests(unittest.TestCase):
         self.assertIsNotNone(match, "the script no longer sets a literal status")
         self.assertIn(match.group(1), PROVEN_LIVE_STATUSES)
 
+    def test_no_hide_path_can_undo_the_restoration(self):
+        """The restoration must survive the next scan.
+
+        Found by running the audit after restoring: two hide paths key on
+        evidence weaker than the proof these channels now carry, and both would
+        have hidden all seven on the next scan with the measurement still
+        sitting in the report.
+
+        `_apply_strict_player_visibility` keys on `verified`, which means "this
+        scan proved it" and is False for a card proven by a separate measurement
+        run - and strict_player_publish is ON in config/settings.json, so this
+        one was live. `is_player_proven` keys on the fingerprint ledger, whose
+        fingerprint includes the URL and so stops matching when a source
+        rotates; that gate is currently off, and this keeps turning it back on
+        from being destructive.
+        """
+        import copy  # noqa: PLC0415
+        import json as _json  # noqa: PLC0415
+
+        from scanner.fast_pipeline import (  # noqa: PLC0415
+            _apply_strict_player_visibility,
+        )
+        from scanner.player_compatibility import (  # noqa: PLC0415
+            mark_unproven_player_items,
+        )
+
+        settings = _json.loads(
+            (ROOT / "config" / "settings.json").read_text(encoding="utf-8")
+        )
+        restored = [
+            copy.deepcopy(c) for c in _cards(CATALOGUE)
+            if str(c.get("name") or "") in RESTORED
+        ]
+        self.assertEqual(len(restored), len(RESTORED))
+
+        hidden = _apply_strict_player_visibility(copy.deepcopy(restored), settings)
+        self.assertEqual(
+            hidden, 0, "strict player visibility would undo the restoration"
+        )
+        hidden = mark_unproven_player_items(copy.deepcopy(restored), "channel")
+        self.assertEqual(
+            hidden, 0, "the player-proof gate would undo the restoration"
+        )
+
+    def test_every_hide_path_keeps_the_restored_channels(self):
+        # Two paths were found by hand; this walks all four so a fifth cannot be
+        # added later without the restoration silently breaking again.
+        import copy  # noqa: PLC0415
+        import json as _json  # noqa: PLC0415
+
+        from scanner import browser_reachability as br  # noqa: PLC0415
+        from scanner import fast_pipeline as fp  # noqa: PLC0415
+        from scanner import player_compatibility as pc  # noqa: PLC0415
+
+        settings = _json.loads(
+            (ROOT / "config" / "settings.json").read_text(encoding="utf-8")
+        )
+        restored = [
+            c for c in _cards(CATALOGUE) if str(c.get("name") or "") in RESTORED
+        ]
+        paths = {
+            "mark_confirmed_player_failures":
+                lambda items: pc.mark_confirmed_player_failures(items, "channel"),
+            "mark_unproven_player_items":
+                lambda items: pc.mark_unproven_player_items(items, "channel"),
+            "mark_unproven_items":
+                lambda items: br.mark_unproven_items(items, "channel", True)[0],
+            "strict_player_visibility":
+                lambda items: fp._apply_strict_player_visibility(items, settings),
+        }
+        for name, run in paths.items():
+            hidden = run([copy.deepcopy(c) for c in restored])
+            self.assertEqual(hidden, 0, f"{name} would hide the restored channels")
+
+    def test_the_restored_channels_read_as_reachable_and_proven(self):
+        from scanner.browser_reachability import (  # noqa: PLC0415
+            item_is_browser_reachable,
+            item_is_proven_live,
+        )
+
+        for card in _cards(CATALOGUE):
+            if str(card.get("name") or "") not in RESTORED:
+                continue
+            self.assertTrue(item_is_browser_reachable(card), card.get("name"))
+            self.assertTrue(item_is_proven_live(card), card.get("name"))
+
+    def test_a_genuinely_unproven_card_is_still_hidden(self):
+        # The exemption must be narrow: it protects the sustained-playback
+        # status, not everything.
+        from scanner.fast_pipeline import (  # noqa: PLC0415
+            _apply_strict_player_visibility,
+        )
+
+        unproven = [
+            {
+                "name": "Unproven",
+                "publish_allowed": True,
+                "verified": False,
+                "verification_status": "pending",
+            }
+        ]
+        hidden = _apply_strict_player_visibility(
+            unproven, {"bd_verification": {"strict_player_publish": True}}
+        )
+        self.assertEqual(hidden, 1)
+
     def test_no_other_channel_was_touched(self):
         # 31 before, 7 added, nothing else.
         self.assertEqual(len(_cards(CATALOGUE)), 38)

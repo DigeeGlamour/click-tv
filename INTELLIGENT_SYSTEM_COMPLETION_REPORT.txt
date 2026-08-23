@@ -712,3 +712,171 @@ window পার হতে হবে, এবং সেই window-এ কোন�
   unknown                                     ৬
   playback_fail                               ৪
   advisory:transient_network                  ৪
+
+--------------------------------------------------------------------------------
+১৮. শেষ ফাঁক বন্ধ — persistence store-এ কেউ কিছু জমা করত না
+--------------------------------------------------------------------------------
+সব function কোথায় ডাকা হচ্ছে তা যাচাই করতে গিয়ে আসল ফাঁকটা বেরিয়ে এল:
+`persistence_store` module লেখা ও tested ছিল, কিন্তু **কোনো production path
+সেখানে কিছু লিখত না**। ফলে `persistence_state` সব সময় একটি মাত্র run দেখত,
+counter স্থায়ীভাবে ১-এ আটকে থাকত, এবং যে escalation path-টি এই পুরো কাজের
+বিষয় সেটি বাস্তবে অগম্যই থাকত।
+
+এখন `visibility_audit.audit_hide` প্রতিটি hide-সিদ্ধান্তের সময়:
+  • observation store-এ লেখে;
+  • cross-run verdict পড়ে এনে decision-এ `persistence_state` ও
+    `persistence_counter` হিসেবে দেখায়।
+
+route id হিসেবে normalized source identity ব্যবহার হয়, তাই ঘুরতে থাকা token
+বা cache-buster আলাদা route মনে হয় না এবং history প্রতি run-এ শূন্য থেকে
+শুরু হয় না। উল্টোদিকে `?id=NNN` দিয়ে আলাদা হওয়া ২২টি channel আলাদাই থাকে —
+নইলে অসম্পর্কিত evidence একটি counter-এ জমা হত। দুটোই test দিয়ে বাঁধা।
+
+model যখন item রাখতে বলে তখনও observation লেখা হয়, কারণ ব্যর্থতার
+অনুপস্থিতিই পরের window-এর জানা দরকার।
+
+store CI-তে টিকবে: `.github/workflows/scan.yml` `git add data reports state`
+করে, তাই `state/route-persistence.json` commit হয় এবং counter সত্যিই
+run-এর মাঝে জমতে পারে।
+
+এখনো ইচ্ছাকৃতভাবে অগম্য: `keyframe_verdict`। Phase 0b-র lock বলে
+১০ সেকেন্ড media clock-এর নিচে সব keyframe রায় `unknown`, আর বর্তমান
+16 KiB probe এক intra interval-এর ২.৮% — অর্থাৎ ওই floor ছোঁয়াই সম্ভব নয়।
+এটি ফাঁক নয়, lock-এর নির্দিষ্ট আচরণ: "the existing 16 KiB probe can never
+produce a keyframe verdict. It stays a reachability probe only."
+
+--------------------------------------------------------------------------------
+১৯. HMAC KEY — secret বসালে যাতে সত্যিই কাজ করে
+--------------------------------------------------------------------------------
+আগের report-এ লিখেছিলাম "CI-তে HMAC key নেই"। যাচাই করে দেখা গেল সমস্যাটা
+আরও গভীর: **code কোথাও থেকেই key পড়ত না**। অর্থাৎ আপনি repository-তে secret
+বসালেও কিছুই বদলাত না — `failure_domain_tenant` তখনও None-ই থাকত, অথচ
+দেখতে মনে হত configured।
+
+যা যোগ করা হলো:
+  scanner/route_evidence.py
+    ROUTE_IDENTITY_HMAC_KEY      — secret
+    ROUTE_IDENTITY_HMAC_KEY_ID   — কোন key দিয়ে record হলো (rotation-এর জন্য)
+    configured_hmac_key()        — env থেকে পড়ে
+    ১৬ byte-এর কম key = অনুপস্থিত ধরা হয়
+
+  scanner/visibility_audit.py — configured key ব্যবহার করে, decision-এ
+    hmac_key_id লেখে
+
+  .github/workflows/scan.yml — দুই জায়গায় secret pass করা হয়
+
+কেন ১৬ byte-এর কম key প্রত্যাখ্যাত: দুর্বল keyed id দেখতে identity-র মতো
+কিন্তু সহজেই উল্টে ফেলা যায় — সেটা সৎ `unknown`-এর চেয়ে খারাপ।
+
+key না থাকা একটি **সমর্থিত অবস্থা**, ব্যর্থতা নয়: key ছাড়া প্রতিটি keyed
+field `unknown` বলে, আর `unknown` কখনো কোনো channel hide করতে পারে না।
+অর্থাৎ secret ছাড়া model দুর্বল হয়, ভুল হয় না।
+
+এখন আপনার শুধু GitHub-এ দুটি secret যোগ করলেই হবে — code প্রস্তুত, এবং
+৭টি test নিশ্চিত করে যে secret বসালে সত্যিই ফল বদলায়।
+
+--------------------------------------------------------------------------------
+২০. দ্বিতীয় VANTAGE — আসল blocker কী, তা মেপে বের করা হলো
+--------------------------------------------------------------------------------
+আগের report-এ লিখেছিলাম "আলাদা network দরকার"। যাচাই করে দেখা গেল কথাটা
+ভুল ছিল, এবং সঠিক কারণটা আলাদা।
+
+মাপা হলো:
+  vantage 1 (scanner egress)   AS8075 Microsoft Corporation, country IN
+  vantage 2 হওয়ার প্রার্থী       Cloudflare worker proxy (ভিন্ন ASN)
+
+worker দিয়ে নিজের egress মাপার চেষ্টা করা হলো। ফল:
+  Origin header ছাড়া      → "Playback requires the Click TV site origin"
+  site origin দিয়ে         → "Target host not allowed"
+
+অর্থাৎ proxy-র একটি **বন্ধ host allowlist** আছে (data/allowed-hosts.json,
+৪২১টি host), এবং api.ipify.org তাতে নেই। এটি ভালো নকশা।
+
+তাই আসল blocker "আলাদা network নেই" নয় — worker-এর egress ভিন্নই। blocker
+হলো: তার egress মাপতে হয় ওই allowlist-এ একটি তৃতীয় পক্ষের service যোগ
+করতে হবে, নয়তো worker-এ নিজের egress জানানোর একটি নতুন endpoint deploy
+করতে হবে।
+
+**আমি allowlist খুলিনি।** একটি measurement চালানোর জন্য proxy-র security
+allowlist শিথিল করা খারাপ বিনিময় — proxy-টি ঠিক এই কারণেই ওই তালিকা রাখে।
+
+ফলাফল: vantage independence এখনো **মাপা হয়নি**, তাই may_hide()-এর "দুটি
+measurably independent vantage" শর্ত পূরণযোগ্য নয়, এবং ওই কঠোর guard
+বাস্তবে কিছুই hide করতে দেয় না। এই মুহূর্তে সেটিই সঠিক আচরণ।
+
+মালিকের জন্য দুটি পথ (দুটিই infrastructure পরিবর্তন, measurement নয়):
+  ১। worker-এ একটি `/egress` endpoint যোগ করা যা নিজের বেরোনো IP/ASN
+     জানায় — allowlist অপরিবর্তিত থাকে, এটিই নিরাপদ পথ;
+  ২। allowlist-এ একটি IP-echo service যোগ করা — সহজ, কিন্তু proxy-র
+     security posture শিথিল হয়।
+
+--------------------------------------------------------------------------------
+২১. সবচেয়ে গুরুত্বপূর্ণ আবিষ্কার — restoration পরের scan-এ নীরবে উল্টে যেত
+--------------------------------------------------------------------------------
+"আর কিছু বাকি আছে কি" যাচাই করতে গিয়ে audit আবার চালালাম। সংখ্যা ২১ থেকে
+২৮-এ উঠেছিল — অর্থাৎ যে ৭টি channel আমি সদ্য ফিরিয়েছি, তারাও একটি hide
+path-এ পড়ছে। খুঁড়ে দেখা গেল **দুটি** path তাদের hide করত:
+
+  ১। fast_pipeline._apply_strict_player_visibility
+     এটি `verified` flag দেখে, যার অর্থ "এই scan প্রমাণ করেছে" — আর আলাদা
+     measurement run-এ প্রমাণিত card-এ ওটা False। এবং
+     `strict_player_publish` config/settings.json-এ **চালু**।
+     সরাসরি চালিয়ে মাপা: ৭/৭ hide হত।
+
+  ২। player_compatibility.is_player_proven
+     এটি fingerprint ledger দেখে, আর fingerprint-এ URL থাকে, তাই source
+     rotate হলেই মিল ভেঙে যায়। এই gate এখন বন্ধ
+     (`bangla_requires_player_proof: false`), কিন্তু কেউ চালু করলেই একই
+     বিপদ ফিরে আসত।
+
+অর্থাৎ measurement report-এ প্রমাণ পড়ে থাকতেই পরের scan restoration
+নীরবে উল্টে দিত — এবং কোথাও কোনো error দেখা যেত না।
+
+সংশোধন: দুটি path-ই এখন `verified_sustained_playback`-কে স্বতন্ত্র প্রমাণ
+হিসেবে মানে। যুক্তিটা সরল — fingerprint ledger একটিমাত্র decoded frame-এর
+রেকর্ড, আর এই status দুটি স্বাধীন real browser session-এ পূর্ণ ১২০ সেকেন্ড
+PASS floor ছোঁয়ার রেকর্ড। দুর্বল প্রমাণের অনুপস্থিতি শক্তিশালী প্রমাণকে
+বাতিল করতে পারে না।
+
+ছাড়টি সংকীর্ণ রাখা হয়েছে — test দিয়ে যাচাই করা যে সত্যিকারের unverified
+card এখনো hide হয় (১/১), এবং ফেরানো card হয় না (০/৭)।
+
+এটিই সেই শ্রেণির bug যা প্রথম দিন থেকে এই প্রকল্পের বিষয়: প্রমাণ ছিল,
+তবু দুর্বল evidence দেখে চালু channel বাদ পড়ত।
+
+--------------------------------------------------------------------------------
+২২. Phase 5 চলাকালীন আরও একটি অনিরাপদ ভুল ধরা পড়ল — 403 escalate করত
+--------------------------------------------------------------------------------
+Phase 5-এর চতুর্থ movie-তে দেখা গেল:
+
+    mpegts NetworkError/HttpStatusCodeInvalid {"code":403}
+      → advisory:transient_network   (escalatable)
+
+কিন্তু 403 হলো **vantage block** — পর্যবেক্ষকের access সম্পর্কে বক্তব্য,
+route-এর স্বাস্থ্য সম্পর্কে নয়। `VANTAGE_BLOCKED_STATUSES`-এ 403 আগেই ছিল,
+কিন্তু সেটি HTTP status code path-এ; playback-এর fatal error string-এ 403
+এলে আমার transient marker ("networkerror") আগে মিলে যাচ্ছিল।
+
+কেন এটি গুরুতর: এই মুহূর্তে একটি published, owner-এর কাছে চালু channel
+এই egress থেকে **তিনবার 403** ফেরত দিয়েছিল — এই পুরো module-এর অস্তিত্বের
+মূল measurement সেটাই। আমার marker তালিকা নীরবে সেটাই উল্টে দিচ্ছিল:
+একটি geo-block route disqualify করার দিকে জমা হতে পারত।
+
+সংশোধন — classify_playback এখন চার স্তরে পড়ে, এই ক্রমে:
+
+  decoder signature        → advisory:device_or_browser_unsupported
+                             escalatable নয় · environment scope
+  vantage signature         → advisory:vantage_blocked
+  (401/403/429/451,          escalatable নয় · vantage scope
+   forbidden, geo)
+  network signature         → advisory:transient_network
+  (Failed to fetch, 5xx,     escalatable, কিন্তু শুধু persistence window দিয়ে
+   tls, timeout, fragLoad)
+  কোনোটিই নয়                → playback_fail
+                             escalatable · সরাসরি hard_disqualified
+
+দুই দিকেই যাচাই করা: 403/401/429/451 কখনো escalate করে না (১২ বার
+পুনরাবৃত্তিতেও counter শূন্য), আর 502/503 এখনো transient — server-এর দোষ
+পর্যবেক্ষকের দোষ নয়, তাই তার window-পথ অটুট।
+
+Phase 1 re-classify করা হলো: কোনো verdict বদলায়নি (ওখানে 403 ছিল না)।

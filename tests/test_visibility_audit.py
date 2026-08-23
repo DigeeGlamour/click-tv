@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from scanner import route_evidence as rev  # noqa: E402
+from scanner import persistence_store as ps  # noqa: E402
 from scanner import visibility_audit as va  # noqa: E402
 
 
@@ -198,6 +199,70 @@ class AuditWithholdingTests(unittest.TestCase):
         self.assertIsNone(payload.get("error"))
         self.assertNotIn("rows_withheld_for_forbidden_material", payload)
         self.assertEqual(len(payload["decisions"]), 1)
+
+
+class PersistenceIntegrationTests(unittest.TestCase):
+    """The store has to be fed by something, or the counter never moves.
+
+    Before this integration nothing wrote observations anywhere, so
+    persistence_state could only ever see a single run: the counter was fully
+    implemented and permanently stuck at one, and the escalation path it guards
+    was unreachable in practice.
+    """
+
+    def setUp(self):
+        va.reset()
+        self._tmp = tempfile.TemporaryDirectory()
+        self._original = ps.DEFAULT_STORE_PATH
+        ps.DEFAULT_STORE_PATH = str(Path(self._tmp.name) / "store.json")
+
+    def tearDown(self):
+        ps.DEFAULT_STORE_PATH = self._original
+        self._tmp.cleanup()
+
+    def test_an_audited_decision_reaches_the_store(self):
+        va.audit_hide("unit.test", _item(), status=502)
+        stored = ps.load(ps.DEFAULT_STORE_PATH)["routes"]
+        self.assertEqual(len(stored), 1)
+
+    def test_the_route_id_survives_a_rotating_token(self):
+        # A cache-buster must not read as a different route, or every run starts
+        # the history over and the counter can never accumulate.
+        va.audit_hide("unit.test", _item(url="https://h.example.net/a.m3u8?_t=1"))
+        va.audit_hide("unit.test", _item(url="https://h.example.net/a.m3u8?_t=2"))
+        self.assertEqual(len(ps.load(ps.DEFAULT_STORE_PATH)["routes"]), 1)
+
+    def test_a_distinct_route_gets_its_own_history(self):
+        va.audit_hide("unit.test", _item(url="https://h.example.net/a.m3u8?id=1"))
+        va.audit_hide("unit.test", _item(url="https://h.example.net/a.m3u8?id=2"))
+        # 22 published channels differ only by "?id=NNN"; fusing them would
+        # pool unrelated evidence into one counter.
+        self.assertEqual(len(ps.load(ps.DEFAULT_STORE_PATH)["routes"]), 2)
+
+    def test_no_credential_reaches_the_store(self):
+        va.audit_hide(
+            "unit.test",
+            _item(url="https://h.example.net/a.m3u8?token=SECRETVALUE"),
+        )
+        blob = Path(ps.DEFAULT_STORE_PATH).read_text(encoding="utf-8")
+        self.assertNotIn("SECRETVALUE", blob)
+        self.assertNotIn("token", blob)
+
+    def test_the_decision_reports_the_cross_run_state(self):
+        decision = va.audit_hide("unit.test", _item(), status=502)
+        self.assertIn("persistence_state", decision)
+        self.assertIn("persistence_counter", decision)
+
+    def test_a_broken_store_cannot_break_the_audit(self):
+        Path(ps.DEFAULT_STORE_PATH).write_text("not json", encoding="utf-8")
+        decision = va.audit_hide("unit.test", _item(), status=502)
+        self.assertFalse(decision["model_would_hide"])
+
+    def test_recording_does_not_change_the_item(self):
+        item = _item()
+        before = copy.deepcopy(item)
+        va.audit_hide("unit.test", item, status=502)
+        self.assertEqual(item, before)
 
 
 if __name__ == "__main__":

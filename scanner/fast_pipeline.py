@@ -37,6 +37,7 @@ from scanner.bd_verifier import (
     verify_bd_stream,
 )
 from scanner.browser_reachability import (
+    PROVEN_LIVE_STATUSES,
     mark_browser_unreachable,
     mark_unproven_items,
     requires_same_run_proof,
@@ -249,6 +250,14 @@ def _apply_strict_player_visibility(
     hidden = 0
     for item in items:
         if item.get("verified") is True:
+            continue
+        # A sustained-playback proof outranks the same-run flag. `verified` means
+        # "this scan proved it"; verified_sustained_playback means two independent
+        # real browser sessions each played the card for a full 120 s to the PASS
+        # floor, which is strictly stronger evidence. Measured: without this the
+        # next scan hid all seven channels Phase 1 had just cleared, undoing the
+        # restoration with the proof still sitting in the report.
+        if str(item.get("verification_status") or "") in PROVEN_LIVE_STATUSES:
             continue
         if item.get("publish_allowed") is True:
             audit_hide_safe(

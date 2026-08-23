@@ -22,10 +22,12 @@ what the model requires.
 """
 from __future__ import annotations
 
+import datetime as _dt
 import json
 import os
 from typing import Any, Dict, List, Optional, Sequence
 
+from scanner import persistence_store
 from scanner import route_evidence as rev
 
 #: Where the audit lands. Reports only; never read back by the scanner.
@@ -96,20 +98,55 @@ def audit_hide(
         evidence=evidence,
         healthy_sibling_sources=healthy_sibling_sources,
     )
-    correlation = rev.correlated_event(routes)
+    # Use the configured key when one exists, so adding the repository secret
+    # actually changes the output instead of being inert.
+    hmac_key = rev.configured_hmac_key()
+    correlation = rev.correlated_event(routes, hmac_key)
+
+    # Feed the cross-run store, then read back what it now says. Until this
+    # existed nothing wrote observations anywhere, so persistence_state could
+    # only ever see one run and the escalation path was unreachable in practice -
+    # the counter was implemented and permanently stuck at one.
+    #
+    # The route id is the normalized source identity, so a rotating token or
+    # cache-buster does not look like a different route and reset the history.
+    # Recording happens even when the model would keep the item, because the
+    # absence of a failure is exactly what a later window needs to know about.
+    persistence: Dict[str, Any] = {"state": rev.UNKNOWN, "counter": 0}
+    route_id = ""
+    try:
+        primary = (routes[0] or {}).get("url") if routes else ""
+        if primary:
+            route_id = rev.normalize_source_identity(str(primary))
+        if route_id:
+            persistence_store.record(
+                route_id,
+                {
+                    "observed_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
+                    "verdict": transport,
+                    "kind": "http_status",
+                },
+            )
+            persistence = persistence_store.state_for(route_id)
+    except Exception:  # noqa: BLE001 - the store must never break an audit
+        pass
+
     decision = {
         "site": site,
         "kind": kind or str(item.get("_sourceKind") or ""),
         "name": str(item.get("name") or item.get("title") or ""),
         "three_state": state,
         "distinct_sources": rev.distinct_sources(routes),
-        "independent_redundancy": rev.independent_redundancy(routes),
+        "independent_redundancy": rev.independent_redundancy(routes, hmac_key),
+        "hmac_key_id": rev.configured_hmac_key_id(),
         "correlation": correlation["correlation"],
         "tenant_undetermined_routes": correlation["undetermined_count"],
         "transport_class": transport,
         "escalatable": rev.is_escalatable(transport),
         "verdict_scope": scope,
         "site_reason": str(reason or "")[:200],
+        "persistence_state": persistence.get("state"),
+        "persistence_counter": persistence.get("counter"),
         "model_would_hide": bool(allowed),
         "model_reason": why,
         "evidence_records_supplied": len(list(evidence or ())),

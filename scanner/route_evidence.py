@@ -299,6 +299,39 @@ TRANSIENT_ERROR_MARKERS = (
 )
 
 
+#: Fatal-error signatures that describe the OBSERVER's access, not the route.
+#: Measured on the Phase 5 movie run: an mpegts
+#: HttpStatusCodeInvalid {"code":403} was classifying as
+#: advisory:transient_network, which IS escalatable - so a geo-block from this
+#: egress could have accumulated toward disqualifying a route that works
+#: perfectly for the audience. A published, owner-working channel was measured
+#: returning 403 three times from this vantage; that is the founding measurement
+#: of this whole module, and the transient marker list had quietly undone it.
+VANTAGE_ERROR_STATUS_PATTERN = re.compile(
+    r'"?code"?\s*[:=]\s*"?(401|403|429|451)\b|\b(?:http\s*)?(401|403|429|451)\b',
+    re.IGNORECASE,
+)
+
+VANTAGE_ERROR_MARKERS = (
+    "forbidden",
+    "unauthorized",
+    "geo",
+    "geoblock",
+    "not available in your",
+    "too many requests",
+)
+
+
+def describes_vantage_block(errors: Iterable[Any]) -> bool:
+    """Whether a fatal-error list is about the observer's access."""
+    blob = " ".join(str(e or "") for e in (errors or ())).lower()
+    if not blob:
+        return False
+    if VANTAGE_ERROR_STATUS_PATTERN.search(blob):
+        return True
+    return any(marker in blob for marker in VANTAGE_ERROR_MARKERS)
+
+
 def describes_transient_network(errors: Iterable[Any]) -> bool:
     """Whether a fatal-error list is about the network rather than the route."""
     blob = " ".join(str(e or "") for e in (errors or ())).lower()
@@ -403,6 +436,40 @@ def redact_public_template(url: str) -> str:
         )
         template += f"?{rendered}"
     return template
+
+
+#: Environment variable carrying the keyed-identity secret. Nothing read a key
+#: from anywhere before this, so `failure_domain_tenant` was unconditionally
+#: None and adding the repository secret would have changed nothing. The name is
+#: paired with ROUTE_IDENTITY_HMAC_KEY_ID so a rotation can be identified in the
+#: records it produced.
+HMAC_KEY_ENV = "ROUTE_IDENTITY_HMAC_KEY"
+HMAC_KEY_ID_ENV = "ROUTE_IDENTITY_HMAC_KEY_ID"
+
+#: The shortest key worth accepting. A key below this is treated as absent
+#: rather than used, because a weak keyed id is worse than an honest `unknown`:
+#: it looks like an identity while being trivially reversible.
+MIN_HMAC_KEY_BYTES = 16
+
+
+def configured_hmac_key() -> Optional[bytes]:
+    """The keyed-identity secret from the environment, or None.
+
+    None is a supported state, not a failure. Every consumer reports `unknown`
+    without a key, and `unknown` can never hide a channel - so a missing secret
+    makes the model weaker, never wrong.
+    """
+    raw = os.environ.get(HMAC_KEY_ENV) or ""
+    encoded = raw.strip().encode("utf-8")
+    if len(encoded) < MIN_HMAC_KEY_BYTES:
+        return None
+    return encoded
+
+
+def configured_hmac_key_id() -> Optional[str]:
+    """Which key produced a record, so a rotation stays traceable."""
+    value = str(os.environ.get(HMAC_KEY_ID_ENV) or "").strip()
+    return value or None
 
 
 def hmac_id(value: str, key: Optional[bytes], *, length: int = 32) -> Optional[str]:
@@ -576,6 +643,14 @@ def classify_playback(metrics: Dict[str, Any]) -> Tuple[str, List[str]]:
                 "capped at environment scope and never escalatable"
             )
             return ADVISORY_DEVICE_UNSUPPORTED, reasons
+        if describes_vantage_block(fatal):
+            # Never escalatable and capped at vantage scope: a thousand blocks
+            # from one egress are a thousand statements about the egress.
+            reasons.append(
+                "fatal error describes the observer's access, not the route; "
+                "capped at vantage scope and never escalatable"
+            )
+            return ADVISORY_VANTAGE_BLOCKED, reasons
         if describes_transient_network(fatal):
             # Still escalatable, but only through the persistence window: one
             # failed fetch cannot reach hard_disqualified on its own.

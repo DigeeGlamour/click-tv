@@ -75,6 +75,12 @@ jobs:
       - name: Mask scanner secrets in all following logs
         shell: bash
         env:
+          # Keyed route identity. Optional: with no secret set, every keyed
+          # field reports `unknown`, which can never hide a channel - so the
+          # scanner is weaker without it, never wrong. A key shorter than 16
+          # bytes is treated as absent.
+          ROUTE_IDENTITY_HMAC_KEY: ${{ secrets.ROUTE_IDENTITY_HMAC_KEY }}
+          ROUTE_IDENTITY_HMAC_KEY_ID: ${{ secrets.ROUTE_IDENTITY_HMAC_KEY_ID }}
           PRIVATE_MOVIE_SOURCE_TOKEN: ${{ secrets.PRIVATE_MOVIE_SOURCE_TOKEN }}
           PRIVATE_SPORTS_SOURCE_TOKEN: ${{ secrets.PRIVATE_SPORTS_SOURCE_TOKEN }}
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
@@ -297,6 +303,12 @@ jobs:
           PYTHONFAULTHANDLER: "1"
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          # Keyed route identity. Optional: with no secret set, every keyed
+          # field reports `unknown`, which can never hide a channel - so the
+          # scanner is weaker without it, never wrong. A key shorter than 16
+          # bytes is treated as absent.
+          ROUTE_IDENTITY_HMAC_KEY: ${{ secrets.ROUTE_IDENTITY_HMAC_KEY }}
+          ROUTE_IDENTITY_HMAC_KEY_ID: ${{ secrets.ROUTE_IDENTITY_HMAC_KEY_ID }}
           PRIVATE_MOVIE_SOURCE_TOKEN: ${{ secrets.PRIVATE_MOVIE_SOURCE_TOKEN }}
           PRIVATE_SPORTS_SOURCE_TOKEN: ${{ secrets.PRIVATE_SPORTS_SOURCE_TOKEN }}
           FANART_API_KEY: ${{ secrets.FANART_API_KEY }}
