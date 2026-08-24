@@ -1,20 +1,22 @@
-"""Model enforcement: available, measured, and deliberately off.
+"""Model enforcement, conditional on evidence actually existing.
 
-I turned blanket enforcement on and it broke seven existing contract tests.
-Reading them showed they were right to break. "An item with no reachable route at
-all is hidden" is a structural finding across every route a channel has, not one
-vantage disagreeing about one route - and `may_hide` refuses it anyway, because it
-demands two independent vantages for anything. So blanket enforcement stops
-legitimate hides along with illegitimate ones, and these tests pin that finding
-rather than the assumption I started with.
+Blanket enforcement was tried first and broke seven contract tests. Reading them
+showed they were right: "an item with no reachable route at all is hidden" is a
+structural finding across every route a channel has, and `may_hide` refuses it
+anyway because it demands two independent vantages for anything. Refusing every
+hide is not safety, it is a different failure.
 
-The protection that mattered is in place by a narrower route: an item carrying
-sustained-playback proof is exempt at each hide site, which is what keeps the
-seven restored channels. That targets the failure that was actually measured
-instead of switching off hiding in general.
+So enforcement now depends on evidence. With no per-route records for an item the
+caller's decision stands and only the audit records the model's view; with records
+present the model's refusal is honoured. That is the case the guard was written
+for - a channel with a 403 from two datacentre egresses must not be removed, and
+a route that produced no data from two independent vantages in separate windows
+may be.
 """
 import copy
+import datetime as dt
 import json
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -26,6 +28,7 @@ from scanner import browser_reachability as br  # noqa: E402
 from scanner import fast_pipeline as fp  # noqa: E402
 from scanner import player_compatibility as pc  # noqa: E402
 from scanner import route_evidence as rev  # noqa: E402
+from scanner import route_evidence_pipeline as rp  # noqa: E402
 from scanner import visibility_audit as va  # noqa: E402
 
 CATALOGUE = ROOT / "data" / "channels" / "bangla.json"
@@ -38,17 +41,23 @@ def _cards():
 
 
 class EnforcementDefaultTests(unittest.TestCase):
-    def test_enforcement_is_off_by_default(self):
-        # Measured, not assumed: turning it on broke seven contracts that
-        # require hides which are justified.
-        self.assertFalse(va.ENFORCE_MODEL_DECISION)
+    def setUp(self):
+        va.clear_evidence()
 
-    def test_audit_only_mode_leaves_the_caller_alone(self):
+    def tearDown(self):
+        va.clear_evidence()
+
+    def test_enforcement_is_on(self):
+        self.assertTrue(va.ENFORCE_MODEL_DECISION)
+
+    def test_without_evidence_the_caller_decision_stands(self):
+        # This is what stops enforcement from breaking legitimate structural
+        # hides. Measured: making it unconditional broke seven contracts.
         allowed, why = va.model_permits_hide(
             "unit.test", {"name": "Live", "url": "https://a.example.net/x.m3u8"}
         )
         self.assertTrue(allowed, why)
-        self.assertIn("audit-only", why)
+        self.assertIn("no per-route evidence", why)
 
     def test_the_model_would_still_refuse_a_visible_channel(self):
         # The refusal itself is correct; what was wrong was enforcing it
@@ -56,16 +65,14 @@ class EnforcementDefaultTests(unittest.TestCase):
         allowed, why = rev.may_hide(state=rev.EXISTING_VISIBLE, evidence=[])
         self.assertFalse(allowed, why)
 
-    def test_enforcement_when_switched_on_refuses_a_visible_channel(self):
-        original = va.ENFORCE_MODEL_DECISION
-        try:
-            va.ENFORCE_MODEL_DECISION = True
-            allowed, _ = va.model_permits_hide(
-                "unit.test", {"name": "Live", "url": "https://a.example.net/x.m3u8"}
-            )
-            self.assertFalse(allowed)
-        finally:
-            va.ENFORCE_MODEL_DECISION = original
+    def test_a_partial_record_is_not_accepted_as_evidence(self):
+        # A partial record reads as `unknown`, which would make the model look
+        # better informed than it is.
+        accepted = va.supply_evidence([{"route_id": "r1", "verdict": "playback_fail"}])
+        self.assertEqual(accepted, 0)
+
+    def test_a_record_without_a_route_id_is_not_accepted(self):
+        self.assertEqual(va.supply_evidence([{"verdict": "playback_fail"}]), 0)
 
     def test_an_already_hidden_item_stays_hidden(self):
         # Enforcement must not resurrect anything either; it is one-directional.
@@ -126,24 +133,74 @@ class MeasuredEffectTests(unittest.TestCase):
                 f"{count} vs {without[path]}",
             )
 
-    def test_enforcement_would_stop_every_hide_which_is_why_it_is_off(self):
-        # The number that decided it: with enforcement on, nothing is hidden at
-        # all - including the hides seven contract tests require. That is too
-        # blunt an instrument, and this records the measurement.
+    def test_without_evidence_enforcement_changes_nothing(self):
+        # The measurement that shaped the design. Unconditional enforcement hid
+        # nothing at all, including the hides seven contracts require; made
+        # conditional on evidence, an evidence-free scan behaves exactly as
+        # before and the audit still records the model's view.
+        va.clear_evidence()
+        va.ENFORCE_MODEL_DECISION = False
+        without = self._run_all_paths()
         va.ENFORCE_MODEL_DECISION = True
-        for path, count in self._run_all_paths().items():
-            self.assertEqual(count, 0, f"{path} hid {count} item(s)")
+        with_enforcement = self._run_all_paths()
+        self.assertEqual(with_enforcement, without)
 
     def test_a_blocked_hide_is_recorded_on_the_item(self):
-        # When enforcement IS on, the reason has to be visible where the item is,
-        # not only in a report.
-        va.ENFORCE_MODEL_DECISION = True
-        cards = [copy.deepcopy(c) for c in _cards()]
-        pc.mark_unproven_player_items(cards, "channel")
-        blocked = [c for c in cards if c.get("model_blocked_hide")]
-        self.assertTrue(blocked, "no item recorded why its hide was blocked")
-        for card in blocked:
-            self.assertIsNot(card.get("publish_allowed"), False, card.get("name"))
+        # When the model does block a hide, the reason has to be visible where
+        # the item is, not only in a report. Driven by real evidence, since
+        # enforcement without evidence deliberately does nothing.
+        import os as _os  # noqa: PLC0415
+
+        saved = _os.environ.get(rev.HMAC_KEY_ENV)
+        _os.environ[rev.HMAC_KEY_ENV] = "k" * 32
+        try:
+            va.clear_evidence()
+            va.ENFORCE_MODEL_DECISION = True
+            key = rev.configured_hmac_key()
+            metrics = {
+                "announced_render_tracks": ["video", "audio"],
+                "progressing_tracks": [],
+                "first_frame_seconds": None,
+                "startup_seconds": None,
+                "media_progress_seconds": 0.0,
+                "cumulative_stall_seconds": 120,
+                "fatal_errors": ['HttpStatusCodeInvalid {"code":403}'],
+                "recovered_to_pass_floor": False,
+            }
+            cards = [copy.deepcopy(c) for c in _cards()][:4]
+            records = []
+            for card in cards:
+                for offset in (0, 200):
+                    stamp = (
+                        dt.datetime(2026, 8, 23, 10, 0, 0, tzinfo=dt.timezone.utc)
+                        + dt.timedelta(seconds=offset)
+                    ).isoformat()
+                    observation = {
+                        "playback_metrics": metrics,
+                        "browser_profile": "desktop_chrome",
+                        "failed_profiles": list(rev.DECLARED_TARGET_MATRIX),
+                        "observed_at": stamp,
+                    }
+                    records.extend(
+                        rp.build_route_evidence(
+                            str(card.get("url") or ""),
+                            scanner=dict(observation),
+                            proxy=dict(observation),
+                            hmac_key=key,
+                        )
+                    )
+            va.supply_evidence(records)
+            pc.mark_unproven_player_items(cards, "channel")
+            blocked = [c for c in cards if c.get("model_blocked_hide")]
+            self.assertTrue(blocked, "no item recorded why its hide was blocked")
+            for card in blocked:
+                self.assertIsNot(card.get("publish_allowed"), False, card.get("name"))
+        finally:
+            va.clear_evidence()
+            if saved is None:
+                _os.environ.pop(rev.HMAC_KEY_ENV, None)
+            else:
+                _os.environ[rev.HMAC_KEY_ENV] = saved
 
 
 class VantageIndependenceEvidenceTests(unittest.TestCase):
@@ -178,6 +235,85 @@ class VantageIndependenceEvidenceTests(unittest.TestCase):
     def test_the_report_carries_no_credential(self):
         payload = json.loads(self.REPORT.read_text(encoding="utf-8"))
         self.assertFalse(rev.evidence_contains_forbidden_material(payload))
+
+
+class EvidenceDrivenEnforcementTests(unittest.TestCase):
+    """The cases the guard exists for, driven by assembled records."""
+
+    ROUTE = "https://tenant-a.akamaized.net/live/index.m3u8"
+    BASE = dt.datetime(2026, 8, 23, 10, 0, 0, tzinfo=dt.timezone.utc)
+
+    BASE_METRICS = {
+        "announced_render_tracks": ["video", "audio"],
+        "progressing_tracks": [],
+        "first_frame_seconds": None,
+        "startup_seconds": None,
+        "media_progress_seconds": 0.0,
+        "cumulative_stall_seconds": 120,
+        "recovered_to_pass_floor": False,
+    }
+
+    def setUp(self):
+        self._saved = os.environ.get(rev.HMAC_KEY_ENV)
+        os.environ[rev.HMAC_KEY_ENV] = "k" * 32
+        va.clear_evidence()
+        va.reset()
+
+    def tearDown(self):
+        va.clear_evidence()
+        if self._saved is None:
+            os.environ.pop(rev.HMAC_KEY_ENV, None)
+        else:
+            os.environ[rev.HMAC_KEY_ENV] = self._saved
+
+    def _load(self, fatal):
+        key = rev.configured_hmac_key()
+        metrics = dict(self.BASE_METRICS, fatal_errors=list(fatal))
+        records = []
+        for offset in (0, 200):
+            stamp = (self.BASE + dt.timedelta(seconds=offset)).isoformat()
+            observation = {
+                "playback_metrics": metrics,
+                "browser_profile": "desktop_chrome",
+                "failed_profiles": list(rev.DECLARED_TARGET_MATRIX),
+                "observed_at": stamp,
+            }
+            records.extend(
+                rp.build_route_evidence(
+                    self.ROUTE,
+                    scanner=dict(observation),
+                    proxy=dict(observation),
+                    hmac_key=key,
+                )
+            )
+        self.assertGreater(va.supply_evidence(records), 0)
+        return {"name": "X", "url": self.ROUTE, "backups": []}
+
+    def test_a_403_from_both_vantages_blocks_the_hide(self):
+        # The founding measurement of this whole model: a published channel
+        # returning 403 from a datacentre egress is working for its audience.
+        item = self._load(['HttpStatusCodeInvalid {"code":403}'])
+        allowed, why = va.model_permits_hide("unit.test", item)
+        self.assertFalse(allowed, why)
+
+    def test_a_decoder_limit_from_both_vantages_blocks_the_hide(self):
+        item = self._load(["media element error code 3"])
+        allowed, why = va.model_permits_hide("unit.test", item)
+        self.assertFalse(allowed, why)
+
+    def test_a_real_route_failure_permits_the_hide(self):
+        # Two independent vantages, two separated windows, no vantage or decoder
+        # explanation. This is the one case the model is willing to act on.
+        item = self._load(["source produced no data"])
+        allowed, why = va.model_permits_hide("unit.test", item)
+        self.assertTrue(allowed, why)
+
+    def test_a_healthy_sibling_source_still_blocks_the_hide(self):
+        item = self._load(["source produced no data"])
+        allowed, why = va.model_permits_hide(
+            "unit.test", item, healthy_sibling_sources=1
+        )
+        self.assertFalse(allowed, why)
 
 
 if __name__ == "__main__":

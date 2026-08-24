@@ -1105,7 +1105,17 @@ def evidence_contains_forbidden_material(record: Dict[str, Any]) -> bool:
         blob = _json.dumps(record, ensure_ascii=False)
     except (TypeError, ValueError):
         blob = str(record)
-    if FORBIDDEN_EVIDENCE_PATTERN.search(blob):
+    # A named credential parameter whose value has ALREADY been replaced with a
+    # placeholder is not a leak - it is redaction having worked. Firing on the
+    # parameter name alone destroyed a legitimate report whose every value was
+    # already "{redacted}", so the placeholder form is stripped before the check.
+    # Drop the parameter entirely rather than just its value: leaving "token="
+    # behind still matches the pattern, which was the bug - the check fired on a
+    # report where every value was already a placeholder.
+    unredacted = re.sub(
+        r"[?&](?:token|signature|sig|hdnts)=\{[a-z_]+\}", "", blob
+    )
+    if FORBIDDEN_EVIDENCE_PATTERN.search(unredacted):
         return True
     # A long opaque run is the signature of an embedded credential, but the
     # plain length rule fired on ordinary prose: the Phase 0 sentence
@@ -1115,10 +1125,17 @@ def evidence_contains_forbidden_material(record: Dict[str, Any]) -> bool:
     # run must also look opaque rather than like words, which in practice means
     # carrying at least one digit. Every opaque run measured in the real stream
     # URLs of this repository (132-161 characters) satisfies that.
-    for match in re.finditer(r"[A-Za-z0-9+/=_-]{40,}", blob):
-        token = match.group()
-        if any(character.isdigit() for character in token):
-            return True
+    # A credential is ONE contiguous opaque token. Measured twice now, both
+    # times destroying a clean report: the run "TV/AndroidTV/AFT/SmartTV/BRAVIA"
+    # and the path "live/zee_bangla_abr/live/zee_bangla_720" are both 40+
+    # characters of this class, and both are ordinary words separated by
+    # delimiters. So the length test applies to a SEGMENT, not to the whole run.
+    for match in re.finditer(r"[A-Za-z0-9+/=_.-]{40,}", blob):
+        for segment in re.split(r"[/_.\-]", match.group()):
+            if len(segment) < 32:
+                continue
+            if any(character.isdigit() for character in segment):
+                return True
     return False
 
 

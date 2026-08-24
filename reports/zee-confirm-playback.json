@@ -1,0 +1,310 @@
+{
+  "mode": "phase_1_sustained_playback",
+  "complete": true,
+  "base_url": "https://clicktv.pages.dev/",
+  "window_seconds": 120.0,
+  "sessions_per_route": 2,
+  "session_separation_seconds": 120.0,
+  "browser_profile": "desktop_chrome",
+  "required_fresh_sessions_for_proof": 2,
+  "elapsed_seconds": 506.1,
+  "scope_note": "One browser profile only. By the model's own rule a FAIL here is environment:desktop_chrome; global scope needs the complete declared matrix ['desktop_chrome', 'android_chrome', 'iphone_safari', 'android_tv'].",
+  "results": [
+    {
+      "name": "ZB-ZeeBangla-jio",
+      "url_public_template": "{id}.{id}.workers.dev/{file}?id={v}",
+      "distinct_sources": 1,
+      "independent_redundancy": 1,
+      "browser_profile": "desktop_chrome",
+      "observations": [
+        {
+          "attempt_index": 0,
+          "session": 0,
+          "engine": "hls.js",
+          "plan_length": 3,
+          "plan_routes": [
+            "direct",
+            "proxy:proxy",
+            "proxy:proxy"
+          ],
+          "attempt_route": "direct",
+          "proxied": false,
+          "window_seconds": 120.0,
+          "target_window_seconds": 120.0,
+          "early_exit_reason": null,
+          "kind": "full_playback_session",
+          "playback_metrics": {
+            "announced_render_tracks": [
+              "video",
+              "audio"
+            ],
+            "progressing_tracks": [
+              "video",
+              "audio"
+            ],
+            "first_frame_seconds": 3.7395,
+            "startup_seconds": 3.7395,
+            "media_progress_seconds": 173.59,
+            "cumulative_stall_seconds": 0,
+            "fatal_errors": [],
+            "recovered_to_pass_floor": false
+          },
+          "verdict": "proven",
+          "reasons": [],
+          "notes": [
+            "playing direct as hls",
+            "play() still pending after 15s"
+          ],
+          "sample_count": 120,
+          "last_samples": [
+            {
+              "s": 121,
+              "t": 171.59,
+              "rs": 4,
+              "f": 2948,
+              "ab": 1419188,
+              "stall": 0
+            },
+            {
+              "s": 122,
+              "t": 172.59,
+              "rs": 4,
+              "f": 2973,
+              "ab": 1431339,
+              "stall": 0
+            },
+            {
+              "s": 123,
+              "t": 173.59,
+              "rs": 4,
+              "f": 2998,
+              "ab": 1443189,
+              "stall": 0
+            }
+          ]
+        },
+        {
+          "attempt_index": 0,
+          "session": 1,
+          "engine": "hls.js",
+          "plan_length": 3,
+          "plan_routes": [
+            "direct",
+            "proxy:proxy",
+            "proxy:proxy"
+          ],
+          "attempt_route": "direct",
+          "proxied": false,
+          "window_seconds": 120.0,
+          "target_window_seconds": 120.0,
+          "early_exit_reason": null,
+          "kind": "full_playback_session",
+          "playback_metrics": {
+            "announced_render_tracks": [
+              "video",
+              "audio"
+            ],
+            "progressing_tracks": [
+              "video",
+              "audio"
+            ],
+            "first_frame_seconds": 2.4941999999999536,
+            "startup_seconds": 2.4941999999999536,
+            "media_progress_seconds": 172.08,
+            "cumulative_stall_seconds": 0,
+            "fatal_errors": [],
+            "recovered_to_pass_floor": false
+          },
+          "verdict": "proven",
+          "reasons": [],
+          "notes": [
+            "playing direct as hls",
+            "play() still pending after 15s"
+          ],
+          "sample_count": 120,
+          "last_samples": [
+            {
+              "s": 120,
+              "t": 170.08,
+              "rs": 4,
+              "f": 2948,
+              "ab": 1419307,
+              "stall": 0
+            },
+            {
+              "s": 121,
+              "t": 171.08,
+              "rs": 4,
+              "f": 2973,
+              "ab": 1431240,
+              "stall": 0
+            },
+            {
+              "s": 122,
+              "t": 172.08,
+              "rs": 4,
+              "f": 2998,
+              "ab": 1443378,
+              "stall": 0
+            }
+          ]
+        }
+      ],
+      "pass_count": 2,
+      "proven": true,
+      "verdict_scope": "environment:desktop_chrome"
+    },
+    {
+      "name": "ZB-ZeeBanglaHD-jio",
+      "url_public_template": "{id}.{id}.workers.dev/{file}?id={v}",
+      "distinct_sources": 1,
+      "independent_redundancy": 1,
+      "browser_profile": "desktop_chrome",
+      "observations": [
+        {
+          "attempt_index": 0,
+          "session": 0,
+          "engine": "hls.js",
+          "plan_length": 3,
+          "plan_routes": [
+            "direct",
+            "proxy:proxy",
+            "proxy:proxy"
+          ],
+          "attempt_route": "direct",
+          "proxied": false,
+          "window_seconds": 51,
+          "target_window_seconds": 120.0,
+          "early_exit_reason": "no first frame within 35s and an unrecovered fatal error: the FAIL floor is already met",
+          "kind": "full_playback_session",
+          "playback_metrics": {
+            "announced_render_tracks": [],
+            "progressing_tracks": [],
+            "first_frame_seconds": null,
+            "startup_seconds": null,
+            "media_progress_seconds": 0,
+            "cumulative_stall_seconds": 0,
+            "fatal_errors": [
+              "hls networkError/manifestParsingError"
+            ],
+            "recovered_to_pass_floor": false
+          },
+          "verdict": "advisory:transient_network",
+          "reasons": [
+            "playback never started within the window",
+            "no first frame within 30s",
+            "media progress 0s < 10s",
+            "unrecovered fatal error: hls networkError/manifestParsingError",
+            "fatal error describes the network; escalatable only through the locked persistence window, never on a single observation"
+          ],
+          "notes": [
+            "playing direct as hls",
+            "play() still pending after 15s",
+            "play() rejected: AbortError: The play() request was interrupted by a new load request. https://goo.gl/LdLk22"
+          ],
+          "sample_count": 35,
+          "last_samples": [
+            {
+              "s": 48,
+              "t": 0,
+              "rs": 0,
+              "f": 0,
+              "ab": 0,
+              "stall": 0
+            },
+            {
+              "s": 49,
+              "t": 0,
+              "rs": 0,
+              "f": 0,
+              "ab": 0,
+              "stall": 0
+            },
+            {
+              "s": 50,
+              "t": 0,
+              "rs": 0,
+              "f": 0,
+              "ab": 0,
+              "stall": 0
+            }
+          ]
+        },
+        {
+          "attempt_index": 0,
+          "session": 1,
+          "engine": "hls.js",
+          "plan_length": 3,
+          "plan_routes": [
+            "direct",
+            "proxy:proxy",
+            "proxy:proxy"
+          ],
+          "attempt_route": "direct",
+          "proxied": false,
+          "window_seconds": 51,
+          "target_window_seconds": 120.0,
+          "early_exit_reason": "no first frame within 35s and an unrecovered fatal error: the FAIL floor is already met",
+          "kind": "full_playback_session",
+          "playback_metrics": {
+            "announced_render_tracks": [],
+            "progressing_tracks": [],
+            "first_frame_seconds": null,
+            "startup_seconds": null,
+            "media_progress_seconds": 0,
+            "cumulative_stall_seconds": 0,
+            "fatal_errors": [
+              "hls networkError/manifestParsingError"
+            ],
+            "recovered_to_pass_floor": false
+          },
+          "verdict": "advisory:transient_network",
+          "reasons": [
+            "playback never started within the window",
+            "no first frame within 30s",
+            "media progress 0s < 10s",
+            "unrecovered fatal error: hls networkError/manifestParsingError",
+            "fatal error describes the network; escalatable only through the locked persistence window, never on a single observation"
+          ],
+          "notes": [
+            "playing direct as hls",
+            "play() still pending after 15s",
+            "play() rejected: AbortError: The play() request was interrupted by a new load request. https://goo.gl/LdLk22"
+          ],
+          "sample_count": 35,
+          "last_samples": [
+            {
+              "s": 48,
+              "t": 0,
+              "rs": 0,
+              "f": 0,
+              "ab": 0,
+              "stall": 0
+            },
+            {
+              "s": 49,
+              "t": 0,
+              "rs": 0,
+              "f": 0,
+              "ab": 0,
+              "stall": 0
+            },
+            {
+              "s": 50,
+              "t": 0,
+              "rs": 0,
+              "f": 0,
+              "ab": 0,
+              "stall": 0
+            }
+          ]
+        }
+      ],
+      "pass_count": 0,
+      "proven": false,
+      "verdict_scope": "environment:desktop_chrome"
+    }
+  ],
+  "proven_routes": 1,
+  "routes_tested": 2
+}

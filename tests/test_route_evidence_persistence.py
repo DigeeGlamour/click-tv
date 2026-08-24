@@ -810,6 +810,55 @@ class ForbiddenMaterialTests(unittest.TestCase):
                 re_mod.evidence_contains_forbidden_material({"h": blob}), blob
             )
 
+    def test_a_redacted_credential_parameter_is_not_a_leak(self):
+        """Redaction having worked must not read as a leak.
+
+        Measured: the Zee Bangla scout report was withheld in full because every
+        one of its URL templates ended in "?token={redacted}". The values were
+        already placeholders - the check was firing on the parameter NAME. That is
+        the second time this check destroyed a clean report, so both shapes are
+        pinned here.
+        """
+        for blob in (
+            "{id}.roarzone.net/{seg}/edge7/zee-bangla/{file}?token={redacted}",
+            "{id}.h.net/{file}?sig={redacted}&hdnts={redacted}",
+            "{id}.h.net/{file}?signature={redacted}",
+        ):
+            self.assertFalse(
+                re_mod.evidence_contains_forbidden_material({"t": blob}), blob
+            )
+
+    def test_an_unredacted_credential_parameter_is_still_a_leak(self):
+        for blob in (
+            "https://h.example.net/x.m3u8?token=abc",
+            "https://h.example.net/x.m3u8?token=SECRETVALUE123456",
+            "https://h.example.net/x.m3u8?hdnts=exp=1~hmac=deadbeef",
+        ):
+            self.assertTrue(
+                re_mod.evidence_contains_forbidden_material({"t": blob}), blob
+            )
+
+    def test_an_ordinary_path_of_words_is_not_a_credential(self):
+        # "live/zee_bangla_abr/live/zee_bangla_720" is 40+ characters of the
+        # credential character class and contains digits, but every segment is a
+        # short word. The length test belongs on the SEGMENT, not the run.
+        for blob in (
+            "{id}.ottplus.bd/live/zee_bangla_abr/live/zee_bangla_720/{file}",
+            "{id}.cdn.net/hls/channel_24_abr/index_1080p/{file}",
+            "the player special-cases TV/AndroidTV/AFT/SmartTV/BRAVIA/MiBOX/TV",
+        ):
+            self.assertFalse(
+                re_mod.evidence_contains_forbidden_material({"t": blob}), blob
+            )
+
+    def test_one_long_opaque_segment_is_still_a_credential(self):
+        self.assertTrue(
+            re_mod.evidence_contains_forbidden_material(
+                {"t": "https://h.example.net/live/"
+                      "abc123DEF456ghi789JKL012mno345PQR678stu901vwx/i.m3u8"}
+            )
+        )
+
     def test_the_committed_phase0_evidence_is_clean(self):
         import json as _json
 

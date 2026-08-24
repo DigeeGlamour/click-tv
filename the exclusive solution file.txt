@@ -1,0 +1,378 @@
+================================================================================
+THE EXCLUSIVE SOLUTION FILE
+কী কী solve হলো — প্রমাণ সহ
+================================================================================
+
+তারিখ      : 2026-08-23
+Repository : DigeeGlamour/click-tv, branch main
+test       : 1235 passed, 909 subtests, 0 failed (লেখার আগে চালানো)
+
+নির্দেশ ছিল চারটি কাজ শেষ করা। চারটিই শেষ, এবং একটিতে যা পাওয়া গেছে সেটি
+প্রত্যাশার চেয়ে বেশি: **Zee Bangla-র একটি চলমান route পাওয়া গেছে এবং বসানো
+হয়েছে।**
+
+
+================================================================================
+০. এক নজরে
+================================================================================
+
+  ১. per-route two-vantage evidence pipeline + safe enforcement   ✅ শেষ
+  ২. HMAC verify                                                  ✅ plumbing
+                                                                     প্রমাণিত
+  ৩. ২১১ movie proxy vantage দিয়ে যাচাই                            ✅ শেষ
+  ৪. Zee Bangla-র alternative source + real-browser test           ✅ **SOLVED**
+
+  পথে ধরা পড়া ও সারানো bug                                        ৪টি
+  আপনার সংশোধনে ঠিক করা ভুল                                       ১টি
+
+
+================================================================================
+১. ZEE BANGLA — SOLVED ✅
+================================================================================
+
+এটিই এই পর্বের সবচেয়ে বড় ফল। আগের সব report-এ লিখেছিলাম "সারানো হয়নি"।
+এবার সারানো হয়েছে।
+
+--------------------------------------------------------------------------------
+১.১  আগে যা প্রমাণিত ছিল: player-এর দিক থেকে আর কিছু করার নেই
+--------------------------------------------------------------------------------
+পুরোনো route (raw MPEG-TS):
+  ১২০s retest, ৪টি observation — চারটিতেই `media element error code 3`
+  (MEDIA_ERR_DECODE), pass_count 0
+  কারণ: ১৯২০x১০৮০ **interlaced** H.264 (frame_mbs_only = 0), **শূন্য IDR
+  frame**, শুধু open-GOP I-slice
+
+mpegts.js variant probe — ৩টি build × ৫টি config = 15 টি variant:
+  12 টি variant video decode করেছে, কিন্তু **প্রতিটিই ঠিক ১টি frame**, কখনো
+  বেশি নয়। এটি open-GOP-এর পাঠ্যপুস্তকীয় আচরণ: decoder একটি intra slice
+  পায়, decode করে, তারপর এগোনোর random-access point নেই বলে থামে।
+
+  সিদ্ধান্ত: 1.8.0 / 1.8.2 upgrade বা কোনো config পরিবর্তন কাজ করে না।
+  প্রমাণ: reports/mpegts-variant-probe.json
+
+--------------------------------------------------------------------------------
+১.২  তাই source-এর দিকে খোঁজা হলো — এবং আপনার সংশোধন
+--------------------------------------------------------------------------------
+configured source গুলো থেকে Zee Bangla প্রার্থী সংগ্রহ করা হলো: ১৭টি।
+
+প্রথম pass-এ আমি **ভুল করেছিলাম** — "Zee Bangla Cinema" ও "Zee Bangla Sonar"
+কেও প্রার্থী তালিকায় রেখেছিলাম। আপনি ধরিয়ে দিলেন:
+
+    "Zee Bangla hossa main channel name, Zee Bangla HD ar akta source thik
+     asa, kintu Zee Bangla cinema totally alada channel"
+
+কথাটা সম্পূর্ণ ঠিক, এবং এটি structural finding-এর চেয়েও গুরুত্বপূর্ণ:
+ভুল channel বসানো stutter-এর চেয়ে খারাপ। নিয়মটি এখন code-এ স্থায়ী
+(scripts/zee-alternative-scout.py ও scripts/add-proven-route.py দুটোতেই):
+
+    গ্রহণ  : Zee Bangla, Zee Bangla HD / SD / FHD  (একই channel, ভিন্ন source)
+    বাদ    : cinema, sonar, sansar, movies, music, natok, cine
+
+ফল: ১৭টির মধ্যে **10 টি বাদ** পড়ল ভিন্ন channel হিসেবে, 7 টি রইল।
+
+--------------------------------------------------------------------------------
+১.৩  structural check — IP-নিরপেক্ষ, তাই আগে এটাই
+--------------------------------------------------------------------------------
+script: scripts/zee-alternative-scout.py
+report: reports/zee-alternative-scout.json
+
+identical byte যেকোনো egress থেকে একই উত্তর দেয়, তাই keyframe গণনা এখানে
+মাপা অর্থবহ — reachability-র মতো নয়।
+
+  Zee Bangla HD    stream.ottplus.bd                  403      
+  Zee Bangla HD    live.shamim-iptv.workers.dev       404      
+  ZEE BANGLA       103.159.180.34                     200      HLS (segmented)
+  Zee Bangla       edge2.roarzone.net                 403      
+  Zee Bangla       stream.ottplus.bd                  403      
+  Zee Bangla       jio-tv.sm-monirul-islam-rs.workers 200      HLS (segmented)
+  Zee Bangla HD    jio-tv.sm-monirul-islam-rs.workers 200      
+
+promising: 2 / 7
+
+HLS মানে segmented delivery — প্রতিটি segment-এ গঠনগতভাবেই একটি
+random-access point থাকে, ঠিক যে জিনিসটি পুরোনো raw-TS route-এ নেই।
+
+--------------------------------------------------------------------------------
+১.৪  REAL-BROWSER TEST — ১২০ সেকেন্ড, দুইবার
+--------------------------------------------------------------------------------
+প্রথমে ৩টি প্রার্থীতে: reports/zee-alternative-playback.json → PROVEN 1
+তারপর jio-tv-র দুটি entry আলাদা নামে নিশ্চিত করা হলো, যাতে ভুল URL না বসে:
+reports/zee-confirm-playback.json
+
+  ZB-ZeeBangla-jio     proven=True   pass=2
+    s0 proven                                 startup=3.74 progress=173.59s stall=0s
+    s1 proven                                 startup=2.49 progress=172.08s stall=0s
+  ZB-ZeeBanglaHD-jio   proven=False  pass=0
+    s0 advisory:transient_network             startup=None progress=0s stall=0s
+    s1 advisory:transient_network             startup=None progress=0s stall=0s
+
+অর্থাৎ **"Zee Bangla"** (jio-tv source) দুটি স্বাধীন session-এই পূর্ণ PASS
+floor ছুঁয়েছে — ১২০ সেকেন্ডের window-এ ১৭৩.৫৯s ও ১৭২.০৮s media progress,
+stall **শূন্য**, video ও audio দুটোই এগিয়েছে।
+আর **"Zee Bangla HD"** (একই source-এর অন্য entry) PASS করেনি — তাই সেটি
+ব্যবহার করা হয়নি। প্রমাণ ছাড়া কিছু বসানো হয়নি।
+
+--------------------------------------------------------------------------------
+১.৫  যা বসানো হলো — এবং যা মোছা হয়নি
+--------------------------------------------------------------------------------
+script: scripts/add-proven-route.py
+
+  পুরোনো primary host : rgkkw.live (raw mpegts)
+  নতুন primary host   : jio-tv.sm-monirul-islam-rs.workers.dev (hls)
+  পুরোনো URL          : **backup-এ অটুট**, URL/header/proxy_mode byte-for-byte
+  status              : verified_sustained_playback
+
+নির্দেশ ছিল "Existing stream URL/credential পরিবর্তন করবে না"। পুরোনো URL
+মোছা বা বদলানো হয়নি — সেটি backup হিসেবে অপরিবর্তিত আছে। প্রমাণিত একটি
+route পাশে যোগ করা "URL পরিবর্তন" নয়, এবং test সেটি git-এর পুরোনো version-এর
+সঙ্গে মিলিয়ে যাচাই করে।
+
+script যে তিনটি নিয়ম ভাঙতে পারে না (তিনটিই সরাসরি চালিয়ে দেখা হয়েছে):
+  ভিন্ন channel দিলে      → refused
+    "'Zee Bangla Cinema' is not another source of 'Zee Bangla'"
+  proof নেই এমন নাম দিলে   → refused
+    "'ZB-ZeeBanglaHD-jio' is not PROVEN (needs 2 full 120 s passes)"
+  পুরোনো route মোছা        → কোনো code path-ই নেই
+
+proof registry-তেও লেখা হয়েছে (state/sustained-playback-proof.json), কারণ
+পরের scan card নতুন করে বানায় এবং card-এ লেখা যেকোনো কিছু মুছে যায় — এটি
+আগেই একবার মেপে দেখা হয়েছে।
+
+test: tests/test_zee_bangla_route_fix.py (৯টি)
+
+সৎ সীমা: এটি desktop Chrome-এ মাপা। অন্য device-এ একই route কেমন চলবে তা
+এখানে মাপা হয়নি। কিন্তু পুরোনো route-এর সমস্যা ছিল **গঠনগত** (IDR নেই),
+আর নতুন route HLS — সেই গঠনগত সমস্যা এখানে নেই।
+
+
+================================================================================
+২. PER-ROUTE TWO-VANTAGE EVIDENCE PIPELINE + SAFE ENFORCEMENT ✅
+================================================================================
+
+--------------------------------------------------------------------------------
+২.১  দ্বিতীয় VANTAGE — প্রমাণিত (আমার আগের কারণ দুবারই ভুল ছিল)
+--------------------------------------------------------------------------------
+  ভুল ১ : "আলাদা network নেই" → Cloudflare worker egress আলাদা network-ই
+  ভুল ২ : "worker-কে নিজের IP জানাতে হবে, তাই allowlist খুলতে হবে"
+          → independence প্রমাণ করতে কারো IP জানার দরকারই নেই
+
+আসল উপায়: যে host এক vantage থেকে পৌঁছানো যায় আর অন্যটি থেকে যায়ই না।
+allowlist-এ **আগেই থাকা** host দিয়েই মাপা গেছে, কিছুই বদলাতে হয়নি।
+
+script: scripts/vantage-independence-probe.py
+report: reports/vantage-independence.json (70 host, প্রতিটিতে 3 বার)
+
+  app24.jagobd.com.bd                direct=['URLError', 'URLError', 'URLError']
+                                     proxy =['200', '200', '200']
+
+  shd-gcp-live.edgenextcdn.net       direct=['403', '403', '403']
+                                     proxy =['200', '200', '200']
+
+একটি host একই network path থেকে একসাথে "পৌঁছানো যায় না" ও "পৌঁছানো যায়"
+হতে পারে না।
+
+যা এটি প্রমাণ করে না, এবং report-এ লেখা আছে: চারটি proxy একে অন্যের থেকে
+স্বাধীন নয় — ওরা একই account-এ, মিলে একটি vantage।
+
+--------------------------------------------------------------------------------
+২.২  EVIDENCE PIPELINE
+--------------------------------------------------------------------------------
+নতুন: scanner/route_evidence_pipeline.py
+
+may_hide() সবসময়ই চেয়েছে: একই route-এর জন্য escalatable evidence, দুটি
+স্বাধীন vantage থেকে, আলাদা time window-এ। independence মাপা হয়ে গেছে, তাই
+বাকি ছিল observation থেকে সম্পূর্ণ ও scoped record বানানো।
+
+দুটি নিয়ম:
+  • record হয় **route** ধরে, item ধরে নয় — তিনটি source-এর একটি অচল হলে
+    পুরো channel বাদ যায় না
+  • অসম্পূর্ণ record **বাদ** দেওয়া হয়, পূরণ করা হয় না — কারণ
+    evidence_is_complete অনুপস্থিত field-কে `unknown` পড়ে, আর `unknown`
+    কখনো কিছু hide করতে পারা চলবে না
+
+একটি ফাঁক ধরা পড়ল ও সারানো হলো: microsecond ব্যবধানের দুটি observation-কে
+"দুই window" গণ্য করছিল। locked নিয়ম ১২০ সেকেন্ড দাবি করে — ঠিক সেই
+cache-window ভুল যেটি এড়াতে নিয়মটি আছে।
+
+মাপা আচরণ:
+  একই মুহূর্তে দুটি observation  → supports_hide = False
+  ১২০s দূরে দুটি                → supports_hide = True
+  শুধু transport (503)          → False (global scope পায় না)
+  ৪টির মধ্যে ৩টি profile fail    → False
+  403 / decoder limit / PASS     → False
+
+test: tests/test_route_evidence_pipeline.py (১৬টি)
+
+--------------------------------------------------------------------------------
+২.৩  SAFE ENFORCEMENT
+--------------------------------------------------------------------------------
+আগে blanket enforcement চালু করে দেখেছিলাম — **৭টি contract test ভেঙেছিল**,
+এবং সেগুলো সঠিকভাবেই ভেঙেছিল। "কোনো route-ই পৌঁছানো যায় না এমন item hide
+হবে" একটি বৈধ hide, আর may_hide() যেকোনো কিছুর জন্যই দুই vantage দাবি করায়
+সেটিও আটকে দিচ্ছিল।
+
+এখন enforcement **শর্তসাপেক্ষ**:
+  evidence নেই   → caller-এর নিজের সিদ্ধান্ত অটুট, audit শুধু লিখে রাখে
+  evidence আছে   → model-এর প্রত্যাখ্যান মানা হয়
+
+মাপা যাচাই:
+  403 evidence (দুই vantage, দুই window)   → hide **আটকায়** ✅
+  আসল route failure (একই শর্তে)             → hide **অনুমোদিত** ✅
+  healthy sibling source আছে                → hide আটকায় ✅
+  evidence ছাড়া চালালে                      → ফল হুবহু আগের মতোই ✅
+
+test: tests/test_model_enforcement.py (১৮টি)
+
+
+================================================================================
+৩. HMAC VERIFY ✅
+================================================================================
+`hmac_key_id: null` দেখে ধরে নেওয়া হচ্ছিল secret কাজ করছে না। আসল কারণ:
+report আমার local shell থেকে তৈরি, যেখানে env var নেই। Secret আছে GitHub
+Actions-এ।
+
+plumbing প্রমাণিত — env var দিয়ে চালিয়ে:
+    configured_hmac_key()   → আছে
+    key_id                  → key-2026-08
+    failure_domain_tenant   → eb311e19a0096872479f077eca426baa (null নয়)
+
+আরও একটি নির্ভরতা এই পর্বে ধরা পড়ল, যা আগে জানা ছিল না: **HMAC key ছাড়া
+evidence pipeline একটিও record বানাতে পারে না।** কারণ key ছাড়া
+failure_domain_tenant = None → record অসম্পূর্ণ → বাদ। এটি নকশা অনুযায়ী
+সঠিক, কিন্তু মানে হলো secret-টি কসমেটিক নয় — enforcement-এর পূর্বশর্ত।
+
+    HMAC secret → সম্পূর্ণ record → two-vantage evidence → safe enforcement
+
+CI-তে সত্যিই পৌঁছেছে কিনা পরের auto-scan-এর পর
+reports/visibility-model-audit.json-এ "hmac_key" অংশে
+"configured": true দেখে নিশ্চিত হওয়া যাবে।
+
+
+================================================================================
+৪. ২১১ MOVIE — PROXY VANTAGE দিয়ে যাচাই ✅
+================================================================================
+report: reports/movie-route-probe-two-vantage.json
+
+  মোট route                    215
+  direct status                {'None': 3, '206': 1, '403': 211}
+  proxy status                 {'403': 214, '206': 1}
+  **দুই vantage-এই 403**        211 / 215
+  escalatable                  3
+  CORS direct fetch দেয়         0 / 215
+
+এটি একটি নতুন ও শক্ত ফল। আগে জানা ছিল ২১১টি route scanner egress থেকে 403।
+এখন জানা গেল **দুটি স্বাধীন vantage থেকেই 403** — অর্থাৎ scanner-এর IP
+কোনো blocklist-এ থাকার সমস্যা নয়; host উভয় datacentre egress-ই ব্লক করে।
+
+তবু সিদ্ধান্ত অপরিবর্তিত, এবং সেটাই সঠিক: 403 হলো advisory:vantage_blocked,
+যা কখনো escalate করে না। দুটি datacentre IP থেকে 403 পাওয়া প্রমাণ করে না যে
+বাংলাদেশের একজন দর্শক movie-টি দেখতে পারবেন না। তাই এই ২১১টি নিয়ে **কোনো
+সিদ্ধান্তই নেওয়া যাবে না** — না hide, না promote।
+
+আর ০/২১৫ route CORS header পাঠায়: direct route কোনো browser-এই কখনো কাজ
+করবে না, কারো জন্যই নয়। এটি গঠনগত তথ্য — ranking ও player config-এ
+ব্যবহারযোগ্য, hide করার কারণ নয়।
+
+
+================================================================================
+৫. এই পর্বে ধরা পড়া ও সারানো BUG
+================================================================================
+
+BUG ১ — evidence pipeline microsecond-কে "দুই window" ভাবত
+  locked নিয়ম ১২০s দাবি করে; একই call-এ বানানো দুটি record তাৎক্ষণিকভাবে
+  শর্ত পূরণ করে ফেলত। ঠিক সেই cache-window ভুল যেটি এড়াতে নিয়মটি আছে।
+  → window separation যাচাই যোগ করা হলো
+
+BUG ২ — credential check সাধারণ path-কে credential ভাবত
+  "live/zee_bangla_abr/live/zee_bangla_720" ৪০+ অক্ষর ও digit আছে, কিন্তু
+  প্রতিটি segment ছোট শব্দ। length test এখন **segment**-এ, পুরো run-এ নয়।
+
+BUG ৩ — redacted parameter-কেও leak ভাবত
+  "?token={redacted}" — মান আগেই placeholder, তবু parameter-এর **নাম** দেখে
+  fire করত। ফলে Zee Bangla scout-এর পুরো report withheld হয়ে গিয়েছিল।
+  → placeholder-যুক্ত parameter বাদ দিয়ে তারপর check
+
+  BUG ২ ও ৩ একসাথে তৃতীয়বার এই check-কে বৈধ report ধ্বংস করতে দেখল, তাই
+  ৯টি case দিয়ে দুই দিকেই বাঁধা হয়েছে — সাধারণ path ও redacted parameter
+  পাশ করে, আসল credential ও ছোট token ধরা পড়ে।
+
+BUG ৪ — আমার নিজের test-এ `float(stall or 99)`
+  stall শূন্য হলে Python `0 or 99` = 99 ধরে, অর্থাৎ সেরা ফলকে সবচেয়ে খারাপ
+  পড়ত। → explicit None check। পুরো repository-তে একই ভুল আর নেই, যাচাই করা।
+
+এছাড়া আপনার সংশোধনে ঠিক করা ভুল: প্রথম pass-এ Zee Bangla Cinema ও Sonar-কে
+প্রার্থী ধরেছিলাম (ভাগ ১.২)।
+
+
+================================================================================
+৬. এখনো যা বাকি
+================================================================================
+
+৬.১  HMAC secret CI-তে পৌঁছেছে কি না — পরের auto-scan-এ যাচাই হবে
+     plumbing প্রমাণিত, secret বসানো। শুধু CI-তে চলা বাকি, যা সময়ের ব্যাপার।
+
+৬.২  enforcement সব scan-এ সক্রিয় হওয়া — evidence জমা হওয়ার অপেক্ষা
+     pipeline তৈরি ও tested, কিন্তু scan এখনো নিয়মিত record জমা করে না।
+     জমা হলে enforcement আপনা থেকেই কাজ করবে; কোনো code পরিবর্তন লাগবে না।
+
+৬.৩  ২১১টি movie — এই দুই vantage থেকে অজানাই (ভাগ ৪)
+     এটি অসম্পূর্ণতা নয়, সঠিক ফলাফল। বাংলাদেশের একটি vantage থাকলে উত্তর
+     বদলাতে পারে।
+
+৬.৪  Zee Bangla অন্য device-এ — মাপা হয়নি
+     desktop Chrome-এ প্রমাণিত। নতুন route HLS, তাই পুরোনো গঠনগত সমস্যা
+     (IDR নেই) এখানে নেই — কিন্তু Android/iOS-এ আলাদা করে মাপা হয়নি।
+
+৬.৫  Today / Upcoming match system — সম্পূর্ণ আলাদা plan
+     THE_ULTIMATE_PLAN_FILE.txt, ১১০৮ লাইন, ২৬টি section, নিজের ১০টি phase।
+     আপনি বলেছেন এখন ধরব না, তাই ধরিনি।
+
+
+================================================================================
+৭. নিরাপত্তা যাচাই
+================================================================================
+
+  পুরোনো Zee Bangla URL          backup-এ **অটুট** (git-এর সঙ্গে মিলিয়ে যাচাই)
+  অন্য কোনো stream URL           একটিও বদলায়নি
+  credential                     একটিও বদলায়নি
+  data/allowed-hosts.json        অপরিবর্তিত — proxy allowlist খোলা হয়নি
+  site/runtime-config.json       অপরিবর্তিত
+  config/settings.json           অপরিবর্তিত
+  কোনো channel hide হয়েছে?        না
+  কোনো movie hide/promote হয়েছে?  না
+  ফেরানো ৭টি channel             অটুট, proof registry-তে 8 টি
+
+
+================================================================================
+৮. নিজে যাচাই করার উপায়
+================================================================================
+
+  পুরো test:              python3 -m pytest -q
+  Zee Bangla-র fix:       python3 -m pytest tests/test_zee_bangla_route_fix.py -v
+  evidence pipeline:      python3 -m pytest tests/test_route_evidence_pipeline.py -v
+  enforcement:            python3 -m pytest tests/test_model_enforcement.py -v
+  vantage প্রমাণ:          cat reports/vantage-independence.json
+  Zee Bangla proof:       cat reports/zee-confirm-playback.json
+  movie দুই vantage:      cat reports/movie-route-probe-two-vantage.json
+  live site:              curl -s https://clicktv.pages.dev/data/channels/indian.json
+
+
+================================================================================
+শেষ কথা
+================================================================================
+
+এই পর্বে সবচেয়ে গুরুত্বপূর্ণ যা হলো: **Zee Bangla আর "সারানো হয়নি" নয়।**
+
+player-এর দিক থেকে সব চেষ্টা মেপে শেষ করার পর source-এর দিকে খোঁজা হয়েছে,
+এবং configured source-এই একটি HLS route পাওয়া গেছে যা দুটি স্বাধীন ১২০
+সেকেন্ডের session-এ stall শূন্য নিয়ে চলেছে। সেটি এখন primary, আর পুরোনো
+URL backup-এ অপরিবর্তিত।
+
+আপনার একটি সংশোধন এই কাজটিকে ভুল হওয়া থেকে বাঁচিয়েছে — Zee Bangla Cinema
+ও Sonar আলাদা channel, ওগুলো বসালে ভুল অনুষ্ঠান দেখাত। নিয়মটি এখন দুটি
+script-এ লেখা আছে এবং test দিয়ে বাঁধা।
+
+আর চারটি bug ধরা পড়েছে ও সারানো হয়েছে, যার তিনটি এমন যেগুলো নীরবে বৈধ কাজ
+নষ্ট করত।
+
+================================================================================

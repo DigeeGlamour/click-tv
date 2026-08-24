@@ -158,29 +158,65 @@ def audit_hide(
     return decision
 
 
-#: When True the model's decision is ENFORCED, not merely recorded: a hide that
-#: `may_hide` rejects does not happen.
+#: Enforce the model's refusal, but only where the model actually has evidence.
 #:
-#: Off, and this is now a measured decision rather than caution. Turning it on
-#: broke seven existing contract tests, and reading them showed they were right
-#: to break: they require hides that ARE justified. "An item with no reachable
-#: route at all is hidden" is the clearest - that is a structural finding across
-#: every route a channel has, not one vantage disagreeing about one route.
-#: `may_hide` refuses it anyway, because it demands two independent vantages for
-#: anything, and blanket enforcement therefore stops legitimate hides along with
-#: the illegitimate ones.
+#: Blanket enforcement was tried and was wrong: it broke seven contract tests,
+#: and reading them showed they were right. "An item with no reachable route at
+#: all is hidden" is a structural finding across every route a channel has, and
+#: `may_hide` refuses it anyway because it demands two independent vantages for
+#: anything. Refusing every hide is not safety; it is a different failure.
 #:
-#: The protection that actually mattered is in place by a narrower route: an item
-#: with sustained-playback proof is exempt at each hide site (see
-#: scanner/sustained_proof.py), which is what keeps the seven restored channels.
-#: That is targeted at the failure that was measured, instead of switching off
-#: hiding in general.
+#: So enforcement is conditional on evidence existing. With no per-route evidence
+#: for an item, the caller's own decision stands untouched and only the audit
+#: records what the model would have said. With evidence present, the model's
+#: refusal is honoured - which is the case the guard was written for and the one
+#: that loses working channels when it is ignored.
 #:
-#: Turning this on becomes correct once real two-vantage evidence records are
-#: being collected per route - vantage independence itself is now measured
-#: (reports/vantage-independence.json), so the remaining piece is the evidence
-#: pipeline, not the network.
-ENFORCE_MODEL_DECISION = False
+#: Vantage independence is measured (reports/vantage-independence.json) and
+#: scanner/route_evidence_pipeline.py assembles the records, so this is now a
+#: live path rather than a placeholder.
+ENFORCE_MODEL_DECISION = True
+
+#: Evidence records per route id, supplied by a caller that has measured them.
+#: Empty means no item is enforced, which is the state during an ordinary scan
+#: until the pipeline is fed.
+_EVIDENCE: Dict[str, List[Dict[str, Any]]] = {}
+
+
+def supply_evidence(records: Sequence[Dict[str, Any]]) -> int:
+    """Register per-route evidence for this process. Returns records accepted.
+
+    Only complete, credential-free records are kept: a partial record would be
+    read as `unknown` and make the model look better informed than it is.
+    """
+    accepted = 0
+    for record in records or ():
+        if not isinstance(record, dict):
+            continue
+        complete, _missing = rev.evidence_is_complete(record)
+        if not complete or rev.evidence_contains_forbidden_material(record):
+            continue
+        route_id = str(record.get("route_id") or "")
+        if not route_id:
+            continue
+        _EVIDENCE.setdefault(route_id, []).append(record)
+        accepted += 1
+    return accepted
+
+
+def clear_evidence() -> None:
+    _EVIDENCE.clear()
+
+
+def evidence_for(item: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Records covering any route this item publishes."""
+    if not isinstance(item, dict) or not _EVIDENCE:
+        return []
+    found: List[Dict[str, Any]] = []
+    for route in _routes(item):
+        route_id = rev.normalize_source_identity(str(route.get("url") or ""))
+        found.extend(_EVIDENCE.get(route_id) or [])
+    return found
 
 
 def model_permits_hide(
@@ -196,16 +232,26 @@ def model_permits_hide(
     caller's behaviour is unchanged and only the audit records the difference.
     """
     try:
+        supplied = list(evidence) or evidence_for(item)
         decision = audit_hide(
             site,
             item,
-            evidence=evidence,
+            evidence=supplied,
             healthy_sibling_sources=healthy_sibling_sources,
         )
     except Exception:  # noqa: BLE001 - a model failure must not block a scan
         return True, "model unavailable; caller behaviour unchanged"
     if not ENFORCE_MODEL_DECISION:
         return True, "audit-only mode; decision recorded but not enforced"
+    if not supplied:
+        # No measured evidence for this item's routes. Refusing here would block
+        # legitimate structural hides - the seven contracts that broke when this
+        # was unconditional - so the caller's own decision stands and the audit
+        # records what the model would have said.
+        return True, (
+            "no per-route evidence for this item; caller decision stands "
+            "(model view recorded in the audit)"
+        )
     if decision.get("model_would_hide"):
         return True, str(decision.get("model_reason") or "model permits")
     return False, str(decision.get("model_reason") or "model refuses")

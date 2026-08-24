@@ -97,14 +97,14 @@
       "sport_type": "",
       "logo": "https://assets-prod.services.toffeelive.com/f_png,w_300,q_85/kK2aX5UBrjBfS2_RBcKf/posters/ba5dd8dc-4f87-414a-b57f-c9ecdeda5253.png",
       "category": "Indian",
-      "url": "http://rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/98881.ts",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "mpegts",
-      "requires_headers": true,
+      "url": "https://jio-tv.sm-monirul-islam-rs.workers.dev/live.m3u8?id=625",
+      "header_profile": "",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
       "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
+      "verification_mode": "phase1_120s_browser_x2",
+      "verification_status": "verified_sustained_playback",
       "verification_badge": "Verified",
       "verified": true,
       "publish_allowed": true,
@@ -114,8 +114,19 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "smartplaytv-worker-stream",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Original-primary",
+          "url": "http://rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/98881.ts",
+          "stream_type": "mpegts",
+          "proxy_mode": "proxy_first",
+          "header_profile": "android_tv",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_note": "Kept unchanged. Measured failing: 1080i H.264 with zero IDR frames, four 120 s sessions ending in MEDIA_ERR_DECODE, and fifteen mpegts.js variants each decoding one frame before stopping."
+        }
+      ],
       "source_provenance": [
         {
           "source_id": "smartplaytv-worker-stream",
@@ -128,7 +139,8 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_7c087fd5a9fca392e64b2ac2d7dc97cc"
+      "playback_id": "ctv_7c087fd5a9fca392e64b2ac2d7dc97cc",
+      "verification_note": "Two independent 120 s browser sessions each played this route to the full PASS floor. See reports/zee-confirm-playback.json."
     },
     {
       "id": "sony-aath",

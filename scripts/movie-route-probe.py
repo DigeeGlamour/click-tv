@@ -93,19 +93,51 @@ def probe(url: str) -> Dict[str, Any]:
                 "detail": str(exc)[:120]}
 
 
+def proxy_list() -> list:
+    """The configured play proxies, which the vantage probe established are a
+    DIFFERENT egress from the scanner's own."""
+    try:
+        with open(os.path.join(ROOT, "site", "runtime-config.json"), "r", encoding="utf-8") as h:
+            config = json.load(h)
+    except (OSError, ValueError):
+        return []
+    found = config.get("playback_proxies") or config.get("play_proxies") or []
+    return [p for p in found if isinstance(p, str)]
+
+
+def probe_via(url: str, proxy: str) -> Dict[str, Any]:
+    """Same probe, through the proxy egress.
+
+    Worth doing only because vantage independence is now measured rather than
+    assumed: reports/vantage-independence.json shows hosts the scanner cannot
+    reach at all while the proxy returns 200. So a 403 from both egresses says
+    something a 403 from one does not.
+    """
+    return probe(f"{proxy.rstrip('/')}/hls?url={urllib.parse.quote(url, '')}")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--targets", required=True)
     ap.add_argument("--out", default="reports/movie-route-probe.json")
     ap.add_argument("--workers", type=int, default=8)
+    ap.add_argument("--via-proxy", action="store_true",
+                    help="also probe through the proxy egress, which the vantage "
+                         "probe established is a different network path")
     args = ap.parse_args()
 
     with open(args.targets, "r", encoding="utf-8") as handle:
         targets = json.load(handle)
 
+    proxies = proxy_list()
+
     def run(target: Dict[str, Any]) -> Dict[str, Any]:
         url = str(target.get("url") or "")
         result = probe(url) if url else {"status": None, "error_kind": "network"}
+        # Second vantage. A route blocked from BOTH egresses is blocked by the
+        # host for datacentre traffic generally, not by one egress being on a
+        # blocklist - and those are different findings.
+        via = probe_via(url, proxies[0]) if (url and proxies and args.via_proxy) else None
         verdict = rev.classify_transport(
             result.get("status"),
             error_kind=result.get("error_kind") or "",
@@ -123,6 +155,13 @@ def main() -> int:
             "browser_direct_possible": bool(result.get("cors_allow_origin")),
             "transport_class": verdict,
             "escalatable": rev.is_escalatable(verdict),
+            "proxy_status": (via or {}).get("status"),
+            "proxy_error_kind": (via or {}).get("error_kind"),
+            "blocked_from_both_vantages": bool(
+                via
+                and str(result.get("status")) == "403"
+                and str(via.get("status")) == "403"
+            ),
         }
 
     results: List[Dict[str, Any]] = []
@@ -150,6 +189,13 @@ def main() -> int:
             1 for r in results if r["browser_direct_possible"]
         ),
         "escalatable_count": sum(1 for r in results if r["escalatable"]),
+        "second_vantage_used": bool(args.via_proxy and proxies),
+        "blocked_from_both_vantages": sum(
+            1 for r in results if r.get("blocked_from_both_vantages")
+        ),
+        "by_proxy_status": dict(
+            Counter(str(r.get("proxy_status")) for r in results)
+        ) if args.via_proxy else None,
         "results": results,
     }
     target_path = os.path.join(ROOT, args.out)
