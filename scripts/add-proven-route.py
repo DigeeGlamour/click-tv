@@ -40,6 +40,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from scanner import route_evidence as rev  # noqa: E402
+from scanner import route_preference  # noqa: E402
 from scanner import sustained_proof  # noqa: E402
 
 #: Same rule as scripts/zee-alternative-scout.py, restated rather than imported
@@ -162,15 +163,36 @@ def main() -> int:
         return 1
     print(f"card: {os.path.relpath(path, ROOT)}")
 
+    def write_registries() -> None:
+        """Register the proof even when the card already looks right.
+
+        The card is generated: a scan rebuilds it from its sources and erases
+        whatever was written on it. So returning early because the card is
+        already correct would leave the registries empty and the fix would last
+        exactly one scan - which is the bug this whole function exists to avoid.
+        """
+        written, why = sustained_proof.record(
+            "channel", args.channel, evidence,
+            path=None if not args.dry_run else os.devnull,
+        )
+        print(f"proof registry: {'recorded' if written else why}")
+        pref_written, pref_why = route_preference.record(
+            "channel", args.channel, args.url, evidence,
+            path=None if not args.dry_run else os.devnull,
+        )
+        print(f"route preference: {'recorded' if pref_written else pref_why}")
+
     existing_url = str(card.get("url") or "")
-    if existing_url == args.url:
-        print("the proven route is already the primary; nothing to do")
-        return 0
     backups = list(card.get("backups") or [])
+    if existing_url == args.url:
+        print("the proven route is already the primary")
+        write_registries()
+        return 0
     if any(
         isinstance(b, dict) and str(b.get("url") or "") == args.url for b in backups
     ):
-        print("the proven route is already a backup; nothing to do")
+        print("the proven route is already a backup")
+        write_registries()
         return 0
 
     proven_entry = {
@@ -222,13 +244,16 @@ def main() -> int:
               "untouched")
     card["available_link_count"] = 1 + len(card.get("backups") or [])
 
-    # The proof belongs outside the card as well, because the next scan rebuilds
-    # cards from their sources and erases anything written on them.
-    written, why = sustained_proof.record(
-        "channel", args.channel, evidence,
-        path=None if not args.dry_run else os.devnull,
-    )
-    print(f"proof registry: {'recorded' if written else why}")
+    # The proof belongs outside the card, because the next scan rebuilds cards
+    # from their sources and erases anything written on them. Two registries,
+    # answering two different questions:
+    #
+    #   sustained_proof  - may this channel be hidden?           (no)
+    #   route_preference - which of its routes should lead?      (this one)
+    #
+    # Only the first existed at first, which meant the swap below would have
+    # survived exactly one scan.
+    write_registries()
 
     if args.dry_run:
         print("\n(dry run: nothing written)")

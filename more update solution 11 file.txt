@@ -1,0 +1,306 @@
+================================================================================
+MORE UPDATE SOLUTION 11
+Codex-এর ধরা প্রতিটি ফাঁক — কী সারালাম, প্রমাণ সহ
+================================================================================
+
+তারিখ      : 2026-08-23
+Repository : DigeeGlamour/click-tv, branch main
+test       : 1260 passed, 909 subtests, 0 failed, 0 skipped
+             (লেখার আগে চালানো)
+
+Codex পাঁচটি বিষয় ধরেছিল। চারটি আমার আসল ভুল ছিল এবং সারানো হয়েছে; একটি
+এমন যা আমার হাতে নেই এবং কেন তা লেখা আছে।
+
+
+================================================================================
+০. এক নজরে
+================================================================================
+
+  ১. evidence pipeline scanner-এর সঙ্গে যুক্ত নয়        ✅ সারানো
+  ২. পরের scan-এ Zee Bangla fix টিকবে না                ✅ সারানো — সবচেয়ে গুরুতর
+  ৩. test সংখ্যার দাবি ভুল (1235)                        ✅ সংশোধিত + skip সরানো
+  ৪. ২১১ movie — BD vantage ছাড়া বোঝা যায় না             ⚠️ সঠিক, আমার হাতে নেই
+  ৫. Android / iPhone-এ Zee Bangla পরীক্ষা হয়নি          ⚠️ সঠিক, নিচে লেখা
+
+
+================================================================================
+১. পরের SCAN-এ ZEE BANGLA FIX টিকবে না — সারানো ✅
+================================================================================
+এটিই সবচেয়ে গুরুতর, এবং Codex একটি scan চালানোর আগেই ধরেছে।
+
+--------------------------------------------------------------------------------
+১.১  সমস্যাটা কী ছিল
+--------------------------------------------------------------------------------
+আমি proven route সরাসরি generated `data/channels/indian.json`-এ বসিয়েছিলাম।
+আর আমার **নিজের script-এর comment** (add-proven-route.py) বলছিল:
+
+    "the next scan rebuilds cards from their sources and erases anything
+     written on them"
+
+অর্থাৎ আমি নিজেই জানতাম card-এ লেখা টেকে না — এবং তবু card-এ লিখেছিলাম।
+fix-টির আয়ু ছিল **একটি scan**।
+
+আরও খারাপ: এটি ঠিক সেই ভুল যা আগের পর্বে ৭টি restored channel-এর ক্ষেত্রে
+ঘটেছিল, শুধু এক ধাপ এগিয়ে। তখন `sustained_proof` বানিয়ে channel **hide
+হওয়া** ঠেকিয়েছিলাম, কিন্তু কোন route **primary থাকবে** সেই প্রশ্নের উত্তর
+কোথাও রাখিনি। আর ওই প্রশ্নটাই ঠিক করে দর্শক চলমান stream দেখবেন না আটকানো
+stream দেখবেন।
+
+--------------------------------------------------------------------------------
+১.২  যা করা হলো
+--------------------------------------------------------------------------------
+নতুন: scanner/route_preference.py
+      state/route-preference.json
+
+দুটি registry, দুটি ভিন্ন প্রশ্নের উত্তর — দুটোই card-এর বাইরে:
+
+    sustained_proof   → এই channel hide করা যাবে কি?        না
+    route_preference  → এর কোন route আগে থাকবে?             এটি
+
+merger-এ যুক্ত করা হলো, ঠিক যেখানে primary বাছা হয়
+(scanner/merger.py, rank_and_select_streams):
+
+  • proven route promote হয় **incumbent-hold logic-এর আগে** — কারণ যে
+    route acceptance pass করেনি, সে pass-করা route-এর উপরে জায়গা ধরে
+    রাখতে পারবে না; নইলে hysteresis নিয়ম প্রতি scan-এ promotion উল্টে দিত
+  • registry-তে থাকা route **normalized identity** দিয়ে মেলানো হয়, তাই
+    ঘুরতে থাকা cache-buster দেখে preference কাজ করা বন্ধ করে না — ঠিক
+    সেভাবেই fingerprint ledger ছয়টি channel হারিয়েছিল
+  • registry কেবল **promote** করতে পারে: route যোগ করা, সরানো বা hide করা
+    কোনো code path-ই নেই (AST দিয়ে যাচাই করা, docstring বাদ দিয়ে)
+  • scan যে route খুঁজে পায়নি সেটি যোগ করা হয় না — যা scan দেখেনি তার
+    জন্য scan দায় নিতে পারে না
+
+--------------------------------------------------------------------------------
+১.৩  মাপা প্রমাণ — scan card নতুন করে বানালে কী হয়
+--------------------------------------------------------------------------------
+scan-এর দেওয়া ক্রম নকল করে চালানো হলো:
+
+    scan দিল       : rgkkw.live  (পুরোনো, ভাঙা)
+                     jio-tv...   (proven)
+    promote পরে    : jio-tv...   ← primary
+                     rgkkw.live
+
+  primary এখন proven route?                      হ্যাঁ
+  registry-হীন channel-এ কিছু বদলায়?              না
+  proven route candidate-এ না থাকলে যোগ করে?      না
+  stream সংখ্যা অপরিবর্তিত?                        হ্যাঁ (permutation)
+
+registry-তে এখন:
+  Zee Bangla     2 PASS · window 120.0s · media [173.59, 172.08] · stall [0, 0]
+
+--------------------------------------------------------------------------------
+১.৪  একটি ফাঁক এর মধ্যেই ধরা পড়ল ও সারানো হলো
+--------------------------------------------------------------------------------
+প্রথমবার script চালিয়ে দেখলাম registry লেখা **হয়নি** — কারণ route ইতিমধ্যে
+primary ছিল, তাই script "nothing to do" বলে আগেই return করছিল।
+
+কিন্তু card তো generated: card ঠিক দেখাচ্ছে বলে registry ফাঁকা রেখে ফিরে
+আসা মানে fix আবার এক scan-এর আয়ু পাওয়া — অর্থাৎ ঠিক যে bug এড়াতে
+registry, সেটাই ফিরে আসত। এখন card যেমনই থাকুক registry লেখা হয়।
+
+test: tests/test_route_preference.py (১৬টি)
+
+--------------------------------------------------------------------------------
+১.৫  Zee Bangla-র এখনকার অবস্থা
+--------------------------------------------------------------------------------
+  primary host    : jio-tv.sm-monirul-islam-rs.workers.dev
+  stream_type     : hls
+  status          : verified_sustained_playback
+  backups         : 1
+    - Original-primary   rgkkw.live
+
+  প্রমাণ            : ২টি স্বাধীন ১২০s session, media 173.59s ও 172.08s,
+                      stall শূন্য, video+audio দুটোই এগিয়েছে
+  টেকসই কোথায়       : state/route-preference.json (card-এর বাইরে)
+                      state/sustained-playback-proof.json
+
+test: tests/test_zee_bangla_route_fix.py (১০টি)
+
+
+================================================================================
+২. EVIDENCE PIPELINE SCANNER-এর সঙ্গে যুক্ত নয় — সারানো ✅
+================================================================================
+Codex ঠিক বলেছে। pipeline ও test ছিল, কিন্তু **কোনো production path সেখানে
+record সরবরাহ করত না**। তাই শর্তসাপেক্ষ enforcement সাধারণ scan-এ কার্যত
+নিষ্ক্রিয় ছিল।
+
+আর আমার report-এর ৩১৫ লাইনে লেখা ছিল "কোনো code পরিবর্তন লাগবে না" —
+**ওই বাক্যটি ভুল ছিল।** scanner integration লাগবেই, এবং সেটিই এখন করা হলো।
+
+যা যোগ হলো: scanner/fast_pipeline.py-তে `_supply_scan_evidence()`
+  • scan-এর নিজের observation (http_status, verification_error,
+    content_type) থেকে per-route evidence record বানায়
+  • প্রতিটি hide path চলার **আগে** model-কে সরবরাহ করে
+  • HMAC key না থাকলে ০টি record বানায় — কারণ key ছাড়া tenant field None,
+    record অসম্পূর্ণ, এবং ৭০০টি record বানিয়ে ফেলে দেওয়ার চেয়ে "না" বলা ভালো
+  • ভাঙা item দিলেও exception ওঠে না — evidence কখনো scan fail করাবে না
+
+**সৎ সীমা, test দিয়ে বাঁধা:** একটি scan **একটি** vantage থেকে দেখে। তাই
+এখান থেকে বানানো record একা কখনো may_hide()-এর দুই-স্বাধীন-vantage শর্ত
+পূরণ করবে না। এটি model-কে বেশি জানায়, কিন্তু hide করতে বেশি রাজি করায় না।
+test `test_one_vantage_alone_still_cannot_hide_anything` ঠিক এটাই প্রমাণ করে।
+
+test: tests/test_scan_evidence_supply.py (৮টি)
+
+
+================================================================================
+৩. TEST সংখ্যার দাবি ভুল — সংশোধিত ✅
+================================================================================
+Codex ঠিক বলেছে। আমি লিখেছিলাম `1235 passed`। আসল ফল ছিল:
+
+    1234 passed, 1 skipped, 909 subtests passed, 0 failed
+
+skip হওয়া test-টি ছিল **পুরোনো Zee URL backup-এ আছে কি** সেটার test। এবং
+কেন skip হচ্ছিল সেটাই বেশি গুরুত্বপূর্ণ: test-টি HEAD-এর সঙ্গে তুলনা করত,
+তাই **commit করার সঙ্গে সঙ্গেই** "primary unchanged in this revision" বলে
+নীরবে skip করত।
+
+একটি test যার কাজ "পুরোনো URL অবশ্যই থাকতে হবে" পাহারা দেওয়া, সেটি নীরবে
+skip করা সবচেয়ে খারাপ আচরণ — যে জিনিস পাহারা দিচ্ছে সেটি হারিয়ে গেলেও কিছু
+বলবে না।
+
+সংশোধন: এখন দুটি test, দুটিই শর্তহীন —
+  • পুরোনো host (rgkkw.live) backups-এ আছে কি — সরাসরি যাচাই
+  • যে revision-এ route-টি প্রথম এসেছিল সেখান থেকে URL নিয়ে byte-for-byte
+    মিলিয়ে দেখা (git log -S দিয়ে খোঁজা, HEAD-এর উপর নির্ভর নয়)
+
+ফল: 1260 passed, 0 failed, **0 skipped**।
+
+Codex আরও বলেছে সে git history-র সঙ্গে হাতে মিলিয়ে নিশ্চিত হয়েছে পুরোনো URL
+সত্যিই backup-এ আছে — সেটি এখন test-ও প্রতিবার যাচাই করে।
+
+
+================================================================================
+৪. ২১১টি MOVIE — Codex ঠিক, এবং এটি আমার হাতে নেই ⚠️
+================================================================================
+Codex-এর কথা সম্পূর্ণ ঠিক:
+
+  মোট route                     215
+  দুই datacenter vantage-এই 403  211 / 215
+  escalatable                   3
+
+দুটি datacenter egress থেকে 403 পাওয়া প্রমাণ করে না movie-টি নষ্ট, আর
+প্রমাণ করে না চলছে। বাংলাদেশ বা home-network vantage ছাড়া এই প্রশ্নের সঠিক
+উত্তর পাওয়া সম্ভব নয়।
+
+আমার হাতে যা নেই: বাংলাদেশ বা residential IP থেকে একটি vantage। proxy-গুলো
+সবই datacenter (Cloudflare), scanner-ও datacenter (Microsoft Azure)। তাই
+এই প্রশ্নটি এখান থেকে **উত্তরহীন**, এবং model-ও সেটাই বলে — vantage block
+কখনো escalate করে না, তাই এই ২১১টি নিয়ে কোনো সিদ্ধান্তই নেওয়া যাবে না।
+
+এটি অসম্পূর্ণ কাজ নয়, এটিই সঠিক ফলাফল। ভুল হত যদি datacenter থেকে দুবার
+403 দেখে ২১১টি movie মুছে দিতাম।
+
+যা লাগবে: বাংলাদেশ থেকে একটি probe — একটি BD VPS, অথবা আপনার নিজের
+network থেকে চালানো একটি script। বললে script লিখে দিতে পারি, কিন্তু চালাতে
+হবে ওই network থেকে।
+
+
+================================================================================
+৫. ANDROID / iPHONE-এ ZEE BANGLA পরীক্ষা হয়নি — Codex ঠিক ⚠️
+================================================================================
+নতুন route শুধু **desktop_chrome** profile-এ প্রমাণিত। Android Chrome,
+iPhone Safari বা Android TV-তে আলাদা করে ১২০s test চালানো হয়নি।
+
+যা এর পক্ষে বলা যায় (এবং এটি প্রমাণ নয়, যুক্তি): পুরোনো route-এর সমস্যা
+ছিল **গঠনগত** — interlaced H.264 ও শূন্য IDR frame, যা প্রতিটি decoder-এর
+জন্যই সমস্যা। নতুন route HLS, অর্থাৎ segmented, প্রতি segment-এ
+random-access point আছে। ওই গঠনগত সমস্যা এখানে নেই।
+
+কিন্তু "গঠনগত সমস্যা নেই" আর "ওই device-এ চলে" এক কথা নয়, তাই দাবি করছি না।
+
+করা যেতে পারে: scripts/sustained-playback-check.py-তে `--profile` দিয়ে
+android_chrome / iphone_safari চালানো — harness ইতিমধ্যেই ৪টি profile চেনে
+(scripts/browser-target-matrix-check.py দেখুন)। এটি এখানেই চালানো সম্ভব,
+শুধু আরও ~২০ মিনিট লাগবে প্রতি profile-এ। বললে চালিয়ে দেব।
+
+
+================================================================================
+৬. এই পর্বে যা যোগ হলো
+================================================================================
+
+নতুন code:
+  scanner/route_preference.py            proven route কোনটি primary — durable
+  scanner/fast_pipeline.py               _supply_scan_evidence() যোগ
+  scanner/merger.py                      primary বাছার সময় registry পড়ে
+  scripts/add-proven-route.py            দুটি registry-তেই লেখে, early-return
+                                         আর registry ফাঁকা রাখে না
+
+নতুন state:
+  state/route-preference.json            1 টি preference
+
+নতুন test:
+  tests/test_route_preference.py         ১৬টি
+  tests/test_scan_evidence_supply.py      ৮টি
+  tests/test_zee_bangla_route_fix.py     ১০টি (skip সরানো, ২টি নতুন)
+
+
+================================================================================
+৭. এখনো যা বাকি
+================================================================================
+
+৭.১  BD / home-network vantage — আমার হাতে নেই (ভাগ ৪)
+     ২১১টি movie ও যেকোনো geo-প্রশ্নের সঠিক উত্তর এর উপর নির্ভর করে।
+
+৭.২  Android / iPhone / TV-তে Zee Bangla — এখানেই চালানো সম্ভব (ভাগ ৫)
+     বললে চালিয়ে দেব, প্রতি profile-এ ~২০ মিনিট।
+
+৭.৩  HMAC secret CI-তে পৌঁছেছে কি না — পরের auto-scan-এ দেখা যাবে
+     এখন এটি আরও গুরুত্বপূর্ণ: key ছাড়া _supply_scan_evidence() ০টি record
+     বানায়, অর্থাৎ enforcement নিষ্ক্রিয়ই থাকে। নির্ভরতা শৃঙ্খল:
+     HMAC secret → সম্পূর্ণ record → evidence → enforcement
+
+৭.৪  Today / Upcoming match system — সম্পূর্ণ আলাদা plan
+     THE_ULTIMATE_PLAN_FILE.txt, ১১০৮ লাইন। আপনি বলেছেন এখন ধরব না।
+
+
+================================================================================
+৮. নিরাপত্তা যাচাই
+================================================================================
+
+  পুরোনো Zee Bangla URL      backups-এ অটুট (byte-for-byte, test দিয়ে যাচাই)
+  অন্য কোনো stream URL       একটিও বদলায়নি
+  credential                 একটিও বদলায়নি
+  data/allowed-hosts.json    অপরিবর্তিত
+  site/runtime-config.json   অপরিবর্তিত
+  config/settings.json       অপরিবর্তিত
+  কোনো channel hide হয়েছে?    না
+  কোনো movie hide/promote?    না
+  ফেরানো ৭টি channel         অটুট, proof registry-তে 8 টি
+  route_preference কী করতে পারে?  শুধু promote — যোগ/সরানো/hide-এর code
+                                  path-ই নেই (AST দিয়ে যাচাই)
+
+
+================================================================================
+৯. নিজে যাচাই করার উপায়
+================================================================================
+
+  পুরো test:            python3 -m pytest -q
+  Zee Bangla fix:       python3 -m pytest tests/test_zee_bangla_route_fix.py -v
+  route preference:     python3 -m pytest tests/test_route_preference.py -v
+  scan evidence:        python3 -m pytest tests/test_scan_evidence_supply.py -v
+  registry:             cat state/route-preference.json
+  live site:            curl -s https://clicktv.pages.dev/data/channels/indian.json
+
+
+================================================================================
+শেষ কথা
+================================================================================
+
+Codex-এর সবচেয়ে দামি অবদান ছিল ২ নম্বর: **আমার নিজের script-এর comment
+পড়ে ধরেছে যে আমার fix পরের scan-এ মুছে যাবে।** আমি সেটি লিখেছিলাম এবং তবু
+card-এ fix বসিয়েছিলাম। একটি scan চললেই Zee Bangla আবার আটকে যেত, আর আমি
+"সারানো হয়েছে" লিখে রেখেছিলাম।
+
+এখন fix card-এর বাইরে দুটি registry-তে আছে, merger সেখান থেকেই primary
+বাছে, এবং নকল scan চালিয়ে যাচাই করা হয়েছে যে card নতুন করে বানালেও proven
+route-ই আগে থাকে।
+
+আর ১ নম্বরও আসল ছিল: pipeline ছিল, কেউ ডাকত না। "কোনো code পরিবর্তন লাগবে
+না" — ওই দাবিটি ভুল ছিল, এবং integration এখন করা হয়েছে।
+
+৪ ও ৫ নম্বর নিয়ে দাবি করছি না। ৪-এর জন্য বাংলাদেশ থেকে একটি vantage লাগবে
+যা আমার হাতে নেই; ৫ এখানেই চালানো সম্ভব, বললেই চালাব।
+
+================================================================================

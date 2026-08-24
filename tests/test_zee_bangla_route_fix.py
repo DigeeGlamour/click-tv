@@ -56,30 +56,74 @@ class RouteSwapTests(unittest.TestCase):
         )
         self.assertEqual(self.card.get("stream_type"), "hls")
 
-    def test_the_original_url_is_preserved_as_a_backup(self):
-        """The instruction was that existing stream URLs are not to be changed.
+    #: The route this channel published before the swap. Named explicitly so the
+    #: check does not depend on git state: comparing against HEAD made this test
+    #: SKIP the moment the change was committed, which is the worst possible
+    #: behaviour for a test guarding "the old URL must still be there".
+    ORIGINAL_PRIMARY_HOST = "rgkkw.live"
+
+    def test_the_original_route_is_preserved_as_a_backup(self):
+        """Existing stream URLs are not to be changed.
 
         Adding a proven route alongside is not changing one - but only if the old
-        URL is actually still there, which is what this checks against git rather
-        than against a comment.
+        route is actually still present, which is what this asserts
+        unconditionally rather than only while the diff happens to show it.
         """
+        import urllib.parse  # noqa: PLC0415
+
+        backups = self.card.get("backups") or []
+        hosts = {
+            urllib.parse.urlsplit(str(b.get("url") or "")).hostname
+            for b in backups
+            if isinstance(b, dict)
+        }
+        self.assertIn(
+            self.ORIGINAL_PRIMARY_HOST,
+            hosts,
+            f"the original route ({self.ORIGINAL_PRIMARY_HOST}) is gone, "
+            f"not demoted; backups hold {sorted(h for h in hosts if h)}",
+        )
+
+    def test_the_original_route_matches_the_committed_url_byte_for_byte(self):
+        """Preserved means unmodified, not merely present with the same host."""
+        import urllib.parse  # noqa: PLC0415
+
         previous = subprocess.run(
-            ["git", "show", "HEAD:data/channels/indian.json"],
+            ["git", "log", "-S", self.ORIGINAL_PRIMARY_HOST, "--format=%H", "-1",
+             "--", "data/channels/indian.json"],
+            capture_output=True, text=True, cwd=str(ROOT),
+        ).stdout.strip()
+        if not previous:
+            self.skipTest("no revision in history introduced the original route")
+        blob = subprocess.run(
+            ["git", "show", f"{previous}:data/channels/indian.json"],
             capture_output=True, text=True, cwd=str(ROOT),
         ).stdout
-        if not previous.strip():
-            self.skipTest("no committed version to compare against")
-        old_card = _card(json.loads(previous))
+        if not blob.strip():
+            self.skipTest("could not read that revision")
+        old_card = _card(json.loads(blob))
         if old_card is None:
-            self.skipTest("channel absent from the committed version")
-        old_url = str(old_card.get("url") or "")
-        if not old_url or old_url == str(self.card.get("url") or ""):
-            self.skipTest("primary unchanged in this revision")
-        backups = self.card.get("backups") or []
-        self.assertTrue(
-            any(isinstance(b, dict) and b.get("url") == old_url for b in backups),
-            "the original URL is gone, not demoted",
+            self.skipTest("channel absent from that revision")
+        candidates = [str(old_card.get("url") or "")] + [
+            str(b.get("url") or "")
+            for b in (old_card.get("backups") or [])
+            if isinstance(b, dict)
+        ]
+        original = next(
+            (
+                u for u in candidates
+                if urllib.parse.urlsplit(u).hostname == self.ORIGINAL_PRIMARY_HOST
+            ),
+            "",
         )
+        if not original:
+            self.skipTest("original route not found in that revision")
+        backups = [
+            str(b.get("url") or "")
+            for b in (self.card.get("backups") or [])
+            if isinstance(b, dict)
+        ]
+        self.assertIn(original, backups, "the original URL was rewritten")
 
     def test_the_proof_is_two_full_passes(self):
         payload = json.loads(REPORT.read_text(encoding="utf-8"))

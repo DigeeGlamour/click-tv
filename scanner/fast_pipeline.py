@@ -48,6 +48,7 @@ from scanner.verifier import (
     _extract_bd_rules as _extract_bd_rules_for_global,
     verify_single_stream,
 )
+from scanner import route_evidence as rev_module
 from scanner.visibility_audit import audit_hide_safe, model_permits_hide
 
 
@@ -236,6 +237,61 @@ def _publishable(item: Dict[str, Any]) -> bool:
     if item.get("publish_allowed") is False:
         return False
     return item.get("verified") is True or item.get("publish_allowed") is True
+
+
+def _supply_scan_evidence(items: List[Dict[str, Any]]) -> int:
+    """Turn this scan's own observations into per-route evidence records.
+
+    Without this the evidence pipeline was a library nothing fed, so conditional
+    enforcement never engaged during a real scan - the report claimed no code
+    change was needed for it to work, and that was wrong. This is the missing
+    integration.
+
+    What it supplies is honest about its own weakness: a scan observes from ONE
+    vantage, so a record built here can never on its own satisfy `may_hide`'s
+    two-independent-vantage requirement. It becomes half of a pair once a second
+    vantage contributes, and until then it makes the model better informed
+    without making it more willing to hide anything.
+    """
+    from scanner import route_evidence_pipeline as pipeline
+    from scanner import visibility_audit
+
+    key = rev_module.configured_hmac_key()
+    if key is None:
+        # Without a key the tenant field is None, every record is incomplete and
+        # would be dropped anyway. Saying so beats building 700 records that get
+        # thrown away.
+        return 0
+
+    records: List[Dict[str, Any]] = []
+    for item in items or ():
+        if not isinstance(item, dict):
+            continue
+        url = str(item.get("url") or "")
+        if not url:
+            continue
+        status = item.get("http_status")
+        error_kind = str(item.get("verification_error") or "")[:60]
+        if status is None and not error_kind:
+            continue
+        try:
+            records.extend(
+                pipeline.build_route_evidence(
+                    url,
+                    scanner={
+                        "status": status,
+                        "error_kind": error_kind,
+                        "content_type": str(item.get("content_type") or ""),
+                    },
+                    hmac_key=key,
+                )
+            )
+        except Exception:  # noqa: BLE001 - evidence must never break a scan
+            continue
+    try:
+        return visibility_audit.supply_evidence(records)
+    except Exception:  # noqa: BLE001
+        return 0
 
 
 def _apply_strict_player_visibility(
@@ -1838,6 +1894,12 @@ def run_fast_verification_pipeline(
     # Stable deterministic order for processors and reports.
     global_results.sort(key=lambda item: _safe_int(item.get("_planner_index"), 0))
     final_results.sort(key=lambda item: _safe_int(item.get("_planner_index"), 0))
+
+    # Feed the model before any hide path runs, so conditional enforcement has
+    # something to enforce on.
+    supplied = _supply_scan_evidence(final_results)
+    if supplied:
+        print(f"   route evidence supplied to the model: {supplied} record(s)")
 
     player_failure_hidden = 0
     player_failure_hidden += mark_confirmed_player_failures(

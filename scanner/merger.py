@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import hashlib
 import re
+from scanner import route_preference
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -1451,6 +1452,8 @@ def rank_and_select_streams(
     prefer_different_hosts: bool = True,
     previous_primary_identity: str = "",
     hysteresis_margin: int = 1,
+    channel_name: str = "",
+    channel_kind: str = "channel",
 ) -> Tuple[Optional[Dict[str, Any]], List[Dict[str, Any]]]:
     if not streams:
         return None, []
@@ -1544,6 +1547,26 @@ def rank_and_select_streams(
     # is allowed to reorder everything behind it, but swapping the primary on
     # every scan because a rival was a few milliseconds faster is what makes a
     # running stream flap. Only a clearly better candidate takes over.
+    # A route with two independent 120 s passes leads, ahead of both the ranking
+    # and the incumbent hold. Every verification tier the scanner assigns is a
+    # network observation; this one is decoded frames, so it outranks them.
+    #
+    # This exists because the Zee Bangla fix was written into the generated card
+    # and the next scan would have rebuilt that card from its sources and erased
+    # it - a fix with a shelf life of one scan. The registry sits outside the
+    # cards, so a rebuild reads it instead.
+    if channel_name:
+        try:
+            selected_streams, promoted = route_preference.promote_preferred(
+                selected_streams, channel_kind, channel_name
+            )
+            if promoted:
+                # Ahead of the hold below: an incumbent that has not passed the
+                # acceptance must not keep its place over one that has.
+                previous_primary_identity = ""
+        except Exception:  # noqa: BLE001 - a preference failure must not break a merge
+            pass
+
     if previous_primary_identity:
         held = next(
             (
@@ -1902,6 +1925,8 @@ def merge_candidates(
             allow_http_fallback=allow_http_fallback,
             prefer_different_hosts=prefer_different_hosts,
             previous_primary_identity=remembered_primary,
+            channel_name=str(base_item.get("name") or ""),
+            channel_kind="channel",
         )
 
         if not primary:
