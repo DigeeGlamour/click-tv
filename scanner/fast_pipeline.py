@@ -49,7 +49,7 @@ from scanner.verifier import (
     verify_single_stream,
 )
 from scanner import route_evidence as rev_module
-from scanner.visibility_audit import audit_hide_safe, model_permits_hide
+from scanner.visibility_audit import model_permits_hide
 
 
 def _utc_now() -> str:
@@ -130,12 +130,13 @@ def _path_group(item: Dict[str, Any], depth: int = 3) -> str:
 
 
 def _quarantine_404_result(item: Dict[str, Any], path_group: str) -> Dict[str, Any]:
-    audit_hide_safe(
-        "fast_pipeline.quarantine_404_path_sample",
-        item,
-        reason=f"404 path sample for group {path_group}",
-        status=404,
+    allowed, why = model_permits_hide(
+        "fast_pipeline.quarantine_404_path_sample", item
     )
+    if not allowed:
+        result = dict(item)
+        result["model_blocked_hide"] = why
+        return result
     result = dict(item)
     result.update(
         verified=False,
@@ -204,12 +205,11 @@ def _pipeline_budget(settings: Dict[str, Any], mode: str) -> int:
 
 
 def _failure_result(item: Dict[str, Any], message: str, kind: str = "") -> Dict[str, Any]:
-    audit_hide_safe(
-        "fast_pipeline.failure_result",
-        item,
-        reason=str(message or kind or "verification failed")[:160],
-        error_kind=str(kind or ""),
-    )
+    allowed, why = model_permits_hide("fast_pipeline.failure_result", item)
+    if not allowed:
+        result = dict(item)
+        result["model_blocked_hide"] = why
+        return result
     result = dict(item)
     result.update(
         verified=False,
@@ -245,14 +245,24 @@ def _supply_scan_evidence(items: List[Dict[str, Any]]) -> int:
     Without this the evidence pipeline was a library nothing fed, so conditional
     enforcement never engaged during a real scan - the report claimed no code
     change was needed for it to work, and that was wrong. This is the missing
-    integration.
+    integration, and it closes two distinct gaps in the first version of it:
 
-    What it supplies is honest about its own weakness: a scan observes from ONE
-    vantage, so a record built here can never on its own satisfy `may_hide`'s
-    two-independent-vantage requirement. It becomes half of a pair once a second
-    vantage contributes, and until then it makes the model better informed
-    without making it more willing to hide anything.
+      * The scanner already measures a SECOND vantage for many items -
+        bd_verifier's proxy check writes `proxy_http_status` - and the first
+        version of this function never read it, so every record it built
+        carried one vantage no matter how much data was on hand.
+      * A scan is one process. Anything kept only in this process's memory is
+        gone the moment it exits, so "two separate time windows" could never be
+        satisfied across real scans. route_evidence_cache persists records to
+        disk and this function reads last run's cache back in before adding
+        this run's observations to it.
+
+    What remains honest about its own weakness: a route needs the SAME window
+    twice, correctly separated, before `may_hide` will act - one well-observed
+    scan is still only half of that, and the model stays exactly as reluctant
+    to hide something as it was before this integration existed.
     """
+    from scanner import route_evidence_cache as cache
     from scanner import route_evidence_pipeline as pipeline
     from scanner import visibility_audit
 
@@ -263,7 +273,7 @@ def _supply_scan_evidence(items: List[Dict[str, Any]]) -> int:
         # thrown away.
         return 0
 
-    records: List[Dict[str, Any]] = []
+    fresh: List[Dict[str, Any]] = []
     for item in items or ():
         if not isinstance(item, dict):
             continue
@@ -274,8 +284,16 @@ def _supply_scan_evidence(items: List[Dict[str, Any]]) -> int:
         error_kind = str(item.get("verification_error") or "")[:60]
         if status is None and not error_kind:
             continue
+
+        proxy_status = item.get("proxy_http_status")
+        # 0 is bd_verifier's sentinel for "no proxy check ran", never a real
+        # HTTP status - treated as no observation rather than as a failure.
+        proxy_observation = (
+            {"status": proxy_status} if proxy_status not in (None, 0) else None
+        )
+
         try:
-            records.extend(
+            fresh.extend(
                 pipeline.build_route_evidence(
                     url,
                     scanner={
@@ -283,15 +301,29 @@ def _supply_scan_evidence(items: List[Dict[str, Any]]) -> int:
                         "error_kind": error_kind,
                         "content_type": str(item.get("content_type") or ""),
                     },
+                    proxy=proxy_observation,
                     hmac_key=key,
                 )
             )
         except Exception:  # noqa: BLE001 - evidence must never break a scan
             continue
+
     try:
-        return visibility_audit.supply_evidence(records)
+        historical = cache.all_records()
     except Exception:  # noqa: BLE001
-        return 0
+        historical = []
+
+    try:
+        supplied = visibility_audit.supply_evidence(historical + fresh)
+    except Exception:  # noqa: BLE001
+        supplied = 0
+
+    try:
+        cache.append(fresh)
+    except Exception:  # noqa: BLE001 - persistence failure must not break a scan
+        pass
+
+    return supplied
 
 
 def _apply_strict_player_visibility(

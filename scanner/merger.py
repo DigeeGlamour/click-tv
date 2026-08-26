@@ -1557,8 +1557,16 @@ def rank_and_select_streams(
     # cards, so a rebuild reads it instead.
     if channel_name:
         try:
+            # `protocol_candidates` is the pool BEFORE the max_total slot cutoff
+            # above, so a proven route ranked outside the top slots is still
+            # findable here - measured: with 7 candidates and the proven route
+            # ranked 7th, promote_preferred saw only the truncated 6 and could
+            # never promote it.
             selected_streams, promoted = route_preference.promote_preferred(
-                selected_streams, channel_kind, channel_name
+                selected_streams,
+                channel_kind,
+                channel_name,
+                full_pool=protocol_candidates,
             )
             if promoted:
                 # Ahead of the hold below: an incumbent that has not passed the

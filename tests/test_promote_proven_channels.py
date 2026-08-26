@@ -90,15 +90,49 @@ class RestoredStateTests(unittest.TestCase):
                     str(result.get("name")),
                 )
 
-    def test_the_restored_channels_are_in_the_catalogue_exactly_once(self):
+    def test_no_restored_channel_is_duplicated_in_the_catalogue(self):
+        """A restoration must not add a second copy of a channel.
+
+        Asserted as "never more than once", not "exactly once". The scanner owns
+        this file and rebuilds it every run from whatever the sources currently
+        offer, so a channel legitimately disappears when its source stops
+        answering - which is what happened to Zee Bangla's proven route (HTTP
+        530, its worker went down) and broke eight consecutive scanner runs when
+        an earlier test demanded the channel be present.
+
+        What the restoration guarantees is that it never duplicates. Whether a
+        channel is in today's card is the scanner's answer about today's
+        network.
+        """
         names = [str(c.get("name") or "") for c in _cards(CATALOGUE)]
         for name in RESTORED:
-            self.assertEqual(names.count(name), 1, f"{name} appears {names.count(name)}x")
+            self.assertLessEqual(
+                names.count(name), 1, f"{name} appears {names.count(name)}x"
+            )
 
-    def test_the_restored_channels_are_publishable(self):
+    def test_no_restored_channel_that_is_present_is_hidden(self):
+        # The invariant that actually matters and does not depend on today's
+        # reachability: if the channel is in the catalogue, it is not hidden.
         for card in _cards(CATALOGUE):
             if str(card.get("name") or "") in RESTORED:
                 self.assertIsNot(card.get("publish_allowed"), False, card.get("name"))
+
+    def test_every_restored_channel_keeps_its_durable_proof(self):
+        """The registry is what survives a rebuild, so that is what is checked.
+
+        A card can lose a channel to a dead source; the proof that the channel
+        was measured playing does not expire because of that, and it is what
+        stops the channel being hidden if it comes back.
+        """
+        from scanner import sustained_proof  # noqa: PLC0415
+
+        registry = sustained_proof.load()
+        recorded = {
+            str(v.get("name") or "")
+            for v in (registry.get("proofs") or {}).values()
+        }
+        missing = RESTORED - recorded
+        self.assertFalse(missing, f"proof lost for: {sorted(missing)}")
 
     def test_the_disproved_ledger_entries_are_gone(self):
         # Leaving them would let the next scan hide the channel again on the
@@ -131,9 +165,18 @@ class RestoredStateTests(unittest.TestCase):
         )
 
         self.assertIn("verified_sustained_playback", PROVEN_LIVE_STATUSES)
+        # Only for cards that are actually present: a channel whose source went
+        # down is absent, and absence is the scanner's correct answer rather
+        # than a failure of this registration.
         for card in _cards(CATALOGUE):
-            if str(card.get("name") or "") in RESTORED:
-                self.assertTrue(item_is_proven_live(card), card.get("name"))
+            if str(card.get("name") or "") not in RESTORED:
+                continue
+            if str(card.get("verification_status") or "") not in PROVEN_LIVE_STATUSES:
+                # A later scan re-verified it under a different status; that is
+                # the scanner's business. What must hold is that the sustained
+                # status is registered as proof-worthy, checked above.
+                continue
+            self.assertTrue(item_is_proven_live(card), card.get("name"))
 
     def test_the_status_written_is_the_status_registered(self):
         # The script and the gate must not drift apart.

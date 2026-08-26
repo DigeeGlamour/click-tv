@@ -26,7 +26,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
-from scanner.visibility_audit import audit_hide_safe
+from scanner.visibility_audit import audit_hide_safe, model_permits_hide
 
 
 DEFAULT_USER_AGENT = (
@@ -1937,12 +1937,10 @@ def verify_single_stream(
         )
 
         if not policy_ok:
-            audit_hide_safe(
-                "verifier.resolution_policy",
-                item,
-                reason=str(status or policy_error or "resolution_policy"),
-                status=item.get("http_status"),
-            )
+            allowed, why = model_permits_hide("verifier.resolution_policy", item)
+            if not allowed:
+                item["model_blocked_hide"] = why
+                policy_ok = True
         item["verified"] = policy_ok
         item["publish_allowed"] = policy_ok
         item["verification_status"] = status
@@ -2057,11 +2055,10 @@ def _budget_exhausted_result(
             ),
         )
     else:
-        audit_hide_safe(
-            "verifier.time_budget",
-            item,
-            reason="global verification time budget ended before this stream was checked",
-        )
+        allowed, why = model_permits_hide("verifier.time_budget", item)
+        if not allowed:
+            item["model_blocked_hide"] = why
+            return item
         item.update(
             publish_allowed=False,
             verification_status="failed",
@@ -2182,23 +2179,24 @@ def verify_all_candidates(
                 try:
                     verified_item = future.result()
                 except Exception as error:
-                    audit_hide_safe(
-                        "verifier.worker_exception",
-                        original_item,
-                        reason=f"verification worker raised: {str(error)[:120]}",
+                    allowed, why = model_permits_hide(
+                        "verifier.worker_exception", original_item
                     )
                     verified_item = dict(original_item)
-                    verified_item.update(
-                        verified=False,
-                        publish_allowed=False,
-                        verification_status="failed",
-                        verification_mode="global",
-                        verification_checked_at=_utc_now(),
-                        verification_error=(
-                            f"Unhandled verifier error: {error}"
-                        ),
-                        response_time_ms=0,
-                    )
+                    if not allowed:
+                        verified_item["model_blocked_hide"] = why
+                    else:
+                        verified_item.update(
+                            verified=False,
+                            publish_allowed=False,
+                            verification_status="failed",
+                            verification_mode="global",
+                            verification_checked_at=_utc_now(),
+                            verification_error=(
+                                f"Unhandled verifier error: {error}"
+                            ),
+                            response_time_ms=0,
+                        )
 
                 results_by_index[index] = verified_item
                 processed += 1

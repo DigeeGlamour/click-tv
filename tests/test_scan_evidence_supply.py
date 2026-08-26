@@ -38,12 +38,32 @@ class WiringTests(unittest.TestCase):
 
 
 class SupplyTests(unittest.TestCase):
+    """Isolated from the real state file.
+
+    `_supply_scan_evidence` reads and writes the default route-evidence cache
+    with no path override, so without isolation these tests would read whatever
+    a real scan (or another test run) had already written to
+    state/route-evidence-cache.json - which is exactly the contamination that
+    made two of these tests fail against leftover data from manual testing
+    earlier in this session.
+    """
+
     def setUp(self):
+        import tempfile  # noqa: PLC0415
+
+        from scanner import route_evidence_cache as cache  # noqa: PLC0415
+
         va.clear_evidence()
         self._saved = os.environ.get(rev.HMAC_KEY_ENV)
+        self._tmp = tempfile.TemporaryDirectory()
+        self._cache_module = cache
+        self._original_default_path = cache.DEFAULT_PATH
+        cache.DEFAULT_PATH = str(Path(self._tmp.name) / "cache.json")
 
     def tearDown(self):
         va.clear_evidence()
+        self._cache_module.DEFAULT_PATH = self._original_default_path
+        self._tmp.cleanup()
         if self._saved is None:
             os.environ.pop(rev.HMAC_KEY_ENV, None)
         else:

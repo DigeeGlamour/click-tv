@@ -20,11 +20,26 @@ candidates. It cannot introduce a route, remove one, or hide anything.
 """
 from __future__ import annotations
 
+import datetime as _dt
 import json
 import os
 from typing import Any, Dict, List, Optional
 
 from scanner import route_evidence as rev
+
+#: How long a recorded preference stays in force without being re-verified.
+#:
+#: Codex asked what stops a route that later breaks from being forced into
+#: primary forever - correctly, since nothing did. This is a new policy
+#: decision, not a previously-locked one: Phase 0b's persistence.ttl_seconds
+#: (1800 s) governs a different mechanism (the escalation counter) and is far
+#: too short here - channel scans run roughly every 6 hours, so a 30-minute
+#: expiry would make every preference stale before the next scan ever reads it.
+#: 14 days is several times the movie-scan cadence (48 h) and dozens of times
+#: the channel-scan cadence (6 h), long enough that a route proven once keeps
+#: leading across many real scans, short enough that a route nobody re-verifies
+#: for two weeks stops being forced and falls back to ordinary ranking.
+PREFERENCE_TTL_SECONDS = 14 * 24 * 3600
 
 DEFAULT_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
@@ -84,6 +99,7 @@ def record(
     registry.setdefault("preferred", {})[_key(kind, channel)] = {
         "kind": kind,
         "channel": channel,
+        "recorded_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
         # Stored normalised so a rotating cache-buster does not look like a
         # different route on the next scan.
         "route_id": rev.normalize_source_identity(route_url),
@@ -111,13 +127,43 @@ def record(
     return True, "recorded"
 
 
+def _is_stale(entry: Dict[str, Any], *, now: Optional[float] = None) -> bool:
+    stamp = str(entry.get("recorded_at") or "")
+    if not stamp:
+        # An entry from before this field existed. Treated as stale rather than
+        # eternal, so an old record cannot outlive verification forever simply
+        # by predating the check that would have caught it.
+        return True
+    try:
+        text = stamp[:-1] + "+00:00" if stamp.endswith("Z") else stamp
+        recorded = _dt.datetime.fromisoformat(text)
+    except ValueError:
+        return True
+    if recorded.tzinfo is None:
+        recorded = recorded.replace(tzinfo=_dt.timezone.utc)
+    reference = (
+        _dt.datetime.now(_dt.timezone.utc)
+        if now is None
+        else _dt.datetime.fromtimestamp(now, tz=_dt.timezone.utc)
+    )
+    return (reference - recorded).total_seconds() > PREFERENCE_TTL_SECONDS
+
+
 def preferred_route_id(
-    kind: str, channel: str, registry: Optional[Dict[str, Any]] = None
+    kind: str,
+    channel: str,
+    registry: Optional[Dict[str, Any]] = None,
+    *,
+    now: Optional[float] = None,
 ) -> Optional[str]:
     entry = ((registry if registry is not None else load()).get("preferred") or {}).get(
         _key(kind, channel)
     )
     if not isinstance(entry, dict):
+        return None
+    if _is_stale(entry, now=now):
+        # Stale preferences fall back to ordinary ranking rather than forcing a
+        # route nobody has re-verified in PREFERENCE_TTL_SECONDS.
         return None
     route_id = str(entry.get("route_id") or "")
     return route_id or None
@@ -128,24 +174,51 @@ def promote_preferred(
     kind: str,
     channel: str,
     registry: Optional[Dict[str, Any]] = None,
+    *,
+    full_pool: Optional[List[Dict[str, Any]]] = None,
+    now: Optional[float] = None,
 ) -> tuple:
     """Move a proven route to the front of `streams`, if it is present.
 
-    Returns (streams, promoted). The list is returned unchanged when the proven
-    route is not among the candidates - this never adds one, because a route the
-    scanner did not find is a route this scan cannot vouch for.
+    Returns (streams, promoted). Without `full_pool`, the list is returned
+    unchanged when the proven route is not among `streams` - measured to be a
+    real gap: `streams` is usually a slot-limited selection (six by default),
+    and a channel with seven or more sources could rank its proven route
+    seventh, below that cutoff, where this function never saw it at all.
+
+    `full_pool` is the pre-truncation candidate list the caller ranked `streams`
+    from. When the preferred route is present there but not in `streams`, it is
+    pulled in and the lowest-ranked current entry is evicted so the result never
+    exceeds the caller's own size limit - the route was always a genuine
+    candidate the scan found; only the slot count hid it.
     """
-    wanted = preferred_route_id(kind, channel, registry)
-    if not wanted or not streams:
+    wanted = preferred_route_id(kind, channel, registry, now=now)
+    if not wanted:
         return streams, False
-    for index, stream in enumerate(streams):
+
+    def _matches(stream: Dict[str, Any]) -> bool:
         url = str((stream or {}).get("url") or "")
-        if not url:
-            continue
-        if rev.normalize_source_identity(url) == wanted:
+        return bool(url) and rev.normalize_source_identity(url) == wanted
+
+    for index, stream in enumerate(streams or ()):
+        if _matches(stream):
             if index == 0:
                 return streams, False
             reordered = list(streams)
             reordered.insert(0, reordered.pop(index))
             return reordered, True
+
+    if full_pool:
+        for stream in full_pool:
+            if not _matches(stream):
+                continue
+            if not streams:
+                return [stream], True
+            promoted_list = [stream] + list(streams)
+            # Keep the caller's own slot limit: evict the weakest entry rather
+            # than growing the selection past what it asked for.
+            if len(promoted_list) > len(streams):
+                promoted_list = promoted_list[: len(streams)]
+            return promoted_list, True
+
     return streams, False

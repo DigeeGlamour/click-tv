@@ -1,18 +1,26 @@
-"""Zee Bangla now leads with a route that was measured playing.
+"""The Zee Bangla route swap: its proof and its guards, not the scanner's output.
 
-The published route was settled by measurement, not opinion: 1080i H.264 with
-zero IDR frames, four 120 s sessions all ending in MEDIA_ERR_DECODE, and fifteen
+The published route was settled by measurement: 1080i H.264 with zero IDR
+frames, four 120 s sessions all ending in MEDIA_ERR_DECODE, and fifteen
 mpegts.js build/config combinations each decoding exactly one frame before
 stopping. No player change fixes a stream with no random-access point, so the
-remaining question was whether the configured sources already held a route with a
-different structure. One did, and it passed twice.
+alternative had to come from the sources - and one HLS route there passed twice.
 
-These tests pin the three things that make that swap safe rather than lucky: the
-old URL is still there, the new one has real proof, and the route belongs to this
-channel and not to a similarly-named different one.
+An earlier version of this file asserted the CURRENT contents of
+data/channels/indian.json, and that was a design mistake serious enough to break
+production: it failed eight consecutive scanner runs. The scanner owns that file
+and rewrites it every run from whatever the sources currently offer. When the
+proven route later started returning HTTP 530 (its Cloudflare worker went down),
+the scan correctly dropped it, correctly kept the only route that still answered,
+and my tests correctly reported that as a failure - of the scan, which had done
+nothing wrong.
+
+So these tests now assert what this work actually owns and controls: the recorded
+proof, the durable registries, and the guards in the promotion script. Whether a
+given route is in today's card is the scanner's answer to a question about
+today's network, and it is not a test's business to freeze it.
 """
 import json
-import subprocess
 import sys
 import unittest
 from pathlib import Path
@@ -21,6 +29,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from scanner import route_evidence as rev  # noqa: E402
+from scanner import route_preference  # noqa: E402
 from scanner import sustained_proof  # noqa: E402
 
 CARD_FILE = ROOT / "data" / "channels" / "indian.json"
@@ -39,91 +48,8 @@ def _card(payload):
     return None
 
 
-class RouteSwapTests(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.card = _card(json.loads(CARD_FILE.read_text(encoding="utf-8")))
-        if cls.card is None:
-            raise unittest.SkipTest("Zee Bangla card not present")
-
-    def test_the_channel_still_exists(self):
-        self.assertIsNotNone(self.card)
-        self.assertIsNot(self.card.get("publish_allowed"), False)
-
-    def test_the_primary_is_the_proven_route(self):
-        self.assertEqual(
-            self.card.get("verification_status"), "verified_sustained_playback"
-        )
-        self.assertEqual(self.card.get("stream_type"), "hls")
-
-    #: The route this channel published before the swap. Named explicitly so the
-    #: check does not depend on git state: comparing against HEAD made this test
-    #: SKIP the moment the change was committed, which is the worst possible
-    #: behaviour for a test guarding "the old URL must still be there".
-    ORIGINAL_PRIMARY_HOST = "rgkkw.live"
-
-    def test_the_original_route_is_preserved_as_a_backup(self):
-        """Existing stream URLs are not to be changed.
-
-        Adding a proven route alongside is not changing one - but only if the old
-        route is actually still present, which is what this asserts
-        unconditionally rather than only while the diff happens to show it.
-        """
-        import urllib.parse  # noqa: PLC0415
-
-        backups = self.card.get("backups") or []
-        hosts = {
-            urllib.parse.urlsplit(str(b.get("url") or "")).hostname
-            for b in backups
-            if isinstance(b, dict)
-        }
-        self.assertIn(
-            self.ORIGINAL_PRIMARY_HOST,
-            hosts,
-            f"the original route ({self.ORIGINAL_PRIMARY_HOST}) is gone, "
-            f"not demoted; backups hold {sorted(h for h in hosts if h)}",
-        )
-
-    def test_the_original_route_matches_the_committed_url_byte_for_byte(self):
-        """Preserved means unmodified, not merely present with the same host."""
-        import urllib.parse  # noqa: PLC0415
-
-        previous = subprocess.run(
-            ["git", "log", "-S", self.ORIGINAL_PRIMARY_HOST, "--format=%H", "-1",
-             "--", "data/channels/indian.json"],
-            capture_output=True, text=True, cwd=str(ROOT),
-        ).stdout.strip()
-        if not previous:
-            self.skipTest("no revision in history introduced the original route")
-        blob = subprocess.run(
-            ["git", "show", f"{previous}:data/channels/indian.json"],
-            capture_output=True, text=True, cwd=str(ROOT),
-        ).stdout
-        if not blob.strip():
-            self.skipTest("could not read that revision")
-        old_card = _card(json.loads(blob))
-        if old_card is None:
-            self.skipTest("channel absent from that revision")
-        candidates = [str(old_card.get("url") or "")] + [
-            str(b.get("url") or "")
-            for b in (old_card.get("backups") or [])
-            if isinstance(b, dict)
-        ]
-        original = next(
-            (
-                u for u in candidates
-                if urllib.parse.urlsplit(u).hostname == self.ORIGINAL_PRIMARY_HOST
-            ),
-            "",
-        )
-        if not original:
-            self.skipTest("original route not found in that revision")
-        backups = [
-            str(b.get("url") or "")
-            for b in (self.card.get("backups") or [])
-            if isinstance(b, dict)
-        ]
-        self.assertIn(original, backups, "the original URL was rewritten")
+class ProofAndRegistryTests(unittest.TestCase):
+    """What the measurement established, and where it is durably recorded."""
 
     def test_the_proof_is_two_full_passes(self):
         payload = json.loads(REPORT.read_text(encoding="utf-8"))
@@ -153,10 +79,52 @@ class RouteSwapTests(unittest.TestCase):
                     float(stall), rev.PASS_MAX_CUMULATIVE_STALL_SECONDS
                 )
 
-    def test_the_proof_survives_a_card_rebuild(self):
-        # A scan rebuilds cards from their sources and erases anything written on
-        # them, which is why the registry exists outside the card.
-        self.assertTrue(sustained_proof.has_proof(self.card, "channel"))
+    def test_the_proof_is_recorded_outside_any_card(self):
+        """A card cannot hold this, so the registry must.
+
+        Measured: the scan that ran after the swap rebuilt the card from its
+        sources and erased every field the script had written. The registries
+        are the only place a proof survives that.
+        """
+        registry = sustained_proof.load()
+        channels = {
+            str(v.get("name") or "") for v in (registry.get("proofs") or {}).values()
+        }
+        self.assertIn(CHANNEL, channels)
+
+    def test_the_preferred_route_is_recorded_with_its_evidence(self):
+        registry = route_preference.load()
+        entries = [
+            v for v in (registry.get("preferred") or {}).values()
+            if str(v.get("channel") or "") == CHANNEL
+        ]
+        self.assertTrue(entries, "no route preference recorded for this channel")
+        entry = entries[0]
+        self.assertGreaterEqual(
+            int(entry.get("pass_count") or 0), rev.REQUIRED_FRESH_SESSIONS
+        )
+        self.assertEqual(float(entry.get("window_seconds") or 0), 120.0)
+        self.assertTrue(str(entry.get("route_id") or ""))
+
+    def test_the_registry_stores_no_raw_url(self):
+        registry = route_preference.load()
+        self.assertFalse(
+            rev.evidence_contains_forbidden_material(registry)
+        )
+
+    def test_the_channel_is_still_published(self):
+        """The one thing about the card that this work does guarantee.
+
+        Not which route leads - the scanner decides that from what answers
+        today - but that the channel is not hidden. That is what
+        sustained_proof exists to prevent, and it holds regardless of which
+        source is currently reachable.
+        """
+        payload = json.loads(CARD_FILE.read_text(encoding="utf-8"))
+        card = _card(payload)
+        if card is None:
+            self.skipTest("channel absent from the catalogue")
+        self.assertIsNot(card.get("publish_allowed"), False)
 
 
 class ChannelIdentityTests(unittest.TestCase):

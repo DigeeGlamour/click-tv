@@ -27,7 +27,7 @@ import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple
-from scanner.visibility_audit import audit_hide_safe
+from scanner.visibility_audit import audit_hide_safe, model_permits_hide
 
 try:
     from scanner.verifier import verify_single_stream as _global_verify_single
@@ -1022,11 +1022,10 @@ def verify_bd_stream(
 
     url = _clean_url(item.get("url"))
     if not url:
-        audit_hide_safe(
-            "bd_verifier.no_url",
-            item,
-            reason="candidate has no url",
-        )
+        allowed, why = model_permits_hide("bd_verifier.no_url", item)
+        if not allowed:
+            item["model_blocked_hide"] = why
+            return item
         item.update(
             verified=False,
             publish_allowed=False,
@@ -1042,11 +1041,12 @@ def verify_bd_stream(
     eligible = _eligible_for_github_protection(item, bd_rules)
 
     if not eligible and not movie_uncertain and not tv_uncertain:
-        audit_hide_safe(
-            "bd_verifier.not_eligible_for_protection",
-            item,
-            reason=str(item.get("verification_status") or "not_eligible"),
+        allowed, why = model_permits_hide(
+            "bd_verifier.not_eligible_for_protection", item
         )
+        if not allowed:
+            item["model_blocked_hide"] = why
+            return item
         item["publish_allowed"] = False
         return item
 
@@ -1100,12 +1100,12 @@ def verify_bd_stream(
         return item
 
     if _safe_bool(bd_config.get("strict_player_publish", False), False):
-        audit_hide_safe(
-            "bd_verifier.same_run_player_gate",
-            item,
-            reason="neither direct retry nor proxy proved playable media",
-            status=item.get("http_status"),
+        allowed, why = model_permits_hide(
+            "bd_verifier.same_run_player_gate", item
         )
+        if not allowed:
+            item["model_blocked_hide"] = why
+            return item
         item.update(
             verified=False,
             publish_allowed=False,
@@ -1154,12 +1154,12 @@ def verify_bd_stream(
             )
             return item
 
-        audit_hide_safe(
-            "bd_verifier.confirmed_permanent_http",
-            item,
-            reason=f"confirmed permanent HTTP {http_status} after {fail_count} checks",
-            status=http_status,
+        allowed, why = model_permits_hide(
+            "bd_verifier.confirmed_permanent_http", item
         )
+        if not allowed:
+            item["model_blocked_hide"] = why
+            return item
         item.update(
             verified=False,
             publish_allowed=False,
@@ -1230,12 +1230,12 @@ def verify_bd_stream(
         )
         return item
 
-    audit_hide_safe(
-        "bd_verifier.not_covered_by_protected_rules",
-        item,
-        reason=str(item.get("proxy_error") or "not covered by protected rules"),
-        status=item.get("http_status"),
+    allowed, why = model_permits_hide(
+        "bd_verifier.not_covered_by_protected_rules", item
     )
+    if not allowed:
+        item["model_blocked_hide"] = why
+        return item
     item.update(
         verified=False,
         publish_allowed=False,
