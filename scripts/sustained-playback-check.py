@@ -109,6 +109,60 @@ DEVICE_PROFILES = {
 }
 
 
+def _harness_backup(raw: Any) -> Dict[str, Any]:
+    """Keep the public playback fields the site's attempt planner consumes."""
+    if not isinstance(raw, dict):
+        return {"url": raw}
+    return {
+        key: raw.get(key)
+        for key in (
+            "name",
+            "url",
+            "playback_id",
+            "stream_type",
+            "proxy_mode",
+            "header_profile",
+            "requires_headers",
+            "requires_credentials",
+            "protected_source",
+            "drm",
+            "inherit_manifest_query",
+        )
+        if raw.get(key) is not None
+    }
+
+
+def build_harness_item(target: Dict[str, Any], name: str) -> Dict[str, Any]:
+    """Build the same playback-shaped item that a published card supplies.
+
+    Protected cards can intentionally omit their URL and expose only a
+    ``playback_id``. Dropping that ID (and its DRM hint) silently turned the
+    sustained check into a test of an empty attempt plan, which is not a test
+    of the channel viewers actually open.
+    """
+    return {
+        "name": name,
+        "url": target.get("url"),
+        "playback_id": target.get("playback_id"),
+        "stream_type": target.get("stream_type"),
+        "proxy_mode": target.get("proxy_mode"),
+        "header_profile": target.get("header_profile"),
+        "requires_headers": bool(target.get("requires_headers")),
+        "requires_credentials": bool(target.get("requires_credentials")),
+        "protected_source": bool(target.get("protected_source")),
+        "drm": target.get("drm"),
+        "inherit_manifest_query": bool(target.get("inherit_manifest_query")),
+        "backups": [
+            _harness_backup(raw) for raw in (target.get("backups") or [])
+        ],
+        "_sourceKind": str(target.get("kind") or "channel"),
+        "content_kind": (
+            "movie" if str(target.get("kind") or "") == "movie"
+            else "live_tv"
+        ),
+    }
+
+
 #: In-page harness. Returns the sample series; the Python side does the
 #: classification so the browser cannot vote on its own verdict.
 PLAY_AND_MEASURE = r"""
@@ -158,7 +212,7 @@ async ([item, seconds, attemptIndex]) => {
 
   const t0 = performance.now();
   const elapsed = () => (performance.now() - t0) / 1000;
-  let engine = null, hls = null, mp = null;
+  let engine = null, hls = null, mp = null, shakaPlayer = null;
 
   const fatal = (msg) => { if (out.fatal_errors.length < 6) out.fatal_errors.push(String(msg).slice(0, 200)); };
 
@@ -190,6 +244,57 @@ async ([item, seconds, attemptIndex]) => {
           if (info?.hasAudio && !out.announced.includes('audio')) out.announced.push('audio');
         });
         mp.attachMediaElement(video); mp.load();
+      }
+    } else if (kind === 'dash' || /\.mpd(\?|$)/i.test(url)) {
+      // Protected published cards expose only playback_id; buildProxyUrl turns
+      // that into /hls?id=..., so the URL suffix cannot tell us this is DASH.
+      // The published stream_type is authoritative, exactly as in initShaka.
+      let shakaLib = (typeof shaka !== 'undefined') ? shaka : null;
+      if (!shakaLib?.Player && typeof ensureShakaLibrary === 'function') {
+        try { shakaLib = await ensureShakaLibrary(); }
+        catch (e) { fatal('ensureShakaLibrary failed: ' + e); }
+      }
+      if (!shakaLib?.Player) { fatal('Shaka Player unavailable'); }
+      else {
+        engine = 'shaka';
+        shakaLib.polyfill.installAll();
+        shakaPlayer = new shakaLib.Player();
+        await shakaPlayer.attach(video);
+        if (typeof shakaConfigFor === 'function') {
+          shakaPlayer.configure(shakaConfigFor(
+            (typeof currentNetworkMode === 'function' ? currentNetworkMode() : 'auto'),
+            false
+          ));
+        }
+        let playbackDrm = source.drm || item.drm || null;
+        if (typeof resolveProtectedDrm === 'function') {
+          try {
+            playbackDrm = await resolveProtectedDrm({ currentAttempt: attempt, item }) || playbackDrm;
+          } catch (e) { fatal('DRM resolution failed: ' + e); }
+        }
+        const drmType = typeof normalizePlaybackDrmType === 'function'
+          ? normalizePlaybackDrmType(playbackDrm) : '';
+        if (drmType === 'clearkey') {
+          const clearKeys = typeof parseClearKeys === 'function'
+            ? parseClearKeys(playbackDrm?.clear_keys || playbackDrm?.clearkey || playbackDrm?.license_key)
+            : null;
+          if (!clearKeys) fatal('ClearKey DRM keys are missing or invalid');
+          else shakaPlayer.configure({ drm: { clearKeys } });
+        }
+        shakaPlayer.addEventListener('error', (event) => {
+          const detail = event?.detail || {};
+          fatal('shaka ' + (detail.code || '') + ' ' + (detail.message || 'playback error'));
+        });
+        shakaPlayer.addEventListener('trackschanged', () => {
+          const tracks = shakaPlayer.getVariantTracks?.() || [];
+          if (tracks.some((track) => track.videoCodec || track.width)) {
+            if (!out.announced.includes('video')) out.announced.push('video');
+          }
+          if (tracks.some((track) => track.audioCodec || track.audioId)) {
+            if (!out.announced.includes('audio')) out.announced.push('audio');
+          }
+        });
+        await shakaPlayer.load(url);
       }
     } else if (typeof Hls !== 'undefined' && Hls.isSupported() && !/\.mp4(\?|$)/i.test(url)) {
       engine = 'hls.js';
@@ -271,7 +376,11 @@ async ([item, seconds, attemptIndex]) => {
   // stream whose manifest declared no codecs is not failed for that alone.
   if (!out.announced.length) out.announced = out.progressed.slice();
 
-  try { if (hls) hls.destroy(); if (mp) { mp.destroy(); } } catch (e) { /* teardown */ }
+  try {
+    if (hls) hls.destroy();
+    if (mp) mp.destroy();
+    if (shakaPlayer) await shakaPlayer.destroy();
+  } catch (e) { /* teardown */ }
   try { video.pause(); video.removeAttribute('src'); video.load(); video.remove(); } catch (e) { /* teardown */ }
   return out;
 }
@@ -474,22 +583,7 @@ def run(argv: List[str]) -> int:
                 name = str(target.get("name") or f"target-{index}")
                 if name in already:
                     continue
-                item = {
-                    "name": name,
-                    "url": target.get("url"),
-                    "stream_type": target.get("stream_type"),
-                    "proxy_mode": target.get("proxy_mode"),
-                    "header_profile": target.get("header_profile"),
-                    "backups": [{"url": u} for u in (target.get("backups") or [])],
-                    # A movie must not be presented as a live channel: the
-                    # attempt plan, the mpegts isLive flag and the player's own
-                    # contextual buttons all branch on this.
-                    "_sourceKind": str(target.get("kind") or "channel"),
-                    "content_kind": (
-                        "movie" if str(target.get("kind") or "") == "movie"
-                        else "live_tv"
-                    ),
-                }
+                item = build_harness_item(target, name)
                 per_route: List[Dict[str, Any]] = []
                 for attempt_index in range(max(1, args.attempts)):
                     for session in range(max(1, args.sessions)):
@@ -651,11 +745,11 @@ def run(argv: List[str]) -> int:
                         ),
                         "distinct_sources": rev.distinct_sources(
                             [{"url": target.get("url")}]
-                            + [{"url": u} for u in (target.get("backups") or [])]
+                            + [_harness_backup(u) for u in (target.get("backups") or [])]
                         ),
                         "independent_redundancy": rev.independent_redundancy(
                             [{"url": target.get("url")}]
-                            + [{"url": u} for u in (target.get("backups") or [])]
+                            + [_harness_backup(u) for u in (target.get("backups") or [])]
                         ),
                         "browser_profile": args.profile,
                         "observations": per_route,
