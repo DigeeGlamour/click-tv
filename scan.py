@@ -1275,7 +1275,12 @@ def _flush_visibility_audit() -> None:
             print(
                 f"   visibility model audit: {summary['decisions_seen']} hide "
                 f"decision(s) seen, model would keep "
-                f"{summary['model_would_keep']} (advisory only)"
+                f"{summary['model_would_keep']} "
+                + (
+                    "(enforced where the route has evidence)"
+                    if visibility_audit.ENFORCE_MODEL_DECISION
+                    else "(advisory only)"
+                )
             )
     except Exception:  # noqa: BLE001 - auditing must never fail a scan
         pass

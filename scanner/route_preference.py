@@ -173,30 +173,141 @@ def preferred_route_id(
     return route_id or None
 
 
-def _is_healthy_this_scan(stream: Dict[str, Any]) -> bool:
-    """Whether THIS scan found the route usable.
+#: The three answers this scan can give about a preferred route.
+#:
+#: Two states were not enough, and the gap was pointed out rather than
+#: discovered here: the first version of this check treated
+#: `publish_allowed is False` as the single disqualifier, which reads every
+#: negative as final. Most negatives available from this vantage are not. A
+#: datacentre egress sees a Bangladesh-only route as 403 and a Cloudflare
+#: worker outage as 530, and neither says the route is dead - concluding that
+#: it is would throw away a working channel on the strength of where the
+#: scanner happens to run.
+HEALTH_HEALTHY = "healthy"
+HEALTH_HARD_FAILED = "hard_failed"
+HEALTH_INCONCLUSIVE = "inconclusive"
 
-    The expiry window alone was not enough. A preference could be well inside
-    its 14 days while the route it names had already stopped working, and this
-    function is what stops that being promoted over a route that answers today.
+#: This scan positively observed the route working.
+POSITIVE_STATUSES = frozenset({
+    "verified",
+    "verified_global",
+    "verified_bd",
+    "verified_proxy",
+    "verified_sustained_playback",
+})
 
-    Deliberately permissive about what counts as healthy, and strict about only
-    one thing: an explicit denial. `publish_allowed is False` is how every hide
-    path in this project records "do not serve this", so a route carrying it is
-    the one case where a stale proof must not override a fresh negative.
-    Anything else - verified, pending, geo-protected, simply unremarked - is
-    left alone, because reading a missing field as unhealthy would refuse
-    promotion on most routes and quietly restore the exact behaviour this
-    registry exists to fix.
+#: The scan could not settle the question, and said so. These are the statuses
+#: the publish gate already treats as publishable rather than failed, which is
+#: the same judgement in a different place.
+INCONCLUSIVE_STATUSES = frozenset({
+    "geo_pending",
+    "bd_protected_pending",
+    "needs_bd_check",
+    "retryable_pending",
+    "host_deferred",
+    "host_circuit_open",
+    "stale_last_good",
+})
+
+#: "This resource is gone" - about the route itself, and true from anywhere.
+HARD_HTTP_STATUSES = frozenset({404, 410})
+
+#: "You may not have this from here" - about the asker, the credential or the
+#: origin's own availability, none of which is a property of the route. 530 is
+#: in this set for a measured reason: the proven Zee Bangla route returns it
+#: today because the Cloudflare worker in front of a working upstream is down,
+#: and the same upstream answers 200 through a different front.
+VANTAGE_HTTP_STATUSES = frozenset({401, 403, 407, 429, 451, 502, 503, 530})
+
+
+def route_health(stream: Dict[str, Any]) -> tuple:
+    """(state, reason) for what THIS scan found about a route.
+
+    Expiry alone was not enough - a preference could sit well inside its 14
+    days while the route it named had already stopped working. Nor is a plain
+    boolean enough, because it forces a vantage-shaped negative to be read as
+    either "fine" or "dead" when the honest answer is "not from here".
+
+    The three states are acted on differently by `promote_preferred`:
+    hard_failed refuses the promotion, healthy and inconclusive allow it. That
+    asymmetry is deliberate. Decoded frames from two independent browser
+    sessions are the strongest evidence this project can hold, and an
+    inconclusive network reading from one datacentre is not grounds to discard
+    it. A route that is genuinely gone does not stay inconclusive: it returns
+    404, or fails playback, or the proof expires.
     """
     if not isinstance(stream, dict):
-        return False
+        return HEALTH_HARD_FAILED, "not a stream record"
+    if str(stream.get("metadata_only") or "").lower() == "true" or stream.get(
+        "metadata_only"
+    ) is True:
+        return HEALTH_HARD_FAILED, "metadata-only record, no route to promote"
+    if not str(stream.get("url") or "").strip():
+        return HEALTH_HARD_FAILED, "no URL on this record"
+
+    verdict = str(stream.get("verdict") or "").strip().lower()
+    if verdict == rev.PLAYBACK_FAIL:
+        return HEALTH_HARD_FAILED, "playback_fail: the route was measured unplayable"
+    if rev.is_escalatable(verdict) and verdict:
+        return HEALTH_HARD_FAILED, f"escalatable route failure: {verdict}"
+
+    status = str(stream.get("verification_status") or "").strip().lower()
+    http_status = _safe_int(stream.get("http_status"))
+
+    if http_status in HARD_HTTP_STATUSES:
+        return HEALTH_HARD_FAILED, f"HTTP {http_status}: the route is gone"
+
+    if status in POSITIVE_STATUSES and stream.get("publish_allowed") is not False:
+        return HEALTH_HEALTHY, f"this scan verified the route ({status})"
+
+    if http_status in VANTAGE_HTTP_STATUSES:
+        return (
+            HEALTH_INCONCLUSIVE,
+            f"HTTP {http_status} is about this vantage, not the route",
+        )
+    if status in INCONCLUSIVE_STATUSES:
+        return HEALTH_INCONCLUSIVE, f"the scan did not settle it ({status})"
+    if status == "failed":
+        # Failed with nothing to say why. Treated as unsettled rather than
+        # final: this vantage produces geo-shaped failures routinely, and the
+        # TTL already bounds how long an unconfirmed proof can lead.
+        return HEALTH_INCONCLUSIVE, "failed without an attributable cause"
+
+    if verdict:
+        # A verdict that reached here is one the taxonomy already declared
+        # non-escalatable - a device or vantage limit rather than a property of
+        # the route. Named rather than folded into "no observation", because
+        # the two are different findings and a reader of this reason should be
+        # able to tell them apart.
+        return HEALTH_INCONCLUSIVE, f"non-escalatable verdict: {verdict}"
+
+    return HEALTH_INCONCLUSIVE, "this scan recorded no observation for the route"
+
+
+def _safe_int(value: Any) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def is_promotable(stream: Dict[str, Any]) -> tuple:
+    """(allowed, reason) - whether this record may be made primary.
+
+    Health is what we believe about the route; promotability is whether making
+    it primary is even coherent. They are separate on purpose: a geo-blocked
+    route is inconclusive AND publishable (the publish gate allows geo_pending
+    by design, because those routes work for the audience this site is built
+    for), so it can still lead. A route the pipeline has marked unpublishable
+    cannot lead whatever we believe about it - the card would point at
+    something the site will not serve.
+    """
+    state, reason = route_health(stream)
+    if state == HEALTH_HARD_FAILED:
+        return False, reason
     if stream.get("publish_allowed") is False:
-        return False
-    if stream.get("metadata_only") is True:
-        # No playable URL to promote.
-        return False
-    return bool(str(stream.get("url") or "").strip())
+        return False, f"the pipeline marked this route unpublishable ({state})"
+    return True, reason
 
 
 def promote_preferred(
@@ -230,9 +341,11 @@ def promote_preferred(
         url = str((stream or {}).get("url") or "")
         if not url or rev.normalize_source_identity(url) != wanted:
             return False
-        # A proof from two weeks ago does not outrank this scan finding the
-        # route unusable today.
-        return _is_healthy_this_scan(stream)
+        # A proof from two weeks ago does not outrank this scan measuring the
+        # route unplayable today - but an inconclusive reading from one
+        # datacentre egress is not that measurement.
+        allowed, _reason = is_promotable(stream)
+        return allowed
 
     for index, stream in enumerate(streams or ()):
         if _matches(stream):

@@ -112,7 +112,14 @@ class AuditContentTests(unittest.TestCase):
             written = va.flush(target, provenance="unit test")
             self.assertEqual(written, target)
             payload = json.loads(Path(target).read_text(encoding="utf-8"))
-        self.assertEqual(payload["mode"], "audit_only")
+        # "audit_only" was true when this file was written and became false
+        # when the hide paths were put behind model_permits_hide. The report has
+        # to say which it is, so this pins mode to the flag rather than to a
+        # literal that can quietly go stale again.
+        self.assertEqual(payload["mode"], "conditional_enforcement")
+        self.assertTrue(va.ENFORCE_MODEL_DECISION)
+        self.assertTrue(payload["enforcement"]["enforced"])
+        self.assertIn("REFUSES", payload["enforcement"]["when_enforced"])
         self.assertEqual(payload["provenance"], "unit test")
         self.assertTrue(payload["locks"]["declared"])
         self.assertEqual(

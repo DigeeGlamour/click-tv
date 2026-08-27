@@ -4,12 +4,13 @@
     "channel|zee bangla": {
       "kind": "channel",
       "channel": "Zee Bangla",
-      "route_id": "jio-tv.sm-monirul-islam-rs.workers.dev/live.m3u8?id=625",
-      "url_public_template": "{id}.{id}.workers.dev/{file}?id={v}",
+      "recorded_at": "2026-08-27T06:13:48.592914+00:00",
+      "route_id": "live.balajibroadband.com:3500/live/625.m3u8",
+      "url_public_template": "{id}.balajibroadband.com/live/{file}",
       "pass_count": 2,
       "window_seconds": 120.0,
       "media_progress_seconds": [
-        173.59,
+        172.09,
         172.08
       ],
       "cumulative_stall_seconds": [
@@ -17,7 +18,16 @@
         0
       ],
       "browser_profile": "desktop_chrome",
-      "evidence_report": "reports/zee-confirm-playback.json"
+      "evidence_report": "reports/zee-balaji-candidate.json",
+      "superseded": [
+        {
+          "route_id": "jio-tv.sm-monirul-islam-rs.workers.dev/live.m3u8?id=625",
+          "recorded_at": "2026-08-24T05:09:43+00:00",
+          "pass_count": 2,
+          "evidence_report": "reports/zee-confirm-playback.json",
+          "why_superseded": "Still a genuine two-session proof. Superseded rather than deleted: the Cloudflare worker in front of it returns HTTP 530, which is a vantage-shaped negative and no reason to discard the record. If that front recovers this route is provable again; the route this entry now names is a different front onto the same upstream (JioTV Go channel_key_id=625) that answers today."
+        }
+      ]
     }
   },
   "note": "A route here passed two independent 120 s browser sessions. It outranks the scanner's verification tiers, which are network observations, because this is decoded frames. Promotion only - this registry cannot introduce, remove or hide a route."

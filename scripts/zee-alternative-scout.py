@@ -37,7 +37,18 @@ from scanner import route_evidence as rev  # noqa: E402
 #: DIFFERENT CHANNELS entirely - substituting one of those would put the wrong
 #: programme on the card, which is worse than a channel that stutters. The first
 #: pass of this scout listed them as candidates; that was wrong.
-SAME_CHANNEL = re.compile(r"^\s*zee\s*bangla(\s*(hd|sd|fhd))?\s*$", re.IGNORECASE)
+#: Playlists prefix names with a group tag - "[BD] Zee Bangla" is the same
+#: channel as "Zee Bangla", carried by a Bangladeshi CDN. The first version of
+#: this pattern anchored at the start of the string and rejected it as "name
+#: does not match the channel", which lost a real HLS candidate. Leading
+#: bracketed or parenthesised tags are stripped before matching; the
+#: DIFFERENT_CHANNEL_WORDS check below still runs on the untouched name, so no
+#: prefix can smuggle Cinema or Sonar past the owner's rule.
+GROUP_TAG = re.compile(r"^\s*(?:[\[(][^\])]*[\])]\s*)+")
+
+SAME_CHANNEL = re.compile(
+    r"^\s*zee\s*bangla(\s*(hd|sd|fhd|full\s*hd))?\s*$", re.IGNORECASE
+)
 
 #: Qualifiers that mark a separate channel rather than a variant of one.
 DIFFERENT_CHANNEL_WORDS = (
@@ -51,7 +62,7 @@ def is_same_channel(name: str) -> tuple:
     for word in DIFFERENT_CHANNEL_WORDS:
         if word in text.lower():
             return False, f"'{word}' marks a different channel, not another source"
-    if SAME_CHANNEL.match(text):
+    if SAME_CHANNEL.match(GROUP_TAG.sub("", text)):
         return True, "same channel"
     return False, "name does not match the channel"
 

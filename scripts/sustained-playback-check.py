@@ -419,6 +419,25 @@ def run(argv: List[str]) -> int:
             "browser_profile": args.profile,
             "browser_engine": device["engine"],
             "viewport": device["viewport"],
+            # Named in the artifact itself so a reader cannot mistake a
+            # profile name for the hardware it is named after. Playwright
+            # drives a desktop build of the engine with a phone's viewport,
+            # user agent and touch flags; it is not a Pixel, an iPhone or a
+            # television, and WebKit here is not iOS Safari. The engine is
+            # real and the difference it exposes is real - Chromium and WebKit
+            # genuinely disagree about codecs - but hardware decoders,
+            # vendor-patched media stacks and real network conditions are out
+            # of scope, so a FAIL measured here can never be more than
+            # environment-scoped.
+            "measurement_kind": "browser_engine_and_device_profile_emulation",
+            "not_a_physical_device": True,
+            "emulation_limits": (
+                f"Playwright {device['engine']} with the {args.profile} "
+                "viewport, user agent and touch profile. No physical hardware "
+                "was involved: no vendor media stack, no hardware decoder, no "
+                "real mobile network. WebKit is not iOS Safari. Treat every "
+                "verdict as environment-scoped."
+            ),
             "required_fresh_sessions_for_proof": rev.REQUIRED_FRESH_SESSIONS,
             "elapsed_seconds": round(time.time() - started, 1),
             "scope_note": (

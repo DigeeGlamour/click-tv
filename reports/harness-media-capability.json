@@ -1,0 +1,33 @@
+{
+  "mode": "harness_media_capability_probe",
+  "measured_at": "2026-08-27T06:44:58.090409+00:00",
+  "why": "The iphone_safari profile returned playback_fail on a route that three Chromium profiles proved. Before recording that as a finding about iOS, the harness itself had to be questioned - and it is the cause. Playwright's WebKit build reports no native Apple HLS support and cannot accept MPEG-TS through MediaSource, so the one path real iOS Safari would use for this route does not exist in it. The route delivers MPEG-TS segments (/render.ts), so hls.js has to transmux in JavaScript, and that is what stalled.",
+  "conclusion": "The iphone_safari verdict is scoped environment:iphone_safari and says nothing about iOS Safari. Real iOS coverage stays untested: it needs a physical device, which this environment does not have.",
+  "engines": {
+    "chromium": {
+      "native_apple_hls": "maybe",
+      "native_mpegts": "",
+      "h264_high31": "probably",
+      "aac_lc": "probably",
+      "media_source": true,
+      "mse_mpegts": true,
+      "mse_fmp4": true,
+      "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36"
+    },
+    "webkit": {
+      "native_apple_hls": "",
+      "native_mpegts": "",
+      "h264_high31": "probably",
+      "aac_lc": "probably",
+      "media_source": true,
+      "mse_mpegts": false,
+      "mse_fmp4": true,
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.5 Safari/605.1.15"
+    }
+  },
+  "route_under_test": {
+    "segment_container": "mpegts",
+    "delivery": "hls",
+    "note": "master and variant are HLS; media segments are .ts"
+  }
+}

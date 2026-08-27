@@ -11,23 +11,28 @@
     "width": 390,
     "height": 844
   },
+  "measurement_kind": "browser_engine_and_device_profile_emulation",
+  "not_a_physical_device": true,
+  "emulation_limits": "Playwright webkit with the iphone_safari viewport, user agent and touch profile. No physical hardware was involved: no vendor media stack, no hardware decoder, no real mobile network. WebKit is not iOS Safari. Treat every verdict as environment-scoped.",
   "required_fresh_sessions_for_proof": 2,
-  "elapsed_seconds": 307.9,
+  "elapsed_seconds": 255.7,
   "scope_note": "One browser profile only. By the model's own rule a FAIL here is environment:iphone_safari; global scope needs the complete declared matrix ['desktop_chrome', 'android_chrome', 'iphone_safari', 'android_tv'].",
   "results": [
     {
       "name": "Zee Bangla",
-      "url_public_template": "rgkkw.live/live/{seg}/{seg}/{file}",
-      "distinct_sources": 1,
+      "url_public_template": "{id}.balajibroadband.com/live/{file}",
+      "distinct_sources": 2,
       "independent_redundancy": "unknown",
       "browser_profile": "iphone_safari",
       "observations": [
         {
           "attempt_index": 0,
           "session": 0,
-          "engine": "mpegts",
-          "plan_length": 2,
+          "engine": "hls.js",
+          "plan_length": 4,
           "plan_routes": [
+            "proxy:proxy",
+            "proxy:proxy",
             "proxy:proxy",
             "proxy:proxy"
           ],
@@ -43,61 +48,60 @@
               "audio"
             ],
             "progressing_tracks": [],
-            "first_frame_seconds": 16.079,
-            "startup_seconds": null,
-            "media_progress_seconds": 0,
-            "cumulative_stall_seconds": 0,
+            "first_frame_seconds": 3.638,
+            "startup_seconds": 3.638,
+            "media_progress_seconds": 48.72,
+            "cumulative_stall_seconds": 116,
             "fatal_errors": [
-              "media element error code 3"
+              "hls mediaError/bufferStalledError"
             ],
             "recovered_to_pass_floor": false
           },
-          "verdict": "advisory:device_or_browser_unsupported",
+          "verdict": "playback_fail",
           "reasons": [
-            "playback never started within the window",
-            "media progress 0s < 10s",
-            "unrecovered fatal error: media element error code 3",
-            "no announced render track progressed",
-            "fatal error describes the decoder, not the route; capped at environment scope and never escalatable"
+            "unrecovered fatal error: hls mediaError/bufferStalledError",
+            "no announced render track progressed"
           ],
           "notes": [
-            "playing proxy as mpegts",
+            "playing proxy as hls",
             "play() still pending after 15s"
           ],
           "sample_count": 120,
           "last_samples": [
             {
-              "s": 134,
-              "t": 0,
-              "rs": 1,
+              "s": 121,
+              "t": 48.72,
+              "rs": 4,
               "f": 0,
               "ab": 0,
-              "stall": 0
+              "stall": 114
             },
             {
-              "s": 135,
-              "t": 0,
-              "rs": 1,
+              "s": 122,
+              "t": 48.72,
+              "rs": 4,
               "f": 0,
               "ab": 0,
-              "stall": 0
+              "stall": 115
             },
             {
-              "s": 136,
-              "t": 0,
-              "rs": 1,
+              "s": 123,
+              "t": 48.72,
+              "rs": 4,
               "f": 0,
               "ab": 0,
-              "stall": 0
+              "stall": 116
             }
           ]
         },
         {
           "attempt_index": 0,
           "session": 1,
-          "engine": "mpegts",
-          "plan_length": 2,
+          "engine": "hls.js",
+          "plan_length": 4,
           "plan_routes": [
+            "proxy:proxy",
+            "proxy:proxy",
             "proxy:proxy",
             "proxy:proxy"
           ],
@@ -113,52 +117,49 @@
               "audio"
             ],
             "progressing_tracks": [],
-            "first_frame_seconds": 16.059,
-            "startup_seconds": null,
-            "media_progress_seconds": 0,
-            "cumulative_stall_seconds": 0,
+            "first_frame_seconds": 2.193,
+            "startup_seconds": 2.193,
+            "media_progress_seconds": 52.72,
+            "cumulative_stall_seconds": 116,
             "fatal_errors": [
-              "media element error code 3"
+              "hls mediaError/bufferStalledError"
             ],
             "recovered_to_pass_floor": false
           },
-          "verdict": "advisory:device_or_browser_unsupported",
+          "verdict": "playback_fail",
           "reasons": [
-            "playback never started within the window",
-            "media progress 0s < 10s",
-            "unrecovered fatal error: media element error code 3",
-            "no announced render track progressed",
-            "fatal error describes the decoder, not the route; capped at environment scope and never escalatable"
+            "unrecovered fatal error: hls mediaError/bufferStalledError",
+            "no announced render track progressed"
           ],
           "notes": [
-            "playing proxy as mpegts",
+            "playing proxy as hls",
             "play() still pending after 15s"
           ],
           "sample_count": 120,
           "last_samples": [
             {
-              "s": 133,
-              "t": 0,
-              "rs": 1,
+              "s": 120,
+              "t": 52.72,
+              "rs": 4,
               "f": 0,
               "ab": 0,
-              "stall": 0
+              "stall": 114
             },
             {
-              "s": 134,
-              "t": 0,
-              "rs": 1,
+              "s": 121,
+              "t": 52.72,
+              "rs": 4,
               "f": 0,
               "ab": 0,
-              "stall": 0
+              "stall": 115
             },
             {
-              "s": 136,
-              "t": 0,
-              "rs": 1,
+              "s": 122,
+              "t": 52.72,
+              "rs": 4,
               "f": 0,
               "ab": 0,
-              "stall": 0
+              "stall": 116
             }
           ]
         }

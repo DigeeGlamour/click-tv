@@ -279,11 +279,35 @@ def summary() -> Dict[str, Any]:
         else:
             bucket["model_would_keep"] += 1
     return {
-        "mode": "audit_only",
+        # Named for what the code does, which stopped being "audit only" when
+        # the production hide paths were put behind model_permits_hide. Left
+        # saying audit_only, this file told a reader the opposite of the truth:
+        # that nothing here could change what the site shows. It can.
+        "mode": (
+            "conditional_enforcement" if ENFORCE_MODEL_DECISION else "audit_only"
+        ),
+        "enforcement": {
+            "enforced": bool(ENFORCE_MODEL_DECISION),
+            "when_enforced": (
+                "The item has per-route evidence. model_would_hide=false then "
+                "REFUSES the caller's hide and the item stays visible."
+            ),
+            "when_not_enforced": (
+                "The item has no per-route evidence. The caller's own decision "
+                "stands and this report only records what the model would have "
+                "said - the deliberate choice that keeps legitimate structural "
+                "hides working."
+            ),
+            "note": (
+                "model_would_hide counts what the model concluded, not what "
+                "happened: on an item with no evidence the caller may still "
+                "have hidden it."
+            ),
+        },
         "note": (
-            "Advisory. No value here changed any item's visibility. "
             "model_would_hide=false means the evidence this site acted on does "
-            "not by itself support removing the item."
+            "not by itself support removing the item. Where evidence exists "
+            "that conclusion is enforced; see the enforcement block."
         ),
         "hmac_key": {
             "configured": rev.configured_hmac_key() is not None,
@@ -351,7 +375,11 @@ def flush(path: Optional[str] = None, provenance: str = "") -> Optional[str]:
                 # Still tripping after row removal: the problem is in the
                 # summary itself, so withhold the detail and say exactly that.
                 payload = {
-                    "mode": "audit_only",
+                    "mode": (
+                        "conditional_enforcement"
+                        if ENFORCE_MODEL_DECISION
+                        else "audit_only"
+                    ),
                     "error": (
                         "audit detail withheld: the summary itself contained "
                         "forbidden material"

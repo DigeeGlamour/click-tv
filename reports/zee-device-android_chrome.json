@@ -11,23 +11,28 @@
     "width": 412,
     "height": 915
   },
+  "measurement_kind": "browser_engine_and_device_profile_emulation",
+  "not_a_physical_device": true,
+  "emulation_limits": "Playwright chromium with the android_chrome viewport, user agent and touch profile. No physical hardware was involved: no vendor media stack, no hardware decoder, no real mobile network. WebKit is not iOS Safari. Treat every verdict as environment-scoped.",
   "required_fresh_sessions_for_proof": 2,
-  "elapsed_seconds": 278.1,
+  "elapsed_seconds": 372.4,
   "scope_note": "One browser profile only. By the model's own rule a FAIL here is environment:android_chrome; global scope needs the complete declared matrix ['desktop_chrome', 'android_chrome', 'iphone_safari', 'android_tv'].",
   "results": [
     {
       "name": "Zee Bangla",
-      "url_public_template": "rgkkw.live/live/{seg}/{seg}/{file}",
-      "distinct_sources": 1,
+      "url_public_template": "{id}.balajibroadband.com/live/{file}",
+      "distinct_sources": 2,
       "independent_redundancy": "unknown",
       "browser_profile": "android_chrome",
       "observations": [
         {
           "attempt_index": 0,
           "session": 0,
-          "engine": "mpegts",
-          "plan_length": 2,
+          "engine": "hls.js",
+          "plan_length": 4,
           "plan_routes": [
+            "proxy:proxy",
+            "proxy:proxy",
             "proxy:proxy",
             "proxy:proxy"
           ],
@@ -46,56 +51,43 @@
               "video",
               "audio"
             ],
-            "first_frame_seconds": 4.996799999999814,
-            "startup_seconds": null,
-            "media_progress_seconds": 0,
+            "first_frame_seconds": 2.0531999999997206,
+            "startup_seconds": 2.0532999999998136,
+            "media_progress_seconds": 171.99,
             "cumulative_stall_seconds": 0,
-            "fatal_errors": [
-              "media element error code 3",
-              "mpegts MediaError/MediaMSEError {\"code\":11,\"msg\":\"Failed to execute 'appendBuffer' on 'SourceBuffer': The HTMLMediaElement.error attribute is not null.\"}",
-              "mpegts MediaError/MediaMSEError {\"code\":11,\"msg\":\"Failed to execute 'appendBuffer' on 'SourceBuffer': The HTMLMediaElement.error attribute is not null.\"}",
-              "mpegts MediaError/MediaMSEError {\"code\":11,\"msg\":\"Failed to execute 'appendBuffer' on 'SourceBuffer': The HTMLMediaElement.error attribute is not null.\"}",
-              "mpegts MediaError/MediaMSEError {\"code\":11,\"msg\":\"Failed to execute 'appendBuffer' on 'SourceBuffer': The HTMLMediaElement.error attribute is not null.\"}",
-              "mpegts MediaError/MediaMSEError {\"code\":11,\"msg\":\"Failed to execute 'appendBuffer' on 'SourceBuffer': The HTMLMediaElement.error attribute is not null.\"}"
-            ],
+            "fatal_errors": [],
             "recovered_to_pass_floor": false
           },
-          "verdict": "advisory:device_or_browser_unsupported",
-          "reasons": [
-            "playback never started within the window",
-            "media progress 0s < 10s",
-            "unrecovered fatal error: media element error code 3",
-            "fatal error describes the decoder, not the route; capped at environment scope and never escalatable"
-          ],
+          "verdict": "proven",
+          "reasons": [],
           "notes": [
-            "playing proxy as mpegts",
-            "play() rejected: AbortError: The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22",
+            "playing proxy as hls",
             "play() still pending after 15s"
           ],
           "sample_count": 120,
           "last_samples": [
             {
-              "s": 122,
-              "t": 0,
-              "rs": 1,
-              "f": 1,
-              "ab": 1920,
+              "s": 119,
+              "t": 169.99,
+              "rs": 4,
+              "f": 2947,
+              "ab": 1417666,
               "stall": 0
             },
             {
-              "s": 123,
-              "t": 0,
-              "rs": 1,
-              "f": 1,
-              "ab": 1920,
+              "s": 120,
+              "t": 170.99,
+              "rs": 4,
+              "f": 2971,
+              "ab": 1429485,
               "stall": 0
             },
             {
-              "s": 124,
-              "t": 0,
-              "rs": 1,
-              "f": 1,
-              "ab": 1920,
+              "s": 121,
+              "t": 171.99,
+              "rs": 4,
+              "f": 2996,
+              "ab": 1441584,
               "stall": 0
             }
           ]
@@ -103,9 +95,11 @@
         {
           "attempt_index": 0,
           "session": 1,
-          "engine": "mpegts",
-          "plan_length": 2,
+          "engine": "hls.js",
+          "plan_length": 4,
           "plan_routes": [
+            "proxy:proxy",
+            "proxy:proxy",
             "proxy:proxy",
             "proxy:proxy"
           ],
@@ -124,66 +118,53 @@
               "video",
               "audio"
             ],
-            "first_frame_seconds": 4.9095,
-            "startup_seconds": null,
-            "media_progress_seconds": 0,
+            "first_frame_seconds": 1.797,
+            "startup_seconds": 1.797,
+            "media_progress_seconds": 172.14,
             "cumulative_stall_seconds": 0,
-            "fatal_errors": [
-              "media element error code 3",
-              "mpegts MediaError/MediaMSEError {\"code\":11,\"msg\":\"Failed to execute 'appendBuffer' on 'SourceBuffer': The HTMLMediaElement.error attribute is not null.\"}",
-              "mpegts MediaError/MediaMSEError {\"code\":11,\"msg\":\"Failed to execute 'appendBuffer' on 'SourceBuffer': The HTMLMediaElement.error attribute is not null.\"}",
-              "mpegts MediaError/MediaMSEError {\"code\":11,\"msg\":\"Failed to execute 'appendBuffer' on 'SourceBuffer': The HTMLMediaElement.error attribute is not null.\"}",
-              "mpegts MediaError/MediaMSEError {\"code\":11,\"msg\":\"Failed to execute 'appendBuffer' on 'SourceBuffer': The HTMLMediaElement.error attribute is not null.\"}",
-              "mpegts MediaError/MediaMSEError {\"code\":11,\"msg\":\"Failed to execute 'appendBuffer' on 'SourceBuffer': The HTMLMediaElement.error attribute is not null.\"}"
-            ],
+            "fatal_errors": [],
             "recovered_to_pass_floor": false
           },
-          "verdict": "advisory:device_or_browser_unsupported",
-          "reasons": [
-            "playback never started within the window",
-            "media progress 0s < 10s",
-            "unrecovered fatal error: media element error code 3",
-            "fatal error describes the decoder, not the route; capped at environment scope and never escalatable"
-          ],
+          "verdict": "proven",
+          "reasons": [],
           "notes": [
-            "playing proxy as mpegts",
-            "play() rejected: AbortError: The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22",
+            "playing proxy as hls",
             "play() still pending after 15s"
           ],
           "sample_count": 120,
           "last_samples": [
             {
-              "s": 122,
-              "t": 0,
-              "rs": 1,
-              "f": 1,
-              "ab": 8064,
+              "s": 119,
+              "t": 170.14,
+              "rs": 4,
+              "f": 2954,
+              "ab": 1419693,
               "stall": 0
             },
             {
-              "s": 123,
-              "t": 0,
-              "rs": 1,
-              "f": 1,
-              "ab": 8064,
+              "s": 120,
+              "t": 171.14,
+              "rs": 4,
+              "f": 2976,
+              "ab": 1431430,
               "stall": 0
             },
             {
-              "s": 124,
-              "t": 0,
-              "rs": 1,
-              "f": 1,
-              "ab": 8064,
+              "s": 121,
+              "t": 172.14,
+              "rs": 4,
+              "f": 3004,
+              "ab": 1443999,
               "stall": 0
             }
           ]
         }
       ],
-      "pass_count": 0,
-      "proven": false,
+      "pass_count": 2,
+      "proven": true,
       "verdict_scope": "environment:android_chrome"
     }
   ],
-  "proven_routes": 0,
+  "proven_routes": 1,
   "routes_tested": 1
 }
