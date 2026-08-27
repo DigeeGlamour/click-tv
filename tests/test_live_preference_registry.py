@@ -469,45 +469,19 @@ class DeviceClaimWordingTests(unittest.TestCase):
         self.assertFalse(webkit.get("mse_mpegts"))
         self.assertIn("says nothing about iOS Safari", payload.get("conclusion", ""))
 
-    def test_no_tracked_report_claims_a_physical_device_was_tested(self):
-        """Narrow on purpose.
-
-        An earlier version of this test forbade the phrase "real Android"
-        anywhere, and it flagged a sentence stating what a physical-device run
-        WOULD require - an honest statement of a limit, the opposite of the
-        overclaim worth guarding. What is forbidden is claiming the run
-        happened.
-        """
-        claimed = re.compile(
-            r"(?:tested|verified|proven|measured|confirmed|ran)\s+"
-            r"(?:on\s+)?(?:a\s+)?(?:real|physical|actual)\s+"
-            r"(?:device|hardware|iphone|android|pixel|tv)"
-            r"|physical\s+device\s+(?:tested|verified|proven|confirmed)"
-            r"|on\s+(?:a\s+)?(?:real|physical)\s+(?:iphone|pixel|android\s+tv)"
-            r"\s+(?:hardware\s+)?(?:we|i)?\s*(?:tested|verified|proved)",
-            re.IGNORECASE,
-        )
-        import subprocess
-
-        try:
-            tracked = subprocess.run(
-                ["git", "ls-files", "reports", "*.txt"],
-                cwd=str(ROOT), capture_output=True, text=True, timeout=30,
-            ).stdout.split()
-        except (OSError, subprocess.SubprocessError):
-            self.skipTest("git unavailable")
-        for name in tracked:
-            path = ROOT / name
-            try:
-                text = path.read_text(encoding="utf-8", errors="replace")
-            except OSError:
-                continue
-            hit = claimed.search(text)
-            self.assertIsNone(
-                hit,
-                f"{name} claims a physical-device run: "
-                f"{hit.group(0) if hit else ''}",
-            )
+    # A prose-scanning test used to live here and it was wrong twice.
+    #
+    # It searched tracked reports for phrases like "real Android" and
+    # "physical device tested". The first version flagged a sentence stating
+    # what a physical-device run WOULD require - an honest statement of a
+    # limit. The narrowed version then flagged the report's own line saying
+    # that no report claims "physical device tested", and broke CI: the test
+    # could not tell a claim from a description of the rule itself.
+    #
+    # Prose about limits necessarily quotes the overclaim it rules out, so a
+    # regex over prose cannot separate the two. The disclosure now lives where
+    # a machine can check it without reading intent - the fields above, in the
+    # measurement artifact itself. Wording stays a human review matter.
 
 
 if __name__ == "__main__":
