@@ -239,6 +239,42 @@ def _publishable(item: Dict[str, Any]) -> bool:
     return item.get("verified") is True or item.get("publish_allowed") is True
 
 
+def _load_cached_evidence_before_verification() -> int:
+    """Give the model last run's evidence BEFORE any hide path can act.
+
+    The first version of this integration supplied evidence at the END of the
+    pipeline, after verification. But bd_verifier.verify_bd_stream hides items
+    during verification - three call sites, all earlier than the supply point -
+    so by the time the model had anything to reason with, those items had
+    already been decided. Every one of those gates returned "no per-route
+    evidence for this item; caller decision stands", which is a gate that
+    cannot refuse anything.
+
+    Cross-scan persistence is what makes the ordering fixable: a previous scan's
+    observations are on disk before this scan starts, so they can be handed over
+    first. This scan's own fresh observations are still added at the end, for the
+    next run - one scan cannot both observe an item and use that observation to
+    second-guess itself, and pretending otherwise would be the single-vantage
+    single-window mistake in a new costume.
+    """
+    from scanner import route_evidence_cache as cache
+    from scanner import visibility_audit
+
+    if rev_module.configured_hmac_key() is None:
+        # Without a key no record is complete, so there is nothing to load.
+        return 0
+    try:
+        historical = cache.all_records()
+    except Exception:  # noqa: BLE001 - evidence must never break a scan
+        return 0
+    if not historical:
+        return 0
+    try:
+        return visibility_audit.supply_evidence(historical)
+    except Exception:  # noqa: BLE001
+        return 0
+
+
 def _supply_scan_evidence(items: List[Dict[str, Any]]) -> int:
     """Turn this scan's own observations into per-route evidence records.
 
@@ -308,13 +344,12 @@ def _supply_scan_evidence(items: List[Dict[str, Any]]) -> int:
         except Exception:  # noqa: BLE001 - evidence must never break a scan
             continue
 
+    # Historical records were already supplied at pipeline start, before the
+    # hide paths ran - re-supplying them here would only duplicate them in the
+    # model's view. What is new is this scan's own observations, and they are
+    # persisted for the NEXT run rather than used to re-judge this one.
     try:
-        historical = cache.all_records()
-    except Exception:  # noqa: BLE001
-        historical = []
-
-    try:
-        supplied = visibility_audit.supply_evidence(historical + fresh)
+        supplied = visibility_audit.supply_evidence(fresh)
     except Exception:  # noqa: BLE001
         supplied = 0
 
@@ -1179,6 +1214,13 @@ def run_fast_verification_pipeline(
     pipeline_cfg = settings.get("pipeline")
     if not isinstance(pipeline_cfg, dict):
         pipeline_cfg = {}
+
+    # Before verification, and therefore before any hide path: hand the model
+    # what previous scans measured. bd_verifier hides during verification, so
+    # supplying evidence afterwards left those decisions ungated.
+    preloaded = _load_cached_evidence_before_verification()
+    if preloaded:
+        print(f"   route evidence from previous scans: {preloaded} record(s)")
 
     worker_profile = _mode_worker_profile(settings, mode)
     pool_count = worker_profile["pool_count"]

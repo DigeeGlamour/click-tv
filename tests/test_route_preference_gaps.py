@@ -187,5 +187,98 @@ class StalenessTests(unittest.TestCase):
         self.assertIsNotNone(route_id)
 
 
+class CurrentHealthTests(unittest.TestCase):
+    """A proof from two weeks ago must not outrank today's negative.
+
+    Codex's second point had two halves. Expiry was the first and is covered by
+    StalenessTests. This is the other: a preference well inside its 14 days
+    could still name a route that had already stopped working, and nothing
+    consulted the current scan about it.
+    """
+
+    def setUp(self):
+        self._tmp = tempfile.TemporaryDirectory()
+        self.path = str(Path(self._tmp.name) / "pref.json")
+        rp.record("channel", "Test Ch", PROVEN_URL, EVIDENCE, path=self.path)
+        self.registry = rp.load(self.path)
+
+    def tearDown(self):
+        self._tmp.cleanup()
+
+    def _promote(self, proven_stream):
+        streams = [{"url": "https://other.example.net/x.m3u8"}, proven_stream]
+        return rp.promote_preferred(
+            streams, "channel", "Test Ch", self.registry
+        )
+
+    def test_a_healthy_route_is_promoted(self):
+        _out, promoted = self._promote({"url": PROVEN_URL})
+        self.assertTrue(promoted)
+
+    def test_an_explicitly_denied_route_is_not_promoted(self):
+        # publish_allowed is False is how every hide path in this project
+        # records "do not serve this". A stale proof must not override it.
+        _out, promoted = self._promote(
+            {"url": PROVEN_URL, "publish_allowed": False}
+        )
+        self.assertFalse(promoted)
+
+    def test_a_metadata_only_route_is_not_promoted(self):
+        _out, promoted = self._promote(
+            {"url": PROVEN_URL, "metadata_only": True}
+        )
+        self.assertFalse(promoted)
+
+    def test_a_route_with_no_url_is_not_promoted(self):
+        _out, promoted = self._promote({"url": "", "publish_allowed": True})
+        self.assertFalse(promoted)
+
+    def test_an_unremarked_route_is_still_promoted(self):
+        """The permissive half, and it matters as much as the strict half.
+
+        Most routes carry no explicit health verdict at the point ranking runs.
+        Reading a missing field as unhealthy would refuse promotion nearly
+        always and quietly restore the behaviour this registry exists to fix.
+        """
+        for extra_fields in (
+            {},
+            {"verification_status": "pending"},
+            {"verification_status": "geo_pending"},
+            {"verified": False},
+            {"publish_allowed": True},
+        ):
+            stream = dict({"url": PROVEN_URL}, **extra_fields)
+            _out, promoted = self._promote(stream)
+            self.assertTrue(promoted, f"refused promotion for {extra_fields}")
+
+    def test_a_denied_route_is_not_pulled_in_from_the_full_pool_either(self):
+        # The slot-truncation path must apply the same health rule.
+        all_candidates = [
+            {"url": f"https://rival{i}.example.net/live/x.m3u8"} for i in range(6)
+        ]
+        all_candidates.append({"url": PROVEN_URL, "publish_allowed": False})
+        truncated = all_candidates[:6]
+        _out, promoted = rp.promote_preferred(
+            truncated, "channel", "Test Ch", self.registry,
+            full_pool=all_candidates,
+        )
+        self.assertFalse(promoted)
+
+    def test_expiry_and_health_are_independent_guards(self):
+        # Either one alone must be able to refuse; neither depends on the other.
+        fresh_but_denied = self._promote(
+            {"url": PROVEN_URL, "publish_allowed": False}
+        )[1]
+        self.assertFalse(fresh_but_denied)
+
+        stale_but_healthy = rp.promote_preferred(
+            [{"url": "https://other.example.net/x.m3u8"}, {"url": PROVEN_URL}],
+            "channel", "Test Ch", self.registry,
+            now=dt.datetime.now(dt.timezone.utc).timestamp()
+            + rp.PREFERENCE_TTL_SECONDS + 3600,
+        )[1]
+        self.assertFalse(stale_but_healthy)
+
+
 if __name__ == "__main__":
     unittest.main()

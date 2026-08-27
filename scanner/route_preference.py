@@ -17,6 +17,10 @@ a rebuild reads it rather than erasing it.
 
 Deliberately narrow: it can only PROMOTE a route within a channel's existing
 candidates. It cannot introduce a route, remove one, or hide anything.
+
+Two guards keep a stale proof from outliving its usefulness: entries expire
+after PREFERENCE_TTL_SECONDS, and a route this scan found unusable is not
+promoted even while its proof is still inside that window.
 """
 from __future__ import annotations
 
@@ -169,6 +173,32 @@ def preferred_route_id(
     return route_id or None
 
 
+def _is_healthy_this_scan(stream: Dict[str, Any]) -> bool:
+    """Whether THIS scan found the route usable.
+
+    The expiry window alone was not enough. A preference could be well inside
+    its 14 days while the route it names had already stopped working, and this
+    function is what stops that being promoted over a route that answers today.
+
+    Deliberately permissive about what counts as healthy, and strict about only
+    one thing: an explicit denial. `publish_allowed is False` is how every hide
+    path in this project records "do not serve this", so a route carrying it is
+    the one case where a stale proof must not override a fresh negative.
+    Anything else - verified, pending, geo-protected, simply unremarked - is
+    left alone, because reading a missing field as unhealthy would refuse
+    promotion on most routes and quietly restore the exact behaviour this
+    registry exists to fix.
+    """
+    if not isinstance(stream, dict):
+        return False
+    if stream.get("publish_allowed") is False:
+        return False
+    if stream.get("metadata_only") is True:
+        # No playable URL to promote.
+        return False
+    return bool(str(stream.get("url") or "").strip())
+
+
 def promote_preferred(
     streams: List[Dict[str, Any]],
     kind: str,
@@ -198,7 +228,11 @@ def promote_preferred(
 
     def _matches(stream: Dict[str, Any]) -> bool:
         url = str((stream or {}).get("url") or "")
-        return bool(url) and rev.normalize_source_identity(url) == wanted
+        if not url or rev.normalize_source_identity(url) != wanted:
+            return False
+        # A proof from two weeks ago does not outrank this scan finding the
+        # route unusable today.
+        return _is_healthy_this_scan(stream)
 
     for index, stream in enumerate(streams or ()):
         if _matches(stream):

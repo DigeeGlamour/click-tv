@@ -146,34 +146,66 @@ class PromotionTests(unittest.TestCase):
         self.assertEqual(self._hosts(out)[0], "good.example.net")
 
     def test_it_can_only_promote_never_hide(self):
-        """No code path here touches visibility.
+        """No code path here WRITES visibility.
 
-        Checked against the executable lines rather than the whole file: the
-        module's own prose says "cannot introduce, remove or hide a route", and a
-        naive substring search flags that sentence as if it were an offence.
+        Checked as "never assigns", not "never mentions". The first version of
+        this test forbade the substring outright, and that was wrong twice: it
+        flagged the module's own prose saying it cannot hide, and then it
+        flagged the health check reading `publish_allowed` in order to DECLINE
+        promoting a route the scan had denied. Reading a hide flag to hold back
+        is the opposite of hiding, and a test that cannot tell those apart
+        blocks the correct fix.
         """
         import ast  # noqa: PLC0415
 
         path = ROOT / "scanner" / "route_preference.py"
         tree = ast.parse(path.read_text(encoding="utf-8"))
-        # Strip docstrings, then read back what is left as code.
+
+        forbidden = {
+            "publish_allowed", "player_visibility", "verification_status",
+        }
+        writes = []
+
         for node in ast.walk(tree):
-            if isinstance(
-                node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
-            ):
-                body = getattr(node, "body", [])
+            # item["publish_allowed"] = ...  /  obj.publish_allowed = ...
+            targets = []
+            if isinstance(node, ast.Assign):
+                targets = node.targets
+            elif isinstance(node, (ast.AugAssign, ast.AnnAssign)):
+                targets = [node.target]
+            for target in targets:
                 if (
-                    body
-                    and isinstance(body[0], ast.Expr)
-                    and isinstance(body[0].value, ast.Constant)
-                    and isinstance(body[0].value.value, str)
+                    isinstance(target, ast.Subscript)
+                    and isinstance(target.slice, ast.Constant)
+                    and target.slice.value in forbidden
                 ):
-                    node.body = body[1:] or [ast.Pass()]
-        code = ast.unparse(ast.fix_missing_locations(tree))
-        for forbidden in (
-            "publish_allowed", "may_hide", "mark_unproven", "mark_confirmed",
-        ):
-            self.assertNotIn(forbidden, code, f"code references {forbidden}")
+                    writes.append(f"line {node.lineno}: subscript store "
+                                  f"{target.slice.value}")
+                if isinstance(target, ast.Attribute) and target.attr in forbidden:
+                    writes.append(f"line {node.lineno}: attribute store "
+                                  f"{target.attr}")
+            # item.update(publish_allowed=...) / dict(publish_allowed=...)
+            if isinstance(node, ast.Call):
+                for keyword in node.keywords:
+                    if keyword.arg in forbidden:
+                        writes.append(f"line {node.lineno}: keyword "
+                                      f"{keyword.arg}")
+
+        self.assertEqual(writes, [], f"module writes visibility: {writes}")
+
+        # And it must not call anything that hides on its behalf.
+        code = ast.unparse(tree)
+        for call in ("may_hide", "mark_unproven", "mark_confirmed",
+                     "model_permits_hide"):
+            self.assertNotIn(call, code, f"code calls {call}")
+
+    def test_the_health_check_only_reads_visibility(self):
+        # The counterpart: reading is allowed and required. If this stops being
+        # true the stale-proof guard has been removed.
+        source = (ROOT / "scanner" / "route_preference.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('stream.get("publish_allowed") is False', source)
 
     def test_promotion_returns_the_same_streams(self):
         # The strongest form of "never removes": the output is a permutation.

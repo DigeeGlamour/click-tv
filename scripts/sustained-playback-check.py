@@ -57,6 +57,58 @@ CHROME_ARGS = [
     "--js-flags=--max-old-space-size=512",
 ]
 
+#: The declared target matrix, with the engine and identity each profile
+#: actually needs. Until now `--profile` was only a LABEL written into the
+#: report - the browser was desktop Chromium every time, so a run marked
+#: android_chrome measured nothing about Android and said it had. That is worse
+#: than not running it, so the label now selects a real environment.
+#:
+#: Chromium covers the Chrome profiles and Android TV; WebKit covers iPhone
+#: Safari, which is the engine family Safari ships. Matching the engine matters
+#: most for exactly the question at hand: codec and container support differ
+#: between them, and this project has already measured HEVC absent in Chromium
+#: and present in WebKit.
+DEVICE_PROFILES = {
+    "desktop_chrome": {
+        "engine": "chromium",
+        "viewport": {"width": 1366, "height": 768},
+        "user_agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"
+        ),
+        "is_touch": False,
+    },
+    "android_chrome": {
+        "engine": "chromium",
+        "viewport": {"width": 412, "height": 915},
+        "user_agent": (
+            "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36"
+        ),
+        "is_touch": True,
+    },
+    "iphone_safari": {
+        "engine": "webkit",
+        "viewport": {"width": 390, "height": 844},
+        "user_agent": (
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) "
+            "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 "
+            "Mobile/15E148 Safari/604.1"
+        ),
+        "is_touch": True,
+    },
+    "android_tv": {
+        "engine": "chromium",
+        "viewport": {"width": 1920, "height": 1080},
+        "user_agent": (
+            "Mozilla/5.0 (Linux; Android 14; BRAVIA 4K GB ) AppleWebKit/537.36 "
+            "(KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36 SmartTV"
+        ),
+        "is_touch": False,
+    },
+}
+
+
 #: In-page harness. Returns the sample series; the Python side does the
 #: classification so the browser cannot vote on its own verdict.
 PLAY_AND_MEASURE = r"""
@@ -302,7 +354,10 @@ def run(argv: List[str]) -> int:
                          f"{rev.REQUIRED_FRESH_SESSIONS} for a PASS to stand")
     ap.add_argument("--separation", type=float, default=rev.PERSISTENCE_MIN_WINDOW_SEPARATION_SECONDS)
     ap.add_argument("--attempts", type=int, default=1, help="attempt-plan entries per route")
-    ap.add_argument("--profile", default="desktop_chrome")
+    ap.add_argument("--profile", default="desktop_chrome",
+                    choices=sorted(DEVICE_PROFILES),
+                    help="selects a real engine, viewport and identity - not "
+                         "just a label in the report")
     ap.add_argument("--out", default="reports/sustained-playback.json")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--force-sessions", action="store_true",
@@ -362,6 +417,8 @@ def run(argv: List[str]) -> int:
             "sessions_per_route": args.sessions,
             "session_separation_seconds": args.separation,
             "browser_profile": args.profile,
+            "browser_engine": device["engine"],
+            "viewport": device["viewport"],
             "required_fresh_sessions_for_proof": rev.REQUIRED_FRESH_SESSIONS,
             "elapsed_seconds": round(time.time() - started, 1),
             "scope_note": (
@@ -378,8 +435,20 @@ def run(argv: List[str]) -> int:
             json.dump(payload, handle, indent=2, ensure_ascii=False)
             handle.write("\n")
 
+    device = DEVICE_PROFILES.get(args.profile)
+    if device is None:
+        print(f"unknown profile {args.profile!r}; known: "
+              f"{', '.join(sorted(DEVICE_PROFILES))}")
+        return 1
+    print(f"profile {args.profile}: {device['engine']}, "
+          f"{device['viewport']['width']}x{device['viewport']['height']}",
+          flush=True)
+
     with sync_playwright() as pw:
-        browser = pw.chromium.launch(args=CHROME_ARGS)
+        launcher = getattr(pw, device["engine"])
+        browser = launcher.launch(
+            args=CHROME_ARGS if device["engine"] == "chromium" else []
+        )
         try:
             results.extend(already.values())
             for index, target in enumerate(targets, start=1):
@@ -415,11 +484,13 @@ def run(argv: List[str]) -> int:
                         if per_route and args.separation > 0 and previous_passed:
                             time.sleep(args.separation)
                         context = browser.new_context(
-                            viewport={"width": 1366, "height": 768},
-                            user_agent=(
-                                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                                "AppleWebKit/537.36 (KHTML, like Gecko) "
-                                "Chrome/151.0.0.0 Safari/537.36"
+                            viewport=device["viewport"],
+                            user_agent=device["user_agent"],
+                            has_touch=device["is_touch"],
+                            is_mobile=(
+                                device["is_touch"]
+                                if device["engine"] == "chromium"
+                                else False
                             ),
                         )
                         page = context.new_page()
