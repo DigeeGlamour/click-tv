@@ -1,0 +1,16 @@
+{
+  "mode": "declared_resolution_verification",
+  "measured_at": "2026-08-27T12:27:59.020692+00:00",
+  "why": "manual/manual.m3u declares tvg-resolution=\"1080\" on the Zee Bangla fallback, and the verifier reads that declaration when a raw-TS route offers no manifest to measure. A declaration the project cannot check is a guess, so it was checked: the H.264 SPS was decoded straight from the transport stream.",
+  "route_id": "rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/98881.ts",
+  "url_public_template": "{id}.live/live/{seg}/{seg}/{file}",
+  "sps": {
+    "profile_idc": 100,
+    "level_idc": 40,
+    "width": 1920,
+    "height": 1080,
+    "frame_mbs_only_flag": 0,
+    "scan_type": "interlaced"
+  },
+  "conclusion": "The declared 1080 is correct, so reading it is reading a fact rather than trusting a playlist. The same SPS explains why this route decodes nowhere: frame_mbs_only_flag=0 means interlaced, and combined with zero IDR frames no browser decoder can start on it. It is kept as a backup, not as the primary."
+}

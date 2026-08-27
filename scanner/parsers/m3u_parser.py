@@ -310,6 +310,7 @@ def parse_m3u_content(
             "name": "",
             "logo": "",
             "group_title": "",
+            "resolution_hint": "",
             "tvg_id": "",
             "tvg_name": "",
 
@@ -363,6 +364,20 @@ def parse_m3u_content(
                 line,
                 "group-title",
             )
+
+            # A playlist may declare the resolution it is serving. Read because
+            # the TV floor rejects an unknown resolution outright
+            # (allow_unknown_tv_resolution is false), and a raw-TS route has no
+            # manifest for the scanner to read one from - so a perfectly good
+            # fallback was being dropped for having nothing to say about
+            # itself, not for being too small. Only read here; nothing is
+            # inferred or guessed.
+            resolution_hint = (
+                _extract_attribute(line, "tvg-resolution")
+                or _extract_attribute(line, "resolution")
+            )
+            if resolution_hint:
+                state["resolution_hint"] = resolution_hint
 
             display_name = _extract_display_name(line)
 
@@ -532,6 +547,9 @@ def parse_m3u_content(
             "group_title": str(
                 state["group_title"] or ""
             ).strip(),
+            # Only present when the playlist declared it. An empty string keeps
+            # downstream "unknown resolution" handling exactly as before.
+            "resolution_hint": str(state.get("resolution_hint") or ""),
 
             # Signed query parameters remain unchanged.
             "url": stream_url,

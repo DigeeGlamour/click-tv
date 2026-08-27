@@ -1,0 +1,98 @@
+{
+  "mode": "star_jalsha_root_cause",
+  "measured_at": "2026-08-27T12:20:15.027277+00:00",
+  "channel": "Star Jalsha",
+  "card": {
+    "url": null,
+    "playback_id": "ctv_dd796176ad31c523779637cd0a20582e",
+    "stream_type": "dash",
+    "drm": {
+      "type": "clearkey",
+      "protected": true
+    },
+    "note": "The card carries no URL by design: a protected source is played through the proxy's id-aware route, /hls?id=<playback_id>."
+  },
+  "chain": [
+    {
+      "step": "manifest via /hls?id=",
+      "status": 200,
+      "detail": "valid dynamic DASH MPD, 4 representations, timeShiftBufferDepth PT298S"
+    },
+    {
+      "step": "ClearKey via /drm?id=",
+      "status": 200,
+      "detail": "clear_keys present; the browser is given a real key, so DRM configuration is not the failure"
+    },
+    {
+      "step": "init segment via the MPD's rewritten media URL",
+      "status": 200,
+      "detail": "HTTP 200 but content-type text/html and a 66 KB HTML page titled 'Hotstar Live TV - M3U8 + MPD Player'. Shaka is handed a web page where an fMP4 init segment belongs, cannot append it to the SourceBuffer, and reports 'Progress stopped: DASH manifest loaded'."
+    },
+    {
+      "step": "same init segment with the channel's full upstream path",
+      "status": 403,
+      "detail": "{\"error\":\"unauthorized origin\"} from hotstarplugx.cstds.workers.dev, both directly and through the playback proxy (x-upstream-status: 403)."
+    }
+  ],
+  "root_cause": "The upstream worker authorises the manifest request the proxy makes through /hls?id= but not the media requests the rewritten MPD produces. Segment URLs that keep the channel's base path are refused with 'unauthorized origin'; segment URLs that lose it are answered with the worker's HTML landing page under a 200. Either way no media reaches the decoder.",
+  "where_the_defect_is": "In the external Cloudflare workers - the playback proxy's DASH URL rewriting and/or its upstream authorisation for media. Neither is in this repository, so nothing here can fix it.",
+  "blast_radius": {
+    "published_cards_on_this_upstream": 17,
+    "playback_store_entries_on_this_upstream": 59,
+    "examples": [
+      "Star Jalsha",
+      "Sony Aath",
+      "Sony MAX",
+      "Sony SAB",
+      "Sony PIX",
+      "Star Sports 1 Hindi",
+      "Sony BBC Earth"
+    ]
+  },
+  "fallback_measured": {
+    "route": "rgkkw.live/.../198.ts",
+    "sessions": 2,
+    "media_progress_seconds": [
+      22.56,
+      20.0
+    ],
+    "window_seconds": 120,
+    "verdict": "unknown - under the 115 s floor, so it cannot carry the card"
+  },
+  "alternatives_checked": [
+    {
+      "host": "edge2.roarzone.net",
+      "status": 403
+    },
+    {
+      "host": "s3.itcnbd.live",
+      "status": 502
+    },
+    {
+      "host": "103.151.61.12",
+      "status": 0,
+      "detail": "connection failed"
+    },
+    {
+      "host": "jio-tv...workers.dev id=317",
+      "status": 530,
+      "detail": "and 403 {\"code\":3012,\"message\":\"No eligible plans found\"} on the front that answers - no subscription for this channel"
+    },
+    {
+      "host": "premiumtvs.space",
+      "status": 200,
+      "detail": "raw TS, same structural family as the failing rgkkw route"
+    },
+    {
+      "host": "catchup.yuppcdn.net",
+      "status": 200,
+      "detail": "HLS but 960x540 and the path says 'preview' - not the full live feed"
+    },
+    {
+      "host": "live.shamim-iptv.workers.dev",
+      "status": 404
+    }
+  ],
+  "verdict": "UNSOLVED",
+  "why_unsolved_is_the_honest_answer": "Seven same-channel candidates were measured and none can carry a card. The card's own route fails in the external proxy chain, and no alternative front offers this channel at or above the resolution floor with a working media path. Claiming otherwise would require a proven route, which does not exist today."
+}

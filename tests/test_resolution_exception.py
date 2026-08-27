@@ -167,3 +167,68 @@ class StarJalshaIsNotClaimedFixedTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DeclaredResolutionTests(unittest.TestCase):
+    """A playlist's declared resolution is read, and the reading was checked.
+
+    A raw transport stream has no manifest, so the scanner has nothing to
+    measure a resolution from - and the TV floor rejects an unknown resolution
+    outright. The Zee Bangla fallback was therefore dropped for saying nothing
+    about itself rather than for being too small, which cost the card its
+    backup.
+
+    Reading `tvg-resolution` fixes that, but only if the declaration is true.
+    It was verified against the stream itself rather than trusted.
+    """
+
+    def test_the_declaration_is_read_only_as_a_last_resort(self):
+        source = (ROOT / "scanner" / "verifier.py").read_text(encoding="utf-8")
+        self.assertIn("resolution_hint", source)
+        # The declared hint must come after the measured fields, never before.
+        # Compared on the whole file rather than a slice: the first mention of
+        # the measured field has to precede the first mention of the hint.
+        height_at = source.index('item.get("resolution_height")')
+        hint_at = source.index('item.get("resolution_hint")')
+        self.assertLess(
+            height_at, hint_at,
+            "the declared hint is being read before the measured resolution",
+        )
+
+    def test_the_parser_only_reads_the_attribute_and_never_guesses(self):
+        source = (ROOT / "scanner" / "parsers" / "m3u_parser.py").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn('_extract_attribute(line, "tvg-resolution")', source)
+        self.assertIn('"resolution_hint"', source)
+        # Nothing may infer a resolution from the URL or the channel name.
+        self.assertNotIn("resolution_hint = _guess", source)
+
+    def test_the_declared_value_was_verified_against_the_stream(self):
+        probe = ROOT / "reports" / "declared-resolution-verification.json"
+        if not probe.exists():
+            self.skipTest("no declared-resolution verification recorded")
+        payload = json.loads(probe.read_text(encoding="utf-8"))
+        sps = payload["sps"]
+        self.assertEqual(sps["height"], 1080)
+        self.assertEqual(
+            sps["frame_mbs_only_flag"], 0,
+            "this route is interlaced; that is why it decodes nowhere",
+        )
+        self.assertEqual(sps["scan_type"], "interlaced")
+        self.assertNotIn("http://", json.dumps(payload))
+
+    def test_the_fallback_is_a_backup_and_not_the_primary(self):
+        payload = json.loads(
+            (ROOT / "data" / "channels" / "indian.json").read_text(encoding="utf-8")
+        )
+        rows = payload if isinstance(payload, list) else payload.get("channels") or []
+        card = next((c for c in rows if c.get("name") == "Zee Bangla"), None)
+        if card is None:
+            self.skipTest("Zee Bangla is not published in this snapshot")
+        self.assertNotIn("rgkkw", str(card.get("url") or ""))
+        backups = " ".join(str(b.get("url") or "") for b in (card.get("backups") or []))
+        self.assertIn(
+            "rgkkw", backups,
+            "the previous route must stay available as a backup",
+        )

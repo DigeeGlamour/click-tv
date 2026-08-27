@@ -2015,6 +2015,12 @@ def verify_single_stream(
             item.get("resolution_height")
             or item.get("height")
             or item.get("resolution")
+            # Last, and only when the playlist declared it. A raw-TS route has
+            # no manifest to read a resolution from, and the TV floor rejects
+            # an unknown resolution outright, so a working fallback was being
+            # dropped for saying nothing about itself rather than for being too
+            # small. Read only - never inferred from the URL or the name.
+            or item.get("resolution_hint")
         )
 
     if detected_height > 0:

@@ -156,6 +156,49 @@ class PublishedCatalogueTests(unittest.TestCase):
         )
 
 
+class WorkingScratchFilesTests(unittest.TestCase):
+    """The scan's scratch files must stay placeholders in the repository.
+
+    working/candidates.json, global-results.json and bd-results.json are listed
+    in .gitignore, but they are also tracked - committed once by mistake, and
+    gitignore does not apply to a tracked file. So every scan leaves them
+    rewritten in the working tree, and a `git add` that is not careful about
+    paths commits 78 MB of intermediate scan output. That nearly happened:
+    1,820,585 staged insertions, of which 1,820,361 were these three files.
+
+    Keeping them as the committed placeholders is what the .gitignore entries
+    were always asking for.
+    """
+
+    PLACEHOLDERS = (
+        "working/candidates.json",
+        "working/global-results.json",
+        "working/bd-results.json",
+    )
+
+    def test_the_scratch_files_are_committed_empty(self):
+        import subprocess
+
+        for name in self.PLACEHOLDERS:
+            result = subprocess.run(
+                ["git", "cat-file", "-s", f"HEAD:{name}"],
+                cwd=str(ROOT), capture_output=True, text=True,
+            )
+            if result.returncode != 0:
+                continue  # not tracked any more, which is also fine
+            size = int(result.stdout.strip() or 0)
+            self.assertLess(
+                size, 4096,
+                f"{name} is committed at {size} bytes - scan scratch output "
+                "has been committed instead of the placeholder",
+            )
+
+    def test_they_are_listed_in_gitignore(self):
+        text = (ROOT / ".gitignore").read_text(encoding="utf-8")
+        for name in self.PLACEHOLDERS:
+            self.assertIn(name, text, name)
+
+
 class CoverageAuditTests(unittest.TestCase):
     """The audit artifact has to exist and has to cover every source."""
 

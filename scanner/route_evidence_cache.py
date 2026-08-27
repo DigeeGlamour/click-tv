@@ -113,11 +113,24 @@ def append(
         bucket.append(record)
         cache["routes"][route_id] = bucket[-MAX_RECORDS_PER_ROUTE:]
         written += 1
+    # Written to a temporary file and renamed into place. A 13 MB cache takes
+    # long enough to serialise that a reader can catch it half-written: a test
+    # reading it while a movie scan was writing hit
+    # "JSONDecodeError: Expecting value: line 316268". The loader tolerates a
+    # broken file by returning empty, so the visible cost was a lost cache
+    # rather than a crash - but losing 22,000 records to a badly-timed read is
+    # not a cost worth keeping when a rename makes the swap atomic.
+    temporary = f"{target}.tmp"
     try:
         os.makedirs(os.path.dirname(target), exist_ok=True)
-        with open(target, "w", encoding="utf-8") as handle:
+        with open(temporary, "w", encoding="utf-8") as handle:
             json.dump(cache, handle, indent=2, ensure_ascii=False)
             handle.write("\n")
+        os.replace(temporary, target)
     except OSError:
+        try:
+            os.unlink(temporary)
+        except OSError:
+            pass
         return 0
     return written

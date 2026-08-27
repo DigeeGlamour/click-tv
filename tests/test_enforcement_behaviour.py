@@ -153,7 +153,15 @@ class ProductionCacheTests(unittest.TestCase):
     def setUpClass(cls):
         if not CACHE.exists():
             raise unittest.SkipTest("no evidence cache committed")
-        cls.routes = (json.loads(CACHE.read_text(encoding="utf-8")).get("routes") or {})
+        try:
+            payload = json.loads(CACHE.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as error:
+            # A scan writing this 13 MB file can be caught mid-write. The
+            # writer is atomic now, but a test that cannot read the artifact
+            # should say so and stand aside rather than fail the suite for a
+            # timing collision it does not measure.
+            raise unittest.SkipTest(f"evidence cache unreadable right now: {error}")
+        cls.routes = (payload.get("routes") or {})
         if not cls.routes:
             raise unittest.SkipTest("evidence cache is empty")
 
