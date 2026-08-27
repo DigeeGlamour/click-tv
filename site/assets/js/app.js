@@ -56,6 +56,14 @@ const CHANNEL_INITIAL_CHUNK = 30;
 const CHANNEL_NEXT_CHUNK = 20;
 const MOVIE_CHUNK_SIZE = 20;
 const CHANNEL_ATTEMPT_BUDGET_MS = 14000;
+// A protected channel spends part of its budget before any media moves: a
+// /drm?id= round-trip for the ClearKey keys, a /hls?id= proxy lookup, then CDM
+// configuration and an encrypted init segment. Measured on the deployed site,
+// 14 s was not enough for one attempt of that chain, let alone the two the
+// plan holds - Star Jalsha exhausted its plan with readyState 0, no error and
+// no segment ever requested. This is the session-wide cap; markAttemptProgress
+// holds the per-attempt one.
+const PROTECTED_CHANNEL_ATTEMPT_BUDGET_MS = 40000;
 const MOVIE_ATTEMPT_BUDGET_MS = 110000;
 const EVENT_ATTEMPT_BUDGET_MS = 26000;
 const MIDPLAY_RECOVERY_BUDGET_MS = 16000;
@@ -4855,11 +4863,43 @@ function resetManualRetryState(item) {
   persistProxyHealth();
 }
 
+// A source whose first frame costs an extra round-trip before any media is
+// fetched: the browser must ask the proxy for the ClearKey keys (/drm?id=),
+// configure the CDM, then fetch and decrypt an init segment.
+//
+// Measured on the deployed site with Star Jalsha, which is one of sixty cards
+// carrying clearkey DRM and no URL of its own. Every part of the chain was
+// healthy - /drm?id= returned 200 with keys, /hls?id= returned a live MPD -
+// and playback still never started. The console said why:
+//
+//     Trying next playback attempt: Progress stopped: DASH manifest loaded
+//     Playback plan exhausted {reason: attempts_exhausted, attempts: 2}
+//
+// The attempt budget for a DASH channel is 11.5 s measured from the START of
+// the attempt. The DRM fetch and the manifest load through the proxy had
+// already spent most of it, so when "manifest loaded" extended the deadline
+// there were about 1.5 s left - less than the time to request an init segment,
+// decrypt it and paint. The video element ended on readyState 0 with no error
+// and not one segment requested.
+function isProtectedPlaybackSource(source, item) {
+  const drm = source?.drm || item?.drm;
+  if (drm && typeof drm === 'object' && Object.keys(drm).length) return true;
+  if (source?.protected_source || item?.protected_source) return true;
+  if (source?.requires_credentials || item?.requires_credentials) return true;
+  // URL-hidden sources resolve through /hls?id=, which is a proxy lookup
+  // before the upstream fetch even begins.
+  const hasUrl = Boolean(source?.url || item?.url);
+  const hasId = Boolean(source?.playback_id || item?.playback_id);
+  return hasId && !hasUrl;
+}
+
 function playbackAttemptBudgetMs(item) {
   const kind = item?._sourceKind || state.view;
   if (kind === VIEW.EVENT || kind === VIEW.UPCOMING) return EVENT_ATTEMPT_BUDGET_MS;
   if (kind === VIEW.MOVIE) return MOVIE_ATTEMPT_BUDGET_MS;
-  return CHANNEL_ATTEMPT_BUDGET_MS;
+  return isProtectedPlaybackSource(null, item)
+    ? PROTECTED_CHANNEL_ATTEMPT_BUDGET_MS
+    : CHANNEL_ATTEMPT_BUDGET_MS;
 }
 
 async function startPlayback(item, userInitiated = true) {
@@ -5058,6 +5098,10 @@ function markAttemptProgress(reason = '', attemptToken = state.playbackSession?.
   const format = detectFormat(session.currentAttempt?.source?.url || '', { ...session.item, ...session.currentAttempt?.source });
   const isEvent = isLiveEventContext(session.item);
   const isMovie = isMoviePlaybackContext(session.item);
+  const protectedSource = isProtectedPlaybackSource(
+    session.currentAttempt?.source,
+    session.item,
+  );
   const maxTotal = isMovie
     ? (format === 'direct'
       ? (session.currentAttempt?.route === 'direct' ? 42000 : 30000)
@@ -5065,7 +5109,7 @@ function markAttemptProgress(reason = '', attemptToken = state.playbackSession?.
     : isEvent && format === 'dash'
       ? 15000
       : format === 'dash'
-        ? 11500
+        ? (protectedSource ? 24000 : 11500)
         : session.currentAttempt?.route === 'direct' ? 8500 : 7500;
   const extension = Math.max(900, maxTotal - elapsed);
   const remaining = Math.max(250, session.budgetDeadline - Date.now());

@@ -331,6 +331,9 @@ async ([item, seconds, attemptIndex]) => {
 
   let firstFrameAt = null, startupAt = null;
   let lastTime = 0, stall = 0, prevFrames = 0, prevAudioBytes = 0;
+  // The loop below sleeps one second between samples.
+  const SAMPLE_SECONDS = 1;
+  let progressed_seconds = 0;
   let videoProgressed = false, audioProgressed = false;
   const total = Math.ceil(seconds);
 
@@ -360,6 +363,23 @@ async ([item, seconds, attemptIndex]) => {
     if (startupAt === null && t > 0.05) startupAt = elapsed();
     const advanced = t - lastTime;
     if (startupAt !== null && advanced < 0.10) stall += 1;
+    // Genuine progress, accumulated and capped at the sampling interval.
+    //
+    // This used to be reported as video.currentTime at the end of the window,
+    // which is not progress at all for a live stream: currentTime starts at
+    // the live-edge offset into the DVR buffer, and this project's own Star
+    // Jalsha manifest declares timeShiftBufferDepth PT298S. A route that
+    // played for two seconds could therefore report 172 s of "media progress"
+    // and clear a 115 s floor, which is exactly what happened - the owner
+    // watched Zee Bangla stop after sixteen seconds on a route this harness
+    // had called proven twice.
+    //
+    // Capping each step at the interval means a seek or a timeline jump can
+    // contribute at most one second, so the total can only be earned by
+    // actually playing.
+    if (startupAt !== null && advanced > 0.10) {
+      progressed_seconds += Math.min(advanced, SAMPLE_SECONDS);
+    }
     out.samples.push({ s: Math.round(elapsed()), t: Number(t.toFixed(2)),
                        rs: video.readyState, f: frames, ab: abytes,
                        stall: Number(stall.toFixed(0)) });
@@ -368,7 +388,13 @@ async ([item, seconds, attemptIndex]) => {
 
   out.first_frame_seconds = firstFrameAt;
   out.startup_seconds = startupAt;
-  out.media_progress_seconds = Number((video.currentTime || 0).toFixed(2));
+  out.media_progress_seconds = Number(progressed_seconds.toFixed(2));
+  // Kept for diagnosis, and named for what it is. A large value here with a
+  // small media_progress_seconds is the live-edge offset, not playback.
+  out.final_current_time = Number((video.currentTime || 0).toFixed(2));
+  out.media_progress_definition =
+    'sum of per-sample currentTime advance, each step capped at the sampling ' +
+    'interval, so a timeline jump cannot be counted as playback';
   out.cumulative_stall_seconds = stall;
   if (videoProgressed) out.progressed.push('video');
   if (audioProgressed) out.progressed.push('audio');
@@ -607,7 +633,28 @@ def run(argv: List[str]) -> int:
                             ),
                         )
                         page = context.new_page()
-                        page.on("pageerror", lambda e: None)
+                        # Console and page errors are collected, not discarded.
+                        #
+                        # They used to be dropped, and it cost real time: Star
+                        # Jalsha reported "playback never started" with an
+                        # empty fatal_errors list and nothing else to go on,
+                        # while the browser console was saying exactly what
+                        # happened ("Progress stopped: DASH manifest loaded",
+                        # then "Playback plan exhausted"). A harness that
+                        # measures a failure without recording the reason makes
+                        # every failure look the same.
+                        console_log: List[str] = []
+                        page_errors: List[str] = []
+                        page.on(
+                            "console",
+                            lambda message: console_log.append(
+                                f"{message.type}: {message.text[:220]}"
+                            ),
+                        )
+                        page.on(
+                            "pageerror",
+                            lambda error: page_errors.append(str(error)[:220]),
+                        )
                         record: Dict[str, Any]
                         try:
                             page.goto(args.base, wait_until="commit", timeout=60000)
@@ -685,6 +732,15 @@ def run(argv: List[str]) -> int:
                                 "notes": raw.get("notes") or [],
                                 "sample_count": len(raw.get("samples") or []),
                                 "last_samples": (raw.get("samples") or [])[-3:],
+                                # Trimmed to the tail and to warnings/errors:
+                                # a full console log of a 120 s session is
+                                # mostly shaka debug chatter, and the lines
+                                # that explain a failure are the last few.
+                                "console_tail": [
+                                    line for line in console_log
+                                    if line.startswith(("error", "warning"))
+                                ][-12:] or console_log[-6:],
+                                "page_errors": page_errors[:6],
                             }
                         except Exception as exc:  # a crash is a reported outcome
                             record = {
@@ -695,6 +751,8 @@ def run(argv: List[str]) -> int:
                                 "verdict": rev.UNKNOWN,
                                 "reasons": [f"harness error: {str(exc)[:180]}"],
                                 "playback_metrics": {},
+                                "console_tail": console_log[-12:],
+                                "page_errors": page_errors[:6],
                             }
                         finally:
                             try:
