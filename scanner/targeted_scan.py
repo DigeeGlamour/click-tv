@@ -27,6 +27,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Set
+from scanner import route_evidence as rev
 
 STATE_FILE = Path("state/upcoming-targeting.json")
 DEFAULT_WINDOW_MINUTES = 15
@@ -347,7 +348,19 @@ def record_outcome(
         if item is not None and has_valid_link(item):
             entry["resolved"] = True
             entry["resolved_at"] = reference.isoformat()
-            entry["url"] = str(item.get("url") or "")
+            # Redacted, and the value is informational only - nothing reads
+            # it back. It was storing the resolved stream URL verbatim, and
+            # this file is committed to a public repository: eight of the
+            # thirty-three URLs in the committed ledger carried live `token=`
+            # query values. The rest of this project stores route identities
+            # through route_evidence for exactly this reason; this one writer
+            # was missed.
+            entry["route_id"] = rev.normalize_source_identity(
+                str(item.get("url") or "")
+            )
+            entry["url_public_template"] = rev.redact_public_template(
+                str(item.get("url") or "")
+            )
         else:
             entry["resolved"] = False
         fixtures[key] = entry

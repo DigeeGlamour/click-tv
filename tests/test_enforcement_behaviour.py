@@ -228,9 +228,23 @@ class ProductionCacheTests(unittest.TestCase):
         import re
 
         blob = CACHE.read_text(encoding="utf-8")
-        # No scheme-ful URL: identities are stored host-and-path only.
-        self.assertNotIn("http://", blob)
-        self.assertNotIn("https://", blob)
+        # An identity must not BE a URL - it is host-and-path. It may CONTAIN a
+        # scheme, and legitimately does: some proxies carry the target URL
+        # inside their own path, so a real route_id reads
+        # "…herokuapp.com/https://…cloudfront.net/x.m3u8". A blanket search for
+        # "https://" flagged that as a credential leak, which it is not.
+        #
+        # Assertion messages here are kept to a count. unittest prints the
+        # values it compared, and comparing against this 33 MB file produced a
+        # 33 MB failure message.
+        schemed = [
+            route_id for route_id in self.routes
+            if str(route_id).startswith(("http://", "https://"))
+        ]
+        self.assertEqual(
+            len(schemed), 0,
+            f"{len(schemed)} route ids are full URLs rather than identities",
+        )
         # Every query value that could carry a secret must be a placeholder.
         leaked = [
             m.group(0)[:60]
@@ -242,7 +256,9 @@ class ProductionCacheTests(unittest.TestCase):
             if not m.group(1).startswith("{")
         ]
         self.assertEqual(
-            leaked[:5], [], f"{len(leaked)} query values are not redacted"
+            len(leaked), 0,
+            f"{len(leaked)} query values are not redacted; first: "
+            f"{leaked[0][:40] if leaked else ''}",
         )
 
 

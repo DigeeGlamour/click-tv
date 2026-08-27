@@ -298,6 +298,20 @@ def _is_publishable_stream(stream: Dict[str, Any]) -> bool:
     )
 
 
+def _is_verified_status(stream: Dict[str, Any]) -> bool:
+    """Whether the pipeline actually verified this route in this run."""
+    if stream.get("verified") is True or stream.get("is_valid") is True:
+        return True
+    status = str(stream.get("verification_status") or "").strip().casefold()
+    return status in {
+        "verified",
+        "verified_global",
+        "verified_bd",
+        "verified_proxy",
+        "verified_sustained_playback",
+    }
+
+
 def _is_listed_exception(
     stream: Dict[str, Any],
     resolution: Dict[str, Any],
@@ -334,6 +348,68 @@ def _is_listed_exception(
     return False
 
 
+def _card_id_slug(value: Any) -> str:
+    """Slug for a card id. Local rather than imported from scanner.output,
+    which imports the merger's results and would make the dependency circular.
+    """
+    text = re.sub(r"[^\w]+", "-", str(value or "").casefold())
+    return text.strip("-")
+
+
+def _make_card_ids_unique(cards: List[Dict[str, Any]]) -> int:
+    """Give a colliding card an id derived from its own name. Returns fixes.
+
+    Measured in the published catalogue: three ids were carried by two cards
+    each - `green-tv` by "Green TV" and "TEN IP TV", `aaj-tak` by "Aaj Tak" and
+    "Aaj Tak Bangla", `deepto-tv` by "DEEPTO TV" and "Deepto". Two of those
+    pairs are genuinely different channels that happened to share a tvg-id in
+    their source, which is where card ids come from.
+
+    The public dedupe requires id AND name together, so both cards still ship -
+    the site does not lose a channel to this. What it does lose is anything
+    keyed on the id alone: a deep link, a favourite, a DOM key.
+
+    The first card keeps the id, so the better-known channel's existing links
+    keep working, and the collider takes a slug of its own name, which is
+    naturally distinct ("aaj-tak-bangla", "ten-ip-tv"). Renaming the second is
+    the smaller change; renaming both would break two sets of links to fix one
+    collision.
+    """
+    seen: Dict[str, Dict[str, Any]] = {}
+    fixed = 0
+    for card in cards:
+        if not isinstance(card, dict):
+            continue
+        card_id = str(card.get("id") or "").strip()
+        if not card_id:
+            continue
+        holder = seen.get(card_id)
+        if holder is None:
+            seen[card_id] = card
+            continue
+        if str(holder.get("name") or "") == str(card.get("name") or ""):
+            # Same channel twice: the public dedupe owns that case.
+            continue
+        replacement = _card_id_slug(card.get("name"))
+        if not replacement or replacement == card_id:
+            replacement = f"{card_id}-2"
+        suffix = 2
+        while replacement in seen:
+            replacement = f"{_card_id_slug(card.get('name')) or card_id}-{suffix}"
+            suffix += 1
+        card["id"] = replacement
+        card["previous_id"] = card_id
+        card["id_collision_note"] = (
+            f"Shared id {card_id!r} with {holder.get('name')!r}; renamed from "
+            "this card's own name so anything keyed on the id is unambiguous."
+        )
+        seen[replacement] = card
+        fixed += 1
+    if fixed:
+        print(f"   card id collisions resolved: {fixed}")
+    return fixed
+
+
 def _meets_resolution_contract(
     stream: Dict[str, Any],
     settings: Dict[str, Any],
@@ -367,6 +443,24 @@ def _meets_resolution_contract(
     if stream.get("resolution_exception") is True and _is_listed_exception(
         stream, resolution
     ):
+        return True
+
+    # The verifier decides what to do about a resolution it could not read, and
+    # it has the policy to do it with: allow_unknown_tv_resolution,
+    # preserve_unknown_working_tv and the protected-BD rule. When it keeps such
+    # a route it records quality_unknown on the item. This function then
+    # re-judged the same question with none of that context and always said no,
+    # because an undetected height is 0 and 0 is below every floor.
+    #
+    # Measured on one channels scan: 208 of the 840 routes the verifier had
+    # approved were dropped here, every one of them carrying quality_unknown -
+    # a quarter of the verified pool, including the working Zee Bangla fallback.
+    # Trusting the flag is not a loosening of the floor; it stops one stage
+    # overruling a decision the other already made under policy.
+    #
+    # Paired with a verified status so a hand-written manual entry cannot
+    # publish an unverified route by asserting the flag on its own.
+    if stream.get("quality_unknown") is True and _is_verified_status(stream):
         return True
     detected = _parse_resolution_height(
         stream.get("resolution_height")
@@ -2173,6 +2267,8 @@ def merge_candidates(
                 merged_card[field_name] = base_item[field_name]
 
         merged_results.append(merged_card)
+
+    _make_card_ids_unique(merged_results)
 
     pinned_config = settings.get("pinned_channels")
     if not isinstance(pinned_config, dict):

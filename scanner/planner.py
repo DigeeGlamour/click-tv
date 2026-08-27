@@ -21,6 +21,7 @@ Signed URL query strings are never stripped for identity or playback.
 from __future__ import annotations
 
 import hashlib
+from scanner import channel_alias
 import json
 import os
 import re
@@ -252,8 +253,22 @@ def _group_key(item: Dict[str, Any]) -> str:
             or _slug(item.get("tvg_id"))
         )
     else:
+        # Channel identity comes from the NAME first for live TV, not from the
+        # id. Ids are per-playlist slugs, so "Zee Bangla" and "Zee Bangla HD"
+        # arrived as zee-bangla and zee-bangla-hd and became two channels -
+        # and groups are what compete for a card's primary and backup slots.
+        # Measured across the live sources: 324 groups were one channel split
+        # by spelling, and Zee Bangla's own group could see three of its ten
+        # available routes.
+        #
+        # channel_alias only folds markers that describe the FEED - resolution,
+        # region tag, playlist tier. A name carrying a word that names a
+        # different service keeps it, so Zee Bangla Cinema and Zee Bangla Sonar
+        # stay separate channels, which is the owner's rule and the one that
+        # matters: a wrong merge puts the wrong programme on a card.
         identity = (
-            _slug(item.get("id"))
+            _slug(channel_alias.canonical_channel_name(item.get("name")))
+            or _slug(item.get("id"))
             or _slug(item.get("tvg_id"))
             or _slug(item.get("name"))
         )
