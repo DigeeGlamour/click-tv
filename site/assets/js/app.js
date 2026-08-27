@@ -1740,6 +1740,29 @@ function movieYearValue(item) {
   return Number.isFinite(fromName) ? fromName : 0;
 }
 
+// Requirement: "Recently Added" is the movie default, so the ordering needs a
+// value for when a film arrived. The scanner writes first_seen_at from a store
+// kept outside the cards; a card rebuilt by a scan cannot know its own age.
+//
+// Bucketed to whole days on purpose, matching the server-side sort key. Exact
+// timestamps would scatter one scan's intake by milliseconds and bury the
+// manual pinning that decides order within it.
+function movieAddedDay(item) {
+  const stamp = String(item?.first_seen_at || '').trim();
+  if (!stamp) return 0;
+  const parsed = Date.parse(stamp);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.floor(parsed / 86400000);
+}
+
+function movieIsNew(item) {
+  if (item?.is_new === true) return true;
+  if (item?.is_new === false) return false;
+  const day = movieAddedDay(item);
+  if (!day) return false;
+  return (Math.floor(Date.now() / 86400000) - day) <= 7;
+}
+
 function applyFilterAndSort() {
   const query = currentSearchValue();
   state.currentQuery = query;
@@ -1785,6 +1808,12 @@ function applyFilterAndSort() {
     });
   } else if (state.view === VIEW.MOVIE) {
     items.sort((a, b) => {
+      // Recently Added first. Year alone left the catalogue looking frozen:
+      // discovered movies carried no year at all, so every one of them tied at
+      // 0 and fell through to server order, which was alphabetical - a 2026
+      // release sat on page 5 behind "100 percent Love (2012)".
+      const addedDifference = movieAddedDay(b) - movieAddedDay(a);
+      if (addedDifference) return addedDifference;
       const yearDifference = movieYearValue(b) - movieYearValue(a);
       if (yearDifference) return yearDifference;
       return (a.seqNumber || 0) - (b.seqNumber || 0);
@@ -3465,8 +3494,12 @@ function createMovieCard(item, visualIndex) {
 
   const year = item.year || item.name.match(/\((\d{4})\)/)?.[1] || 'Movie';
   const rating = item.rating ? `<span class="movie-rating-badge"><i class="fas fa-star"></i> ${escapeHtml(item.rating)}</span>` : '';
+  const newBadge = movieIsNew(item)
+    ? '<span class="movie-new-badge">NEW</span>'
+    : '';
   card.innerHTML = `
     <span class="movie-rank-badge">#${visualIndex + 1}</span>
+    ${newBadge}
     ${rating}
     ${createImageHtml(item, 'movie-poster')}
     <div class="movie-hover-play"><i class="fas fa-play"></i></div>

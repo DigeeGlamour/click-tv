@@ -532,7 +532,16 @@
     "manual_can_override_resolution": false,
     "preserve_working_bd_below_minimum": false,
     "preserve_unknown_working_tv": false,
-    "preserve_unknown_working_event": true
+    "preserve_unknown_working_event": true,
+    "below_floor_exceptions": [
+      {
+        "channel": "Zee Bangla",
+        "minimum_height": 576,
+        "reason": "The published 720p route decodes nowhere: interlaced H.264 with zero IDR frames, MEDIA_ERR_DECODE in six 120 s sessions across desktop Chromium, mobile Chromium and Android TV Chromium. The only route that plays is the 1024x576 mobile profile of the same JioTV Go upstream, proven by two independent 120 s sessions with zero stall on each of those three profiles. Recorded in reports/zee-balaji-candidate.json and state/route-preference.json.",
+        "requires_sustained_proof": true,
+        "note": "This does not change tv_minimum_height, which stays 720 for every other channel. A listed channel still needs a sustained-playback proof for the exact route before anything below the floor is published, so this list cannot publish an unproven low-resolution stream."
+      }
+    ]
   },
   "channel_protection": {
     "preserve_working_bd_channels": true,

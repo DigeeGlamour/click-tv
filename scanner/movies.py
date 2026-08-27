@@ -27,6 +27,7 @@ Manual movie rules:
 
 from __future__ import annotations
 
+import datetime as _dt
 import difflib
 import concurrent.futures
 import hashlib
@@ -545,9 +546,73 @@ def _resolve_category_precedence(
     return resolved
 
 
-def _movie_sort_key(movie: Dict[str, Any]) -> Tuple[int, int, int, int, int, str, str]:
+def _retain_recent_dropouts(
+    movies: List[Dict[str, Any]],
+    category_slug: str,
+) -> List[Dict[str, Any]]:
+    """One scan of grace for a movie that was published and is now missing.
+
+    Wrapped so a failure here cannot take a scan down: publishing the incoming
+    list unchanged is the old behaviour, which is worse but not broken.
+    """
+    try:
+        from scanner import movie_retention
+
+        kept, summary = movie_retention.retain(movies, category_slug)
+        if summary.get("retained") or summary.get("dropped_after_grace"):
+            print(
+                f"   {category_slug}: carried {summary['retained']} movie(s) "
+                f"through a failed check, dropped "
+                f"{summary['dropped_after_grace']} past the grace scan"
+            )
+        return kept
+    except Exception as error:  # noqa: BLE001 - retention must not fail a scan
+        print(f"   movie retention skipped for {category_slug}: {error}")
+        return movies
+
+
+def _annotate_recency(movies: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Add the fields the ordering needs. Adds only - never hides or removes.
+
+    Kept in a wrapper so a failure here cannot take a scan down with it: the
+    catalogue ordered the old way is far better than no catalogue, and this
+    runs on every category.
+    """
+    try:
+        from scanner import movie_recency
+
+        return movie_recency.enrich(movies)
+    except Exception as error:  # noqa: BLE001 - ordering must not fail a scan
+        print(f"   movie recency annotation skipped: {error}")
+        return {}
+
+
+def _first_seen_day(movie: Dict[str, Any]) -> int:
+    """first_seen_at as a day ordinal, 0 when unknown.
+
+    Bucketed by day rather than compared exactly, so a scan's whole intake
+    stays one group and the manual pinning below still decides order inside
+    it. Comparing timestamps directly would scatter manual and discovered
+    movies by milliseconds.
+    """
+    stamp = str((movie or {}).get("first_seen_at") or "").strip()
+    if not stamp:
+        return 0
+    try:
+        parsed = _dt.datetime.fromisoformat(
+            stamp[:-1] + "+00:00" if stamp.endswith("Z") else stamp
+        )
+    except (ValueError, AttributeError, TypeError):
+        return 0
+    return parsed.date().toordinal()
+
+
+def _movie_sort_key(
+    movie: Dict[str, Any],
+) -> Tuple[int, int, int, int, int, int, str, str]:
     """
     Ordering inside every movie category:
+    0. most recently added first;
     1. newest valid year first;
     2. trusted manual movies before discovered movies inside the same year;
     3. local manual before remote manual only when year/order ties;
@@ -555,6 +620,16 @@ def _movie_sort_key(movie: Dict[str, Any]) -> Tuple[int, int, int, int, int, str
     5. verification confidence, title and ID for deterministic output.
 
     Example: 2026 manual, 2026 discovered, 2025 manual, 2025 discovered.
+
+    Recency leads because the catalogue looked frozen without it, and it was
+    not: 510 ids appeared between the 2026-08-22 and 2026-08-27 scans. Nothing
+    ordered by arrival, and discovered movies carried no year either, so all
+    731 of them fell into one bucket ordered by title - a 2026 release landed
+    on page 5 behind "100 percent Love (2012)". Year alone would not have
+    fixed it: a third of those titles are series with no year to read.
+
+    Recency is bucketed by day so manual pinning still decides order within a
+    scan's intake.
     """
     is_manual = bool(
         movie.get("manual_source") is True
@@ -576,6 +651,7 @@ def _movie_sort_key(movie: Dict[str, Any]) -> Tuple[int, int, int, int, int, str
     movie_id = str(movie.get("id") or movie.get("tvg_id") or "")
 
     return (
+        -_first_seen_day(movie),
         unknown_year,
         -year,
         manual_rank,
@@ -3110,18 +3186,30 @@ def paginate_movie_list(
     movies: List[Dict[str, Any]],
     category_name: str,
     page_size: int = DEFAULT_PAGE_SIZE,
+    *,
+    retain_recent_dropouts: bool = False,
 ) -> Dict[str, Any]:
     canonical_category = _canonical_movie_category(category_name)
     category_slug = CATEGORY_SLUGS[canonical_category]
     safe_page_size = _safe_page_size(page_size)
-    ordered_movies = sorted(
-        [
-            _enforce_movie_runtime_direct_first(movie)
-            for movie in movies
-            if isinstance(movie, dict)
-        ],
-        key=_movie_sort_key,
-    )
+    prepared = [
+        _enforce_movie_runtime_direct_first(movie)
+        for movie in movies
+        if isinstance(movie, dict)
+    ]
+    # Off by default, and that is not caution for its own sake. Retention reads
+    # the previous pages off disk and adds to the list, so switching it on
+    # inside this function made it impossible to paginate a subset: a caller
+    # passing four films got the seven already published in that category back
+    # as well. Only the real publish path asks for it.
+    if retain_recent_dropouts:
+        prepared = _retain_recent_dropouts(prepared, category_slug)
+    # Year, first_seen_at and is_new are filled in HERE, before the sort and
+    # therefore before pagination. Doing it after would order the catalogue on
+    # fields that are not there yet, which is the bug this fixes rather than a
+    # detail of it.
+    _annotate_recency(prepared)
+    ordered_movies = sorted(prepared, key=_movie_sort_key)
 
     total_count = len(ordered_movies)
     status_counts: Dict[str, int] = {}
@@ -3402,6 +3490,11 @@ def process_movies(
             movies=grouped_movies[category],
             category_name=category,
             page_size=page_size,
+            # The real publish path, and the only caller that asks for
+            # retention: 383 of 817 films disappeared between two scans while
+            # the category-total guard stayed silent, because the total had
+            # gone up.
+            retain_recent_dropouts=True,
         )
         for category in VALID_MOVIE_CATEGORIES
     }

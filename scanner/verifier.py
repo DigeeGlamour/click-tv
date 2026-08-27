@@ -1548,6 +1548,90 @@ def _resolution_policy(settings: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _below_floor_exception(
+    item: Dict[str, Any],
+    settings: Dict[str, Any],
+) -> Tuple[bool, str]:
+    """(allowed, reason) for publishing one channel below the resolution floor.
+
+    Deliberately not a loosening of the floor. The floor stays 720p for every
+    channel on the site - all 530 published cards are at or above it - and this
+    opens a named, evidence-bound hole for a single case where holding the line
+    costs the viewer the channel entirely.
+
+    The case that forced it: Zee Bangla's published 720p route decodes nowhere.
+    Six 120 s browser sessions across three profiles produced MEDIA_ERR_DECODE
+    every time, because the stream is interlaced H.264 with zero IDR frames.
+    The one route that does play is the mobile profile of the same upstream at
+    1024x576. A floor that prefers a nominally-HD stream nobody can watch over
+    an SD stream that plays is not protecting quality.
+
+    Two conditions, both required, so neither config nor proof alone is enough:
+
+      1. the channel is listed in resolution.below_floor_exceptions, and the
+         measured height is at or above the height that entry allows;
+      2. route_preference holds a sustained-playback proof for THIS route -
+         two independent 120 s browser sessions. Config alone cannot publish an
+         unproven low-resolution route, which is what stops this becoming a
+         general escape hatch.
+
+    The item keeps its detected SD resolution and badge. Nothing here dresses
+    576p up as HD.
+    """
+    resolution = settings.get("resolution")
+    if not isinstance(resolution, dict):
+        resolution = {}
+    exceptions = resolution.get("below_floor_exceptions")
+    if not isinstance(exceptions, list) or not exceptions:
+        return False, ""
+
+    name = str(item.get("name") or item.get("title") or "").strip().casefold()
+    if not name:
+        return False, ""
+
+    detected = _safe_int(
+        item.get("resolution_height") or item.get("height") or 0, 0
+    )
+
+    for entry in exceptions:
+        if not isinstance(entry, dict):
+            continue
+        if str(entry.get("channel") or "").strip().casefold() != name:
+            continue
+        floor = _safe_int(entry.get("minimum_height"), 0)
+        if floor <= 0 or detected < floor:
+            return False, (
+                f"{name}: exception allows {floor}p and this route measured "
+                f"{detected}p"
+            )
+        if not _has_sustained_proof(item):
+            return False, (
+                f"{name}: listed as an exception but this route carries no "
+                "sustained-playback proof"
+            )
+        return True, str(entry.get("reason") or "listed exception with proof")
+    return False, ""
+
+
+def _has_sustained_proof(item: Dict[str, Any]) -> bool:
+    """Whether route_preference records a browser proof for this exact route."""
+    url = str(item.get("url") or "").strip()
+    if not url:
+        return False
+    try:
+        from scanner import route_evidence as _rev
+        from scanner import route_preference as _rp
+
+        kind = "channel"
+        name = str(item.get("name") or item.get("title") or "")
+        wanted = _rp.preferred_route_id(kind, name)
+        if not wanted:
+            return False
+        return _rev.normalize_source_identity(url) == wanted
+    except Exception:  # noqa: BLE001 - a lookup failure must not publish
+        return False
+
+
 def _apply_resolution_policy(
     item: Dict[str, Any],
     settings: Dict[str, Any],
@@ -1570,6 +1654,18 @@ def _apply_resolution_policy(
         protected_bd_tv = _protected_bd_tv_candidate(item, settings)
 
         if detected_height > 0 and detected_height < minimum:
+            exception_allowed, exception_reason = _below_floor_exception(
+                item, settings
+            )
+            if exception_allowed:
+                item["quality_below_preferred"] = True
+                item["quality_policy_note"] = (
+                    f"Below the {minimum}p floor at {detected_height}p by a "
+                    f"named per-channel exception with browser proof: "
+                    f"{exception_reason}"
+                )
+                item["resolution_exception"] = True
+                return True, "verified_global", ""
             if manual_override_active or (
                 protected_bd_tv
                 and policy["preserve_working_bd_below_minimum"]

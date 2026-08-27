@@ -21,7 +21,12 @@ on:
       timezone: "Asia/Dhaka"
 
     # Movies: প্রতি দ্বিতীয় calendar date ভোর ৪:৩৭
-    - cron: "37 4 */2 * *"
+    #
+    # Was "*/2" - every second calendar DATE, not every second day. A new
+    # film waited up to two days to appear, and the gap stretched to three
+    # across a month boundary because */2 counts days of the month. The
+    # upstream playlist changes daily, so the scan does too.
+    - cron: "37 4 * * *"
       timezone: "Asia/Dhaka"
 
   workflow_dispatch:
@@ -247,7 +252,7 @@ jobs:
             MODE="upcoming"
           elif [[ "${{ github.event.schedule }}" == "17 0,6,12,18 * * *" ]]; then
             MODE="channels"
-          elif [[ "${{ github.event.schedule }}" == "37 4 */2 * *" ]]; then
+          elif [[ "${{ github.event.schedule }}" == "37 4 * * *" ]]; then
             MODE="movies"
           else
             MODE="channels"

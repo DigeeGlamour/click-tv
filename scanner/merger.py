@@ -298,6 +298,42 @@ def _is_publishable_stream(stream: Dict[str, Any]) -> bool:
     )
 
 
+def _is_listed_exception(
+    stream: Dict[str, Any],
+    resolution: Dict[str, Any],
+) -> bool:
+    """Whether this channel is actually named in the exception list.
+
+    The flag alone would be enough if only the verifier could ever set it, and
+    it is the only thing that does during a scan - but a manual JSON entry can
+    carry arbitrary fields, so a hand-written item could assert the flag and
+    walk past the floor. Checking the name against config closes that: an
+    unlisted channel gains nothing by claiming the exception.
+    """
+    entries = resolution.get("below_floor_exceptions")
+    if not isinstance(entries, list):
+        return False
+    name = str(stream.get("name") or stream.get("title") or "").strip().casefold()
+    if not name:
+        return False
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        if str(entry.get("channel") or "").strip().casefold() != name:
+            continue
+        try:
+            floor = int(entry.get("minimum_height") or 0)
+        except (TypeError, ValueError):
+            return False
+        detected = _parse_resolution_height(
+            stream.get("resolution_height")
+            or stream.get("height")
+            or stream.get("resolution")
+        )
+        return floor > 0 and detected >= floor
+    return False
+
+
 def _meets_resolution_contract(
     stream: Dict[str, Any],
     settings: Dict[str, Any],
@@ -316,6 +352,21 @@ def _meets_resolution_contract(
     }
     minimum = minimum_by_pipeline.get(pipeline, 720)
     if minimum <= 0:
+        return True
+
+    # The verifier already decided this one, and it is the only place that can:
+    # the exception requires a sustained-playback proof for the exact route,
+    # which is a lookup this function has no business repeating. Honouring the
+    # recorded flag keeps the decision in one place.
+    #
+    # Found by a real scan rather than by reading: with only the verifier
+    # taught about the exception, Zee Bangla's proven 576p route came through
+    # as verified_global with publish_allowed True and the card still vanished
+    # from the catalogue entirely, because this second, independent floor
+    # dropped it here.
+    if stream.get("resolution_exception") is True and _is_listed_exception(
+        stream, resolution
+    ):
         return True
     detected = _parse_resolution_height(
         stream.get("resolution_height")
@@ -2109,6 +2160,14 @@ def merge_candidates(
             "time_verification",
             "source_category",
             "today_source_channel",
+            # Carried so the card itself records why it is below the
+            # resolution floor. Without these the only trace was in config and
+            # in a scan log, which is not where anyone reading the catalogue
+            # would look, and an audit of "which cards are under 720p and by
+            # whose decision" had nothing to read.
+            "resolution_exception",
+            "quality_below_preferred",
+            "quality_policy_note",
         ):
             if base_item.get(field_name) not in (None, ""):
                 merged_card[field_name] = base_item[field_name]
