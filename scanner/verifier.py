@@ -1632,6 +1632,82 @@ def _has_sustained_proof(item: Dict[str, Any]) -> bool:
         return False
 
 
+#: HTTP codes that say something about the asker rather than the resource.
+#: 404 and 410 are deliberately absent: those are about the file.
+VANTAGE_SHAPED_CODES = {401, 403, 407, 451}
+RETRYABLE_CODES = {429, 500, 502, 503, 504}
+
+
+def _vantage_shaped_movie_status(status_code: int, error_kind: str) -> str:
+    """The pending status a movie deserves, or "" to fall through to failed."""
+    code = _safe_int(status_code, 0)
+    if code in VANTAGE_SHAPED_CODES:
+        return "geo_pending"
+    if code in RETRYABLE_CODES:
+        return "retryable_pending"
+    if str(error_kind or "").strip().casefold() == "host_circuit_open":
+        return "host_deferred"
+    return ""
+
+
+def _measure_resolution_from_media(item: Dict[str, Any]) -> int:
+    """Height read out of the stream itself, or 0.
+
+    Deliberately bounded and best-effort: a small byte sample, a short timeout,
+    and any failure returns 0 so the caller falls back to the existing unknown
+    handling. It runs only for streams that would otherwise have no resolution
+    at all, so it costs nothing on the ordinary path.
+    """
+    url = str(item.get("url") or "").strip()
+    if not url:
+        return 0
+    try:
+        import urllib.parse
+        import urllib.request
+
+        from scanner import media_probe
+
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36"
+            ),
+            "Referer": "https://clicktv.pages.dev/",
+        }
+
+        def _get(target: str, limit: int) -> bytes:
+            request = urllib.request.Request(target, headers=headers)
+            with urllib.request.urlopen(request, timeout=8) as response:
+                return response.read(limit)
+
+        body = _get(url, 262144)
+        if not body:
+            return 0
+        head = body[:8192].decode("utf-8", "replace")
+        if head.lstrip().startswith("#EXTM3U"):
+            declared = media_probe.master_playlist_height(head)
+            if declared:
+                return declared
+            segments = [
+                line.strip()
+                for line in head.splitlines()
+                if line.strip() and not line.startswith("#")
+            ]
+            if not segments:
+                return 0
+            body = _get(urllib.parse.urljoin(url, segments[0]), 262144)
+            if not body:
+                return 0
+        decoded = media_probe.sps_from_transport_stream(body)
+        if not decoded:
+            return 0
+        item["resolution_scan_type"] = decoded.get("scan_type")
+        item["resolution_evidence"] = "h264 SPS decoded from the stream"
+        return media_probe.plausible(decoded.get("height"))
+    except Exception:  # noqa: BLE001 - a probe must never fail a scan
+        return 0
+
+
 def _apply_resolution_policy(
     item: Dict[str, Any],
     settings: Dict[str, Any],
@@ -2023,6 +2099,21 @@ def verify_single_stream(
             or item.get("resolution_hint")
         )
 
+    if detected_height <= 0:
+        # Ask the media. A manifest that declares no RESOLUTION and a raw
+        # transport stream both leave the scanner with nothing to read, and the
+        # TV floor rejects an unknown resolution outright - so these streams
+        # were being published under a blanket "verified but unknown"
+        # exemption instead of being measured.
+        #
+        # Measured across the 120 cards carrying that exemption: 110 could be
+        # read. 75 were at or above 720p and had simply never declared it, and
+        # 35 were genuinely below the floor. Guessing in either direction was
+        # wrong; this reads the H.264 SPS out of the bytes.
+        measured = _measure_resolution_from_media(item)
+        if measured:
+            detected_height = measured
+
     if detected_height > 0:
         item["resolution_height"] = detected_height
         item["resolution"] = _resolution_label(
@@ -2083,6 +2174,32 @@ def verify_single_stream(
         item["verification_mode"] = "pending_bd"
         item["bd_candidate"] = True
         return item
+
+    # A movie refused from this egress is not a movie that is gone.
+    #
+    # Measured on the last movie scan: 2,053 candidates answered 403 and 20,081
+    # answered 404, and every one of them was recorded as "failed". 404 says the
+    # file is not there; 403 from a datacentre says this egress may not have it,
+    # which is exactly what a Bangladesh-only or residential-only library
+    # answers. Both egresses available here are datacentre (AS8075 Microsoft,
+    # AS13335 Cloudflare), so the question cannot be settled from here at all -
+    # and calling it "failed" states an answer the scan does not have.
+    #
+    # Movies only, deliberately. geo_pending is a publishable status for TV, so
+    # widening this would put unverified TV routes on cards; the movie publish
+    # gate requires a confirmed verification, so a movie in this state is
+    # recorded and held back rather than shown.
+    if str(item.get("source_pipeline") or "").strip().casefold() == "movies":
+        pending = _vantage_shaped_movie_status(status_code, error_kind)
+        if pending:
+            item["verification_status"] = pending
+            item["verification_mode"] = "vantage_inconclusive"
+            item["vantage_note"] = (
+                f"HTTP {status_code} from a datacentre egress. Not treated as a "
+                "dead route: this vantage cannot distinguish a geo-restricted "
+                "library from a missing file."
+            )
+            return item
 
     item["verification_status"] = "failed"
     return item

@@ -201,6 +201,31 @@ def _verification_badge(stream: Dict[str, Any]) -> str:
     return ""
 
 
+def _playback_aware_badge(stream: Dict[str, Any]) -> str:
+    """The verification badge, unless a browser measured this route unplayable.
+
+    A route that answers 200 with a parseable manifest is indistinguishable
+    from one that plays, and Star Jalsha shipped a "Verified" badge on four
+    routes that a real browser could not play. The badge now says so.
+
+    Marks only. The card stays, publish_allowed is untouched and no other route
+    is demoted - a viewer whose device can play it still can, and an audit can
+    see what was measured.
+    """
+    badge = _verification_badge(stream)
+    try:
+        from scanner import playback_evidence
+
+        reason = playback_evidence.unproven_reason(stream.get("url"))
+        if reason:
+            stream["playback_unproven"] = True
+            stream["playback_unproven_reason"] = reason
+            return playback_evidence.BADGE
+    except Exception:  # noqa: BLE001 - a badge must never fail a scan
+        pass
+    return badge
+
+
 def _parse_resolution_height(res_val: Any) -> int:
     if not res_val:
         return 0
@@ -1739,7 +1764,9 @@ def rank_and_select_streams(
     # Requirement 2. Independent channels get the backup slots first; a second
     # variant of the channel already playing only fills a slot nothing else
     # wanted.
-    backup_candidates = _apply_lineage_diversity(selected_streams[1:], max_backups)
+    backup_candidates = _dedupe_by_physical_url(
+        _apply_lineage_diversity(selected_streams[1:], max_backups)
+    )
 
     selected_identities = {
         _stream_identity_key(stream) for stream in selected_streams
@@ -1905,6 +1932,72 @@ def _kept_by_unknown_resolution_policy(item: Dict[str, Any]) -> bool:
     project had explicitly restored.
     """
     return item.get("quality_unknown") is True
+
+
+def _dedupe_by_physical_url(
+    streams: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """One entry per physical URL, keeping the more capable variant.
+
+    Zee Bangla shipped with two backups that were the same URL twice, differing
+    only in requires_headers - the stream identity includes the header profile,
+    so both survived as "different" routes and one backup slot bought nothing.
+
+    Which one survives is not arbitrary. A variant that this scan verified beats
+    one it did not, because that is measured; failing that, the variant that
+    sends the header profile is kept, since omitting a header the origin needs
+    fails outright while sending one it ignores usually does not. The folded
+    variant's requirement is recorded on the survivor so nothing is lost
+    silently.
+    """
+    kept: Dict[str, Dict[str, Any]] = {}
+    order: List[str] = []
+    folded = 0
+    for stream in streams or ():
+        if not isinstance(stream, dict):
+            continue
+        url = str(stream.get("url") or "").split("|", 1)[0].strip()
+        if not url:
+            continue
+        # The URL alone is not the route. Two entries can share it and still be
+        # different things to play: a different Cookie, a different DRM key.
+        # Folding on the URL alone deleted those - a test caught it, and the
+        # project already treats them as distinct everywhere else (playback ids
+        # are derived from the credential values for exactly this reason).
+        #
+        # requires_headers is deliberately NOT part of the key. That is the
+        # duplicate this function exists for: Zee Bangla carried the same URL,
+        # the same headers and the same DRM twice, differing only in that flag.
+        key = json.dumps(
+            {
+                "url": url,
+                "headers": stream.get("headers") or {},
+                "drm": stream.get("drm") or {},
+            },
+            sort_keys=True,
+            default=str,
+        )
+        current = kept.get(key)
+        if current is None:
+            kept[key] = stream
+            order.append(key)
+            continue
+        folded += 1
+        better = max(
+            (current, stream),
+            key=lambda entry: (
+                _verification_tier_score(entry),
+                1 if entry.get("requires_headers") else 0,
+            ),
+        )
+        other = stream if better is current else current
+        if other.get("requires_headers"):
+            better = dict(better)
+            better["folded_variant_requires_headers"] = True
+        kept[key] = better
+    if folded:
+        print(f"   duplicate physical URLs folded out of backups: {folded}")
+    return [kept[identity] for identity in order]
 
 
 def _drop_cards_the_pages_validator_would_refuse(
@@ -2292,7 +2385,7 @@ def merge_candidates(
             ),
             "verification_mode": v_mode,
             "verification_status": v_status,
-            "verification_badge": _verification_badge(primary),
+            "verification_badge": _playback_aware_badge(primary),
             "verified": bool(primary.get("verified", False)),
             "publish_allowed": _effective_publish_allowed(primary),
             "source_pipeline": str(base_item.get("source_pipeline") or ""),
@@ -2370,6 +2463,8 @@ def merge_candidates(
         # and the card shipped at 576p with nothing saying why.
         for field_name in (
             "resolution_exception",
+            "playback_unproven",
+            "playback_unproven_reason",
             "quality_below_preferred",
             "quality_unknown",
             "quality_policy_note",

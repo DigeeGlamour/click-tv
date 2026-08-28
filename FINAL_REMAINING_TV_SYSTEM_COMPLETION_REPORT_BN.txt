@@ -1,0 +1,327 @@
+================================================================================
+FINAL REMAINING TV SYSTEM COMPLETION REPORT
+আগের report-এ solved অংশ পুনরায় করা হয়নি; শুধু বাকি ছয়টি কাজ
+================================================================================
+
+তারিখ      : 2026-08-28
+Repository : DigeeGlamour/click-tv, branch main
+HEAD       : bddd3e0b43c11d30ae1dd638edc84d76256856ed
+test suite : 1462 tests, OK
+build-pages: Validation successful, 0 ERROR
+
+
+================================================================================
+১. DONE / PARTIAL / UNSOLVED
+================================================================================
+
+  #   কাজ                                      অবস্থা      প্রমাণ / কারণ
+  --- ---------------------------------------- ----------- ---------------------
+  1   Actions: latest HEAD-এ সফল run             DONE        run 33167298192
+                                                            commit bddd3e0b4
+  1b  পুরোনো ৬টি queued run cancel                UNSOLVED    HTTP 403; ID ও link
+                                                            ভাগ ৭.২
+  1c  queue jam সরানো                            DONE        concurrency v3
+  2   Star Jalsha proven route                   UNSOLVED    ৪টি reachable
+                                                            candidate ২x১২০s ফেল
+  2b  broken primary "working" দাবি বন্ধ           DONE        Playback Unproven
+                                                            badge
+  3   Zee multi-device 2x120s (corrected)        DONE        android_chrome ও
+                                                            android_tv proven
+  3b  iPhone / WebKit                            UNPROVEN    harness-এ native HLS
+                                                            নেই (ভাগ ৪)
+  3c  rgkkw duplicate backup dedupe              DONE        ২ -> ১, header
+                                                            variant রক্ষিত
+  4   quality_unknown warning audit              DONE        120 -> 12 (ভাগ ৫)
+  5   BD-unverified movie আলাদা status            DONE        geo_pending /
+                                                            retryable_pending
+  6   live token যাচাই ও rotation পরামর্শ          DONE        ভাগ ৮
+
+
+================================================================================
+২. ZEE BANGLA — MULTI-DEVICE, সংশোধিত HARNESS
+================================================================================
+পুরোনো ১৬৮-১৭২s ফল ব্যবহার করা হয়নি। ওই harness `video.currentTime`-এর পরম
+মান লিখত, যা live stream-এ live-edge offset থেকে শুরু হয় — তাই ১২০s window-এ
+১৭২s দেখাত, যা নিজেই অসম্ভব। এখন প্রতি sample-এর অগ্রগতি যোগ হয়, প্রতিটি ধাপ
+sampling interval-এ সীমিত, তাই seek বা timeline jump সর্বোচ্চ ১ সেকেন্ড গোনে।
+
+  android_chrome  (chromium, 412x915)
+    s0 proven         startup=2.26     progress=119.99   stall=0    frames=['video', 'audio']
+    s1 proven         startup=1.74     progress=119.42   stall=0    frames=['video', 'audio']
+    proven: 1 / 1
+
+  android_tv  (chromium, 1920x1080)
+    s0 proven         startup=2.77     progress=120      stall=0    frames=['video', 'audio']
+    s1 proven         startup=1.84     progress=119.62   stall=0    frames=['video', 'audio']
+    proven: 1 / 1
+
+  iphone_safari  (webkit, 390x844)
+    s0 playback_fail  startup=8.77     progress=1.9      stall=114  frames=['video', 'audio']
+    s1 playback_fail  startup=3.13     progress=1.9      stall=114  frames=['video', 'audio']
+    proven: 0 / 1
+
+  deployed route, desktop_chrome (একই সংশোধিত metric):
+    s0 proven   progress=119.99s stall=0s
+    s1 proven   progress=119.99s stall=0s
+
+  ২.১  duplicate backup — dedupe
+  ------------------------------------------------------------------------------
+  card-এ একই physical URL দুইবার ছিল, শুধু requires_headers আলাদা (False, True)।
+  stream identity-তে header profile থাকায় দুটোই "ভিন্ন route" হিসেবে টিকত আর
+  একটি backup slot বৃথা যেত। এখন dedupe হয়:
+
+    key = url + headers + drm       (requires_headers ইচ্ছাকৃতভাবে key-তে নেই)
+    কে টেকে : এই scan যেটি verify করেছে; সমান হলে header পাঠানো variant
+    রেকর্ড  : বাদ পড়া variant-এর header প্রয়োজনীয়তা survivor-এ লেখা থাকে
+
+  cookie বা DRM আলাদা হলে fold হয় না — সেগুলো সত্যিই ভিন্ন route, আর একটি
+  বিদ্যমান contract test ঠিক সেটাই ধরেছিল যখন প্রথম সংস্করণ শুধু URL ধরে
+  fold করছিল।
+
+  Zee Bangla card এখন:
+    primary : http://live.balajibroadband.com:3500/live/625.m3u8
+    badge   : Verified | resolution SD/576
+    backups : ['http://rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/98881.ts']
+
+
+================================================================================
+৩. STAR JALSHA — UNSOLVED (প্রতিটি reachable candidate মাপা)
+================================================================================
+HTTP 200 বা manifest প্রমাণ ধরা হয়নি। প্রতিটিতে আসল Chromium, ২ x ১২০ সেকেন্ড।
+
+  cache.devm3u.top (720p HLS)
+    s0 unknown                            startup=3.02    progress=15.56   stall=104
+    s1 unknown                            startup=2.19    progress=15.56   stall=104
+    proven: 0 / 1
+
+  rgkkw.live (raw TS, card-এর backup)
+    s0 advisory:device_or_browser_unsuppo startup=3.96    progress=120     stall=0
+        fatal: mpegts MediaError/MediaMSEError {"code":9,"msg":"Failed to execute 'addSourceBuffer' on 'MediaSource': T
+    s1 advisory:device_or_browser_unsuppo startup=3.69    progress=120     stall=0
+        fatal: mpegts MediaError/MediaMSEError {"code":9,"msg":"Failed to execute 'addSourceBuffer' on 'MediaSource': T
+    proven: 0 / 1
+
+  premiumtvs.space (raw TS)
+    s0 advisory:device_or_browser_unsuppo startup=3.77    progress=120     stall=0
+        fatal: mpegts MediaError/MediaMSEError {"code":9,"msg":"Failed to execute 'addSourceBuffer' on 'MediaSource': T
+    s1 advisory:device_or_browser_unsuppo startup=4.30    progress=120     stall=0
+        fatal: mpegts MediaError/MediaMSEError {"code":9,"msg":"Failed to execute 'addSourceBuffer' on 'MediaSource': T
+    proven: 0 / 1
+
+  catchup.yuppcdn.net (540p, preview path)
+    s0 advisory:transient_network         startup=-       progress=0       stall=0
+        fatal: hls networkError/manifestLoadError
+    s1 advisory:transient_network         startup=-       progress=0       stall=0
+        fatal: hls networkError/manifestLoadError
+    proven: 0 / 1
+
+Playback Unproven  নথিবদ্ধ মাপা-ব্যর্থ route: 4
+    premiumtvs.space/live/1Aoen7elp5/IgMJ60tmAa/8540.ts  mpegts MediaError/MediaMSEError {"code":9,"msg":"Failed to e
+    rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/198.ts         mpegts MediaError/MediaMSEError {"code":9,"msg":"Failed to e
+    catchup.yuppcdn.net/amazonv2/36/preview/starjalsha/m hls networkError/manifestLoadError
+    cache.devm3u.top/hls/starjalsha.m3u8                 media progress [15.56, 15.56] s in a 120.0 s window, under t
+
+  Star Jalsha card এখন:
+    primary : https://cache.devm3u.top/hls/starjalsha.m3u8
+    badge   : Playback Unproven
+    কারণ     : media progress [15.56, 15.56] s in a 120.0 s window, under the 115 s sustained floor
+
+
+================================================================================
+৪. iPhone / WebKit — UNPROVEN, ব্যর্থ নয়
+================================================================================
+  reports/harness-media-capability.json:
+    Playwright WebKit  canPlayType('application/vnd.apple.mpegurl') -> ''
+                       MediaSource.isTypeSupported('video/mp2t')    -> False
+    Playwright Chromium                                             -> 'maybe' / True
+
+  route MPEG-TS segment দেয়, আর আসল iOS Safari সেটি native চালায়। Playwright-এর
+  WebKit build-এ ওই path নেই, তাই hls.js-কে JavaScript-এ transmux করতে হয়েছে
+  এবং progress ১.৯s-এ থেমে stall ১১৪s হয়েছে। এটি harness-এর সীমা, iOS-এর রায়
+  নয়। আসল iOS সম্পর্কে কিছু প্রমাণিত হয়নি — physical device ছাড়া সম্ভব নয়।
+
+
+================================================================================
+৫. RESOLUTION POLICY — quality_unknown audit (BEFORE / AFTER)
+================================================================================
+  global 720p floor অপরিবর্তিত: resolution.tv_minimum_height = 720।
+  unknown resolution অন্ধভাবে publish বা drop করা হয়নি — stream-কে জিজ্ঞেস
+  করা হয়েছে।
+
+  নতুন: scanner/media_probe.py ও scripts/resolve-unknown-resolutions.py
+    HLS master-এর RESOLUTION, অথবা transport stream থেকে H.264 SPS decode
+    (width, height, এবং interlaced কি না)।
+    decoder যাচাই করা হয়েছে rgkkw-তে, যার উত্তর আগে থেকেই জানা:
+    1920x1080, frame_mbs_only_flag=0।
+
+  BEFORE (verifier measurement যোগ করার আগে):
+    build-pages [ERROR]                : 0
+    quality_unknown warning            : 120
+    resolution জানা এই ১২০টির মধ্যে      : 0
+    audit চালিয়ে নির্ধারিত               : 110 / 120
+       >= 720p                         : 75   (ঘোষণা করেনি, কিন্তু আছে)
+       <  720p                         : 35   (সত্যিই floor-এর নিচে)
+       অনির্ণেয়                          : 10
+
+  AFTER (verifier নিজে SPS পড়ার পরে, একই build):
+    build-pages [ERROR]                : 0
+    quality_unknown warning            : 12
+    card মোট                            : 610
+    resolution unknown                 : 12
+    720p-এর নিচে                        : 1   (Zee Bangla-র নামযুক্ত ব্যতিক্রম)
+
+  বাকি 12 টির audit (reports/unknown-resolution-audit.json):
+    নির্ধারিত 2 | অনির্ণেয় 10
+
+  ৫.১  একটি সীমা কোড করা হয়েছে
+  ------------------------------------------------------------------------------
+  দুটি আসল stream SPS decode-এ ৮ ও ১৬ pixel দিয়েছে — malformed SPS, channel
+  নয়। ১২০ pixel-এর নিচে কোনো মান গ্রহণ করা হয় না; "measured 8p" প্রকাশ করা
+  unknown স্বীকার করার চেয়েও খারাপ হত।
+
+  ৫.২  Bangladeshi channel হারায়নি
+  ------------------------------------------------------------------------------
+  ১২০টির যে ৩৫টি সত্যিই <720p, তার Bangla category-তে মাত্র ১টি
+  (R Plus Gould, 240p)। অনির্ণেয় ১০টির ২টি Bangla (Boishakhi TV, Ekushey TV) —
+  এরা BD-protection নীতিতেই থাকে, কারণ scanner সেগুলো verified দেখেছে।
+  card সংখ্যা কমেনি।
+
+
+================================================================================
+৬. MOVIE — datacentre 403 আর "dead" নয়
+================================================================================
+  গত movie scan-এ:
+    HTTP 404 : 20,081   -> ফাইল নেই
+    HTTP 403 :  2,053   -> এই egress-কে দেওয়া হয়নি
+    সব ২২,১৭১টিরই status ছিল একটিই: "failed"
+
+  এখানে দুই egress-ই datacentre (AS8075 Microsoft, AS13335 Cloudflare), তাই
+  403 দেখে geo-সীমিত library আর মৃত ফাইল আলাদা করা যায় না — "failed" লেখা
+  এমন উত্তর দাবি করে যা scan-এর কাছে নেই।
+
+  এখন movies pipeline-এ:
+    401 / 403 / 407 / 451  -> geo_pending
+    429 / 5xx              -> retryable_pending
+    host circuit open      -> host_deferred
+    404 / 410              -> failed  (অপরিবর্তিত, এগুলো ফাইল সম্পর্কে)
+
+  শুধু movies, ইচ্ছাকৃতভাবে: geo_pending TV-তে প্রকাশযোগ্য status, তাই প্রসারিত
+  করলে unverified TV route card-এ উঠে যেত। movie publish gate confirmed
+  verification দাবি করে, তাই এই অবস্থার movie নথিবদ্ধ হয় কিন্তু দেখানো হয় না।
+
+  বিদ্যমান movie, NEW badge ও retention অক্ষত:
+    verified_global      682
+    stale_last_good      346
+    manual_trusted       220
+    মোট                  1248
+
+
+================================================================================
+৭. GITHUB ACTIONS
+================================================================================
+  ৭.১  latest HEAD-এ সফল run (DONE)
+  ------------------------------------------------------------------------------
+  run 33167298192, commit bddd3e0b4, 2026-08-28T11:28:42Z, conclusion success
+  https://github.com/DigeeGlamour/click-tv/actions/runs/33167298192
+
+  এই কাজের সঙ্গে জড়িত প্রতিটি step সবুজ:
+    Validate scanner files                       success
+    Select scan mode                             success
+    Skip a superseded run of a frequent mode     success   (নতুন guard)
+    Run scanner                                  success
+    Validate generated Cloudflare Pages output   success   (আগে এখানেই ফেল হত)
+    Commit and push updated data                 success
+
+  এর আগের সব run `e521a2ed0`-তে চলেছিল — validator fix-এর আগের commit — আর
+  প্রতিটিই ঠিক ওই resolution error-এ ফেল করেছিল।
+
+  ৭.২  queue jam ও আপনার manual action
+  ------------------------------------------------------------------------------
+  scheduled run একেবারে বন্ধ ছিল: ০৬:৫৩ থেকে ০৯:২০ পর্যন্ত একটিও নয়, যদিও
+  ৫ মিনিটের cron আছে। workflow active, disabled নয়। ছয়টি workflow_dispatch run
+  ২০২৬-০৮-০৫ ও ০৮-১১ থেকে group `live-signal-data-writer-v2`-তে pending।
+  concurrency group একটি run in-progress ও একটি pending রাখে; বাকিরা বাদ পড়ে।
+
+  group `live-signal-data-writer-v3`-এ rotate করা হয়েছে (প্রকল্পের নিজের আগের
+  সমাধান — v2-এর comment-এ v1 নিয়ে একই কথা)। one-writer নিরাপত্তা অপরিবর্তিত।
+  rotation-এর পরে প্রথম run-ই latest code নিয়ে চলেছে ও পাস করেছে।
+
+  ⚠ আপনাকে করতে হবে — ৬টি run cancel। আমার token পারে না
+  (HTTP 403: Resource not accessible by integration):
+
+    https://github.com/DigeeGlamour/click-tv/actions/runs/31465938323
+    https://github.com/DigeeGlamour/click-tv/actions/runs/31465691942
+    https://github.com/DigeeGlamour/click-tv/actions/runs/31465179908
+    https://github.com/DigeeGlamour/click-tv/actions/runs/31464694690
+    https://github.com/DigeeGlamour/click-tv/actions/runs/31041500801
+    https://github.com/DigeeGlamour/click-tv/actions/runs/31041416819
+
+  এক জায়গায়:
+    https://github.com/DigeeGlamour/click-tv/actions?query=is%3Aqueued
+
+  ৭.৩  একটি নীরব অমিল (schedule বদলানো হয়নি)
+  ------------------------------------------------------------------------------
+  প্রতিটি cron-এ `timezone: "Asia/Dhaka"` লেখা। GitHub Actions cron-এ timezone
+  সমর্থন করে না — key টি পড়া হয় ও উপেক্ষিত হয়, তাই সব schedule আসলে **UTC**-তে
+  চলে, comment যা বলে তার ছয় ঘণ্টা আগে: "movies 04:37 Dhaka" আসলে 04:37 UTC =
+  Dhaka সময় 10:37।
+
+  production scan-এর সময় বদলানো আপনার সিদ্ধান্ত, তাই cron ছোঁয়া হয়নি — শুধু
+  comment সত্যবাদী করা হয়েছে। মূল উদ্দেশ্য রাখতে হলে প্রতিটি Dhaka সময় থেকে
+  ছয় ঘণ্টা বাদ দিন: 04:37 Dhaka -> "37 22 * * *"।
+
+
+================================================================================
+৮. নিরাপত্তা — current file-এ live token
+================================================================================
+  tracked file scan করে:
+    data/playback/*.json-এ expiry-যুক্ত token   : 3,098   (স্বল্পজীবী, নিজেই ঘোরে)
+    expiry-বিহীন token                        :   282
+    path-এ embedded credential জোড়া             :     9   (Xtream ধরনের
+                                                          /live/<user>/<pass>/)
+    ওই credential ব্যবহারকারী প্রকাশিত card       :     3   Star Jalsha,
+                                                          Zee Bangla, T Sports
+
+  data/playback/*.json-এর token গুলো proxy `playback_id` সমাধানে ব্যবহার করে;
+  redact করলে ~৬০টি protected channel বন্ধ হবে, তাই সেগুলো নকশার অংশ।
+
+  history rewrite করা হয়নি (destructive)। সুপারিশ — rotation:
+    সর্বোচ্চ অগ্রাধিকার: rgkkw.live-এর user/pass জোড়া — একই জোড়া
+      premiumtvs.space-এও, এবং Zee Bangla ও Star Jalsha দুটোতেই আছে
+    আরও ৮টি Xtream ধরনের জোড়া (cricodi/Football প্রকৃতির)
+    state/upcoming-targeting.json-এর পুরোনো token git history-তে রয়ে গেছে
+
+
+================================================================================
+৯. TEST ও COMMAND
+================================================================================
+  python -m unittest discover -s tests -p "test_*.py"      -> 1462 tests, OK
+  bash scripts/build-pages.sh                              -> Validation
+                                                              successful, 0 ERROR
+  python3 scripts/resolve-unknown-resolutions.py           -> audit artifact
+  python3 scripts/tv-source-coverage-audit.py              -> coverage artifact
+  python3 scripts/sustained-playback-check.py ...          -> browser proof
+
+  নতুন test ফাইল:
+    tests/test_resolution_evidence.py        SPS decode, movie geo status,
+                                             backup dedupe
+    tests/test_workflow_queue_health.py      staleness guard, concurrency
+
+
+================================================================================
+১০. এখনো যা বাকি
+================================================================================
+  Star Jalsha-র proven route — নেই। ৪টি reachable candidate-ই floor ফেল।
+    card রয়েছে কিন্তু "Playback Unproven" চিহ্নিত।
+
+  iPhone / iOS — physical device ছাড়া প্রমাণ সম্ভব নয়।
+
+  ৬টি queued run cancel — আপনার হাতে (ভাগ ৭.২)।
+
+  ১২টি card-এর resolution এখনো অনির্ণেয়; ১০টি সত্যিই পড়া যায় না, ২টি
+    <720p মাপা হয়েছে (Goldmines Bollywood 362p, PEACE TV ENGLISH 480p) —
+    এগুলো BD-protection নীতিতে আছে, সিদ্ধান্ত আপনার।
+
+  Xtream credential rotation — ভাগ ৮।
+
+================================================================================

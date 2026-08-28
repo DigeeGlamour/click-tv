@@ -1,6 +1,18 @@
 name: Live Signal Scanner
 
 on:
+  # NOTE on the `timezone:` keys below.
+  #
+  # GitHub Actions does not support a timezone for `schedule.cron` - only
+  # POSIX cron, always in UTC. The key is accepted by the YAML parser and then
+  # ignored, so every time here fires in UTC, six hours earlier than the
+  # comments claim: "movies at 04:37 Dhaka" actually runs at 04:37 UTC, which
+  # is 10:37 in Dhaka.
+  #
+  # Left as it is rather than converted, because moving a production scan to a
+  # different hour is a scheduling decision for the owner, not a silent fix.
+  # The comments now say what happens. To honour the original intent, subtract
+  # six hours from each Dhaka time: 04:37 Dhaka -> "37 22 * * *" UTC.
   schedule:
     # Requirement 4 — Today Match: প্রতি ২০ মিনিট।
     - cron: "0,20,40 * * * *"
