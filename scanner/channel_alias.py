@@ -188,3 +188,39 @@ def alias_report(names: Any) -> Dict[str, List[str]]:
             continue
         groups.setdefault(canonical, set()).add(str(name))
     return {key: sorted(value) for key, value in sorted(groups.items())}
+def preferred_display_name(names: Any) -> str:
+    """The best-formed spelling among a channel's variants.
+
+    Folding spellings into one group made the card's display name depend on
+    whichever candidate happened to rank first, so "Star Jalsha" became "STAR
+    JALSHA" and "Zoom" became "ZOOM" between two scans. The stream was the
+    same; only the label moved - and the label is what a viewer searches for
+    and what a favourite is keyed on.
+
+    Preference order, all deterministic:
+      1. no bracketed group tag ("[BD] Zee Bangla" loses to "Zee Bangla")
+      2. mixed case over ALL CAPS or all lowercase
+      3. no trailing feed marker ("Zee Bangla" over "Zee Bangla HD")
+      4. shorter, then alphabetical, so the result never depends on input order
+    """
+    candidates = [str(n).strip() for n in (names or ()) if str(n or "").strip()]
+    if not candidates:
+        return ""
+
+    def rank(name: str) -> tuple:
+        tagged = 1 if _LEADING_TAG.match(name) or _TRAILING_TAG.search(name) else 0
+        letters = [c for c in name if c.isalpha()]
+        all_caps = 1 if letters and all(c.isupper() for c in letters) else 0
+        all_lower = 1 if letters and all(c.islower() for c in letters) else 0
+        badly_cased = 1 if (all_caps or all_lower) else 0
+        has_marker = 0
+        words = _words(name.casefold())
+        if len(words) > 1:
+            for marker in FEED_MARKERS:
+                parts = marker.split()
+                if len(parts) <= len(words) - 1 and words[-len(parts):] == parts:
+                    has_marker = 1
+                    break
+        return (tagged, badly_cased, has_marker, len(name), name)
+
+    return min(candidates, key=rank)

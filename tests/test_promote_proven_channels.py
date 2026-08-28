@@ -27,6 +27,15 @@ RESTORED = {
 }
 
 
+from scanner import channel_alias  # noqa: E402
+
+#: The same seven channels, keyed by canonical name so a display-name change
+#: (now chosen from every spelling in the group) does not read as a loss.
+_RESTORED_CANONICAL = {
+    channel_alias.canonical_channel_name(name) for name in RESTORED
+}
+
+
 def _cards(path):
     payload = json.loads(path.read_text(encoding="utf-8"))
     return payload if isinstance(payload, list) else (
@@ -224,7 +233,7 @@ class RestoredStateTests(unittest.TestCase):
         )
         restored = [
             copy.deepcopy(c) for c in _cards(CATALOGUE)
-            if str(c.get("name") or "") in RESTORED
+            if channel_alias.canonical_channel_name(c.get("name")) in _RESTORED_CANONICAL
         ]
         self.assertEqual(len(restored), len(RESTORED))
 
@@ -347,10 +356,22 @@ class RestoredStateTests(unittest.TestCase):
         # seven, each exactly once, and nothing outside that set changed - which
         # is what the other tests in this class check. So the invariant is the
         # set, not the size.
+        # Matched by canonical channel name, not by exact spelling. Channel
+        # identity stopped being per-spelling, so a card's display name is now
+        # chosen from every variant in its group: "NEXUS TV" became "Nexus TV"
+        # and the channel was still there. Asserting the old capitalisation
+        # would fail for a rename that is the point of the change, while
+        # missing the thing that matters - whether the channel is present.
+        from scanner import channel_alias
+
         names = [str(c.get("name") or "") for c in _cards(CATALOGUE)]
+        canonical = [channel_alias.canonical_channel_name(n) for n in names]
         for name in RESTORED:
+            wanted = channel_alias.canonical_channel_name(name)
             self.assertEqual(
-                names.count(name), 1, f"{name} appears {names.count(name)}x"
+                canonical.count(wanted), 1,
+                f"{name} (canonical {wanted!r}) appears "
+                f"{canonical.count(wanted)}x",
             )
         self.assertGreaterEqual(
             len(names), len(RESTORED), "the catalogue lost the restored channels"

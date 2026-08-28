@@ -68,7 +68,14 @@ class OrderingTests(unittest.TestCase):
 class GateBehaviourTests(unittest.TestCase):
     """What the ordering actually buys: a gate that can refuse."""
 
-    BASE = dt.datetime(2026, 8, 20, 10, 0, 0, tzinfo=dt.timezone.utc).timestamp()
+    # Relative to now, deliberately. A fixed date (2026-08-20) sat exactly on
+    # the cache's retention boundary the moment that window was shortened to 7
+    # days, and both tests failed with "0 not greater than 0" - measuring the
+    # retention constant instead of the ordering they exist to check. Two hours
+    # ago is inside any retention window this cache would sensibly have.
+    BASE = (
+        dt.datetime.now(dt.timezone.utc) - dt.timedelta(hours=2)
+    ).timestamp()
 
     def setUp(self):
         self._saved_key = os.environ.get(rev.HMAC_KEY_ENV)

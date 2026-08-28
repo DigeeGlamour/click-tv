@@ -85,27 +85,38 @@ class YearFromTitleTests(unittest.TestCase):
             mr.year_for_movie({"year": 1999, "name": "Something 2024"}), 1999
         )
 
-    def test_it_recovers_the_year_for_most_of_the_real_catalogue(self):
-        """A guard on the fix's actual reach, not just its logic.
+    def test_most_of_the_real_catalogue_carries_a_year(self):
+        """A guard on the fix's reach, measured the right way round.
 
-        Measured at 481 of the 731 year-less movies. Pinned loosely so an
-        upstream naming change shows up as a failure here rather than as a
-        silently emptier catalogue ordering.
+        The first version of this test took the movies that still had no year
+        and asserted that most of their years could be read. That was fine
+        before a scan applied the fix and meaningless after one: what remains
+        without a year is exactly the residue the reader cannot decode -
+        series titled "Little Things S01 E01 05" with no year in them at all -
+        so the ratio went to 0/360 and the test failed for succeeding.
+
+        What matters is coverage of the catalogue: before the fix 213 of 944
+        movies had a year; after a real scan, 888 of 1248.
         """
-        yearless = []
+        movies = []
         for path in sorted((ROOT / "data" / "movies").glob("*/page-*.json")):
             payload = json.loads(path.read_text(encoding="utf-8"))
-            items = payload.get("items") or []
-            yearless += [
-                m for m in items
-                if isinstance(m, dict) and not str(m.get("year") or "").strip()
-            ]
-        if not yearless:
-            self.skipTest("every published movie already carries a year")
-        recovered = sum(1 for m in yearless if mr.year_for_movie(m))
+            movies += [m for m in (payload.get("items") or []) if isinstance(m, dict)]
+        if not movies:
+            self.skipTest("no published movies")
+        with_year = sum(1 for m in movies if str(m.get("year") or "").strip())
         self.assertGreater(
-            recovered / len(yearless), 0.5,
-            f"only {recovered} of {len(yearless)} years could be read",
+            with_year / len(movies), 0.5,
+            f"only {with_year} of {len(movies)} published movies carry a year",
+        )
+
+    def test_the_reader_still_works_on_titles_that_contain_a_year(self):
+        """Separate from coverage: the reader itself, on titles that have one."""
+        titles = [
+            "Some Film (2019)", "Another 2024 Dual", "Third (2026) S01",
+        ]
+        self.assertEqual(
+            [mr.year_from_text(t) for t in titles], [2019, 2024, 2026]
         )
 
 

@@ -40,6 +40,7 @@ sys.path.insert(0, ROOT)
 
 from scanner import channel_alias as ca  # noqa: E402
 from scanner.parsers.m3u_parser import parse_m3u_content  # noqa: E402
+from scanner import route_evidence as rev  # noqa: E402
 
 UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -125,7 +126,15 @@ def probe(url: str, timeout: int = 15) -> Tuple[int, str]:
 
 
 def published_cards() -> Dict[str, Dict[str, Any]]:
-    """url -> card, plus canonical-name -> card, for the published catalogue."""
+    """route identity -> card, for the published catalogue.
+
+    Keyed on the normalised route identity rather than the exact URL. Matching
+    exact URLs under-reported badly: aynaott's URLs carry a rotating signed
+    token, so a card published from that source never matched the playlist entry
+    it came from and the audit read 33 published as 0. An audit that
+    under-reports is worse than no audit - it accuses the scanner of dropping
+    what it published.
+    """
     by_url: Dict[str, Dict[str, Any]] = {}
     for name in sorted(os.listdir(os.path.join(ROOT, "data", "channels"))):
         if not name.endswith(".json"):
@@ -143,8 +152,12 @@ def published_cards() -> Dict[str, Dict[str, Any]]:
             for url in [card.get("url")] + [
                 b.get("url") for b in (card.get("backups") or []) if isinstance(b, dict)
             ]:
-                if url:
-                    by_url[str(url)] = card
+                if not url:
+                    continue
+                by_url[str(url)] = card
+                identity = rev.normalize_source_identity(str(url))
+                if identity:
+                    by_url[identity] = card
     return by_url
 
 
@@ -234,11 +247,37 @@ def main() -> int:
         row["deduped_unique"] = per_source_unique.get(row["source_id"], 0)
 
     cards_by_url = published_cards()
+    def _is_published(entry: Dict[str, str]) -> bool:
+        if entry["url"] in cards_by_url:
+            return True
+        identity = rev.normalize_source_identity(entry["url"])
+        return bool(identity) and identity in cards_by_url
+
     per_source_published = Counter(
-        e["source_id"] for e in unique if e["url"] in cards_by_url
+        e["source_id"] for e in unique if _is_published(e)
     )
+    # Host-level coverage as well, because URL matching cannot settle it for
+    # every source. aynaott rotates a path SEGMENT, not just a query token, so
+    # neither the exact URL nor the normalised route identity of a playlist
+    # entry matches the card published from it - the URL column reads 0 while
+    # four aynaott hosts carry seventeen published URLs. This column says
+    # whether a source's origins reached the catalogue at all, which is the
+    # question "was this source silently skipped" actually needs.
+    published_hosts_all = {
+        urllib.parse.urlsplit(url).hostname
+        for url in cards_by_url
+        if url.startswith("http")
+    }
+    per_source_hosts: Dict[str, set] = {}
+    for entry in unique:
+        host = urllib.parse.urlsplit(entry["url"]).hostname
+        if host:
+            per_source_hosts.setdefault(entry["source_id"], set()).add(host)
     for row in rows:
         row["published_urls"] = per_source_published.get(row["source_id"], 0)
+        hosts = per_source_hosts.get(row["source_id"], set())
+        row["source_hosts"] = len(hosts)
+        row["hosts_in_catalogue"] = len(hosts & published_hosts_all)
 
     # Alias grouping: how many channel groups exist before and after folding.
     names = [e["name"] for e in unique if e["name"]]
@@ -262,7 +301,9 @@ def main() -> int:
             results = [(None, "")] * len(matched)
         for entry, (status, kind) in zip(matched, results):
             host = urllib.parse.urlsplit(entry["url"]).hostname
-            card = cards_by_url.get(entry["url"])
+            card = cards_by_url.get(entry["url"]) or cards_by_url.get(
+                rev.normalize_source_identity(entry["url"])
+            )
             if card is not None:
                 reason = "published"
             elif status == 0:
@@ -323,18 +364,20 @@ def main() -> int:
         handle.write("\n")
 
     write = sys.stderr.write
-    write("\n%-32s %-4s %-6s %-9s %-8s %-8s %s\n" % (
-        "SOURCE", "ON", "HTTP", "BYTES", "PARSED", "UNIQUE", "PUBLISHED"))
-    write("-" * 92 + "\n")
+    write("\n%-32s %-4s %-6s %-8s %-7s %-7s %-6s %s\n" % (
+        "SOURCE", "ON", "HTTP", "PARSED", "UNIQUE", "PUB-URL", "HOSTS",
+        "HOSTS-IN-CATALOGUE"))
+    write("-" * 100 + "\n")
     for row in rows:
-        write("%-32s %-4s %-6s %-9s %-8s %-8s %s\n" % (
+        write("%-32s %-4s %-6s %-8s %-7s %-7s %-6s %s\n" % (
             str(row["source_id"])[:32],
             "yes" if row["enabled"] else "NO",
             row["http_status"] if row["http_status"] is not None else "-",
-            row["bytes"],
             row["parsed_entries"],
             row["deduped_unique"],
             row["published_urls"],
+            row["source_hosts"],
+            row["hosts_in_catalogue"],
         ))
         if row["fetch_error"]:
             write("%-32s   -> %s\n" % ("", row["fetch_error"]))

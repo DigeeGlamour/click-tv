@@ -158,3 +158,56 @@ class ScanIntegrationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+class SizeIsBoundedTests(unittest.TestCase):
+    """The cache is committed by every scan, so its size is a repo problem.
+
+    It reached 60.4 MB across 26,396 routes with retention unable to trim a
+    single one - a scan probes 3,200 channels and 21,400 movies, so every route
+    was inside the window. GitHub refuses a file above 100 MB, so the growth
+    had a deadline rather than a limit.
+    """
+
+    def test_a_hard_route_ceiling_exists(self):
+        self.assertGreater(cache.MAX_ROUTES, 0)
+        self.assertLessEqual(cache.MAX_ROUTES, 50_000)
+
+    def test_pruning_drops_the_least_recently_observed_routes(self):
+        import datetime as dt
+
+        now = dt.datetime(2026, 8, 27, tzinfo=dt.timezone.utc)
+        routes = {}
+        for index in range(cache.MAX_ROUTES + 50):
+            moment = now - dt.timedelta(seconds=index)
+            routes[f"host{index}.example.net/live/x.m3u8"] = [{
+                "route_id": f"host{index}.example.net/live/x.m3u8",
+                "observed_at": moment.isoformat(),
+            }]
+        pruned = cache._prune({"version": 1, "routes": routes}, now=now.timestamp())
+        self.assertEqual(len(pruned["routes"]), cache.MAX_ROUTES)
+        self.assertIn("host0.example.net/live/x.m3u8", pruned["routes"])
+        self.assertNotIn(
+            f"host{cache.MAX_ROUTES + 49}.example.net/live/x.m3u8",
+            pruned["routes"],
+        )
+
+    def test_the_committed_cache_stays_under_the_github_warning(self):
+        path = Path(cache.DEFAULT_PATH)
+        if not path.is_file():
+            self.skipTest("no cache committed")
+        megabytes = path.stat().st_size / (1024 * 1024)
+        self.assertLess(
+            megabytes, 50,
+            f"the cache is {megabytes:.1f} MB; GitHub warns at 50 and refuses "
+            "at 100, and every scan commits it",
+        )
+
+    def test_it_is_written_without_indentation(self):
+        source = (ROOT / "scanner" / "route_evidence_cache.py").read_text(
+            encoding="utf-8"
+        )
+        # The call, not the file: the comment above it names indent=2 to say
+        # what was replaced, and a substring search over the whole source read
+        # that as the thing it was forbidding.
+        call = source.split("json.dump(", 1)[-1].split(")", 1)[0]
+        self.assertIn("separators", source)
+        self.assertNotIn("indent", call)

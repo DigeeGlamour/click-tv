@@ -254,6 +254,83 @@ def get_items(data: Any, *keys: str) -> list[Any] | None:
     return None
 
 
+_SETTINGS_CACHE: dict | None = None
+
+
+def _scanner_settings() -> dict:
+    """config/settings.json, read from the repository rather than from dist.
+
+    ROOT here is the built dist/ tree, which deliberately contains no config -
+    so the exception list has to be read beside the script. This runs from the
+    repository in both places that matter: the scan workflow and the Cloudflare
+    Pages build.
+    """
+    global _SETTINGS_CACHE
+    if _SETTINGS_CACHE is None:
+        path = Path(__file__).resolve().parents[1] / "config" / "settings.json"
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                loaded = json.load(handle)
+            _SETTINGS_CACHE = loaded if isinstance(loaded, dict) else {}
+        except (OSError, ValueError):
+            # No config, no exception. Refusing a below-floor card is the safe
+            # direction: it fails the build loudly instead of publishing
+            # quietly.
+            _SETTINGS_CACHE = {}
+    return _SETTINGS_CACHE
+
+
+def below_floor_allowance(item):
+    """(allowed, why) for a card published below the 720p floor.
+
+    The scanner has a named, evidence-bound exception for exactly one channel:
+    the card must be listed in config/settings.json under
+    resolution.below_floor_exceptions AND carry resolution_exception, which the
+    verifier only sets when route_preference holds a sustained-playback proof
+    for that exact route.
+
+    This validator had no such concept, and the two rules disagreeing is worse
+    than either rule alone: the scanner published the card and this refused the
+    whole build over it, so build-pages.sh failed as a workflow step, the run
+    never committed, and Cloudflare Pages kept serving the previous day's data
+    while every push looked fine. Reading the same config keeps them agreed.
+
+    Deliberately strict: config alone is not enough, and the measured height
+    must still reach the height that entry allows.
+    """
+    # The scanner keeps a verified stream whose resolution it could not read -
+    # a raw chunk list, or a Bangladeshi feed on the protected path - and marks
+    # it quality_unknown. Refusing those here overruled that decision and
+    # deleted restored channels (Ekattor TV, Bijoy TV, Boishakhi TV) while
+    # failing the build at the same time.
+    if item.get("quality_unknown") is True:
+        return True, "verified with no declared resolution (quality_unknown)"
+    if item.get("resolution_exception") is not True:
+        return False, ""
+    name = str(item.get("name") or "").strip().casefold()
+    if not name:
+        return False, ""
+    entries = (_scanner_settings().get("resolution") or {}).get(
+        "below_floor_exceptions"
+    )
+    if not isinstance(entries, list):
+        return False, ""
+    height = declared_resolution_height(item)
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        if str(entry.get("channel") or "").strip().casefold() != name:
+            continue
+        try:
+            floor = int(entry.get("minimum_height") or 0)
+        except (TypeError, ValueError):
+            return False, ""
+        if floor > 0 and height >= floor:
+            return True, f"allowed to {floor}p"
+        return False, ""
+    return False, ""
+
+
 def get_primary_url(item: dict[str, Any]) -> str:
     for key in ("url", "stream_url", "link"):
         value = item.get(key)
@@ -585,10 +662,16 @@ def validate_stream_item(
         allow_metadata_only and metadata_only
     ):
         primary_height = declared_resolution_height(item)
-        if primary_height < 720:
+        allowed_floor, why_below = below_floor_allowance(item)
+        if primary_height < 720 and not allowed_floor:
             add_error(
                 f"{label} resolution must be known and at least 720p: "
                 f"{name} ({primary_height or 'unknown'})"
+            )
+        elif allowed_floor:
+            add_warning(
+                f"{label} below 720p by a named exception: {name} "
+                f"({primary_height}) - {why_below}"
             )
 
     if playback_id:
@@ -625,7 +708,11 @@ def validate_stream_item(
         stream_height = declared_resolution_height(stream)
         # Same exemption as the primary stream above: an event's backup feed is
         # the same kind of undeclared-resolution live match link.
-        if media_kind in {"channel", "movie"} and stream_height < 720:
+        if (
+            media_kind in {"channel", "movie"}
+            and stream_height < 720
+            and not below_floor_allowance(stream)[0]
+        ):
             add_error(
                 f"{label} backup/standby #{stream_number} is below 720p or unknown: "
                 f"{name} ({stream_height or 'unknown'})"

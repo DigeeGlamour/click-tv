@@ -1775,6 +1775,12 @@ def rank_and_select_streams(
             backup_item["drm"] = b_stream["drm"]
         if b_stream.get("resolution"):
             backup_item["resolution"] = b_stream["resolution"]
+        # The numeric height was being dropped, so a backup that declared only
+        # resolution_height reached the card with no resolution at all - and the
+        # Pages validator holds backups to the same 720p rule as primaries,
+        # judging such an entry "unknown" and failing the build over it.
+        if b_stream.get("resolution_height"):
+            backup_item["resolution_height"] = b_stream["resolution_height"]
 
         backups.append(backup_item)
 
@@ -1883,6 +1889,125 @@ def _first_group_logo(
         if logo:
             return logo
     return ""
+
+
+def _kept_by_unknown_resolution_policy(item: Dict[str, Any]) -> bool:
+    """Whether the scanner deliberately kept this despite an unknown resolution.
+
+    `quality_unknown` is set by the verifier when media verification succeeded
+    and the stream simply declared no resolution - a raw chunk list, or a
+    Bangladeshi feed reached through the protected path. That branch exists
+    because quarantining those channels threw away working ones, so the
+    decision has already been made with more information than a card carries.
+
+    Withholding them here would undo it, and it did: Ekattor TV, Bijoy TV and
+    Boishakhi TV disappeared from the catalogue in one scan - channels this
+    project had explicitly restored.
+    """
+    return item.get("quality_unknown") is True
+
+
+def _drop_cards_the_pages_validator_would_refuse(
+    cards: List[Dict[str, Any]],
+    settings: Dict[str, Any],
+) -> int:
+    """Last gate: a card that cannot be published must not be written.
+
+    The candidate filter above applies the resolution contract to STREAMS, and
+    it is not the same question as whether the finished CARD satisfies it. A
+    card takes its resolution from the primary only when the primary carries
+    one - so a route the verifier passed under
+    `preserve_unknown_working_tv` ("Manifest/media verification succeeded;
+    resolution metadata was unavailable") produces a card with no resolution at
+    all, and scripts/validate-pages.py refuses the whole build over it:
+
+        [ERROR] Other channel #48 resolution must be known and at least 720p
+
+    That refusal is not cosmetic. build-pages.sh is a step in the scan
+    workflow, so one such card fails the run before it can commit, and
+    Cloudflare Pages keeps serving the last valid build. Measured: 111 cards in
+    this state, and a site frozen on data from the previous day while every
+    push looked successful.
+
+    Dropping them here keeps the two rules in agreement. Nothing is skipped
+    silently - the count and the first names are printed.
+    """
+    refused: List[str] = []
+    trimmed_backups = 0
+    for card in list(cards):
+        if not isinstance(card, dict):
+            continue
+        if not _kept_by_unknown_resolution_policy(card) and not (
+            _meets_resolution_contract(card, settings)
+        ):
+            refused.append(str(card.get("name") or card.get("id") or "?"))
+            cards.remove(card)
+            continue
+        # The validator holds backups to the same rule as primaries, and a
+        # backup it refuses fails the whole build exactly as a primary would -
+        # 23 of them did, after the primaries were already clean. A backup that
+        # cannot be published is not a fallback anyway.
+        for key in ("backups", "standby"):
+            entries = card.get(key)
+            if not isinstance(entries, list):
+                continue
+            kept = []
+            for entry in entries:
+                if not isinstance(entry, dict):
+                    kept.append(entry)
+                    continue
+                # A backup entry carries no source_pipeline - the merger builds
+                # it from a stream and keeps only playback fields. Judged on its
+                # own it therefore defaulted to "tv" and was held to the 720p
+                # floor, which deleted every backup on every event card: the
+                # event floor is 0 precisely because a live match feed rarely
+                # declares RESOLUTION. Measured as "0 != 3" on two event tests.
+                judged = entry
+                if not str(entry.get("source_pipeline") or "").strip():
+                    judged = dict(entry)
+                    judged["source_pipeline"] = card.get("source_pipeline") or "tv"
+                if _kept_by_unknown_resolution_policy(entry) or (
+                    _meets_resolution_contract(judged, settings)
+                ):
+                    kept.append(entry)
+                else:
+                    trimmed_backups += 1
+            if len(kept) != len(entries):
+                card[key] = kept
+                if key == "backups":
+                    card["available_link_count"] = 1 + len(kept)
+    if refused or trimmed_backups:
+        print(
+            f"   withheld for the Pages resolution rule: {len(refused)} card(s)"
+            f" and {trimmed_backups} backup(s)"
+            + (f" (first card: {', '.join(refused[:5])})" if refused else "")
+        )
+    return len(refused)
+
+
+def _stable_channel_name(
+    candidates: List[Dict[str, Any]],
+    base_item: Dict[str, Any],
+) -> str:
+    """The card's label, chosen from every spelling in the group.
+
+    Taking it from base_item made the label depend on which candidate ranked
+    first, so once spellings were folded into one group "Star Jalsha" became
+    "STAR JALSHA" and "Zoom" became "ZOOM" between two scans. The stream did
+    not change; only the name a viewer searches for and favourites by.
+    """
+    fallback = str(base_item.get("name") or "")
+    try:
+        from scanner import channel_alias
+
+        names = [
+            str(item.get("name") or "")
+            for item in candidates
+            if isinstance(item, dict) and str(item.get("name") or "").strip()
+        ]
+        return channel_alias.preferred_display_name(names) or fallback
+    except Exception:  # noqa: BLE001 - a label must never fail a scan
+        return fallback
 
 
 def merge_candidates(
@@ -2122,7 +2247,7 @@ def merge_candidates(
         display_name = (
             fixture_display_name(base_item, channel_alias_map)
             if group_pipeline in _EVENT_PIPELINES and event_channels
-            else base_item.get("name", "")
+            else _stable_channel_name(publishable_candidates, base_item)
         )
 
         # The channel ids are namespaced by this, so the broadcaster has to come
@@ -2236,6 +2361,21 @@ def merge_candidates(
             merged_card["resolution"] = primary["resolution"]
         if primary and primary.get("resolution_height"):
             merged_card["resolution_height"] = primary["resolution_height"]
+
+        # Read from the PRIMARY, not from base_item. These fields record why the
+        # published route is allowed below the resolution floor, and it is the
+        # primary that is below it - base_item is whichever candidate scored
+        # highest on quality, which for Zee Bangla is the 1080i fallback that
+        # decodes nowhere. Carried from base_item the flag simply went missing
+        # and the card shipped at 576p with nothing saying why.
+        for field_name in (
+            "resolution_exception",
+            "quality_below_preferred",
+            "quality_unknown",
+            "quality_policy_note",
+        ):
+            if primary and primary.get(field_name) not in (None, ""):
+                merged_card[field_name] = primary[field_name]
         for field_name in (
             "start_time",
             "start_at",
@@ -2254,14 +2394,6 @@ def merge_candidates(
             "time_verification",
             "source_category",
             "today_source_channel",
-            # Carried so the card itself records why it is below the
-            # resolution floor. Without these the only trace was in config and
-            # in a scan log, which is not where anyone reading the catalogue
-            # would look, and an audit of "which cards are under 720p and by
-            # whose decision" had nothing to read.
-            "resolution_exception",
-            "quality_below_preferred",
-            "quality_policy_note",
         ):
             if base_item.get(field_name) not in (None, ""):
                 merged_card[field_name] = base_item[field_name]
@@ -2296,5 +2428,7 @@ def merge_candidates(
 
         for card_index, original_position in enumerate(category_indices):
             merged_results[original_position] = ordered_cards[card_index]
+
+    _drop_cards_the_pages_validator_would_refuse(merged_results, settings)
 
     return merged_results

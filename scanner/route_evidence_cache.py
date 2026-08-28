@@ -30,15 +30,36 @@ DEFAULT_PATH = os.path.join(
     "route-evidence-cache.json",
 )
 
-#: New policy, reasoned from measured scan cadence rather than the Phase 0b
-#: lock: several multiples of the slowest real cadence (movies, ~48 h), long
-#: enough that at least two real scans' evidence can co-exist, short enough
-#: that a route nobody re-observes for two weeks stops counting.
-RETENTION_SECONDS = 14 * 24 * 3600
+#: How long an observation is kept.
+#:
+#: Was 14 days, chosen to span the ~6 h channel-scan cadence comfortably. The
+#: file reached 60.4 MB across 26,396 routes and is committed by every scan -
+#: GitHub warns above 50 MB per file and refuses above 100 MB, so a few more
+#: scans would have broken pushing entirely.
+#:
+#: 7 days still spans about 28 channel scans and 3 movie scans, which is far
+#: more than the rule needs: two observations from different vantages in
+#: separate time windows. Nothing about the two-vantage decision reaches back a
+#: fortnight.
+RETENTION_SECONDS = 7 * 24 * 3600
 
 #: A single route accumulating unboundedly is a slow leak, not a feature - once
 #: two windows exist the verdict is already decided.
 MAX_RECORDS_PER_ROUTE = 20
+
+#: A hard ceiling on how many routes the cache holds, newest observation first.
+#:
+#: Retention alone does not bound this file. Every route the scanner has ever
+#: probed within the window is kept, and one scan probes 3,200 channels and
+#: 21,400 movies - so the file reached 60.4 MB with every route inside 7 days
+#: and nothing to trim. It is committed by every scan, and GitHub refuses a
+#: file above 100 MB, so the growth had a deadline.
+#:
+#: 20,000 routes at ~1 KB each keeps it near 20 MB. The routes dropped are the
+#: least recently observed, which are also the least likely to be asked about:
+#: the two-vantage decision is made about a route the CURRENT scan is looking
+#: at, and that route is by definition freshly observed.
+MAX_ROUTES = 20_000
 
 
 def load(path: Optional[str] = None) -> Dict[str, Any]:
@@ -77,6 +98,20 @@ def _prune(
         if kept:
             kept.sort(key=lambda r: rev._parse_observed_at(r.get("observed_at")) or 0.0)
             routes[str(route_id)] = kept[-MAX_RECORDS_PER_ROUTE:]
+
+    if len(routes) > MAX_ROUTES:
+        # Least recently observed routes go first. Retention could not bound
+        # this on its own: one scan probes 24,600 routes, so every route was
+        # inside the window and nothing was ever trimmed.
+        def _latest(item) -> float:
+            return max(
+                (rev._parse_observed_at(r.get("observed_at")) or 0.0)
+                for r in item[1]
+            )
+
+        ordered = sorted(routes.items(), key=_latest, reverse=True)
+        routes = dict(ordered[:MAX_ROUTES])
+
     return {"version": 1, "routes": routes}
 
 
@@ -124,7 +159,12 @@ def append(
     try:
         os.makedirs(os.path.dirname(target), exist_ok=True)
         with open(temporary, "w", encoding="utf-8") as handle:
-            json.dump(cache, handle, indent=2, ensure_ascii=False)
+            # Compact separators, not indent=2. This file is machine-read only
+            # and 24% of its 60 MB was whitespace; a human reading it uses
+            # jq or the audit report, both of which are unaffected.
+            json.dump(
+                cache, handle, ensure_ascii=False, separators=(",", ":")
+            )
             handle.write("\n")
         os.replace(temporary, target)
     except OSError:

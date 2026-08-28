@@ -83,6 +83,36 @@ def _load_failure_keys_cached(path_text: str, modified_ns: int) -> Set[Tuple[str
     return keys
 
 
+@lru_cache(maxsize=8)
+def _load_failed_routes_cached(path_text: str, modified_ns: int) -> Set[str]:
+    """The route fingerprints that actually failed in a browser."""
+    del modified_ns
+    path = Path(path_text)
+    if not path.is_file():
+        return set()
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return set()
+    routes: Set[str] = set()
+    for entry in payload.get("records") or []:
+        if not isinstance(entry, dict):
+            continue
+        record = entry.get("record")
+        if not isinstance(record, dict):
+            continue
+        fingerprint = playback_fingerprint(record)
+        if fingerprint:
+            routes.add(fingerprint)
+    return routes
+
+
+def load_failed_routes(report_path: str | Path = DEFAULT_FAILURE_REPORT) -> Set[str]:
+    path = Path(report_path).resolve()
+    modified_ns = path.stat().st_mtime_ns if path.is_file() else 0
+    return _load_failed_routes_cached(str(path), modified_ns)
+
+
 def load_failure_keys(report_path: str | Path = DEFAULT_FAILURE_REPORT) -> Set[Tuple[str, str, str]]:
     path = Path(report_path).resolve()
     modified_ns = path.stat().st_mtime_ns if path.is_file() else 0
@@ -197,12 +227,37 @@ def is_confirmed_player_failure(
     normalized_kind = str(kind or "").strip().casefold()
     keys = set(failure_keys) if failure_keys is not None else load_failure_keys()
     key = _item_key(normalized_kind, item)
-    if key in keys:
+    name_matches = key in keys
+    if not name_matches and normalized_kind == "movie" and not key[2]:
+        # A missing movie year in either source is matched only by its title.
+        name_matches = any(candidate[:2] == key[:2] for candidate in keys)
+    if not name_matches:
+        return False
+
+    # The name matching above is not the decision. This ledger records the
+    # ROUTE that failed - url, header profile, proxy mode, stream type are all
+    # in each record, and playback_fingerprint exists to key on them - but the
+    # filter used to match on the channel name alone. One browser failure
+    # therefore hid a channel permanently, however many working routes turned
+    # up afterwards.
+    #
+    # Measured: Ekattor TV and Bijoy TV failed on their stream.ottplus.live
+    # routes, and both were still hidden while this scan held a verified_global
+    # HD/720 route for each. They were not in any hidden-items report either,
+    # so the loss was invisible.
+    #
+    # So a card is hidden only while it is still serving a route that failed.
+    # Change the route and the channel is eligible again, which is the same
+    # rule the comment on the proof ledger in scanner/channels.py argues for.
+    routes = load_failed_routes()
+    if not routes:
+        # No fingerprints recorded (an older ledger). Fall back to the previous
+        # behaviour rather than silently stop hiding anything.
         return True
-    # A missing movie year in either source is matched only by its exact title.
-    if normalized_kind == "movie" and not key[2]:
-        return any(candidate[:2] == key[:2] for candidate in keys)
-    return False
+    fingerprint = playback_fingerprint(item)
+    if not fingerprint:
+        return True
+    return fingerprint in routes
 
 
 def mark_confirmed_player_failures(
