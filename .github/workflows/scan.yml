@@ -261,6 +261,61 @@ jobs:
           echo "Selected scan mode: $MODE"
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
 
+      # A run that waited out its own cadence has nothing useful left to write,
+      # and finishing it holds the queue against the next one.
+      #
+      # Measured on 2026-08-28: a today-match run created at 06:53 started at
+      # 07:43 - fifty minutes late - while the cron asks for one every twenty
+      # minutes. The concurrency group is deliberately one-writer with
+      # cancel-in-progress false, so slow runs stack rather than replace each
+      # other, and six workflow_dispatch runs have been queued since 2026-08-05
+      # and 08-11 and cannot be cancelled from here.
+      #
+      # Only the two frequent modes are dropped, and only when they are already
+      # past their own interval. channels, movies and the twice-daily upcoming
+      # refresh always run: they are infrequent, they are the ones that publish
+      # the catalogue, and a late one is still worth having.
+      - name: Skip a superseded run of a frequent mode
+        id: staleness
+        if: github.event_name == 'schedule'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -uo pipefail
+
+          MODE="${{ steps.scan_mode.outputs.mode }}"
+          case "$MODE" in
+            today) LIMIT=1500 ;;             # 25 min, cadence is 20
+            upcoming-targeted) LIMIT=720 ;;  # 12 min, cadence is 5
+            *) echo "mode $MODE always runs"; echo "stale=no" >> "$GITHUB_OUTPUT"; exit 0 ;;
+          esac
+
+          CREATED="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            --jq .created_at 2>/dev/null || true)"
+          if [[ -z "$CREATED" ]]; then
+            echo "run creation time unavailable; running anyway"
+            echo "stale=no" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          CREATED_TS="$(date -u -d "$CREATED" +%s 2>/dev/null || echo 0)"
+          NOW_TS="$(date -u +%s)"
+          if [[ "$CREATED_TS" -eq 0 ]]; then
+            echo "could not parse $CREATED; running anyway"
+            echo "stale=no" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          AGE=$(( NOW_TS - CREATED_TS ))
+          echo "mode=$MODE queued_age=${AGE}s limit=${LIMIT}s"
+          if [[ "$AGE" -gt "$LIMIT" ]]; then
+            echo "This $MODE run is ${AGE}s old and superseded; skipping the scan."
+            echo "stale=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "stale=no" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout private movie source repository
         if: steps.scan_mode.outputs.mode == 'movies' || steps.scan_mode.outputs.mode == 'all'
         uses: actions/checkout@v7
@@ -302,6 +357,7 @@ jobs:
             ! -name '_*' | sort
 
       - name: Run scanner
+        if: steps.staleness.outputs.stale != 'yes'
         shell: bash
         env:
           PYTHONUNBUFFERED: "1"
@@ -343,12 +399,14 @@ jobs:
           echo "============================================================"
 
       - name: Validate generated Cloudflare Pages output
+        if: steps.staleness.outputs.stale != 'yes'
         shell: bash
         run: |
           set -euo pipefail
           bash scripts/build-pages.sh
 
       - name: Commit and push updated data
+        if: steps.staleness.outputs.stale != 'yes'
         id: git_push
         shell: bash
         run: |
@@ -463,7 +521,7 @@ jobs:
           echo "GitHub push successful: $COMMIT"
 
       - name: Send Telegram after successful GitHub push
-        if: success()
+        if: success() && steps.staleness.outputs.stale != 'yes'
         shell: bash
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
