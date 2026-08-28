@@ -99,6 +99,26 @@ class StalenessGuardTests(unittest.TestCase):
 
 
 class ConcurrencyTests(unittest.TestCase):
+    def test_the_group_name_records_why_it_was_rotated(self):
+        """A rotation without its reason looks like churn to the next reader.
+
+        The group has been rotated twice for the same cause: runs left pending
+        in it forever. A concurrency group holds one run in progress and one
+        pending, so anything behind them is dropped - six workflow_dispatch
+        runs stuck since 2026-08-05 stopped scheduled runs appearing at all,
+        and a pushed fix went unused for over two hours.
+        """
+        if not WORKFLOW.is_file():
+            self.skipTest("no workflow")
+        text = WORKFLOW.read_text(encoding="utf-8")
+        group = (_load().get("concurrency") or {}).get("group") or ""
+        self.assertRegex(
+            str(group), r"-v\d+$",
+            "the group carries no version, so a jam cannot be rotated away",
+        )
+        head = text.split("concurrency:", 1)[-1].split("group:", 1)[0]
+        self.assertIn("pending", head.lower())
+
     def test_the_one_writer_guarantee_is_still_in_place(self):
         """The guard reduces the backlog; it must not weaken write safety."""
         if not WORKFLOW.is_file():

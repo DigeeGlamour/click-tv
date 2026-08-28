@@ -48,8 +48,22 @@ permissions:
   contents: write
 
 concurrency:
-  # v2 rotates away from the orphaned v1 queue while preserving one-writer safety.
-  group: live-signal-data-writer-v2
+  # v3, and the reason is the same one that produced v2: the group is jammed.
+  #
+  # Six workflow_dispatch runs have been pending in v2 since 2026-08-05 and
+  # 08-11 - 392 hours at the time of writing - and they cannot be cancelled
+  # from CI (the token gets HTTP 403). A concurrency group holds one run in
+  # progress and one pending; anything else queued behind them is dropped, so
+  # scheduled runs stopped appearing at all: none between 06:53 and 09:15 UTC
+  # on 2026-08-28 despite a five-minute cron, while a pushed fix sat unused.
+  #
+  # Rotating the name moves new runs to an empty queue. The stuck runs stay in
+  # v2 and stop mattering. One-writer safety is unchanged: still one group,
+  # still cancel-in-progress false, so two scans can never write data at once.
+  #
+  # The orphaned runs are worth cancelling by hand anyway - this only stops
+  # them blocking anything.
+  group: live-signal-data-writer-v3
   cancel-in-progress: false
 
 jobs:
