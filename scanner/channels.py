@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Set
 
 try:
+    from scanner import category_allowlist
     from scanner.channel_logos import enrich_channel_logos
     from scanner.content_router import is_vod_candidate
     from scanner.merger import merge_candidates, pin_t_sports_first
@@ -23,6 +24,7 @@ except ImportError:
     module_dir = str(Path(__file__).resolve().parent)
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
+    import category_allowlist  # type: ignore[no-redef]
     from channel_logos import enrich_channel_logos
     from content_router import is_vod_candidate
     from merger import merge_candidates, pin_t_sports_first
@@ -233,6 +235,7 @@ def process_tv_channels(
         ]
 
     published_identity_keys: Set[str] = set()
+    rejected_by_allowlist: List[Dict[str, Any]] = []
 
     for card in known_cards:
         if not isinstance(card, dict):
@@ -244,6 +247,20 @@ def process_tv_channels(
 
         card_copy = dict(card)
         card_copy["category"] = canonical_category
+
+        # A curated category publishes only the names it lists. Dropped here
+        # rather than re-routed to Other, because the point of the list is that
+        # the card should not exist - moving it would leave the card.
+        if not category_allowlist.is_allowed(canonical_category, card_copy.get("name")):
+            rejected_by_allowlist.append(
+                {
+                    "name": str(card_copy.get("name") or ""),
+                    "category": canonical_category,
+                    "reason": "not on the publish allowlist for this category",
+                }
+            )
+            continue
+
         categorized[canonical_category].append(card_copy)
         published_identity_keys.update(_identity_keys(card_copy))
 
@@ -281,7 +298,61 @@ def process_tv_channels(
         "Sports",
     )
 
+    _write_allowlist_report(categorized, rejected_by_allowlist)
+
     return categorized
+
+
+def _write_allowlist_report(
+    categorized: Dict[str, List[Dict[str, Any]]],
+    rejected: List[Dict[str, Any]],
+) -> None:
+    """Say what a curated category refused and what it did not receive.
+
+    A filter that drops cards without saying which ones is the same shape of
+    problem as a scan that hides a channel without saying why. Both halves
+    matter: what was refused, and which of the requested names produced no card
+    at all this run - the second is how the owner finds out a channel they asked
+    for has no working source left.
+    """
+    restricted = [
+        category for category in categorized
+        if category_allowlist.is_restricted(category)
+    ]
+    if not restricted and not rejected:
+        return
+    payload: Dict[str, Any] = {
+        "mode": "category_publish_allowlist",
+        "note": (
+            "Categories listed in config/channel-categories.json under "
+            "publish_allowlist publish only the names they list. Anything else "
+            "is dropped from that category rather than moved to Other."
+        ),
+        "rejected_count": len(rejected),
+        "rejected": sorted(rejected, key=lambda row: str(row.get("name") or "")),
+        "categories": {},
+    }
+    for category in sorted(restricted):
+        cards = categorized.get(category) or []
+        payload["categories"][category] = {
+            "requested": len(category_allowlist.allowed_names(category)),
+            "published": len(cards),
+            "published_names": sorted(
+                str(card.get("name") or "") for card in cards
+            ),
+            "requested_but_not_published": category_allowlist.missing_from(
+                cards, category
+            ),
+        }
+    try:
+        target = Path("reports") / "category-allowlist.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=1) + "\n",
+            encoding="utf-8",
+        )
+    except OSError:  # noqa: BLE001 - a report must never fail a scan
+        pass
 
 
 if __name__ == "__main__":

@@ -69,12 +69,33 @@ class TheFloorItselfTests(unittest.TestCase):
         self.assertEqual(resolution["movie_minimum_height"], 720)
         self.assertFalse(resolution["allow_unknown_tv_resolution"])
 
-    def test_exactly_one_channel_is_listed(self):
+    def test_only_named_channels_are_listed(self):
+        """The list is named, short, and grows only on measurement.
+
+        It was one channel. Sangeet Bangla was added on 2026-08-30 for the same
+        reason Zee Bangla was: the only route any configured source still
+        carries is 576p, and it passed two independent 120 s browser sessions
+        (115.72 s and 115.08 s of media) while every alternative answered 403,
+        404, or declared no resolution at all.
+
+        The names are pinned rather than the count, so adding a third is a
+        deliberate edit to this test and not something that slips through.
+        """
         listed = [
             entry["channel"]
             for entry in SETTINGS["resolution"]["below_floor_exceptions"]
         ]
-        self.assertEqual(listed, ["Zee Bangla"])
+        self.assertEqual(listed, ["Zee Bangla", "Sangeet Bangla"])
+
+    def test_every_listed_entry_demands_its_own_proof(self):
+        """Config alone must never be enough for any of them."""
+        for entry in SETTINGS["resolution"]["below_floor_exceptions"]:
+            self.assertTrue(
+                entry.get("requires_sustained_proof"), entry.get("channel")
+            )
+            self.assertGreaterEqual(int(entry.get("minimum_height") or 0), 120)
+            self.assertGreater(len(str(entry.get("reason") or "")), 120,
+                               f"{entry.get('channel')} cites no evidence")
 
     def test_the_entry_says_why_and_cites_its_evidence(self):
         entry = SETTINGS["resolution"]["below_floor_exceptions"][0]
