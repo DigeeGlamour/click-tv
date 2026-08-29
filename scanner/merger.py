@@ -1792,12 +1792,28 @@ def rank_and_select_streams(
             ),
             "verification_mode": b_stream.get("verification_mode", "local"),
             "verification_status": _verification_label(b_stream),
-            "verification_badge": _verification_badge(b_stream),
+            # The playback-aware badge, for the same reason the primary gets
+            # one. Star Jalsha's Backup-2 shipped "Verified" on rgkkw.live
+            # while that exact route sat in the measured-failure ledger, and
+            # its Backup-1 shipped "Verified" on a DRM route no browser had
+            # ever been asked to play. A backup is a route a viewer is offered,
+            # so it answers to the same evidence the primary does.
+            "verification_badge": _playback_aware_badge(b_stream),
             "verified": bool(b_stream.get("verified", False)),
             "publish_allowed": _effective_publish_allowed(b_stream),
             "source_id": str(b_stream.get("source_id") or ""),
             "host": _extract_hostname(str(b_stream.get("url") or "")),
         }
+        # _playback_aware_badge records the measurement on the stream it read.
+        # Carrying it onto the backup keeps the reason next to the badge, so a
+        # card can say WHY a backup is unproven and not only that it is.
+        for field_name in (
+            "playback_unproven",
+            "playback_unproven_reason",
+            "transient_rescue_count",
+        ):
+            if b_stream.get(field_name) not in (None, ""):
+                backup_item[field_name] = b_stream[field_name]
         if b_stream.get("drm"):
             backup_item["drm"] = b_stream["drm"]
         if b_stream.get("resolution"):
@@ -2468,6 +2484,12 @@ def merge_candidates(
             "quality_below_preferred",
             "quality_unknown",
             "quality_policy_note",
+            # The consecutive-transient counter lives on the card because that
+            # is what the next scan reads it from. Dropped here, every scan
+            # would look like the first one and a permanently rate-limited host
+            # could hold a dead channel open for ever.
+            "transient_rescue_count",
+            "vantage_note",
         ):
             if primary and primary.get(field_name) not in (None, ""):
                 merged_card[field_name] = primary[field_name]

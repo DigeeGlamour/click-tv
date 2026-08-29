@@ -503,6 +503,70 @@ def reclassify(path: str) -> int:
     return 0
 
 
+def _measured_reason(per_route: List[Dict[str, Any]]) -> str:
+    """The first thing the harness actually said about why it did not play."""
+    for record in per_route:
+        for source in (record.get("reasons") or []):
+            if str(source or "").strip():
+                return str(source).strip()
+        fatal = (record.get("playback_metrics") or {}).get("fatal_errors") or []
+        for source in fatal:
+            if str(source or "").strip():
+                return str(source).strip()
+    return "measured unplayable with no reason reported by the harness"
+
+
+def _record_evidence(
+    target: Dict[str, Any],
+    per_route: List[Dict[str, Any]],
+    *,
+    proven: bool,
+    vantage: str,
+    window_seconds: float,
+    evidence_report: str,
+) -> None:
+    """Put this route's verdict into the measured-playback ledger.
+
+    A pass supersedes an existing failure rather than deleting it, so the two
+    vantages stay visible side by side. A route with no URL - a protected card
+    that exposes only a playback id - is skipped: the ledger is keyed by URL,
+    and there is nothing to key on.
+    """
+    from scanner import playback_evidence
+
+    url = str(target.get("url") or "").strip()
+    if not url:
+        return
+    progress = [
+        (record.get("playback_metrics") or {}).get("media_progress_seconds")
+        for record in per_route
+    ]
+    if proven:
+        playback_evidence.record_proof(
+            url,
+            vantage=vantage,
+            sessions=len(per_route),
+            media_progress_seconds=progress,
+            window_seconds=window_seconds,
+            evidence_report=evidence_report,
+        )
+        return
+    if any(record.get("verdict") == rev.PROVEN for record in per_route):
+        # One pass and one inconclusive session is not a proof, but it is also
+        # not a measured failure. Recording it as one would be the mistake this
+        # ledger exists to stop.
+        return
+    playback_evidence.record(
+        url,
+        _measured_reason(per_route),
+        sessions=len(per_route),
+        media_progress_seconds=progress,
+        window_seconds=window_seconds,
+        evidence_report=evidence_report,
+        vantage=vantage,
+    )
+
+
 def run(argv: List[str]) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--targets", default="", help="JSON list of channel items")
@@ -527,6 +591,13 @@ def run(argv: List[str]) -> int:
                     help="keep measurements already in --out and skip those targets")
     ap.add_argument("--reclassify", default="",
                     help="recompute verdicts in an existing report and exit")
+    ap.add_argument("--record-evidence", default="",
+                    help="write each verdict into "
+                         "state/measured-playback-failures.json tagged with "
+                         "this vantage name, e.g. "
+                         "'bangladesh-residential' or 'github-actions-us'. "
+                         "Off by default: a measurement taken on a bad link "
+                         "should not be able to brand a route on its own.")
     args = ap.parse_args(argv)
 
     if args.reclassify:
@@ -819,6 +890,15 @@ def run(argv: List[str]) -> int:
                             break
 
                 passes = [r for r in per_route if r["verdict"] == rev.PROVEN]
+                if args.record_evidence:
+                    _record_evidence(
+                        target,
+                        per_route,
+                        proven=len(passes) >= rev.REQUIRED_FRESH_SESSIONS,
+                        vantage=args.record_evidence,
+                        window_seconds=args.seconds,
+                        evidence_report=args.out,
+                    )
                 results.append(
                     {
                         "name": name,
