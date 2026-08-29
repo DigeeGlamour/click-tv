@@ -262,6 +262,28 @@ jobs:
           node tests/playback-worker-runtime.mjs
           python -m unittest discover -s tests -p "test_*.py" -v
 
+          # The suite writes into the repository's REAL state/ and reports/.
+          # Around thirty tests across test_model_enforcement,
+          # test_visibility_audit, test_evidence_ordering, test_manual_movies
+          # and others call the persistence helpers on their default paths, and
+          # those default to the working tree.
+          #
+          # It is not cosmetic. Measured on 2026-08-29: one suite run left
+          # state/route-persistence.json 13,736 lines shorter - the ledger that
+          # holds per-route observation history, and the whole reason a channel
+          # is not given up on after one bad answer. Because this step runs
+          # before the scanner, every run since the suite grew has started from
+          # an emptied ledger and then committed it: 497 KB at 150d3487c, 22 KB
+          # three commits later, 216 KB at 3796cd144, 23 KB at 71fda2082.
+          #
+          # Discarding the churn here restores the committed evidence before
+          # the scanner reads it. The tests themselves still need isolating -
+          # that is a change to thirty call sites and belongs in its own commit.
+          echo "Discarding test-run churn in state/ and reports/ before scanning:"
+          git status --porcelain -- state reports | head -40
+          git checkout -- state reports
+          git status --porcelain -- state reports
+
       - name: Select scan mode
         id: scan_mode
         shell: bash
@@ -286,6 +308,28 @@ jobs:
 
           echo "Selected scan mode: $MODE"
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+
+      # Five crons ask for roughly 370 runs a day. GitHub delivered ten on
+      # 2026-08-27, nine on 08-28 and nine on 08-29, against ninety-five on
+      # 08-22. That is documented GitHub behaviour - a schedule event is
+      # delayed under load and skipped once the delay reaches the next
+      # occurrence, and `*/5` puts the next occurrence five minutes away - and
+      # nothing here can change it.
+      #
+      # What it can change is what the surviving runs do. The dense crons win
+      # the few slots, so on 2026-08-29 the channels catalogue was sixteen
+      # hours stale and the movie catalogue forty-seven, both still published.
+      # This step lets a surviving run also scan whichever catalogue mode is
+      # overdue. It adds; it never replaces, and never more than one per run.
+      - name: Plan a catch-up for a catalogue the schedule skipped
+        id: catchup
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/select-scan-mode.py \
+            --scheduled "${{ steps.scan_mode.outputs.mode }}" \
+            --event-name "${{ github.event_name }}" \
+            > /dev/null
 
       # A run that waited out its own cadence has nothing useful left to write,
       # and finishing it holds the queue against the next one.
@@ -383,7 +427,10 @@ jobs:
             ! -name '_*' | sort
 
       - name: Run scanner
-        if: steps.staleness.outputs.stale != 'yes'
+        # A superseded frequent run still runs when it carries a catch-up: the
+        # scheduled today-match pass is what is stale, not the channels
+        # catalogue the run was about to rescue.
+        if: steps.staleness.outputs.stale != 'yes' || steps.catchup.outputs.catchup != ''
         shell: bash
         env:
           PYTHONUNBUFFERED: "1"
@@ -407,32 +454,50 @@ jobs:
           set -euo pipefail
 
           MODE="${{ steps.scan_mode.outputs.mode }}"
+          CATCHUP="${{ steps.catchup.outputs.catchup }}"
+          STALE="${{ steps.staleness.outputs.stale }}"
 
           echo "============================================================"
           echo "LIVE SIGNAL SCANNER STARTED"
           echo "Mode: $MODE"
+          echo "Catch-up: ${CATCHUP:-none}"
           echo "Commit: $(git rev-parse --short HEAD)"
           echo "Started: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
           python --version
           echo "============================================================"
 
-          python -u scan.py "$MODE" 2>&1 | tee scanner-run.log
+          # The overdue catalogue first. It is the one the schedule dropped,
+          # so if the job is going to run out of time it should not be the
+          # thing that loses.
+          if [[ -n "$CATCHUP" ]]; then
+            echo "--- catch-up scan: $CATCHUP ---"
+            python -u scan.py "$CATCHUP" 2>&1 | tee scanner-run.log
+          fi
+
+          if [[ "$STALE" == "yes" ]]; then
+            echo "--- scheduled $MODE pass skipped: superseded ---"
+          elif [[ -n "$CATCHUP" ]]; then
+            python -u scan.py "$MODE" 2>&1 | tee -a scanner-run.log
+          else
+            python -u scan.py "$MODE" 2>&1 | tee scanner-run.log
+          fi
 
           echo "============================================================"
           echo "SCANNER FINISHED"
           echo "Mode: $MODE"
+          echo "Catch-up: ${CATCHUP:-none}"
           echo "Finished: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
           echo "============================================================"
 
       - name: Validate generated Cloudflare Pages output
-        if: steps.staleness.outputs.stale != 'yes'
+        if: steps.staleness.outputs.stale != 'yes' || steps.catchup.outputs.catchup != ''
         shell: bash
         run: |
           set -euo pipefail
           bash scripts/build-pages.sh
 
       - name: Commit and push updated data
-        if: steps.staleness.outputs.stale != 'yes'
+        if: steps.staleness.outputs.stale != 'yes' || steps.catchup.outputs.catchup != ''
         id: git_push
         shell: bash
         run: |
