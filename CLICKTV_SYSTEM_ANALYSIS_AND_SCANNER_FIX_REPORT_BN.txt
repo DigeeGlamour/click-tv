@@ -314,6 +314,8 @@ site-এর নিজের buildAttemptPlan() দিয়ে, desktop_chrome (
 
 Round 1 — বর্তমানে published card ও তাদের প্রতিটি route (14টি, 4টি proven):
 
+  (এই দুই দফার পরে তৃতীয় একটি দফা হয়েছে — §৪ঘ-এর Star Jalsha সংশোধন দেখুন।)
+
   Route                            proven  media progress (s)   stall (s)  engine
   ------------------------------   ------  ------------------   ---------  ------
   Star Jalsha [primary] devm3u     না      112.21 / 116.93      5 / 2      hls.js
@@ -354,7 +356,8 @@ Round 2 — বিকল্প route খোঁজা (14টি, 7টি proven):
   Sangeet Bangla ← devm3u [smartplaytv]            হ্যাঁ  115.72 / 115.08    1 / 4
   Sun Bangla ← bare-IP [manual]                    না       0.00 /   0.00    0 / 0
 
-মোট ২৮টি route × ২টি session = ৫৬টি আসল ১২০ সেকেন্ডের browser session।
+মোট ২৯টি route × ২টি session = **৫৮টি আসল ১২০ সেকেন্ডের browser session**
+(round 1: 14, round 2: 14, round 3: Star Jalsha-র নতুন route 1)।
 
 --------------------------------------------------------------------------------
 ৪গ. Zee Bangla — সমাধান করা হয়েছে (প্রমাণ সহ)
@@ -394,9 +397,26 @@ Round 2 — বিকল্প route খোঁজা (14টি, 7টি proven):
 হচ্ছে না।** সবচেয়ে ভালো যেটি (devm3u) সেটিই primary আছে, আর তার badge
 "Playback Unproven"।
 
-উল্লেখ্য: 08-29 17:00-এর CI scan Star Jalsha-কে একটি নতুন BD host দিয়েছে —
-`s3.itcnbd.live/server-4/...`। এটি আমার browser test-এর পরে এসেছে, তাই
-**এখনো মাপা হয়নি**। এটিই পরের ধাপের সবচেয়ে সম্ভাবনাময় candidate।
+**সংশোধন — এরপর মাপা হয়েছে এবং Star Jalsha এখন চলে।**
+08-29 17:00-এর CI scan Star Jalsha-কে একটি নতুন Bangladeshi host দিয়েছিল
+(`s3.itcnbd.live/server-4/...`), যা আমার প্রথম দুই দফা browser test-এর পরে
+এসেছিল। সেটিও ২ × ১২০ সেকেন্ড মাপা হয়েছে:
+
+    session 0:  media 119.96s, stall 0s, first frame 1.56s, route=direct  PROVEN
+    session 1:  media 119.99s, stall 0s, first frame 1.79s, route=direct  PROVEN
+
+    → reports/star-jalsha-itcnbd-playback.json
+
+এটিই এখন card-এর primary (CI scan নিজেই বসিয়েছে), এবং proof
+state/sustained-playback-proof.json-এ লেখা হয়েছে, যাতে কোনো scan একে লুকাতে
+না পারে।
+
+এর তিনটি backup (devm3u, premiumtvs, rgkkw) কোনোটিই পাস করেনি; ledger অনুযায়ী
+দুটির badge এখন "Playback Unproven" (নিচে দেখুন)। route_preference-এ এই
+route-টি লেখা যায়নি: তার path-এ একটি ৬৩-অক্ষরের base64 অংশ আছে, আর project-এর
+নিজস্ব credential-guard (`evidence_contains_forbidden_material`) সেটিকে
+credential ভেবে registry-তে লিখতে দেয় না। Guard-টি শিথিল করা হয়নি — সেটি
+সুবিধার জন্য নিরাপত্তা নিয়ম বদলানো হতো।
 
 --------------------------------------------------------------------------------
 ৪ঙ. Nick Bangla / Sonic Bangla / SONY YAY Bengali
@@ -600,10 +620,32 @@ Actions: https://github.com/DigeeGlamour/click-tv/actions
   scripts/removed-card-audit.py        বাদ পড়া card-এর মাপা কারণ
   scripts/record-playback-evidence.py  report → ledger, vantage সহ
   scripts/select-scan-mode.py          catch-up সিদ্ধান্ত (push বাকি)
+  scripts/rebadge-measured-routes.py   published badge ↔ ledger মেলানো
+  reports/star-jalsha-itcnbd-playback.json  Star Jalsha-র নতুন route-এর প্রমাণ
   reports/bengali-route-playback.json      round 1 browser evidence
   reports/bengali-alternative-playback.json round 2 browser evidence
   reports/channel-route-scout.json          ৭৫টি candidate route
   reports/removed-card-audit.json           ৫৮টি বাদ পড়া card
+
+
+--------------------------------------------------------------------------------
+৮ক. Published badge গুলো ledger-এর সঙ্গে মেলানো
+--------------------------------------------------------------------------------
+Merger এখন backup-এর badge ledger থেকে নেয় — কিন্তু সেটি কেবল পরের scan-এ
+কার্যকর হবে। যে catalogue **মাপার আগে** publish হয়েছিল, সেটিতে হাত পড়ে না,
+আর দুইয়ের মাঝে অনেক ঘণ্টা যেতে পারে।
+
+`scripts/rebadge-measured-routes.py` (নতুন) ledger পড়ে published card-এর badge
+ঠিক করে দেয় — merger যা লিখত, ঠিক তাই। কিছু লুকায় না, কিছু বাদ দেয় না, শুধু
+চিহ্নিত করে। চালানোর পরে:
+
+    Star Jalsha  Backup-1 (cache.devm3u.top)  Verified → Playback Unproven
+                 কারণ: media progress [15.56, 15.56]s in a 120.0s window
+    Star Jalsha  Backup-3 (rgkkw.live)        Verified → Playback Unproven
+                 কারণ: media progress 29.86s < 115s
+
+    (Backup-2 premiumtvs-এর ওই নির্দিষ্ট path মাপা হয়নি, তাই ছোঁয়া হয়নি —
+     না মাপা route-এ badge বদলানো হয় না।)
 
 
 ================================================================================
@@ -654,9 +696,10 @@ test suite প্রতি CI run-এ route-persistence ledger মুছতে �
   ১. §৯-এর workflow commit push — সবচেয়ে জরুরি।
   ২. Movies scan (§৫.৩) — private source token ছাড়া এখান থেকে সম্ভব নয়;
      catch-up commit গেলে CI নিজেই চালাবে।
-  ৩. Star Jalsha — কোনো route ২টি session পাস করেনি। নতুন BD host
-     `s3.itcnbd.live` (08-29 17:00-এর scan থেকে) এখনো মাপা হয়নি — এটিই
-     পরের ধাপ।
+  ৩. Star Jalsha — সমাধান হয়েছে (§৪ঘ), কিন্তু route_preference-এ লেখা যায়নি
+     (credential-guard, §৪ঘ)। অর্থাৎ পরের scan যদি অন্য route বেছে নেয়,
+     registry তাকে থামাবে না। Guard-টি base64 path আর আসল token-এর পার্থক্য
+     করতে পারে না — সেটি আলাদা কাজ।
   ৪. Sonic Bangla ও SONY YAY Bengali — configured কোনো source-এ চালু route
      নেই (শুধু JioTV, HTTP 451)। নতুন source লাগবে।
   ৫. gpcdn.net-এর ৩৮টি route HTTP 403 — এখনো ৩৩টি card-এর পেছনে কিছু নেই।
