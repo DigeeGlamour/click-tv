@@ -1650,6 +1650,79 @@ def _vantage_shaped_movie_status(status_code: int, error_kind: str) -> str:
     return ""
 
 
+#: Network-level failures that say the same thing 429 says: the asker did not
+#: get through this time. None of them is evidence about the stream.
+TRANSIENT_ERROR_KINDS = frozenset({"timeout", "connection", "network", "dns"})
+
+#: How many consecutive scans may hold one route pending on transient evidence
+#: before it is allowed to fail. Two, matching
+#: bd_verification.permanent_fail_confirmations: long enough to ride out a rate
+#: limit or a bad minute, short enough that a genuinely dead route goes within a
+#: day at the six-hourly channels cadence.
+MAXIMUM_TRANSIENT_RESCUES = 2
+
+
+def _transient_reason(status_code: Any, error_kind: str) -> str:
+    code = _safe_int(status_code, 0)
+    if code:
+        return "HTTP %d" % code
+    kind = str(error_kind or "").strip().casefold()
+    return "a %s error" % kind if kind else "a network error"
+
+
+def _transient_rescue_next(item: Dict[str, Any]) -> int:
+    try:
+        from scanner import last_published
+
+        return last_published.rescue_count(item.get("url")) + 1
+    except Exception:  # noqa: BLE001 - a counter must never fail a scan
+        return 1
+
+
+def _transient_rescue_status(
+    item: Dict[str, Any],
+    status_code: Any,
+    error_kind: str,
+) -> str:
+    """`retryable_pending` when this run's only evidence is transient, else "".
+
+    Narrow on purpose, and every clause earns its place:
+
+      * Transient answers only - 429 and 5xx, timeouts, connection and DNS
+        failures. 403 and 451 are excluded even though they are equally
+        vantage-shaped, because holding those would put geo-blocked routes on
+        cards; 404 and 410 are about the file and always fail.
+      * Only a route the previous published catalogue was already carrying.
+        This can never publish a route that has not been verified before, which
+        is the objection that kept the movie rule movies-only.
+      * At most two consecutive rescues per route, counted on the card itself,
+        so a host that answers 429 forever cannot keep a dead channel alive.
+
+    Measured cause, 2026-08-29: BTV News and My TV answered HTTP 429 to the CI
+    runner and were deleted from the catalogue; both answered HTTP 200 at 1080p
+    from a Bangladeshi residential connection minutes later.
+    """
+    pipeline = str(item.get("source_pipeline") or "tv").strip().casefold()
+    if pipeline == "movies":
+        return ""
+    code = _safe_int(status_code, 0)
+    kind = str(error_kind or "").strip().casefold()
+    if code not in RETRYABLE_CODES and kind not in TRANSIENT_ERROR_KINDS:
+        return ""
+    if code in {404, 410}:
+        return ""
+    try:
+        from scanner import last_published
+
+        if not last_published.was_published(item.get("url")):
+            return ""
+        if last_published.rescue_count(item.get("url")) >= MAXIMUM_TRANSIENT_RESCUES:
+            return ""
+    except Exception:  # noqa: BLE001 - a lookup failure must not publish
+        return ""
+    return "retryable_pending"
+
+
 def _measure_resolution_from_media(item: Dict[str, Any]) -> int:
     """Height read out of the stream itself, or 0.
 
@@ -2200,6 +2273,27 @@ def verify_single_stream(
                 "library from a missing file."
             )
             return item
+
+    rescued = _transient_rescue_status(item, status_code, error_kind)
+    if rescued:
+        item["verification_status"] = rescued
+        item["verification_mode"] = "transient_rescue"
+        item["transient_rescue_count"] = _transient_rescue_next(item)
+        # Publishable, and explicitly NOT verified. The first version set only
+        # the status and the 2026-08-29 channels scan produced thirteen rescued
+        # routes and published none of them: `publish_allowed` was left unset,
+        # so the merger fell back to `verified`, which is False here by
+        # definition. `verified` stays False on purpose - the card keeps the
+        # "Temporary" badge and claims nothing this run did not measure.
+        item["publish_allowed"] = True
+        item["verified"] = False
+        item["vantage_note"] = (
+            f"{_transient_reason(status_code, error_kind)} from this run's "
+            "egress on a route the published catalogue was already carrying. "
+            "Held for one more scan instead of being deleted; a second "
+            "consecutive transient answer, or any permanent one, fails it."
+        )
+        return item
 
     item["verification_status"] = "failed"
     return item

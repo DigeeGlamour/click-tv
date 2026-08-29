@@ -79,6 +79,13 @@ GEO_PENDING_STATUSES = frozenset({
 })
 
 
+def _safe_rescue_count(item: Dict[str, Any]) -> int:
+    try:
+        return int(item.get("transient_rescue_count") or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
 def requires_same_run_proof(item: Dict[str, Any], apply_to_movies: bool = False) -> bool:
     """Which items the same-run-proof rule applies to.
 
@@ -114,6 +121,22 @@ def item_is_proven_live(item: Dict[str, Any], allow_geo_pending: bool = True) ->
     if status in PROVEN_LIVE_STATUSES:
         return True
     if allow_geo_pending and status in GEO_PENDING_STATUSES:
+        return True
+    # A route the published catalogue was already carrying, whose only answer
+    # this run was transient - HTTP 429, a 5xx, a timeout, a TLS failure. The
+    # verifier sets `transient_rescue_count` for exactly that case and for no
+    # other, and it can only be set on a route that is in state/last-good, so
+    # nothing unverified reaches a card through here.
+    #
+    # Without this clause the rescue was inert: the 2026-08-29 channels scan
+    # produced thirteen retryable_pending items and published none of them,
+    # because this gate did not recognise the status. BTV News and My TV, both
+    # answering HTTP 200 at 1080p from Bangladesh, were dropped for a 429.
+    if (
+        allow_geo_pending
+        and status == "retryable_pending"
+        and _safe_rescue_count(item) > 0
+    ):
         return True
     # Manual catalogue entries carry their own trust and are never network
     # verified, so an empty status on a manual card is not a failure signal.

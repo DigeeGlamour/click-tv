@@ -640,6 +640,76 @@ def _sanitize_error_text(value: Any) -> str:
     )
 
 
+#: What a route failure is actually evidence of. Without this every row in
+#: reports/source-errors-*.json reads the same, and they are not the same:
+#: measured on 2026-08-29, 661 of the 972 today-mode route failures were HTTP
+#: 403 from the runner's US datacentre egress, and the SonyLIV URL recorded
+#: "HTTP 403: Forbidden" there answered HTTP 200 with a real live manifest from
+#: a Bangladeshi connection minutes later. Reading that row as a dead stream is
+#: how a working source ends up looking like a broken one.
+_VANTAGE_SHAPED_STATUSES = frozenset({401, 403, 407, 451})
+_TRANSIENT_STATUSES = frozenset({408, 425, 429})
+_PERMANENT_STATUSES = frozenset({400, 404, 410})
+_TRANSIENT_ERROR_WORDS = ("timed out", "timeout", "connection", "reset",
+                          "temporarily", "network is unreachable",
+                          "dns", "getaddrinfo", "ssl", "certificate")
+#: A 200 that is not a stream. Separate from the rest because it is the one
+#: class that says the request succeeded and the content is still unusable -
+#: 292 of one source's routes answered a non-standard HTTP 567 in the same run,
+#: which is a server saying no, while these are a server saying yes and sending
+#: something that is not media.
+_UNPLAYABLE_BODY_WORDS = ("does not contain #extm3u", "no playable segment",
+                          "stream url is empty", "not a playlist",
+                          "empty response")
+
+
+def _failure_class(
+    item: Dict[str, Any],
+) -> str:
+    """Whether a failure is about the stream, the asker, or the moment.
+
+    Five values, and the distinction each one carries:
+
+      permanent        400/404/410 - the file is not there, from anywhere.
+      vantage_shaped   401/403/407/451 - this egress may not have it. Says
+                       nothing about a viewer on a different network.
+      transient        408/425/429 and every 5xx, plus timeouts, resets, DNS
+                       and TLS failures - the asker did not get through this
+                       time. Any 5xx counts, including the non-standard ones a
+                       CDN invents: 292 routes on one source answered HTTP 567
+                       in a single run.
+      unplayable_body  HTTP 200 carrying something that is not media.
+      unknown          anything else, including a bare error with no status.
+    """
+    try:
+        status = int(item.get("http_status") or 0)
+    except (TypeError, ValueError):
+        status = 0
+
+    text = str(
+        item.get("verification_error")
+        or item.get("error_reason")
+        or ""
+    ).casefold()
+
+    if status == 200 and any(word in text for word in _UNPLAYABLE_BODY_WORDS):
+        return "unplayable_body"
+    if status in _PERMANENT_STATUSES:
+        return "permanent"
+    if status in _VANTAGE_SHAPED_STATUSES:
+        return "vantage_shaped"
+    if status in _TRANSIENT_STATUSES or 500 <= status <= 599:
+        return "transient"
+
+    if not text:
+        return ""
+    if any(word in text for word in _UNPLAYABLE_BODY_WORDS):
+        return "unplayable_body"
+    if any(word in text for word in _TRANSIENT_ERROR_WORDS):
+        return "transient"
+    return "unknown"
+
+
 def _safe_report_item(
     item: Dict[str, Any],
 ) -> Dict[str, Any]:
@@ -693,6 +763,11 @@ def _safe_report_item(
 
     if safe_url:
         safe["url"] = safe_url
+
+    failure_class = _failure_class(item)
+
+    if failure_class:
+        safe["failure_class"] = failure_class
 
     return safe
 
