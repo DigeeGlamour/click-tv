@@ -302,6 +302,11 @@ def main() -> int:
         "inherit_manifest_query": False,
         "verification_mode": "phase1_120s_browser_x2",
         "verification_status": "verified_sustained_playback",
+        # The badge, spelled out. Left unset the entry reached the card with
+        # `verification_badge: null` and the site rendered a blank chip beside a
+        # route that had just passed two full 120 s sessions - the strongest
+        # evidence anything on the card carries.
+        "verification_badge": "Verified",
         "verification_note": (
             "Two independent 120 s browser sessions each played this route to "
             f"the full PASS floor. See {args.report}."

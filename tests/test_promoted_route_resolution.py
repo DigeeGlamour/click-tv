@@ -179,6 +179,21 @@ class DemotedRouteTests(unittest.TestCase):
         block = self._block()
         self.assertIn('existing_entry["resolution_height"] = card.get("resolution_height")', block)
 
+    def test_the_added_route_carries_a_badge(self):
+        """Left unset it reached the card as `verification_badge: null` and the
+        site drew a blank chip beside a route that had just passed two full
+        120 s sessions."""
+        source = (ROOT / "scripts" / "add-proven-route.py").read_text(encoding="utf-8")
+        _, _, tail = source.partition("proven_entry = {")
+        block = tail[: tail.index("}")]
+        self.assertIn('"verification_badge": "Verified"', block)
+
+    def test_and_a_measured_resolution(self):
+        """A backup answers to the same 720p rule as a primary, and the Pages
+        validator refused the whole build over one that reached it as unknown."""
+        source = (ROOT / "scripts" / "add-proven-route.py").read_text(encoding="utf-8")
+        self.assertIn('proven_entry["resolution_height"] = _proven_height', source)
+
     def test_the_reason_comes_from_the_ledger_not_from_this_script(self):
         source = (ROOT / "scripts" / "add-proven-route.py").read_text(encoding="utf-8")
         self.assertIn("playback_evidence.unproven_reason(existing_url)", source)
