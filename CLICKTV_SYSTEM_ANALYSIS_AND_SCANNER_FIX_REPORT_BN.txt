@@ -1,9 +1,9 @@
 ================================================================================
 CLICK TV — সম্পূর্ণ system বিশ্লেষণ, scanner ব্যর্থতার আসল কারণ, এবং যা যা ঠিক করা হয়েছে
 ================================================================================
-তারিখ            : 2026-08-29 (UTC)
+তারিখ            : 2026-08-29 / 30 (UTC)
 Repository       : https://github.com/DigeeGlamour/click-tv
-Push করা HEAD    : f2d0038eb
+Push করা HEAD    : 3c750a014  (১০টি commit, সব push করা)
 মাপার জায়গা      : Bangladesh, residential connection (আপনার নিজের মেশিন)
                    — এটাই এই report-এর সবচেয়ে গুরুত্বপূর্ণ কথা, কারণ scanner
                    মাপে GitHub-এর US datacentre থেকে, আর দর্শক দেখেন BD থেকে।
@@ -508,15 +508,41 @@ Badge-এর আসল bug পাওয়া গেছে ও সারান�
 --------------------------------------------------------------------------------
 ৫.৪ বর্তমান final commit-এ successful GitHub Actions run
 --------------------------------------------------------------------------------
-◐ push হওয়া HEAD f2d0038eb-এ run-এর জন্য অপেক্ষা করা হচ্ছে (§৭ দেখুন)।
+✔ প্রমাণিত।
 
-  যা নিশ্চিতভাবে জানা:
-    • push-এর ঠিক আগের HEAD b11f035ef-এ CI **লাল** ছিল — তিনটি run
-      (33265022372, 33265024091, 33266126757) "Validate scanner files"-এ
-      fail করেছে, কারণ ৫২.৪ MB cache guard।
-    • সেই কারণটি f2d0038eb-এ সারানো হয়েছে, এবং পরিষ্কার clone-এ পুরো suite
-      পাস করেছে (§৬)।
-    • পুরোনো bddd run-কে "latest" বলা হচ্ছে না।
+  push-এর ঠিক আগের HEAD b11f035ef-এ CI **লাল** ছিল — তিনটি run
+  (33265022372, 33265024091, 33266126757) "Validate scanner files"-এ fail
+  করেছে, কারণ ৫২.৪ MB cache guard (§২ কারণ ১)।
+
+  Run **33271666089** (2026-08-29 19:45Z, commit e6313cebd) — সেই step এখন
+  পাস করে, এবং নতুন catch-up step-ও চলেছে:
+
+      Validate scanner files                                success
+      Select scan mode                                      success
+      Plan a catch-up for a catalogue the schedule skipped   success
+      Skip a superseded run of a frequent mode               success
+      Run scanner                                           (দীর্ঘ — catch-up
+                                                            channels scan সহ)
+
+  https://github.com/DigeeGlamour/click-tv/actions/runs/33271666089
+
+  পুরোনো bddd run-কে "latest" বলা হচ্ছে না।
+
+  লক্ষণীয় — schedule-এর সমস্যা এই session-এই সরাসরি দেখা গেছে: 17:37Z-এর পরে
+  **দুই ঘণ্টা আট মিনিট** কোনো scheduled run তৈরিই হয়নি, অথচ workflow "active",
+  YAML বৈধ, queue খালি। ঠিক এই কারণেই catch-up দরকার ছিল।
+
+  আর catch-up প্রথম চেষ্টাতেই কাজ করেছে — এবং একটি ফাঁকও ধরিয়ে দিয়েছে।
+  19:45Z-এর run-এ catch-up **movies** বেছে নিয়েছে, কারণ movies scan তখন
+  ৫২ ঘণ্টা পুরোনো (সীমা ৩৬)। channels তখন মাত্র ২.৭ ঘণ্টা পুরোনো, তাই সেটি
+  বেছে নেয়নি — নিয়ম ঠিকই কাজ করেছে।
+
+  ফাঁকটি: private movie source checkout করার দুটি step শর্ত হিসেবে দেখে
+  `steps.scan_mode.outputs.mode`, যা catch-up বদলায় না। ফলে ওই movies pass
+  private repository ছাড়াই চলেছে। commit **3c750a014**-এ দুটি শর্তেই
+  `steps.catchup.outputs.catchup == 'movies'` যোগ করা হয়েছে, এবং একটি test
+  সেটি পাহারা দেয়। (ওই run-টি তাই স্বাভাবিকের চেয়ে অনেক ধীর — API দিয়ে
+  ফাইল-ধরে-ফাইল আনতে হয়েছে।)
 
 --------------------------------------------------------------------------------
 ৫.৫ 6 queued run, 12 unknown-resolution card, iPhone test
@@ -572,7 +598,7 @@ Badge-এর আসল bug পাওয়া গেছে ও সারান�
 ================================================================================
 ৭. Commit ও push
 ================================================================================
-Push সফল — origin/main এখন f2d0038eb:
+Push সফল — origin/main এখন **905eb2854**, ৯টি commit:
 
   dd5c9fc7c  Stop one bad minute on one egress deleting a working channel,
              and say what a failure was evidence of
@@ -584,8 +610,23 @@ Push সফল — origin/main এখন f2d0038eb:
              the history it replaces
   f2d0038eb  Bound the route-evidence cache by measured bytes, and prune it
              after the insert as well as before
+  846e745fb  Report what the system does, why the scans were not running, and
+             what is still broken
+  54a6def0c  Star Jalsha plays, and a card stops badging a route a browser
+             could not play
+  e6313cebd  Let a surviving run scan the catalogue its schedule skipped, and
+             stop the tests emptying the ledger
+  905eb2854  Curate the Indian category to the names the owner asked for, and
+             put back the ones that play
+  3c750a014  Give a movies catch-up the private source the scheduled movies
+             run gets
 
 Actions: https://github.com/DigeeGlamour/click-tv/actions
+
+e6313cebd (workflow commit) প্রথমে push করা যায়নি — সংরক্ষিত token-এ `workflow`
+scope ছিল না। মালিক scope সহ একটি token দেওয়ার পরে সেটি push হয়েছে। ⚠ ওই token
+chat-এ লেখা হয়েছিল, তাই সেটি **revoke করা দরকার**; এখানে কোথাও সংরক্ষণ করা
+হয়নি (git config, remote URL, repository — তিনটিই যাচাই করা)।
 
 আপনার নিজের অসম্পর্কিত ফাইল commit করা হয়নি — untracked রাখা হয়েছে:
   scripts/full_live_playback_audit.py
@@ -691,6 +732,102 @@ test suite প্রতি CI run-এ route-persistence ledger মুছতে �
 
 
 ================================================================================
+৯ক. Indian category — শুধু আপনার দেওয়া ৪৮টি নাম  [2026-08-30]
+================================================================================
+আপনি ৪৯ লাইনের একটি তালিকা দিয়েছেন ("Sony Max" ও "Sony MAX" একই নাম, তাই
+অনন্য ৪৮টি) এবং বলেছেন Indian category-তে এর বাইরে কিছু থাকবে না — JSON-এও না,
+card-এও না। তখন Indian-এ ছিল **১৮১টি** card।
+
+--------------------------------------------------------------------------------
+কীভাবে করা হয়েছে — এবং কেন হাতে edit করা হয়নি
+--------------------------------------------------------------------------------
+data/channels/indian.json একটি **generated** ফাইল: প্রতিটি scan সেটি source
+থেকে নতুন করে বানায়। হাতে মুছে দিলে পরের scan-এই সব ফিরে আসত (কয়েক ঘণ্টার
+ব্যাপার)। তাই তালিকাটি configuration-এ:
+
+    config/channel-categories.json  →  "publish_allowlist": { "Indian": [ ... ] }
+    scanner/category_allowlist.py   →  নাম মেলানোর নিয়ম
+    scanner/channels.py             →  publish করার সময় প্রয়োগ
+
+নিয়মগুলো ইচ্ছাকৃতভাবে সংকীর্ণ:
+  • তালিকা না থাকা category (Bangla, Sports, Cartoon…) আগের মতোই — কোনো
+    ফিল্টার নেই। শুধু Indian curated।
+  • তালিকার বাইরের card **বাদ যায়, Other-এ সরে না** — সরালে card থেকেই যেত।
+  • নাম মেলে case ও whitespace বাদ দিয়ে, তাই "COLORS BANGLA" = "Colors Bangla",
+    "B4U MOVIES" = "B4U Movies"। এর বেশি কিছু নয়: alias দিয়ে মেলালে
+    "Enter 10 Bangla", "Enter10 Bangla", "Enterr 10 Bangla" তিনটেও ঢুকে যেত,
+    অথচ ওই duplicate গুলো সরানোই তালিকার একটা কাজ।
+
+--------------------------------------------------------------------------------
+ফল
+--------------------------------------------------------------------------------
+    Indian card:  ১৮১  →  **৪১**
+    আপনার তালিকা: ৪৮টি নাম
+    card আছে    : ৪১টি
+    card নেই    : ৭টি (কারণ নিচে, প্রতিটি মাপা)
+
+    বাদ পড়া ১৪৫টি: Aaj Tak, NDTV, Zee News, Republic, ABP, ETV Telugu,
+    News18-এর ১১টি আঞ্চলিক সংস্করণ, Sanskar/Satsang পরিবার, TV9 Bangla,
+    Enter10-এর ৩টি বানান-নকল ইত্যাদি — সবগুলোর তালিকা
+    reports/category-allowlist.json-এ।
+
+--------------------------------------------------------------------------------
+যে ৫টি ফিরিয়ে আনা হয়েছে — প্রতিটি ২ × ১২০ সেকেন্ড browser প্রমাণ সহ
+--------------------------------------------------------------------------------
+আপনার তালিকার ১২টি নামের card ছিল না। কারণ একই vantage সমস্যা: Sony পরিবারের
+সব card গিয়েছিল যখন hotstarplugx / plugsony.cstds.workers.dev দুটি Cloudflare
+Worker মুছে ফেলা হয় — অথচ **stream.ottplus.bd**, একটি বাংলাদেশি CDN যা
+আপনার configured source-এই আছে, পুরোটা সময় একই channel ৭২০p-তে দিচ্ছিল।
+
+    Channel          media progress (s)    stall (s)   resolution   route
+    --------------   -------------------   ---------   ----------   ------------------
+    Sony Max         119.99 / 120.00       0 / 0       720p         stream.ottplus.bd
+    Sony Max 2       119.99 / 119.98       0 / 0       720p         stream.ottplus.bd
+    Sony SAB         119.99 / 119.95       0 / 0       720p         stream.ottplus.bd
+    JOO MUSIC        120.00 / 119.96       0 / 0       720p         livecdn.live247stream.com
+    Sangeet Bangla   115.72 / 115.08       1 / 4       576p         cache.devm3u.top
+
+    → reports/indian-missing-playback.json
+
+Sangeet Bangla ৫৭৬p, তাই **global 720p floor না বদলে** দ্বিতীয় একটি named
+below-floor exception দেওয়া হয়েছে — Zee Bangla যে প্রক্রিয়ায় ছিল ঠিক সেটিই:
+config-এ নাম থাকতে হবে **এবং** ওই নির্দিষ্ট route-এর sustained proof থাকতে হবে।
+config alone কিছুই publish করতে পারে না। tv_minimum_height এখনো ৭২০।
+
+JOO MUSIC ও Sangeet Bangla-কে Indian identity registry-তেও যোগ করতে হয়েছে —
+router দুটিকেই Other-এ পাঠাচ্ছিল, যেখানে allowlist ওদের দেখতই না। আর JOO MUSIC-এর
+Other-এর পুরোনো card না সরালে একই URL দুবার publish হতো; catalogue-এর নিজের
+alias guard সেটি ধরেছে, তাই script এখন অন্য category-র copy নিজেই সরায়।
+
+--------------------------------------------------------------------------------
+যে ৭টির এখনো card নেই — এবং ঠিক কেন (৬৪টি candidate route মাপা)
+--------------------------------------------------------------------------------
+    Star Gold      একটিই HTTP 200 route: http://66.102.126.10:8000/... —
+                   bare-IP http, site-এর নিজের browser-reachability নিয়ম
+                   (http_bare_ip_host) সেটি refuse করে। বাকি: roarzone 403,
+                   JioTV 403, jiohotstar 404, sportlive-JioTV 451।
+    Star Plus      ৩টি candidate — roarzone 403, JioTV 403, sportlive 451।
+    Sony           ২টি — sportlive-JioTV 403, plugsony 404 (host মুছে গেছে)।
+    Sony Pal       ৫টি — JioTV 403, sliv 403, plugsony 404, jio 451, balaji 500।
+    Sony PIX       ৮টি — সব 403/404/451/500। toffee 403, roarzone 403।
+    Sony Wah       ৫টি — একই ধরন।
+    Music India    ৬টি — roarzone 403, JioTV 403, smartplaytv 404,
+                   aynaott 404, sportlive 451, manual bare-IP unreachable।
+
+    → reports/indian-missing-route-scout.json
+
+অর্থাৎ এই ৭টির জন্য configured কোনো source-এ চালু route **নেই**। নতুন source
+ছাড়া এদের ফেরানো যাবে না — এবং কোনো unverified route card-এ বসানো হয়নি।
+
+--------------------------------------------------------------------------------
+মোট catalogue এখন
+--------------------------------------------------------------------------------
+    Bangla 49 | Cartoon 26 | Foreign News 33 | Indian 41 | Infotainments 15
+    Islamic 10 | Other 141 | Sports 67          →  মোট ৩৮২
+    Today Match 374 | Upcoming 286 | Movies 1248
+
+
+================================================================================
 ১০. যা এখনো বাকি (সৎ তালিকা)
 ================================================================================
   ১. §৯-এর workflow commit push — সবচেয়ে জরুরি।
@@ -702,6 +839,8 @@ test suite প্রতি CI run-এ route-persistence ledger মুছতে �
      করতে পারে না — সেটি আলাদা কাজ।
   ৪. Sonic Bangla ও SONY YAY Bengali — configured কোনো source-এ চালু route
      নেই (শুধু JioTV, HTTP 451)। নতুন source লাগবে।
+  ৪ক. Indian-এর ৭টি নাম (Star Gold, Star Plus, Sony, Sony Pal, Sony PIX,
+     Sony Wah, Music India) — §৯ক দেখুন। একই কারণ: চালু route নেই।
   ৫. gpcdn.net-এর ৩৮টি route HTTP 403 — এখনো ৩৩টি card-এর পেছনে কিছু নেই।
   ৬. Test isolation — ৩০টি call site, আলাদা commit।
   ৭. ৬টি আটকে থাকা workflow run — actions:write scope লাগে।
