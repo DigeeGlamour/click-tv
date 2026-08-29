@@ -45,7 +45,13 @@ RETENTION_SECONDS = 7 * 24 * 3600
 
 #: A single route accumulating unboundedly is a slow leak, not a feature - once
 #: two windows exist the verdict is already decided.
-MAX_RECORDS_PER_ROUTE = 20
+#:
+#: Was 20. One scan writes two records for a route - the scanner vantage and the
+#: proxy vantage - so six is the last three scans, and the rule this cache
+#: exists for needs two windows, not fifteen. Measured on the 2026-08-29 cache:
+#: 20,000 routes held 65,082 records at 50.9 MB; at six the same routes hold
+#: about 46,000 at 35.5 MB.
+MAX_RECORDS_PER_ROUTE = 6
 
 #: A hard ceiling on how many routes the cache holds, newest observation first.
 #:
@@ -60,6 +66,19 @@ MAX_RECORDS_PER_ROUTE = 20
 #: the two-vantage decision is made about a route the CURRENT scan is looking
 #: at, and that route is by definition freshly observed.
 MAX_ROUTES = 20_000
+
+#: The byte budget, which is what actually matters and what a route count keeps
+#: failing to predict.
+#:
+#: "~1 KB each" above was measured wrong: one record serialises to about 680
+#: bytes and a route averages three of them, so 20,000 routes is 50.9 MB, not
+#: 20. Rather than re-guess the multiplier, the prune now trims by measured
+#: size: routes are dropped least-recently-observed-first until the serialised
+#: cache fits. A route count cannot drift out of date; a byte budget cannot.
+#:
+#: 24 MB, against a 50 MB warning and a 100 MB hard refusal, so an unusually
+#: heavy scan has somewhere to go.
+MAX_BYTES = 24 * 1024 * 1024
 
 
 def load(path: Optional[str] = None) -> Dict[str, Any]:
@@ -112,7 +131,62 @@ def _prune(
         ordered = sorted(routes.items(), key=_latest, reverse=True)
         routes = dict(ordered[:MAX_ROUTES])
 
+    routes = _fit_to_budget(routes)
     return {"version": 1, "routes": routes}
+
+
+def _serialised_size(routes: Dict[str, List[Dict[str, Any]]]) -> int:
+    return len(
+        json.dumps(
+            {"version": 1, "routes": routes},
+            ensure_ascii=False,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
+
+
+def _fit_to_budget(
+    routes: Dict[str, List[Dict[str, Any]]],
+    *,
+    budget: int = 0,
+) -> Dict[str, List[Dict[str, Any]]]:
+    """Drop least-recently-observed routes until the file fits MAX_BYTES.
+
+    Each route is costed individually and the costs are accumulated in recency
+    order, so the cut is exact in one pass. A proportional estimate is not good
+    enough here and was tried first: the most recently observed routes are also
+    the most frequently probed, so they carry more records than the average and
+    every estimate from the average overshot - 9,434 routes came out at 25.6 MB
+    against a 24 MB budget.
+    """
+    limit = budget or MAX_BYTES
+    if not routes:
+        return routes
+    if _serialised_size(routes) <= limit:
+        return routes
+
+    def _latest(item) -> float:
+        return max(
+            (rev._parse_observed_at(record.get("observed_at")) or 0.0)
+            for record in item[1]
+        )
+
+    # {"version":1,"routes":{}} plus the newline the writer adds.
+    overhead = len('{"version":1,"routes":{}}') + 1
+    kept: Dict[str, List[Dict[str, Any]]] = {}
+    running = overhead
+    for route_id, records in sorted(routes.items(), key=_latest, reverse=True):
+        cost = len(
+            json.dumps(
+                {route_id: records}, ensure_ascii=False, separators=(",", ":")
+            ).encode("utf-8")
+        )  # includes the key, its quotes and the colon; one byte over for the
+        # enclosing braces, which is the direction to be wrong in.
+        if running + cost > limit:
+            break
+        kept[route_id] = records
+        running += cost
+    return kept
 
 
 def all_records(path: Optional[str] = None, *, now: Optional[float] = None) -> List[Dict[str, Any]]:
@@ -148,6 +222,19 @@ def append(
         bucket.append(record)
         cache["routes"][route_id] = bucket[-MAX_RECORDS_PER_ROUTE:]
         written += 1
+
+    # Prune again, now that this run's routes are in.
+    #
+    # The first prune runs before the insert, so MAX_ROUTES bounded what was
+    # READ and never what was WRITTEN: a channels scan added ~3,200 fresh routes
+    # on top of the 20,000 it had just trimmed to, and a movie scan ~21,400. The
+    # steady state was therefore 20,000 plus one scan's worth, and the file grew
+    # every run: 46.1 MB at 799aaa106, 49.6 at 3796cd144, 50.5 at 635b626f5,
+    # 51.7 at 2f38fa7d4, 54.9 at b11f035ef - 21,609 routes in a cache capped at
+    # 20,000. GitHub warns above 50 MB per file and refuses above 100, and this
+    # file is committed by every scan, so the ceiling had a date on it.
+    cache = _prune(cache, now=now)
+
     # Written to a temporary file and renamed into place. A 13 MB cache takes
     # long enough to serialise that a reader can catch it half-written: a test
     # reading it while a movie scan was writing hit

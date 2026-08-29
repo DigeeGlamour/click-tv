@@ -201,6 +201,114 @@ class SizeIsBoundedTests(unittest.TestCase):
             "at 100, and every scan commits it",
         )
 
+    def test_the_committed_cache_honours_its_own_route_cap(self):
+        """The size guard above is the symptom; this is the cause.
+
+        `append` pruned before inserting, so MAX_ROUTES bounded what was read
+        and never what was written. Measured on 2026-08-29: a cache capped at
+        20,000 holding 21,609 routes, having grown 46.1 -> 54.9 MB across five
+        consecutive scans.
+        """
+        import json as _json  # noqa: PLC0415
+
+        path = Path(cache.DEFAULT_PATH)
+        if not path.is_file():
+            self.skipTest("no cache committed")
+        routes = _json.loads(path.read_text(encoding="utf-8")).get("routes") or {}
+        self.assertLessEqual(
+            len(routes), cache.MAX_ROUTES,
+            f"{len(routes)} routes committed against a {cache.MAX_ROUTES} cap",
+        )
+
+    def test_append_prunes_after_the_insert_not_only_before(self):
+        """A full cache plus one scan's new routes must still come out capped."""
+        import json as _json  # noqa: PLC0415
+
+        stamp = dt.datetime.fromtimestamp(BASE, tz=dt.timezone.utc).isoformat()
+
+        newer = dt.datetime.fromtimestamp(
+            BASE + 3600, tz=dt.timezone.utc
+        ).isoformat()
+
+        def _row(route_id, when=stamp):
+            return {"route_id": route_id, "observed_at": when,
+                    "verdict": rev.PLAYBACK_FAIL}
+
+        full = {
+            "version": 1,
+            "routes": {
+                "old%d.example/live/index.m3u8" % n:
+                    [_row("old%d.example/live/index.m3u8" % n)]
+                for n in range(cache.MAX_ROUTES)
+            },
+        }
+        with tempfile.TemporaryDirectory() as folder:
+            target = str(Path(folder) / "cache.json")
+            Path(target).write_text(_json.dumps(full), encoding="utf-8")
+            fresh = [
+                _row("new%d.example/live/index.m3u8" % n, newer)
+                for n in range(50)
+            ]
+            cache.append(fresh, path=target, now=BASE + 3600)
+            written = _json.loads(
+                Path(target).read_text(encoding="utf-8")
+            )["routes"]
+        self.assertLessEqual(
+            len(written), cache.MAX_ROUTES,
+            "the insert pushed the cache past its own cap",
+        )
+        self.assertIn(
+            "new0.example/live/index.m3u8", written,
+            "the newest routes are the ones worth keeping",
+        )
+
+    def test_the_committed_cache_is_inside_its_byte_budget(self):
+        path = Path(cache.DEFAULT_PATH)
+        if not path.is_file():
+            self.skipTest("no cache committed")
+        self.assertLessEqual(path.stat().st_size, cache.MAX_BYTES)
+
+    def test_the_budget_is_measured_not_estimated(self):
+        """A route count kept failing to predict the size.
+
+        "20,000 routes at ~1 KB each keeps it near 20 MB" was the estimate; the
+        real cost is ~680 bytes per record and about three records per route, so
+        20,000 routes came out at 50.9 MB. And the routes kept are the most
+        recently observed, which are also the most frequently probed and so
+        carry more records than the average - every proportional estimate from
+        the average overshot too.
+        """
+        import json as _json  # noqa: PLC0415
+
+        stamp = dt.datetime.fromtimestamp(BASE, tz=dt.timezone.utc).isoformat()
+        heavy = {
+            "host%d.example/live/index.m3u8" % n: [
+                {"route_id": "host%d.example/live/index.m3u8" % n,
+                 "observed_at": stamp, "verdict": rev.PLAYBACK_FAIL,
+                 "padding": "x" * 400}
+                for _ in range(3)
+            ]
+            for n in range(400)
+        }
+        budget = 60_000
+        fitted = cache._fit_to_budget(heavy, budget=budget)
+        self.assertLess(len(fitted), len(heavy), "nothing was trimmed")
+        blob = _json.dumps(
+            {"version": 1, "routes": fitted},
+            ensure_ascii=False, separators=(",", ":"),
+        ).encode("utf-8")
+        self.assertLessEqual(len(blob) + 1, budget)
+
+    def test_a_cache_already_inside_the_budget_is_untouched(self):
+        stamp = dt.datetime.fromtimestamp(BASE, tz=dt.timezone.utc).isoformat()
+        small = {
+            "one.example/live/index.m3u8": [
+                {"route_id": "one.example/live/index.m3u8",
+                 "observed_at": stamp, "verdict": rev.PLAYBACK_FAIL}
+            ]
+        }
+        self.assertEqual(small, cache._fit_to_budget(small))
+
     def test_it_is_written_without_indentation(self):
         source = (ROOT / "scanner" / "route_evidence_cache.py").read_text(
             encoding="utf-8"
