@@ -34,6 +34,7 @@ import os
 import re
 import sys
 import urllib.parse
+import urllib.request
 from typing import Any, Dict, List, Optional
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -59,6 +60,102 @@ def same_channel(channel: str, candidate: str) -> bool:
         return False
     stripped = re.sub(r"\s*(hd|sd|fhd)\s*$", "", other, flags=re.I).strip()
     return stripped.casefold() == base.casefold()
+
+
+#: Fields that describe the OLD primary's quality. Left in place they follow a
+#: route that is no longer on the card: Zee Bangla kept "SD / 576p, below the
+#: floor by a named exception" after its primary became a 1280x720 master, so
+#: the card advertised the wrong resolution and claimed an exemption it no
+#: longer needed.
+BELOW_FLOOR_FIELDS = (
+    "resolution_exception",
+    "quality_below_preferred",
+    "quality_policy_note",
+    "quality_unknown",
+)
+
+
+def _label_for(height: int) -> str:
+    return (
+        "FHD" if height >= 1080 else "HD" if height >= 720
+        else "SD" if height >= 480 else "LD"
+    )
+
+
+def measure_height(url: str) -> int:
+    """The route's real height, or 0 when the stream will not say.
+
+    Measurement, not assumption: the HLS master's RESOLUTION, or the H.264 SPS
+    decoded from the first transport-stream segment.
+    """
+    from scanner import media_probe
+
+    height = 0
+    try:
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36"
+            )
+        }
+
+        def _get(target: str, limit: int) -> bytes:
+            request = urllib.request.Request(target, headers=headers)
+            with urllib.request.urlopen(request, timeout=15) as response:
+                return response.read(limit)
+
+        body = _get(url, 262144)
+        head = body[:16384].decode("utf-8", "replace")
+        if "#EXT-X-STREAM-INF" in head:
+            height = media_probe.master_playlist_height(head)
+        elif "#EXTINF" in head:
+            # An encrypted media playlist cannot be measured without the key,
+            # and saying "0" for it would be indistinguishable from a stream
+            # that simply did not answer. stream.ottplus.bd's per-variant
+            # playlists are AES-128; only its master declares a RESOLUTION.
+            if "METHOD=AES-128" in head or "METHOD=SAMPLE-AES" in head:
+                print(f"resolution: {url[:48]} is an encrypted media playlist; "
+                      "the height cannot be read without the key")
+                return 0
+            segments = [
+                line.strip() for line in head.splitlines()
+                if line.strip() and not line.startswith("#")
+            ]
+            if segments:
+                body = _get(urllib.parse.urljoin(url, segments[0]), 524288)
+        if not height:
+            decoded = media_probe.sps_from_transport_stream(body)
+            if decoded:
+                height = media_probe.plausible(decoded.get("height"))
+    except Exception as error:  # noqa: BLE001 - a probe must never lose the swap
+        print(f"resolution: could not measure {url[:48]} ({error})")
+        return 0
+    return height
+
+
+def _retake_resolution(card: Dict[str, Any], url: str, floor: int = 720) -> None:
+    """Re-read the resolution from the route that is now the primary.
+
+    If the stream will not say, the old value is left alone and nothing is
+    claimed - an unreadable answer is not a reason to overwrite a known one.
+    """
+    height = measure_height(url)
+    if not height:
+        print("resolution: the new primary would not say; the card keeps its "
+              "existing value")
+        return
+
+    card["resolution_height"] = height
+    card["resolution"] = _label_for(height)
+    if height >= floor:
+        removed = [f for f in BELOW_FLOOR_FIELDS if f in card]
+        for field in removed:
+            card.pop(field, None)
+        print(f"resolution: measured {height}p on the new primary"
+              + (f"; dropped {', '.join(removed)}" if removed else ""))
+    else:
+        print(f"resolution: measured {height}p on the new primary, still below "
+              f"the {floor}p floor - the card keeps its exception fields")
 
 
 def proven_routes(report_path: str) -> List[Dict[str, Any]]:
@@ -211,6 +308,15 @@ def main() -> int:
         ),
         "verified": False,
     }
+    # A backup answers to the same 720p rule as a primary, and the Pages
+    # validator enforces it. Added without a measured height this entry reached
+    # the validator as "unknown" and failed the whole build - which is the
+    # failure mode that has kept Cloudflare Pages serving stale data before.
+    _proven_height = measure_height(args.url)
+    if _proven_height:
+        proven_entry["resolution_height"] = _proven_height
+        proven_entry["resolution"] = _label_for(_proven_height)
+        print(f"resolution: measured {_proven_height}p on the proven route")
     existing_entry = {
         "name": "Original-primary",
         "url": existing_url,
@@ -226,6 +332,28 @@ def main() -> int:
         ),
     }
 
+    # Whether the route being demoted is still worth offering a viewer.
+    #
+    # The standing rule is that an existing URL is never dropped, and it is a
+    # good rule - routes have been deleted here on a single bad answer before.
+    # But Zee Bangla's old primary is not a route with a bad answer: it returned
+    # HTTP 500 to two consecutive probes and produced zero seconds of media in
+    # two 120 s browser sessions, and it sits in the measured-playback ledger
+    # saying so. Publishing it as a backup gives the viewer a second button that
+    # does nothing, and it carries a below-floor resolution whose exception is
+    # now attached to a different route.
+    #
+    # So it is dropped from the card only when a browser measured it unplayable,
+    # and the URL is not lost: it stays in state/measured-playback-failures.json
+    # and in the route-preference registry's superseded chain.
+    demoted_reason = ""
+    try:
+        from scanner import playback_evidence
+
+        demoted_reason = playback_evidence.unproven_reason(existing_url)
+    except Exception:  # noqa: BLE001 - a lookup failure keeps the safe default
+        demoted_reason = ""
+
     if args.make_primary:
         card["url"] = args.url
         card["stream_type"] = args.stream_type
@@ -235,9 +363,36 @@ def main() -> int:
         card["verification_status"] = "verified_sustained_playback"
         card["verification_mode"] = "phase1_120s_browser_x2"
         card["verification_note"] = proven_entry["verification_note"]
-        card["backups"] = [existing_entry] + backups
-        print("action: proven route becomes the primary; the existing route is "
-              "preserved as a backup with its URL unchanged")
+        if demoted_reason:
+            # The same URL is often on the card twice - once as the primary and
+            # once as a backup, which is how the scanner records a route two
+            # sources both carry. Dropping only the primary copy leaves the
+            # viewer the identical dead route under a "Verified" badge, which
+            # is exactly what this is meant to stop.
+            demoted_id = rev.normalize_source_identity(existing_url)
+            card["backups"] = [
+                backup for backup in backups
+                if not (
+                    isinstance(backup, dict)
+                    and rev.normalize_source_identity(
+                        str(backup.get("url") or "")
+                    ) == demoted_id
+                )
+            ]
+            card["demoted_route_public_template"] = rev.redact_public_template(
+                existing_url
+            )
+            card["demoted_route_reason"] = demoted_reason[:300]
+            print("action: proven route becomes the primary; the old route is "
+                  "NOT published as a backup because a browser measured it "
+                  f"unplayable - {demoted_reason[:90]}")
+        else:
+            existing_entry["resolution"] = card.get("resolution")
+            existing_entry["resolution_height"] = card.get("resolution_height")
+            card["backups"] = [existing_entry] + backups
+            print("action: proven route becomes the primary; the existing route "
+                  "is preserved as a backup with its URL unchanged")
+        _retake_resolution(card, args.url)
     else:
         card["backups"] = [proven_entry] + backups
         print("action: proven route added as the first backup; the primary is "

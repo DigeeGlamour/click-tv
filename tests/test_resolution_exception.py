@@ -22,12 +22,35 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from scanner import route_preference  # noqa: E402
 from scanner import verifier as V  # noqa: E402
 
 SETTINGS = json.loads(
     (ROOT / "config" / "settings.json").read_text(encoding="utf-8")
 )
-PROVEN_URL = "http://live.balajibroadband.com:3500/live/625.m3u8"
+
+#: The route the registry currently prefers for Zee Bangla, read rather than
+#: written down.
+#:
+#: It used to be a literal - the 1024x576 balajibroadband route this exception
+#: was created for. On 2026-08-29 that route answered HTTP 500 to two
+#: consecutive probes from Bangladesh and produced zero seconds of media in two
+#: 120 s browser sessions, while stream.ottplus.bd - a 1280x720 HLS master from
+#: the same configured source - passed both sessions at 119.99 s and 119.87 s
+#: with zero stall. The preference moved, and a test that pins a URL rather
+#: than the mechanism then fails for the one reason that should never fail a
+#: test: the thing it guards got better.
+#:
+#: What these tests guard is the mechanism, so they follow the registry. The
+#: named channel, the proof requirement and every "must NOT open" case below
+#: are unchanged.
+PROVEN_URL = (
+    route_preference.load()
+    .get("preferred", {})
+    .get("channel|zee bangla", {})
+    .get("route_id")
+    or "http://live.balajibroadband.com:3500/live/625.m3u8"
+)
 
 
 def _item(name="Zee Bangla", url=PROVEN_URL, height=576):
@@ -141,6 +164,25 @@ class TheExceptionTests(unittest.TestCase):
         self.assertTrue(item.get("resolution_exception"))
         self.assertIn("576p", item["quality_policy_note"])
 
+    def test_the_preferred_route_is_the_one_the_registry_holds(self):
+        """The exception is bound to a route, not to a channel name."""
+        registry = route_preference.load()["preferred"]["channel|zee bangla"]
+        self.assertEqual(registry["route_id"], PROVEN_URL)
+        self.assertGreaterEqual(int(registry["pass_count"]), 2)
+
+    def test_the_route_it_replaced_is_retained_not_deleted(self):
+        """A superseded proof was still a real measurement, and a route can
+        come back. `record` used to overwrite the entry, which silently deleted
+        two earlier Zee Bangla proofs the first time it was called."""
+        registry = route_preference.load()["preferred"]["channel|zee bangla"]
+        superseded = [
+            row.get("route_id") for row in (registry.get("superseded") or ())
+        ]
+        self.assertIn(
+            "live.balajibroadband.com:3500/live/625.m3u8", superseded,
+            "the route the exception was created for was dropped from history",
+        )
+
 
 class StarJalshaIsNotClaimedFixedTests(unittest.TestCase):
     """Both of its routes were measured and both failed. Recorded, not hidden."""
@@ -220,11 +262,32 @@ class DeclaredResolutionTests(unittest.TestCase):
 
     @staticmethod
     def _verification_failure_for(fragment: str) -> str:
-        """The reason the last scan recorded for a route, or "" if it verified.
+        """The reason on file for a route, or "" if nothing was recorded.
 
-        The scan writes every failed verification here, so a route missing from
-        a card can be told apart from a route the scan could not reach.
+        Two places, because there are two kinds of evidence and the second is
+        the stronger one:
+
+          reports/source-errors-channels.json   what the last scan's network
+                                                check saw - an HTTP status.
+          state/measured-playback-failures.json what a real browser measured
+                                                over two 120 s sessions.
+
+        The ledger was added on 2026-08-29 for Zee Bangla's rgkkw route, which
+        answers HTTP 200 and produces zero seconds of media. A guard that read
+        only the scan report would have called that "dropped with no reason on
+        file" while a decoded-frame measurement of it sat in the repository.
         """
+        ledger = ROOT / "state" / "measured-playback-failures.json"
+        if ledger.exists():
+            routes = json.loads(ledger.read_text(encoding="utf-8")).get("routes") or {}
+            for route_id, row in routes.items():
+                if not isinstance(row, dict) or row.get("superseded_by"):
+                    continue
+                if fragment in str(route_id) or fragment in str(
+                    row.get("url_public_template") or ""
+                ):
+                    return str(row.get("reason") or "measured unplayable")
+
         report = ROOT / "reports" / "source-errors-channels.json"
         if not report.exists():
             return ""

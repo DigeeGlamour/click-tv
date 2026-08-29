@@ -51,6 +51,11 @@ DEFAULT_PATH = os.path.join(
     "route-preference.json",
 )
 
+#: How many superseded proofs one channel keeps. Enough to read the history of
+#: a channel that has moved between CDNs a few times, bounded so a flapping
+#: channel cannot grow the registry without limit.
+MAXIMUM_SUPERSEDED = 6
+
 
 def load(path: Optional[str] = None) -> Dict[str, Any]:
     """Read the registry. Unreadable means no preferences, never an error."""
@@ -100,7 +105,10 @@ def record(
 
     target = path or DEFAULT_PATH
     registry = load(target)
-    registry.setdefault("preferred", {})[_key(kind, channel)] = {
+    key = _key(kind, channel)
+    previous = (registry.get("preferred") or {}).get(key)
+
+    entry = {
         "kind": kind,
         "channel": channel,
         "recorded_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
@@ -115,6 +123,42 @@ def record(
         "browser_profile": evidence.get("browser_profile"),
         "evidence_report": evidence.get("evidence_report"),
     }
+
+    # The route being replaced is kept, not overwritten.
+    #
+    # It only got into this registry by passing two full 120 s sessions, so it
+    # is a real measurement whatever happens to it later - and what usually
+    # happens is a vantage-shaped negative, not a stream that stopped existing.
+    # The committed registry had a hand-written superseded chain and a contract
+    # test guarding it; `record` did not know about either, so the first call
+    # through this function silently deleted two earlier Zee Bangla proofs.
+    if isinstance(previous, dict) and previous.get("route_id"):
+        if previous["route_id"] != entry["route_id"]:
+            history = [
+                item for item in (previous.get("superseded") or ())
+                if isinstance(item, dict)
+            ]
+            retained = {
+                field: previous.get(field)
+                for field in (
+                    "route_id", "url_public_template", "recorded_at",
+                    "pass_count", "window_seconds", "media_progress_seconds",
+                    "cumulative_stall_seconds", "browser_profile",
+                    "evidence_report",
+                )
+                if previous.get(field) is not None
+            }
+            retained["why_superseded"] = str(
+                evidence.get("why_superseded")
+                or "A later route passed two independent sessions. This proof "
+                   "is retained rather than deleted: it was a real measurement, "
+                   "and a route can come back."
+            )[:400]
+            entry["superseded"] = ([retained] + history)[:MAXIMUM_SUPERSEDED]
+        elif previous.get("superseded"):
+            entry["superseded"] = previous["superseded"]
+
+    registry.setdefault("preferred", {})[key] = entry
     registry["note"] = (
         "A route here passed two independent 120 s browser sessions. It outranks "
         "the scanner's verification tiers, which are network observations, "
