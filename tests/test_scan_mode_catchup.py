@@ -179,6 +179,25 @@ class WorkflowWiringTests(unittest.TestCase):
         body = str(self._step("Run scanner").get("run") or "")
         self.assertIn('if [[ "$STALE" == "yes" ]]', body)
 
+    def test_a_movies_catch_up_still_gets_the_private_source(self):
+        """The movie catalogue's candidates are overwhelmingly in a private
+        repository. A catch-up that skipped its checkout would rebuild the
+        catalogue from the two public playlists alone - and the first real
+        catch-up this repository ran chose movies, because the movie scan was
+        52 hours stale."""
+        for name in ("Checkout private movie source repository",
+                     "Validate private movie source repository"):
+            condition = str(self._step(name).get("if") or "")
+            self.assertIn("steps.scan_mode.outputs.mode == 'movies'", condition)
+            self.assertIn("steps.catchup.outputs.catchup == 'movies'", condition,
+                          f"{name} ignores a movies catch-up")
+
+    def test_those_steps_come_after_the_catch_up_is_decided(self):
+        self.assertLess(
+            self.names.index("Plan a catch-up for a catalogue the schedule skipped"),
+            self.names.index("Checkout private movie source repository"),
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -387,7 +387,13 @@ jobs:
           fi
 
       - name: Checkout private movie source repository
-        if: steps.scan_mode.outputs.mode == 'movies' || steps.scan_mode.outputs.mode == 'all'
+        # The catch-up counts too: a movies catch-up that ran without the
+        # private source would scan the public playlists alone and
+        # rebuild the catalogue from a fraction of its candidates.
+        if: >-
+          steps.scan_mode.outputs.mode == 'movies'
+          || steps.scan_mode.outputs.mode == 'all'
+          || steps.catchup.outputs.catchup == 'movies'
         uses: actions/checkout@v7
         with:
           repository: 0matbank/hopeful-research
@@ -398,7 +404,13 @@ jobs:
           token: ${{ secrets.PRIVATE_MOVIE_SOURCE_TOKEN }}
 
       - name: Validate private movie source repository
-        if: steps.scan_mode.outputs.mode == 'movies' || steps.scan_mode.outputs.mode == 'all'
+        # The catch-up counts too: a movies catch-up that ran without the
+        # private source would scan the public playlists alone and
+        # rebuild the catalogue from a fraction of its candidates.
+        if: >-
+          steps.scan_mode.outputs.mode == 'movies'
+          || steps.scan_mode.outputs.mode == 'all'
+          || steps.catchup.outputs.catchup == 'movies'
         shell: bash
         run: |
           set -euo pipefail
