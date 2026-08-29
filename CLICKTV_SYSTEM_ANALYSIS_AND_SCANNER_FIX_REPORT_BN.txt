@@ -482,7 +482,38 @@ Badge-এর আসল bug পাওয়া গেছে ও সারান�
 --------------------------------------------------------------------------------
 ৫.৩ Full movies-mode production-equivalent scan
 --------------------------------------------------------------------------------
-✖ **করা যায়নি — এবং কেন, সেটি সৎভাবে বলছি।**
+✔ **হয়েছে — CI-তে, catch-up নিজেই চালিয়েছে।** (নিচের "করা যায়নি" অংশটি
+   এই session-এর আগের অবস্থা; আসল সংখ্যা এখন পাওয়া গেছে।)
+
+  Run 33271666089-এর catch-up **movies** বেছে নিয়েছে (তখন ৫২ ঘণ্টা পুরোনো) এবং
+  2026-08-29T21:01:54Z-এ শেষ করেছে। ২২,৭৩৬ candidate, ৪,১৮৮ সেকেন্ড।
+
+  geo_pending / retryable_pending — before ও after, দুটোই production scan থেকে:
+
+      2026-08-27 15:13 (পরিবর্তনের আগে)     2026-08-29 21:01 (পরে)
+      -----------------------------------   -----------------------------
+      failed              22,171            failed              2,282
+      verified_global        894            geo_pending        20,341
+      quarantine             101            verified_global       112
+      failed_player_twice    356            rejected_low_quality      1
+      rejected_low_quality    59
+
+  অর্থাৎ **২০,৩৪১টি candidate**, যেগুলো আগে সরাসরি "failed" লেখা হতো, এখন
+  সঠিকভাবে geo_pending — অর্থাৎ "এই egress থেকে পাওয়া গেল না", "নেই" নয়।
+  failed ২২,১৭১ → ২,২৮২ (৯০% কম), আর তার মধ্যে ২,০৬৪টি permanent (404/410)।
+
+  **UI-তে নতুন movie publish হয়নি — এবং সেটাই ঠিক।** movie publish gate
+  একটি confirmed verification চায়, আর geo_pending সেই শর্ত পূরণ করে না; কোড
+  মন্তব্যেই লেখা আছে "recorded and held back rather than shown"। তাই movie
+  সংখ্যা ১২৪৮-এই আছে। ১২৪৮ অপরিবর্তিত থাকাকে "solved" বলা হচ্ছে না — বলা হচ্ছে
+  শ্রেণিবিভাগ এখন সঠিক এবং তার প্রমাণ সংখ্যায় আছে।
+
+  একটি সতর্কতা: ওই run-এ private movie source checkout হয়নি (§৫.৪-এর ফাঁক),
+  তাই verified_global ৮৯৪ → ১১২। catalogue তবু ১২৪৮-এ ধরে রাখা গেছে
+  (`movie_output_preserved: true`) — retention protection কাজ করেছে। commit
+  3c750a014 ওই ফাঁক বন্ধ করেছে, তাই পরের movies pass পূর্ণ source নিয়ে চলবে।
+
+  আগের অবস্থা, রেকর্ডের জন্য:
 
   • Movies mode-এর ৯০%-এর বেশি candidate আসে private repository
     `0matbank/hopeful-research` থেকে, যা `PRIVATE_MOVIE_SOURCE_TOKEN` secret
@@ -831,8 +862,9 @@ alias guard সেটি ধরেছে, তাই script এখন অন্�
 ১০. যা এখনো বাকি (সৎ তালিকা)
 ================================================================================
   ১. §৯-এর workflow commit push — সবচেয়ে জরুরি।
-  ২. Movies scan (§৫.৩) — private source token ছাড়া এখান থেকে সম্ভব নয়;
-     catch-up commit গেলে CI নিজেই চালাবে।
+  ২. Movies scan — **হয়ে গেছে** (§৫.৩)। বাকি: পরের movies pass-এ private
+     source সহ verified_global আবার ~৯০০-তে ফেরে কি না দেখা (commit
+     3c750a014)।
   ৩. Star Jalsha — সমাধান হয়েছে (§৪ঘ), কিন্তু route_preference-এ লেখা যায়নি
      (credential-guard, §৪ঘ)। অর্থাৎ পরের scan যদি অন্য route বেছে নেয়,
      registry তাকে থামাবে না। Guard-টি base64 path আর আসল token-এর পার্থক্য
