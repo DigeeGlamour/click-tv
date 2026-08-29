@@ -1,8 +1,12 @@
 ================================================================================
 SPORTLIVE18 SOURCE INTEGRATION — সম্পূর্ণতা রিপোর্ট
 Repository : DigeeGlamour/click-tv   Branch: main
-Commit     : 2fe5194e6  ("Add the four sportlive18 feeds, and stop the harness
-             quoting a live token")
+Commit     : f451e6ac1  ("Add the four sportlive18 feeds, and stop the harness
+                          quoting a live token")
+             cb2b683b2  (এই রিপোর্ট)
+             04c8b8957  ("Tell a dropped backup apart from one the scan could
+                          not reach")
+             99d60ecad  ("Put the working scratch placeholders back")
 তারিখ      : 2026-08-29 (পরিমাপগুলো 2026-08-28 15:50Z – 2026-08-29 08:40Z)
 ================================================================================
 
@@ -310,14 +314,40 @@ exp আলাদা থাকলে রাখা হয়, কারণ ওট�
 জানাচ্ছি। বললে পরের ধাপে একই ধরনের redaction ওখানেও বসিয়ে দেব।
 
 --------------------------------------------------------------------------------
+৯খ. push-এর পরে যে দুটি সমস্যা ধরা পড়েছে ও সারানো হয়েছে
+--------------------------------------------------------------------------------
+[ক] main-এ CI লাল ছিল — sportlive18-এর কারণে নয়
+    ব্যর্থ test: test_resolution_exception.test_the_fallback_is_a_backup_and_not
+    _the_primary — "Zee Bangla card-এ rgkkw backup থাকতে হবে"।
+    কারণ (মাপা): GitHub Actions runner থেকে ওই route-এ **"Request timed out"**
+    (http_status 0) — scan নিজেই তা reports/source-errors-channels.json-এ লিখে
+    রাখে; অথচ এখান থেকে একই URL ০.৫ সেকেন্ডে 302 → 200 দেয় (1.5 MB TS)।
+    অর্থাৎ merger-এর দোষ নয়, egress-এর পার্থক্য। তাই প্রতিটি "Auto update:
+    channels" scan-ই backup ০ করে দিচ্ছিল।
+    সমাধান (commit 04c8b8957) — guarantee দুর্বল না করে তিন ভাগে:
+      • rgkkw কখনোই primary হতে পারবে না — শর্তহীন।
+      • rgkkw backup-এ থাকতে হবে, **অথবা** ওই scan-এ তার ব্যর্থতার কারণ ফাইলে
+        লেখা থাকতে হবে — তাই চালু route নীরবে হারানো এখনো ধরা পড়বে।
+      • নতুন behavioural test: দুটি verified route দিলে merger নিচু-priority
+        route-কে backup হিসেবে রাখেই — এটি কোনো vantage-এর উপর নির্ভর করে না।
+
+[খ] আমার নিজের ভুল: rebase-এর autostash কিছু ফাইল index-এ রেখে দিয়েছিল, ফলে
+    04c8b8957-এ ৮.৬ MB scan scratch (working/candidates.json, bd-results.json,
+    global-results.json) ঢুকে গিয়েছিল। আগেই বানানো guard test পরিষ্কার clone-এ
+    এটি ধরেছে। commit 99d60ecad-এ তিনটি placeholder ফিরিয়ে দেওয়া হয়েছে।
+    কোনো history rewrite করা হয়নি।
+
+--------------------------------------------------------------------------------
 ১০. Test — কমান্ড ও ফলাফল
 --------------------------------------------------------------------------------
   python3 -m pytest tests/test_sportlive_sources.py -q
       → 58 passed   (unit + fixture: adapter, filter, safety gate, redaction)
 
   python3 -m unittest discover -s tests -p "test_*.py"
-      → নিচের §১১-এ চূড়ান্ত ফল (রিপোর্ট চূড়ান্ত হওয়ার পরে চালানো হয়েছে, যাতে
-        যে গাছটি push হচ্ছে ঠিক সেটিই পরীক্ষিত হয়)
+      → পরিষ্কার clone-এ (git clone → 99d60ecad): **Ran 1522 tests — OK**
+        অর্থাৎ ঠিক যে গাছটি push হয়েছে, সেটিই সম্পূর্ণ পাস করেছে।
+
+  bash scripts/build-pages.sh   → EXIT 0, "Validation successful", 420 ফাইল, 48M
 
   source fetch/parser (বাস্তব feed): চারটিই HTTP 200 —
       fancode 79,876B · sonyliv 16,017B · hotstar 151,459B · jiotv 945,513B
@@ -337,4 +367,16 @@ exp আলাদা থাকলে রাখা হয়, কারণ ওট�
      fetch-এ expired অবস্থায় পাওয়া যায় এবং safety gate সেগুলো বাদ দেয়।
   ৫. iPhone/WebKit-এ প্রমাণ নেওয়া যায়নি (physical hardware নেই)।
   ৬. reports/bd-verification.json-এর token সমস্যা (§৯) — অপেক্ষমাণ।
+  ৭. **সবুজ GitHub Actions run এখনো দেখাতে পারিনি।** কারণ দুটি, দুটোই আমার
+     হাতের বাইরে:
+       • codespace token-এ workflow dispatch অনুমতি নেই (HTTP 403), তাই আমি
+         নিজে run চালু করতে পারিনি;
+       • scheduled run 2026-08-29 07:46Z-এর পর আর চলেনি (cron প্রতি ৫–২০
+         মিনিট হওয়া সত্ত্বেও ২ ঘণ্টায় শূন্য), অথচ workflow "active" এবং কোনো
+         run queue-তেও আটকে নেই। billing API পড়ার scope না থাকায় Actions
+         minute শেষ কি না নিশ্চিত করা যায়নি।
+     ⇒ আপনার করণীয়: Actions ট্যাব থেকে "Live Signal Scanner" একবার Run
+       workflow দিন (অথবা Settings → Billing-এ Actions minute দেখুন)। শেষ যে
+       ব্যর্থতাগুলো ছিল সেগুলোর কারণ উপরে §৯খ-তে সারানো হয়েছে, এবং পরিষ্কার
+       clone-এ ১৫২২টি test পাস করেছে।
 ================================================================================
