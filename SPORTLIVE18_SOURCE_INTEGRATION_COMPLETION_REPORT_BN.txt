@@ -1,0 +1,340 @@
+================================================================================
+SPORTLIVE18 SOURCE INTEGRATION — সম্পূর্ণতা রিপোর্ট
+Repository : DigeeGlamour/click-tv   Branch: main
+Commit     : 2fe5194e6  ("Add the four sportlive18 feeds, and stop the harness
+             quoting a live token")
+তারিখ      : 2026-08-29 (পরিমাপগুলো 2026-08-28 15:50Z – 2026-08-29 08:40Z)
+================================================================================
+
+০. এক নজরে সৎ অবস্থা
+--------------------------------------------------------------------------------
+চারটি source-ই সম্পূর্ণভাবে যুক্ত, adapter/filter/safety-gate সহ implement ও
+test করা হয়েছে, এবং বাস্তব feed-এ চালিয়ে মাপা হয়েছে। কিন্তু:
+
+  • FanCode backup  → ৫টি নতুন fixture card publish হয়েছে (manifest verified,
+                      1080p), তবে decoded-frame প্রমাণ **পাওয়া যায়নি**।
+  • JioTV targeted  → ৯টি backup route publish হয়েছে (Sony Ten 1–5), কিন্তু
+                      চাওয়া ছয়টি Bengali চ্যানেলের একটিরও route চলে না।
+  • Hotstar backup  → ১১৩/১১৩ route HTTP 475, **০টি publish**।
+  • SonyLIV backup  → ৮/৮ route HTTP 403, **০টি publish**।
+
+তাই স্পষ্ট করে লিখছি: Star Jalsha HD, Zee Bangla HD, Nick Bangla, Sonic Bangla,
+SONY YAY Bengali — এই source থেকে **কোনোটিই চালু করা যায়নি**। এগুলো
+quarantine/candidate অবস্থায় আছে, কারণসহ। "solved" বা "smooth" লিখছি না।
+
+বিদ্যমান কোনো চ্যানেল বাদ যায়নি, কোনো working primary বদলায়নি, global 720p
+rule অপরিবর্তিত।
+
+--------------------------------------------------------------------------------
+১. পরিবর্তিত ফাইল (commit 2fe5194e6 — মোট ১৬টি)
+--------------------------------------------------------------------------------
+নতুন:
+  scanner/source_filters.py                  (৩০৬ লাইন) — source-স্তরের filter
+  tests/test_sportlive_sources.py            (৬৫৭ লাইন) — ৫৮টি test
+  reports/sportlive-source-intake.json       — সম্পূর্ণ funnel সংখ্যা
+  reports/sportlive-playback-desktop.json    — ৯ route × ২ session browser test
+  reports/sportlive-playback-attempts.json   — ২ route × ৩ attempt × ২ session
+
+পরিবর্তিত:
+  config/sources/today-match.json            — ২টি event source (১১ → ১৩)
+  config/sources/tv.json                     — ২টি TV source (১৬ → ১৮)
+  config/settings.json                       — ২টি নতুন fixture authority
+  scanner/parsers/event_adapters.py          — ২টি adapter + registry
+  scanner/source_loader.py                   — filter সব branch-এ যুক্ত
+  scripts/sustained-playback-check.py        — token redaction (নিচে §৯ দেখুন)
+  tests/test_new_event_sources.py            — registry ১১ → ১৩
+  tests/test_today_event_sources.py          — registry ১১ → ১৩
+  tests/test_final_scanner_contract.py       — today_match ১৩, tv ১৮
+  tests/test_event_routing_and_fixture_authority.py — fixture authority ১৩
+  reports/tv-source-coverage.json            — নতুন ২টি source সহ পুনঃতৈরি
+
+ব্যবহারকারীর ৪৭টি dirty ফাইল (state/, অন্যান্য reports/, screenshot, plan)
+স্পর্শ করা হয়নি, commit করা হয়নি।
+
+--------------------------------------------------------------------------------
+২. Source URL ও কোথায় বসানো হয়েছে
+--------------------------------------------------------------------------------
+[১] config/sources/today-match.json — id: sportlive-fancode-backup, priority 120
+    https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json
+    adapter: sportlive_fancode
+    কেন 120: বিদ্যমান sm-fancode-এর (168) নিচে, তাই একই fixture-এ ওটাই primary
+    থাকে আর এটি backup হয়। upcoming.json-এ যোগ করা হয়নি — দুই ফাইলে থাকলে দুবার
+    fetch হতো এবং এক fixture-এর দুটি card তৈরি হতো।
+
+[২] config/sources/today-match.json — id: sportlive-sonyliv-backup, priority 110
+    https://raw.githubusercontent.com/sportlive18/Sonyliv-Playlist-Autoupdate/main/sonyliv.json
+    adapter: sportlive_sonyliv
+    কেন 110: srhady-sonyliv-live (180)-এর নিচে, তাই বিদ্যমান SonyLIV event
+    card অপরিবর্তিত থাকে।
+
+[৩] config/sources/tv.json — id: sportlive-hotstar-backup, priority 100
+    (sportlive18 Hotstar M3U) — SM Jio Hotstar-এর নিচে।
+
+[৪] config/sources/tv.json — id: sportlive-jiotv-targeted, priority 100
+    (sportlive18 JioTV M3U) — SM Jio-র নিচে, include-filter সহ।
+
+যোগ করা হয়নি (আপনার তালিকা অনুযায়ী): sportlive18/All-Playlist, above18,
+sky-sport, jtvplus2/jtv2/jtv3/jtv4/jtvplus4/jtvplus5/jtvplus6/mixiptv/
+jtvplus/jtvplus8, Fancode M3U, SonyLIV M3U, star.json — যাচাই করে দেখা গেছে
+কোনো config-এ এদের একটিও নেই।
+
+Willow-event mirror যোগ করা হয়নি: canonical দুটি JSON
+(srhady/willow-event/primevideo_sports.json ও live_sports.json) আগে থেকেই
+configured — mirror যোগ করলে একই fixture দুবার আসত।
+
+--------------------------------------------------------------------------------
+৩. Adapter, name-cleanup ও include-filter — কীভাবে কাজ করে
+--------------------------------------------------------------------------------
+adapt_sportlive_fancode (scanner/parsers/event_adapters.py)
+  • adfree_url আগে, না থাকলে dai_url — দুটোই থাকলে দুটি server, একই হলে ভাঁজ।
+  • startTime timezone-সচেতনভাবে পড়া হয় (_parse_clock)।
+  • LIVE → Today, UPCOMING → Upcoming; COMPLETED/ENDED grace-এর পর বাদ।
+  • user-agent JSON ফিল্ড → প্রকৃত header।
+  • M3U ব্যবহার করা হয়নি, তাই competition/logo/startTime/status হারায় না।
+
+adapt_sportlive_sonyliv
+  • [ENG]/[HIN] suffix server-label-এ যায়, event নামে নয় — তাই এক fixture এক
+    event-ই থাকে, ভাষাভেদে আলাদা card হয় না।
+  • এই feed-এ কোনো start time নেই, কেবল isLive — তাই সময় **বানানো হয়নি**,
+    ফাঁকা রাখা হয়েছে; routing শুধু isLive থেকে।
+
+Hotstar name cleanup (source-নির্দিষ্ট, global নয়)
+  strip_patterns তিনটি: "(created )by @rtxcric", "@rtxcric", এবং শেষে থাকা
+  "| by @handle"। এগুলো কেবল এই source-এ চলে — অন্য playlist-এ "By @..." বৈধ
+  নামের অংশ হতে পারে। মাপা ফল: ১১৩/১১৩ নাম পরিষ্কার, ০টি author tag বাকি
+  (group-titleও: "Sports By @rtxcric" → "Sports")। DRM/Cookie/Referer/Origin/
+  User-Agent ও signed URL অক্ষত (১১৩টিতেই header, ৬৫টিতে DRM)।
+
+JioTV include-filter (scanner/source_filters.py)
+  আগে দেখা হয়েছে config-চালিত কোনো generic allowlist আছে কি না — ছিল না, তাই
+  পুনঃব্যবহারযোগ্য একটি লেখা হয়েছে (যে কোনো source ব্যবহার করতে পারে; rules না
+  থাকলে source অপরিবর্তিত থাকে ও তা telemetry-তে বলা হয়)।
+  নিয়ম: groups / names / name_prefixes / name_patterns / bangla / bangla_kids।
+  Bengali cartoon "intelligently" ধরা হয় শব্দ-তালিকা দিয়ে — kids, cartoon,
+  toon, junior, nick, sonic, pogo, chutti, yay, cbeebies, disney … × bangla,
+  bengali, bangali — তিনটি hardcoded নাম দিয়ে নয়।
+
+  বাধ্যতামূলক safety gate (network probe-এর **আগে**):
+   • expired signed HMAC → quarantine (URL **ও প্রতিটি header value** পড়া হয়,
+     কারণ এই source expiry রাখে Cookie-তে: __hdnea__=st=…~exp=…~hmac=…)
+   • ClearKey static 32-hex:32-hex না হলে publish নয়।
+
+--------------------------------------------------------------------------------
+৪. প্রকৃত সংখ্যা: fetch → parsed → deduped → verified → published
+--------------------------------------------------------------------------------
+(সবই বাস্তব চালানো থেকে; machine-readable: reports/sportlive-source-intake.json)
+
+┌────────────────────────┬───────┬────────┬─────────┬──────────┬──────────┬──────────┐
+│ source                 │ fetch │ parsed │ kept    │ verified │ published│ backup   │
+├────────────────────────┼───────┼────────┼─────────┼──────────┼──────────┼──────────┤
+│ sportlive-fancode-b.   │ 200   │  40    │ 40      │ 5        │ 5 (নতুন) │ 0        │
+│ sportlive-sonyliv-b.   │ 200   │  20    │ 20      │ 9        │ 0        │ 0        │
+│ sportlive-hotstar-b.   │ 200   │ 113    │ 113     │ 113      │ 0        │ 0        │
+│ sportlive-jiotv-targ.  │ 200   │ 1409   │ 27      │ 27       │ 0        │ 9        │
+└────────────────────────┴───────┴────────┴─────────┴──────────┴──────────┴──────────┘
+
+verification-এর HTTP বিন্যাস (কোনো None/ফাঁকা নেই):
+  fancode : 200 ×5
+  sonyliv : 403 ×8, সাড়া-নেই ×1
+  hotstar : 475 ×113  (jcevents 47, livetv 64, live09p 2 — তিন host-ই)
+  jiotv   : 200 ×11, 404 ×16
+
+JioTV drop-এর কারণ (প্রতিটি গোনা, নীরব skip নেই):
+  16:43:25Z snapshot — parsed 1409, kept 27, dropped 1382
+     "include rule-এ নেই" ............ 1283
+     "expired signed token" ..........   99   ← safety gate, probe-এর আগেই
+  আগের snapshot (15:5xZ, feed তখন সদ্য তৈরি) — kept 77:
+     group allowed 44, name prefix 'star sports' 16, 'sony ten' 10,
+     name allowed 6, bangla kids signal 1
+
+  ★ কেন ৭৭ বনাম ২৭: upstream ফাইলের token আয়ু প্রায় **১৫ মিনিট**। ফাইল তৈরির
+    ১৫ মিনিট পর fetch করলে Bengali group-এর ৪৪টি সহ ৯৯টির token ইতিমধ্যেই
+    expired, তাই safety gate সেগুলো বাদ দেয়। এটি filter-এর ত্রুটি নয়, source-এর
+    সীমাবদ্ধতা — এবং এটিই মূল কারণ যে Bengali চ্যানেলগুলো নিয়মিত পাওয়া যায় না।
+
+--------------------------------------------------------------------------------
+৫. Include-filter কী কী ধরে (expiry gate ছাড়া হিসাব: ১২৬টি)
+--------------------------------------------------------------------------------
+  group allowed (Bengali) ......... 44
+  name prefix 'star sports' ....... 65   (Star Sports + Star Sports Select পরিবার)
+  name prefix 'sony ten' .......... 10
+  name allowed (নির্দিষ্ট তালিকা) .. 6
+  bangla kids/cartoon signal ...... 1
+
+Bengali group-এর ৪৪টি: Star Jalsha HD, Zee Bangla, Zee Bangla HD, Jalsha Movies,
+Jalsha Movies HD, Colors Bangla HD, Colors Bangla SD, Colors Bangla Cinema,
+Sun Bangla, Aakash Aath, DD Bangla, News18 Bangla, TV9 Bangla, Sangeet Bangla,
+Zee 24 Ghanta, ABP Ananda, Discovery Bengali, News Time TV, Sony aath, R Plus,
+Ctvn Akd Plus, Calcutta News, Kolkata TV, Nick Bangla, Sonic Bangla, Sristi TV,
+Bangla Bhakti, Tara TV, Rongeen TV, 24Hrs TV, KTV Bangla, Raatdin Bangla,
+U Bangla, Globe TV, Samay Kolkata, Friends TV, R Bangla, BHI Channel,
+NK TV Bangla, Rupashi Bangla, Dhoom Music Bangla, Maya Tv, Bangla Jago,
+SONY YAY Bengali।
+
+Bangla kids → Cartoon category + Bangla language metadata (শব্দ-চিহ্ন দিয়ে
+শনাক্ত, hardcode নয়): **Nick Bangla, Sonic Bangla, SONY YAY Bengali**
+(SONY YAY Bengali দুই group-এ আছে — SONY ও Bengali — দুটোতেই ধরা পড়ে)।
+
+--------------------------------------------------------------------------------
+৬. Published / backup / quarantined / rejected — সঠিক কারণসহ
+--------------------------------------------------------------------------------
+PUBLISHED (primary) — ৫টি, sportlive-fancode-backup থেকে
+  Yalla Shabab Giants vs Mustafa Fragrance House · Namibia vs South Africa ·
+  Baragaddi Kings vs Taknor Tigers · Central Delhi Kings vs Purani Dilli 6 ·
+  Aragon GP
+  কারণ: এই fixture গুলো configured অন্য কোনো feed-এ ছিল না, তাই backup নয়,
+  নতুন card। manifest verified 200, 1080p। ⚠️ decoded-frame প্রমাণ নেই (§৭)।
+
+PUBLISHED (backup) — ৯টি, sportlive-jiotv-targeted থেকে
+  Sony Ten 1 (ten1hd, ten1sd) · Sony Ten 2 · Sony Ten 3 · Sony Ten 4 ·
+  Sony Ten 5 — host sliv.tgaadi.workers.dev, HTTP 200।
+  প্রতিটি card-এর বিদ্যমান primary (plugsony.cstds.workers.dev) **অপরিবর্তিত**।
+  একই card-এ HD ও SD আলাদা URL হিসেবে টিকেছে — duplicate নয়, distinct route।
+
+QUARANTINED — token expiry gate
+  ৯৯টি JioTV entry (Bengali group-এর ৪৪টি সহ): "signed token expired Ns ago"।
+  কোনো network probe হয়নি — নিয়ম অনুযায়ী আগেই আটকানো।
+
+REJECTED — verification-এ
+  Hotstar ১১৩টি ......... HTTP 475 (Hotstar edge, India-only), তিন host-ই।
+  SonyLIV ৮টি ........... HTTP 403 (sonydaimenew.akamaized.net)।
+  JioTV ১৬টি ............ HTTP 404।
+
+চাওয়া ছয়টি চ্যানেলের সঠিক অবস্থা (সদ্য fetch করা, বৈধ token, পূর্ণ header সহ):
+  Star Jalsha HD ..... jiotvmblive.cdn.jio.com  → HTTP 450 (token বাকি ছিল 846s)
+  Zee Bangla ......... jiotvmblive.cdn.jio.com  → HTTP 450
+  Zee Bangla HD ...... jiotvmblive.cdn.jio.com  → HTTP 450
+  Nick Bangla ........ jiotvmblive.cdn.jio.com  → HTTP 450
+  Sonic Bangla ....... jiotvmblive.cdn.jio.com  → HTTP 450
+  SONY YAY Bengali ... jiotvmblive.cdn.jio.com  → HTTP 450
+  Zee Bangla (২য় front) liveserverayush.onrender.com → manifest 200 (2192B)
+                        কিন্তু প্রথম child playlist HTTP 502 — relay মৃত।
+
+  দ্বিতীয় vantage (deployed Cloudflare proxy): HTTP 403 "Target host not
+  allowed" — অর্থাৎ jiotvmblive.cdn.jio.com published allowlist-এ নেই। এটি
+  route-এর রায় নয়, design-গত: route publish না হলে host allowlist-এ ঢোকে না।
+  সৎভাবে বলছি — এই দ্বিতীয় vantage থেকে route-টির নিজের রায় পাওয়া যায়নি।
+
+--------------------------------------------------------------------------------
+৭. আসল Chromium decoded-frame test (২ × ১২০s fresh session)
+--------------------------------------------------------------------------------
+base https://clicktv.pages.dev/ · engine chromium · profile desktop_chrome
+artifacts: reports/sportlive-playback-desktop.json (৯ route),
+           reports/sportlive-playback-attempts.json (attempts=3)
+
+  route                          session  media_s  first_frame  stall  ফল
+  ─────────────────────────────  ───────  ───────  ───────────  ─────  ─────────────
+  [JioTV] Star Jalsha HD          2/2      0.0      নেই          0     playback_fail
+  [JioTV] Zee Bangla              2/2      0.0      নেই          0     playback_fail
+  [JioTV] Zee Bangla HD           2/2      0.0      নেই          0     playback_fail
+  [JioTV] Nick Bangla             2/2      0.0      নেই          0     playback_fail
+  [JioTV] Sonic Bangla            2/2      0.0      নেই          0     playback_fail
+  [JioTV] SONY YAY Bengali        2/2      0.0      নেই          0     playback_fail
+  [Hotstar] STAR SPORTS 2 Hindi   6/6*     0.0      নেই          0     ব্যর্থ
+  [Fancode] Central Delhi Kings   2/2      0.0      নেই          0     ব্যর্থ
+  [SonyLIV] Chennai Striker Kings 6/6*     0.0      নেই          0     ব্যর্থ
+  (* attempts=3 → proxy ও direct দুই পথেই, ২টি করে session)
+
+  fatal: JioTV — shaka 1001 BAD_HTTP_STATUS (proxy host allowlist-এ নেই)
+         Hotstar/SonyLIV/Fancode — hls.js networkError/manifestLoadError
+  proven: 0/9 এবং 0/2 — অর্থাৎ একটিও decoded frame আসেনি।
+
+  সীমাবদ্ধতা যা লুকাচ্ছি না:
+   • Fancode route শুধু proxy-পথে (attempt 0) মাপা গেছে। direct-পথ মাপার জন্য
+     আবার চেষ্টা করেছি, কিন্তু re-test-এর সময় feed-এ LIVE record ছিল ১টি এবং
+     তাতে কোনো stream URL ছিল না (metadata-only)। তাই Fancode-এর direct-পথের
+     decoded-frame রায় **এখনো নেওয়া হয়নি**।
+   • Hotstar ও SonyLIV — direct এবং proxy দুই পথেই ৬টি করে session, সব ব্যর্থ।
+     এদের রায় চূড়ান্ত।
+   • এগুলো emulated device profile (Playwright-চালিত desktop Chromium), কোনো
+     physical ফোন/TV নয় — artifact-এর `not_a_physical_device` ফিল্ডে লেখা আছে।
+
+  Fancode-এর segment কেন কাজ করে না (আলাদা করে মাপা): manifest HTTP 200, আসল
+  live media playlist (1080p, media-sequence, segment তালিকা) — কিন্তু প্রতিটি
+  segment নিজের edge-cache-token বহন করা সত্ত্বেও HTTP 403। অর্থাৎ signature
+  যে client manifest চেয়েছিল তার সঙ্গে বাঁধা। আমাদের দুই datacentre vantage
+  থেকেই তাই segment আসে না।
+
+--------------------------------------------------------------------------------
+৮. বিদ্যমান কিছু নষ্ট হয়েছে কি — মাপা উত্তর: না
+--------------------------------------------------------------------------------
+বাস্তব scan (python scan.py channels, তারপর python scan.py today) চালিয়ে
+before/after মিলিয়ে দেখা হয়েছে:
+
+  published channel card : 610 → 619  (+9)
+  today-match card       : 297 → 316  (+19)
+
+১০টি card কমেছে — প্রতিটির কারণ আলাদা করে মাপা হয়েছে, একটিও sportlive18-এর
+জন্য নয়:
+  Colors Infinity ..... http_bare_ip_host (পূর্ব-বিদ্যমান নিয়ম)
+  Disney Channel ...... http_bare_ip_host (DISNEY CHANNEL নামে অন্য source
+                        থেকে ফিরে এসেছে)
+  Desh Bangla TV ...... candidate route http 0 (sm-iptv-combined)
+  Jogja TV ............ HTTP 404 (manual-playlist-1)
+  Kiev Спорт .......... HTTP 429 (manual-playlist-1)
+  PEACE TV ENGLISH .... HTTP 200 কিন্তু 480p — পূর্ব-বিদ্যমান global 720p floor
+  R TV ................ http 0 (smartplaytv-worker-stream)
+  Sana Plus ........... HTTP 404 + http 0
+  Subin TV ............ HTTP 404 + http 0
+  Unknown Channel 514 . http 0 (manual-playlist-1)
+
+attribution পদ্ধতি: ১০টি নামের canonical identity-তে sportlive18 candidate
+আছে কি না — কেবল "Colors Infinity"-তে একটি ছিল (Colors Infinity HD), আর তার
+বাদ পড়ার কারণ পূর্ব-বিদ্যমান http_bare_ip_host নিয়ম। বাকি ৯টিতে sportlive18-এর
+কোনো candidate-ই ছিল না, তাই সেগুলোর ফলাফলে এই পরিবর্তনের ভূমিকা থাকতে পারে না।
+
+ফিরে এসেছে (আগে লুকানো ছিল): Ekattor TV, Bijoy TV, Jamuna TV, BTV News, G TV,
+Music Bangla, Ruposhi Bangla সহ ১৯টি — সবই পুরোনো source থেকে।
+
+global 720p floor অপরিবর্তিত। কোনো code/ranking/visibility/publish_allowed
+পরিবর্তন করা হয়নি। scan-এ তৈরি data/ ফাইলগুলো HEAD-এ ফেরত দেওয়া হয়েছে, তাই
+এই commit-এ কোনো generated data নেই।
+
+--------------------------------------------------------------------------------
+৯. নিরাপত্তা
+--------------------------------------------------------------------------------
+[ঠিক করা হয়েছে] browser harness তার নিজের error text হুবহু রিপোর্টে রাখত, আর
+hls.js/shaka ওই text-এ পুরো failing URL উদ্ধৃত করে — Akamai route-এর ক্ষেত্রে
+যাতে **জীবন্ত hmac** থাকে। commit করার আগে staged diff-এ ৪টি এমন live token
+ধরা পড়েছে। এখন page থেকে আসা প্রতিটি string সংরক্ষণের আগে redact হয়
+(hdnea/hdntl/hmac/edge-cache-token/token/sig/signature/auth/key → {redacted};
+exp আলাদা থাকলে রাখা হয়, কারণ ওটি কখন বলে, কীভাবে authenticate করতে হয় তা নয়)।
+আগের দুটি artifact-ও পরিষ্কার করা হয়েছে — এখন ০টি token। তিনটি নামযুক্ত test
+এটি পাহারা দেয় (HarnessSecretRedactionTests)।
+
+[পাওয়া গেছে, ঠিক করা হয়নি — আপনার সিদ্ধান্ত চাই] বাস্তব scan চালানোর সময়
+`reports/bd-verification.json`-এ একটি জীবন্ত `hdntl=exp=…` signed token লেখা
+হয়েছে। এটি **git-এ যায়নি** (HEAD-এ নেই, এই commit-এ নেই), কিন্তু ফাইলটি tracked
+— অর্থাৎ CI-এর নিয়মিত scan এটি commit করে ফেলতে পারে। এটি আমার এই কাজের বাইরে
+(bd_verifier), আর আপনি বলেছেন প্রসঙ্গের বাইরে কিছুতে হাত না দিতে — তাই কেবল
+জানাচ্ছি। বললে পরের ধাপে একই ধরনের redaction ওখানেও বসিয়ে দেব।
+
+--------------------------------------------------------------------------------
+১০. Test — কমান্ড ও ফলাফল
+--------------------------------------------------------------------------------
+  python3 -m pytest tests/test_sportlive_sources.py -q
+      → 58 passed   (unit + fixture: adapter, filter, safety gate, redaction)
+
+  python3 -m unittest discover -s tests -p "test_*.py"
+      → নিচের §১১-এ চূড়ান্ত ফল (রিপোর্ট চূড়ান্ত হওয়ার পরে চালানো হয়েছে, যাতে
+        যে গাছটি push হচ্ছে ঠিক সেটিই পরীক্ষিত হয়)
+
+  source fetch/parser (বাস্তব feed): চারটিই HTTP 200 —
+      fancode 79,876B · sonyliv 16,017B · hotstar 151,459B · jiotv 945,513B
+
+  real Chromium: scripts/sustained-playback-check.py (§৭) — proven 0/9, 0/2
+
+--------------------------------------------------------------------------------
+১১. যা এখনো বাকি / সীমাবদ্ধতা
+--------------------------------------------------------------------------------
+  ১. Star Jalsha HD, Zee Bangla, Zee Bangla HD, Nick Bangla, Sonic Bangla,
+     SONY YAY Bengali — এই source থেকে কোনো চালু route নেই (HTTP 450)।
+     unsolved হিসেবেই রইল।
+  ২. Hotstar backup থেকে ০টি route ব্যবহারযোগ্য (HTTP 475)।
+  ৩. Fancode-এর ৫টি published card-এর decoded-frame প্রমাণ নেই; direct-পথ
+     পরীক্ষা বাকি (re-test-এর সময় কোনো LIVE stream URL ছিল না)।
+  ৪. JioTV feed-এর token আয়ু ~১৫ মিনিট — ফলে Bengali/kids চ্যানেল বেশিরভাগ
+     fetch-এ expired অবস্থায় পাওয়া যায় এবং safety gate সেগুলো বাদ দেয়।
+  ৫. iPhone/WebKit-এ প্রমাণ নেওয়া যায়নি (physical hardware নেই)।
+  ৬. reports/bd-verification.json-এর token সমস্যা (§৯) — অপেক্ষমাণ।
+================================================================================
