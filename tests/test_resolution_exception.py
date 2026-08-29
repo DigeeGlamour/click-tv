@@ -218,7 +218,35 @@ class DeclaredResolutionTests(unittest.TestCase):
         self.assertEqual(sps["scan_type"], "interlaced")
         self.assertNotIn("http://", json.dumps(payload))
 
-    def test_the_fallback_is_a_backup_and_not_the_primary(self):
+    @staticmethod
+    def _verification_failure_for(fragment: str) -> str:
+        """The reason the last scan recorded for a route, or "" if it verified.
+
+        The scan writes every failed verification here, so a route missing from
+        a card can be told apart from a route the scan could not reach.
+        """
+        report = ROOT / "reports" / "source-errors-channels.json"
+        if not report.exists():
+            return ""
+        payload = json.loads(report.read_text(encoding="utf-8"))
+        records = (
+            payload.get("records")
+            or payload.get("errors")
+            or payload.get("items")
+            or (payload if isinstance(payload, list) else [])
+        )
+        for record in records:
+            if not isinstance(record, dict):
+                continue
+            if fragment in str(record.get("url") or ""):
+                return str(
+                    record.get("verification_error")
+                    or record.get("verification_status")
+                    or "recorded as failed"
+                )
+        return ""
+
+    def test_the_fallback_is_never_the_primary(self):
         payload = json.loads(
             (ROOT / "data" / "channels" / "indian.json").read_text(encoding="utf-8")
         )
@@ -226,9 +254,73 @@ class DeclaredResolutionTests(unittest.TestCase):
         card = next((c for c in rows if c.get("name") == "Zee Bangla"), None)
         if card is None:
             self.skipTest("Zee Bangla is not published in this snapshot")
+        # Unconditional: the route that decodes nowhere must never lead.
         self.assertNotIn("rgkkw", str(card.get("url") or ""))
+
+    def test_the_fallback_is_kept_as_a_backup_or_says_why_it_is_not(self):
+        """A working second route may not vanish silently.
+
+        It can still be absent for one honest reason: the scan that wrote this
+        snapshot could not verify it. Measured on 2026-08-29, that is exactly
+        what separates a local scan from the CI runner - the same URL answers
+        302 -> 200 in half a second from one and times out from the other, and
+        the scan records `"verification_error": "Request timed out"` for it.
+        So the route must be in the backups, or the reason must be on file.
+        """
+        payload = json.loads(
+            (ROOT / "data" / "channels" / "indian.json").read_text(encoding="utf-8")
+        )
+        rows = payload if isinstance(payload, list) else payload.get("channels") or []
+        card = next((c for c in rows if c.get("name") == "Zee Bangla"), None)
+        if card is None:
+            self.skipTest("Zee Bangla is not published in this snapshot")
         backups = " ".join(str(b.get("url") or "") for b in (card.get("backups") or []))
+        if "rgkkw" in backups:
+            return
+        reason = self._verification_failure_for("rgkkw.live")
+        self.assertTrue(
+            reason,
+            "the previous route is neither a backup nor recorded as failing - "
+            "a working route was dropped with no reason on file",
+        )
+
+    def test_a_verified_second_route_is_kept_as_a_backup(self):
+        """The guarantee itself, independent of any vantage.
+
+        The data test above can only speak for the environment that ran the
+        scan. This one holds the merger to the rule directly: two verified
+        routes for one channel are one card with one backup, and the lower
+        priority is the backup, never a discarded route.
+        """
+        from scanner.merger import merge_candidates
+
+        def entry(url, priority, height):
+            return {
+                "name": "Zee Bangla",
+                "channel_name": "Zee Bangla",
+                "url": url,
+                "source_id": f"src-{priority}",
+                "source_pipeline": "tv",
+                "category": "Indian",
+                "resolution_height": height,
+                "verification_status": "verified_global",
+                "verified": True,
+                "publish_allowed": True,
+                "stream_type": "hls",
+                "headers": {},
+                "source_priority": priority,
+            }
+
+        cards = merge_candidates(
+            [
+                entry("https://lead.example/zee.m3u8", 150, 1080),
+                entry("https://second.example/zee.ts", 90, 1080),
+            ],
+            settings_path=str(ROOT / "config" / "settings.json"),
+        )
+        card = next(c for c in cards if c.get("name") == "Zee Bangla")
+        self.assertIn("lead.example", str(card.get("url")))
         self.assertIn(
-            "rgkkw", backups,
-            "the previous route must stay available as a backup",
+            "second.example",
+            " ".join(str(b.get("url") or "") for b in (card.get("backups") or [])),
         )
