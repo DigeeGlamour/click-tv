@@ -281,22 +281,78 @@ def parse_source_content(
         str(source_info.get("url") or source_info.get("location") or ""),
     )
 
-    # A source that declares its own reader gets it. The eleven Today Match /
+    # A source that declares its own reader gets it. The thirteen Today Match /
     # Upcoming feeds each have their own layout, and a shape-guessing parser
     # measurably loses data on six of them - four returned nothing at all. See
     # scanner/parsers/event_adapters.py for what each reader handles.
     adapted = parse_event_source_flat(content, source_info)
     if adapted is not None:
-        return adapted, detected or "json"
+        return _apply_source_rules(adapted, source_info), detected or "json"
 
     if detected == "json":
-        return parse_json_content(content, source_info), detected
+        return (
+            _apply_source_rules(parse_json_content(content, source_info), source_info),
+            detected,
+        )
     if detected == "m3u":
-        return parse_m3u_content(content, source_info), detected
+        return (
+            _apply_source_rules(parse_m3u_content(content, source_info), source_info),
+            detected,
+        )
     if detected == "direct_stream":
-        return parse_direct_stream_content(content, source_info), detected
+        return (
+            _apply_source_rules(
+                parse_direct_stream_content(content, source_info), source_info
+            ),
+            detected,
+        )
 
-    return parse_url_list_content(content, source_info), "url_list"
+    return (
+        _apply_source_rules(parse_url_list_content(content, source_info), source_info),
+        "url_list",
+    )
+
+
+#: Per-source filter telemetry from this process, by source id. Read by the
+#: coverage report so a source's own include rules are visible as counts rather
+#: than as a silent difference between what a playlist holds and what a scan
+#: verified.
+SOURCE_RULE_TELEMETRY: Dict[str, Any] = {}
+
+
+def _apply_source_rules(
+    items: List[Dict[str, Any]],
+    source_info: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    """A source's own include rules, name cleanup and pre-network rejections.
+
+    Sits in the one place every parser's output passes through, so a source
+    declares `source_rules` in its config and needs no parser of its own. A
+    source that declares nothing is returned unchanged, which is every source
+    configured before this existed.
+    """
+    try:
+        from scanner import source_filters
+
+        kept, telemetry = source_filters.apply_source_rules(items, source_info)
+        if telemetry.get("rules_declared"):
+            SOURCE_RULE_TELEMETRY[str(source_info.get("id") or "")] = telemetry
+            print(
+                "   %s source rules: parsed %s, kept %s, dropped %s%s"
+                % (
+                    source_info.get("id"),
+                    telemetry["parsed"],
+                    telemetry["kept"],
+                    telemetry["dropped"],
+                    (", renamed %s" % telemetry["renamed"])
+                    if telemetry.get("renamed")
+                    else "",
+                )
+            )
+        return kept
+    except Exception as error:  # noqa: BLE001 - a filter must not lose a source
+        print(f"   source rules skipped for {source_info.get('id')}: {error}")
+        return list(items or [])
 
 
 # ---------------------------------------------------------------------------

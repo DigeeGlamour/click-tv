@@ -1,7 +1,9 @@
-"""The eleven event feeds, one adapter per real JSON layout.
+"""The thirteen event feeds, one adapter per real JSON layout.
 
-Today Match and Upcoming are now built from exactly eleven sources, and no two
-of them share a shape. sonyliv nests the stream under
+Today Match and Upcoming are now built from exactly thirteen sources, and no
+two of them share a shape. The last two are the sportlive18 FanCode and
+SonyLIV backups; their own layouts, counts and folding rules are held in
+tests/test_sportlive_sources.py, and the registry counts here include them. sonyliv nests the stream under
 `live_matches[].playback_info`; axsports and bingstream carry a `link_live[]`
 array where each entry holds both a tokenless `stream_link` and a signed
 `videoURL` for the same server; tapmad has a flat `stream_url`; primevideo and
@@ -24,7 +26,7 @@ ones a "reasonable" parser gets wrong:
     also when it ships links that are not serving yet.
   - LIVE/Today/Upcoming is decided after parsing, from the status the record
     itself carries - not from which config file the source is listed in. All
-    eleven live in today-match.json, and axsports alone mixes 4 live rows with
+    thirteen live in today-match.json, and axsports alone mixes 4 live rows with
     83 not-started ones inside a single array.
 """
 
@@ -297,7 +299,7 @@ class DispatchTests(unittest.TestCase):
             s["id"] for s in json.loads(CONFIG.read_text(encoding="utf-8"))["sources"]
         }
         self.assertEqual(configured, set(ADAPTER_BY_SOURCE))
-        self.assertEqual(len(configured), 11)
+        self.assertEqual(len(configured), 13)
 
     def test_an_unregistered_source_is_left_to_the_normal_parsers(self):
         self.assertEqual(adapter_name_for(source_info("some-m3u-source")), "")
@@ -694,12 +696,12 @@ class AnEventWithNoTwoSidesTests(unittest.TestCase):
 
 
 class ConfigurationTests(unittest.TestCase):
-    def test_today_match_holds_all_eleven_and_upcoming_holds_none(self):
+    def test_today_match_holds_all_thirteen_and_upcoming_holds_none(self):
         today = json.loads(CONFIG.read_text(encoding="utf-8"))
         upcoming = json.loads(
             (ROOT / "config" / "sources" / "upcoming.json").read_text(encoding="utf-8")
         )
-        self.assertEqual(len(today["sources"]), 11)
+        self.assertEqual(len(today["sources"]), 13)
         self.assertEqual(upcoming["sources"], [],
                          "listing a source twice would fetch and parse it twice")
 
@@ -711,7 +713,7 @@ class ConfigurationTests(unittest.TestCase):
                 self.assertTrue(source["preserve_drm"])
                 self.assertIn(source["adapter"], set(ADAPTER_BY_SOURCE.values()))
 
-    def test_all_eleven_are_fixture_authorities(self):
+    def test_all_configured_sources_are_fixture_authorities(self):
         settings = json.loads(
             (ROOT / "config" / "settings.json").read_text(encoding="utf-8")
         )

@@ -218,13 +218,17 @@ class FinalScannerContractTests(unittest.TestCase):
 
         payload = load_sources_config("config")
         # Replaced wholesale by direct request: the event registry is now the
-        # eleven JSON feeds, registered once each under today_match. upcoming
+        # thirteen JSON feeds, registered once each under today_match. The
+        # last two are the sportlive18 FanCode and SonyLIV backups, added at
+        # priority 120/110 so they sit below the feeds already serving those
+        # fixtures; the two TV additions are the sportlive18 Hotstar backup
+        # and the targeted JioTV include-filtered source. upcoming
         # is deliberately empty - a source listed in both files was fetched and
         # parsed twice, and which tab a record reaches is decided by the status
         # that record carries, not by the file its source sits in.
         self.assertEqual(len(payload["upcoming"]), 0)
-        self.assertEqual(len(payload["today_match"]), 11)
-        self.assertEqual(len(payload["tv"]), 16)
+        self.assertEqual(len(payload["today_match"]), 13)
+        self.assertEqual(len(payload["tv"]), 18)
         self.assertEqual(len(payload["movies"]), 2)
         self.assertEqual(
             {entry["id"] for entry in payload["movies"]},

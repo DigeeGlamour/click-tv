@@ -1,0 +1,239 @@
+{
+  "generated_at": "2026-08-28T16:56:16+00:00",
+  "note": "প্রতিটি সংখ্যা বাস্তব fetch/scan থেকে মাপা - কোনোটি অনুমান নয়। verified/published কলাম দুটি এই মেশিনে চালানো real scan থেকে: `python scan.py channels` (16:31Z) এবং `python scan.py today` (16:52Z)।",
+  "sources": {
+    "sportlive-fancode-backup": {
+      "pipeline": "today_match",
+      "priority": 120,
+      "adapter": "sportlive_fancode",
+      "fetch": {
+        "http": 200,
+        "bytes": 79876
+      },
+      "parsed": 40,
+      "adapter_records": 40,
+      "adapter_skipped": 0,
+      "status_counts": {
+        "LIVE": 5,
+        "UPCOMING": 35
+      },
+      "metadata_only_cards": 35,
+      "routes_with_stream": 5,
+      "deduped": 5,
+      "reached_verification": 5,
+      "verification_http": {
+        "200": 5
+      },
+      "publish_allowed": 5,
+      "published_primary": 5,
+      "published_backup": 0,
+      "published_note": "এই ৫টি fixture অন্য কোনো configured feed-এ ছিল না, তাই backup নয় primary হিসেবে নতুন card তৈরি হয়েছে। today-match 297 -> 316।",
+      "segment_delivery": {
+        "scanner_egress_AS8075": "manifest 200 (1080p, আসল live media playlist), প্রতিটি segment HTTP 403 নিজের edge-cache-token থাকা সত্ত্বেও"
+      }
+    },
+    "sportlive-sonyliv-backup": {
+      "pipeline": "today_match",
+      "priority": 110,
+      "adapter": "sportlive_sonyliv",
+      "fetch": {
+        "http": 200,
+        "bytes": 16017
+      },
+      "parsed": 20,
+      "adapter_records": 20,
+      "adapter_skipped": 0,
+      "status_counts": {
+        "LIVE": 8,
+        "UPCOMING": 12
+      },
+      "metadata_only_cards": 12,
+      "routes_with_stream": 8,
+      "deduped": 8,
+      "reached_verification": 9,
+      "verification_http": {
+        "403": 8,
+        "no_response": 1
+      },
+      "publish_allowed": 0,
+      "published_primary": 0,
+      "published_backup": 0,
+      "published_note": "সব route HTTP 403 - verifier সঠিকভাবে বাতিল করেছে; বিদ্যমান srhady-sonyliv-live card অপরিবর্তিত।"
+    },
+    "sportlive-hotstar-backup": {
+      "pipeline": "tv",
+      "priority": 100,
+      "fetch": {
+        "http": 200,
+        "bytes": 151459
+      },
+      "parsed": 113,
+      "kept_after_source_rules": 113,
+      "dropped": 0,
+      "renamed_by_strip_patterns": 113,
+      "author_tags_left": 0,
+      "with_headers": 113,
+      "with_drm": 65,
+      "hosts": {
+        "jcevents.hotstar.com": 47,
+        "livetv.hotstar.com": 64,
+        "live09p.hotstar.com": 2
+      },
+      "deduped": 113,
+      "reached_verification": 113,
+      "verification_http": {
+        "475": 113
+      },
+      "publish_allowed": 0,
+      "published_primary": 0,
+      "published_backup": 0,
+      "published_note": "১১৩/১১৩ route তিনটি host জুড়েই HTTP 475 - একটিও publish হয়নি, কোনো বিদ্যমান primary স্পর্শ করা হয়নি।"
+    },
+    "sportlive-jiotv-targeted": {
+      "pipeline": "tv",
+      "priority": 100,
+      "fetch": {
+        "http": 200,
+        "bytes": 945513
+      },
+      "parsed": 1409,
+      "snapshot_A": {
+        "at": "2026-08-28T15:5xZ",
+        "kept": 77,
+        "dropped": 1332,
+        "reasons": {
+          "group allowed": 44,
+          "name prefix 'star sports'": 16,
+          "name prefix 'sony ten'": 10,
+          "name allowed": 6,
+          "bangla kids/cartoon signal": 1
+        },
+        "bangla_kids_forced_to_cartoon": 4
+      },
+      "snapshot_B": {
+        "at": "2026-08-28T16:43:25Z",
+        "kept": 27,
+        "dropped": 1382,
+        "reasons": {
+          "not in this source's include rules": 1283,
+          "expired signed token": 99
+        },
+        "explanation": "upstream file-এর token আয়ু ~১৫ মিনিট। file তৈরির পর ১৫ মিনিট পার হলে Bengali group-এর ৪৪টি সহ ৯৯টি entry-র token ইতিমধ্যে expired, তাই বাধ্যতামূলক safety gate কোনো network probe-এর আগেই বাতিল করে।"
+      },
+      "reached_verification": 27,
+      "verification_http": {
+        "200": 11,
+        "404": 16
+      },
+      "publish_allowed": 9,
+      "published_primary": 0,
+      "published_backup": 9,
+      "published_note": "৯টি backup Sony Ten 1-5 card-এ যোগ হয়েছে (sliv.tgaadi.workers.dev host, token-বিহীন, header-বিহীন); প্রতিটি card-এর বিদ্যমান primary (plugsony) অপরিবর্তিত; একই card-এ HD ও SD আলাদা URL হিসেবে টিকেছে - duplicate নয়।"
+    }
+  },
+  "no_regression": {
+    "channels_published_before": 610,
+    "channels_published_after": 619,
+    "today_match_before": 297,
+    "today_match_after": 316,
+    "cards_lost": 10,
+    "loss_attribution": {
+      "Colors Infinity": "browser-unreachable: http_bare_ip_host (পূর্ব-বিদ্যমান নিয়ম)",
+      "Disney Channel": "browser-unreachable: http_bare_ip_host (DISNEY CHANNEL নামে অন্য source থেকে ফিরে এসেছে)",
+      "Desh Bangla TV": "candidate route http 0 (unreachable) - sm-iptv-combined",
+      "Jogja TV": "candidate route HTTP 404 - manual-playlist-1",
+      "Kiev Спорт": "candidate route HTTP 429 - manual-playlist-1",
+      "PEACE TV ENGLISH": "HTTP 200 কিন্তু 480p - পূর্ব-বিদ্যমান global 720p floor (অপরিবর্তিত)",
+      "R TV": "candidate route http 0 - smartplaytv-worker-stream",
+      "Sana Plus": "HTTP 404 + http 0 - manual-playlist-1, sm-iptv-jiotv",
+      "Subin TV": "HTTP 404 + http 0 - manual-playlist-1, sm-iptv-jiotv",
+      "Unknown Channel 514": "candidate route http 0 - manual-playlist-1"
+    },
+    "sportlive_involvement": "১০টির মধ্যে কেবল Colors Infinity-র canonical identity-তে একটি sportlive18 candidate ছিল (Colors Infinity HD), এবং সেটির বাদ পড়ার কারণ পূর্ব-বিদ্যমান http_bare_ip_host নিয়ম - sportlive18 নয়। বাকি ৯টির কোনোটিতে sportlive18 candidate ছিল না।"
+  },
+  "_earlier_intake_snapshot": {
+    "sportlive-fancode-backup": {
+      "http": 200,
+      "bytes": 79876,
+      "raw_entries": 40,
+      "parsed_kept": 40,
+      "format": "json",
+      "adapter": "sportlive_fancode",
+      "adapter_records": 40,
+      "adapter_skipped": 0,
+      "status_counts": {
+        "LIVE": 5,
+        "UPCOMING": 35
+      },
+      "metadata_only": 35
+    },
+    "sportlive-sonyliv-backup": {
+      "http": 200,
+      "bytes": 16017,
+      "raw_entries": 20,
+      "parsed_kept": 20,
+      "format": "json",
+      "adapter": "sportlive_sonyliv",
+      "adapter_records": 20,
+      "adapter_skipped": 0,
+      "status_counts": {
+        "LIVE": 8,
+        "UPCOMING": 12
+      },
+      "metadata_only": 12
+    },
+    "sportlive-hotstar-backup": {
+      "http": 200,
+      "bytes": 151459,
+      "raw_entries": 113,
+      "parsed_kept": 113,
+      "format": "m3u",
+      "renamed": 113,
+      "include_reasons": {},
+      "with_headers": 113,
+      "with_drm": 65,
+      "bangla_kids": 0
+    },
+    "sportlive-jiotv-targeted": {
+      "http": 200,
+      "bytes": 945513,
+      "raw_entries": 1409,
+      "parsed_kept": 77,
+      "format": "m3u",
+      "renamed": 0,
+      "include_reasons": {
+        "name allowed": 6,
+        "name prefix 'sony ten'": 10,
+        "bangla kids/cartoon signal": 1,
+        "group allowed": 44,
+        "name prefix 'star sports'": 16
+      },
+      "with_headers": 50,
+      "with_drm": 67,
+      "bangla_kids": 4
+    },
+    "_rule_telemetry": {
+      "sportlive-hotstar-backup": {
+        "source_id": "sportlive-hotstar-backup",
+        "parsed": 113,
+        "kept": 113,
+        "dropped": 0,
+        "reasons": {},
+        "renamed": 113,
+        "rules_declared": true
+      },
+      "sportlive-jiotv-targeted": {
+        "source_id": "sportlive-jiotv-targeted",
+        "parsed": 1409,
+        "kept": 77,
+        "dropped": 1332,
+        "reasons": {
+          "not in this source's include rules": 1283,
+          "expired signed token": 49
+        },
+        "renamed": 0,
+        "rules_declared": true
+      }
+    }
+  }
+}

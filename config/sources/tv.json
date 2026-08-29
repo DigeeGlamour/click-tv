@@ -192,6 +192,73 @@
       "bd_candidate": true,
       "preserve_source_headers": true,
       "preserve_drm": true
+    },
+    {
+      "id": "sportlive-hotstar-backup",
+      "name": "SportLive18 Hotstar Backup",
+      "url": "https://raw.githubusercontent.com/sportlive18/Hotstar-Auto-Update/main/playlist.m3u",
+      "format": "auto",
+      "enabled": true,
+      "priority": 100,
+      "category_mode": "detect",
+      "bd_candidate": true,
+      "preserve_source_headers": true,
+      "preserve_drm": true,
+      "note": "Lower priority than sm-iptv-jiohotstar (140), so this is a backup route rather than a primary. Every one of its 113 entries carries the author's credit in the channel name and in the group title; the strip_patterns below belong to this source only, because 'By @rtxcric' is noise here and could be part of a legitimate name somewhere else.",
+      "source_rules": {
+        "strip_patterns": [
+          "\\s*(?:created\\s+)?by\\s*@rtxcric\\b",
+          "\\s*@rtxcric\\b",
+          "\\s*\\|?\\s*by\\s*@[A-Za-z0-9_]{3,}\\s*$"
+        ],
+        "reject_expired_tokens": true,
+        "require_usable_clearkey": true
+      }
+    },
+    {
+      "id": "sportlive-jiotv-targeted",
+      "name": "SportLive18 JioTV Targeted Backup",
+      "url": "https://raw.githubusercontent.com/sportlive18/jio-tv-auto-update-playlist/main/jtvplus7.m3u",
+      "format": "auto",
+      "enabled": true,
+      "priority": 100,
+      "category_mode": "detect",
+      "bd_candidate": true,
+      "preserve_source_headers": true,
+      "preserve_drm": true,
+      "note": "1,409 entries, of which 44 are in its Bengali group. Ingesting all of them would spend a scan's budget verifying channels nobody asked for, so this source declares what it is wanted for. Priority 100 keeps it below sm-iptv-jiotv (140): a backup and staging source, never a primary. Codex measured direct 450/403 and proxy 403 on its Star Jalsha and Zee routes, so nothing from here is published as working without its own browser proof.",
+      "source_rules": {
+        "include": {
+          "groups": [
+            "Bengali"
+          ],
+          "names": [
+            "Star Jalsha HD",
+            "Zee Bangla",
+            "Zee Bangla HD",
+            "Jalsha Movies",
+            "Jalsha Movies HD",
+            "Colors Bangla",
+            "Colors Bangla HD",
+            "Colors Bangla SD",
+            "Colors Bangla Cinema",
+            "Sun Bangla",
+            "Aakash Aath",
+            "DD Bangla",
+            "News18 Bangla",
+            "TV9 Bangla",
+            "Sangeet Bangla"
+          ],
+          "name_prefixes": [
+            "star sports",
+            "sony ten"
+          ],
+          "bangla_kids": true
+        },
+        "bangla_kids_category": "Cartoon",
+        "reject_expired_tokens": true,
+        "require_usable_clearkey": true
+      }
     }
   ]
 }

@@ -64,6 +64,8 @@ ADAPTER_BY_SOURCE: Dict[str, str] = {
     "sm-sports-data": "named_streams",
     "sm-fancode": "fancode",
     "srhady-crichd-footy-live": "spaced_keys",
+    "sportlive-fancode-backup": "sportlive_fancode",
+    "sportlive-sonyliv-backup": "sportlive_sonyliv",
 }
 
 
@@ -381,8 +383,15 @@ def _server(
 
 
 def _order_servers(servers: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Tokenless first, then quality, then CDN preference, then stable order."""
-    return sorted(
+    """Tokenless first, then quality, then CDN preference, then stable order.
+
+    Identical routes are folded. A feed can name the same URL under several
+    keys - sonyliv.json gives dai_url, pub_url and video_url byte-identical on
+    every live row - and offering one route three times spends three attempt
+    slots to learn the same thing once. Two entries differing in headers or DRM
+    are NOT the same route and both survive.
+    """
+    ordered = sorted(
         (item for item in servers if item),
         key=lambda item: (
             1 if item["has_token"] else 0,
@@ -390,6 +399,19 @@ def _order_servers(servers: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
             item["server_rank"],
         ),
     )
+    seen: set = set()
+    unique: List[Dict[str, Any]] = []
+    for item in ordered:
+        identity = (
+            item.get("url"),
+            json.dumps(item.get("headers") or {}, sort_keys=True, default=str),
+            json.dumps(item.get("drm") or {}, sort_keys=True, default=str),
+        )
+        if identity in seen:
+            continue
+        seen.add(identity)
+        unique.append(item)
+    return unique
 
 
 def _channel(name: str, servers: List[Dict[str, Any]], logo: str = "") -> Dict[str, Any]:
@@ -1146,6 +1168,151 @@ def _ended_by_clock(end_time: str) -> Optional[bool]:
 # dispatch
 # ---------------------------------------------------------------------------
 
+
+# ---------------------------------------------------------------------------
+# sportlive18/Fancode-New-Auto-Update/fancode.json
+#
+# A second Fancode feed, and a different shape from the one adapt_fancode
+# reads: that one carries a single `stream_link`, this one carries `adfree_url`
+# and `dai_url` side by side. Measured on 2026-08-28: 40 rows, 5 LIVE and 35
+# UPCOMING, and on every LIVE row the two URLs were byte-identical - so the
+# ad-free preference is implemented because it is the stated rule, not because
+# this snapshot exercised it. The 35 UPCOMING rows carried no URL at all, which
+# is why the metadata matters: it is the only thing they have.
+# ---------------------------------------------------------------------------
+
+def adapt_sportlive_fancode(payload: Dict[str, Any], source_id: str) -> List[Dict[str, Any]]:
+    """`matches[]` with adfree_url preferred over dai_url."""
+    records: List[Dict[str, Any]] = []
+    rows = payload.get("matches")
+    if not isinstance(rows, list):
+        return records
+    stats = _stats(source_id)
+    stats["total_records"] += len(rows)
+
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            _skip(source_id, index, "record is not an object")
+            continue
+        name = _match_name(row.get("match_name"), row.get("title"))
+        if not name:
+            team_a = _first_text(row.get("team_1"))
+            team_b = _first_text(row.get("team_2"))
+            name = f"{team_a} vs {team_b}" if team_a and team_b else ""
+        if not name:
+            _skip(source_id, index, "no match name")
+            continue
+
+        # The feed names a User-Agent on the rows that carry a stream, and the
+        # stream is served only to that agent. Dropping it would turn a
+        # playable route into a 403 that looks like a dead one.
+        headers: Dict[str, str] = {}
+        agent = _first_text(row.get("user-agent"), row.get("user_agent"))
+        if agent:
+            headers["User-Agent"] = agent
+
+        servers = [
+            # Ad-free first, by the owner's rule. Both are kept: when they
+            # differ, the second is a real fallback rather than a duplicate,
+            # and _order_servers drops nothing that plays.
+            _server(row.get("adfree_url"), label="FanCode ad-free",
+                    quality="HD", headers=headers),
+            _server(row.get("dai_url"), label="FanCode",
+                    quality="HD", headers=headers),
+        ]
+        records.append(
+            _record(
+                source_id,
+                name=name,
+                status_raw=_first_text(row.get("status")),
+                channels=[_channel("FanCode", servers, logo=_first_text(row.get("src")))],
+                logos=(row.get("src"),),
+                competition=_first_text(row.get("event_name")),
+                sport=_first_text(row.get("event_category")),
+                start_time=_parse_clock(row.get("startTime")),
+                identity=_first_text(row.get("match_id")),
+            )
+        )
+    return records
+
+
+# ---------------------------------------------------------------------------
+# sportlive18/Sonyliv-Playlist-Autoupdate/sonyliv.json
+#
+# Measured on 2026-08-28: 20 rows, 8 with isLive true. There is no start-time
+# field at all - only isLive - so this adapter routes on that and leaves the
+# start time empty rather than inventing one; the lifecycle router owns the
+# rest. dai_url, pub_url and video_url were byte-identical on every live row,
+# so all three are offered and _order_servers folds the duplicates.
+#
+# The same fixture appears once per audio language, distinguished by the
+# `[ENG]`/`[HIN]` suffix on match_name and by the contentId suffix. Those are
+# one event with two servers, not two events: the language is carried on the
+# server label so the merge keeps a single card.
+# ---------------------------------------------------------------------------
+
+_SONYLIV_LANG_SUFFIX = re.compile(r"\s*\[([A-Z]{2,4})\]\s*$")
+
+
+def adapt_sportlive_sonyliv(payload: Dict[str, Any], source_id: str) -> List[Dict[str, Any]]:
+    """`matches[]` keyed by isLive, one row per audio language."""
+    records: List[Dict[str, Any]] = []
+    rows = payload.get("matches")
+    if not isinstance(rows, list):
+        return records
+    stats = _stats(source_id)
+    stats["total_records"] += len(rows)
+
+    for index, row in enumerate(rows):
+        if not isinstance(row, dict):
+            _skip(source_id, index, "record is not an object")
+            continue
+        raw_name = _first_text(row.get("match_name"), row.get("event_name"))
+        if not raw_name:
+            _skip(source_id, index, "no match name")
+            continue
+
+        # The language belongs on the server, not in the event name, or the
+        # same fixture becomes two cards.
+        language = ""
+        suffix = _SONYLIV_LANG_SUFFIX.search(raw_name)
+        if suffix:
+            language = suffix.group(1)
+            raw_name = _SONYLIV_LANG_SUFFIX.sub("", raw_name).strip()
+        if not language:
+            identifier = _first_text(row.get("contentId"))
+            if "_" in identifier:
+                language = identifier.rsplit("_", 1)[-1].upper()
+        name = _match_name(raw_name) or raw_name
+
+        is_live = row.get("isLive")
+        if isinstance(is_live, str):
+            is_live = is_live.strip().casefold() in {"true", "1", "yes", "live"}
+        status_raw = "LIVE" if is_live else "UPCOMING"
+
+        channel_name = _first_text(row.get("broadcast_channel")) or "SonyLIV"
+        label_bits = [bit for bit in (channel_name, language) if bit]
+        label = " ".join(label_bits)
+        servers = [
+            _server(row.get("dai_url"), label=label, quality="HD"),
+            _server(row.get("pub_url"), label=label, quality="HD"),
+            _server(row.get("video_url"), label=label, quality="HD"),
+        ]
+        records.append(
+            _record(
+                source_id,
+                name=name,
+                status_raw=status_raw,
+                channels=[_channel(channel_name, servers, logo=_first_text(row.get("src")))],
+                logos=(row.get("src"),),
+                competition=_first_text(row.get("event_name")),
+                sport=_first_text(row.get("event_category")),
+                identity=_first_text(row.get("contentId")),
+            )
+        )
+    return records
+
+
 ADAPTERS: Dict[str, Callable[[Dict[str, Any], str], List[Dict[str, Any]]]] = {
     "sonyliv": adapt_sonyliv,
     "link_live": adapt_link_live,
@@ -1154,6 +1321,8 @@ ADAPTERS: Dict[str, Callable[[Dict[str, Any], str], List[Dict[str, Any]]]] = {
     "named_streams": adapt_named_streams,
     "fancode": adapt_fancode,
     "spaced_keys": adapt_spaced_keys,
+    "sportlive_fancode": adapt_sportlive_fancode,
+    "sportlive_sonyliv": adapt_sportlive_sonyliv,
 }
 
 

@@ -217,10 +217,12 @@ class LiveProjectConfigTests(unittest.TestCase):
             (ROOT / "config" / "settings.json").read_text(encoding="utf-8")
         )
         configured = settings["events"]["fixture_authority_sources"]
-        # Every event feed is an authority now. All eleven state a status per
-        # record - the reason the registry no longer needs an -upcoming twin of
-        # each source - so any of them can be the one that says a fixture has
-        # started or finished.
+        # Every event feed is an authority now. All thirteen state a status
+        # per record - the reason the registry no longer needs an -upcoming
+        # twin of each source - so any of them can be the one that says a
+        # fixture has started or finished. The sportlive18 FanCode backup
+        # carries status directly; the SonyLIV backup carries isLive, which
+        # its adapter maps to the same LIVE/UPCOMING vocabulary.
         registered = {
             source["id"]
             for source in json.loads(
@@ -228,7 +230,7 @@ class LiveProjectConfigTests(unittest.TestCase):
                 .read_text(encoding="utf-8")
             )["sources"]
         }
-        self.assertEqual(len(registered), 11)
+        self.assertEqual(len(registered), 13)
         self.assertEqual(set(configured), registered)
 
 

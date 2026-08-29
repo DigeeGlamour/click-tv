@@ -43,8 +43,10 @@ class TodayEventSourceTests(unittest.TestCase):
             "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
             "https://raw.githubusercontent.com/srhady/crichd-speical-live-event/refs/heads/main/Footy_Live.json",
             "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
+            "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+            "https://raw.githubusercontent.com/sportlive18/Sonyliv-Playlist-Autoupdate/main/sonyliv.json",
         }.issubset(urls), sorted(urls))
-        self.assertEqual(len(urls), 11, sorted(urls))
+        self.assertEqual(len(urls), 13, sorted(urls))
 
     def test_today_planner_accepts_upcoming_event_candidates(self):
         self.assertEqual(
@@ -151,7 +153,7 @@ class TodayEventSourceTests(unittest.TestCase):
             len(submitted_urls), len(set(submitted_urls)),
             f"a playlist was fetched more than once: {submitted_urls}",
         )
-        # No alias entries are left to fold: the eleven feeds are eleven
+        # No alias entries are left to fold: the thirteen feeds are thirteen
         # distinct URLs registered once each, which is what the dedup above is
         # now protecting rather than repairing.
         self.assertEqual(len(submitted_ids), len(configured))

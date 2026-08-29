@@ -33,6 +33,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
 import time
 from typing import Any, Dict, List
@@ -413,8 +414,31 @@ async ([item, seconds, attemptIndex]) => {
 """
 
 
+#: Signed-token parameters that must never reach a committed report. The
+#: browser hands back its own error text, and hls.js and shaka both quote the
+#: full failing URL in it - which for an Akamai route carries a live
+#: `hmac=`/`hdnea=` value. The redacted URL templates elsewhere in the report
+#: were already safe; these quoted strings were not, so every string coming
+#: out of the page goes through here before it is stored.
+_SECRET_PARAM = re.compile(
+    r"(?i)(hdnea|hdntl|hmac|edge-cache-token|token|sig|signature|auth|key)"
+    r"=([^&\s'\"~)]+)"
+)
+
+
+def redact_secrets(value: Any) -> Any:
+    """Replace signed-token values anywhere in a string, list or dict."""
+    if isinstance(value, str):
+        return _SECRET_PARAM.sub(lambda m: f"{m.group(1)}={{redacted}}", value)
+    if isinstance(value, list):
+        return [redact_secrets(entry) for entry in value]
+    if isinstance(value, dict):
+        return {key: redact_secrets(entry) for key, entry in value.items()}
+    return value
+
+
 def measure_once(page, item: Dict[str, Any], seconds: float, attempt_index: int) -> Dict[str, Any]:
-    return page.evaluate(PLAY_AND_MEASURE, [item, seconds, attempt_index])
+    return redact_secrets(page.evaluate(PLAY_AND_MEASURE, [item, seconds, attempt_index]))
 
 
 def reclassify(path: str) -> int:

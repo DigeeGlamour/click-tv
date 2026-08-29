@@ -155,6 +155,34 @@
       "preserve_drm": true,
       "broadcaster": "Willow",
       "note": "stream_url_alpha and _bravo are two different feeds (pdx-nitro vs iad-nitro) = two channels of five servers. The same key is a bare string on upcoming records."
+    },
+    {
+      "id": "sportlive-fancode-backup",
+      "name": "SportLive18 FanCode Backup",
+      "url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "format": "json",
+      "adapter": "sportlive_fancode",
+      "priority": 120,
+      "note": "Backup for sm-fancode (priority 168). A different shape from that feed: adfree_url and dai_url side by side rather than one stream_link. Today/Upcoming is decided by the existing lifecycle router from status and startTime - this source is not added to upcoming.json, because adding it twice would fetch it twice and produce two cards for one fixture.",
+      "enabled": true,
+      "allow_without_stream": true,
+      "preserve_source_headers": true,
+      "preserve_drm": true,
+      "broadcaster": "FanCode"
+    },
+    {
+      "id": "sportlive-sonyliv-backup",
+      "name": "SportLive18 SonyLIV Backup",
+      "url": "https://raw.githubusercontent.com/sportlive18/Sonyliv-Playlist-Autoupdate/main/sonyliv.json",
+      "format": "json",
+      "adapter": "sportlive_sonyliv",
+      "priority": 110,
+      "note": "Lower priority than srhady-sonyliv-live (180), so the same fixture keeps that source's card and this one's stream becomes a backup route. This feed carries no start time at all - only isLive - so routing is by that and the start time is left empty rather than invented.",
+      "enabled": true,
+      "allow_without_stream": true,
+      "preserve_source_headers": true,
+      "preserve_drm": true,
+      "broadcaster": "SonyLIV"
     }
   ]
 }
