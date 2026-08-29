@@ -3,7 +3,7 @@ CLICK TV — সম্পূর্ণ system বিশ্লেষণ, scanner �
 ================================================================================
 তারিখ            : 2026-08-29 / 30 (UTC)
 Repository       : https://github.com/DigeeGlamour/click-tv
-Push করা HEAD    : 3c750a014  (১০টি commit, সব push করা)
+Push করা HEAD    : 7f1423b1a  (১২টি commit, সব push করা)
 মাপার জায়গা      : Bangladesh, residential connection (আপনার নিজের মেশিন)
                    — এটাই এই report-এর সবচেয়ে গুরুত্বপূর্ণ কথা, কারণ scanner
                    মাপে GitHub-এর US datacentre থেকে, আর দর্শক দেখেন BD থেকে।
@@ -849,6 +849,40 @@ alias guard সেটি ধরেছে, তাই script এখন অন্�
 
 অর্থাৎ এই ৭টির জন্য configured কোনো source-এ চালু route **নেই**। নতুন source
 ছাড়া এদের ফেরানো যাবে না — এবং কোনো unverified route card-এ বসানো হয়নি।
+
+--------------------------------------------------------------------------------
+allowlist সত্যিই scan-এ টিকেছে — CI-তে প্রমাণিত
+--------------------------------------------------------------------------------
+হাতে বদলানো data/channels/indian.json পরের scan-এ মুছে যেত। তাই আসল প্রশ্ন
+ছিল: একটি সত্যিকারের CI channels scan কি allowlist মানবে?
+
+    Run 84b00a560 — "Auto update: channels [2026-08-29 21:15:36 UTC]"
+    → Indian card: **ঠিক ৪১টি**, একটিও তালিকার বাইরে নয়
+    → ফিরিয়ে আনা পাঁচটিও টিকেছে (Sony Max, Sony Max 2, Sony SAB,
+      JOO MUSIC, Sangeet Bangla)
+
+অর্থাৎ config + scanner/channels.py-এর প্রয়োগ production-এ কাজ করছে, শুধু
+এই একবারের হাতে-করা পরিবর্তন নয়।
+
+--------------------------------------------------------------------------------
+টেকসই করা — প্রতিটি card-এ দ্বিতীয় প্রমাণিত route
+--------------------------------------------------------------------------------
+ফিরিয়ে আনা card গুলোর প্রতিটি ছিল `stream.ottplus.bd`-তে, প্রমাণ শুধু
+Bangladesh থেকে। CI ওই host দেখতে পায় কি না জানা ছিল না, তাই পরের scan-এ
+হারিয়ে যাওয়ার ঝুঁকি ছিল।
+
+`stream.ottplus.live` হুবহু একই ৭২০p master দেয়, **এবং CI ইতিমধ্যে ওই host
+থেকে card publish করে** (Channel 24, Desh TV, Ekhon TV, Sony Aath, Zee Cinema
+সহ ২০টি)। তাই সেটিই দুই শর্ত পূরণ করা route: এখানে চলে, আর CI দেখতে পায়।
+
+    Zee Bangla   ottplus.live/live/zee_bangla_abr   ২ × ১২০s proven
+    Sony Max     ottplus.live/live/max_hd_abr       ২ × ১২০s proven
+    Sony Max 2   ottplus.live/live/max_2_abr        ২ × ১২০s proven
+    Sony SAB     ottplus.live/live/sub_hd_abr       ২ × ১২০s proven
+    → reports/ottplus-live-playback.json
+
+চারটিই এখন backup হিসেবে card-এ আছে (badge "Verified", মাপা ৭২০p) এবং
+route_preference ওগুলোর দিকেই দেখায়।
 
 --------------------------------------------------------------------------------
 মোট catalogue এখন
