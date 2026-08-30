@@ -158,6 +158,46 @@ class TheDeliveryCheckIsHonestAboutEvidenceTests(unittest.TestCase):
         catalogue in one run."""
         self.assertIn("PROXY_OWN_REFUSALS", self._source())
 
+    def test_it_asks_the_proxy_the_way_the_player_does(self):
+        """buildProxyUrl in app.js uses /hls?id= whenever the source has a
+        playback_id, and only falls back to ?url= without one. The id form makes
+        the proxy load the route's stored headers server-side; `&profile=` alone
+        does not carry what some of them need - Ananda TV's toffeelive backup
+        answers 200 by id and 403 by url+profile. Asking the wrong way was about
+        to record 102 working routes as dead."""
+        source = self._source()
+        self.assertIn('/hls?id=', source)
+        self.assertIn('row.get("playback_id")', source)
+
+    def test_a_single_use_url_is_reported_but_not_recorded(self):
+        """The ledger is keyed on the exact URL and these hosts re-sign on every
+        scan, so the row could never match again - it would be pure growth. It
+        also invites a wrong answer: Movie Bangla and Asian TV were both about
+        to be recorded on a 403 to their signed primary, and both played the
+        full sixty seconds in real Chrome."""
+        source = self._source()
+        self.assertIn("carries_a_token", source)
+        self.assertIn("SIGNED_PARAMETERS", source)
+
+    def test_a_proxy_pinned_route_is_not_rescued_by_a_direct_fetch(self):
+        """A signed URL is pinned to the proxy on purpose - handing it to the
+        page would publish the credential - so the player will never take the
+        direct path for it, and a direct success says nothing about what the
+        viewer gets."""
+        self.assertIn('row.get("proxy_only")', self._source())
+
+    def test_the_ledger_cannot_grow_without_limit(self):
+        from scanner import playback_evidence as evidence
+        store = {"routes": {f"r{i}": {"reason": "x"} for i in range(evidence.MAX_ROUTES + 40)}}
+        for i in range(10):
+            store["routes"][f"r{i}"]["superseded_by"] = {"verdict": "proven"}
+        evidence._trim(store)
+        self.assertEqual(evidence.MAX_ROUTES, len(store["routes"]))
+        self.assertEqual(
+            0, sum(1 for row in store["routes"].values() if row.get("superseded_by")),
+            "a superseded row is spent before a standing verdict",
+        )
+
     def test_the_site_origin_is_sent(self):
         """Without it every answer is a 403 about the origin rather than an
         answer about the route, and the check would call the whole catalogue

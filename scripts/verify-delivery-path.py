@@ -53,6 +53,43 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from scanner import playback_evidence  # noqa: E402
+from scanner.playback_profiles import SENSITIVE_TOKEN_RE  # noqa: E402
+
+#: Query parameter names that make a URL single-use. Kept beside the shared
+#: token pattern because these appear as bare parameter names too, without the
+#: long signed value the pattern looks for.
+SIGNED_PARAMETERS = (
+    "hdnea", "hdnts", "hdntl", "token", "sig", "signature", "policy",
+    "expires", "exp", "st", "wmsauthsign", "nimblesessionid",
+)
+
+
+def carries_a_token(url: str) -> bool:
+    """Is this URL single-use, so that a verdict about it cannot outlive it?
+
+    A signed URL is re-issued on every scan, so recording "this one is dead"
+    teaches the next scan nothing: it will produce a different URL, the ledger
+    is keyed on the exact URL, and the row will never match again. All it does
+    is grow the file.
+
+    Worse, it invites a wrong answer. `Movie Bangla` and `Asian TV` were both
+    about to be recorded on a 403 to their signed primary - and both played the
+    full sixty seconds in real Chrome, because the player had already fallen
+    through to another route. The verdict would have been noise attached to a
+    URL that no longer exists.
+
+    So the check reports these and records nothing. What it does record is a
+    stable URL, where "dead" stays true tomorrow - which is where the repair
+    actually comes from.
+    """
+    text = str(url or "").split("|", 1)[0]
+    if SENSITIVE_TOKEN_RE.search(text):
+        return True
+    query = urllib.parse.urlsplit(text).query
+    if not query:
+        return False
+    names = {key.lower() for key, _ in urllib.parse.parse_qsl(query, keep_blank_values=True)}
+    return bool(names & set(SIGNED_PARAMETERS))
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36")
@@ -196,18 +233,45 @@ def published_routes() -> List[Dict[str, str]]:
                     "profile": (str(stream.get("header_profile") or "")
                                 or str(record.get("header_profile") or "")) if isinstance(stream, dict) else "",
                     "headers": headers,
+                    "playback_id": (str(stream.get("playback_id") or "")
+                                    if isinstance(stream, dict) else ""),
+                    # Whether the player is even allowed to take the direct
+                    # path for this route. A signed URL is pinned to the proxy
+                    # on purpose - handing it to the page would publish the
+                    # credential - so for those the proxy's answer is final.
+                    "proxy_only": bool(
+                        str((stream.get("proxy_mode")
+                             or record.get("proxy_mode") or "")).strip().lower()
+                        in {"proxy_only", "direct_only"}
+                        or stream.get("protected_source") is True
+                        or record.get("protected_source") is True
+                        or stream.get("requires_credentials") is True
+                        or record.get("requires_credentials") is True
+                    ) if isinstance(stream, dict) else False,
                 })
     return rows
 
 
 def ask_proxy(row: Dict[str, str], proxy: str, timeout: float) -> Tuple[str, str]:
     """(verdict, detail). verdict is "pass", "dead" or "unknown"."""
+    # Exactly what buildProxyUrl in site/assets/js/app.js does: a playback_id
+    # wins, and only a route without one is passed by URL.
+    #
+    # This is not a detail. The id form makes the proxy load the route's stored
+    # headers server-side; `&profile=` alone does not carry what some of them
+    # need. Ananda TV's toffeelive backup answers 200 by id and 403 by
+    # url+profile - and asking the wrong way was about to record 102 working
+    # routes as dead, almost all of them backups of Bangla channels.
     target = str(row["url"]).split("|", 1)[0]
-    endpoint = (
-        proxy.rstrip("/") + "/hls?url=" + urllib.parse.quote(target, safe="")
-        + ("&type=" + urllib.parse.quote(row["type"]) if row["type"] else "")
-        + ("&profile=" + urllib.parse.quote(row["profile"]) if row["profile"] else "")
-    )
+    if row.get("playback_id"):
+        endpoint = (proxy.rstrip("/") + "/hls?id="
+                    + urllib.parse.quote(str(row["playback_id"])))
+    else:
+        endpoint = (
+            proxy.rstrip("/") + "/hls?url=" + urllib.parse.quote(target, safe="")
+            + ("&type=" + urllib.parse.quote(row["type"]) if row["type"] else "")
+            + ("&profile=" + urllib.parse.quote(row["profile"]) if row["profile"] else "")
+        )
     request = urllib.request.Request(endpoint, headers={
         "User-Agent": UA,
         "Origin": SITE_ORIGIN,
@@ -308,8 +372,18 @@ def main(argv: Any = None) -> int:
                 return dict(row, verdict="unknown",
                             detail=f"refused by one proxy, {again} on another: {detail2}")
         # An https route has a second path to the viewer that does not involve
-        # the proxy at all, so the proxy's answer is not the last word on it.
-        if verdict == "dead" and row["url"].lower().startswith("https://"):
+        # the proxy at all, so the proxy's answer is not the last word on it -
+        # unless the player is barred from taking that path.
+        #
+        # `Mumbai Sobo Stars vs Bangalore Blasters` is why this exception
+        # exists. Its Akamai URL carries a signed `hdnea` token, so the scanner
+        # pins it to the proxy: handing that URL to the page would publish a
+        # live credential. Akamai then refuses Cloudflare's egress while
+        # answering 200 to a plain Chrome request from Bangladesh - so a direct
+        # check "rescues" a route the player will never be allowed to fetch
+        # directly, and the card goes on claiming to work.
+        if (verdict == "dead" and not row.get("proxy_only")
+                and row["url"].lower().startswith("https://")):
             direct = ask_directly(row, args.timeout)
             if direct != "dead":
                 return dict(row, verdict="unknown",
@@ -335,10 +409,17 @@ def main(argv: Any = None) -> int:
           f"scan prefers an alternate")
     print(f"   no verdict either way : {len(unknown)}  -> left alone on purpose")
 
+    signed = [r for r in dead if carries_a_token(r["url"])]
+    stable = [r for r in dead if r not in signed]
+    if signed:
+        print(f"   of those, {len(signed)} carry a single-use token and are NOT "
+              f"recorded: the next scan re-signs them into a different URL, so "
+              f"the verdict could never match again")
+
     written = 0
     restored = 0
     if not args.dry_run:
-        for row in dead:
+        for row in stable:
             if playback_evidence.record(
                 row["url"], row["detail"], sessions=1,
                 media_progress_seconds=[0], window_seconds=0.0,
@@ -372,7 +453,7 @@ def main(argv: Any = None) -> int:
         print(f"\n   newly recorded as dead : {written}")
         print(f"   cleared, host is back  : {restored}")
 
-    for row in dead[:25]:
+    for row in stable[:25]:
         print(f"      [{row['where']:8s}] {row['name'][:34]:36s} {row['detail'][:70]}")
 
     if not args.dry_run:
@@ -388,12 +469,13 @@ def main(argv: Any = None) -> int:
                 "checked": len(results),
                 "served": len(ok),
                 "refused": len(dead),
+                "refused_but_single_use": len(signed),
                 "no_verdict": len(unknown),
                 "recorded": written,
                 "cleared": restored,
                 "refusals": [
                     {"name": r["name"], "where": r["where"], "detail": r["detail"]}
-                    for r in dead
+                    for r in stable
                 ],
             }, handle, ensure_ascii=False, indent=1)
             handle.write("\n")

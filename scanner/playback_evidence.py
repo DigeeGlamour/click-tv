@@ -49,6 +49,19 @@ DEFAULT_PATH = os.path.join(
 
 BADGE = "Playback Unproven"
 
+#: How many rows the ledger may hold. It is keyed on the exact URL, and several
+#: of these hosts sign their URLs - Akamai's `hdnea`, JioTV's `__hdnea__` - so
+#: the same dead route arrives under a new key every time its token is
+#: refreshed. That is deliberate and correct for freshness: a re-signed URL has
+#: never been disproved and must not inherit an old verdict. It also means the
+#: file would grow without limit, and this project has already had one evidence
+#: store reach 52 MB and start failing its own size guard.
+#:
+#: Trimmed newest-first. A row that still matches a published route is kept
+#: ahead of one that does not, because a verdict about something on the site is
+#: worth more than a verdict about a URL nothing points at any more.
+MAX_ROUTES = 4000
+
 
 #: path -> (mtime, size, payload). The merger consults this ledger once per
 #: candidate per comparison while sorting, which is tens of thousands of reads
@@ -101,6 +114,32 @@ def _route_key(url: Any) -> str:
 UNKNOWN_VANTAGE = "unknown"
 
 
+def _trim(store: Dict[str, Any]) -> int:
+    """Hold the ledger to MAX_ROUTES, dropping the least useful rows first.
+
+    A superseded row goes before a standing one - it records a route that came
+    back, which is history rather than a live verdict. Otherwise insertion
+    order decides, so the oldest verdicts are the ones that go.
+    """
+    routes = store.get("routes")
+    if not isinstance(routes, dict) or len(routes) <= MAX_ROUTES:
+        return 0
+    keys = list(routes)
+    superseded = [key for key in keys
+                  if isinstance(routes[key], dict) and routes[key].get("superseded_by")]
+    standing = [key for key in keys if key not in set(superseded)]
+    # Oldest first within each group; superseded rows are spent before standing
+    # ones, and the newest standing verdicts are the last to go.
+    order = superseded + standing
+    removed = 0
+    for key in order[:max(0, len(keys) - MAX_ROUTES)]:
+        routes.pop(key, None)
+        removed += 1
+    if removed:
+        store["trimmed_at_limit"] = MAX_ROUTES
+    return removed
+
+
 def _write(store: Dict[str, Any], path: Optional[str]) -> bool:
     store["note"] = (
         "Routes a real browser measured and could not play, each with the "
@@ -110,6 +149,7 @@ def _write(store: Dict[str, Any], path: Optional[str]) -> bool:
         "measurement from any vantage passes, which supersedes the failure "
         "rather than deleting it."
     )
+    _trim(store)
     target = path or DEFAULT_PATH
     try:
         os.makedirs(os.path.dirname(target), exist_ok=True)
