@@ -121,6 +121,12 @@ log "Website file dist root-এ copy করা হচ্ছে"
 
 cp -a "${SITE_DIR}/." "${DIST_DIR}/"
 
+# প্রতিটি JS/CSS-এর URL-এ তার নিজের content hash বসানো হয়, যাতে পুরোনো
+# service worker cache আর পুরোনো app.js ফেরত দিতে না পারে। index.html-এর
+# হাতে-লেখা ?v= ২০২৬-০৮-১৯ থেকে বদলায়নি, অথচ app.js বহুবার বদলেছে।
+log "Asset URL-এ content hash বসানো হচ্ছে (পুরোনো cache আটকাতে)"
+"${PYTHON_BIN:-python}" "${ROOT_DIR}/scripts/stamp-asset-versions.py" "${DIST_DIR}"
+
 log "Generated data dist/data folder-এ copy করা হচ্ছে"
 
 mkdir -p "${DIST_DIR}/data"

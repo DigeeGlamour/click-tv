@@ -96,7 +96,23 @@ def _canonical_json(value: Any) -> str:
 
 
 def _stream_identity_key(stream: Dict[str, Any]) -> str:
-    """Identify an exact playable setup, not merely an equal URL."""
+    """Identify an exact playable setup, not merely an equal URL.
+
+    Empty when there is no playable setup to identify. A metadata-only fixture
+    has no url, no headers, no drm and no profile, so hashing its fields
+    produced the hash of an empty payload - the same string for every one of
+    them. Measured on 2026-08-30: one such key was published as the
+    `primary_stream_key` of 183 unrelated fixtures and another of 33, which is
+    a placeholder wearing the name of an identity.
+
+    That is not only untidy. `load_previous_primary_keys` maps event name to
+    this key so a healthy primary keeps its place across scans, and 183 events
+    all claiming the same previous primary is a comparison that can only give
+    wrong answers. Returning "" says what is true - nothing is identified yet -
+    and every caller here already treats a falsy key as no match.
+    """
+    if not str(stream.get("url") or "").strip():
+        return ""
     payload = {
         "url": str(stream.get("url") or "").strip(),
         "headers": stream.get("headers") if isinstance(stream.get("headers"), dict) else {},
@@ -1787,11 +1803,14 @@ def rank_and_select_streams(
             pass
 
     if previous_primary_identity:
+        # An empty identity matches nothing, including another empty one -
+        # otherwise every routeless fixture would be read as the incumbent.
         held = next(
             (
                 index
                 for index, stream in enumerate(selected_streams)
-                if _stream_identity_key(stream) == previous_primary_identity
+                if previous_primary_identity
+                and _stream_identity_key(stream) == previous_primary_identity
             ),
             -1,
         )
@@ -2125,7 +2144,9 @@ def _drop_cards_the_pages_validator_would_refuse(
             if len(kept) != len(entries):
                 card[key] = kept
                 if key == "backups":
-                    card["available_link_count"] = 1 + len(kept)
+                    card["available_link_count"] = (
+                        0 if card.get("metadata_only") is True else 1
+                    ) + len(kept)
     if refused or trimmed_backups:
         print(
             f"   withheld for the Pages resolution rule: {len(refused)} card(s)"
@@ -2453,7 +2474,14 @@ def merge_candidates(
             "routing_reason": str(base_item.get("routing_reason") or ""),
             "source_id": str(primary.get("source_id") or base_item.get("source_id") or ""),
             "metadata_only": is_metadata_only,
-            "available_link_count": 1 + len(backups),
+            # The primary only counts when there is a primary. A metadata-only
+            # fixture has no url and no playback_id, and every one of the 216
+            # cards on Upcoming was published saying `available_link_count: 1`
+            # beside `metadata_only: true` and an empty channels[] - a field
+            # whose name promises a playable route, asserting one that does not
+            # exist. Anything reading it to decide whether a card can be watched
+            # was being told yes.
+            "available_link_count": (0 if is_metadata_only else 1) + len(backups),
             "backups": backups,
         }
 

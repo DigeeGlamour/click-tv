@@ -2975,7 +2975,32 @@ async function refreshActiveEventCatalogue() {
     state.currentDataPath = snapshotPath;
     const raw = Array.isArray(data) ? data : (data.channels || data.items || data.events || []);
     let nextItems = normalizeList(raw, expectedView);
-    const signature = (items) => JSON.stringify(items.map((item) => [item._uid, item.url, item.status, item.start_time, item.end_time]));
+    // What makes this card different from the one on screen?
+    //
+    // The old list was _uid, url, status, start_time and end_time - and an
+    // event's playable identity is in none of them. Most event cards carry an
+    // empty top-level url and are played through playback_id and channels[],
+    // so a scan that swapped a dead route for a working one, or attached a
+    // stream to a fixture that had none, produced a byte-identical signature
+    // and the refresh returned without touching the UI. The viewer sat looking
+    // at Waiting, or at a route already known to be dead, until they reloaded
+    // by hand. That is the exact repair this project just built, arriving in
+    // the file and stopping at the browser.
+    const signature = (items) => JSON.stringify(items.map((item) => [
+      item._uid,
+      item.url,
+      item.status,
+      item.start_time,
+      item.end_time,
+      // playable identity
+      item.playback_id,
+      item.metadata_only,
+      item.verification_status,
+      item.available_link_count,
+      item.default_channel_id,
+      (item.channels || []).map((channel) => [channel.id, channel.playback_id, channel.url]),
+      (item.backups || []).map((backup) => backup.playback_id || backup.url)
+    ]));
     if (signature(nextItems) === signature(state.currentItems)) return;
 
     // Requirement 7 and 14. A background refresh must never take the playing
