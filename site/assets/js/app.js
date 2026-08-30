@@ -519,6 +519,35 @@ function isFailedPublishedItem(item) {
   return FAILED_PUBLISH_STATUSES.has(status) || item?.publish_allowed === false;
 }
 
+// How long past its own kickoff a fixture may still be shown under Upcoming.
+// Mirrors events.upcoming_past_grace_minutes in config/settings.json: the
+// scanner's -20 minute trigger runs every few minutes, and a feed that
+// publishes a link just after the whistle should still be caught.
+const UPCOMING_PAST_GRACE_MS = 10 * 60 * 1000;
+
+function hasAlreadyKickedOff(item) {
+  // The scanner drops these on its next pass, and this is the same rule read
+  // from the same clock - but the scanner cannot run when GitHub does not
+  // schedule it, and it frequently does not. Measured on 2026-08-30 the gaps
+  // between runs were 4, 11, 29, 33, 37, 56, 62, 89, 209 and 246 minutes
+  // against crons asking for one every five, and in one of those gaps a 15:30
+  // match was still sitting on Upcoming at 16:14 badged LINK UPDATING.
+  //
+  // A published file is a snapshot of when it was written. The browser knows
+  // what time it is now, so it can tell that a fixture has started whatever the
+  // file says, and a viewer should never meet a match on the Upcoming tab that
+  // kicked off three quarters of an hour ago.
+  //
+  // Deliberately narrow: it needs a real start time and only ever removes a
+  // fixture from the UPCOMING list. A fixture with no clock, or one already
+  // live with a link, is Today Match's business and is untouched here.
+  const raw = item?.start_time || item?.start_at || '';
+  if (!raw) return false;
+  const start = Date.parse(String(raw));
+  if (!Number.isFinite(start)) return false;
+  return Date.now() - start > UPCOMING_PAST_GRACE_MS;
+}
+
 function isLikelyVodLeak(item) {
   const pipeline = String(item?.source_pipeline || '').toLowerCase();
   const kind = String(item?.content_kind || item?.content_type || '').toLowerCase();
@@ -852,8 +881,11 @@ function normalizeList(rawList, sourceKind) {
       if (sourceKind === VIEW.CHANNEL) return !isLikelyVodLeak(item);
       if (sourceKind === VIEW.MOVIE) return !isLikelyLiveLeak(item) && isPlayable(item);
       // Upcoming schedules are useful before a stream URL exists. Keep the
-      // published metadata card, then open its details preview on selection.
-      if (sourceKind === VIEW.UPCOMING) return Boolean(String(item.name || '').trim());
+      // published metadata card, then open its details preview on selection -
+      // but only while it is still upcoming.
+      if (sourceKind === VIEW.UPCOMING) {
+        return Boolean(String(item.name || '').trim()) && !hasAlreadyKickedOff(item);
+      }
       return isPlayable(item);
     });
 

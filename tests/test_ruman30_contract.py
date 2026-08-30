@@ -1,3 +1,4 @@
+import re
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
@@ -11,6 +12,29 @@ from scanner.movies import (
 
 
 ROOT = Path(__file__).resolve().parent.parent
+
+
+
+def _cron_minute_interval(cron: str) -> int:
+    """Minutes between firings of a cron whose minute field is a list or step.
+
+    Written because these tests used to pin the literal cron string, and the
+    requirement is a frequency, not a spelling. The crons were moved off :00
+    and */5 - the busiest minutes on GitHub's shared scheduler, where a run
+    that cannot start is dropped rather than queued - and every one of these
+    tests failed on an offset that changed nothing about how often it runs.
+    """
+    minute = cron.split()[0]
+    if minute.startswith("*/"):
+        return int(minute[2:])
+    if "/" in minute:
+        return int(minute.split("/")[1])
+    if "," in minute:
+        points = sorted(int(p) for p in minute.split(","))
+        gaps = {b - a for a, b in zip(points, points[1:])}
+        gaps.add(60 - points[-1] + points[0])
+        return min(gaps)
+    return 60
 
 
 class ManualMovieMediaDepthTests(unittest.TestCase):
@@ -168,8 +192,12 @@ class RuntimeContractTests(unittest.TestCase):
     def test_scheduled_event_refresh_is_automatic(self):
         workflow = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
         # Requirement 4 replaced the old 15/30 minute pair.
-        self.assertIn('cron: "0,20,40 * * * *"', workflow)
-        self.assertIn('cron: "*/5 * * * *"', workflow)
+        crons = re.findall(r'- cron: "([^"]+)"', workflow)
+        every_20 = [c for c in crons if _cron_minute_interval(c) == 20]
+        self.assertTrue(every_20, "no cron fires every 20 minutes")
+        crons = re.findall(r'- cron: "([^"]+)"', workflow)
+        every_5 = [c for c in crons if _cron_minute_interval(c) == 5]
+        self.assertTrue(every_5, "no cron fires every 5 minutes")
         self.assertIn('cron: "9 5,17 * * *"', workflow)
 
     def test_uncertain_movies_are_not_publishable(self):

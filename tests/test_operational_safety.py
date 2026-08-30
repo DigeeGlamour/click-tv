@@ -1,3 +1,4 @@
+import re
 import json
 import subprocess
 import tempfile
@@ -12,6 +13,29 @@ ROOT = Path(__file__).resolve().parent.parent
 LOCAL_SCAN_TOOLS = ROOT / "Local and Google Colab"
 NOTEBOOK_PATH = LOCAL_SCAN_TOOLS / "ClickTV_Colab_FINAL_EASY_5_MODE.ipynb"
 LAUNCHER_PATH = LOCAL_SCAN_TOOLS / "CLICK_TV_EASY_PAT_SCAN.cmd"
+
+
+
+def _cron_minute_interval(cron: str) -> int:
+    """Minutes between firings of a cron whose minute field is a list or step.
+
+    Written because these tests used to pin the literal cron string, and the
+    requirement is a frequency, not a spelling. The crons were moved off :00
+    and */5 - the busiest minutes on GitHub's shared scheduler, where a run
+    that cannot start is dropped rather than queued - and every one of these
+    tests failed on an offset that changed nothing about how often it runs.
+    """
+    minute = cron.split()[0]
+    if minute.startswith("*/"):
+        return int(minute[2:])
+    if "/" in minute:
+        return int(minute.split("/")[1])
+    if "," in minute:
+        points = sorted(int(p) for p in minute.split(","))
+        gaps = {b - a for a, b in zip(points, points[1:])}
+        gaps.add(60 - points[-1] + points[0])
+        return min(gaps)
+    return 60
 
 
 class SecretRedactionTests(unittest.TestCase):
@@ -172,8 +196,12 @@ class WorkflowSafetyTests(unittest.TestCase):
         workflow = (ROOT / ".github/workflows/scan.yml").read_text(encoding="utf-8")
         # Requirement 4: Today every 20 minutes, plus the 5-minute trigger
         # that drives the targeted -15 minute Upcoming scan.
-        self.assertIn('cron: "0,20,40 * * * *"', workflow)
-        self.assertIn('cron: "*/5 * * * *"', workflow)
+        crons = re.findall(r'- cron: "([^"]+)"', workflow)
+        every_20 = [c for c in crons if _cron_minute_interval(c) == 20]
+        self.assertTrue(every_20, "no cron fires every 20 minutes")
+        crons = re.findall(r'- cron: "([^"]+)"', workflow)
+        every_5 = [c for c in crons if _cron_minute_interval(c) == 5]
+        self.assertTrue(every_5, "no cron fires every 5 minutes")
         self.assertIn('cron: "9 5,17 * * *"', workflow)
         # The requirement is that the workflow refuses to run without these
         # files, not that it uses one particular shell idiom to check them.

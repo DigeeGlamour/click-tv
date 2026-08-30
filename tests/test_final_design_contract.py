@@ -162,7 +162,16 @@ class FinalDesignContractTests(unittest.TestCase):
             self.assertIn(element_id, self.index)
 
     def test_modern_event_cards_keep_schedules_and_live_actions(self) -> None:
-        self.assertIn("if (sourceKind === VIEW.UPCOMING) return Boolean(String(item.name || '').trim());", self.app)
+        # An Upcoming card is kept on its name alone, not on having a playable
+        # stream - the whole point of the tab is to show a fixture before its
+        # link exists. Asserted on the two parts rather than on one exact line,
+        # because the same filter now also drops a fixture that has already
+        # kicked off, and pinning the line meant a legitimate refinement of the
+        # rule read as a breach of it.
+        upcoming_filter = self.app[self.app.index("if (sourceKind === VIEW.UPCOMING)"):][:400]
+        self.assertIn("Boolean(String(item.name || '').trim())", upcoming_filter)
+        self.assertNotIn("isPlayable(item)", upcoming_filter.split("}")[0])
+        self.assertIn("hasAlreadyKickedOff(item)", upcoming_filter)
         self.assertIn("'LIVE NOW'", self.app)
         # The action names what the click does. A card with a usable link plays
         # on either tab, so the label follows playability rather than the tab.

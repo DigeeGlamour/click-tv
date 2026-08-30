@@ -6,6 +6,7 @@ present in the shipping files, and that the hard locks were respected. The
 runtime behaviour itself is exercised by the Playwright suites.
 """
 
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -16,6 +17,29 @@ sys.path.insert(0, str(ROOT))
 
 def read(rel: str) -> str:
     return (ROOT / rel).read_text(encoding="utf-8")
+
+
+
+def _cron_minute_interval(cron: str) -> int:
+    """Minutes between firings of a cron whose minute field is a list or step.
+
+    Written because these tests used to pin the literal cron string, and the
+    requirement is a frequency, not a spelling. The crons were moved off :00
+    and */5 - the busiest minutes on GitHub's shared scheduler, where a run
+    that cannot start is dropped rather than queued - and every one of these
+    tests failed on an offset that changed nothing about how often it runs.
+    """
+    minute = cron.split()[0]
+    if minute.startswith("*/"):
+        return int(minute[2:])
+    if "/" in minute:
+        return int(minute.split("/")[1])
+    if "," in minute:
+        points = sorted(int(p) for p in minute.split(","))
+        gaps = {b - a for a, b in zip(points, points[1:])}
+        gaps.add(60 - points[-1] + points[0])
+        return min(gaps)
+    return 60
 
 
 class Requirement4ScanArchitecture(unittest.TestCase):
@@ -29,11 +53,15 @@ class Requirement4ScanArchitecture(unittest.TestCase):
         cls.output = read("scanner/output.py")
 
     def test_today_match_runs_every_twenty_minutes(self):
-        self.assertIn('- cron: "0,20,40 * * * *"', self.workflow)
+        crons = re.findall(r'- cron: "([^"]+)"', self.workflow)
+        every_20 = [c for c in crons if _cron_minute_interval(c) == 20]
+        self.assertTrue(every_20, "no cron fires every 20 minutes")
         self.assertNotIn('- cron: "2,17,32,47 * * * *"', self.workflow)
 
     def test_a_frequent_trigger_drives_the_targeted_upcoming_scan(self):
-        self.assertIn('- cron: "*/5 * * * *"', self.workflow)
+        crons = re.findall(r'- cron: "([^"]+)"', self.workflow)
+        every_5 = [c for c in crons if _cron_minute_interval(c) == 5]
+        self.assertTrue(every_5, "no cron fires every 5 minutes")
         self.assertIn('MODE="upcoming-targeted"', self.workflow)
 
     def test_the_targeted_mode_is_a_real_scanner_mode(self):
