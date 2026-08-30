@@ -130,7 +130,7 @@ class TheTwoSidesOfKickoffTests(unittest.TestCase):
                               on Upcoming without one
 
     The trigger runs every five minutes, so each is really a number of
-    attempts: 20 before the whistle is four, 10 after is two more.
+    attempts: 30 before the whistle is six, 10 after is two more.
     """
 
     def _events(self):
@@ -141,7 +141,7 @@ class TheTwoSidesOfKickoffTests(unittest.TestCase):
 
     def test_the_hunt_starts_before_kickoff(self):
         window = self._events()["targeted_window_minutes"]
-        self.assertEqual(20, window)
+        self.assertEqual(30, window)
 
     def test_it_is_read_from_config_not_hard_coded(self):
         """It sat at 15 in scanner/targeted_scan.py, where changing it meant
@@ -149,7 +149,7 @@ class TheTwoSidesOfKickoffTests(unittest.TestCase):
         import sys as _sys
         _sys.path.insert(0, str(ROOT))
         import scan
-        self.assertEqual(20, scan._targeted_window_minutes())
+        self.assertEqual(30, scan._targeted_window_minutes())
 
     def test_a_missing_or_absurd_value_falls_back(self):
         """A window of zero would stop the trigger hunting at all, and a huge

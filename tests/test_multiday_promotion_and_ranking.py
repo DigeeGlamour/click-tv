@@ -195,7 +195,10 @@ class PromotionTests(unittest.TestCase):
             before, _ = self._scan(
                 [self._fixture("NS", NOW + timedelta(hours=2))], data_root
             )
-            self.assertEqual(_destination_for(before[0]), "upcoming")
+            # Routing reads the clock now - a fixture within 30 minutes of
+            # kickoff belongs on Today Match - so this test's own NOW has to be
+            # the clock it is measured against, not the real one.
+            self.assertEqual(_destination_for(before[0], NOW), "upcoming")
             self.assertFalse(before[0].get("url"))
 
             (data_root / "upcoming.json").write_text(json.dumps({
@@ -212,7 +215,7 @@ class PromotionTests(unittest.TestCase):
             ], data_root)
 
         self.assertEqual(len(after), 1, "promotion must not create a second card")
-        self.assertEqual(_destination_for(after[0]), "today_match")
+        self.assertEqual(_destination_for(after[0], NOW), "today_match")
         self.assertTrue(after[0].get("url"))
         self.assertEqual(after[0]["id"], before[0]["id"])
         self.assertEqual(reused, 1)
@@ -239,7 +242,7 @@ class PromotionTests(unittest.TestCase):
             cards, _ = self._scan(
                 [self._fixture("NS", NOW + timedelta(days=2))], data_root
             )
-        self.assertEqual(_destination_for(cards[0]), "upcoming")
+        self.assertEqual(_destination_for(cards[0], NOW), "upcoming")
 
     def test_reuse_is_a_no_op_on_a_first_ever_scan(self):
         with tempfile.TemporaryDirectory() as temp_dir:

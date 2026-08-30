@@ -20,6 +20,7 @@ try:
     from scanner.live_protection import probe_card_is_playable, protect_live_events
     from scanner import deliverability
     from scanner.event_lifecycle import (
+        DEFAULT_TODAY_ROUTING_MINUTES,
         ROUTE_LIVE_STATUSES,
         ROUTE_UPCOMING_STATUSES,
         authority_says_live,
@@ -50,6 +51,7 @@ except ImportError:
         sys.path.insert(0, module_dir)
     from live_protection import probe_card_is_playable, protect_live_events
     from event_lifecycle import (
+        DEFAULT_TODAY_ROUTING_MINUTES,
         ROUTE_LIVE_STATUSES,
         ROUTE_UPCOMING_STATUSES,
         authority_says_live,
@@ -369,6 +371,48 @@ def _is_playable(item: Dict[str, Any]) -> bool:
     return bool(_primary_url(item) or _backup_urls(item))
 
 
+#: How long past kickoff a fixture may sit on Today Match with no link at all.
+#:
+#: Routing now moves a fixture across 30 minutes before it starts, so one whose
+#: feeds never carry a stream arrives on Today Match and would otherwise stay
+#: there. It shows honestly - "link খোঁজা হচ্ছে" - but only for as long as that
+#: is still plausible. Half an hour past the whistle with nothing found is not a
+#: link being updated; it is a match nobody is carrying, and leaving it fills
+#: Today Match with exactly the clutter moving it there was meant to clear.
+TODAY_NO_LINK_GRACE_MINUTES = 30
+
+
+def _has_any_route(item: Dict[str, Any]) -> bool:
+    if str(item.get("playback_id") or "").strip():
+        return True
+    if _primary_url(item) or _backup_urls(item):
+        return True
+    channels = item.get("channels")
+    return bool(isinstance(channels, list) and channels)
+
+
+
+def _routed_early_without_a_link(item: Dict[str, Any], now: datetime) -> bool:
+    """Is this on Today Match only because kickoff is close, with no stream yet?
+
+    True for the window the routing rule opens - from 30 minutes before kickoff
+    until TODAY_NO_LINK_GRACE_MINUTES after it - and only while the card really
+    has no route. A card that has a link, or one an authority is calling live,
+    is not this.
+    """
+    if _has_any_route(item):
+        return False
+    status = str(item.get("schedule_status") or item.get("status") or "").strip().upper()
+    if status in ROUTE_LIVE_STATUSES:
+        return False
+    start = _parse_datetime(
+        item.get("start_time"), item.get("_source_timezone", timezone.utc)
+    )
+    if start is None:
+        return False
+    minutes_away = (start - now).total_seconds() / 60.0
+    return -TODAY_NO_LINK_GRACE_MINUTES <= minutes_away <= DEFAULT_TODAY_ROUTING_MINUTES
+
 def _is_today_fresh(
     item: Dict[str, Any],
     now: datetime,
@@ -405,6 +449,13 @@ def _is_today_fresh(
     if start_time > now + timedelta(hours=6):
         return False
     if start_time < now - timedelta(hours=max_age_hours):
+        return False
+    # Arrived here 30 minutes before kickoff, and the feeds never produced a
+    # stream. See TODAY_NO_LINK_GRACE_MINUTES.
+    if (
+        not _has_any_route(item)
+        and start_time < now - timedelta(minutes=TODAY_NO_LINK_GRACE_MINUTES)
+    ):
         return False
     return True
 
@@ -1486,11 +1537,28 @@ def process_events(
 
         card_copy = dict(card)
         card_copy["_source_timezone"] = source_timezone
-        pipeline = _destination_for(card_copy)
+        pipeline = _destination_for(card_copy, now)
 
         if pipeline == "today_match":
             undeliverable_dropped += _strip_undeliverable_routes(card_copy)
-            if not _is_playable(card_copy):
+            # A fixture routed here by the clock rather than by a live status
+            # has not been found a stream yet - that is the normal state 30
+            # minutes before kickoff, and the reason it was moved across is so
+            # the viewer can see it coming. Requiring a playable link here
+            # deleted it from both tabs instead: measured on 2026-08-30, six
+            # cards vanished this way, `Raków Częstochowa vs Jagiellonia` among
+            # them, gone from Upcoming and never arriving on Today Match.
+            #
+            # So it publishes as a schedule card, exactly as Upcoming has always
+            # published one, and the card says which state it is in. The
+            # playability gate still applies to everything else.
+            pre_kickoff = _routed_early_without_a_link(card_copy, now)
+            if pre_kickoff:
+                card_copy["metadata_only"] = True
+                card_copy["allow_without_stream"] = True
+                card_copy.setdefault("verification_status", "metadata_only")
+                card_copy["publish_allowed"] = True
+            elif not _is_playable(card_copy):
                 today_unplayable += 1
                 continue
             if not _is_today_fresh(card_copy, now, today_max_age_hours):

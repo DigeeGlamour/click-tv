@@ -451,5 +451,83 @@
 }
 @media(max-width:460px){
   .sidebar-section.event-list-mode .tm-channels{gap:4px!important;padding:6px!important}
-  .sidebar-section.event-list-mode .event-channel-chip.tm-channel{font-size:9.5px!important;min-height:25px!important}
+  /* A 25px chip with 9.5px text is half of any published guidance - Apple
+   * asks for 44px, Android for 48dp - and a mis-tap here switches the stream
+   * mid-match. The strip drops to one column below 420px rather than shrinking
+   * further, because in a two-column card grid a wider button and a readable
+   * one cannot both fit across. */
+  .sidebar-section.event-list-mode .event-channel-chip.tm-channel{font-size:10.5px!important;min-height:40px!important}
+}
+
+/* ── Today Match: what state is this card actually in ───────────────────────
+ *
+ * The tab now holds matches that have not started - routing moves a fixture
+ * across 30 minutes before kickoff - so the card has to say which of them it
+ * is. While everything on the tab was live a LIVE badge on every card was
+ * decoration; now its absence is the information.
+ *
+ * Sits top-left, opposite .tm-category top-right, and borrows that badge's
+ * shape so the poster keeps one visual language.
+ */
+.sidebar-section.event-list-mode .tm-state{
+  position:absolute!important;top:8px!important;left:8px!important;z-index:3!important;
+  max-width:calc(100% - 74px)!important;
+  margin:0!important;padding:4px 7px!important;
+  border-radius:7px!important;
+  font-size:8.5px!important;line-height:1!important;font-weight:900!important;
+  letter-spacing:.2px!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.8)!important;
+  backdrop-filter:blur(5px)!important;
+}
+/* Live. The only one that gets the site's red, because it is the only one that
+ * means "watch this now". */
+.sidebar-section.event-list-mode .tm-state-live{
+  border:1px solid rgba(255,49,88,.55)!important;
+  background:rgba(35,12,18,.78)!important;color:#ffdbe3!important;
+}
+/* Not started, and a stream is already resolved - the viewer can queue it up. */
+.sidebar-section.event-list-mode .tm-state-ready{
+  border:1px solid rgba(46,204,113,.5)!important;
+  background:rgba(10,32,20,.78)!important;color:#c9f5da!important;
+}
+/* Not started, no stream yet. Amber, because it is a countdown, not a promise. */
+.sidebar-section.event-list-mode .tm-state-soon{
+  border:1px solid rgba(241,196,15,.45)!important;
+  background:rgba(38,30,8,.78)!important;color:#ffe9a8!important;
+}
+/* Kickoff has passed and nothing has been found. Says so rather than looking
+ * like a live card that will not play. */
+.sidebar-section.event-list-mode .tm-state-waiting{
+  border:1px solid rgba(230,126,34,.45)!important;
+  background:rgba(40,24,8,.78)!important;color:#ffd7ac!important;
+}
+@media (max-width:460px){
+  .sidebar-section.event-list-mode .tm-state{
+    font-size:7.5px!important;padding:3px 5px!important;
+    max-width:calc(100% - 58px)!important;
+  }
+}
+
+@media (max-width:420px){
+  .sidebar-section.event-list-mode .tm-channels{
+    grid-template-columns:1fr!important;
+  }
+  .sidebar-section.event-list-mode .event-channel-chip.tm-channel{
+    min-height:42px!important;font-size:11px!important;
+  }
+}
+
+/* The broadcaster for a single-channel Today card. A line of text rather than
+ * a button, so the owner's "no one-button row" still holds while the viewer
+ * can still see whether this is Willow or Tapmad before tapping. */
+.sidebar-section.event-list-mode .tm-sole-channel{
+  margin-top:3px!important;
+  font-size:9px!important;font-weight:900!important;letter-spacing:.2px!important;
+  color:#9fb2cc!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.85)!important;
+}
+@media (max-width:460px){
+  .sidebar-section.event-list-mode .tm-sole-channel{font-size:8px!important}
 }

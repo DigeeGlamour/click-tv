@@ -1576,11 +1576,20 @@ def validate_data_manifest() -> None:
             )
 
     validate_snapshot_pointer(manifest)
+    # Today Match now carries schedule cards as well as live ones. Routing moves
+    # a fixture across 30 minutes before kickoff so a viewer can see it coming,
+    # and at that point it legitimately has no stream yet - that is the state
+    # the card exists to show. Refusing it here deleted six of them from both
+    # tabs on 2026-08-30 rather than publishing what was true about them.
+    #
+    # The rest of the rule is unchanged: a card without a stream must say
+    # `metadata_only`, and anything claiming to be playable is still held to
+    # every check below.
     validate_event_file(
         manifest,
         "today_match",
         "data/today-match.json",
-        False,
+        True,
     )
     validate_event_file(
         manifest,

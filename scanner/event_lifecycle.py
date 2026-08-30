@@ -401,7 +401,33 @@ ROUTE_UPCOMING_STATUSES = frozenset({
 })
 
 
-def event_destination(card: Dict[str, Any]) -> str:
+#: How long before kickoff a fixture moves onto Today Match.
+#:
+#: The tab is named for the day but was routed purely on status, so a match at
+#: 20:00 sat on Upcoming at 19:55 and only crossed over when the scanner marked
+#: it LIVE_NOW - after the whistle. A viewer opening the site at 19:45 pressed
+#: Today Match and did not find the match they came for.
+#:
+#: Deliberately the same number as events.targeted_window_minutes. That window
+#: tells the scanner which fixtures to hunt links for; this one decides which
+#: tab they appear on. Different jobs, but a fixture arriving on Today Match
+#: before anything is looking for its link would sit there with nothing to show.
+DEFAULT_TODAY_ROUTING_MINUTES = 30
+
+
+def minutes_to_kickoff(card: Dict[str, Any], now: Optional[datetime] = None) -> Optional[float]:
+    """Minutes until this fixture starts. Negative once it has. None with no clock."""
+    start = parse_time(card.get("start_time") or card.get("start_at"))
+    if start is None:
+        return None
+    reference = now or datetime.now(timezone.utc)
+    return (start - reference).total_seconds() / 60.0
+
+
+def event_destination(
+    card: Dict[str, Any],
+    now: Optional[datetime] = None,
+) -> str:
     """Decide Today Match vs Upcoming from the event, not from its source file.
 
     Routing used to read `source_pipeline`, so a match stayed wherever its
@@ -416,10 +442,21 @@ def event_destination(card: Dict[str, Any]) -> str:
     says when no status resolved.
     """
     status = str(card.get("schedule_status") or card.get("status") or "").strip().upper()
-    if status in ROUTE_LIVE_STATUSES:
-        return "today_match"
-    if status in ROUTE_UPCOMING_STATUSES:
-        return "upcoming"
     if status == "ENDED":
         return "ended"
+    if status in ROUTE_LIVE_STATUSES:
+        return "today_match"
+
+    # A fixture close enough to kickoff belongs on Today Match whatever its
+    # status says, because that is the tab a viewer looks at when a match is
+    # about to start. STARTING_SOON and LINK_UPDATING are exactly the states
+    # this covers - the second one especially, since a match at its kickoff
+    # with the scanner still hunting is the last thing that should be filed
+    # under "upcoming".
+    if status in ROUTE_UPCOMING_STATUSES:
+        remaining = minutes_to_kickoff(card, now)
+        if remaining is not None and remaining <= DEFAULT_TODAY_ROUTING_MINUTES:
+            return "today_match"
+        return "upcoming"
+
     return str(card.get("source_pipeline") or "").strip().lower()

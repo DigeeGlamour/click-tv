@@ -1837,14 +1837,31 @@ function applyFilterAndSort() {
       const sport = itemSportType(item);
       return sport === 'cricket' ? 0 : sport === 'football' ? 1 : 2;
     };
+    // Sport ordering is an audience preference and it belongs on Today Match,
+    // where everything is on now or within half an hour and cricket is what
+    // this audience opens the site for.
+    //
+    // On Upcoming it is simply wrong. Sport ranked above the clock, so a
+    // football match kicking off in five minutes sorted below every cricket
+    // fixture in the list including tomorrow's - and the one question that tab
+    // answers is what is on next.
+    const sportBeatsTheClock = state.view !== VIEW.UPCOMING;
     items.sort((a, b) => {
-      const sportDifference = sportRank(a) - sportRank(b);
-      if (sportDifference) return sportDifference;
+      if (sportBeatsTheClock) {
+        const sportDifference = sportRank(a) - sportRank(b);
+        if (sportDifference) return sportDifference;
+      }
       const statusDifference = (statusRank[eventUiStatus(a)] ?? 9) - (statusRank[eventUiStatus(b)] ?? 9);
       if (statusDifference) return statusDifference;
       const aTime = eventStartDate(a)?.getTime() ?? Number.MAX_SAFE_INTEGER;
       const bTime = eventStartDate(b)?.getTime() ?? Number.MAX_SAFE_INTEGER;
-      return aTime - bTime || (a.seqNumber || 0) - (b.seqNumber || 0);
+      if (aTime !== bTime) return aTime - bTime;
+      // Only once the clock has been asked, so a preference never outranks it.
+      if (!sportBeatsTheClock) {
+        const sportDifference = sportRank(a) - sportRank(b);
+        if (sportDifference) return sportDifference;
+      }
+      return (a.seqNumber || 0) - (b.seqNumber || 0);
     });
   } else if (state.view === VIEW.MOVIE) {
     items.sort((a, b) => {
@@ -1882,11 +1899,24 @@ function setEventListCount() {
   if (state.view === VIEW.EVENT) {
     const channels = events.filter((entry) => isChannelOnlyEventCard(entry)).length;
     const matches = events.length - channels;
+    // The headline used to read "27 Live" because everything on this tab was.
+    // Routing now brings a fixture across 30 minutes before kickoff, so the
+    // count and the word stopped agreeing - and a viewer reading "27 Live" and
+    // finding a countdown on the first card has been told something untrue by
+    // the one line that is supposed to summarise the tab.
+    const live = events.filter((entry) => {
+      const status = eventUiStatus(entry);
+      return status === 'LIVE_NOW' || status === 'CHANNEL_LIVE';
+    }).length;
     const detail = [
+      live ? `${live} Live` : '',
       matches ? `${matches} Match${matches === 1 ? '' : 'es'}` : '',
       channels ? `${channels} Channel${channels === 1 ? '' : 's'}` : ''
     ].filter(Boolean).join(' • ');
-    setSidebarCount(`${events.length} Live`, events.length ? detail : '');
+    setSidebarCount(
+      `${events.length} ${events.length === 1 ? 'Match' : 'Matches'}`,
+      events.length ? detail : ''
+    );
     return;
   }
   const todayKey = eventDhakaDayKey(new Date());
@@ -3212,6 +3242,56 @@ function bindEventChannelStrip(shell, item) {
 // Today Match tab on a genuinely live item only (see the call site in
 // createEventCard), so the Upcoming tab keeps its existing card, unchanged,
 // in every respect.
+// What a Today Match card must say about itself now that the tab holds matches
+// that have not started.
+//
+// The card was deliberately minimal, and that was right while everything on the
+// tab was live: a LIVE badge on every card is decoration, not information. It
+// stops being right the moment a fixture arrives 30 minutes before kickoff,
+// because a card that looks exactly like a live one and is not is simply
+// telling the viewer something untrue.
+//
+// Three states, and the difference between the last two matters to someone
+// deciding whether to wait: a stream that is ready, versus one still being
+// looked for.
+function todayCardState(item) {
+  const status = eventUiStatus(item);
+  if (status === 'LIVE_NOW' || status === 'CHANNEL_LIVE') {
+    return { tone: 'live', label: 'LIVE' };
+  }
+  const countdown = eventCountdownTextBn(item) || eventCountdownText(item);
+  if (!countdown) {
+    // Kickoff has passed but the scanner has not called it live yet.
+    return isPlayable(item)
+      ? { tone: 'ready', label: 'স্ট্রিম প্রস্তুত' }
+      : { tone: 'waiting', label: 'লিংক খোঁজা হচ্ছে' };
+  }
+  return isPlayable(item)
+    ? { tone: 'ready', label: `স্ট্রিম প্রস্তুত • ${countdown}` }
+    : { tone: 'soon', label: countdown };
+}
+
+// The broadcaster name for a Today card that carries exactly one channel.
+//
+// The minimal strip renders nothing below two channels, by the owner's direct
+// request - a single button in a row of one is not a selector. That stays. But
+// the name itself is information the viewer wants before tapping, because the
+// sources differ in quality: Willow, Willow 2, Sony Sports Ten 5 and Tapmad are
+// not interchangeable. So it goes in as a line of text, not a control.
+//
+// Only when the scanner is sure of the name. `name_confidence: generic` means
+// it fell back to something like "Server-1", and printing that tells the viewer
+// nothing they did not already know while spending a line of the card.
+function soleChannelLabel(item) {
+  const channels = eventChannels(item);
+  if (channels.length !== 1) return '';
+  const channel = channels[0] || {};
+  if (String(channel.name_confidence || '').toLowerCase() === 'generic') return '';
+  const name = String(channel.name || '').trim();
+  if (!name || /^server[\s-]*\d*$/i.test(name)) return '';
+  return name;
+}
+
 function createTodayMatchCardV2(item, visualIndex, ctx) {
   const { card, playable, parts, channelOnly, sport } = ctx;
   card.className = ['sidebar-item event-ref-card tv-focusable event-live-card tm-card-v2',
@@ -3227,14 +3307,18 @@ function createTodayMatchCardV2(item, visualIndex, ctx) {
     maybePreconnect(item.url);
   });
 
+  const todayState = todayCardState(item);
+  const soleChannel = soleChannelLabel(item);
   card.innerHTML = `
     <span class="tm-serial">${visualIndex + 1}</span>
     <div class="tm-poster">
       ${eventArtHtml(item, parts)}
       <span class="tm-category">${escapeHtml(channelOnly ? 'CHANNEL' : sport.label)}</span>
+      <span class="tm-state tm-state-${todayState.tone}">${escapeHtml(todayState.label)}</span>
       <div class="tm-info">
         ${parts.competition ? `<div class="tm-league">${escapeHtml(parts.competition)}</div>` : ''}
         <div class="tm-title">${escapeHtml(parts.title)}</div>
+        ${soleChannel ? `<div class="tm-sole-channel">${escapeHtml(soleChannel)}</div>` : ''}
       </div>
     </div>`;
 
