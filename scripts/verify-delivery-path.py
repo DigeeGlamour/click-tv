@@ -66,16 +66,37 @@ SITE_ORIGIN = "https://clicktv.pages.dev"
 #: later: a row written by a browser measurement is never cleared from here.
 VANTAGE = "delivery_path_proxy"
 
-#: Bodies the proxy or the edge returns when the refusal is permanent. Matched
-#: on the body rather than the status because both arrive as 403, and one of
-#: them - the origin check - is about this script, not about the route.
+#: Bodies the proxy or the edge returns when the refusal is permanent.
 PERMANENT_BODIES = (
     "target host not allowed",
     "error code: 1003",
 )
 
-#: Statuses that mean the upstream itself says the path is gone.
-PERMANENT_STATUSES = frozenset({404, 410})
+#: The proxy refusing THIS SCRIPT rather than the route. If one of these ever
+#: appears the check is misconfigured - it means the origin header did not
+#: arrive - and the honest answer is "no verdict", never "the route is dead".
+#: Without this, a mistake here would demote the entire catalogue in one run.
+PROXY_OWN_REFUSALS = (
+    "requires the click tv site origin",
+    "origin not allowed",
+)
+
+#: A refusal that reaches the viewer identically every time.
+#:
+#: 403 and 451 are here because of what the delivery path is. The scanner sees
+#: 403 from a GitHub runner and rightly treats it as vantage-shaped - the same
+#: host often answers 200 from Bangladesh. But every viewer reaches a route
+#: through the same Cloudflare edge, so a 403 THE PROXY receives is not one
+#: vantage's bad luck; it is the answer every viewer will get.
+#:
+#: Safe because the ledger is keyed on the exact URL. These hosts sign their
+#: URLs, so the next scan produces a different one and the recorded row simply
+#: stops applying - a refreshed token is picked up on its own.
+#:
+#: Measured on 2026-08-30: `Mumbai Sobo Stars vs Bangalore Blasters` had exactly
+#: one route, sonydaimenew.akamaized.net, and the player showed "লাইভ ম্যাচটি
+#: চালানো যায়নি" after trying every link. The proxy gets 403 from Akamai for it.
+PERMANENT_STATUSES = frozenset({403, 404, 410, 451})
 
 #: Statuses that prove nothing. A route is never demoted on one of these.
 AMBIGUOUS_STATUSES = frozenset({0, 408, 429, 500, 502, 503, 504, 520, 521, 522,
@@ -160,12 +181,21 @@ def published_routes() -> List[Dict[str, str]]:
                 if not url or url in seen:
                     continue
                 seen.add(url)
+                record = (CATALOGUE.get(str(stream.get("playback_id") or ""))
+                          if isinstance(stream, dict) else None) or {}
+                headers = {}
+                if isinstance(stream, dict):
+                    headers = dict(stream.get("headers") or {})
+                if not headers:
+                    headers = dict(record.get("headers") or {})
                 rows.append({
                     "name": str(card.get("name") or ""),
                     "where": label,
                     "url": url,
                     "type": str(stream.get("stream_type") or "") if isinstance(stream, dict) else "",
-                    "profile": str(stream.get("header_profile") or "") if isinstance(stream, dict) else "",
+                    "profile": (str(stream.get("header_profile") or "")
+                                or str(record.get("header_profile") or "")) if isinstance(stream, dict) else "",
+                    "headers": headers,
                 })
     return rows
 
@@ -197,16 +227,53 @@ def ask_proxy(row: Dict[str, str], proxy: str, timeout: float) -> Tuple[str, str
         except Exception:  # noqa: BLE001 - a body we cannot read is not evidence
             body = ""
         lowered = body.lower()
-        if failure.code in PERMANENT_STATUSES:
-            return "dead", f"HTTP {failure.code} from the upstream"
+        for marker in PROXY_OWN_REFUSALS:
+            if marker in lowered:
+                return "unknown", f"the proxy refused this check, not the route: {body[:90]}"
         for marker in PERMANENT_BODIES:
             if marker in lowered:
                 return "dead", f"the playback proxy refuses this route: {body[:120]}"
+        if failure.code in PERMANENT_STATUSES:
+            return "dead", (
+                f"the playback proxy gets HTTP {failure.code} for this route, "
+                "so no viewer can reach it"
+            )
         if failure.code in AMBIGUOUS_STATUSES:
             return "unknown", f"HTTP {failure.code}"
         return "unknown", f"HTTP {failure.code}: {body[:120]}"
     except Exception as failure:  # noqa: BLE001 - a timeout is not evidence
         return "unknown", type(failure).__name__
+
+
+def ask_directly(row: Dict[str, str], timeout: float) -> str:
+    """"pass", "dead" or "unknown" for a plain fetch, no proxy in the way.
+
+    The proxy is not the only path. An https:// route is handed straight to the
+    video element - site/assets/js/app.js resolves those to `direct_first`, and
+    only an http:// one is forced through the proxy, because an HTTPS page
+    cannot load mixed content. So a proxy refusal alone does not prove an https
+    route is unreachable, and treating it that way would have demoted 105
+    routes in one run, most of them backups of Bangla channels whose primaries
+    play perfectly well.
+    """
+    target = str(row["url"]).split("|", 1)[0]
+    # The catalogue stores the headers a route needs, and several of the hosts
+    # here refuse without them - toffeelive answers 403 to a bare request and
+    # 200 to the same request carrying its profile. Fetching without them and
+    # calling the answer evidence is how a working route gets demoted.
+    headers = {"User-Agent": UA, "Accept": "*/*"}
+    headers.update({str(k): str(v) for k, v in (row.get("headers") or {}).items()})
+    try:
+        with urllib.request.urlopen(
+            urllib.request.Request(target, headers=headers),
+            timeout=timeout, context=_context(),
+        ) as response:
+            response.read(512)
+            return "pass" if response.status in (200, 206) else "unknown"
+    except urllib.error.HTTPError as failure:
+        return "dead" if failure.code in PERMANENT_STATUSES else "unknown"
+    except Exception:  # noqa: BLE001 - a timeout is not evidence
+        return "unknown"
 
 
 def main(argv: Any = None) -> int:
@@ -240,6 +307,17 @@ def main(argv: Any = None) -> int:
             if again != "dead":
                 return dict(row, verdict="unknown",
                             detail=f"refused by one proxy, {again} on another: {detail2}")
+        # An https route has a second path to the viewer that does not involve
+        # the proxy at all, so the proxy's answer is not the last word on it.
+        if verdict == "dead" and row["url"].lower().startswith("https://"):
+            direct = ask_directly(row, args.timeout)
+            if direct != "dead":
+                return dict(row, verdict="unknown",
+                            detail=("the proxy refuses it, but it is https and "
+                                    f"answers {direct} directly, which is the "
+                                    "path the player uses for it"))
+            return dict(row, verdict="dead",
+                        detail=detail + "; and it refuses a direct fetch too")
         return dict(row, verdict=verdict, detail=detail)
 
     results: List[Dict[str, Any]] = []

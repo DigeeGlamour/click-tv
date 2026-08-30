@@ -133,6 +133,31 @@ class TheDeliveryCheckIsHonestAboutEvidenceTests(unittest.TestCase):
         source = self._source()
         self.assertIn("refused by one proxy", source)
 
+    def test_it_sends_the_headers_a_route_needs(self):
+        """The catalogue stores them and several hosts refuse without them.
+        toffeelive answers 403 to a bare request and 200 to the same request
+        carrying its profile. Fetching without them and calling that evidence
+        demoted 100 routes in one run - 97 of them working backups of Bangla
+        channels. With the headers it is 3."""
+        source = self._source()
+        self.assertIn('headers.update(', source)
+        self.assertIn('row.get("headers")', source)
+
+    def test_an_https_route_gets_its_direct_path_checked(self):
+        """The proxy is not the only way in. app.js resolves an https route to
+        `direct_first` and only forces http:// through the proxy, because an
+        HTTPS page cannot load mixed content. So a proxy refusal alone does not
+        prove an https route is unreachable."""
+        source = self._source()
+        self.assertIn('startswith("https://")', source)
+        self.assertIn("ask_directly", source)
+
+    def test_a_refusal_aimed_at_this_script_is_not_a_verdict(self):
+        """If the origin header ever stops arriving, every answer becomes a 403
+        about the origin. Reading those as dead routes would demote the whole
+        catalogue in one run."""
+        self.assertIn("PROXY_OWN_REFUSALS", self._source())
+
     def test_the_site_origin_is_sent(self):
         """Without it every answer is a 403 about the origin rather than an
         answer about the route, and the check would call the whole catalogue
