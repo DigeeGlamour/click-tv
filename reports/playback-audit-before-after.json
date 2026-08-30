@@ -1,0 +1,268 @@
+{
+ "mode": "ui_playback_audit_before_and_after",
+ "note": "Both halves produced by the owner's own full_live_playback_audit.py, which clicks the deployed UI in real Chrome and requires a decoded video frame with measurable progress for a PASS. The only change between them is the crossorigin fix in site/assets/js/app.js.",
+ "before": {
+  "generated_at": "2026-08-29T15:42:05+00:00",
+  "tested": 1863,
+  "status_counts": {
+   "PASS": 543,
+   "FAIL": 1320
+  },
+  "by_category": {
+   "channel": {
+    "Sports": {
+     "PASS": 25,
+     "FAIL": 74
+    },
+    "Bangla": {
+     "FAIL": 20,
+     "PASS": 28
+    },
+    "Indian": {
+     "PASS": 143,
+     "FAIL": 76
+    },
+    "Cartoon": {
+     "PASS": 15,
+     "FAIL": 18
+    },
+    "Islamic": {
+     "PASS": 10,
+     "FAIL": 3
+    },
+    "Infotainments": {
+     "PASS": 12,
+     "FAIL": 9
+    },
+    "Foreign News": {
+     "FAIL": 14,
+     "PASS": 23
+    },
+    "Others": {
+     "FAIL": 78,
+     "PASS": 67
+    }
+   },
+   "movie": {
+    "Bangla": {
+     "PASS": 30
+    },
+    "Hindi": {
+     "FAIL": 139,
+     "PASS": 22
+    },
+    "English": {
+     "FAIL": 17,
+     "PASS": 34
+    },
+    "Hindi Dubbed": {
+     "FAIL": 189,
+     "PASS": 58
+    },
+    "South Indian": {
+     "PASS": 69,
+     "FAIL": 2
+    },
+    "Premium": {
+     "PASS": 7
+    },
+    "Mix Movies": {
+     "FAIL": 681
+    }
+   }
+  }
+ },
+ "after": {
+  "generated_at": "2026-08-30T03:45:23+00:00",
+  "tested": 1601,
+  "status_counts": {
+   "ERROR": 25,
+   "PASS": 1217,
+   "FAIL": 359
+  },
+  "by_category": {
+   "channel": {
+    "Sports": {
+     "PASS": 34,
+     "FAIL": 36
+    },
+    "Bangla": {
+     "FAIL": 7,
+     "PASS": 41
+    },
+    "Indian": {
+     "PASS": 42,
+     "FAIL": 1
+    },
+    "Cartoon": {
+     "PASS": 18,
+     "FAIL": 10
+    },
+    "Islamic": {
+     "PASS": 9,
+     "FAIL": 1
+    },
+    "Infotainments": {
+     "PASS": 10,
+     "FAIL": 5
+    },
+    "Foreign News": {
+     "PASS": 29,
+     "FAIL": 3
+    },
+    "Others": {
+     "PASS": 103,
+     "FAIL": 34
+    }
+   },
+   "movie": {
+    "Bangla": {
+     "PASS": 30
+    },
+    "Hindi": {
+     "PASS": 153,
+     "FAIL": 2
+    },
+    "English": {
+     "PASS": 61,
+     "FAIL": 1
+    },
+    "Hindi Dubbed": {
+     "PASS": 180,
+     "FAIL": 1
+    },
+    "South Indian": {
+     "PASS": 77,
+     "FAIL": 3
+    },
+    "Premium": {
+     "FAIL": 4,
+     "PASS": 6
+    },
+    "Mix Movies": {
+     "PASS": 424,
+     "FAIL": 251
+    }
+   }
+  }
+ },
+ "today_match_after_audit_fix": {
+  "tested": 21,
+  "status_counts": {
+   "PASS": 15,
+   "FAIL": 6
+  },
+  "note": "Before the fix this category produced 25 ERROR rows and no verdicts."
+ },
+ "failing_channels_retested_one_at_a_time": {
+  "note": "The audit runs four Chrome workers in parallel, four video streams on one connection, with a 22 s channel timeout. Re-tested one at a time in a 45 s window through the site own attempt plan.",
+  "sample": 21,
+  "results": [
+   {
+    "name": "Bangla | Ahsan TV",
+    "verdict": "unknown",
+    "media_progress_seconds": 44.91
+   },
+   {
+    "name": "Bangla | ATN Bangla",
+    "verdict": "unknown",
+    "media_progress_seconds": 45
+   },
+   {
+    "name": "Bangla | Boishakhi TV",
+    "verdict": "unknown",
+    "media_progress_seconds": 44.99
+   },
+   {
+    "name": "Cartoo | Biznet Kids",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   },
+   {
+    "name": "Cartoo | Disney Channel",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   },
+   {
+    "name": "Foreig | AL EKHBARIA",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   },
+   {
+    "name": "Foreig | RS News",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   },
+   {
+    "name": "Foreig | RS News Web",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   },
+   {
+    "name": "Indian | Star Jalsha",
+    "verdict": "unknown",
+    "media_progress_seconds": 45
+   },
+   {
+    "name": "Indian | Sony Aath",
+    "verdict": "unknown",
+    "media_progress_seconds": 44.68
+   },
+   {
+    "name": "Indian | Jalsha Movies",
+    "verdict": "unknown",
+    "media_progress_seconds": 44.68
+   },
+   {
+    "name": "Infota | BIZNET ADVENTURE",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   },
+   {
+    "name": "Infota | Biznet Lifestyle",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   },
+   {
+    "name": "Infota | NAT GEO WILD",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   },
+   {
+    "name": "Islami | Madani TV",
+    "verdict": "unknown",
+    "media_progress_seconds": 44.99
+   },
+   {
+    "name": "Other | Aan TV",
+    "verdict": "unknown",
+    "media_progress_seconds": 44.7
+   },
+   {
+    "name": "Other | Angel TV",
+    "verdict": "playback_fail",
+    "media_progress_seconds": 7.64
+   },
+   {
+    "name": "Other | Angel TV Africa",
+    "verdict": "playback_fail",
+    "media_progress_seconds": 9.75
+   },
+   {
+    "name": "Sports | 5 SPORT",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   },
+   {
+    "name": "Sports | beIN SPORTS 6",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   },
+   {
+    "name": "Sports | beIN SPORTS 7",
+    "verdict": "advisory:transient_network",
+    "media_progress_seconds": 0
+   }
+  ]
+ }
+}

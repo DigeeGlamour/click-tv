@@ -197,6 +197,96 @@ CLICKTV_SYSTEM_ANALYSIS_AND_SCANNER_FIX_REPORT_BN.txt-এ।
 
 
 ================================================================================
+পর্ব ৬ক — আপনার full playback audit-এর সমস্যা (1,320 FAIL)
+================================================================================
+আপনার নিজের `full_live_playback_audit.py` ১,৮৬৩টি item আসল Chrome-এ click করে
+পরীক্ষা করেছিল: **৫৪৩ PASS / ১,৩২০ FAIL**। এর মধ্যে **১,০২৯টি** একই এক লাইন:
+"Browser blocked the media response (ORB)"।
+
+--------------------------------------------------------------------------------
+আসল কারণ — এবং সেটা stream-এর দোষ ছিল না
+--------------------------------------------------------------------------------
+Chrome-এর Opaque Response Blocking এমন cross-origin media response বাতিল করে
+যেটি সে sniff করতে পারে না। Matroska (.mkv) container Chrome-এর sniffer চেনে না,
+তাই সাধারণ `<video src>`-এ দেওয়া .mkv decoder পর্যন্ত পৌঁছানোর আগেই বাতিল হয়,
+আর element বলে "MEDIA_ELEMENT_ERROR: Format error" — যা দেখে মনে হয় ফাইল নষ্ট,
+অথচ নষ্ট নয়।
+
+৭০টি item আবার চালিয়ে হুবহু এক লাইনে বিভাজন পাওয়া গেছে:
+    direct route  ৪২/৪২ PASS
+    proxy route   ২৮/২৮ FAIL
+
+আসল Chrome-এ একটি খালি page-এ আলাদা করে মাপা (প্রতিটি ১২ সেকেন্ড):
+    সাধারণ <video src>, r2 direct            ERR_BLOCKED_BY_ORB
+    সাধারণ <video src>, r2 proxy দিয়ে        ERR_BLOCKED_BY_ORB
+    সাধারণ <video src>, bunny proxy দিয়ে     ERR_BLOCKED_BY_ORB
+    crossOrigin='anonymous', r2 proxy         **চলে**, 1920x1080, 10.40s
+    crossOrigin='anonymous', bunny proxy      **চলে**, 1280x720, 10.81s
+    crossOrigin='anonymous', r2 direct        ERR_FAILED
+
+শেষ লাইনটাই কারণ যে এটা সবখানে চালু করা যায় না: আমাদের proxy
+`Access-Control-Allow-Origin` পাঠায়, storage origin গুলো পাঠায় না।
+
+--------------------------------------------------------------------------------
+সমাধান ও যাচাই
+--------------------------------------------------------------------------------
+`initNative` আগে শর্তহীনভাবে crossorigin attribute মুছে দিত। এখন সেটি **শুধু
+আমাদের নিজের playback proxy-র জন্য** বসে (URL origin মিলিয়ে, substring নয়),
+আর অন্য সবের জন্য মুছে যায়। Movie audio companion-ও একই নিয়মে — নইলে ছবি চলত,
+শব্দ চলত না।
+    → commit 277c84700, tests/test_native_cross_origin.py (৮টি test)
+
+Cloudflare Pages-এ deploy হওয়ার পরে ঠিক সেই ৭০টি item আবার:
+    **৭০/৭০ PASS** (আগে ৪২/৭০)
+
+তারপর পুরো audit আবার চালানো হয়েছে — before ও after দুটোই আপনার নিজের tool-এ:
+
+                   আগে                     পরে
+    Movies       220 PASS / 1028 FAIL     **931 PASS / 262 FAIL**   (17.6% → 78.0%)
+    Channels     323 PASS /  292 FAIL     **286 PASS /  97 FAIL**   (52.5% → 74.7%)
+    সব মিলিয়ে    543 / 1863 = 29.1%       **1217 / 1601 = 76.0%**
+
+    (channel সংখ্যা ৬১৫ → ৩৮৩ কমেছে কারণ মৃত card বাদ পড়েছে ও Indian
+     curated হয়েছে; **হার** বেড়েছে।)
+    → reports/playback-audit-before-after.json
+
+--------------------------------------------------------------------------------
+Today Match — ২৫টি ERROR সারানো
+--------------------------------------------------------------------------------
+audit-এ Today Match-এর ২৫টি সারি ERROR ছিল: "3 assigned cards missing after
+full render"। কারণ live তালিকা inventory ও test-এর মাঝে বদলায় (match শেষ হয়,
+নতুন শুরু হয়) — script সেটিকে ত্রুটি ধরে পুরো ২৫টির job fail করে দিত।
+আপনার script-এ এখন live category-র হারানো card **GONE** হিসেবে লেখা হয় আর বাকি
+গুলো পরীক্ষা চলে (fixed catalogue-এ — channel/movie — আগের মতোই ত্রুটি)।
+    ফল: **০ PASS / ২৫ ERROR → ১৫ PASS / ৬ FAIL / ০ ERROR**
+    ⚠ ফাইলটি আপনার নিজের, git-এ tracked নয়। তাই commit করিনি — শুধু ঠিক করে
+      রেখেছি। আপনার অন্য session ফাইলটি লিখলে এই সংশোধন হারাতে পারে।
+
+--------------------------------------------------------------------------------
+বাকি ব্যর্থতাগুলো কী — মাপা
+--------------------------------------------------------------------------------
+[১] Movie ২৬২টি — এর ২৪৭টি `wrtgbn.b-cdn.net`-এ, যে host **সবাইকেই 403** দেয়
+    (referer বদলেও একই)। player-এর সমস্যা নয়। scanner-এর movie retention এক
+    scan-এর grace দেয়, তাই পরের পূর্ণ movies scan-এ এগুলো ঝরে যাওয়ার কথা।
+    বাকি ৯টি এখনো ORB — proxy attempt আগে abort হয়ে direct fallback-এ গেছে,
+    আর ওই host CORS পাঠায় না।
+
+[২] Channel ৯৭টি — কিন্তু **এর অনেকগুলো আসলে চলে**। audit ৪টি Chrome worker
+    সমান্তরালে চালায়, অর্থাৎ একই সংযোগে ৪টি video stream, আর channel timeout
+    ২২ সেকেন্ড। ২১টি "ব্যর্থ" channel একা একা ৪৫ সেকেন্ডের window-তে আবার
+    চালিয়ে:
+        **৮টি ভালোভাবে চলে** (৪৪–৪৫ সেকেন্ড media): Ahsan TV, ATN Bangla,
+        Boishakhi TV, Star Jalsha, Sony Aath, Jalsha Movies, Madani TV, Aan TV
+        ১১টি সত্যিই চালু হয় না: Biznet Kids, Disney Channel, AL EKHBARIA,
+        RS News, RS News Web, BIZNET ADVENTURE, Biznet Lifestyle, NAT GEO WILD,
+        5 SPORT, beIN SPORTS 6, beIN SPORTS 7
+        ২টি আংশিক: Angel TV, Angel TV Africa
+    অর্থাৎ audit-এর channel ব্যর্থতার সংখ্যা বাস্তবের চেয়ে বেশি দেখাচ্ছে।
+    ১৬৭টি ব্যর্থ channel-এর route সরাসরি probe করে দেখা গেছে **১৩৫টির অন্তত
+    একটি route HTTP 200 দেয়**, মাত্র ৩২টির কোনো route সাড়া দেয় না।
+
+
+================================================================================
 পর্ব ৭ — নতুন যা তৈরি হয়েছে
 ================================================================================
 নতুন module / script:
@@ -236,7 +326,8 @@ CLICKTV_SYSTEM_ANALYSIS_AND_SCANNER_FIX_REPORT_BN.txt-এ।
      — configured কোনো source-এ চালু route নেই। নতুন source লাগবে।
   ২. Sonic Bangla ও SONY YAY Bengali — একই কারণ (শুধু JioTV, HTTP 451)।
   ৩. gpcdn.net-এর ৩৮টি route HTTP 403 — ৩৩টি card-এর পেছনে কিছু নেই।
-  ৪. Full playback audit-এর movie সমস্যা — কাজ চলছে (পর্ব ৯)।
+  ৪. Movie ২৬২টি ও channel ৯৭টি এখনো FAIL (পর্ব ৬ক) — এর বড় অংশ মৃত upstream
+     (wrtgbn 403) ও audit-এর সমান্তরাল চালানোর artefact।
   ৫. Test isolation — ~৩০টি call site, আলাদা commit।
   ৬. ৬টি আটকে থাকা workflow run (2026-08-05/11) — actions:write scope লাগে।
   ৭. iPhone/iOS — আসল ডিভাইস লাগে; Playwright-এর WebKit iOS Safari নয়।
