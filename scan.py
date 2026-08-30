@@ -128,6 +128,29 @@ def _write_scan_progress(mode: str, stage: str, **details: Any) -> None:
     _atomic_write_json(SCAN_PROGRESS_PATH, payload)
 
 
+
+def _targeted_window_minutes() -> int:
+    """How long before kickoff the targeted trigger starts hunting for a link.
+
+    Read from config/settings.json rather than hard-coded, because it is a
+    scheduling decision about the owner's site and not a property of the code.
+    The trigger runs every five minutes, so the value is really a number of
+    attempts before the whistle: 15 gives three, 10 gives two.
+
+    Not to be confused with `upcoming_past_grace_minutes`, which is the other
+    side of kickoff - how long a fixture may still sit on Upcoming afterwards
+    without a link.
+    """
+    try:
+        with open(PROJECT_ROOT / "config" / "settings.json", "r", encoding="utf-8") as handle:
+            events_settings = (json.load(handle).get("events") or {})
+        value = int(events_settings.get("targeted_window_minutes") or 0)
+    except (OSError, ValueError, TypeError, AttributeError):
+        return TARGETED_WINDOW_MINUTES
+    if value <= 0 or value > 240:
+        return TARGETED_WINDOW_MINUTES
+    return value
+
 def _load_required_json(file_path: str | Path) -> Dict[str, Any]:
     path = Path(file_path)
 
@@ -882,13 +905,13 @@ def _process_events_for_mode(
             "scanner/events.py is required for all/today/upcoming mode"
         ) from error
 
-    # Requirement 4: the -15 minute targeted upcoming scan. The plan names the
+    # Requirement 4: the pre-kickoff targeted upcoming scan. The plan names the
     # individual fixtures this trigger may touch; every other Upcoming card is
     # republished exactly as it already stands.
     targeted_window = (
         targeted_plan.window_minutes
         if targeted_plan is not None
-        else (TARGETED_WINDOW_MINUTES if mode in TARGETED_UPCOMING_MODES else 0)
+        else (_targeted_window_minutes() if mode in TARGETED_UPCOMING_MODES else 0)
     )
     event_result = process_events(
         targeted_window_minutes=targeted_window,
@@ -1009,7 +1032,7 @@ def run_pipeline(
             fixture_path=PROJECT_ROOT / "config" / "event-fixtures.json",
             state_path=PROJECT_ROOT / "state" / "upcoming-targeting.json",
             now=run_started_at,
-            window_minutes=TARGETED_WINDOW_MINUTES,
+            window_minutes=_targeted_window_minutes(),
         )
         print(
             f"   Targeted window: -{targeted_plan.window_minutes} minutes; "

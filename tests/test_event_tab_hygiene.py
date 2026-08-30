@@ -121,6 +121,50 @@ class UpcomingDropsWhatHasAlreadyStartedTests(unittest.TestCase):
                                       "room after the whistle")
 
 
+class TheTwoSidesOfKickoffTests(unittest.TestCase):
+    """Two windows, one on each side of the whistle, easy to confuse.
+
+    targeted_window_minutes   how long BEFORE kickoff the trigger starts
+                              hunting for a fixture's stream link
+    upcoming_past_grace_minutes  how long AFTER kickoff a fixture may still sit
+                              on Upcoming without one
+
+    The trigger runs every five minutes, so each is really a number of
+    attempts: 10 before the whistle is two, 10 after is two more.
+    """
+
+    def _events(self):
+        import json
+        return json.loads(
+            (ROOT / "config" / "settings.json").read_text(encoding="utf-8")
+        )["events"]
+
+    def test_the_hunt_starts_before_kickoff(self):
+        window = self._events()["targeted_window_minutes"]
+        self.assertEqual(10, window)
+
+    def test_it_is_read_from_config_not_hard_coded(self):
+        """It sat at 15 in scanner/targeted_scan.py, where changing it meant
+        editing code. It is a scheduling decision about the owner's site."""
+        import sys as _sys
+        _sys.path.insert(0, str(ROOT))
+        import scan
+        self.assertEqual(10, scan._targeted_window_minutes())
+
+    def test_a_missing_or_absurd_value_falls_back(self):
+        """A window of zero would stop the trigger hunting at all, and a huge
+        one would have it re-targeting every fixture on the calendar."""
+        import sys as _sys
+        _sys.path.insert(0, str(ROOT))
+        import scan
+        self.assertEqual(15, scan.TARGETED_WINDOW_MINUTES)
+
+    def test_the_two_windows_are_separate_settings(self):
+        events = self._events()
+        self.assertIn("targeted_window_minutes", events)
+        self.assertIn("upcoming_past_grace_minutes", events)
+
+
 class UndeliverableRoutesDoNotComeBackTests(unittest.TestCase):
     def test_a_bare_ip_backup_is_stripped(self):
         item = {"backups": [
