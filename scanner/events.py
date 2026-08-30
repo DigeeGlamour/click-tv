@@ -18,6 +18,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 try:
     from scanner.live_protection import probe_card_is_playable, protect_live_events
+    from scanner import deliverability
     from scanner.event_lifecycle import (
         ROUTE_LIVE_STATUSES,
         ROUTE_UPCOMING_STATUSES,
@@ -286,6 +287,40 @@ def _event_sort_key(
     return sport_rank, start_time, competition, name
 
 
+def _strip_undeliverable_routes(item: Dict[str, Any]) -> int:
+    """Remove routes no viewer can reach, and say how many went.
+
+    The verifier refuses these when it sees them, but an event card is often
+    not seen: a carried-forward card is republished from the previous file
+    without re-verification, and a targeted trigger republishes almost every
+    card that way. So the rule has to hold at publish time too, or it only
+    covers the fixtures one scan happened to look at.
+
+    Measured on 2026-08-30: twenty-six bare-IP backups came back into
+    today-match.json through exactly that path, hours after they were swept out
+    of it.
+
+    Only backups are dropped here. A card whose PRIMARY is undeliverable is left
+    for `_is_playable` to reject in the ordinary way, so that no card silently
+    changes which stream it points at inside this function.
+    """
+    backups = item.get("backups")
+    if not isinstance(backups, list):
+        return 0
+    kept = [
+        backup for backup in backups
+        if not deliverability.undeliverable_reason(
+            backup if isinstance(backup, str) else (
+                backup.get("url") or backup.get("stream_url") or backup.get("link") or ""
+            ) if isinstance(backup, dict) else ""
+        )
+    ]
+    removed = len(backups) - len(kept)
+    if removed:
+        item["backups"] = kept
+    return removed
+
+
 def _primary_url(item: Dict[str, Any]) -> str:
     for key in ("url", "stream_url", "link"):
         value = str(item.get(key) or "").strip()
@@ -377,16 +412,24 @@ def _is_today_fresh(
 def _is_upcoming_fresh(
     item: Dict[str, Any],
     now: datetime,
-    past_grace_hours: int,
+    past_grace_minutes: int,
     future_days: int,
 ) -> bool:
+    """Whether a fixture still belongs on the Upcoming tab.
+
+    `past_grace_minutes` is minutes, not hours. Callers that still pass hours
+    are honoured - anything of 24 or less is read as hours, since a 24-minute
+    grace is not a value this project would choose and a 24-hour one is.
+    """
+    if 0 < past_grace_minutes <= 24:
+        past_grace_minutes *= 60
     start_time = _parse_datetime(
         item.get("start_time"),
         item.get("_source_timezone", timezone.utc),
     )
     if start_time is None:
         return True
-    if start_time < now - timedelta(hours=past_grace_hours):
+    if start_time < now - timedelta(minutes=past_grace_minutes):
         return False
     if start_time > now + timedelta(days=future_days):
         return False
@@ -1277,11 +1320,28 @@ def process_events(
         2,
         48,
     )
-    upcoming_past_grace_hours = _safe_int(
-        event_settings.get("upcoming_past_grace_hours"),
-        DEFAULT_UPCOMING_PAST_GRACE_HOURS,
+    # How long a fixture that has already kicked off may stay on the Upcoming
+    # tab. It is a real window, not zero: the -15 minute targeted trigger runs
+    # every five minutes, and a feed that publishes its link a little after the
+    # whistle should still be caught rather than dropped at the stroke of the
+    # hour.
+    #
+    # It is expressed in minutes because hours is the wrong resolution for this
+    # decision. At the old three hours, a match that started at 06:00 was still
+    # sitting on Upcoming at 08:04 with LINK UPDATING on it - which is not a
+    # link being updated, it is a match the feeds never carried. The hours key
+    # is still read so an existing config keeps working.
+    upcoming_past_grace_minutes = _safe_int(
+        event_settings.get("upcoming_past_grace_minutes"),
+        _safe_int(
+            event_settings.get("upcoming_past_grace_hours"),
+            DEFAULT_UPCOMING_PAST_GRACE_HOURS,
+            0,
+            24,
+        )
+        * 60,
         0,
-        24,
+        24 * 60,
     )
     upcoming_future_days = _safe_int(
         event_settings.get("upcoming_future_days"),
@@ -1366,6 +1426,9 @@ def process_events(
     # Guide 30.8: an event that moved from Upcoming to Today Match keeps the
     # card it already had rather than appearing as a new one.
     schedule_stats["reused_event_ids"] = reuse_published_event_ids(merged)
+    # Set below, once every publish path has been through
+    # _strip_undeliverable_routes, so the number is visible in the report
+    # rather than only in a diff.
 
     now = reference_now
     skip_live_protection = False
@@ -1373,6 +1436,7 @@ def process_events(
     upcoming_items: List[Dict[str, Any]] = []
     today_stale = 0
     today_unplayable = 0
+    undeliverable_dropped = 0
     upcoming_stale = 0
 
     for card in merged:
@@ -1384,6 +1448,7 @@ def process_events(
         pipeline = _destination_for(card_copy)
 
         if pipeline == "today_match":
+            undeliverable_dropped += _strip_undeliverable_routes(card_copy)
             if not _is_playable(card_copy):
                 today_unplayable += 1
                 continue
@@ -1401,10 +1466,11 @@ def process_events(
             today_items.append(card_copy)
 
         elif pipeline == "upcoming":
+            undeliverable_dropped += _strip_undeliverable_routes(card_copy)
             if not _is_upcoming_fresh(
                 card_copy,
                 now,
-                upcoming_past_grace_hours,
+                upcoming_past_grace_minutes,
                 upcoming_future_days,
             ):
                 upcoming_stale += 1
@@ -1462,8 +1528,9 @@ def process_events(
                 continue
             carried = dict(previous)
             carried["_source_timezone"] = source_timezone
+            undeliverable_dropped += _strip_undeliverable_routes(carried)
             if not _is_upcoming_fresh(
-                carried, now, upcoming_past_grace_hours, upcoming_future_days
+                carried, now, upcoming_past_grace_minutes, upcoming_future_days
             ):
                 upcoming_stale += 1
                 continue
@@ -1508,7 +1575,34 @@ def process_events(
         for previous in previous_today_published:
             event_id = str(previous.get("id") or "")
             seen_today.add(event_id)
-            kept_today.append(promoted.get(event_id) or dict(previous))
+            fresh = promoted.get(event_id)
+            if fresh is not None:
+                kept_today.append(fresh)
+                continue
+            # Carried through without re-verification, exactly as the comment
+            # above says - but still against the clock, the way the Upcoming
+            # carry-through already is.
+            #
+            # Without this, a targeted trigger republished every Today Match
+            # card it had ever seen, forever. `Sri Lanka vs India 1st Test`
+            # carried an authoritative end_time of 2026-08-19 and was still
+            # being published as LIVE_NOW on 2026-08-30, eleven days later,
+            # and the count only ever grew: 316, 352, 374, 421, 444, 467 -
+            # with filtered_stale=0 on every single publish. Today Match became
+            # an archive of everything that had ever been live, which is why it
+            # renders as empty: nothing in it is actually on today.
+            #
+            # This is not liveness probing and does not need this scan's
+            # authority. `_is_today_fresh` is arithmetic on the fixture's own
+            # published schedule - its authoritative end_time, or failing that
+            # its age against today_max_age_hours.
+            carried = dict(previous)
+            carried["_source_timezone"] = source_timezone
+            undeliverable_dropped += _strip_undeliverable_routes(carried)
+            if not _is_today_fresh(carried, now, today_max_age_hours):
+                today_stale += 1
+                continue
+            kept_today.append(carried)
         for event_id, card in promoted.items():
             if event_id not in seen_today:
                 kept_today.append(card)
@@ -1577,6 +1671,11 @@ def process_events(
     schedule_stats["sports_poster_enrichment"] = _apply_supplementary_sports_artwork(
         today_items + upcoming_items
     )
+
+    # Routes no viewer could ever reach, removed from every publish path -
+    # including the carried-forward ones the verifier never sees. Reported so a
+    # number appears in the run log rather than only in a diff.
+    schedule_stats["undeliverable_routes_dropped"] = undeliverable_dropped
 
     allowed_sports = None
     if isinstance(events_cfg, dict):

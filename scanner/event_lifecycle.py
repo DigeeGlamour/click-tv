@@ -138,6 +138,42 @@ def authority_says_live(card: Dict[str, Any]) -> Optional[bool]:
     return None
 
 
+def verified_end_passed(
+    card: Dict[str, Any],
+    now: datetime,
+    grace_minutes: int = DEFAULT_ESTIMATE_GRACE_MINUTES,
+) -> bool:
+    """Has the fixture's OWN published end time passed?
+
+    Distinct from `estimate_passed`, and the distinction is the whole point.
+    `estimated_end` falls back to a guess from the sport when a card has no end
+    time, and a guess must never retire anything on its own. This asks only
+    about a real `end_time` on a card whose schedule an authority verified - the
+    fixture stating, in its own words, when it finishes.
+
+    That is an end signal, not a supporting hint, and it has to outrank a live
+    link probe. A probe proves the LINK works; it says nothing about whether the
+    MATCH is on. Most of these links are 24-hour channel feeds - Willow, Star
+    Sports - which answer forever.
+
+    Measured on 2026-08-30: Today Match held 444 cards, 295 of them from more
+    than a day earlier, because live protection carried 434 forward on
+    probe_alive=411 with released_stale=0. `Sri Lanka vs India 1st Test` had a
+    verified end_time of 2026-08-19 and was still being published as LIVE_NOW
+    eleven days later, its channel still answering, exactly as it always will.
+    """
+    if card.get("schedule_verified") is not True:
+        return False
+    end = None
+    for field in ("end_time", "end_at"):
+        end = parse_time(card.get(field))
+        if end is not None:
+            break
+    if end is None:
+        return False
+    return now >= end + timedelta(minutes=max(0, int(grace_minutes)))
+
+
 def parse_time(value: Any) -> Optional[datetime]:
     text = str(value or "").strip()
     if not text:
@@ -262,6 +298,19 @@ def decide(
     if signals.strong_end or signals.authority_live is False:
         return LifecycleVerdict(
             ENDED, False, "authoritative finished status", confirmations=0,
+        )
+
+    # 2b. The fixture's own verified end time, which is the same authority
+    #     speaking - it said in advance when this would finish, and it has.
+    #     Placed above the still-live protections deliberately: those are led by
+    #     a link probe, and a link probe cannot tell a live match from a channel
+    #     that happens to broadcast all day. Without this the protections held
+    #     434 finished matches on Today Match indefinitely.
+    if verified_end_passed(card, reference):
+        return LifecycleVerdict(
+            ENDED, False,
+            "the fixture's own verified end time has passed",
+            confirmations=0,
         )
 
     protections: List[str] = []
