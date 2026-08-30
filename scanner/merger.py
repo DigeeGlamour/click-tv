@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import hashlib
 import re
+from scanner import playback_evidence
 from scanner import route_preference
 from datetime import datetime, timezone
 from pathlib import Path
@@ -1411,11 +1412,49 @@ def _verification_tier_score(stream: Dict[str, Any]) -> int:
     return 0
 
 
+def _stream_url_for_evidence(stream: Dict[str, Any]) -> str:
+    for key in ("url", "stream_url", "link"):
+        value = str(stream.get(key) or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def _measured_unplayable(stream: Dict[str, Any]) -> int:
+    """0 when a real browser has measured this exact route unplayable, else 1.
+
+    This is what makes a broken card repair itself. Verification here is an HTTP
+    request from the runner: a route that answers 200 scores tier 6 whether or
+    not a viewer can actually watch it. So a dead route and a working one tied on
+    tier, source priority broke the tie, and the dead one won every scan, forever.
+
+    Measured on 2026-08-30: Disney Channel published rgkkw.live, which answers
+    200 and produced 0.12 seconds of video across two 120-second Chrome sessions,
+    while sm-aynaott-auto-update offered tvsen7.aynaott.com/disney in the same
+    scan - HTTP 200, a real master playlist, never disproved. Same for Dazn 2, 4
+    and 5. The scanner had the replacement in its hand and could not see a reason
+    to prefer it.
+
+    Ranked above every other signal, source priority included, because a route a
+    browser could not play is not a better route from a better playlist - it is
+    not a route at all. The ledger only ever holds URLs a browser was actually
+    pointed at, so nothing untested is demoted by this.
+    """
+    url = _stream_url_for_evidence(stream)
+    if not url:
+        return 1
+    try:
+        return 0 if playback_evidence.unproven_reason(url) else 1
+    except Exception:  # noqa: BLE001 - ranking must never fail on a bad ledger
+        return 1
+
+
 def _stream_quality_score(
     stream: Dict[str, Any],
-) -> Tuple[int, int, int, int, int, int, int, int]:
+) -> Tuple[int, ...]:
     """
     Ranking score, higher is better:
+    0. Not measured unplayable by a real browser
     1. Verification Tier Score (Global > Proxy > Last-Good > Protected Pending)
     2. Manual-source flag
     3. Source priority
@@ -1425,6 +1464,7 @@ def _stream_quality_score(
     7. Stability score
     8. Preserved metadata
     """
+    playable = _measured_unplayable(stream)
     tier_score = _verification_tier_score(stream)
 
     source_id = str(stream.get("source_id") or "").lower()
@@ -1468,6 +1508,7 @@ def _stream_quality_score(
     ) else 0
 
     return (
+        playable,
         tier_score,
         _playback_readiness(stream),
         is_manual,

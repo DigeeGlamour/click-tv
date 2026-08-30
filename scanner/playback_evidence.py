@@ -50,8 +50,33 @@ DEFAULT_PATH = os.path.join(
 BADGE = "Playback Unproven"
 
 
+#: path -> (mtime, size, payload). The merger consults this ledger once per
+#: candidate per comparison while sorting, which is tens of thousands of reads
+#: in a channels scan - measured at 412 microseconds each, about two minutes of
+#: a scan spent re-parsing the same small file. Keyed on mtime AND size so a
+#: rewrite is picked up even when it lands inside the same filesystem timestamp
+#: tick, which on Windows can be 15 milliseconds wide.
+_CACHE: Dict[str, Any] = {}
+
+
+def reset_cache() -> None:
+    """Forget what was read. Called after every write, and available to tests."""
+    _CACHE.clear()
+
+
 def load(path: Optional[str] = None) -> Dict[str, Any]:
     target = path or DEFAULT_PATH
+    try:
+        stat = os.stat(target)
+        stamp = (stat.st_mtime_ns, stat.st_size)
+    except OSError:
+        _CACHE.pop(target, None)
+        return {"version": 1, "routes": {}}
+
+    cached = _CACHE.get(target)
+    if cached is not None and cached[0] == stamp:
+        return cached[1]
+
     try:
         with open(target, "r", encoding="utf-8") as handle:
             payload = json.load(handle)
@@ -59,6 +84,7 @@ def load(path: Optional[str] = None) -> Dict[str, Any]:
         return {"version": 1, "routes": {}}
     if not isinstance(payload, dict) or not isinstance(payload.get("routes"), dict):
         return {"version": 1, "routes": {}}
+    _CACHE[target] = (stamp, payload)
     return payload
 
 
@@ -92,6 +118,10 @@ def _write(store: Dict[str, Any], path: Optional[str]) -> bool:
             handle.write("\n")
     except OSError:
         return False
+    # The ledger changed under the cache. mtime and size would normally catch
+    # it, but a same-tick rewrite of the same length would not, and a stale
+    # ledger here means a route stays demoted after it was cleared.
+    reset_cache()
     return True
 
 

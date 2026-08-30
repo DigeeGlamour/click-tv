@@ -516,6 +516,30 @@ jobs:
           echo "Finished: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
           echo "============================================================"
 
+      # Ask the live playback proxies for every route this scan is about to
+      # publish, with the site origin, exactly as the player does. The scanner
+      # verifies with Python's own socket from this runner; the viewer fetches
+      # through a Cloudflare Worker from a browser. A route can answer 200 to
+      # the first and be unreachable to the second, and that publishes a card
+      # that spins forever.
+      #
+      # A permanent refusal is written to state/measured-playback-failures.json,
+      # which the merger ranks above every other signal - so the next scan
+      # prefers an alternate the sources already carry, without anyone asking.
+      # That is the whole self-repair loop, and it needs no service to run.
+      #
+      # Never fails the run. This is evidence gathering; if the proxies are
+      # having a bad minute the right outcome is to publish what the scan found
+      # and record nothing, which is exactly what the script does with an
+      # ambiguous answer.
+      - name: Check the delivery path a viewer actually uses
+        if: steps.staleness.outputs.stale != 'yes' || steps.catchup.outputs.catchup != ''
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -uo pipefail
+          python -u scripts/verify-delivery-path.py --workers 8 --timeout 20             2>&1 | tail -40
+
       - name: Validate generated Cloudflare Pages output
         if: steps.staleness.outputs.stale != 'yes' || steps.catchup.outputs.catchup != ''
         shell: bash
