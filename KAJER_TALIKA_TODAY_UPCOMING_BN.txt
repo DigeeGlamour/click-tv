@@ -42,7 +42,7 @@ Repository     : https://github.com/DigeeGlamour/click-tv
       "Targeted window: -30 minutes; targets=3, outside window=207"
 
 
-[  বাকি]  ২. Routing — ৩০ মিনিট বাকি থাকতেই Today Match-এ
+[✅ শেষ]  ২. Routing — ৩০ মিনিট বাকি থাকতেই Today Match-এ
 --------------------------------------------------------------------------------
     এখন: STARTING_SOON আর LINK_UPDATING → Upcoming
     হবে : সময় ≤ ৩০ মিনিট হলে status যাই হোক → Today Match
@@ -50,10 +50,25 @@ Repository     : https://github.com/DigeeGlamour/click-tv
     গুরুত্বপূর্ণ: এখনকার targeted_window_minutes শুধু "link খোঁজার" জানালা,
     tab routing-এর নিয়ম নয়। তাই routing-এর জন্য আলাদা নিয়ম লাগবে।
 
-    ফাইল: scanner/event_lifecycle.py → event_destination()
+    করা হয়েছে: scanner/event_lifecycle.py → event_destination()
+    ঘড়ি ধরে যাচাই (৮টার ম্যাচ):
+      ৫:০০ PM → Upcoming    ৭:৩০ PM → Today Match
+      ৭:০০ PM → Upcoming    ৭:৪৫ PM → Today Match
+      ৭:২৯ PM → Upcoming    ৮:০০ PM → Today Match
+
+    ⚠️ এটা করতে গিয়ে আমার নিজের একটা bug ধরা পড়ল:
+       link ছাড়া card Today-তে এসে "চালানো যায় না" বলে পুরোপুরি মুছে যাচ্ছিল।
+       প্রথম run-এ ৬টা card দুই tab থেকেই হারিয়ে গিয়েছিল
+       (Raków Częstochowa vs Jagiellonia সহ)।
+       এখন schedule card হিসেবে থাকে — Upcoming-এ যেভাবে থাকত।
+       Pages validator-ও এখন Today-তে metadata card মেনে নেয়।
+
+    আসল scan-এ প্রমাণ: ৩১টা card, তার ২টা এখনো শুরু হয়নি —
+      "শুরু হবে ২৪ মিনিট পর  Raków Częstochowa vs Jagiellonia  link=False"
+      "শুরু হবে  ৯ মিনিট পর  Day 4 vs The K Club (2026)        link=False"
 
 
-[  বাকি]  ৩. Today card-এ status + countdown
+[✅ শেষ]  ৩. Today card-এ status + countdown
 --------------------------------------------------------------------------------
     ⚠️ এখানে আমার আগের পরামর্শ উল্টে যাচ্ছে, সেটা লিখে রাখলাম।
 
@@ -65,21 +80,27 @@ Repository     : https://github.com/DigeeGlamour/click-tv
       🟡 শুরু হবে ১২ মিনিট পর
       🟠 link খোঁজা হচ্ছে
 
-    ফাইল: site/assets/js/app.js → createTodayMatchCardV2()
+    করা হয়েছে: app.js → todayCardState()  +  event-channel-cards.css
+    চারটে অবস্থা:
+      🔴 LIVE                              চলছে
+      🟢 স্ট্রিম প্রস্তুত • ১২ মিনিট পর     link আছে, শুরু হয়নি
+      🟡 শুরু হবে ২৪ মিনিট পর               link নেই, শুরু হয়নি
+      🟠 লিংক খোঁজা হচ্ছে                   সময় হয়ে গেছে, link নেই
 
 
-[  বাকি]  ৪. Today-র ভেতরে সাজানো
+[✅ শেষ]  ৪. Today-র ভেতরে সাজানো
 --------------------------------------------------------------------------------
     LIVE আগে → তারপর STARTING_SOON → তারপর সময় অনুযায়ী
     নইলে না-শুরু-হওয়া ম্যাচ চলতি ম্যাচের উপরে বসবে।
 
 
-[  বাকি]  ৫. Header-এর লেখা
+[✅ শেষ]  ৫. Header-এর লেখা
 --------------------------------------------------------------------------------
-    "27 Live" আর সত্যি থাকবে না → "27 Matches • 5 Live"
+    হয়েছে: শিরোনাম "31 Matches", পাশে detail-এ "5 Live • 31 Matches"
+    Live সংখ্যাটা detail-এ গেছে, যেখানে সেটা সত্যি।
 
 
-[  বাকি]  ৬. link না এলে বাদ দেওয়া
+[✅ শেষ]  ৬. link না এলে বাদ দেওয়া
 --------------------------------------------------------------------------------
     শুরুর ৩০ মিনিট পরেও কোনো source link না দিলে Today থেকে বাদ।
     তার বেশি রাখলে Today-ও আবর্জনায় ভরবে।
@@ -88,7 +109,7 @@ Repository     : https://github.com/DigeeGlamour/click-tv
      নতুন system-এ card তখন Today-তে থাকবে, তাই নিয়মটা সরাতে হবে।)
 
 
-[  বাকি]  ৭. Upcoming-এর sort — যেটা আগে শুরু হবে
+[✅ শেষ]  ৭. Upcoming-এর sort — যেটা আগে শুরু হবে
 --------------------------------------------------------------------------------
     এখন যা হচ্ছে:
       ৫ মিনিট পরে football   ← নিচে
@@ -101,7 +122,7 @@ Repository     : https://github.com/DigeeGlamour/click-tv
       Upcoming → যেটা আগে শুরু হবে (সময়ই এখানে একমাত্র যুক্তি)
 
 
-[  বাকি]  ৮. মোবাইলে tap target ২৫px → ৪০px
+[✅ শেষ]  ৮. মোবাইলে tap target ২৫px → ৪০px
 --------------------------------------------------------------------------------
     এখন: min-height 25px, font-size 9.5px  (৪৬০px-এর নিচে)
     Apple বলে ৪৪px, Android ৪৮dp — অর্ধেকেরও কম।
@@ -110,13 +131,18 @@ Repository     : https://github.com/DigeeGlamour/click-tv
     সাবধানে: ২ column grid-এ button বড় করলে জায়গা কমে।
     তাই ৪২০px-এর নিচে channel strip এক column — লেখা আরও ছোট করার চেয়ে।
 
-    ফাইল: site/assets/css/event-channel-cards.css
+    করা হয়েছে: ২৫px → ৪০px, ৪২০px-এর নিচে এক column (৪২px)
 
 
-[  বাকি]  ৯. এক-channel card-এ channel-এর নাম
+[✅ শেষ]  ৯. এক-channel card-এ channel-এর নাম
 --------------------------------------------------------------------------------
     এখন ২টার কম channel হলে strip পুরো লুকানো থাকে।
     কিন্তু Willow / Willow 2 / Sony-র মান আলাদা — কোনটা পাচ্ছি জানা দরকার।
+
+    করা হয়েছে: নামটা লেখা হিসেবে, button নয় — তাই আপনার আগের
+    "এক-button সারি নয়" অনুরোধ বহাল আছে।
+    "Server-1" জাতীয় generic নাম দেখানো হয় না (name_confidence দেখে),
+    কারণ সেটা এক লাইন খরচ করে কিছুই বলে না।
 
 
 [  না করা]  ১০. নাম বদলে "Live Now"
@@ -152,4 +178,54 @@ Repository     : https://github.com/DigeeGlamour/click-tv
   ৮, ৯  →  মোবাইল tap target আর channel-এর নাম
 
   প্রতিটার পরে: পুরো test suite + আসল browser-এ যাচাই।
+
+
+================================================================================
+অবস্থা — ২০২৬-০৮-৩০
+================================================================================
+  commit  : 7c7abaa0e  (push করা)
+  test    : ১৭৮৯টা — সব OK
+  validator: Errors: 0
+
+  ৯টার মধ্যে ৯টাই শেষ। ১০ নম্বর ইচ্ছে করে করা হয়নি (নাম বদল)।
+
+  নতুন test ফাইল:
+    tests/test_today_routing_window.py   ২৫টা test
+      - ৮টার ম্যাচের পুরো সময়সূচি ঘড়ি ধরে
+      - link না থাকলে কখন বাদ
+      - card-এর চারটে অবস্থা
+      - দুই tab-এ দুই sort
+      - মোবাইল tap target
+      - এক-channel নাম
+
+  বদলানো ফাইল:
+    scanner/event_lifecycle.py   routing ৩০ মিনিট
+    scanner/events.py            pre-kickoff card রাখা, link না এলে বাদ
+    scripts/validate-pages.py    Today-তে schedule card মেনে নেওয়া
+    site/assets/js/app.js        card status, sort, header
+    site/assets/css/event-channel-cards.css   badge, tap target, channel নাম
+    config/settings.json         খোঁজার জানালা ৩০
+
+
+================================================================================
+এখনো যা বাকি (এই কাজের বাইরে)
+================================================================================
+  ১. আসল browser-এ পুরো যাচাই
+     Cloudflare deploy হওয়ার পর — card-এর badge, countdown, sort, মোবাইলে
+     button-এর মাপ চোখে দেখে মিলিয়ে নেওয়া। এখনো করা হয়নি।
+
+  ২. GitHub-এর scan কত ঘন ঘন চলছে
+     cron সরানো হয়েছে (:০৩/:২৩/:৪৩ আর :০১/:০৬/:১১), concurrency দুই ভাগ
+     করা হয়েছে — কিন্তু ফাঁক সত্যিই কমেছে কিনা তার সংখ্যা এখনো হাতে আসেনি।
+     GitHub-এর scheduler আমার হাতে নেই, তাই browser-এর ঘড়ি-নিয়মই ভরসা।
+
+  ৩. আটকে থাকা ৬টা queued run
+     মোছা যাচ্ছে না (token-এ শুধু metadata=read, তিনটে API-ই 403)।
+     কিন্তু কিছু আটকাচ্ছেও না — ওরা পুরোনো `live-signal-data-writer` group
+     ধরে আছে, এখনকার run গুলো `-v4` group-এ। প্রমাণসহ ফাইলে লেখা আছে।
+
+  ৪. HIGH-1-এর যুক্তিটা (audit)
+     একটা `status` field দিয়ে দুটো কথা বলা হচ্ছে — "ম্যাচ শুরু হয়েছে" আর
+     "stream চালু"। এখনকার ডেটায় কোনো ভাঙা জিনিস নেই, তাই ছোঁয়া হয়নি।
+     ভবিষ্যতে আলাদা করলে ভালো হবে।
 ================================================================================
