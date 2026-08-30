@@ -298,8 +298,11 @@ class DispatchTests(unittest.TestCase):
         configured = {
             s["id"] for s in json.loads(CONFIG.read_text(encoding="utf-8"))["sources"]
         }
+        # Every configured source must have a reader, and every registered
+        # reader must belong to a configured source. The count is deliberately
+        # not pinned: adding a feed is normal work, and a test that fails for
+        # counting is a test that gets edited without being read.
         self.assertEqual(configured, set(ADAPTER_BY_SOURCE))
-        self.assertEqual(len(configured), 13)
 
     def test_an_unregistered_source_is_left_to_the_normal_parsers(self):
         self.assertEqual(adapter_name_for(source_info("some-m3u-source")), "")
@@ -696,14 +699,16 @@ class AnEventWithNoTwoSidesTests(unittest.TestCase):
 
 
 class ConfigurationTests(unittest.TestCase):
-    def test_today_match_holds_all_thirteen_and_upcoming_holds_none(self):
+    def test_every_event_source_lives_in_today_match_only(self):
         today = json.loads(CONFIG.read_text(encoding="utf-8"))
         upcoming = json.loads(
             (ROOT / "config" / "sources" / "upcoming.json").read_text(encoding="utf-8")
         )
-        self.assertEqual(len(today["sources"]), 13)
+        self.assertTrue(today["sources"], "no event sources configured")
         self.assertEqual(upcoming["sources"], [],
                          "listing a source twice would fetch and parse it twice")
+        ids = [s["id"] for s in today["sources"]]
+        self.assertEqual(len(ids), len(set(ids)), "a source is configured twice")
 
     def test_every_source_opts_into_metadata_only_cards(self):
         for source in json.loads(CONFIG.read_text(encoding="utf-8"))["sources"]:

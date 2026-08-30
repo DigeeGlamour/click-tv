@@ -66,6 +66,26 @@ ADAPTER_BY_SOURCE: Dict[str, str] = {
     "srhady-crichd-footy-live": "spaced_keys",
     "sportlive-fancode-backup": "sportlive_fancode",
     "sportlive-sonyliv-backup": "sportlive_sonyliv",
+
+    # Added 2026-08-30. The three SonyLiv feeds carry the same shape as
+    # sportlive-sonyliv-backup - matches[] keyed by isLive, one row per audio
+    # language - and are the only new feeds whose streams reached a media
+    # segment from Bangladesh: 9/9, 9/9 and 3/3.
+    "kajju-sonyliv-backup": "sportlive_sonyliv",
+    "drmlive-sonyliv-backup": "sportlive_sonyliv",
+    "sayanpal-sonyliv-backup": "sportlive_sonyliv",
+
+    # The FanCode mirrors publish the same rows as sportlive-fancode-backup,
+    # including google_m3u8_hex and akamai_m3u8_hex, so they read the same way.
+    # None of them plays from here - every one carries the same India-minted
+    # signature - and they are configured below the SonyLiv feeds for that
+    # reason. What they add is metadata: fixture names, kickoff times, team art,
+    # and the regional CDN alternatives.
+    "drmlive-fancode-mirror": "sportlive_fancode",
+    "sayanpal-fancode-mirror": "sportlive_fancode",
+    "vk1817-fancode-mirror": "sportlive_fancode",
+    "dartv-fancode-mirror": "sportlive_fancode",
+    "iptvflixbd-fancode-data": "sportlive_fancode",
 }
 
 

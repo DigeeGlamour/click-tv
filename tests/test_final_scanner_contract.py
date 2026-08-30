@@ -227,8 +227,13 @@ class FinalScannerContractTests(unittest.TestCase):
         # parsed twice, and which tab a record reaches is decided by the status
         # that record carries, not by the file its source sits in.
         self.assertEqual(len(payload["upcoming"]), 0)
-        self.assertEqual(len(payload["today_match"]), 13)
-        self.assertEqual(len(payload["tv"]), 18)
+        # See the note in test_new_event_sources: the set of feeds is
+        # expected to grow, and a count assertion turns that into a failure
+        # that says nothing about correctness.
+        ids = [s["id"] for s in payload["today_match"]]
+        self.assertEqual(len(ids), len(set(ids)), "a source is configured twice")
+        tv_ids = [s["id"] for s in payload["tv"]]
+        self.assertEqual(len(tv_ids), len(set(tv_ids)), "a TV source is configured twice")
         self.assertEqual(len(payload["movies"]), 2)
         self.assertEqual(
             {entry["id"] for entry in payload["movies"]},

@@ -39,6 +39,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
 
 from scanner import channel_alias as ca  # noqa: E402
+from scanner.parsers.json_parser import parse_json_content
 from scanner.parsers.m3u_parser import parse_m3u_content  # noqa: E402
 from scanner import route_evidence as rev  # noqa: E402
 
@@ -77,10 +78,22 @@ def parse_playlist(text: str, source_info: Optional[Dict[str, Any]] = None) -> L
     the scanner of losing channels it parses correctly. An audit that measures
     a copy of the code cannot report on the code.
     """
-    try:
-        parsed = parse_m3u_content(text, source_info or {})
-    except Exception:  # noqa: BLE001 - fall back rather than lose the source
-        parsed = []
+    # And it has to use the RIGHT one of the scanner's parsers. This called the
+    # M3U reader for everything, so a JSON source audited as 0 entries however
+    # well the scanner reads it - dartv-vip-cricket, 17 channels, reported as
+    # nothing. The same mistake the docstring above describes, one layer up.
+    stripped = (text or "").lstrip()
+    parsed = []
+    if stripped.startswith(("{", "[")):
+        try:
+            parsed = parse_json_content(text, source_info or {})
+        except Exception:  # noqa: BLE001 - fall back rather than lose the source
+            parsed = []
+    if not parsed:
+        try:
+            parsed = parse_m3u_content(text, source_info or {})
+        except Exception:  # noqa: BLE001 - fall back rather than lose the source
+            parsed = []
     entries: List[Dict[str, str]] = []
     for item in parsed:
         if not isinstance(item, dict):
