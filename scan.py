@@ -485,6 +485,22 @@ def _complete_untargeted_run(
         },
         "manifest_summary": manifest,
     }
+    # Nothing to chase does not mean nothing to correct. A fixture promoted to
+    # Today Match by an earlier trigger can still be sitting on Upcoming, and
+    # with no fixture inside the window this path is the only one that runs for
+    # long stretches - so the contradiction would stay on the site until some
+    # other scan happened along.
+    #
+    # This keeps the promise made below it. No source is fetched, nothing is
+    # verified and no card is replaced; it only removes an Upcoming copy of a
+    # match the published Today Match already carries as live.
+    tidied = _drop_upcoming_already_live()
+    if tidied:
+        summary["upcoming_cards_already_live_removed"] = tidied
+        summary["totals"]["upcoming"] = max(
+            0, int(summary["totals"].get("upcoming") or 0) - tidied
+        )
+
     reports_root = PROJECT_ROOT / "reports"
     _atomic_write_json(reports_root / "scan-summary.json", summary)
     _atomic_write_json(reports_root / f"scan-summary-{mode}.json", summary)
@@ -889,6 +905,59 @@ def _sanitize_channel_quarantine(
         for item in quarantine
         if isinstance(item, dict)
     ]
+
+
+
+def _drop_upcoming_already_live() -> int:
+    """Remove any Upcoming card the published Today Match already has as live.
+
+    Reads and rewrites only the two published event files - the flat pair and
+    every snapshot slot, since publishing switches slots by one os.replace() of
+    the manifest and the flat copy can be spotless while the live one is not.
+
+    Returns how many cards were removed. Never raises: this is tidying, and a
+    scan must not fail because of it.
+    """
+    import glob as _glob
+
+    removed_total = 0
+    try:
+        from scanner.events import _drop_upcoming_cards_already_live
+    except ImportError:
+        return 0
+
+    pairs = [(PROJECT_ROOT / "data" / "today-match.json",
+              PROJECT_ROOT / "data" / "upcoming.json")]
+    for today_path in sorted(_glob.glob(
+        str(PROJECT_ROOT / "data" / "snapshots" / "*" / "today-match.json")
+    )):
+        pairs.append((Path(today_path),
+                      Path(today_path).with_name("upcoming.json")))
+
+    for today_path, upcoming_path in pairs:
+        try:
+            if not today_path.is_file() or not upcoming_path.is_file():
+                continue
+            with open(today_path, "r", encoding="utf-8") as handle:
+                today = json.load(handle)
+            with open(upcoming_path, "r", encoding="utf-8") as handle:
+                upcoming = json.load(handle)
+            duplicates = _drop_upcoming_cards_already_live(
+                today.get("items") or [], upcoming.get("items") or []
+            )
+            if not duplicates:
+                continue
+            doomed = {id(card) for card in duplicates}
+            upcoming["items"] = [
+                card for card in (upcoming.get("items") or [])
+                if id(card) not in doomed
+            ]
+            upcoming["count"] = len(upcoming["items"])
+            _atomic_write_json(upcoming_path, upcoming)
+            removed_total += len(duplicates)
+        except (OSError, ValueError, TypeError):
+            continue
+    return removed_total
 
 
 def _process_events_for_mode(

@@ -1272,6 +1272,47 @@ def _playing_event_ids(path: str | Path = "state/playing-sessions.json") -> set:
     return {str(value).strip() for value in values if str(value).strip()}
 
 
+def _drop_upcoming_cards_already_live(
+    today_items: List[Dict[str, Any]],
+    upcoming_items: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """Which Upcoming cards are already published as live? Returns them.
+
+    A fixture belongs to exactly one tab. Once it has a link it is live and
+    Today Match owns it; leaving the Upcoming copy in place shows the same match
+    twice, in two different states, one of them a lie.
+
+    Both halves were individually right, which is why this survived. The
+    targeted trigger promotes a fixture into Today Match the moment its link
+    resolves - that promotion IS the work it exists to do - while the Upcoming
+    carry-through, written separately and running first, republishes every
+    previously published card that is still in the future. Neither knew about
+    the other.
+
+    Measured on 2026-08-30: a -20 minute trigger resolved `European Tour 11
+    Hungarian Darts Trophy` and `Women's Elite Cross country Olympic`, both
+    appeared in Today Match as LIVE_NOW carrying a link, and both were still
+    sitting on Upcoming afterwards.
+
+    Matched on the event id and on the fixture key, because a promotion can
+    rebuild a card and the id is not guaranteed to survive it.
+    """
+    if not today_items or not upcoming_items:
+        return []
+    live_ids = {str(card.get("id") or "") for card in today_items
+                if isinstance(card, dict)}
+    live_ids.discard("")
+    live_keys = {fixture_key(card) for card in today_items
+                 if isinstance(card, dict)}
+    live_keys.discard("")
+    return [
+        card for card in upcoming_items
+        if isinstance(card, dict)
+        and (str(card.get("id") or "") in live_ids
+             or fixture_key(card) in live_keys)
+    ]
+
+
 def process_events(
     bd_results_path: str = "working/bd-results.json",
     settings_path: str = "config/settings.json",
@@ -1671,6 +1712,32 @@ def process_events(
     schedule_stats["sports_poster_enrichment"] = _apply_supplementary_sports_artwork(
         today_items + upcoming_items
     )
+
+    # A fixture belongs to exactly one tab. Once it has a link it is live, and
+    # Today Match owns it; leaving the Upcoming copy in place shows the same
+    # match twice, in two different states, one of them a lie.
+    #
+    # Both halves were individually right, which is why this survived. The
+    # targeted trigger promotes a fixture into Today Match the moment its link
+    # resolves - that promotion IS the work it exists to do - while the Upcoming
+    # carry-through, written separately and running first, republishes every
+    # previously published card that is still in the future. Neither knew about
+    # the other.
+    #
+    # Measured on 2026-08-30: a -20 minute trigger resolved `European Tour 11
+    # Hungarian Darts Trophy` and `Women's Elite Cross country Olympic`, both
+    # appeared in Today Match as LIVE_NOW with a link, and both were still on
+    # Upcoming afterwards.
+    #
+    # Placed here, after every path has finished with both lists, so it holds
+    # for a targeted trigger, a full scan and a carried-forward card alike.
+    removed_from_upcoming = _drop_upcoming_cards_already_live(
+        today_items, upcoming_items
+    )
+    if removed_from_upcoming:
+        live = {id(card) for card in removed_from_upcoming}
+        upcoming_items = [c for c in upcoming_items if id(c) not in live]
+        schedule_stats["promoted_off_upcoming"] = len(removed_from_upcoming)
 
     # Routes no viewer could ever reach, removed from every publish path -
     # including the carried-forward ones the verifier never sees. Reported so a

@@ -130,7 +130,7 @@ class TheTwoSidesOfKickoffTests(unittest.TestCase):
                               on Upcoming without one
 
     The trigger runs every five minutes, so each is really a number of
-    attempts: 10 before the whistle is two, 10 after is two more.
+    attempts: 20 before the whistle is four, 10 after is two more.
     """
 
     def _events(self):
@@ -141,7 +141,7 @@ class TheTwoSidesOfKickoffTests(unittest.TestCase):
 
     def test_the_hunt_starts_before_kickoff(self):
         window = self._events()["targeted_window_minutes"]
-        self.assertEqual(10, window)
+        self.assertEqual(20, window)
 
     def test_it_is_read_from_config_not_hard_coded(self):
         """It sat at 15 in scanner/targeted_scan.py, where changing it meant
@@ -149,7 +149,7 @@ class TheTwoSidesOfKickoffTests(unittest.TestCase):
         import sys as _sys
         _sys.path.insert(0, str(ROOT))
         import scan
-        self.assertEqual(10, scan._targeted_window_minutes())
+        self.assertEqual(20, scan._targeted_window_minutes())
 
     def test_a_missing_or_absurd_value_falls_back(self):
         """A window of zero would stop the trigger hunting at all, and a huge
@@ -163,6 +163,82 @@ class TheTwoSidesOfKickoffTests(unittest.TestCase):
         events = self._events()
         self.assertIn("targeted_window_minutes", events)
         self.assertIn("upcoming_past_grace_minutes", events)
+
+
+class AFixtureBelongsToExactlyOneTabTests(unittest.TestCase):
+    """Once a fixture has a link it is live, and Today Match owns it.
+
+    Measured on 2026-08-30: a -20 minute trigger resolved `European Tour 11
+    Hungarian Darts Trophy` and `Women's Elite Cross country Olympic`, both
+    appeared in Today Match as LIVE_NOW carrying a link, and both were still
+    sitting on Upcoming afterwards - the same match shown twice, in two
+    different states, one of them a lie.
+
+    Both halves were individually right. The targeted trigger promotes a
+    fixture the moment its link resolves; the Upcoming carry-through, written
+    separately and running first, republishes every published card still in the
+    future. Neither knew about the other.
+    """
+
+    def test_a_promoted_fixture_is_taken_off_upcoming(self):
+        today = [{"id": "darts-trophy", "name": "Darts Trophy"}]
+        upcoming = [{"id": "darts-trophy", "name": "Darts Trophy"},
+                    {"id": "later-match", "name": "Later Match"}]
+        found = events._drop_upcoming_cards_already_live(today, upcoming)
+        self.assertEqual(["Darts Trophy"], [c["name"] for c in found])
+
+    def test_a_fixture_not_yet_live_is_left_alone(self):
+        today = [{"id": "one", "name": "One"}]
+        upcoming = [{"id": "two", "name": "Two"}]
+        self.assertEqual([], events._drop_upcoming_cards_already_live(today, upcoming))
+
+    def test_it_matches_on_the_fixture_key_too(self):
+        """A promotion can rebuild a card, and the id is not guaranteed to
+        survive it."""
+        from scanner.targeted_scan import fixture_key
+        live = {"id": "rebuilt-by-the-promotion", "name": "Aberdeen vs Rangers"}
+        pending = {"id": "original-id", "name": "Aberdeen vs Rangers"}
+        if fixture_key(live) == fixture_key(pending):
+            self.assertEqual(
+                1, len(events._drop_upcoming_cards_already_live([live], [pending]))
+            )
+
+    def test_empty_lists_do_not_raise(self):
+        self.assertEqual([], events._drop_upcoming_cards_already_live([], [{"id": "a"}]))
+        self.assertEqual([], events._drop_upcoming_cards_already_live([{"id": "a"}], []))
+
+    def test_the_published_files_hold_no_card_twice(self):
+        """The catalogue itself, so a regression shows up here rather than as a
+        match a viewer meets twice."""
+        import json
+        for name in ("today-match.json",):
+            today_path = ROOT / "data" / name
+            upcoming_path = ROOT / "data" / "upcoming.json"
+            if not today_path.is_file() or not upcoming_path.is_file():
+                continue
+            today = json.loads(today_path.read_text(encoding="utf-8")).get("items") or []
+            upcoming = json.loads(upcoming_path.read_text(encoding="utf-8")).get("items") or []
+            self.assertEqual(
+                [], [c.get("name") for c in
+                     events._drop_upcoming_cards_already_live(today, upcoming)],
+            )
+
+    def test_the_no_target_path_tidies_too(self):
+        """`TARGETED SCAN SKIPPED - NOTHING TO CHASE` returns before the events
+        pass, and with no fixture inside the window that path is the only one
+        running for long stretches - so the contradiction would sit on the site
+        until some other scan happened along."""
+        source = (ROOT / "scan.py").read_text(encoding="utf-8")
+        skipped = source[:source.index("TARGETED SCAN SKIPPED")]
+        self.assertIn("_drop_upcoming_already_live()", skipped)
+
+    def test_the_tidy_sweeps_every_snapshot_slot(self):
+        """Publishing switches slots by one os.replace() of the manifest, so
+        the flat copy can be spotless while the live one is not."""
+        source = (ROOT / "scan.py").read_text(encoding="utf-8")
+        tidy = source[source.index("def _drop_upcoming_already_live"):]
+        tidy = tidy.split(chr(10) + "def ")[0]
+        self.assertIn("snapshots", tidy)
 
 
 class UndeliverableRoutesDoNotComeBackTests(unittest.TestCase):
