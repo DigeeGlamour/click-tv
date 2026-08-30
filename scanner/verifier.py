@@ -26,6 +26,7 @@ import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+from scanner import deliverability
 from scanner.visibility_audit import audit_hide_safe, model_permits_hide
 
 
@@ -1969,6 +1970,14 @@ def verify_single_stream(
         )
         item["response_time_ms"] = 0
         return item
+
+    # This runner can fetch a bare-IP host perfectly well; the viewer's delivery
+    # path cannot. Checked here, before any network call, because the answer
+    # does not depend on one - and checked here rather than at publish time so
+    # the route never earns a badge it cannot honour. See scanner/deliverability.
+    undeliverable = deliverability.undeliverable_reason(request_url)
+    if undeliverable:
+        return deliverability.mark_undeliverable(item, undeliverable)
 
     playback_headers = _sanitize_headers(
         item.get("headers"),

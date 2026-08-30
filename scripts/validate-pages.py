@@ -34,6 +34,10 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from scanner import deliverability  # noqa: E402
+
 ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else "dist").resolve()
 
 ERRORS: list[str] = []
@@ -739,6 +743,30 @@ def validate_stream_item(
     ]
     if len(set(active_identities)) != len(active_identities):
         add_warning(f"{label} duplicate primary/backup configuration: {name}")
+
+    # A bare-IP host is not a route that merely failed today - it is a route
+    # with no path to the viewer at all. The proxy is the only way an http://
+    # stream reaches an HTTPS page, and Cloudflare refuses a direct-IP fetch
+    # before the request leaves the edge (403, `error code: 1003`). Measured on
+    # the live workers against Disney Channel, Dazn 2/4/5 and Star Gold, all
+    # already past the worker's own host allowlist. The verifier now stops these
+    # at source; this is the gate that keeps one from reaching the site again if
+    # it arrives by some other door - a manual entry, a promoted backup, a fixup
+    # script. See scanner/deliverability.py.
+    for stream_number, stream in enumerate([item, *backup_objects], start=0):
+        if not isinstance(stream, dict):
+            continue
+        stream_url = get_primary_url(stream)
+        if not stream_url:
+            continue
+        host = deliverability.host_of(stream_url)
+        if deliverability.is_bare_ip_host(host):
+            where = "primary" if stream_number == 0 else f"backup #{stream_number}"
+            add_error(
+                f"{label} {where} host is a bare IP, which the playback proxy "
+                f"cannot fetch ({deliverability.CLOUDFLARE_DIRECT_IP_ERROR}): "
+                f"{name} ({host})"
+            )
 
     validate_https_priority(
         item,
