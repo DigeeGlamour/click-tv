@@ -52,6 +52,25 @@ SENSITIVE_QUERY_RE = re.compile(
     re.IGNORECASE,
 )
 
+#: A signed token that is NOT in the query string.
+#:
+#: The query-parameter rule above covers `?hdnts=...`, which is where most CDNs
+#: put one. Akamai's token auth and JioTV's do not: the value arrives inside the
+#: path, or inside a Cookie header a CDN echoes back in an error body, as
+#: `hdntl=exp=...~hmac=<64 hex>` or `__hdnea__=st=...~hmac=...`. Reports carry
+#: free text copied straight from upstream responses, and every one of them is
+#: committed to a public repository on each scan - so one echoed credential
+#: would be published with no way to take it back.
+#:
+#: Matched by name and shape, so ordinary prose containing "key" or "expires"
+#: is untouched: the value has to be a long opaque run.
+SENSITIVE_TOKEN_RE = re.compile(
+    r"\b(hdntl|hdnea|__hdnea__|hdnts|hmac|signature|sig|token|policy|"
+    r"license_key|clear_?keys?|clearkey|key_?id|kid|"
+    r"nimblesessionid)\s*=\s*[A-Za-z0-9%._~:\-]{16,}",
+    re.IGNORECASE,
+)
+
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
@@ -137,8 +156,12 @@ def redact_public_report(value: Any) -> Any:
     if isinstance(value, str):
         clean_value = redact_sensitive_text(value)
         if "?" in clean_value or "&" in clean_value:
-            return _redacted_url(clean_value)
-        return clean_value
+            clean_value = _redacted_url(clean_value)
+        # After the query rule, because a token in the path or in an echoed
+        # error body never reaches it.
+        return SENSITIVE_TOKEN_RE.sub(
+            lambda match: f"{match.group(1)}=<protected>", clean_value
+        )
     return value
 
 

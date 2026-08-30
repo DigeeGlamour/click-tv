@@ -27,6 +27,7 @@ import urllib.parse
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Set, Tuple
+from scanner.playback_profiles import redact_public_report
 from scanner.visibility_audit import audit_hide_safe, model_permits_hide
 
 try:
@@ -1435,7 +1436,17 @@ def verify_bd_candidates(
         "status_counts": status_counts,
         "groups": report_groups,
     }
-    _atomic_write_json(report_path, report_data)
+    # Through the project's own redactor before it is written, the same way
+    # every other committed report goes out.
+    #
+    # `_safe_url_for_report` strips the query, which covers a signed token in
+    # `?hdnts=...`. It does not cover a token in the PATH - Hotstar and JioTV
+    # both put one there - nor anything a CDN echoes back inside
+    # `verification_error` or `verification_note`, which are free text copied
+    # from an upstream response. This file is committed by every scan, so a
+    # single such response would publish a live credential to a public
+    # repository and there would be no way to unpublish it.
+    _atomic_write_json(report_path, redact_public_report(report_data))
 
     output_data: Dict[str, Any] = {
         "timestamp": _utc_now(),

@@ -260,7 +260,21 @@ jobs:
           node --check site/assets/js/series.js
           node --check site/sw.js
           node tests/playback-worker-runtime.mjs
-          python -m unittest discover -s tests -p "test_*.py" -v
+          # The suite runs in a throwaway worktree, not in the tree the scanner
+          # is about to read. A worktree shares the object database, so this
+          # costs a checkout and no clone, and whatever the tests write is
+          # thrown away with it. Isolating the tests themselves is thirty call
+          # sites and belongs in its own commit; this makes the damage
+          # impossible in the meantime, which the discard below could only undo
+          # after the fact.
+          VALIDATE_TREE="${RUNNER_TEMP:-/tmp}/clicktv-validate-$$"
+          git worktree add --detach --quiet "$VALIDATE_TREE" HEAD
+          set +e
+          ( cd "$VALIDATE_TREE" && python -m unittest discover -s tests -p "test_*.py" -v )
+          VALIDATE_STATUS=$?
+          set -e
+          git worktree remove --force "$VALIDATE_TREE" || rm -rf "$VALIDATE_TREE"
+          if [[ "$VALIDATE_STATUS" -ne 0 ]]; then exit "$VALIDATE_STATUS"; fi
 
           # The suite writes into the repository's REAL state/ and reports/.
           # Around thirty tests across test_model_enforcement,
@@ -276,9 +290,10 @@ jobs:
           # an emptied ledger and then committed it: 497 KB at 150d3487c, 22 KB
           # three commits later, 216 KB at 3796cd144, 23 KB at 71fda2082.
           #
-          # Discarding the churn here restores the committed evidence before
-          # the scanner reads it. The tests themselves still need isolating -
-          # that is a change to thirty call sites and belongs in its own commit.
+          # Belt and braces. The worktree above is the actual fix - the tests
+          # can no longer reach this tree at all. This stays because a later
+          # step could still touch these files, and restoring a clean tree
+          # costs nothing.
           echo "Discarding test-run churn in state/ and reports/ before scanning:"
           git status --porcelain -- state reports | head -40
           git checkout -- state reports

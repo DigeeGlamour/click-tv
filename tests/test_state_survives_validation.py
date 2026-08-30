@@ -50,6 +50,29 @@ class ValidationStepTests(unittest.TestCase):
     def test_the_suite_still_runs(self):
         self.assertIn("unittest discover", self.body)
 
+    def test_the_suite_runs_in_a_throwaway_worktree(self):
+        """The real fix: the tests cannot reach the scanner's tree at all.
+
+        A worktree shares the object database, so it costs a checkout and no
+        clone, and everything the suite writes is thrown away with it.
+        """
+        self.assertIn("git worktree add --detach", self.body)
+        self.assertIn('cd "$VALIDATE_TREE"', self.body)
+        self.assertIn("git worktree remove --force", self.body)
+
+    def test_a_failing_suite_still_fails_the_step(self):
+        """Running in a subshell swallows the exit code unless it is carried
+        back out, and a validator that cannot fail is worse than none."""
+        self.assertIn("VALIDATE_STATUS=$?", self.body)
+        self.assertIn('exit "$VALIDATE_STATUS"', self.body)
+
+    def test_the_worktree_is_removed_even_when_the_suite_fails(self):
+        self.assertLess(
+            self.body.index("git worktree remove --force"),
+            self.body.index('exit "$VALIDATE_STATUS"'),
+            "the tree would be left behind on a failing run",
+        )
+
     def test_the_churn_is_discarded_after_it(self):
         self.assertIn("git checkout -- state reports", self.body)
         self.assertLess(
