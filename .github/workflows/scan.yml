@@ -93,10 +93,22 @@ concurrency:
   # push step fetches, rebases with -X theirs, recomputes every generated count
   # from the file it describes, and retries three times.
   #
-  # v4 in the name for the same reason v3 existed - a rotation moves new runs to
-  # an empty queue. Six workflow_dispatch runs have been pending in v2 since
-  # 2026-08-05 and cannot be cancelled from CI (the token gets HTTP 403); they
-  # stay there and stop mattering.
+  # About the six runs that have sat Queued since 2026-08-05 and 08-11: they are
+  # inert, and this is written down so nobody spends another hour on them.
+  #
+  # They cannot be cancelled - not from CI, and not from the Actions page
+  # either, where Cancel returns an error. force-cancel and DELETE both answer
+  # 403. GitHub leaves very old queued runs in this state and there is no
+  # supported way out of it from here.
+  #
+  # They also block nothing, which is the part that matters. A concurrency group
+  # is evaluated from the workflow file at the commit that triggered the run, and
+  # all six were triggered when this file said `group: live-signal-data-writer`.
+  # Nothing uses that name any more - current runs are in
+  # live-signal-events-v4 and live-signal-catalogue-v4 - so they hold a queue
+  # with no traffic in it. Runs since have started and finished normally.
+  #
+  # Leave them. They cost nothing but a line in the UI.
   group: >-
     live-signal-${{
       (github.event.schedule == '17 0,6,12,18 * * *'
