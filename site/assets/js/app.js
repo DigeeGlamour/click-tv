@@ -3117,14 +3117,52 @@ function channelChipIconHtml(channel) {
 // empty box, not a placeholder bar, not a fake name. The main card stays exactly
 // as it is. Section 13 says the same for an Upcoming card with nothing attached
 // yet, and the same emptiness answers both.
+// The quality band a single-channel button shows beside its name - FHD, HD, or
+// the raw height when it is neither. Read from the channel's own primary
+// stream, where the scanner records it; the card-level copy can belong to a
+// different channel once there is more than one.
+function channelQualityBand(channel) {
+  const streams = Array.isArray(channel?.streams) ? channel.streams : [];
+  const primary = streams.find((entry) => entry?.role === 'primary') || streams[0] || {};
+  const height = Number(
+    primary.resolution_height || primary.height || channel?.resolution_height || 0
+  );
+  if (height > 0) return movieQualityTitle(height);
+  const declared = String(primary.resolution || channel?.resolution || '').trim();
+  return /^(4K|FHD|HD|SD)$/i.test(declared) ? declared.toUpperCase() : '';
+}
+
 function eventChannelStripHtml(item, minimal = false) {
   const channels = eventChannels(item);
   // Today Match's minimal strip, by direct request: name only, no icon, no
   // Primary/Backups summary - and no grid at all for a single channel, which
   // is shown as the card's plain default rather than a one-button row.
   if (minimal) {
-    if (channels.length < 2) return '';
+    // One channel used to render nothing at all, so a card with a single
+    // source showed no name and no play affordance - and the sources are not
+    // interchangeable: Tapmad, Sony Sports Ten 5 and Willow differ in quality
+    // and in whether they work at all. It gets one full-width button now, in
+    // the same chip the multi-channel strip uses, labelled with the play glyph,
+    // the channel and its quality band.
+    //
+    // Everything about the two-or-more case is untouched, deliberately: same
+    // markup, same class, same grid, same selection behaviour.
+    if (channels.length < 1) return '';
     const active = activeChannelId(item);
+    if (channels.length === 1) {
+      const only = channels[0] || {};
+      const name = String(only.name || '').trim() || 'Stream';
+      const quality = channelQualityBand(only);
+      const label = quality ? `${name} ${quality}` : name;
+      const selected = String(only.id) === String(active);
+      return `<div class="event-channel-strip tm-channels tm-channels-one" data-channel-strip="1" role="group" aria-label="Channel options">`
+        + `<button type="button" class="event-channel-chip tm-channel tm-channel-solo${selected ? ' is-selected' : ''}"`
+        + ` data-channel-id="${escapeHtml(String(only.id))}"`
+        + ` title="${escapeHtml(label)}"`
+        + ` aria-pressed="${selected ? 'true' : 'false'}"`
+        + ` aria-label="${escapeHtml(label)}">▶ ${escapeHtml(label)}</button>`
+        + `</div>`;
+    }
     const chips = channels.map((channel) => {
       const selected = String(channel.id) === String(active);
       const label = String(channel.name || '').trim();
@@ -3271,27 +3309,6 @@ function todayCardState(item) {
     : { tone: 'soon', label: countdown };
 }
 
-// The broadcaster name for a Today card that carries exactly one channel.
-//
-// The minimal strip renders nothing below two channels, by the owner's direct
-// request - a single button in a row of one is not a selector. That stays. But
-// the name itself is information the viewer wants before tapping, because the
-// sources differ in quality: Willow, Willow 2, Sony Sports Ten 5 and Tapmad are
-// not interchangeable. So it goes in as a line of text, not a control.
-//
-// Only when the scanner is sure of the name. `name_confidence: generic` means
-// it fell back to something like "Server-1", and printing that tells the viewer
-// nothing they did not already know while spending a line of the card.
-function soleChannelLabel(item) {
-  const channels = eventChannels(item);
-  if (channels.length !== 1) return '';
-  const channel = channels[0] || {};
-  if (String(channel.name_confidence || '').toLowerCase() === 'generic') return '';
-  const name = String(channel.name || '').trim();
-  if (!name || /^server[\s-]*\d*$/i.test(name)) return '';
-  return name;
-}
-
 function createTodayMatchCardV2(item, visualIndex, ctx) {
   const { card, playable, parts, channelOnly, sport } = ctx;
   card.className = ['sidebar-item event-ref-card tv-focusable event-live-card tm-card-v2',
@@ -3308,7 +3325,6 @@ function createTodayMatchCardV2(item, visualIndex, ctx) {
   });
 
   const todayState = todayCardState(item);
-  const soleChannel = soleChannelLabel(item);
   card.innerHTML = `
     <span class="tm-serial">${visualIndex + 1}</span>
     <div class="tm-poster">
@@ -3318,7 +3334,6 @@ function createTodayMatchCardV2(item, visualIndex, ctx) {
       <div class="tm-info">
         ${parts.competition ? `<div class="tm-league">${escapeHtml(parts.competition)}</div>` : ''}
         <div class="tm-title">${escapeHtml(parts.title)}</div>
-        ${soleChannel ? `<div class="tm-sole-channel">${escapeHtml(soleChannel)}</div>` : ''}
       </div>
     </div>`;
 
@@ -4654,7 +4669,23 @@ function hlsConfigFor(mode, isMovie, _fastStart = false) {
     // playback now starts at the lowest level and climbs from measured
     // bandwidth; a movie keeps automatic selection.
     startLevel: isMovie ? -1 : 0,
-    capLevelToPlayerSize: true,
+    // hls.js will not choose an auto level wider than the video element is
+    // displayed at when this is on, and the player here is 937 CSS pixels wide
+    // on a 1600px window. Measured on Moonbug Kids, whose master offers 240,
+    // 360, 480, 720 and 1080: autoLevelCapping sat at level 3 - 1280x720 - with
+    // 1920x1080 present and the connection idle. Turning it off in the live
+    // page moved it to level 4 and 1920x1080 within seconds.
+    //
+    // That is the whole reported fault: quality climbs to 720 and stops, while
+    // choosing 1080 by hand works, because a manual choice is not an auto one
+    // and this cap only applies to auto.
+    //
+    // It is a sensible default for a small thumbnail and the wrong one here,
+    // where the viewer picked this channel to watch it. Bandwidth is still
+    // governed by hls.js's own ABR, the startup ladder still opens low so the
+    // first frame arrives quickly, and capLevelOnFPSDrop below still protects a
+    // device that genuinely cannot decode what it was given.
+    capLevelToPlayerSize: false,
     capLevelOnFPSDrop: true,
     maxStarvationDelay: 2.5,
     maxLoadingDelay: 3.5,

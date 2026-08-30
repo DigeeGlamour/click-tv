@@ -382,11 +382,31 @@ class TodayMatchCardV2(unittest.TestCase):
         for required in ("tm-serial", "tm-category", "tm-league", "tm-title", "tm-poster"):
             self.assertIn(required, body)
 
-    def test_a_single_channel_hides_the_grid_entirely_in_the_minimal_strip(self):
-        body = APP.split("function eventChannelStripHtml(item, minimal = false) {", 1)[1].split(
-            "\nfunction ", 1)[0]
-        minimal_branch = body.split("if (minimal) {", 1)[1].split("\n  if (channels.length < 1)", 1)[0]
-        self.assertIn("channels.length < 2", minimal_branch)
+    def test_a_single_channel_gets_one_full_width_button(self):
+        """It used to render nothing at all, so a card with one source showed
+        neither its name nor any play affordance - and the sources are not
+        interchangeable: Tapmad, Sony Sports Ten 5 and Willow differ in quality
+        and in whether they work. The owner asked for one full-width button in
+        the same chip the multi-channel strip already uses, labelled with the
+        play glyph, the channel and its quality band."""
+        # The minimal branch, sliced to where the full strip begins.
+        strip = APP[APP.index("if (minimal) {"):]
+        strip = strip[:strip.index("const columns = Math.min(")]
+        self.assertIn("channels.length === 1", strip)
+        self.assertIn("tm-channels-one", strip)
+        self.assertIn("tm-channel-solo", strip)
+        self.assertIn("channelQualityBand(only)", strip)
+        # The same chip class, so it inherits the existing look exactly.
+        self.assertIn("event-channel-chip tm-channel", strip)
+
+    def test_two_or_more_channels_are_untouched(self):
+        """The owner asked for the multi-channel case to stay exactly as it
+        was, so the change must not have reached it."""
+        # The minimal branch, sliced to where the full strip begins.
+        strip = APP[APP.index("if (minimal) {"):]
+        strip = strip[:strip.index("const columns = Math.min(")]
+        self.assertIn("const chips = channels.map((channel) => {", strip)
+        self.assertIn('class="event-channel-strip tm-channels"', strip)
 
     def test_the_minimal_channel_button_carries_only_the_name(self):
         body = APP.split("function eventChannelStripHtml(item, minimal = false) {", 1)[1].split(

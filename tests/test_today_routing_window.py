@@ -228,30 +228,52 @@ class TappingAChannelOnAPhoneTests(unittest.TestCase):
 
 
 class ASingleChannelCardNamesItsBroadcasterTests(unittest.TestCase):
+    """One channel renders one full-width button, in the chip the multi-channel
+    strip already uses: play glyph, channel name, quality band."""
+
     APP = (ROOT / "site" / "assets" / "js" / "app.js").read_text(encoding="utf-8")
+    CSS = (ROOT / "site" / "assets" / "css" / "event-channel-cards.css").read_text(
+        encoding="utf-8"
+    )
 
-    def test_the_name_is_shown(self):
-        self.assertIn("function soleChannelLabel(item)", self.APP)
-        self.assertIn("tm-sole-channel", self.APP)
+    def _minimal(self):
+        # The minimal branch, sliced to where the full strip begins.
+        block = self.APP[self.APP.index("if (minimal) {"):]
+        return block[:block.index("const columns = Math.min(")]
 
-    def test_it_is_text_not_a_button(self):
-        """The minimal strip renders nothing below two channels by the owner's
-        direct request - a single button in a row of one is not a selector -
-        and that stays."""
-        strip = self.APP[self.APP.index("function eventChannelStripHtml"):]
-        strip = strip[:strip.index("\n}\n")]
-        self.assertIn("if (channels.length < 2) return '';", strip)
-        card = self.APP[self.APP.index("function soleChannelLabel(item)"):]
-        card = card[:card.index("\n}\n")]
-        self.assertNotIn("<button", card)
+    def test_one_channel_renders_a_button(self):
+        block = self._minimal()
+        self.assertIn("channels.length === 1", block)
+        self.assertIn("tm-channel-solo", block)
+        self.assertIn("<button", block)
 
-    def test_a_generic_name_is_not_printed(self):
-        """`name_confidence: generic` means it fell back to something like
-        "Server-1", which tells the viewer nothing while spending a line."""
-        block = self.APP[self.APP.index("function soleChannelLabel(item)"):]
-        block = block[:block.index("\n}\n")]
-        self.assertIn("name_confidence", block)
-        self.assertIn("server", block.lower())
+    def test_it_reuses_the_existing_chip_class(self):
+        """No new look - the owner asked for the existing style, reused."""
+        self.assertIn("event-channel-chip tm-channel", self._minimal())
+
+    def test_the_label_carries_the_play_glyph_and_the_quality(self):
+        block = self._minimal()
+        self.assertIn("\u25B6", block)
+        self.assertIn("channelQualityBand(only)", block)
+
+    def test_the_quality_band_reads_the_channel_own_stream(self):
+        """The card-level copy can belong to a different channel once there is
+        more than one."""
+        band = self.APP[self.APP.index("function channelQualityBand(channel)"):]
+        band = band.split(chr(10) + "}" + chr(10))[0]
+        self.assertIn("channel?.streams", band)
+        self.assertIn("movieQualityTitle", band)
+
+    def test_the_button_spans_the_strip(self):
+        self.assertIn(".event-channel-strip.tm-channels-one", self.CSS)
+        one = self.CSS[self.CSS.index(".event-channel-strip.tm-channels-one"):]
+        self.assertIn("grid-template-columns:1fr", one[:200])
+
+    def test_two_or_more_channels_are_untouched(self):
+        block = self._minimal()
+        self.assertIn("const chips = channels.map((channel) => {", block)
+        self.assertIn('class="event-channel-strip tm-channels"', block)
+
 
 
 if __name__ == "__main__":

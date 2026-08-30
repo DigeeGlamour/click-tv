@@ -518,16 +518,19 @@
   }
 }
 
-/* The broadcaster for a single-channel Today card. A line of text rather than
- * a button, so the owner's "no one-button row" still holds while the viewer
- * can still see whether this is Willow or Tapmad before tapping. */
-.sidebar-section.event-list-mode .tm-sole-channel{
-  margin-top:3px!important;
-  font-size:9px!important;font-weight:900!important;letter-spacing:.2px!important;
-  color:#9fb2cc!important;
-  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
-  text-shadow:0 1px 2px rgba(0,0,0,.85)!important;
+
+/* One channel: the same chip, spanning the strip.
+ *
+ * The two-column grid is what a selector needs; with a single option there is
+ * nothing to choose between, so the button takes the full width and reads as
+ * the play action it is. Everything else - the chip's own colours, border,
+ * height, selected state - is inherited from .tm-channel unchanged, and the
+ * two-or-more case never reaches these rules.
+ */
+.sidebar-section.event-list-mode .event-channel-strip.tm-channels-one{
+  grid-template-columns:1fr!important;
 }
-@media (max-width:460px){
-  .sidebar-section.event-list-mode .tm-sole-channel{font-size:8px!important}
+.sidebar-section.event-list-mode .event-channel-chip.tm-channel-solo{
+  justify-content:center!important;
+  letter-spacing:.3px!important;
 }
