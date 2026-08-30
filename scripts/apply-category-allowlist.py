@@ -50,6 +50,8 @@ def main(argv: Any = None) -> int:
         if not category or not category_allowlist.is_restricted(category):
             continue
 
+        # `apply` both filters and orders: the list is the running order the
+        # owner wrote, not only the set of names.
         kept = category_allowlist.apply(cards, category)
         dropped = category_allowlist.rejected(cards, category)
         missing = category_allowlist.missing_from(kept, category)
@@ -71,6 +73,8 @@ def main(argv: Any = None) -> int:
         print("%s: %d card(s) -> %d kept, %d dropped, %d requested name(s) "
               "produced no card"
               % (category, len(cards), len(kept), len(dropped), len(missing)))
+        print("   order: " + ", ".join(
+            str(c.get("name") or "") for c in kept[:6]) + " ...")
         for name in sorted(dropped)[:400]:
             print("   drop  %s" % name)
         for name in missing:

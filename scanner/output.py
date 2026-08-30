@@ -99,6 +99,26 @@ def _apply_pinned_sports_order(cards: List[Dict[str, Any]]) -> List[Dict[str, An
     return [card for _, card in pinned] + rest
 
 
+def _apply_curated_category_order(
+    category_name: str,
+    cards: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """Order a category that declares a publish allowlist by that list.
+
+    Every other category is returned untouched, and a failure to read the
+    config returns the cards unchanged - an ordering problem must never cost a
+    card.
+    """
+    try:
+        from scanner import category_allowlist
+
+        if not category_allowlist.is_restricted(category_name):
+            return cards
+        return category_allowlist.in_list_order(cards, category_name)
+    except Exception:  # noqa: BLE001 - order is cosmetic, the cards are not
+        return cards
+
+
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -1292,6 +1312,14 @@ def publish_scan_outputs(
             ]
             if str(category_name) == "Sports":
                 cards = _apply_pinned_sports_order(cards)
+
+            # A curated category is a running order, not just a filter. The
+            # owner's Indian list opens with Star Jalsha and Zee Bangla;
+            # published in the merger's order it came out alphabetical, and
+            # Star Jalsha sat thirty-first behind &TV and four 9X music
+            # channels. Sorting here rather than in channels.py keeps it true
+            # for anything that reaches publication by another path.
+            cards = _apply_curated_category_order(str(category_name), cards)
 
             manifest_entry, drop_error = _publish_channel_category(
                 category_name=str(category_name),

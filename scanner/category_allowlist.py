@@ -41,6 +41,7 @@ CONFIG_KEY = "publish_allowlist"
 
 _LOCK = threading.Lock()
 _CACHE: Optional[Dict[str, Set[str]]] = None
+_CACHE_ORDER: Optional[Dict[str, Dict[str, int]]] = None
 _CACHE_PATH: Optional[str] = None
 
 
@@ -49,41 +50,60 @@ def normalize(name: Any) -> str:
     return re.sub(r"\s+", " ", str(name or "").strip()).casefold()
 
 
-def _read(path: str) -> Dict[str, Set[str]]:
+def _read(path: str) -> Any:
+    """Returns ({category: {name}}, {category: {name: position}})."""
     try:
         with open(path, "r", encoding="utf-8") as handle:
             payload = json.load(handle)
     except (OSError, ValueError):
-        return {}
+        return {}, {}
     raw = payload.get(CONFIG_KEY) if isinstance(payload, dict) else None
     if not isinstance(raw, dict):
-        return {}
+        return {}, {}
     found: Dict[str, Set[str]] = {}
+    order: Dict[str, Dict[str, int]] = {}
     for category, names in raw.items():
         if not isinstance(names, list):
             continue
-        allowed = {normalize(name) for name in names if str(name or "").strip()}
-        if allowed:
-            found[normalize(category)] = allowed
-    return found
+        positions: Dict[str, int] = {}
+        for name in names:
+            key = normalize(name)
+            if key and key not in positions:
+                positions[key] = len(positions)
+        if positions:
+            found[normalize(category)] = set(positions)
+            order[normalize(category)] = positions
+    return found, order
 
 
 def load(path: Optional[str] = None) -> Dict[str, Set[str]]:
-    global _CACHE, _CACHE_PATH
+    global _CACHE, _CACHE_ORDER, _CACHE_PATH
     target = path or DEFAULT_PATH
     with _LOCK:
         if _CACHE_PATH == target and _CACHE is not None:
             return _CACHE
-        _CACHE = _read(target)
+        _CACHE, _CACHE_ORDER = _read(target)
         _CACHE_PATH = target
         return _CACHE
 
 
+def order_of(category: Any, path: Optional[str] = None) -> Dict[str, int]:
+    """{normalised name: position in the list} for a curated category.
+
+    The list is not just a filter, it is the running order the owner wrote it
+    in. Published alphabetically instead, Star Jalsha - the first name they
+    asked for - came out thirty-first, behind &TV and four 9X music channels.
+    """
+    load(path)
+    return dict((_CACHE_ORDER or {}).get(normalize(category)) or {})
+
+
 def reset_cache() -> None:
     """Forget the config. Tests and a second scan in one process need this."""
-    global _CACHE, _CACHE_PATH
+    global _CACHE, _CACHE_ORDER, _CACHE_PATH
     with _LOCK:
         _CACHE = None
+        _CACHE_ORDER = None
         _CACHE_PATH = None
 
 
@@ -112,13 +132,38 @@ def apply(
     category: Any,
     path: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
-    """The cards this category may publish, in their original order."""
+    """The cards this category may publish, in the order the list gives them."""
     if not is_restricted(category, path):
         return list(cards)
-    return [
+    kept = [
         card for card in cards
         if isinstance(card, dict) and is_allowed(category, card.get("name"), path)
     ]
+    return in_list_order(kept, category, path)
+
+
+def in_list_order(
+    cards: List[Dict[str, Any]],
+    category: Any,
+    path: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """Sort a curated category into the order its list was written in.
+
+    A name that somehow reached the category without being on the list keeps
+    its relative place at the end rather than being dropped here - dropping is
+    `apply`'s job, and a sort that silently deleted a card would be a far worse
+    surprise than one out of order.
+    """
+    positions = order_of(category, path)
+    if not positions:
+        return list(cards)
+    tail = len(positions)
+    return sorted(
+        cards,
+        key=lambda card: positions.get(
+            normalize((card or {}).get("name")), tail
+        ),
+    )
 
 
 def rejected(

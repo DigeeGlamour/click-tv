@@ -133,6 +133,56 @@ class ApplyTests(unittest.TestCase):
         self.assertEqual([], allowlist.rejected(self.cards, "Bangla", self.path))
 
 
+class OrderTests(unittest.TestCase):
+    """The list is a running order, not only a set of names.
+
+    Published in the merger's order the category came out alphabetical, so
+    Star Jalsha - the first name the owner wrote - sat thirty-first, behind &TV
+    and four 9X music channels.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.addCleanup(allowlist.reset_cache)
+        allowlist.reset_cache()
+        self.path = _config(
+            self.tmp.name,
+            {"Indian": ["Star Jalsha", "Zee Bangla", "Sony Aath", "&TV"]},
+        )
+
+    def test_cards_come_out_in_the_order_the_list_gives(self):
+        cards = [{"name": "&TV"}, {"name": "Sony Aath"},
+                 {"name": "Star Jalsha"}, {"name": "Zee Bangla"}]
+        ordered = allowlist.apply(cards, "Indian", self.path)
+        self.assertEqual(
+            ["Star Jalsha", "Zee Bangla", "Sony Aath", "&TV"],
+            [c["name"] for c in ordered],
+        )
+
+    def test_a_name_the_sources_did_not_deliver_leaves_no_gap(self):
+        cards = [{"name": "&TV"}, {"name": "Star Jalsha"}]
+        ordered = allowlist.apply(cards, "Indian", self.path)
+        self.assertEqual(["Star Jalsha", "&TV"], [c["name"] for c in ordered])
+
+    def test_ordering_matches_on_case_and_spacing_too(self):
+        cards = [{"name": "&TV"}, {"name": "  STAR   JALSHA "}]
+        ordered = allowlist.in_list_order(cards, "Indian", self.path)
+        self.assertEqual("  STAR   JALSHA ", ordered[0]["name"])
+
+    def test_an_unlisted_card_is_not_dropped_by_the_sort(self):
+        """Dropping is `apply`'s job. A sort that deleted a card would be a
+        worse surprise than one out of order."""
+        cards = [{"name": "Zee News"}, {"name": "Star Jalsha"}]
+        ordered = allowlist.in_list_order(cards, "Indian", self.path)
+        self.assertEqual(2, len(ordered))
+        self.assertEqual("Star Jalsha", ordered[0]["name"])
+
+    def test_an_uncurated_category_keeps_its_own_order(self):
+        cards = [{"name": "b"}, {"name": "a"}]
+        self.assertEqual(cards, allowlist.in_list_order(cards, "Bangla", self.path))
+
+
 class TheCommittedConfigTests(unittest.TestCase):
     """What is actually configured, so a later edit cannot drift unnoticed."""
 
@@ -169,6 +219,22 @@ class TheCommittedConfigTests(unittest.TestCase):
             if normalizer.detect_tv_category(name) != "Indian"
         ]
         self.assertEqual([], stray)
+
+    def test_the_published_catalogue_is_in_the_requested_order(self):
+        path = ROOT / "data" / "channels" / "indian.json"
+        if not path.is_file():
+            self.skipTest("no Indian catalogue")
+        cards = json.loads(path.read_text(encoding="utf-8")).get("channels") or []
+        self.assertEqual(
+            [c.get("name") for c in allowlist.in_list_order(cards, "Indian")],
+            [c.get("name") for c in cards],
+            "the published order does not follow the list",
+        )
+
+    def test_the_publish_path_applies_that_order(self):
+        source = (ROOT / "scanner" / "output.py").read_text(encoding="utf-8")
+        self.assertIn("_apply_curated_category_order(", source)
+        self.assertIn("category_allowlist.in_list_order(", source)
 
     def test_the_published_catalogue_holds_nothing_else(self):
         path = ROOT / "data" / "channels" / "indian.json"
