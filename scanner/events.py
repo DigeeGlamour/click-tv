@@ -417,12 +417,12 @@ def _is_upcoming_fresh(
 ) -> bool:
     """Whether a fixture still belongs on the Upcoming tab.
 
-    `past_grace_minutes` is minutes, not hours. Callers that still pass hours
-    are honoured - anything of 24 or less is read as hours, since a 24-minute
-    grace is not a value this project would choose and a 24-hour one is.
+    `past_grace_minutes` is minutes. It used to guess - anything of 24 or less
+    was read as hours, for callers still passing the old unit - and that guess
+    turned a deliberate ten-minute window into ten hours, quietly undoing the
+    fix it was written to support. The only callers are in this file and both
+    pass minutes; the hours key from config is converted once, where it is read.
     """
-    if 0 < past_grace_minutes <= 24:
-        past_grace_minutes *= 60
     start_time = _parse_datetime(
         item.get("start_time"),
         item.get("_source_timezone", timezone.utc),

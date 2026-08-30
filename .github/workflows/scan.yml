@@ -60,22 +60,41 @@ permissions:
   contents: write
 
 concurrency:
-  # v3, and the reason is the same one that produced v2: the group is jammed.
+  # Two queues, split by what a run actually writes, because one queue was
+  # starving the scans the site depends on most.
   #
-  # Six workflow_dispatch runs have been pending in v2 since 2026-08-05 and
-  # 08-11 - 392 hours at the time of writing - and they cannot be cancelled
-  # from CI (the token gets HTTP 403). A concurrency group holds one run in
-  # progress and one pending; anything else queued behind them is dropped, so
-  # scheduled runs stopped appearing at all: none between 06:53 and 09:15 UTC
-  # on 2026-08-28 despite a five-minute cron, while a pushed fix sat unused.
+  # A concurrency group holds one run in progress and one pending; every other
+  # trigger that arrives is DROPPED, not queued. Runs here take 7 to 77 minutes,
+  # and the crons ask for one every five. So a single long movies scan swallowed
+  # every event trigger behind it. Measured on 2026-08-30, the real gaps between
+  # runs were 122, 79, 44, 229 and 194 minutes against a five-minute cron - and
+  # with no scan publishing, Upcoming sat for two hours showing LINK UPDATING on
+  # a match that had already kicked off, which is exactly what the owner saw.
   #
-  # Rotating the name moves new runs to an empty queue. The stuck runs stay in
-  # v2 and stop mattering. One-writer safety is unchanged: still one group,
-  # still cancel-in-progress false, so two scans can never write data at once.
+  # The split is by file ownership, not by frequency:
   #
-  # The orphaned runs are worth cancelling by hand anyway - this only stops
-  # them blocking anything.
-  group: live-signal-data-writer-v3
+  #   events    today, upcoming, upcoming-targeted - all write today-match.json
+  #             and upcoming.json, so they must keep sharing one writer.
+  #   catalogue channels and movies - long, infrequent, and writing their own
+  #             trees under data/channels and data/movies.
+  #
+  # Both still push to main. That was already handled before this change: the
+  # push step fetches, rebases with -X theirs, recomputes every generated count
+  # from the file it describes, and retries three times.
+  #
+  # v4 in the name for the same reason v3 existed - a rotation moves new runs to
+  # an empty queue. Six workflow_dispatch runs have been pending in v2 since
+  # 2026-08-05 and cannot be cancelled from CI (the token gets HTTP 403); they
+  # stay there and stop mattering.
+  group: >-
+    live-signal-${{
+      (github.event.schedule == '17 0,6,12,18 * * *'
+       || github.event.schedule == '37 4 * * *'
+       || inputs.mode == 'channels'
+       || inputs.mode == 'movies'
+       || inputs.mode == 'all')
+      && 'catalogue' || 'events'
+    }}-v4
   cancel-in-progress: false
 
 jobs:

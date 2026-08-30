@@ -84,33 +84,41 @@ class UpcomingDropsWhatHasAlreadyStartedTests(unittest.TestCase):
     def test_a_match_two_hours_past_kickoff_is_gone(self):
         self.assertFalse(events._is_upcoming_fresh(
             card(name="TBC", start_time="2026-08-30T06:00:00+00:00"),
-            NOW, 45, 120,
+            NOW, 10, 120,
         ))
 
     def test_a_match_ten_minutes_past_kickoff_still_gets_its_chance(self):
         """The trigger runs every five minutes; a feed that publishes a link
         just after the whistle must still be caught."""
         self.assertTrue(events._is_upcoming_fresh(
-            card(start_time=(NOW - timedelta(minutes=10)).isoformat()),
-            NOW, 45, 120,
+            card(start_time=(NOW - timedelta(minutes=4)).isoformat()),
+            NOW, 10, 120,
         ))
 
     def test_a_future_fixture_stays(self):
         self.assertTrue(events._is_upcoming_fresh(
-            card(start_time=(NOW + timedelta(days=3)).isoformat()), NOW, 45, 120,
+            card(start_time=(NOW + timedelta(days=3)).isoformat()), NOW, 10, 120,
         ))
 
-    def test_an_hours_value_from_an_older_config_is_still_honoured(self):
-        """3 means three hours, not three minutes. A caller upgrading from the
-        hours key must not silently get a 180x tighter window."""
-        started_two_hours_ago = card(start_time=(NOW - timedelta(hours=2)).isoformat())
-        self.assertTrue(events._is_upcoming_fresh(started_two_hours_ago, NOW, 3, 120))
-        self.assertFalse(events._is_upcoming_fresh(started_two_hours_ago, NOW, 45, 120))
+    def test_the_window_is_minutes_with_no_guessing(self):
+        """It used to read anything of 24 or less as hours, for callers still
+        passing the old unit. That turned a deliberate ten-minute window into
+        ten hours and quietly undid the fix it was written to support - the
+        owner was looking at a 15:30 match still badged LINK UPDATING at 16:14.
+        Minutes are minutes."""
+        started_20_min_ago = card(start_time=(NOW - timedelta(minutes=20)).isoformat())
+        self.assertFalse(events._is_upcoming_fresh(started_20_min_ago, NOW, 10, 120))
+        self.assertTrue(events._is_upcoming_fresh(started_20_min_ago, NOW, 30, 120))
 
-    def test_the_configured_window_is_minutes(self):
+    def test_the_configured_window_is_short(self):
         import json
         settings = json.loads((ROOT / "config" / "settings.json").read_text(encoding="utf-8"))
-        self.assertEqual(45, settings["events"]["upcoming_past_grace_minutes"])
+        window = settings["events"]["upcoming_past_grace_minutes"]
+        self.assertLessEqual(window, 15, "a viewer must not meet a match that "
+                                         "kicked off long ago still labelled "
+                                         "LINK UPDATING")
+        self.assertGreater(window, 0, "the -15 minute trigger needs a little "
+                                      "room after the whistle")
 
 
 class UndeliverableRoutesDoNotComeBackTests(unittest.TestCase):
