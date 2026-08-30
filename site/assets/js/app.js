@@ -5135,8 +5135,49 @@ async function waitForNativeStartupSignal(session, attemptToken, waitMs = 1400) 
   });
 }
 
+// Whether this URL is one of our own playback proxies.
+//
+// It matters for exactly one reason: our proxy sends
+// `Access-Control-Allow-Origin`, and a third-party origin generally does not.
+// See applyNativeCrossOrigin below.
+function isOwnPlaybackProxyUrl(url) {
+  const text = String(url || '');
+  if (!text) return false;
+  let origin = '';
+  try { origin = new URL(text, location.href).origin; } catch (_) { return false; }
+  return playbackProxyList().some((proxy) => {
+    try { return new URL(proxy, location.href).origin === origin; }
+    catch (_) { return false; }
+  });
+}
+
+// Chrome refuses an opaque media response it cannot sniff.
+//
+// A .mkv served cross-origin to a plain `<video src>` is a no-cors request, and
+// Chrome's Opaque Response Blocking rejects it with ERR_BLOCKED_BY_ORB because
+// it cannot confirm `video/x-matroska` is media - Matroska is not a container
+// its sniffer knows. The element then reports MEDIA_ELEMENT_ERROR: Format
+// error, which looks like a broken file and is not one.
+//
+// Measured on 2026-08-30 against the deployed site: 1,029 of 1,248 published
+// movies failed this way, every one of them with "Browser blocked the media
+// response (ORB)". Reproduced in real Chrome on a bare page, and fixed by one
+// attribute:
+//
+//     plain <video src>                     ERR_BLOCKED_BY_ORB, all three cases
+//     crossOrigin='anonymous' + our proxy   plays, 1920x1080 and 1280x720
+//     crossOrigin='anonymous' + r2 direct   ERR_FAILED - no ACAO on that origin
+//
+// So the attribute is set for our own proxy, which sends the header, and left
+// off for everything else, where setting it would turn a working direct route
+// into a CORS failure.
+function applyNativeCrossOrigin(url) {
+  if (isOwnPlaybackProxyUrl(url)) video.setAttribute('crossorigin', 'anonymous');
+  else video.removeAttribute('crossorigin');
+}
+
 async function initNative(url, session, attemptToken, type) {
-  video.removeAttribute('crossorigin');
+  applyNativeCrossOrigin(url);
   state.playerType = type === 'hls' ? 'native-hls' : 'native';
   video.preload = 'auto';
   video.src = url;
@@ -7188,6 +7229,15 @@ function loadMovieAudioCompanionAttempt(attempt, source, position, options = {})
     };
     movieAudioCompanion.onerror = () => finish(false, new Error('Audio companion media error'));
 
+    // Same opaque-response rule as the video element: a proxied media response
+    // has to be fetched in CORS mode or Chrome blocks it before the decoder
+    // sees a byte. The companion carries the audio track for a movie, so
+    // without this the picture plays and the sound does not.
+    if (isOwnPlaybackProxyUrl(attempt.url)) {
+      movieAudioCompanion.setAttribute('crossorigin', 'anonymous');
+    } else {
+      movieAudioCompanion.removeAttribute('crossorigin');
+    }
     movieAudioCompanion.src = attempt.url;
     try { movieAudioCompanion.load(); } catch (error) { finish(false, error); }
   });

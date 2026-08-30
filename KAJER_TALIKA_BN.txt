@@ -1,0 +1,246 @@
+================================================================================
+কী কী কাজ করা হয়েছে — শুরু থেকে শেষ পর্যন্ত
+================================================================================
+Repository : https://github.com/DigeeGlamour/click-tv
+সময়        : 2026-08-29 থেকে 2026-08-30
+মাপার জায়গা : Bangladesh, আপনার নিজের মেশিন (residential connection)
+
+এই ফাইলটি সংক্ষিপ্ত তালিকা। প্রতিটি সংখ্যার বিস্তারিত প্রমাণ আছে
+CLICKTV_SYSTEM_ANALYSIS_AND_SCANNER_FIX_REPORT_BN.txt-এ।
+
+নিয়ম যেটা সব জায়গায় মানা হয়েছে: HTTP 200 বা manifest পাওয়া = প্রমাণ নয়।
+"চলে" বলার জন্য আসল browser-এ ২টি আলাদা ১২০ সেকেন্ডের session লাগে, প্রতিটিতে
+১১৫ সেকেন্ডের বেশি decoded media। মোট **৭২টি এমন session** চালানো হয়েছে।
+
+
+================================================================================
+পর্ব ১ — scanner কেন ঠিকমতো চলছিল না (৪টি আলাদা কারণ, সবগুলো সারানো)
+================================================================================
+
+[১] route-evidence-cache.json ৫২.৪ MB হয়ে CI লাল করে দিয়েছিল
+    • এই ফাইল প্রতি scan-এ commit হয়। GitHub ৫০ MB-তে সতর্ক করে, ১০০-তে push
+      বন্ধ করে। Repo-র নিজের guard test ইতিমধ্যে fail করছিল।
+    • প্রমাণ: run 33265022372 / 33265024091 / 33266126757 — তিনটিই
+      "Validate scanner files" step-এ fail।
+    • কারণ ১: append() insert করার **আগে** prune করত, পরে করত না।
+    • কারণ ২: সীমাটা ভুল হিসাবে বসানো ছিল ("20,000 routes ≈ 20 MB" — আসলে
+      ৫০.৯ MB)।
+    • সমাধান: insert-এর পরেও prune, আর সীমা এখন **মাপা byte budget (24 MB)**।
+      ফাইল ৫২.৩৮ MiB → ২৩.৯৯ MiB।
+    → commit f2d0038eb
+
+[২] test suite প্রতি CI run-এ production state মুছে দিচ্ছিল
+    • Workflow scanner চালানোর **আগে** পুরো test suite চালায়। প্রায় ৩০টি test
+      persistence helper-কে তাদের default path-এ ডাকে, যা repo-র working tree।
+    • মাপা: একবার suite চালালে state/route-persistence.json থেকে
+      **১৩,৭৩৬ লাইন** মুছে যায়। commit-এ আকার: 497 KB → 22 KB → 216 KB → 23 KB।
+    • অর্থাৎ যে প্রমাণ scan-এর পর scan জমার কথা, তা প্রতিবার শূন্য থেকে শুরু হতো।
+    • সমাধান: suite-এর পরে, scanner-এর আগে `git checkout -- state reports`।
+      একটি test সেই লাইনটি পাহারা দেয়।
+    → commit e6313cebd
+
+[৩] GitHub schedule-এর ~৯৭% run কখনো তৈরিই হয় না
+    • মাপা (Actions API): 08-22 → ৯৫টি run/দিন, 08-27/28/29 → ১০/৯/৯টি।
+      পাঁচটি cron মিলে দিনে ~৩৭০টি চায়।
+    • এই session-এ সরাসরি দেখা গেছে: 17:37Z-এর পরে **২ ঘণ্টা ৮ মিনিট** কোনো
+      run তৈরি হয়নি, অথচ workflow active, YAML বৈধ, queue খালি।
+    • ফল: channels ১৬.২ ঘণ্টা আর movies ৪৭.৭ ঘণ্টা পুরোনো — দুটোই publish হচ্ছিল।
+    • সমাধান: catch-up। টিকে যাওয়া run নিজের mode-এর পাশাপাশি overdue
+      catalogue mode-ও চালায় (channels ৯ ঘণ্টা, movies ৩৬ ঘণ্টা সীমা)।
+      যোগ করে, প্রতিস্থাপন করে না; manual dispatch-এ কখনো নয়; এক run-এ একটির বেশি নয়।
+    → commit e6313cebd  |  প্রথম catch-up: run 33271666089, movies বেছে নিয়েছে
+
+[৪] একটি ক্ষণস্থায়ী উত্তর একটি চালু channel মুছে দিচ্ছিল
+    • scanner মাপে US datacentre থেকে, দর্শক দেখেন Bangladesh থেকে। মাপা:
+          BTV News   CI: HTTP 429  →  এখানে: HTTP 200, 1080p
+          My TV      CI: HTTP 429  →  এখানে: HTTP 200
+          Anand TV   CI: timeout   →  এখানে: HTTP 200, 1080p
+          Praise TV  CI: timeout   →  এখানে: HTTP 200, 720p
+          R TV       CI: TLS fail  →  এখানে: HTTP 200, 720p
+    • সমাধান: ক্ষণস্থায়ী উত্তরে (429, 5xx, timeout, DNS, TLS) আগে-publish-হওয়া
+      route এখন `retryable_pending` হয়ে টিকে থাকে, badge "Temporary",
+      `verified` স্পষ্টভাবে False। 403/451 ইচ্ছাকৃতভাবে বাদ। পরপর সর্বোচ্চ দুইবার।
+    • publish gate-এও একই clause লাগাতে হয়েছে — নইলে rescue নিষ্ফল ছিল।
+    → commit dd5c9fc7c
+
+
+================================================================================
+পর্ব ২ — sportlive18-এর চারটি নতুন source আসলে কী দিচ্ছে
+================================================================================
+    Hotstar     ১১৩/১১৩ route বন্ধ (CI 475, BD 403)। publish ০।
+    JioTV       Bengali-সহ ১৬/১৬ target channel BD থেকে **HTTP 451** (আইনি
+                geo-block)। আগের report-এ লেখা "token আয়ু ১৫ মিনিট" ভুল ছিল —
+                মেপে দেখা গেছে **৬ ঘণ্টা**। token নয়, দেশ। publish ০।
+    FanCode     metadata কাজে লাগছে (১২টি upcoming backup), কিন্তু LIVE route
+                ১৪/১৪ HTTP 403 (BD থেকেও)।
+    SonyLIV     **CI-তে 403, BD থেকে 200** — একই URL। BD থেকে scan চালালে
+                today-match 363 → 382 card।
+
+
+================================================================================
+পর্ব ৩ — channel গুলো কেন চলছিল না, এবং কোনগুলো সারানো হয়েছে
+================================================================================
+
+[ক] কতগুলো card-এর আদৌ চালু route ছিল না — মাপা
+    ৬১৬-card catalogue-এ: **১১৪টি card (১৮.৫%)**-এর একটিও চালু route নেই।
+    সবচেয়ে বড় কারণ: hotstarplugx ও plugsony.cstds.workers.dev — দুটি
+    Cloudflare Worker **মুছে ফেলা হয়েছে** (root path-এও 404)। এই দুটি
+    ৮৩টি route ধরে রেখেছিল।
+    CI scan সেগুলো বাদ দেওয়ার পরে: ৩৩ / ৫২৩ (৬.৩%)।
+
+[খ] Zee Bangla — সারানো হয়েছে
+    পুরোনো route পরপর **HTTP 500**, browser-এ ২ session-এ **০ সেকেন্ড**,
+    কোনো backup ছিল না।
+    নতুন: stream.ottplus.bd — **119.99s ও 119.87s, ০ stall, 1280×720**।
+    720p হওয়ায় below-floor exception আর দরকার নেই।
+    → commit 27de84a10
+
+[গ] Star Jalsha — সারানো হয়েছে
+    ৬টি route মাপার পরেও কোনোটি পাস করেনি (devm3u 112/117s, rgkkw 29/24s
+    ৯০-৯৫s stall সহ, DRM ০s, yuppcdn ০s, JioTV 451)।
+    তারপর CI scan একটি নতুন বাংলাদেশি host দিল — s3.itcnbd.live:
+    **119.96s ও 119.99s, ০ stall**।
+    → commit 54a6def0c
+
+[ঘ] Badge মিথ্যা বলছিল — সারানো হয়েছে
+    merger-এ primary playback-প্রমাণের অধীন ছিল, backup ছিল না। ফলে rgkkw
+    ledger-এ "মাপা-অচল" থাকা সত্ত্বেও card-এ "Verified" লেখা ছিল।
+    এখন backup একই প্রমাণের অধীন, কারণও card-এ যায়।
+    → commit f97438fe2
+
+[ঙ] প্রমাণের সঙ্গে vantage যোগ করা হয়েছে
+    ledger-এ লেখা থাকত "এই route চলে না", কিন্তু কোথা থেকে মাপা তা লেখা থাকত না।
+    চারটি পুরোনো সারি US datacentre থেকে মাপা। BD থেকে মেপে দেখা গেল উল্টো ফল।
+    এখন প্রতিটি মাপে vantage থাকে, আর পরের PASS আগের FAIL-কে supersede করে
+    (মুছে দেয় না)।
+    → commit f97438fe2
+
+
+================================================================================
+পর্ব ৪ — ৬৫৩ → ৬১০ card কমার কারণ (প্রতিটি মাপা)
+================================================================================
+    ৫৮টি বাদ পড়া card-এর প্রত্যেকটির ঠিক সেই route আবার fetch করে, media থেকে
+    উচ্চতা পড়ে (HLS master-এর RESOLUTION, নয়তো প্রথম TS segment থেকে H.264 SPS):
+
+        ২৮টি  মাপা ভাবে 720p floor-এর নিচে (240p–576p) — সঠিকভাবেই বাদ
+        ২০টি  route-ই নেই (HTTP 404/410)          — সঠিকভাবেই বাদ
+        ১০টি  BD থেকে floor-এর উপরে চালু          — এগুলোই আসল ক্ষতি
+
+    ওই ১০টির ৩টি browser-এ পরীক্ষা করে **KTV Bangla, Accu Weather, Anand TV**
+    proven পাওয়া গেছে; BTV News ও R TV browser-এ ০ সেকেন্ড দিয়েছে, তাই
+    "restore করা যাবে" বলা হয়নি।
+    Global 720p floor বদলানো হয়নি।
+    → commit 2fb74ad39,  reports/removed-card-audit.json
+
+
+================================================================================
+পর্ব ৫ — Movies
+================================================================================
+    geo_pending কোড 2026-08-28-এ যোগ হয়েছিল কিন্তু কখনো production-এ চলেনি
+    (শেষ movies scan ছিল 08-27)। catch-up সেটি চালিয়েছে — run 33271666089,
+    ২২,৭৩৬ candidate, ৪,১৮৮ সেকেন্ড:
+
+        আগে (08-27)                 পরে (08-29 21:01)
+        failed          22,171      failed           2,282
+        verified_global    894      geo_pending     20,341
+                                    verified_global    112
+
+    ২০,৩৪১টি candidate যেগুলো আগে "failed" লেখা হতো, এখন সঠিকভাবে geo_pending।
+    UI-তে নতুন movie যোগ হয়নি — সেটাই design: movie publish gate geo_pending
+    মানে না। ১২৪৮ অপরিবর্তিত থাকাকে "solved" বলা হয়নি।
+
+    একটি ফাঁক ধরা পড়েছে: movies catch-up private movie source ছাড়া চলছিল
+    (checkout step শুধু scheduled mode দেখত)। → commit 3c750a014-এ সারানো।
+
+
+================================================================================
+পর্ব ৬ — Indian category, আপনার তালিকা অনুযায়ী
+================================================================================
+    আগে : ১৮১টি card
+    এখন : **৪৩টি**, সবই আপনার তালিকা থেকে, **আপনার দেওয়া ক্রমেই**
+           (১. Star Jalsha, ২. Zee Bangla, ৩. Sony Aath, ...)
+
+    কীভাবে: data/channels/indian.json একটি generated ফাইল — হাতে মুছলে পরের
+    scan-এই ফিরে আসত। তাই তালিকাটি config-এ
+    (config/channel-categories.json → publish_allowlist) এবং
+    scanner/channels.py প্রতিটি scan-এ প্রয়োগ করে। ক্রমও config থেকেই আসে।
+
+    **প্রমাণ যে scan-এ টিকেছে**: 84b00a560 — একটি আসল CI channels scan
+    ঠিক ৪১টি allowlist card বানিয়েছে, একটিও বাইরের নয়।
+
+    ফিরিয়ে আনা ৭টি (প্রতিটি ২ × ১২০s browser প্রমাণ সহ):
+        Sony Max        119.99 / 120.00 s   0 stall   720p
+        Sony Max 2      119.99 / 119.98 s   0 stall   720p
+        Sony SAB        119.99 / 119.95 s   0 stall   720p
+        JOO MUSIC       120.00 / 119.96 s   0 stall   720p
+        Sony            119.96 / 119.99 s   0 stall   720p
+        Sony PIX        119.96 / 119.97 s   0 stall   720p
+        Sangeet Bangla  115.72 / 115.08 s   1/4 stall 576p  ← named exception
+
+    Sangeet Bangla ৫৭৬p, তাই global floor না বদলে Zee Bangla-র মতোই একটি
+    named exception দেওয়া হয়েছে (config + ওই route-এর sustained proof, দুটোই লাগে)।
+
+    টেকসই করা: Zee Bangla, Sony Max, Sony Max 2, Sony SAB — প্রতিটিতে
+    stream.ottplus.live-এ দ্বিতীয় প্রমাণিত route যোগ করা হয়েছে। ওই host থেকে
+    CI আগে থেকেই ২০টি card publish করে, তাই পরের scan-এও টিকবে।
+
+    এখনো নেই ৫টি — এবং কেন (১৯টি source-এ ২০৪টি candidate + দুই CDN-এ ৬৬টি
+    path probe করে):
+        Star Gold    একটিই HTTP 200 route, কিন্তু bare-IP http port 8000 —
+                     site-এর নিজের নিয়মই refuse করে (direct-এ mixed content,
+                     proxy-ও ওই port ছুঁতে পারে না)
+        Star Plus    ৩টি candidate — সব 403/451
+        Sony Pal     ৫টি — 403/404/451/500
+        Sony Wah     ৫টি — একই
+        Music India  ৬টি — 403/404/451, manual-এরটি unreachable
+    → commit 905eb2854, 7f1423b1a, 08faaceb7
+
+
+================================================================================
+পর্ব ৭ — নতুন যা তৈরি হয়েছে
+================================================================================
+নতুন module / script:
+    scanner/last_published.py            আগের catalogue কোন route বহন করত
+    scanner/category_allowlist.py        category-র নাম-তালিকা ও ক্রম
+    scripts/select-scan-mode.py          catch-up সিদ্ধান্ত
+    scripts/channel-route-scout.py       source-এ কোন channel-এর কী route আছে
+    scripts/removed-card-audit.py        বাদ পড়া card-এর মাপা কারণ
+    scripts/record-playback-evidence.py  report → ledger, vantage সহ
+    scripts/rebadge-measured-routes.py   published badge ↔ ledger মেলানো
+    scripts/apply-category-allowlist.py  তালিকা ও ক্রম live catalogue-এ প্রয়োগ
+    scripts/add-proven-channel.py        প্রমাণিত route-এ নতুন card তৈরি
+
+নতুন test ফাইল (মোট test ১৫২২ → ১৬৬৫, সব পাস):
+    test_playback_evidence.py, test_transient_rescue.py, test_failure_class.py,
+    test_promoted_route_resolution.py, test_scan_mode_catchup.py,
+    test_state_survives_validation.py, test_rebadge_measured_routes.py,
+    test_category_allowlist.py, test_add_proven_channel.py
+
+নতুন report (প্রমাণ):
+    reports/bengali-route-playback.json         round 1 browser evidence
+    reports/bengali-alternative-playback.json   round 2
+    reports/star-jalsha-itcnbd-playback.json    Star Jalsha
+    reports/indian-missing-playback.json        Sony পরিবার
+    reports/ottplus-live-playback.json          দ্বিতীয় route
+    reports/sony-family-playback.json           Sony ও Sony PIX
+    reports/channel-route-scout.json            ৭৫টি candidate route
+    reports/indian-missing-route-scout.json     ৬৪টি candidate
+    reports/removed-card-audit.json             ৫৮টি বাদ পড়া card
+    reports/category-allowlist.json             কী রাখা হলো, কী বাদ
+
+
+================================================================================
+পর্ব ৮ — এখনো বাকি (সৎ তালিকা)
+================================================================================
+  ১. Indian-এর ৫টি নাম (Star Gold, Star Plus, Sony Pal, Sony Wah, Music India)
+     — configured কোনো source-এ চালু route নেই। নতুন source লাগবে।
+  ২. Sonic Bangla ও SONY YAY Bengali — একই কারণ (শুধু JioTV, HTTP 451)।
+  ৩. gpcdn.net-এর ৩৮টি route HTTP 403 — ৩৩টি card-এর পেছনে কিছু নেই।
+  ৪. Full playback audit-এর movie সমস্যা — কাজ চলছে (পর্ব ৯)।
+  ৫. Test isolation — ~৩০টি call site, আলাদা commit।
+  ৬. ৬টি আটকে থাকা workflow run (2026-08-05/11) — actions:write scope লাগে।
+  ৭. iPhone/iOS — আসল ডিভাইস লাগে; Playwright-এর WebKit iOS Safari নয়।
+  ৮. reports/bd-verification.json-এ scan চালালে জীবন্ত token লেখা হয়; ফাইলটি
+     tracked, তাই CI একদিন commit করে ফেলতে পারে।
+
+================================================================================
