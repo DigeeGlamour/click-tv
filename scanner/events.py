@@ -19,6 +19,7 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 try:
     from scanner.live_protection import probe_card_is_playable, protect_live_events
     from scanner import deliverability
+    from scanner import sport_filter
     from scanner.event_lifecycle import (
         DEFAULT_TODAY_ROUTING_MINUTES,
         ROUTE_LIVE_STATUSES,
@@ -50,6 +51,7 @@ except ImportError:
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
     from live_protection import probe_card_is_playable, protect_live_events
+    import sport_filter
     from event_lifecycle import (
         DEFAULT_TODAY_ROUTING_MINUTES,
         ROUTE_LIVE_STATUSES,
@@ -287,6 +289,17 @@ def _event_sort_key(
         str(item.get("name") or "").strip(),
     ).casefold()
     return sport_rank, start_time, competition, name
+
+
+def _write_sport_decisions(payload: Dict[str, Any]) -> None:
+    """reports/sport-filter-decisions.json - what was refused, and on what."""
+    try:
+        target = Path("reports") / "sport-filter-decisions.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps(payload, indent=1, ensure_ascii=False),
+                          encoding="utf-8")
+    except (OSError, TypeError, ValueError):
+        pass
 
 
 def _strip_undeliverable_routes(item: Dict[str, Any]) -> int:
@@ -1487,6 +1500,8 @@ def process_events(
     # any of them past the gate.
     attachment_pool: List[Dict[str, Any]] = []
 
+    raw_sport_total = len(raw_event_candidates)
+
     event_candidates, schedule_stats = enrich_event_candidates(
         raw_event_candidates,
         fixture_path=fixture_path,
@@ -1497,6 +1512,32 @@ def process_events(
         provider_event_hours=provider_event_hours,
         attachment_pool=attachment_pool,
     )
+
+    # The sport is settled here: after enrichment, which is what fills in the
+    # competition and the resolved fixture, and before anything is built on
+    # top of the event. Everything downstream - stream attachment, the merge,
+    # the clock rules - then only ever sees cricket and football.
+    #
+    # Not before enrichment, though it was tried: the raw rows carry a name and
+    # little else, so on 2026-08-31 filtering there left 755 of 1061 events
+    # unresolved and took 203 real cricket and football fixtures with them.
+    # The evidence has to exist before it can be weighed.
+    #
+    # It runs again after the tabs are final, because live protection and the
+    # Upcoming carry-through republish cards this scan never enriched.
+    event_candidates, early_sport_report = sport_filter.discard_confirmed_other(
+        event_candidates)
+    # The attachment pool holds the stream-only candidates the enrichment gate
+    # refused, and the next step hands them to whichever fixture matches. It is
+    # filtered by the same rule so a discarded rugby broadcast's stream cannot
+    # be attached to a football card that survived - the pool is matched on the
+    # fixture, and nothing else would stop it. It has discarded nothing so far;
+    # it is here to close the hole rather than to fix an observed failure.
+    pool_kept, pool_report = sport_filter.discard_confirmed_other(attachment_pool)
+    attachment_pool[:] = pool_kept
+    print(f"   sport filter (early): {raw_sport_total} event(s) in, "
+          f"{early_sport_report['discarded']} provably other sport(s) discarded, "
+          f"{pool_report['discarded']} unattached stream(s) discarded")
 
     # Guide 30.7: the fixture exists first, then a matching stream is attached
     # to it. Without this an Upcoming card and the stream that could play it
@@ -1514,6 +1555,17 @@ def process_events(
         # Requirement 16: a healthy primary keeps its place across scans.
         previous_primary_keys=load_previous_primary_keys(),
     )
+
+    # Today Match and Upcoming carry cricket and football. The sport is decided
+    # here, once, on the merged card - before anything routes it - so that the
+    # clock rules below stay exactly as they were and only ever see fixtures
+    # that belong on these two tabs.
+    #
+    # Deciding it on the merged card matters: a fixture that reached us from
+    # three sources has three chances to carry a competition name, and the
+    # merge is where they are all present at once.
+    merged, sport_report = sport_filter.apply(merged)
+    schedule_stats["sport_filter_early"] = early_sport_report
 
     # Guide 30.8: an event that moved from Upcoming to Today Match keeps the
     # card it already had rather than appearing as a new one.
@@ -1807,10 +1859,102 @@ def process_events(
         upcoming_items = [c for c in upcoming_items if id(c) not in live]
         schedule_stats["promoted_off_upcoming"] = len(removed_from_upcoming)
 
+    # The sport is settled on `merged` above, but `merged` is not every card
+    # that reaches these two lists: live protection and the Upcoming
+    # carry-through republish previously published cards that this scan never
+    # merged, and those arrive unclassified. Measured on 2026-08-30, a scan
+    # with the filter wired in at the merge alone published a Today Match of
+    # 41 cards of which 29 had no verdict at all - three motorsport, three
+    # golf, two tennis and a hockey match among them.
+    #
+    # So the tabs are swept once more here, for the same reason the
+    # de-duplication above sits at this point: it is the first place where
+    # both lists are final. The filter is deterministic, so a card already
+    # classified at the merge gets the same answer again.
+    today_items, today_sport_report = sport_filter.apply(today_items)
+    upcoming_items, upcoming_sport_report = sport_filter.apply(upcoming_items)
+    schedule_stats["sport_filter"] = {
+        "at_merge": sport_report,
+        "today_match": today_sport_report,
+        "upcoming": upcoming_sport_report,
+    }
+    schedule_stats["non_ball_sport_dropped"] = (
+        today_sport_report["rejected"] + upcoming_sport_report["rejected"]
+    )
+    # An event nobody could classify is held back rather than shown, but it is
+    # never binned quietly: it is named here so a cricket match that stopped
+    # arriving is a line in the run log instead of a gap on the page.
+    quarantined = (today_sport_report["quarantined_events"]
+                   + upcoming_sport_report["quarantined_events"])
+    schedule_stats["sport_quarantined"] = quarantined
+    # The filter decides; this re-reads what survived and looks for another
+    # sport in it. It should always be empty - if it is not, something was
+    # published on a guess that the gazetteer disagrees with.
+    leaks = today_sport_report["leaks"] + upcoming_sport_report["leaks"]
+    schedule_stats["sport_leaks"] = leaks
+    # Every cricket and football fixture the raw feeds carried, checked against
+    # what actually reached the tabs. A leak is visible on the page; a fixture
+    # that went missing is not, so it has to be counted to be seen at all.
+    never_dropped = sport_filter.never_dropped_audit(
+        early_sport_report["examples"] + sport_report["rejected_examples"],
+        quarantined)
+    schedule_stats["sport_never_dropped"] = never_dropped
+
+    published_states = {}
+    for card in today_items + upcoming_items:
+        state = str(card.get("sport_class") or "")
+        published_states[state] = published_states.get(state, 0) + 1
+    schedule_stats["sport_pipeline"] = {
+        "raw_events": raw_sport_total,
+        "cricket_kept": sport_report["states"].get("confirmed_cricket", 0)
+                        + sport_report["states"].get("likely_cricket", 0),
+        "football_kept": sport_report["states"].get("confirmed_football", 0)
+                         + sport_report["states"].get("likely_football", 0),
+        "other_discarded": (early_sport_report["discarded"]
+                            + sport_report["rejected"]),
+        "unresolved": sport_report["quarantined"],
+        "today_final": len(today_items),
+        "upcoming_final": len(upcoming_items),
+        "published_states": published_states,
+        "other_sport_leak": len(leaks),
+        "ball_sport_wrongly_refused": len(never_dropped["wrongly_refused"]),
+    }
+    print("   sport pipeline: "
+          f"raw {raw_sport_total} -> cricket "
+          f"{schedule_stats['sport_pipeline']['cricket_kept']}, football "
+          f"{schedule_stats['sport_pipeline']['football_kept']}, discarded "
+          f"{schedule_stats['sport_pipeline']['other_discarded']}, unresolved "
+          f"{sport_report['quarantined']} | today {len(today_items)}, "
+          f"upcoming {len(upcoming_items)} | leak {len(leaks)}, "
+          f"wrongly refused {len(never_dropped['wrongly_refused'])}")
+    for row in never_dropped["wrongly_refused"][:12]:
+        print(f"      WRONGLY REFUSED ({row['reads_as']}): {row['name']}"
+              f" - {row['refused_because']}")
+
+    if quarantined or leaks:
+        print(f"   sport filter: {len(quarantined)} quarantined, {len(leaks)} leak(s)")
+        for row in quarantined[:12]:
+            print(f"      quarantined: {row['name']} ({row['source']}) - {row['reason']}")
+        for row in leaks[:12]:
+            print(f"      LEAK: {row['name']} looks like {row['sport']} "
+                  f"({row['evidence']}) but published as {row['classified_as']}")
+
     # Routes no viewer could ever reach, removed from every publish path -
     # including the carried-forward ones the verifier never sees. Reported so a
     # number appears in the run log rather than only in a diff.
     schedule_stats["undeliverable_routes_dropped"] = undeliverable_dropped
+
+    # Written out so a wrong rejection can be audited after the fact: the name,
+    # the source that carried it, and the evidence it was refused on.
+    _write_sport_decisions({
+        "generated_at": now.isoformat(),
+        "pipeline": schedule_stats.get("sport_pipeline", {}),
+        "discarded_early": early_sport_report["examples"],
+        "discarded": sport_report["rejected_examples"],
+        "quarantined": quarantined,
+        "leaks": leaks,
+        "ball_sport_wrongly_refused": never_dropped["wrongly_refused"],
+    })
 
     allowed_sports = None
     if isinstance(events_cfg, dict):

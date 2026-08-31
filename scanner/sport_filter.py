@@ -1,0 +1,692 @@
+"""Is this event cricket or football? Decided on evidence, never on one keyword.
+
+Today Match and Upcoming show cricket and football, and nothing else. Two
+failures are possible and both are real:
+
+  * a valid cricket or football fixture is dropped because nobody labelled it
+  * another sport reaches the tab because nobody labelled it either
+
+The published data on 2026-08-30 shows why neither is solved by reading one
+field. Of 23 events whose `sport_type` said "other", seven were football and
+one was cricket:
+
+    Machico vs Camacha                    Taça de Portugal      football
+    Aberdeen vs Rangers                   (no competition)      football
+    Arzignano Valchiampo vs PRO Vercelli  Serie C - Girone A    football
+    Dolomiti Bellunesi vs Alcione         Serie C - Girone A    football
+    Lumezzane vs Giana Erminio            Serie C - Girone A    football
+    Pergolettese vs Union Brescia         Serie C - Girone A    football
+    União PR vs Campo Mourão              Paranaense - 3        football
+    Top End Series, Final Teams           (no competition)      cricket
+
+while in the same list "BC Lions vs Ottawa Redblacks / CFL" is gridiron and
+"Boland Cavaliers v Suzuki Griquas" is Currie Cup rugby - both of which read as
+football if you go by the shape of the name.
+
+So the sport is worked out in stages, in order of how much each can be trusted,
+and an event that survives every stage without producing evidence is not
+guessed at in either direction. It is held back:
+
+  1. the source's own structured sport field
+  2. the competition or league
+  3. the title and team names
+  4. a gazetteer of clubs and national sides, per sport
+  5. a second pass across the whole batch - the same fixture arriving from
+     another source, already classified, settles it
+
+  confirmed_cricket / confirmed_football   published
+  likely_cricket   / likely_football       published
+  confirmed_other                          refused
+  unknown                                  quarantined, and reported by name
+
+`unknown` is the absence of a verdict, not a verdict, so it never reaches a
+tab. It is also never silently binned: every quarantined event is listed in the
+run report with its source and the reason nothing could be established, so a
+fixture that should have been there shows up as a name to fix rather than as a
+gap nobody sees.
+
+`audit_visible` then re-reads what survived and looks for another sport in it,
+independently of the decision that let it through, so a leak is a number in the
+report rather than a tennis match on the front page.
+"""
+from __future__ import annotations
+
+import re
+from typing import Any, Dict, Iterable, List, Optional, Tuple
+
+CONFIRMED_CRICKET = "confirmed_cricket"
+CONFIRMED_FOOTBALL = "confirmed_football"
+LIKELY_CRICKET = "likely_cricket"
+LIKELY_FOOTBALL = "likely_football"
+CONFIRMED_OTHER = "confirmed_other"
+UNKNOWN = "unknown"
+
+#: Only a positive cricket or football verdict reaches a tab.
+PUBLISHABLE = frozenset({
+    CONFIRMED_CRICKET, CONFIRMED_FOOTBALL, LIKELY_CRICKET, LIKELY_FOOTBALL,
+})
+CRICKET_STATES = frozenset({CONFIRMED_CRICKET, LIKELY_CRICKET})
+FOOTBALL_STATES = frozenset({CONFIRMED_FOOTBALL, LIKELY_FOOTBALL})
+
+SPORT_FIELDS = (
+    "sport_type", "sport", "event_category", "category_name", "type",
+    "discipline", "game_type",
+)
+COMPETITION_FIELDS = (
+    "competition", "league", "tournament", "series", "event_name", "title",
+    "group_title", "tour",
+)
+NAME_FIELDS = ("name", "match_name", "title", "short_name", "event_name")
+
+
+def _text(value: Any) -> str:
+    return " ".join(str(value or "").split()).casefold()
+
+
+def _gather(item: Dict[str, Any], fields: Iterable[str]) -> str:
+    parts = []
+    for field in fields:
+        value = item.get(field)
+        if isinstance(value, str) and value.strip():
+            parts.append(value)
+    return _text(" | ".join(parts))
+
+
+def _word(pattern: str) -> re.Pattern:
+    """Match as a whole word, so `test` does not fire inside `contest`."""
+    return re.compile(rf"(?<![a-z0-9]){pattern}(?![a-z0-9])", re.IGNORECASE)
+
+
+def _any(patterns: Iterable[re.Pattern], text: str) -> str:
+    for pattern in patterns:
+        found = pattern.search(text)
+        if found:
+            return found.group(0)
+    return ""
+
+
+# ── Cricket ───────────────────────────────────────────────────────────────────
+CRICKET_STRONG = [_word(p) for p in (
+    "cricket", "t20", "t20i", "t10", "odi", "one ?day international",
+    "test match", "first class", "the hundred",
+    "ipl", "bbl", "psl", "cpl", "wpl", "lpl", "bpl", "mlc", "ilt20", "sa20",
+    "icc", "ashes", "ranji", "vijay hazare", "syed mushtaq",
+    "duleep trophy", "irani cup", "county championship", "royal london",
+    "vitality blast", "super smash", "plunket shield", "sheffield shield",
+    "marsh cup", "ford trophy", "quaid-e-azam",
+    "asia cup", "champions trophy", "world test championship", "wtc",
+    "bangladesh premier league", "indian premier league",
+    "pakistan super league", "caribbean premier league",
+    "lanka premier league", "big bash", "major league cricket",
+    "top end", "willow", "d50", "50 ?over", "hundred ball",
+)]
+CRICKET_WEAK = [_word(p) for p in (
+    "wickets?", "overs?", "innings", "stumps", "batting", "bowling",
+    "kings ?xi", "super ?kings", "knight ?riders", "zalmi", "qalandars",
+    "sixers", "scorchers", "renegades", "hurricanes", "sunrisers",
+    "royal challengers", "rajvansh", "soormas", "strikers", "blasters",
+)]
+
+# ── Football ──────────────────────────────────────────────────────────────────
+FOOTBALL_STRONG = [_word(p) for p in (
+    "football", "soccer", "futbol", "fútbol", "futebol", "socca",
+    "uefa", "fifa", "conmebol", "concacaf", "afc cup", "afc champions",
+    "premier ?league", "la ?liga", "laliga", "serie ?[abcd]", "bundesliga",
+    "ligue ?[12]", "eredivisie", "primeira ?liga", "liga ?portugal",
+    "champions ?league", "europa ?league", "conference ?league",
+    "mls", "isl", "i-?league", "super ?lig", "superliga", "allsvenskan",
+    "eliteserien", "ekstraklasa", "j1 ?league", "j2 ?league", "k ?league",
+    "a-?league", "brasileir[ãa]o", "libertadores", "sudamericana",
+    "copa ?del ?rey", "coppa ?italia", "dfb ?pokal", "fa ?cup", "efl",
+    "carabao", "efl ?championship", "sky ?bet championship",
+    "league ?one", "league ?two", "national ?league",
+    "ta[çc]a de portugal", "paranaense", "paulista", "carioca", "gaúcho",
+    "girone", "primera ?división", "liga ?mx", "scottish", "eerste ?divisie",
+    "world ?cup qualif", "euro qualif", "nations ?league", "primavera",
+)]
+FOOTBALL_WEAK = [_word(p) for p in (
+    r"f\.?c\.?", r"a\.?f\.?c\.?", r"s\.?c\.?", r"c\.?f\.?", r"u\.?d\.?",
+    "united", "city", "athletic", "atl[ée]tico", "real", "sporting",
+    "dynamo", "dinamo", "spartak", "lokomotiv", "olympiacos", "galatasaray",
+    "fenerbah[çc]e", "besiktas", "ajax", "psv", "feyenoord", "benfica",
+    "porto", "celtic", "rangers", "rovers", "albion",
+    # Not bare "championship": the golf TOUR Championship and the County
+    # Championship both carry it, and the football competitions that mean it -
+    # EFL, Sky Bet - are named in full above. Keeping it here made the audit
+    # read a refused golf broadcast back as football.
+    "u1[5-9]", "u2[0-3]", "reserves",
+)]
+
+# ── Everything else, named so it can be refused with confidence ───────────────
+# The two-word forms matter: "Bulls", "Sharks", "Lions", "Chiefs" and "Tigers"
+# each belong to three different sports, so only unambiguous names are listed.
+OTHER_SPORTS = {
+    "tennis": [_word(p) for p in (
+        "tennis", "atp", "wta", "wimbledon", "roland ?garros",
+        "australian ?open", "davis ?cup", "billie ?jean", "itf",
+    )],
+    "table tennis / pickleball": [_word(p) for p in (
+        "table ?tennis", "ping ?pong", "pickleball", "mlp finals", "ptt",
+        "padel", "squash",
+    )],
+    "basketball": [_word(p) for p in (
+        "basketball", "nba", "wnba", "euroleague", "fiba",
+        "cleveland cavaliers", "mavericks", "knicks", "lakers", "celtics",
+        "atlanta dream", "dallas wings", "minnesota lynx", "golden state",
+    )],
+    "hockey": [_word(p) for p in (
+        "ice ?hockey", "field ?hockey", "nhl", "khl", "hockey league",
+        "fih", "pro ?league hockey",
+    )],
+    "badminton": [_word(p) for p in (
+        "badminton", "bwf", "thomas ?cup", "uber ?cup", "sudirman",
+    )],
+    "motorsport": [_word(p) for p in (
+        "formula ?[123e]", "f1", "motogp", "moto2", "moto3", "nascar",
+        "indycar", "indy ?nxt", "wrc", "rally", "le ?mans", "gt world",
+        "superbike", "dtm", "grand ?prix", "milwaukee mile",
+    )],
+    "kabaddi": [_word(p) for p in ("kabaddi", "pkl", "pro kabaddi")],
+    "wrestling / mma / boxing": [_word(p) for p in (
+        "wrestling", "wwe", "aew", "ufc", "mma", "bkfc", "boxing", "bellator",
+    )],
+    "baseball": [_word(p) for p in (
+        "baseball", "mlb", "npb", "kbo", "world series",
+        "yankees", "red sox", "dodgers", "mets", "cubs", "braves", "orioles",
+        "marlins", "nationals", "padres", "rays", "twins", "brewers",
+        "cardinals", "pirates", "astros", "rockies", "mariners", "blue jays",
+        "guardians", "white sox", "phillies", "angels", "athletics",
+    )],
+    "rugby": [_word(p) for p in (
+        "rugby", "six ?nations", "super ?rugby", "nrl", "currie ?cup",
+        "united rugby", "griquas", "boland cavaliers", "blue bulls",
+        "golden lions", "western province", "free state cheetahs",
+        "sale sharks", "exeter chiefs", "leicester tigers",
+        "glasgow warriors", "northampton saints", "saracens", "harlequins",
+        "leinster", "munster", "ulster", "connacht", "ospreys", "scarlets",
+        "top ?14", "pro ?d2", "state of origin",
+    )],
+    "gridiron": [_word(p) for p in (
+        "nfl", "cfl", "american ?football", "gridiron", "super ?bowl",
+        "redblacks", "roughriders", "tiger-?cats", "blue bombers",
+        "argonauts", "stampeders", "bc lions",
+    )],
+    "golf": [_word(p) for p in (
+        "golf", "pga", "liv golf", "ryder ?cup", "masters tournament",
+        "open championship", "dp world tour", "k club",
+    )],
+    "cycling": [_word(p) for p in (
+        "cycling", "vuelta", "tour de france", "giro d'?italia", "uci",
+        "criterium", "cross country olympic", "xco", "peloton",
+    )],
+    "esports": [_word(p) for p in (
+        "esports", "dota", "counter-?strike", "cs2", "valorant",
+        "league of legends",
+    )],
+    "poker / cards": [_word(p) for p in (
+        "poker", "buy ?in", "all ?in", "wsop", "blackjack",
+    )],
+    "horse racing": [_word(p) for p in (
+        "horse ?racing", "saratoga", "steeplechase", "belmont", "preakness",
+        "racecourse",
+    )],
+    "other": [_word(p) for p in (
+        "darts", "snooker", "bowling", "stepladder", "volleyball", "handball",
+        "athletics", "swimming", "weightlifting", "archery", "shooting",
+        "pentathlon", "chess", "netball", "lacrosse", "curling", "sumo",
+    )],
+}
+
+STRUCTURED_CRICKET = frozenset({"cricket"})
+STRUCTURED_FOOTBALL = frozenset({"football", "soccer"})
+#: Structured values that name another sport. "other", "sports", "live" and ""
+#: are NOT here: they say nothing, and reading them as a refusal is what would
+#: have dropped seven Serie C fixtures.
+STRUCTURED_OTHER = frozenset({
+    "tennis", "basketball", "hockey", "badminton", "motorsport", "racing",
+    "baseball", "golf", "kabaddi", "wrestling", "rugby", "cycling", "esports",
+    "volleyball", "handball", "boxing", "mma", "darts", "snooker", "athletics",
+    "table_tennis", "table tennis", "american_football", "nfl", "poker",
+})
+
+#: Countries that field a side in both sports, so a bare "India vs Thailand"
+#: cannot be settled by the country names alone.
+AMBIGUOUS_NATIONS = frozenset({
+    "india", "pakistan", "bangladesh", "sri lanka", "afghanistan", "nepal",
+    "england", "australia", "south africa", "new zealand", "ireland",
+    "scotland", "netherlands", "thailand", "malaysia", "hong kong", "usa",
+    "united states", "canada", "kenya", "namibia", "zimbabwe", "uganda",
+    "japan", "china", "singapore", "indonesia", "germany", "spain", "wales",
+})
+
+
+def _other_sport_hit(text: str) -> Tuple[str, str]:
+    for sport, patterns in OTHER_SPORTS.items():
+        found = _any(patterns, text)
+        if found:
+            return sport, found
+    return "", ""
+
+
+def _verdict(state: str, reason: str, evidence: str = "") -> Dict[str, Any]:
+    return {"state": state, "reason": reason, "evidence": evidence}
+
+
+def classify(item: Dict[str, Any]) -> Dict[str, Any]:
+    """Stages 1-4 for a single event. Stage 5 needs the whole batch."""
+    if not isinstance(item, dict):
+        return _verdict(UNKNOWN, "not an event record")
+    structured = _text(_gather(item, SPORT_FIELDS))
+    competition = _text(_gather(item, COMPETITION_FIELDS))
+    name = _text(_gather(item, NAME_FIELDS))
+    everything = " | ".join(part for part in (structured, competition, name) if part)
+
+    # 1. the source said so.
+    for token in structured.replace("|", " ").split():
+        if token in STRUCTURED_CRICKET:
+            return _verdict(CONFIRMED_CRICKET, "source sport field", token)
+        if token in STRUCTURED_FOOTBALL:
+            return _verdict(CONFIRMED_FOOTBALL, "source sport field", token)
+
+    # 2. the competition. Ahead of the structured "other sport" values, because
+    # a feed that files a Serie C fixture under "other" is wrong about the
+    # sport and right about the competition.
+    hit = _any(CRICKET_STRONG, competition)
+    if hit:
+        return _verdict(CONFIRMED_CRICKET, "competition", hit)
+    hit = _any(FOOTBALL_STRONG, competition)
+    if hit:
+        return _verdict(CONFIRMED_FOOTBALL, "competition", hit)
+
+    # 3. the title.
+    hit = _any(CRICKET_STRONG, name)
+    if hit:
+        return _verdict(CONFIRMED_CRICKET, "title", hit)
+    hit = _any(FOOTBALL_STRONG, name)
+    if hit:
+        return _verdict(CONFIRMED_FOOTBALL, "title", hit)
+
+    # 4. a named other sport anywhere. Only now, so a cricket or football
+    # signal above always wins - "Cricket Review Top End T20 Series" must not
+    # be refused for the word "series".
+    sport, found = _other_sport_hit(everything)
+    if sport:
+        return _verdict(CONFIRMED_OTHER, f"{sport} gazetteer", found)
+    for token in structured.replace("|", " ").split():
+        if token in STRUCTURED_OTHER:
+            return _verdict(CONFIRMED_OTHER, "source sport field", token)
+
+    # 5. club-name shapes, which only ever produce `likely`.
+    hit = _any(FOOTBALL_WEAK, everything)
+    if hit:
+        return _verdict(LIKELY_FOOTBALL, "club-name shape", hit)
+    hit = _any(CRICKET_WEAK, everything)
+    if hit:
+        return _verdict(LIKELY_CRICKET, "cricket-team shape", hit)
+
+    return _verdict(UNKNOWN, "no sport evidence in the record")
+
+
+# ── Stage 5: the second pass, which needs every event at once ────────────────
+
+_SPLIT = re.compile(r"\s+(?:vs?\.?|v|versus)\s+", re.IGNORECASE)
+_TIDY = re.compile(r"\b(?:live|hd|fhd|sd|women|men|w|u\d{2}|\d{1,2} \w{3} \d{4})\b",
+                   re.IGNORECASE)
+
+
+def _participants(item: Dict[str, Any]) -> List[str]:
+    """The two sides of a fixture, as comparable text."""
+    name = str(item.get("name") or item.get("match_name") or "")
+    sides = [_TIDY.sub("", part).strip(" .-|,") for part in _SPLIT.split(name)]
+    return [_text(side) for side in sides if len(_text(side)) > 2]
+
+
+def _second_pass(item: Dict[str, Any],
+                 settled: List[Tuple[Dict[str, Any], Dict[str, Any]]]
+                 ) -> Optional[Dict[str, Any]]:
+    """Can another event in this batch settle what this one is?
+
+    Both sides appearing together in a fixture somebody else has already
+    classified is real evidence - it is the same match, arriving twice. One
+    side alone is not: a club can share a city, a sponsor or a name with a team
+    in another sport. And two national sides that both play cricket and
+    football settle nothing at all, which is why India vs Thailand stays
+    unresolved rather than borrowing a verdict from a different India fixture.
+    """
+    sides = _participants(item)
+    if len(sides) < 2:
+        return None
+    if all(side in AMBIGUOUS_NATIONS for side in sides):
+        return None
+    for other, verdict in settled:
+        other_sides = _participants(other)
+        if len(other_sides) < 2:
+            continue
+        matched = sum(
+            1 for side in sides
+            if any(side in candidate or candidate in side for candidate in other_sides)
+        )
+        if matched < 2:
+            continue
+        state = (LIKELY_CRICKET if verdict["state"] in CRICKET_STATES
+                 else LIKELY_FOOTBALL)
+        return _verdict(state, "same fixture from another source",
+                        str(other.get("name") or "")[:60])
+    return None
+
+
+# ── Stage 6: ask the world, when the record will not say ────────────────────
+
+#: Structured sport values that carry no claim, so a card holding one is not
+#: classified - it is unlabelled, and has to be looked up rather than guessed.
+NO_CLAIM = frozenset({"", "other", "sports", "sport", "live", "event", "misc",
+                      "unknown", "none", "general"})
+
+
+def _fixture_date(item: Dict[str, Any]) -> str:
+    for field in ("start_time", "start_at", "date", "event_date"):
+        value = str(item.get(field) or "")
+        if len(value) >= 10 and value[4] == "-" and value[7] == "-":
+            return value[:10]
+    return ""
+
+
+def needs_fixture_check(item: Dict[str, Any], verdict: Dict[str, Any]) -> bool:
+    """Two identifiable sides, and nothing trustworthy saying which sport.
+
+    These are the events a keyword cannot settle, because the keyword is the
+    same for all of them: `Boland Cavaliers v Suzuki Griquas` is rugby,
+    `Lumezzane vs Giana Erminio` is Serie C football, and `India vs Thailand`
+    is either. A decision here has to come from a fixture lookup, not a
+    pattern.
+
+    A card whose source names cricket or football outright is left alone -
+    that is a real claim from the feed, and re-litigating every one of them
+    would mean thousands of lookups to change nothing.
+    """
+    if len(_participants(item)) < 2:
+        return False
+    structured = _text(_gather(item, SPORT_FIELDS)).replace("|", " ").split()
+    claimed = [token for token in structured if token not in NO_CLAIM]
+    if not claimed:
+        # Nothing claimed at all: unlabelled, whatever the title happens to
+        # look like.
+        return True
+    if any(token in STRUCTURED_CRICKET or token in STRUCTURED_FOOTBALL
+           for token in claimed):
+        # The source says cricket or football. Taken at face value.
+        return False
+    # The source names some other sport. If the rest of the record agrees,
+    # there is nothing to resolve; if it disagrees, that is a conflict and the
+    # fixture decides.
+    return verdict["state"] in (UNKNOWN, CONFIRMED_CRICKET, CONFIRMED_FOOTBALL,
+                                LIKELY_CRICKET, LIKELY_FOOTBALL)
+
+
+def _apply_fixture_verdict(answer: Dict[str, Any]) -> Dict[str, Any]:
+    sport = str(answer.get("sport") or "")
+    if not answer.get("confirmed"):
+        return _verdict(UNKNOWN, "fixture lookup: " + str(answer.get("reason") or
+                                                          "not confirmed"))
+    if sport == "cricket":
+        return _verdict(CONFIRMED_CRICKET, "fixture lookup",
+                        str(answer.get("reason") or ""))
+    if sport == "football":
+        return _verdict(CONFIRMED_FOOTBALL, "fixture lookup",
+                        str(answer.get("reason") or ""))
+    return _verdict(CONFIRMED_OTHER, f"fixture lookup: {sport}",
+                    str(answer.get("reason") or ""))
+
+
+def resolve(items: Iterable[Dict[str, Any]],
+            verify_fixtures: Optional[Any] = None
+            ) -> List[Tuple[Dict[str, Any], Dict[str, Any]]]:
+    """Classify every event, then resolve what the record could not settle.
+
+    Three passes. The keyword stages first, because most events say what they
+    are. Then the batch itself, because the same fixture often arrives from a
+    second source that did label it. Then, for anything still resting on
+    nothing, the fixture is looked up - and that answer overrules the
+    patterns, because a pattern was never evidence about these.
+    """
+    first = [(item, classify(item)) for item in items if isinstance(item, dict)]
+    settled = [pair for pair in first if pair[1]["state"] in PUBLISHABLE]
+
+    second = []
+    for item, verdict in first:
+        if verdict["state"] == UNKNOWN:
+            verdict = _second_pass(item, settled) or verdict
+        second.append((item, verdict))
+
+    wanted = [(item, verdict) for item, verdict in second
+              if needs_fixture_check(item, verdict)]
+    if not wanted:
+        return second
+
+    if verify_fixtures is None:
+        from scanner import fixture_lookup  # noqa: PLC0415 - optional at import
+        verify_fixtures = fixture_lookup.verify_many
+        key_of = fixture_lookup.cache_key
+    else:
+        from scanner import fixture_lookup  # noqa: PLC0415
+        key_of = fixture_lookup.cache_key
+
+    queries = []
+    for item, _ in wanted:
+        sides = _participants(item)
+        queries.append((sides[0], sides[1], _fixture_date(item),
+                        _gather(item, COMPETITION_FIELDS)[:80]))
+    answers = verify_fixtures(queries) or {}
+
+    resolved_by_fixture = {}
+    for (item, _), query in zip(wanted, queries):
+        answer = answers.get(key_of(query[0], query[1], query[2]))
+        if isinstance(answer, dict):
+            resolved_by_fixture[id(item)] = _apply_fixture_verdict(answer)
+
+    out = []
+    for item, verdict in second:
+        looked_up = resolved_by_fixture.get(id(item))
+        if looked_up is not None:
+            verdict = looked_up
+        elif needs_fixture_check(item, verdict):
+            # The lookup did not get to this one - past the budget, or every
+            # provider was quiet. It waits rather than publishing on a guess.
+            verdict = _verdict(UNKNOWN, "fixture lookup has not run yet")
+        out.append((item, verdict))
+    return out
+
+
+# ── Applying it, and proving afterwards that nothing leaked ──────────────────
+
+def apply(items: List[Dict[str, Any]], verify_fixtures: Optional[Any] = None
+          ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """Keep cricket and football; hold everything else back, and say what.
+
+    `verify_fixtures` exists so the tests can answer the lookups themselves.
+    Left alone, it reaches the real providers.
+    """
+    kept: List[Dict[str, Any]] = []
+    report: Dict[str, Any] = {
+        "total": 0, "published": 0, "rejected": 0, "quarantined": 0,
+        "states": {}, "by_source": {},
+        "rejected_examples": [], "quarantined_events": [], "leaks": [],
+    }
+    for item, verdict in resolve(items, verify_fixtures=verify_fixtures):
+        state = verdict["state"]
+        report["total"] += 1
+        report["states"][state] = report["states"].get(state, 0) + 1
+
+        sources = item.get("source_ids")
+        if not isinstance(sources, list) or not sources:
+            sources = [str(item.get("source_id") or "unknown")]
+        for source in sources:
+            bucket = report["by_source"].setdefault(
+                str(source), {"total": 0, "cricket": 0, "football": 0,
+                              "quarantined": 0, "rejected": 0, "published": 0})
+            bucket["total"] += 1
+            if state in CRICKET_STATES:
+                bucket["cricket"] += 1
+            elif state in FOOTBALL_STATES:
+                bucket["football"] += 1
+
+        item["sport_class"] = state
+        item["sport_class_reason"] = verdict["reason"]
+        if verdict.get("evidence"):
+            item["sport_class_evidence"] = verdict["evidence"]
+
+        # The card's badge reads `sport_type`, so a fixture established here
+        # has to be written back or the page contradicts the decision that put
+        # it there. Seen on Upcoming: `Lumezzane vs Giana Erminio` and
+        # `Pergolettese vs Union Brescia` are Serie C football, were published
+        # as football, and showed an OTHER badge - because the feed had filed
+        # them under "other" and nothing had corrected it.
+        #
+        # Only ever overwritten in favour of what was actually established:
+        # a competition, or a fixture lookup, both of which know more than a
+        # feed that shrugged.
+        established = ("cricket" if state in CRICKET_STATES
+                       else "football" if state in FOOTBALL_STATES else "")
+        if established and _text(item.get("sport_type")) != established:
+            item["sport_type_from_source"] = item.get("sport_type")
+            item["sport_type"] = established
+
+        if state in PUBLISHABLE:
+            kept.append(item)
+            report["published"] += 1
+            for source in sources:
+                report["by_source"][str(source)]["published"] += 1
+        elif state == UNKNOWN:
+            report["quarantined"] += 1
+            for source in sources:
+                report["by_source"][str(source)]["quarantined"] += 1
+            report["quarantined_events"].append({
+                "name": str(item.get("name") or "")[:80],
+                "source": ", ".join(str(s) for s in sources)[:60],
+                "competition": str(item.get("competition") or "")[:60],
+                "sport_type": str(item.get("sport_type") or "")[:30],
+                "reason": verdict["reason"],
+            })
+        else:
+            report["rejected"] += 1
+            for source in sources:
+                report["by_source"][str(source)]["rejected"] += 1
+            if len(report["rejected_examples"]) < 40:
+                report["rejected_examples"].append({
+                    "name": str(item.get("name") or "")[:80],
+                    "source": ", ".join(str(s) for s in sources)[:60],
+                    "competition": str(item.get("competition") or "")[:60],
+                    "sport_type": str(item.get("sport_type") or "")[:30],
+                    "reason": verdict["reason"],
+                    "evidence": verdict["evidence"],
+                })
+
+    report["leaks"] = audit_visible(kept)
+    return kept, report
+
+
+def audit_visible(items: Iterable[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """Re-read what is about to be published, looking for another sport.
+
+    The filter decides; this checks the decision independently by scanning the
+    text of every surviving card against the other-sport gazetteer. A
+    `confirmed_*` verdict came from the source's own field or a named
+    competition and outranks a stray word, so only the `likely_*` cards are
+    re-examined - which is exactly where a wrong guess would hide.
+    """
+    leaks = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        state = str(item.get("sport_class") or "")
+        if state in (CONFIRMED_CRICKET, CONFIRMED_FOOTBALL):
+            continue
+        text = " | ".join(filter(None, (
+            _gather(item, SPORT_FIELDS),
+            _gather(item, COMPETITION_FIELDS),
+            _gather(item, NAME_FIELDS),
+        )))
+        sport, found = _other_sport_hit(text)
+        if sport:
+            leaks.append({"name": str(item.get("name") or "")[:70],
+                          "sport": sport, "evidence": found,
+                          "classified_as": state})
+    return leaks
+
+
+def discard_confirmed_other(items: List[Dict[str, Any]]
+                            ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """Drop the events that are provably another sport, and only those.
+
+    An early pass, run before the merge has assembled each fixture's metadata.
+    At that point a card may have a name and nothing else, so "no evidence" is
+    a statement about the pipeline rather than about the match - which is why
+    nothing is quarantined here and no fixture is looked up. Only a named other
+    sport is removed, because that much is already certain: a title carrying
+    `WNBA` or `Currie Cup` is not going to become cricket after enrichment.
+
+    Measured on 2026-08-31: applying the full rules at this stage left 517 of
+    1062 events unresolved and lost 201 real cricket and football fixtures.
+    Applying only this one loses none of them.
+    """
+    kept, report = [], {"total": 0, "discarded": 0, "examples": []}
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        report["total"] += 1
+        verdict = classify(item)
+        if verdict["state"] != CONFIRMED_OTHER:
+            kept.append(item)
+            continue
+        report["discarded"] += 1
+        if len(report["examples"]) < 60:
+            report["examples"].append({
+                "name": str(item.get("name") or "")[:80],
+                "source": ", ".join(str(s) for s in (item.get("source_ids") or
+                                                     [item.get("source_id") or "?"]))[:60],
+                "competition": str(item.get("competition") or "")[:60],
+                "sport_type": str(item.get("sport_type") or "")[:30],
+                "reason": verdict["reason"],
+                "evidence": verdict["evidence"],
+            })
+    return kept, report
+
+
+def never_dropped_audit(discarded: Iterable[Dict[str, Any]],
+                        quarantined: Iterable[Dict[str, Any]]) -> Dict[str, Any]:
+    """Re-read what this filter refused, and check no ball sport is in there.
+
+    The first version of this compared the raw feeds against the final tabs,
+    which measured the wrong thing: 105 fixtures came back "missing" and they
+    were not missing at all. `ADT vs Sport Huancayo` and `Asociacion Deportiva
+    Tarma Vs Sport Huancayo` are one match from two feeds, and the merge had
+    folded them into a single card - so the audit was reporting the merge
+    working, and the clock retiring finished matches, as losses.
+
+    What this filter can actually be blamed for is what it refused. So that is
+    what gets re-read: every discarded and quarantined row, classified again
+    from scratch. Anything that comes back cricket or football is a real
+    mistake and is named.
+    """
+    wrongly_refused = []
+    for row in list(discarded) + list(quarantined):
+        if not isinstance(row, dict):
+            continue
+        # The rows are decision records - name, source, reason - so the sport
+        # is read back from the name and whatever else was kept with it.
+        verdict = classify({"name": row.get("name"),
+                            "competition": row.get("competition"),
+                            "sport_type": row.get("sport_type")})
+        if verdict["state"] in CRICKET_STATES or verdict["state"] in FOOTBALL_STATES:
+            wrongly_refused.append({
+                "name": str(row.get("name") or "")[:80],
+                "source": str(row.get("source") or "")[:60],
+                "refused_because": str(row.get("reason") or "")[:80],
+                "reads_as": verdict["state"],
+            })
+    return {"refused": len(list(discarded)) + len(list(quarantined)),
+            "wrongly_refused": wrongly_refused}
+
+
+def is_publishable(item: Dict[str, Any]) -> bool:
+    return classify(item)["state"] in PUBLISHABLE
