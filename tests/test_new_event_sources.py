@@ -35,6 +35,7 @@ from __future__ import annotations
 import json
 import sys
 import unittest
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -235,6 +236,12 @@ FANCODE = {
     ],
 }
 
+def _iso(hours):
+    """An absolute timestamp relative to now, for fixtures that must stay live."""
+    return (datetime.now(timezone.utc)
+            + timedelta(hours=hours)).strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+
 FOOTY_LIVE = {
     "playlist_name": "Live Sports Events", "total_links": 0,
     "matches": [{
@@ -245,8 +252,13 @@ FOOTY_LIVE = {
         "Team 1 Logo": "https://logo.test/fih.webp",
         "Team 2 Name": "FIH Hockey World Cup",
         "Team 2 Logo": "https://logo.test/fih.webp",
-        "Start time": "2026-08-18T08:00:00.000Z",
-        "End time": "2026-08-30T18:00:00.000Z",
+        # Relative, not pinned. These were "2026-08-18" and "2026-08-30",
+        # which meant the fixture described a live match until the night of
+        # the 30th and a finished one from the 31st - and
+        # `source_says_ended` then made the publishable test fail on a date
+        # change rather than on a code change.
+        "Start time": _iso(hours=-6),
+        "End time": _iso(hours=+6),
         "Status": "LIVE",
         "referer": "https://bhalocast.pro/",
         "User agent": "Mozilla/5.0",
@@ -384,8 +396,12 @@ class EachRealLayoutParsesTests(unittest.TestCase):
         record = parse("srhady-crichd-footy-live", FOOTY_LIVE)[0]
         self.assertEqual(record["name"], "Hockey World Cup 2026")
         self.assertEqual(record["competition"], "FIH Hockey World Cup")
-        self.assertEqual(record["start_time"][:10], "2026-08-18")
-        self.assertEqual(record["end_time"][:10], "2026-08-30")
+        # Compared against the fixture rather than a written-out date: what
+        # this test is checking is that a key with a space in it round-trips,
+        # not what day the match is on.
+        source = FOOTY_LIVE["matches"][0]
+        self.assertEqual(record["start_time"][:10], source["Start time"][:10])
+        self.assertEqual(record["end_time"][:10], source["End time"][:10])
 
     def test_willow_reads_the_alpha_server_dictionary(self):
         record = parse("srhady-willow-event", WILLOW_EVENT)[0]
