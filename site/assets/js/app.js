@@ -3277,9 +3277,8 @@ function bindEventChannelStrip(shell, item) {
 // countdown, clock, stream summary, verification tick, watch/favorite
 // actions) is left out on purpose, not merely hidden by CSS - the request
 // was for those fields to not exist on this card at all. Scoped to the
-// Today Match tab on a genuinely live item only (see the call site in
-// createEventCard), so the Upcoming tab keeps its existing card, unchanged,
-// in every respect.
+// Today Match tab for every match state (see the call site in createEventCard),
+// so the Upcoming tab keeps its existing card, unchanged, in every respect.
 // What a Today Match card must say about itself now that the tab holds matches
 // that have not started.
 //
@@ -3386,7 +3385,7 @@ function createEventCard(item, visualIndex) {
   const channelOnly = isChannelOnlyEventCard(item);
   const sport = eventSport(item);
 
-  if (state.view === VIEW.EVENT && liveLike) {
+  if (state.view === VIEW.EVENT) {
     return createTodayMatchCardV2(item, visualIndex, { card, playable, parts, channelOnly, sport });
   }
 

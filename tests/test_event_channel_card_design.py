@@ -353,9 +353,9 @@ class TheAssetsAreShippedAndVersionedTogether(unittest.TestCase):
 class TodayMatchCardV2(unittest.TestCase):
     """The Today Match redesign, against a supplied reference file: a
     minimal poster-led card - serial badge, category badge, league name,
-    title, channel buttons and nothing else - scoped to the Today Match tab
-    on a genuinely live item, with the Upcoming tab's existing card left
-    untouched in every respect. The rendered geometry and the real masonry
+    title, channel buttons and nothing else - scoped to every item on the
+    Today Match tab, with the Upcoming tab's existing card left untouched in
+    every respect. The rendered geometry and the real masonry
     layout are proved in a real browser separately; these assertions are
     what must hold even without one.
     """
@@ -363,7 +363,8 @@ class TodayMatchCardV2(unittest.TestCase):
     def test_the_minimal_card_is_only_reached_from_the_today_match_tab(self):
         body = APP.split("function createEventCard(item, visualIndex) {", 1)[1].split(
             "\nfunction ", 1)[0]
-        self.assertIn("state.view === VIEW.EVENT && liveLike", body)
+        self.assertIn("if (state.view === VIEW.EVENT) {", body)
+        self.assertNotIn("state.view === VIEW.EVENT && liveLike", body)
         self.assertIn("createTodayMatchCardV2(", body)
 
     def test_the_minimal_card_carries_none_of_the_hidden_fields(self):
