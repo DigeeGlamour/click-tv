@@ -200,6 +200,10 @@ class FinalDesignContractTests(unittest.TestCase):
         allowed_prefixes = (
             ".sidebar-section.event-list-mode",
             ".sidebar-count-detail",
+            # The data-age label sits beside the count for the same
+            # reason the breakdown does: it describes the list, not a
+            # card, and the phone header is where a viewer reads it.
+            ".sidebar-data-age",
             ".event-preview-facts",
             ".event-preview-fact",
             "@keyframes eventEqualizer",

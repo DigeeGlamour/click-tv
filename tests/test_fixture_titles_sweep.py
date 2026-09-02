@@ -124,3 +124,97 @@ class ItRunsWhereTheListsAreFinal(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ASideAbbreviatedByItsFeed(unittest.TestCase):
+    """Report items [1], [5] and [7]: the card showed half a team name.
+
+    `Wolves vs Castle Rockers` is Belfast Wolves against Edinburgh Castle
+    Rockers in the European T20 Premier League, and `Chennai Strikers` is
+    Chennai Strikers Kings in the JITO Premier League. The word `Wolves` also
+    means Wolverhampton, so every expansion is scoped to the competition that
+    uses it - a card is worse off with a confidently wrong team than with a
+    short one.
+    """
+
+    OBSERVED = [
+        ("Wolves vs Castle Rockers", "ETPL",
+         "Belfast Wolves vs Edinburgh Castle Rockers"),
+        ("Guardians vs Dockers", "European T20 Premier League",
+         "Dublin Guardians vs Rotterdam Dockers"),
+        ("Indore Hawks vs Chennai Strikers 2 Sep 2026",
+         "JITO Premier League 2026",
+         "Indore Hawks vs Chennai Strikers Kings"),
+    ]
+
+    def test_each_observed_card_is_written_out(self):
+        for given, competition, expected in self.OBSERVED:
+            with self.subTest(given=given):
+                self.assertEqual(fixture_titles.tidy(given, competition),
+                                 expected)
+
+    def test_the_same_word_in_another_competition_is_untouched(self):
+        # The whole reason the table is scoped.
+        for competition in ("Premier League", "English Premier League",
+                            "FA Cup", "Championship", ""):
+            with self.subTest(competition=competition):
+                self.assertEqual(
+                    fixture_titles.tidy("Wolves vs Arsenal", competition),
+                    "Wolves vs Arsenal")
+
+    def test_a_side_the_table_does_not_know_keeps_its_spelling(self):
+        self.assertEqual(
+            fixture_titles.expand_sides("Wolves vs Someone Else", "ETPL"),
+            "Belfast Wolves vs Someone Else")
+
+    def test_a_full_name_already_written_out_is_left_alone(self):
+        for given in ("Belfast Wolves vs Edinburgh Castle Rockers",
+                      "Dublin Guardians vs Rotterdam Dockers"):
+            with self.subTest(given=given):
+                self.assertEqual(fixture_titles.expand_sides(given, "ETPL"),
+                                 given)
+
+    def test_the_season_tail_still_finds_the_competition(self):
+        for given, competition, expected in (
+            ("Wolves vs Castle Rockers", "ETPL 2026",
+             "Belfast Wolves vs Edinburgh Castle Rockers"),
+            ("Wolves vs Castle Rockers",
+             "European T20 Premier League 2026",
+             "Belfast Wolves vs Edinburgh Castle Rockers"),
+            ("Indore Hawks vs Chennai Strikers", "JITO Premier League 2026",
+             "Indore Hawks vs Chennai Strikers Kings"),
+        ):
+            with self.subTest(competition=competition):
+                self.assertEqual(
+                    fixture_titles.expand_sides(given, competition), expected)
+
+    def test_each_table_only_knows_its_own_teams(self):
+        # ETPL sides are not JITO sides, and the tail must not blur that.
+        self.assertEqual(
+            fixture_titles.expand_sides("Wolves vs Castle Rockers",
+                                        "JITO Premier League 2026"),
+            "Wolves vs Castle Rockers")
+
+    def test_the_separator_the_feed_used_is_kept(self):
+        self.assertEqual(
+            fixture_titles.expand_sides("Wolves v Castle Rockers", "ETPL"),
+            "Belfast Wolves v Castle Rockers".replace(
+                "v Castle Rockers", "v Edinburgh Castle Rockers"))
+
+    def test_something_that_is_not_two_sides_is_left_alone(self):
+        for given in ("European T20 Premier League", "Wolves", "TBC",
+                      "A vs B vs C"):
+            with self.subTest(given=given):
+                self.assertEqual(fixture_titles.expand_sides(given, "ETPL"),
+                                 given)
+
+    def test_the_expanded_name_still_classifies_as_cricket(self):
+        from scanner import sport_filter
+
+        card = {"name": "Wolves vs Castle Rockers", "competition": "ETPL",
+                "sport_type": "football"}
+        fixture_titles.apply([card])
+        self.assertEqual(card["name"],
+                         "Belfast Wolves vs Edinburgh Castle Rockers")
+        verdict = sport_filter.classify(card)
+        self.assertEqual(verdict["state"], "confirmed_cricket")

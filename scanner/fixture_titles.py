@@ -40,6 +40,85 @@ _PLACEHOLDER = re.compile(
 )
 
 
+#: Both sides of a fixture, however the feed spells the separator.
+_SPLIT_SIDES = re.compile(r"\s+(?:vs?\.?|v|versus)\s+", re.IGNORECASE)
+
+#: (competition marker, short side) -> the side's full name.
+#:
+#: Two feeds abbreviate a side to a word that means a different club
+#: elsewhere, so every entry is scoped to the competition it belongs to.
+#: `Wolves` is Belfast Wolves in the European T20 Premier League and
+#: Wolverhampton in the Premier League, and nothing here may confuse them:
+#: an expansion applies only when the card's own competition matches.
+#:
+#: Observed on the front page 2026-09-02, with the full names taken from
+#: the competitions' own schedules:
+#:
+#:     Wolves vs Castle Rockers      ETPL   Belfast / Edinburgh Castle
+#:     Indore Hawks vs Chennai Strikers
+#:                                   JITO   Chennai Strikers Kings
+TEAM_FULL_NAMES: Dict[str, Dict[str, str]] = {
+    "european t20 premier league": {
+        "wolves": "Belfast Wolves",
+        "castle rockers": "Edinburgh Castle Rockers",
+        "guardians": "Dublin Guardians",
+        "dockers": "Rotterdam Dockers",
+    },
+    "jito premier league": {
+        "chennai strikers": "Chennai Strikers Kings",
+    },
+}
+
+#: Competition spellings that mean the same competition as a key above.
+COMPETITION_ALIASES: Dict[str, str] = {
+    "etpl": "european t20 premier league",
+    "european t20": "european t20 premier league",
+    "jito": "jito premier league",
+    "jito premier league 2026": "jito premier league",
+}
+
+
+def _competition_key(competition: Any) -> str:
+    """The competition table key, or "" when this is not one of them."""
+    text = " ".join(str(competition or "").split()).casefold()
+    if not text:
+        return ""
+    if text in TEAM_FULL_NAMES:
+        return text
+    if text in COMPETITION_ALIASES:
+        return COMPETITION_ALIASES[text]
+    # A season or round tail is decoration, not a different competition.
+    for key in TEAM_FULL_NAMES:
+        if text.startswith(key):
+            return key
+    for alias, key in COMPETITION_ALIASES.items():
+        if re.match(rf"{re.escape(alias)}(?![a-z0-9])", text):
+            return key
+    return ""
+
+
+def expand_sides(name: Any, competition: Any) -> str:
+    """Both sides written out, when this competition abbreviates them.
+
+    A side already carrying its full name is left alone, and a side the
+    table does not know is left exactly as the feed spelled it - a half
+    expanded fixture is still the right fixture.
+    """
+    text = " ".join(str(name or "").split())
+    table = TEAM_FULL_NAMES.get(_competition_key(competition))
+    if not text or not table:
+        return text
+    parts = _SPLIT_SIDES.split(text)
+    if len(parts) != 2:
+        return text
+    separator = _SPLIT_SIDES.search(text).group(0)
+    sides = []
+    for side in parts:
+        full = table.get(side.strip().casefold())
+        sides.append(full if full else side.strip())
+    return separator.join(sides)
+
+
 def is_placeholder(name: Any) -> bool:
     """True when the title names no fixture at all."""
     return bool(_PLACEHOLDER.match(" ".join(str(name or "").split())))
@@ -47,7 +126,7 @@ def is_placeholder(name: Any) -> bool:
 
 def tidy(name: Any, competition: Any = "") -> str:
     """The title a card should carry, given the name and competition it has."""
-    cleaned = _tidy_fixture_title(str(name or ""))
+    cleaned = expand_sides(_tidy_fixture_title(str(name or "")), competition)
     if not is_placeholder(cleaned):
         return cleaned
     fallback = " ".join(str(competition or "").split())
@@ -74,4 +153,4 @@ def apply(items: Iterable[Dict[str, Any]]) -> List[Dict[str, str]]:
     return changed
 
 
-__all__ = ["apply", "is_placeholder", "tidy"]
+__all__ = ["apply", "expand_sides", "is_placeholder", "tidy"]

@@ -914,6 +914,7 @@ async function loadRuntimeAndManifest() {
   const manifestPath = state.runtime.data_manifest || '/data/manifest.json';
   state.manifest = await fetchJson(manifestPath, { cache: 'no-store' });
   state.manifestVersion = String(state.manifest.updated_at || Date.now());
+  renderDataFreshness();
   buildNavigation();
   applyNetworkMode(readNetworkMode(), false);
 
@@ -2963,6 +2964,46 @@ function eventUiFingerprint() {
   return state.currentItems.map((item) => `${item._uid}:${eventUiStatus(item)}`).join('|');
 }
 
+/* The data's own age, shown to the viewer.
+
+   Every published file carries `updated_at` and the page read it only to
+   decide whether to re-render, so a list served from the service worker
+   cache after a failed fetch looked exactly as current as a fresh one. The
+   scan runs every twenty minutes, so anything past forty is behind - and
+   saying so is the difference between a stale card and a wrong one. */
+const DATA_AGE_STALE_MINUTES = 40;
+
+function dataAgeMinutes() {
+  const stamp = state.manifest?.updated_at || state.manifestVersion;
+  const at = stamp ? Date.parse(stamp) : NaN;
+  if (!Number.isFinite(at)) return null;
+  return Math.max(0, Math.round((Date.now() - at) / 60000));
+}
+
+function dataAgeLabel(minutes) {
+  if (minutes === null) return "";
+  if (minutes < 1) return "এইমাত্র আপডেট";
+  if (minutes < 60) return `${minutes} মিনিট আগে আপডেট`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} ঘণ্টা আগে আপডেট`;
+  return `${Math.floor(hours / 24)} দিন আগে আপডেট`;
+}
+
+function renderDataFreshness() {
+  const node = $("dataFreshness");
+  if (!node) return;
+  const minutes = dataAgeMinutes();
+  const label = dataAgeLabel(minutes);
+  if (!label) {
+    node.hidden = true;
+    return;
+  }
+  const stale = minutes >= DATA_AGE_STALE_MINUTES;
+  node.textContent = stale ? `${label} · পুরোনো` : label;
+  node.classList.toggle("stale", stale);
+  node.hidden = false;
+}
+
 function refreshEventCardsForClock() {
   // Requirement 10. A hidden tab keeps decoding audio but has no visible
   // clock to update, so the tick stops rather than re-laying out the list
@@ -3141,6 +3182,7 @@ async function resolveEventSnapshotPath(expectedView, fallbackPath) {
     if (!next) return fallbackPath;
     state.manifest = manifest;
     state.manifestVersion = String(manifest.updated_at || state.manifestVersion);
+    renderDataFreshness();
     return next;
   } catch (error) {
     // An unreachable pointer must not stop the refresh; the snapshot already in
@@ -9837,6 +9879,8 @@ async function bootstrap() {
     updateClock();
   }, effectivePerformanceClass() === 'normal' ? 1000 : 30000);
   setInterval(refreshEventCardsForClock, 30000);
+  renderDataFreshness();
+  setInterval(renderDataFreshness, 30000);
   // On the same cadence as the card clock, so a reminder fires from the tick
   // that already knows the time rather than from a timer per match.
   setInterval(checkDueReminders, 30000);
