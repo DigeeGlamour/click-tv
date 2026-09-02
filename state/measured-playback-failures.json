@@ -2476,7 +2476,17 @@
       ],
       "window_seconds": 0.0,
       "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy"
+      "vantage": "delivery_path_proxy",
+      "superseded_by": {
+        "verdict": "proven",
+        "vantage": "delivery_path_proxy",
+        "sessions": 1,
+        "media_progress_seconds": [
+          0
+        ],
+        "window_seconds": 0.0,
+        "evidence_report": "reports/delivery-path-check.json"
+      }
     },
     "otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/rgilyeubta/out/v1/09a67027b18f4fd78aaa3794a2aacfe8/cenc.mpd": {
       "route_id": "otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/rgilyeubta/out/v1/09a67027b18f4fd78aaa3794a2aacfe8/cenc.mpd",
@@ -2655,6 +2665,54 @@
         "window_seconds": 0.0,
         "evidence_report": "reports/delivery-path-check.json"
       }
+    },
+    "stream.ottplus.live/live/desh_tv_abr/index.m3u8": {
+      "route_id": "stream.ottplus.live/live/desh_tv_abr/index.m3u8",
+      "url_public_template": "{id}.ottplus.live/live/desh_tv_abr/{file}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
+    },
+    "stream.ottplus.live/live/mohona_tv_abr/index.m3u8": {
+      "route_id": "stream.ottplus.live/live/mohona_tv_abr/index.m3u8",
+      "url_public_template": "{id}.ottplus.live/live/mohona_tv_abr/{file}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
+    },
+    "s3.itcnbd.live/server-4/stream/aHR0cDovLzE3Mi4xOS4xNy4yMzA6ODA5MC9obHMvU3RhckphbHNoYUhELm0zdTg.m3u8": {
+      "route_id": "s3.itcnbd.live/server-4/stream/aHR0cDovLzE3Mi4xOS4xNy4yMzA6ODA5MC9obHMvU3RhckphbHNoYUhELm0zdTg.m3u8",
+      "url_public_template": "{id}.itcnbd.live/server-4/stream/aHR0cDovLzE3Mi4xOS4xNy4yMzA6ODA5MC9obHMvU3RhckphbHNoYUhELm0zdTg.m3u8",
+      "reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
+    },
+    "mumt04.tangotv.in/m18aqlK4EPICMUSIC/index.m3u8": {
+      "route_id": "mumt04.tangotv.in/m18aqlK4EPICMUSIC/index.m3u8",
+      "url_public_template": "{id}.tangotv.in/{seg}/{file}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
     }
   },
   "note": "Routes a real browser measured and could not play, each with the vantage it was measured from. Marks the card; never hides it, never changes publish_allowed, never demotes another route. Keyed by route, so a channel recovers when its route changes - or when a later measurement from any vantage passes, which supersedes the failure rather than deleting it."
