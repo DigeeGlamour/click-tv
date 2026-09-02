@@ -133,6 +133,53 @@ def _identity_keys(item: Dict[str, Any]) -> Set[str]:
     return keys
 
 
+#: Collected across both merge passes so the run reports one number, and so a
+#: hidden channel is a name in a file rather than a channel that quietly
+#: stopped existing.
+_PLAYABLE_PRIMARY_REPORT: List[Dict[str, str]] = []
+
+
+def _enforce_playable_primary(cards: List[Dict[str, Any]], pass_name: str) -> None:
+    """Never lead with a route a real browser could not decode.
+
+    Promotes a playable backup where there is one, and holds the card back
+    where there is not. Reports both, and writes the whole decision out to
+    reports/unplayable-primary.json for the run.
+    """
+    try:
+        from scanner import unplayable_primary
+    except ImportError:  # pragma: no cover - direct-module import path
+        import unplayable_primary  # type: ignore
+
+    promoted, hidden, report = unplayable_primary.enforce(cards)
+    for row in report:
+        row["pass"] = pass_name
+    _PLAYABLE_PRIMARY_REPORT.extend(report)
+    if promoted or hidden:
+        print(f"   measured-unplayable primaries ({pass_name}): {promoted} "
+              f"replaced by a playable backup, {hidden} card(s) held back")
+        for row in report[:12]:
+            print(f"      {row['action']}: {row['name']} "
+                  f"({row['category']}) - {row['reason'][:56]}")
+    try:
+        target = Path("reports") / "unplayable-primary.json"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(json.dumps({
+            "generated_at": __import__("datetime").datetime.now(
+                __import__("datetime").timezone.utc).isoformat(),
+            "promoted": sum(1 for r in _PLAYABLE_PRIMARY_REPORT
+                            if r["action"].startswith("promoted")),
+            "hidden": sum(1 for r in _PLAYABLE_PRIMARY_REPORT
+                          if r["action"].startswith("hidden")),
+            "reason": "A route measured unplayable in a real browser may not "
+                      "lead a card. Returns automatically once any route is "
+                      "measured playable again.",
+            "records": _PLAYABLE_PRIMARY_REPORT,
+        }, indent=1, ensure_ascii=False), encoding="utf-8")
+    except (OSError, TypeError, ValueError):  # pragma: no cover - reporting only
+        pass
+
+
 def _empty_result() -> Dict[str, List[Dict[str, Any]]]:
     categorized: Dict[str, List[Dict[str, Any]]] = {
         category: [] for category in VALID_TV_CATEGORIES
@@ -296,6 +343,26 @@ def process_tv_channels(
     categorized["Sports"] = pin_t_sports_first(
         categorized["Sports"],
         "Sports",
+    )
+
+    # A route a real browser could not decode must not be the one a card leads
+    # with. The merge already ranks those last, but ranking only helps when
+    # there is something else to rank: when the dead route is all that
+    # survived, the card publishes it with a green badge, because HTTP
+    # verification asked the runner for the URL and got a 200 - rgkkw.live
+    # answers 200 and produces 0.12 seconds of video.
+    #
+    # Run here, on the cards that are actually about to be written, and not on
+    # the merge candidates - that was tried and it condemned 100 cards instead
+    # of the 22 that publish with a dead primary, because a candidate can still
+    # be carrying a route this scan is about to replace.
+    # The published categories only. `quarantine` holds cards the allowlist
+    # already refused, and re-deciding those here would put names in the
+    # report that were never going to reach a viewer either way.
+    _enforce_playable_primary(
+        [card for name, cards in categorized.items() if name != "quarantine"
+         for card in cards if isinstance(card, dict)],
+        "published",
     )
 
     _write_allowlist_report(categorized, rejected_by_allowlist)
