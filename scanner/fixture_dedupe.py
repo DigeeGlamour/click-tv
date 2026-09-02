@@ -354,3 +354,40 @@ def fold(items: List[Dict[str, Any]],
         })
 
     return kept, report
+
+def correct_home_away(items: List[Dict[str, Any]],
+                      resolver: Optional[Any] = None) -> List[Dict[str, str]]:
+    """Put the home side first on every card, not only on folded pairs.
+
+    `_fix_home_away` only runs while folding two spellings of one fixture,
+    because that is where the question announces itself. A card that arrived
+    once, from one feed, in the wrong order has nothing to be compared with -
+    so `Real Madrid vs Real Betis` stayed on the page after the duplicate
+    work was done, for a match played at Betis.
+
+    `resolver(home, away, date)` is asked and believed only when it names the
+    other side; silence leaves the feed's order alone, because reversing a
+    fixture that was already right is the same defect in the other
+    direction. Returns one row per card turned round.
+    """
+    if resolver is None:
+        return []
+    changed: List[Dict[str, str]] = []
+    for item in items:
+        if not isinstance(item, dict) or item.get("home_away_corrected"):
+            continue
+        home, away = _teams_of(item)
+        date = _kickoff(item)[:10]
+        if not home or not away or not date:
+            continue
+        try:
+            told = resolver(home, away, date)
+        except Exception:  # noqa: BLE001 - a lookup must never break a scan
+            continue
+        if not told or same_side(told, home) or not same_side(told, away):
+            continue
+        item["name_before_home_away_fix"] = item.get("name")
+        item["name"] = f"{away} vs {home}"
+        item["home_away_corrected"] = True
+        changed.append({"was": f"{home} vs {away}", "now": item["name"]})
+    return changed

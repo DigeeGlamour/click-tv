@@ -54,7 +54,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Mapping, Optional, Tuple
 
 CACHE_PATH = Path("state") / "fixture-sport-lookups.json"
 #: A scan should never spend its time here. Past this the remaining fixtures
@@ -497,3 +497,78 @@ def verify_many(fixtures: List[Tuple[str, str, str, str]],
 
     save_cache(cache, cache_path)
     return answers
+
+#: Home/away answers live beside the sport answers, under their own key, so
+#: one confirmed reading is never re-bought and never confused with a sport
+#: verdict for the same fixture.
+HOME_AWAY_PREFIX = "home_away|"
+#: `home_side` costs two requests, so this is deliberately far below the
+#: sport budget. A confirmed answer is permanent, so the list settles.
+MAX_HOME_AWAY_LOOKUPS_PER_SCAN = 12
+
+
+def resolve_home_sides(
+    fixtures: List[Tuple[str, str, str]],
+    fetch: Callable[[str], str] = _fetch,
+    cache_path: Path = CACHE_PATH,
+    budget: int = MAX_HOME_AWAY_LOOKUPS_PER_SCAN,
+) -> Dict[str, str]:
+    """Which side is at home, for each (team_a, team_b, date). Cached.
+
+    Returns {cache_key: home side as the caller spelled it}. A fixture the
+    provider could not settle is absent rather than guessed at, because
+    turning a card round on no evidence is worse than leaving the order the
+    feed sent - `Real Madrid vs Real Betis` is wrong, and so is reversing a
+    fixture that was right.
+    """
+    now = time.time()
+    cache = load_cache(cache_path)
+    answers: Dict[str, str] = {}
+    pending: List[Tuple[str, Tuple[str, str, str]]] = []
+    queued: set = set()
+
+    for team_a, team_b, date in fixtures:
+        if not team_a or not team_b or not date:
+            continue
+        key = HOME_AWAY_PREFIX + cache_key(team_a, team_b, date)
+        entry = cache.get(key)
+        if _still_good(entry, now):
+            home = str(entry.get("home") or "")
+            if home:
+                answers[key] = home
+            continue
+        if key not in queued:
+            queued.add(key)
+            pending.append((key, (team_a, team_b, date)))
+
+    if not pending:
+        return answers
+
+    def run(job):
+        key, (team_a, team_b, date) = job
+        try:
+            home = home_side(team_a, team_b, date, fetch=fetch)
+        except Exception:  # noqa: BLE001 - a lookup must never break a scan
+            home = ""
+        return key, {
+            "home": home,
+            "confirmed": bool(home),
+            "checked_at": now,
+            "fixture": f"{team_a} vs {team_b}",
+        }
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=LOOKUP_WORKERS) as pool:
+        for key, entry in pool.map(run, pending[:budget]):
+            cache[key] = entry
+            if entry["home"]:
+                answers[key] = entry["home"]
+
+    save_cache(cache, cache_path)
+    return answers
+
+
+def home_side_from(answers: Mapping[str, str], team_a: str, team_b: str,
+                   date: str) -> str:
+    """The answer `resolve_home_sides` gave for one fixture, or ""."""
+    return str(answers.get(HOME_AWAY_PREFIX + cache_key(team_a, team_b, date))
+               or "")

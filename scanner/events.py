@@ -1982,6 +1982,46 @@ def process_events(
         for row in (today_folded + upcoming_folded)[:10]:
             print(f"      kept {row['kept']!r}, folded {row['folded']!r}")
 
+    # Folding only settles home and away when two spellings of one fixture
+    # meet. A card that arrived once, in the wrong order, has nothing to be
+    # compared with - so `Real Madrid vs Real Betis` was still on the page
+    # for a match played at Betis. Ask the fixture, cached and budgeted,
+    # because two requests per pair is not something to spend per scan.
+    def _home_sides(rows):
+        try:
+            from scanner import fixture_lookup  # noqa: PLC0415 - optional
+        except Exception:  # noqa: BLE001
+            return None
+        pairs = []
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            home, away = fixture_dedupe._teams_of(row)
+            date = fixture_dedupe._kickoff(row)[:10]
+            if home and away and date:
+                pairs.append((home, away, date))
+        if not pairs:
+            return None
+        try:
+            answers = fixture_lookup.resolve_home_sides(pairs)
+        except Exception:  # noqa: BLE001 - a lookup must never break a scan
+            return None
+
+        def resolver(home, away, date):
+            return fixture_lookup.home_side_from(answers, home, away, date)
+
+        return resolver
+
+    _resolver = _home_sides(today_items + upcoming_items)
+    home_away_fixes = (fixture_dedupe.correct_home_away(today_items, _resolver)
+                       + fixture_dedupe.correct_home_away(upcoming_items,
+                                                          _resolver))
+    schedule_stats["home_away_corrected"] = home_away_fixes
+    if home_away_fixes:
+        print(f"   home/away corrected: {len(home_away_fixes)}")
+        for row in home_away_fixes[:10]:
+            print(f"      {row['was']!r} -> {row['now']!r}")
+
     # `Bundesliga` on its own reads as the German one, and the card was showing
     # it for Austria Vienna. The teams say which country's competition it is.
     competition_renames = (competition_labels.apply(today_items)
