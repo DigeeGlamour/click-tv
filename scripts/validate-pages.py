@@ -37,6 +37,7 @@ if hasattr(sys.stderr, "reconfigure"):
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scanner import deliverability  # noqa: E402
+from scanner import playback_evidence  # noqa: E402
 
 ROOT = Path(sys.argv[1] if len(sys.argv) > 1 else "dist").resolve()
 
@@ -555,6 +556,18 @@ def browser_support_label(source: dict[str, Any]) -> str:
     return media_kind.upper()
 
 
+def measured_failure(url: str) -> str:
+    """The recorded reason this route could not be played, or "".
+
+    Reads the same route-evidence ledger the scan reads, so the validator
+    and the promotion rule cannot disagree about which routes work.
+    """
+    try:
+        return playback_evidence.unproven_reason(url)
+    except Exception:  # noqa: BLE001 - a ledger read must never fail a build
+        return ""
+
+
 def validate_https_priority(
     item: dict[str, Any],
     primary_url: str,
@@ -566,13 +579,38 @@ def validate_https_priority(
     if not primary_url.lower().startswith("http://"):
         return
 
+    # A route that has been measured not to play is not an equally
+    # trustworthy alternative, whatever its verification badge says. Star
+    # Jalsha deadlocked the two rules on 2026-09-02 and failed three
+    # scheduled runs: its HTTPS primary answers 403 through the playback
+    # proxy, its HTTPS backup sustained 15.56s of a 120s window, and the
+    # only route with no measurement against it is HTTP. The scan promotes
+    # that one - correctly, it is the only one anybody can watch - and this
+    # check then refused the build over it. The escape it left was hiding a
+    # channel that works, so the premise is what was wrong: `stream_confidence`
+    # ranks verification status and knows nothing about measured playback.
     https_backups = [
         backup
         for backup in backup_objects
         if get_primary_url(backup).lower().startswith("https://")
+        and not measured_failure(get_primary_url(backup))
     ]
 
     if not https_backups:
+        # Say why, rather than going quiet. A card on HTTP because every
+        # HTTPS route it has was measured broken is a fact worth reading;
+        # silence here is how Star Jalsha looked like a passing build.
+        discounted = [
+            backup
+            for backup in backup_objects
+            if get_primary_url(backup).lower().startswith("https://")
+        ]
+        if discounted:
+            add_warning(
+                f"{label} HTTP primary রাখা হয়েছে কারণ এর "
+                f"{len(discounted)}টি HTTPS backup-এর প্রতিটিরই measured "
+                f"playback failure আছে: {name}"
+            )
         return
 
     primary_rank = stream_confidence(item)
