@@ -373,8 +373,9 @@ def verify(team_a: str, team_b: str, date: str = "", competition: str = "",
             "reason": f"{len(providers)} providers agree on {best}"}
 
 
-def home_side(team_a: str, team_b: str, date: str = "",
-              fetch: Callable[[str], str] = _fetch) -> str:
+def home_side_with_status(team_a: str, team_b: str, date: str = "",
+                          fetch: Callable[[str], str] = _fetch
+                          ) -> Tuple[str, bool]:
     """Which of the two is the home team, as the fixture itself records it.
 
     Two feeds can order one fixture two ways - `Real Sociedad vs RC Celta` and
@@ -393,7 +394,7 @@ def home_side(team_a: str, team_b: str, date: str = "",
     team_a = " ".join(str(team_a or "").split())
     team_b = " ".join(str(team_b or "").split())
     if not team_a or not team_b or not date:
-        return ""
+        return "", False
     session = _Session(fetch)
 
     def found(first: str, second: str) -> bool:
@@ -409,11 +410,22 @@ def home_side(team_a: str, team_b: str, date: str = "",
     a_at_home = found(team_a, team_b)
     b_at_home = found(team_b, team_a)
     if a_at_home and not b_at_home:
-        return team_a
+        return team_a, False
     if b_at_home and not a_at_home:
-        return team_b
-    return ""
+        return team_b, False
+    # No answer. Whether the provider had nothing to say or never spoke at
+    # all is the difference between a fixture nobody records and a minute
+    # of rate limiting, and the caller has to be able to tell them apart:
+    # 52 of 52 lookups came back empty from the CI runner while the same
+    # fixture resolved locally, and the cache recorded that as 52 unknown
+    # fixtures to retry in six hours.
+    return "", bool(session.unavailable)
 
+
+def home_side(team_a: str, team_b: str, date: str = "",
+              fetch: Callable[[str], str] = _fetch) -> str:
+    """The home side, or "". Says nothing about why it is "".""" 
+    return home_side_with_status(team_a, team_b, date, fetch)[0]
 
 # ── The cache, because a fixture's sport does not change ─────────────────────
 
@@ -551,23 +563,38 @@ def resolve_home_sides(
     def run(job):
         key, (team_a, team_b, date) = job
         try:
-            home = home_side(team_a, team_b, date, fetch=fetch)
+            home, unavailable = home_side_with_status(
+                team_a, team_b, date, fetch=fetch)
         except Exception:  # noqa: BLE001 - a lookup must never break a scan
-            home = ""
+            home, unavailable = "", True
         return key, {
             "home": home,
             "confirmed": bool(home),
+            # A provider that never answered is not a fixture nobody
+            # records: _still_good retries this in twenty minutes rather
+            # than holding a non-answer for six hours.
+            "unavailable": unavailable,
             "checked_at": now,
             "fixture": f"{team_a} vs {team_b}",
         }
 
+    asked = silent = 0
     with concurrent.futures.ThreadPoolExecutor(max_workers=LOOKUP_WORKERS) as pool:
         for key, entry in pool.map(run, pending[:budget]):
             cache[key] = entry
+            asked += 1
             if entry["home"]:
                 answers[key] = entry["home"]
+            elif entry["unavailable"]:
+                silent += 1
 
     save_cache(cache, cache_path)
+    if asked and not answers:
+        # Said out loud, because this is what a feature that never fires
+        # in production looks like from the inside: it resolved locally
+        # and returned nothing at all from the CI runner.
+        print(f"   home/away lookups: {asked} asked, none resolved"
+              f"{f', {silent} unanswered by the provider' if silent else ''}")
     return answers
 
 

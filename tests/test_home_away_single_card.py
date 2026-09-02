@@ -240,3 +240,110 @@ class ItRunsInThePipeline(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AProviderThatNeverAnswersIsNotAnAnswer(unittest.TestCase):
+    """The published card stayed reversed while the cache looked busy.
+
+    The 15:04 scheduled run on 2026-09-02 carried the sweep and the raised
+    budget, and `Real Madrid vs Real Betis` was still reversed afterwards. The
+    committed cache said why: 52 home/away lookups, 0 resolved. The same
+    fixture resolved against TheSportsDB from a desktop, so the runner is
+    getting nothing - a free-tier endpoint declining a datacentre address.
+
+    That is not something this repository can fix. What it can do is stop
+    recording it as 52 fixtures nobody has heard of, held for six hours each:
+    a provider that never spoke is retried in twenty minutes, and a scan that
+    resolved none of what it asked says so out loud.
+    """
+
+    def setUp(self):
+        self.cache = Path(tempfile.mkdtemp()) / "lookups.json"
+
+    @staticmethod
+    def _silent(_url):
+        return fixture_lookup.UNAVAILABLE
+
+    def test_silence_is_recorded_as_silence(self):
+        fixture_lookup.resolve_home_sides(
+            [("Real Madrid", "Real Betis", "2026-09-04")],
+            fetch=self._silent, cache_path=self.cache)
+        entry = next(iter(fixture_lookup.load_cache(self.cache).values()))
+        self.assertTrue(entry["unavailable"])
+        self.assertFalse(entry["confirmed"])
+        self.assertEqual(entry["home"], "")
+
+    def test_a_fixture_the_provider_does_not_know_is_not_marked_unavailable(self):
+        def blank(_url):
+            return json.dumps({"event": None})
+
+        fixture_lookup.resolve_home_sides(
+            [("Arsenal", "Chelsea", "2026-09-05")],
+            fetch=blank, cache_path=self.cache)
+        entry = next(iter(fixture_lookup.load_cache(self.cache).values()))
+        self.assertFalse(entry["unavailable"])
+
+    def test_silence_is_retried_within_the_hour_not_in_six(self):
+        fixture_lookup.resolve_home_sides(
+            [("Real Madrid", "Real Betis", "2026-09-04")],
+            fetch=self._silent, cache_path=self.cache)
+        cache = fixture_lookup.load_cache(self.cache)
+        key, entry = next(iter(cache.items()))
+        self.assertFalse(
+            fixture_lookup._still_good(entry, entry["checked_at"] + 25 * 60))
+
+        # Age it on disk, so the resolver's own clock sees it as due.
+        cache[key] = dict(entry, checked_at=entry["checked_at"] - 25 * 60)
+        fixture_lookup.save_cache(cache, self.cache)
+
+        calls = []
+
+        def again(url):
+            calls.append(url)
+            return json.dumps({"event": [{"dateEvent": "2026-09-04"}]}) \
+                if "Real Betis_vs_Real Madrid" in urllib.parse.unquote(url) \
+                else json.dumps({"event": None})
+
+        answered = fixture_lookup.resolve_home_sides(
+            [("Real Madrid", "Real Betis", "2026-09-04")],
+            fetch=again, cache_path=self.cache)
+        self.assertTrue(calls, "a silent entry must be asked again")
+        self.assertEqual(
+            fixture_lookup.home_side_from(answered, "Real Madrid",
+                                          "Real Betis", "2026-09-04"),
+            "Real Betis")
+
+    def test_the_status_variant_tells_the_two_apart(self):
+        self.assertEqual(
+            fixture_lookup.home_side_with_status(
+                "Real Madrid", "Real Betis", "2026-09-04", fetch=self._silent),
+            ("", True))
+
+        def blank(_url):
+            return json.dumps({"event": None})
+
+        self.assertEqual(
+            fixture_lookup.home_side_with_status(
+                "Arsenal", "Chelsea", "2026-09-05", fetch=blank),
+            ("", False))
+
+    def test_the_plain_wrapper_still_returns_a_string(self):
+        # Everything that already called home_side keeps working.
+        self.assertEqual(
+            fixture_lookup.home_side("Real Madrid", "Real Betis",
+                                     "2026-09-04", fetch=self._silent), "")
+        self.assertIsInstance(
+            fixture_lookup.home_side("A", "B", ""), str)
+
+    def test_a_scan_that_resolved_nothing_says_so(self):
+        import contextlib
+        import io as _io
+
+        out = _io.StringIO()
+        with contextlib.redirect_stdout(out):
+            fixture_lookup.resolve_home_sides(
+                [("Real Madrid", "Real Betis", "2026-09-04")],
+                fetch=self._silent, cache_path=self.cache)
+        printed = out.getvalue()
+        self.assertIn("none resolved", printed)
+        self.assertIn("unanswered by the provider", printed)
