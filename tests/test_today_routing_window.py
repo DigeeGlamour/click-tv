@@ -189,20 +189,36 @@ class TheClockOutranksASportPreferenceOnUpcomingTests(unittest.TestCase):
 
     APP = (ROOT / "site" / "assets" / "js" / "app.js").read_text(encoding="utf-8")
 
+    #: The flag was `sportBeatsTheClock` while sport ranked above status on
+    #: Today Match. It no longer does - urgency decides first on both tabs and
+    #: the sport preference orders matches inside a status - so the name says
+    #: what it now controls.
+    FLAG = "sportOrdersWithinStatus"
+
+    def _sort_block(self):
+        block = self.APP[self.APP.index(f"const {self.FLAG}"):]
+        return block[:block.index("} else if (state.view === VIEW.MOVIE)")]
+
     def test_the_rule_is_split_by_tab(self):
-        self.assertIn("const sportBeatsTheClock = state.view !== VIEW.UPCOMING;",
+        self.assertIn(f"const {self.FLAG} = state.view !== VIEW.UPCOMING;",
                       self.APP)
 
-    def test_sport_is_only_consulted_first_on_the_live_tab(self):
-        block = self.APP[self.APP.index("const sportBeatsTheClock"):]
-        block = block[:block.index("} else if (state.view === VIEW.MOVIE)")]
+    def test_status_is_compared_before_any_sport_preference(self):
+        # On Today Match a live football match used to sort below every cricket
+        # fixture that had not started, because sport was asked first.
+        block = self._sort_block()
+        status = block.index("statusRank[eventUiStatus(a)]")
+        first_sport = block.index("sportRank(a) - sportRank(b)")
+        self.assertLess(status, first_sport,
+                        "the sport preference is still asked before the status")
+
+    def test_sport_orders_within_a_status_on_the_live_tab(self):
+        block = self._sort_block()
         first = block.index("sportRank(a) - sportRank(b)")
-        self.assertIn("if (sportBeatsTheClock) {", block[:first])
+        self.assertIn(f"if ({self.FLAG}) {{", block[:first])
 
     def test_the_clock_is_still_a_tie_break_for_sport_on_upcoming(self):
-        block = self.APP[self.APP.index("const sportBeatsTheClock"):]
-        block = block[:block.index("} else if (state.view === VIEW.MOVIE)")]
-        self.assertIn("if (!sportBeatsTheClock) {", block)
+        self.assertIn(f"if (!{self.FLAG}) {{", self._sort_block())
 
 
 class TappingAChannelOnAPhoneTests(unittest.TestCase):

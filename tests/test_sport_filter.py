@@ -85,7 +85,9 @@ class CompetitionOutranksABadLabel(unittest.TestCase):
     def test_serie_c_is_football_even_when_labelled_other(self):
         verdict = sf.classify(event("X vs Y", "other", "Serie C - Girone A"))
         self.assertEqual(verdict["state"], sf.CONFIRMED_FOOTBALL)
-        self.assertEqual(verdict["reason"], "competition")
+        # Named in the league map, so it is settled there rather than by the
+        # looser competition patterns below it.
+        self.assertEqual(verdict["reason"], "league map")
 
     def test_cricket_league_written_out_is_not_english_football(self):
         for competition in ("Bangladesh Premier League", "Indian Premier League",
@@ -469,6 +471,123 @@ class NothingBallShapedWasRefused(unittest.TestCase):
             [{"name": "Main Feed Day 4", "competition": "TOUR Championship 2026",
               "sport_type": "golf", "reason": "golf gazetteer"}], [])
         self.assertEqual(audit["wrongly_refused"], [])
+
+class TheCompetitionOutranksATeamName(unittest.TestCase):
+    """A league name is a fact about the sport; a team name is a coincidence.
+
+    Three real fixtures were lost to one word inside a team's name, and one
+    was published as the wrong sport because the feed's own tag was wrong.
+    """
+
+    def test_a_cricket_league_survives_a_baseball_team_name(self):
+        # "Guardians" is a Cleveland baseball team and also half of an ETPL
+        # cricket fixture.
+        verdict = sf.classify(event("Guardians vs Dockers", None, "ETPL"))
+        self.assertEqual(verdict["state"], sf.CONFIRMED_CRICKET)
+
+    def test_a_football_league_survives_a_baseball_team_name(self):
+        # "Angels" is a Los Angeles baseball team and also half of a Korean
+        # women's football fixture.
+        verdict = sf.classify(
+            event("Seoul W vs Incheon Red Angels W", None, "WK-League"))
+        self.assertEqual(verdict["state"], sf.CONFIRMED_FOOTBALL)
+
+    def test_the_league_map_outranks_a_wrong_source_tag(self):
+        # The feed tagged this football; ETPL is a T20 cricket league and the
+        # sides are Belfast Wolves and Edinburgh Castle Rockers.
+        verdict = sf.classify(event("Wolves vs Castle Rockers", "football", "ETPL"))
+        self.assertEqual(verdict["state"], sf.CONFIRMED_CRICKET)
+        self.assertEqual(verdict["reason"], "league map")
+
+    def test_a_team_name_still_decides_when_there_is_no_competition(self):
+        # Nothing else to go on, so the names are the evidence.
+        verdict = sf.classify(event("Boland Cavaliers v Suzuki Griquas", "other"))
+        self.assertEqual(verdict["state"], sf.CONFIRMED_OTHER)
+
+    def test_a_team_name_against_an_unknown_competition_waits_for_the_fixture(self):
+        # The competition names no sport this module knows, so a word in a
+        # team's name is not allowed to refuse the event on its own.
+        verdict = sf.classify(
+            event("Guardians vs Dockers", None, "Some Unlisted Trophy"))
+        self.assertEqual(verdict["state"], sf.UNKNOWN)
+        self.assertIn("needs the fixture", verdict["reason"])
+
+    def test_a_league_that_names_another_sport_is_still_refused(self):
+        for name, competition, expected in (
+            ("BC Lions vs Ottawa Redblacks", "CFL", "gridiron"),
+            ("Boston Red Sox vs New York Yankees", "MLB", "baseball"),
+            ("Spain vs Germany", "FIH Hockey World Cup 2026", "hockey"),
+            ("Some Pair vs Another", "Currie Cup", "rugby"),
+        ):
+            with self.subTest(competition=competition):
+                verdict = sf.classify(event(name, "other", competition))
+                self.assertEqual(verdict["state"], sf.CONFIRMED_OTHER)
+                self.assertIn(expected, verdict["reason"])
+
+    def test_a_season_year_does_not_hide_the_league(self):
+        for competition in ("European T20 Premier League 2026",
+                            "JITO Premier League 2026", "Oman D50 2026",
+                            "LaLiga 2026/27", "WK League 2026"):
+            with self.subTest(competition=competition):
+                sport, _ = sf.league_sport(competition)
+                self.assertIn(sport, ("cricket", "football"), competition)
+
+    def test_an_unlisted_competition_returns_nothing(self):
+        self.assertEqual(sf.league_sport("Nonexistent Cup"), ("", ""))
+        self.assertEqual(sf.league_sport(""), ("", ""))
+
+class AFeedHeaderIsNotAFixture(unittest.TestCase):
+    """`EUROPEAN T20 Vs Premier League` was a Today Match card.
+
+    It had three channels under it - FOX CRICKET, WILLOW SPORTS, Willow
+    Cricbuzz - while the actual ETPL match at that hour, `Dublin Guardians vs
+    Rotterdam Dockers`, sat beside it with its own two. Nobody plays "European
+    T20": the feed's generic header had been read as a team-vs-team fixture,
+    and a viewer had two cards for one match, one of them fictional.
+    """
+
+    def test_the_observed_header_is_refused(self):
+        verdict = sf.classify(event("EUROPEAN T20 Vs Premier League", None,
+                                    "EUROPEAN T20 Premier League"))
+        self.assertEqual(verdict["state"], sf.CONFIRMED_OTHER)
+        self.assertEqual(verdict["reason"], "not a fixture")
+
+    def test_two_competition_names_facing_each_other_are_refused(self):
+        for name in ("Serie A vs Bundesliga", "LaLiga vs Eredivisie",
+                     "IPL vs BBL"):
+            with self.subTest(name=name):
+                self.assertEqual(sf.classify(event(name))["state"],
+                                 sf.CONFIRMED_OTHER)
+
+    def test_the_real_fixture_in_the_same_competition_survives(self):
+        for name in ("Dublin Guardians vs Rotterdam Dockers",
+                     "Belfast Wolves vs Edinburgh Castle Rockers"):
+            with self.subTest(name=name):
+                verdict = sf.classify(
+                    event(name, None, "European T20 Premier League"))
+                self.assertEqual(verdict["state"], sf.CONFIRMED_CRICKET)
+
+    def test_a_club_whose_name_contains_a_competition_word_is_safe(self):
+        # The competition name has to be essentially the whole side, so a club
+        # is never mistaken for a league.
+        for name, competition in (("Napoli vs Como", "Serie A"),
+                                  ("Real Sociedad vs RC Celta", "LaLiga"),
+                                  ("Machico vs Camacha", "Taca de Portugal")):
+            with self.subTest(name=name):
+                self.assertIn(sf.classify(event(name, None, competition))["state"],
+                              (sf.CONFIRMED_FOOTBALL, sf.CONFIRMED_CRICKET))
+
+    def test_a_single_entity_title_is_not_treated_as_a_header(self):
+        # Nothing to compare, so this rule does not apply and the later stages
+        # decide.
+        self.assertEqual(sf.is_generic_fixture(event("Top End T20 Series 2026")), "")
+
+    def test_a_header_needs_a_recognisable_competition_on_each_side(self):
+        # A known limit, written down rather than papered over: "Championship"
+        # on its own is golf as often as football, so it is in no league map -
+        # and a header built from it is not recognised as one.
+        verdict = sf.classify(event("Premier League vs Championship"))
+        self.assertNotEqual(verdict["reason"], "not a fixture")
 
 
 

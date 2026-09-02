@@ -18,12 +18,14 @@ const STORAGE_KEYS = Object.freeze({
   recentItems: 'clicktv_recent_items_v1',
   favorites: 'clicktv_favorites_v1',
   positions: 'clicktv_positions_v1',
+  lastView: 'clicktv_last_view_v1',
   favoriteItems: 'clicktv_favorite_items_v1',
   noticeDismissed: 'clicktv_notice_dismissed_v1',
   liteMode: 'clicktv_lite_mode',
   maxHeight: 'clicktv_max_height',
   telemetrySession: 'clicktv_telemetry_session_v1',
-  eventReminders: 'clicktv_event_reminders_v1'
+  eventReminders: 'clicktv_event_reminders_v1',
+  eventRemindersFired: 'clicktv_event_reminders_fired_v1'
 });
 
 const VIEW = Object.freeze({
@@ -886,6 +888,20 @@ function normalizeList(rawList, sourceKind) {
       if (sourceKind === VIEW.UPCOMING) {
         return Boolean(String(item.name || '').trim()) && !hasAlreadyKickedOff(item);
       }
+      // Today Match keeps a fixture whose stream has not resolved yet. Thirty
+      // minutes before kickoff the scanner moves the match here and publishes
+      // it as metadata_only until it finds a link - and this filter used to
+      // drop exactly those cards. The match had already left Upcoming, so it
+      // appeared on neither tab and a viewer looking for a game about to start
+      // could not find it anywhere.
+      //
+      // The renderer already handles a card with no channels: it carries the
+      // event-card-no-channels class and shows the kickoff without a play
+      // button, which is the honest thing to show while the hunt is on.
+      if (sourceKind === VIEW.EVENT) {
+        if (!String(item.name || '').trim()) return false;
+        return isPlayable(item) || item.metadata_only === true;
+      }
       return isPlayable(item);
     });
 
@@ -1330,6 +1346,11 @@ async function selectMainView(view, category, options = {}) {
   state.view = kind;
   state.selectedCategory = label;
   state.currentDataPath = path || '';
+  // Remembered so a viewer who lives on Upcoming is not put back on Today
+  // Match every time they open the site.
+  try {
+    localStorage.setItem(STORAGE_KEYS.lastView, JSON.stringify({ kind, label }));
+  } catch (error) { /* private mode, or storage full - not worth failing over */ }
   showListMessage(`${label} তালিকা লোড হচ্ছে…`, 'fa-spinner', true);
   setSidebarCount('Loading...');
 
@@ -1351,12 +1372,18 @@ async function selectMainView(view, category, options = {}) {
       ? data
       : (data.channels || data.items || data.events || []);
     state.currentItems = normalizeList(raw, kind);
+    state.lastDataLoadedAt = Date.now();
     renderCurrentList(true);
     hidePlayerMessage();
 
+    // The first match used to start playing on its own the moment the page
+    // loaded. Nobody asked for it: it spends the viewer's data, talks over
+    // whatever they were listening to, and picks the match for them. The card
+    // is selected so the player shows what it would play, and the viewer
+    // presses it.
     if (options.initial && !state.currentItem && state.currentItems.length && kind !== VIEW.UPCOMING) {
       const firstPlayable = state.currentItems.find(isPlayable);
-      if (firstPlayable) startPlayback(firstPlayable, false);
+      if (firstPlayable) selectWithoutPlaying(firstPlayable);
     }
   } catch (error) {
     if (error.name === 'AbortError' || sessionId !== state.dataSessionId) return;
@@ -1845,19 +1872,27 @@ function applyFilterAndSort() {
     // football match kicking off in five minutes sorted below every cricket
     // fixture in the list including tomorrow's - and the one question that tab
     // answers is what is on next.
-    const sportBeatsTheClock = state.view !== VIEW.UPCOMING;
+    // And on Today Match it belongs *inside* the status, not above it. Ranked
+    // above, a football match already being played sorted below every cricket
+    // fixture that had not started - the tab put a preference ahead of the one
+    // thing that is actually happening. So urgency decides first and the sport
+    // preference decides between matches in the same state, which is where a
+    // preference belongs.
+    const sportOrdersWithinStatus = state.view !== VIEW.UPCOMING;
     items.sort((a, b) => {
-      if (sportBeatsTheClock) {
+      const statusDifference = (statusRank[eventUiStatus(a)] ?? 9) - (statusRank[eventUiStatus(b)] ?? 9);
+      if (statusDifference) return statusDifference;
+      if (sportOrdersWithinStatus) {
         const sportDifference = sportRank(a) - sportRank(b);
         if (sportDifference) return sportDifference;
       }
-      const statusDifference = (statusRank[eventUiStatus(a)] ?? 9) - (statusRank[eventUiStatus(b)] ?? 9);
-      if (statusDifference) return statusDifference;
       const aTime = eventStartDate(a)?.getTime() ?? Number.MAX_SAFE_INTEGER;
       const bTime = eventStartDate(b)?.getTime() ?? Number.MAX_SAFE_INTEGER;
       if (aTime !== bTime) return aTime - bTime;
-      // Only once the clock has been asked, so a preference never outranks it.
-      if (!sportBeatsTheClock) {
+      // On Upcoming the sport preference is asked last of all, only once the
+      // clock has had its say, so it can never put tomorrow's cricket above a
+      // football match kicking off in five minutes.
+      if (!sportOrdersWithinStatus) {
         const sportDifference = sportRank(a) - sportRank(b);
         if (sportDifference) return sportDifference;
       }
@@ -1992,6 +2027,7 @@ function renderCurrentList(reset = true, options = {}) {
     if (state.view === VIEW.EVENT) ensureTodayMatchColumns();
     state.renderedCount = 0;
     state.renderedUids.clear();
+    state.lastRenderedDayKey = '';
     if (!options.preserveScroll) scrollSidebarToTop();
   }
 
@@ -2061,6 +2097,36 @@ function renderCurrentList(reset = true, options = {}) {
   });
 }
 
+function eventDayKey(item) {
+  const date = eventStartDate(item);
+  if (!date) return '';
+  // Grouped by the viewer's own day, so "today" means today where they are.
+  return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+}
+
+function createDayHeading(item) {
+  const date = eventStartDate(item);
+  const heading = document.createElement('div');
+  heading.className = 'event-day-heading';
+  heading.setAttribute('role', 'presentation');
+
+  const today = new Date();
+  const tomorrow = new Date(today.getTime() + 86400000);
+  const sameDay = (a, b) => a.getFullYear() === b.getFullYear()
+    && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+
+  let label;
+  if (sameDay(date, today)) label = 'আজ';
+  else if (sameDay(date, tomorrow)) label = 'আগামীকাল';
+  else {
+    label = date.toLocaleDateString('bn-BD', {
+      weekday: 'long', day: 'numeric', month: 'long',
+    });
+  }
+  heading.textContent = label;
+  return heading;
+}
+
 function appendNextChunk(limit = null) {
   if (state.seriesDetailMode || seriesModule?.detailActive) return;
   if (!state.filteredItems.length) return;
@@ -2091,6 +2157,18 @@ function appendNextChunk(limit = null) {
   } else {
     const fragment = document.createDocumentFragment();
     chunk.forEach(({ item, index }) => {
+      // Upcoming is one unbroken run of a hundred and twenty cards, and the
+      // list is sorted by kickoff - so the boundary between tonight and
+      // tomorrow passes without a mark and a viewer scrolling for "what is on
+      // later" cannot tell which day they have reached. A heading is written
+      // in when the day changes.
+      if (state.view === VIEW.UPCOMING) {
+        const day = eventDayKey(item);
+        if (day && day !== state.lastRenderedDayKey) {
+          state.lastRenderedDayKey = day;
+          fragment.appendChild(createDayHeading(item));
+        }
+      }
       const card = state.view === VIEW.MOVIE
         ? (seriesModule?.isSeriesItem(item)
           ? seriesModule.createSeriesCard(item, index)
@@ -2344,7 +2422,10 @@ function eventStreamSummary(item) {
   }
   const backups = Array.isArray(item?.backups) ? item.backups.length : 0;
   const total = Math.max(Number(item?.available_link_count || 0), backups + 1);
-  if (backups <= 0) return { short: '1 Stream', shortBn: '১ স্ট্রিম', text: 'Stream Ready', ready: true };
+  // "Ready" claimed playability from a URL being present. What is actually
+  // known is that a link exists and the scanner reached it, which is not the
+  // same promise - a route can answer 200 and decode nothing.
+  if (backups <= 0) return { short: '1 Stream', shortBn: '১ লিংক', text: 'Link available', ready: true };
   return {
     short: `${total} Streams`,
     shortBn: `${toBanglaDigits(total)} স্ট্রিম`,
@@ -2555,7 +2636,67 @@ function reminderIds() {
   return Array.isArray(list) ? list : [];
 }
 
-function toggleEventReminder(uid, event) {
+const REMINDER_LEAD_MINUTES = 5;
+
+function reminderNotificationsAllowed() {
+  return typeof Notification !== 'undefined' && Notification.permission === 'granted';
+}
+
+async function askForReminderPermission() {
+  if (typeof Notification === 'undefined') return false;
+  if (Notification.permission === 'granted') return true;
+  if (Notification.permission === 'denied') return false;
+  try {
+    return (await Notification.requestPermission()) === 'granted';
+  } catch (error) {
+    return false;
+  }
+}
+
+function fireReminderNotification(item) {
+  if (!reminderNotificationsAllowed()) return false;
+  try {
+    const when = eventCountdownTextBn(item) || 'এখনই';
+    new Notification(String(item.name || 'ম্যাচ'), {
+      body: `${item.competition || 'ম্যাচ'} — ${when}`,
+      icon: 'assets/img/icon-192.png',
+      tag: `clicktv-reminder-${item.id || item.name}`,
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function checkDueReminders() {
+  /* Fire the reminders whose kickoff has come round.
+
+     Checked on the clock tick rather than with a timer per match, so a list
+     that re-renders - which it does every thirty seconds - does not lose the
+     pending reminders or fire them twice. */
+  const ids = reminderIds();
+  if (!ids.length || !reminderNotificationsAllowed()) return;
+  const fired = readJsonStorage(STORAGE_KEYS.eventRemindersFired, []);
+  const alreadyFired = Array.isArray(fired) ? fired : [];
+  const now = Date.now();
+  const stillPending = [];
+
+  for (const item of state.currentItems || []) {
+    const key = item.id || item.url || item.name;
+    if (!ids.includes(key) || alreadyFired.includes(key)) continue;
+    const kickoff = eventStartDate(item)?.getTime();
+    if (!kickoff) continue;
+    if (kickoff - now > REMINDER_LEAD_MINUTES * 60000) continue;
+    if (now - kickoff > 60 * 60000) continue;  // long over; not worth a ping
+    if (fireReminderNotification(item)) stillPending.push(key);
+  }
+  if (stillPending.length) {
+    writeJsonStorage(STORAGE_KEYS.eventRemindersFired,
+                     [...alreadyFired, ...stillPending].slice(-200));
+  }
+}
+
+async function toggleEventReminder(uid, event) {
   event?.stopPropagation();
   const item = state.currentItems.find((entry) => entry._uid === uid);
   if (!item) return;
@@ -2564,7 +2705,20 @@ function toggleEventReminder(uid, event) {
   const active = current.includes(key);
   writeJsonStorage(STORAGE_KEYS.eventReminders, active ? current.filter((id) => id !== key) : [...current, key]);
   updateReminderUi();
-  showToast(active ? 'Reminder সরানো হয়েছে' : 'Reminder সেট হয়েছে');
+
+  if (active) {
+    showToast('Reminder সরানো হয়েছে');
+    return;
+  }
+
+  // The button used to write a note to localStorage, show a toast, and never
+  // do anything else - so "Remind Me" was a promise nothing kept. Permission
+  // is asked for once, and what the reminder can actually do is said plainly
+  // rather than implied.
+  const allowed = await askForReminderPermission();
+  showToast(allowed
+    ? `Reminder সেট — শুরুর ${REMINDER_LEAD_MINUTES} মিনিট আগে জানানো হবে`
+    : 'Reminder সেট — নোটিফিকেশন বন্ধ, তাই সাইটে ফিরলে দেখতে পাবেন');
 }
 
 // ── Smart Filter ──────────────────────────────────────────────────────────
@@ -2785,15 +2939,23 @@ function eventUiStatus(item) {
 }
 
 function eventStatusLabel(status) {
+  /* One language on one card.
+
+     Every other line the viewer reads is Bengali - the loading text, the
+     countdown, the stream state - and the status pill was shouting English
+     abbreviations beside them. Two of them did not mean anything to a viewer
+     either: "CHANNEL LIVE" describes how the scanner found the match rather
+     than anything about watching it, and "LINK UPDATING" is scanner
+     vocabulary for "we are still looking". */
   return ({
-    LIVE_NOW: 'LIVE NOW',
-    CHANNEL_LIVE: 'CHANNEL LIVE',
-    STARTING_SOON: 'STARTING SOON',
-    LINK_UPDATING: 'LINK UPDATING',
-    UPCOMING: 'UPCOMING',
-    TIME_UNVERIFIED: 'TIME UNVERIFIED',
-    ENDED: 'ENDED'
-  })[status] || 'UPCOMING';
+    LIVE_NOW: 'সরাসরি',
+    CHANNEL_LIVE: 'চ্যানেলে সরাসরি',
+    STARTING_SOON: 'শুরু হচ্ছে',
+    LINK_UPDATING: 'লিংক খোঁজা হচ্ছে',
+    UPCOMING: 'আসছে',
+    TIME_UNVERIFIED: 'সময় নিশ্চিত নয়',
+    ENDED: 'শেষ'
+  })[status] || 'আসছে';
 }
 
 function eventUiFingerprint() {
@@ -3300,11 +3462,11 @@ function todayCardState(item) {
   if (!countdown) {
     // Kickoff has passed but the scanner has not called it live yet.
     return isPlayable(item)
-      ? { tone: 'ready', label: 'স্ট্রিম প্রস্তুত' }
+      ? { tone: 'ready', label: 'লিংক আছে' }
       : { tone: 'waiting', label: 'লিংক খোঁজা হচ্ছে' };
   }
   return isPlayable(item)
-    ? { tone: 'ready', label: `স্ট্রিম প্রস্তুত • ${countdown}` }
+    ? { tone: 'ready', label: `লিংক আছে • ${countdown}` }
     : { tone: 'soon', label: countdown };
 }
 
@@ -3314,7 +3476,14 @@ function createTodayMatchCardV2(item, visualIndex, ctx) {
     playable ? 'is-playable' : 'is-scheduled'].filter(Boolean).join(' ');
   card.tabIndex = 0;
   card.setAttribute('role', 'button');
-  card.setAttribute('aria-label', [parts.title, parts.competition].filter(Boolean).join('. '));
+  // The state is why a viewer is looking at this card at all - live, waiting
+  // for a link, or ready - so a screen reader is told it alongside the name.
+  card.setAttribute('aria-label', [
+    parts.title,
+    parts.competition,
+    todayCardState(item)?.label,
+    isPlayable(item) ? '' : 'স্ট্রিম এখনো আসেনি'
+  ].filter(Boolean).join('. '));
   card.dataset.uid = item._uid;
   card.dataset.itemIndex = String(visualIndex);
   card.addEventListener('focus', () => {
@@ -3395,7 +3564,9 @@ function createEventCard(item, visualIndex) {
   // click handler did not keep. Cards with no link keep Details.
   const showWatchAction = playable;
   const streams = eventStreamSummary(item);
-  const statusLabel = channelOnly && liveLike ? 'CHANNEL LIVE' : eventStatusLabel(uiStatus);
+  const statusLabel = channelOnly && liveLike
+    ? eventStatusLabel('CHANNEL_LIVE')
+    : eventStatusLabel(uiStatus);
 
   // The live card leads with when it began; the upcoming card leads with when
   // it starts and how long that is away.
@@ -5071,6 +5242,24 @@ function playbackAttemptBudgetMs(item) {
   return isProtectedPlaybackSource(null, item)
     ? PROTECTED_CHANNEL_ATTEMPT_BUDGET_MS
     : CHANNEL_ATTEMPT_BUDGET_MS;
+}
+
+function selectWithoutPlaying(item) {
+  /* Show what would play, and wait to be asked.
+
+     The first match used to start on page load. That spends the viewer's data
+     without being asked, talks over whatever they were already listening to,
+     and chooses the match on their behalf. So the card is marked as the
+     selection and the player says what it is holding - and one press starts
+     it, from a real gesture, which is also what every browser's autoplay
+     policy actually wants. */
+  if (!item) return;
+  state.pendingSelection = item;
+  renderCurrentList(false);
+  showPlayerMessage(
+    `${item.name || 'ম্যাচ'} — চালু করতে চ্যানেলে চাপুন`,
+    false
+  );
 }
 
 async function startPlayback(item, userInitiated = true) {
@@ -9610,7 +9799,28 @@ function initializeSeriesModule() {
   });
 }
 
+function setupReturnToTabRefresh() {
+  /* A tab left open for an hour shows an hour-old list.
+
+     Nothing refreshed on return, so a viewer who switched away during a match
+     and came back was reading a snapshot from before kickoff - with no way to
+     tell. Coming back is the clearest signal there is that the list is being
+     read again, so it is reloaded then. Playback is left alone: a session the
+     viewer started belongs to them, and the list can update underneath it. */
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (!state.currentDataPath) return;
+    const since = Date.now() - (state.lastDataLoadedAt || 0);
+    if (since < 30000) return;
+    // Through the same entry point a tap uses, so the reload cannot drift
+    // from what a normal section change does.
+    selectMainView(state.view, state.selectedCategory, { silent: true })
+      .catch(() => {});
+  });
+}
+
 async function bootstrap() {
+  setupReturnToTabRefresh();
   setupFinalNavigationControls();
   setupEventSportFilter();
   initializeSeriesModule();
@@ -9627,6 +9837,9 @@ async function bootstrap() {
     updateClock();
   }, effectivePerformanceClass() === 'normal' ? 1000 : 30000);
   setInterval(refreshEventCardsForClock, 30000);
+  // On the same cadence as the card clock, so a reminder fires from the tick
+  // that already knows the time rather than from a timer per match.
+  setInterval(checkDueReminders, 30000);
   setInterval(refreshActiveEventCatalogue, EVENT_CATALOG_REFRESH_MS);
   await setupServiceWorker();
   setupPwaInstall();

@@ -534,3 +534,31 @@
   justify-content:center!important;
   letter-spacing:.3px!important;
 }
+
+/* A channel chip is the button that starts the match, and it was 27px tall on
+   the narrowest phones and 40-42px elsewhere. 44px is the smallest target a
+   finger hits reliably, so that is the floor everywhere - and on a phone the
+   chips stack one per row, which is what makes room for it. */
+@media (max-width:560px){
+  .sidebar-section.event-list-mode .event-channel-chip.tm-channel,
+  .sidebar-section.event-list-mode .tm-channel-solo{
+    min-height:44px!important;
+    font-size:12px!important;
+    padding:8px 10px!important;
+  }
+  .sidebar-section.event-list-mode .tm-channels{
+    grid-template-columns:1fr!important;
+  }
+}
+
+/* A finger needs 44px whatever the screen is. The width query above catches
+   phones, but a tablet or a touch laptop is wide and still has no pointer -
+   and on those the chip was 27px. `hover: none` asks the right question:
+   whether the device points or touches, rather than how wide it is. */
+@media (hover:none){
+  .sidebar-section.event-list-mode .event-channel-chip.tm-channel,
+  .sidebar-section.event-list-mode .tm-channel-solo{
+    min-height:44px!important;
+    padding:8px 10px!important;
+  }
+}

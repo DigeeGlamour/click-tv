@@ -39,19 +39,26 @@
   <!-- The DASH engine and every Today Match manifest are fetched only after the
        viewer presses play, and that handshake used to land inside the attempt
        timeout. Warming the TLS connections moves it out of the play path. -->
-  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://raspy-meadow-9279.juelgrsan3679.workers.dev" crossorigin>
   <link rel="preconnect" href="https://stream-proxy-3.juelgrsan3679.workers.dev" crossorigin>
   <link rel="preconnect" href="https://stream-proxy-4.juelgrsan3679.workers.dev" crossorigin>
   <link rel="preconnect" href="https://stream-proxy-5.juelgrsan3679.workers.dev" crossorigin>
-  <link rel="preload" as="script" href="https://cdnjs.cloudflare.com/ajax/libs/shaka-player/4.10.9/shaka-player.compiled.js" crossorigin>
+  <!-- Shaka is fetched on demand by app.js, so it is not preloaded: that
+       downloaded the whole library on every page load for viewers who never
+       open a DASH stream. The connection is opened early instead, which is
+       what actually saves time when one of them does. -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 
   <!-- Shaka (DASH/DRM) শুধু প্রয়োজন হলে dynamically load হয় — initial payload হালকা রাখতে -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
+  <!-- Deferred rather than blocking: nothing on the page needs Hls before
+       first paint, and app.js only reaches for it when playback starts.
+       Deferred scripts still run in document order, so it is ready first. -->
+  <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1.5.15/dist/hls.min.js"></script>
 
   <link rel="stylesheet" href="assets/css/app.css?v=20260806-user-list-final-v1">
   <link rel="stylesheet" href="assets/css/series.css?v=20260806-user-list-final-v1">
@@ -153,7 +160,7 @@
             <div class="fs-drawer-list" id="fsDrawerList" aria-busy="false"></div>
           </div>
 
-          <section class="event-preview-overlay" id="eventPreviewOverlay" aria-hidden="true" aria-label="Upcoming match preview">
+          <section class="event-preview-overlay" id="eventPreviewOverlay" aria-hidden="true" aria-label="Upcoming Match preview">
             <button class="event-preview-close" id="eventPreviewClose" type="button" aria-label="Close match preview" title="Close"><i class="fas fa-times" aria-hidden="true"></i></button>
             <div class="event-preview-art" id="eventPreviewArt"></div>
             <div class="event-preview-content">
@@ -329,7 +336,7 @@
     </div>
   </div>
 
-  <script src="assets/js/series.js?v=20260806-user-list-final-v1"></script>
-  <script src="assets/js/app.js?v=20260819-today-match-crimson-v4"></script>
+  <script defer src="assets/js/series.js?v=20260806-user-list-final-v1"></script>
+  <script defer src="assets/js/app.js?v=20260819-today-match-crimson-v4"></script>
 </body>
 </html>

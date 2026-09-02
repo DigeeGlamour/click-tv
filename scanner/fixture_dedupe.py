@@ -37,6 +37,7 @@ five, plus whatever of the one it did not already have.
 from __future__ import annotations
 
 import re
+import unicodedata
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 _SPLIT = re.compile(r"\s+(?:vs?\.?|v|versus)\s+", re.IGNORECASE)
@@ -50,6 +51,44 @@ _SUFFIX = re.compile(
     re.IGNORECASE)
 _PUNCT = re.compile(r"[^\w\s]+", re.UNICODE)
 
+#: Club abbreviations one feed prints and another drops. Leading ones matter as
+#: much as trailing: `CD Toluca` and `Toluca`, `Club Leon` and `Leon`,
+#: `CF Monterrey` and `Monterrey` are the same clubs, and the site published
+#: each of those pairs as two cards for one match.
+#:
+#: Only true abbreviations. `Deportivo`, `Atletico`, `Sporting` and `Real` were
+#: here for one draft and are the club's identity rather than decoration -
+#: stripping "Deportivo" left `Deportivo vs Valencia` unable to match
+#: `Deportivo de A Coruna Vs Valencia`, which is the pair this was meant to
+#: fold in the first place.
+_AFFIX = re.compile(
+    r"\b(?:fc|afc|sc|cf|ac|as|ss|ssc|cd|ud|sd|cs|rc|sk|nk|hk|fk|club|clube)\b",
+    re.IGNORECASE)
+
+#: City and club spellings that differ by language rather than by club:
+#: `SK Rapid Wien` and `Rapid Vienna` are one team in two languages.
+_SAME_PLACE = {
+    "wien": "vienna", "muenchen": "munchen", "munich": "munchen",
+    "milano": "milan", "torino": "turin", "roma": "rome",
+    "napoli": "naples", "firenze": "florence", "genova": "genoa",
+    "sevilla": "seville", "zaragoza": "saragossa", "praha": "prague",
+    "moskva": "moscow", "koln": "cologne", "koeln": "cologne",
+    "lisboa": "lisbon", "beograd": "belgrade", "bucuresti": "bucharest",
+    "warszawa": "warsaw", "kyiv": "kiev", "athina": "athens",
+}
+
+
+def _fold_accents(text: str) -> str:
+    """`Concepcion` for `Concepcion`, so an accent is not a different club.
+
+    Four of the seven duplicate pairs on the site differed by nothing else:
+    `Universidad de Concepcion`, `Velez Sarsfield`, `Club Leon` and
+    `Club America` each appeared twice, once with its accents and once
+    without.
+    """
+    stripped = unicodedata.normalize("NFKD", str(text or ""))
+    return "".join(ch for ch in stripped if not unicodedata.combining(ch))
+
 #: Below this a "truncation" is just a short word that happens to start the
 #: same way - "San" against "Santos" would fold two different clubs.
 MIN_TRUNCATION = 5
@@ -59,7 +98,7 @@ MIN_INITIALISM = 3
 
 
 def _clean(text: Any) -> str:
-    plain = _PUNCT.sub(" ", str(text or ""))
+    plain = _PUNCT.sub(" ", _fold_accents(text))
     plain = _NOISE.sub(" ", plain)
     return " ".join(plain.split()).casefold()
 
@@ -75,8 +114,14 @@ def sides(item: Dict[str, Any]) -> Optional[Tuple[str, str]]:
 
 
 def _bare(side: str) -> str:
-    """The side without the suffixes feeds disagree about."""
-    return " ".join(_SUFFIX.sub(" ", side).split())
+    """The side with the decoration two feeds disagree about taken off.
+
+    Affixes go from both ends, and a place name is spelled one way: what is
+    left is the part of the name that actually identifies the club.
+    """
+    plain = _AFFIX.sub(" ", _SUFFIX.sub(" ", side))
+    words = [_SAME_PLACE.get(word, word) for word in plain.split()]
+    return " ".join(words)
 
 
 def _is_initialism(short: str, long: str) -> bool:
@@ -157,7 +202,18 @@ def same_fixture(left: Dict[str, Any], right: Dict[str, Any]) -> bool:
         if (_bare(left_sides[a]) == _bare(right_sides[a])
                 and same_side(left_sides[b], right_sides[b])):
             return True
-    return False
+
+    # The same two teams with home and away the other way round. One feed had
+    # `Real Sociedad vs RC Celta` and another `Celta Vigo vs Real Sociedad`
+    # for one LaLiga fixture, and the site showed both. A team plays one match
+    # at a time, so two cards naming the same pair at the same instant are the
+    # same match however each feed ordered them.
+    crossed = (_bare(left_sides[0]) == _bare(right_sides[1])
+               and _bare(left_sides[1]) == _bare(right_sides[0]))
+    if crossed:
+        return True
+    return (same_side(left_sides[0], right_sides[1])
+            and same_side(left_sides[1], right_sides[0]))
 
 
 def _weight(item: Dict[str, Any]) -> Tuple[int, int, int]:
@@ -214,8 +270,62 @@ def _absorb(keeper: Dict[str, Any], other: Dict[str, Any]) -> None:
         keeper["source_ids"] = merged_sources
 
 
-def fold(items: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
-    """Fold duplicate spellings of one fixture together. Returns (kept, report)."""
+def _crossed(left: Dict[str, Any], right: Dict[str, Any]) -> bool:
+    """Whether the two cards order the same fixture the opposite way."""
+    left_sides, right_sides = sides(left), sides(right)
+    if not left_sides or not right_sides:
+        return False
+    if _bare(left_sides[0]) == _bare(right_sides[0]):
+        return False
+    return (same_side(left_sides[0], right_sides[1])
+            and same_side(left_sides[1], right_sides[0]))
+
+
+def _teams_of(item: Dict[str, Any]) -> Tuple[str, str]:
+    """The two sides as the feed spelled them, not folded."""
+    name = str(item.get("name") or item.get("match_name") or "")
+    parts = [part.strip(" .-|,") for part in _SPLIT.split(name)]
+    return (parts[0], parts[1]) if len(parts) == 2 else ("", "")
+
+
+def _fix_home_away(keeper: Dict[str, Any], other: Dict[str, Any],
+                   home_lookup: Optional[Any]) -> str:
+    """Put the home side first, asked of the fixture rather than guessed.
+
+    Two feeds ordered one LaLiga match two ways - `Real Sociedad vs RC Celta`
+    and `Celta Vigo vs Real Sociedad` - and the site published both. Folding
+    them leaves the question of which order is right, and neither card can
+    answer it, so the fixture is asked. Returns the name it settled on, or ""
+    when nobody could say and the keeper's own order stands.
+    """
+    if home_lookup is None:
+        return ""
+    home, away = _teams_of(keeper)
+    if not home or not away:
+        return ""
+    date = _kickoff(keeper)[:10]
+    try:
+        told = home_lookup(home, away, date)
+    except Exception:  # noqa: BLE001 - a lookup must never break a scan
+        return ""
+    if not told or told == home:
+        return ""
+    # The fixture says the other side is at home, so the card is turned round.
+    corrected = f"{away} vs {home}"
+    keeper["name_before_home_away_fix"] = keeper.get("name")
+    keeper["name"] = corrected
+    keeper["home_away_corrected"] = True
+    return corrected
+
+
+def fold(items: List[Dict[str, Any]],
+         home_lookup: Optional[Any] = None
+         ) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
+    """Fold duplicate spellings of one fixture together. Returns (kept, report).
+
+    `home_lookup(home, away, date)` names the home side when two cards
+    disagree about the order. Left out, the keeper's own order stands.
+    """
     kept: List[Dict[str, Any]] = []
     report: List[Dict[str, str]] = []
 
@@ -233,11 +343,14 @@ def fold(items: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], List[Dict[s
             kept[kept.index(match)] = item
         else:
             keeper, folded = match, item
+        was_crossed = _crossed(keeper, folded)
         _absorb(keeper, folded)
+        corrected = _fix_home_away(keeper, folded, home_lookup) if was_crossed else ""
         report.append({
             "kept": str(keeper.get("name") or "")[:70],
             "folded": str(folded.get("name") or "")[:70],
             "kickoff": _kickoff(keeper),
+            "home_away_corrected": corrected,
         })
 
     return kept, report

@@ -260,6 +260,86 @@ AMBIGUOUS_NATIONS = frozenset({
 })
 
 
+#: Competitions whose name identifies the sport outright, including the
+#: abbreviations feeds actually ship. Consulted before anything else, because a
+#: league name is a fact about the sport while a team name is a coincidence:
+#: `Guardians vs Dockers` in the ETPL was refused as baseball for the word
+#: "guardians", and `Seoul W vs Incheon Red Angels W` in the WK-League was
+#: refused for "angels". Both are real fixtures - European T20 cricket and
+#: Korean women's football - and both were lost to a single word in a team's
+#: name.
+#:
+#: It also outranks the source's own sport field, which is free text and
+#: demonstrably wrong: `Wolves vs Castle Rockers` arrived tagged `football` and
+#: is Belfast Wolves vs Edinburgh Castle Rockers, an ETPL cricket match.
+LEAGUE_SPORT = {}
+
+
+def _register_league(sport: str, *names: str) -> None:
+    for name in names:
+        LEAGUE_SPORT[" ".join(name.split()).casefold()] = sport
+
+
+_register_league("cricket",
+    "etpl", "european t20 premier league", "european t20", "euro t20",
+    "jito premier league", "jito", "sher-e-punjab", "sher e punjab",
+    "oman d50", "d50", "acc premier cup", "acc mens premier cup",
+    "dehradun premier league", "dpl dehradun", "punjab t20 league",
+    "top end t20 series", "willow cricket", "cricket review",
+    "caribbean premier league", "cpl", "the hundred", "vitality blast",
+    "county championship", "sheffield shield", "ford trophy",
+    "world test championship", "icc world test championship",
+)
+_register_league("football",
+    "wk league", "wk-league", "wk league women", "k league", "k-league",
+    "j league cup", "j.league cup", "jleague cup", "j league", "j.league",
+    "ykk anzen levain cup", "levain cup",
+    "austrian bundesliga", "belarusian premier league", "polish cup",
+    "brasileirao serie a", "brazilian serie a", "primera division",
+    "laliga", "la liga", "premier league", "serie a", "serie b", "serie c",
+    "bundesliga", "ligue 1", "eredivisie", "scottish premiership",
+    "liga profesional argentina", "liga profesional de futbol",
+    "copa sudamericana", "copa libertadores", "nwsl", "mls",
+    "uefa womens champions league", "uefa women champions league",
+    "socca world cup", "campionato primavera", "taca de portugal",
+)
+_register_league("rugby", "currie cup", "sa cup", "united rugby championship")
+_register_league("gridiron", "cfl", "nfl")
+_register_league("baseball", "mlb", "npb", "kbo league")
+_register_league("basketball", "nba", "wnba", "eurobasket")
+_register_league("hockey", "fih hockey world cup", "fih pro league", "nhl")
+_register_league("golf", "pga tour", "dp world tour", "liv golf")
+_register_league("tennis", "atp tour", "wta tour")
+_register_league("motorsport", "formula 1", "motogp", "wrc", "indycar")
+
+#: Trailing season and round decoration a feed appends to a league name.
+_LEAGUE_TAIL = re.compile(
+    r"\s*(?:[-\u2013,]\s*)?(?:girone\s*\w+|group\s*\w+|round\s*\w+|matchday\s*\w+"
+    r"|jornada\s*\w+|week\s*\w+|day\s*\w+|\d{4}(?:/\d{2,4})?|\d+|[ivx]+)\s*$",
+    re.IGNORECASE)
+
+
+def league_sport(competition: Any) -> Tuple[str, str]:
+    """The sport this competition names, and the form that matched."""
+    raw = " ".join(str(competition or "").split())
+    if not raw:
+        return "", ""
+    seen = set()
+    candidate = raw
+    for _ in range(4):
+        key = " ".join(candidate.split()).casefold()
+        if not key or key in seen:
+            break
+        seen.add(key)
+        if key in LEAGUE_SPORT:
+            return LEAGUE_SPORT[key], candidate
+        trimmed = _LEAGUE_TAIL.sub("", candidate).strip(" -–,|")
+        if trimmed == candidate:
+            break
+        candidate = trimmed
+    return "", ""
+
+
 def _other_sport_hit(text: str) -> Tuple[str, str]:
     for sport, patterns in OTHER_SPORTS.items():
         found = _any(patterns, text)
@@ -272,6 +352,62 @@ def _verdict(state: str, reason: str, evidence: str = "") -> Dict[str, Any]:
     return {"state": state, "reason": reason, "evidence": evidence}
 
 
+def looks_like_a_league_not_a_team(text: Any) -> str:
+    """The league this side actually names, if it is a league and not a team.
+
+    Asked of the league map first, then of the strong competition patterns -
+    those are all competition names ("premier league", "la liga", "serie a",
+    "uefa"), never club names, which live in the weak lists instead. Without
+    the second question `Premier League vs Championship` read as a football
+    fixture on the strength of the words in it.
+    """
+    sport, matched = league_sport(text)
+    if sport:
+        return matched
+    plain = _text(text)
+    if not plain:
+        return ""
+    for patterns in (CRICKET_STRONG, FOOTBALL_STRONG):
+        found = _any(patterns, plain)
+        # Only when the competition name is essentially the whole side, so a
+        # club whose name happens to contain one is not mistaken for a league.
+        if found and len(found) >= len(plain) - 2:
+            return found
+    return ""
+
+
+def is_generic_fixture(item: Dict[str, Any]) -> str:
+    """Why this card is not a real fixture, or "".
+
+    `EUROPEAN T20 Vs Premier League` was published as a Today Match card with
+    three channels hanging under it - FOX CRICKET, WILLOW SPORTS and Willow
+    Cricbuzz - while the actual ETPL match at that hour, `Dublin Guardians vs
+    Rotterdam Dockers`, sat beside it with its own two. Nobody plays "European
+    T20": the feed's generic header had been read as a team-vs-team fixture,
+    and a viewer looking for the match had two cards to choose between, one of
+    them fictional.
+
+    A fixture has two teams. Two competition names, or the competition facing
+    itself, is a header.
+    """
+    sides = _participants(item)
+    if len(sides) != 2:
+        return ""
+    left, right = (looks_like_a_league_not_a_team(side) for side in sides)
+    if left and right:
+        return f"both sides name a competition ({left} / {right})"
+
+    competition = _text(_gather(item, COMPETITION_FIELDS))
+    if not competition:
+        return ""
+    # One side repeating the competition it belongs to - "EUROPEAN T20 Vs
+    # Premier League" under "EUROPEAN T20 Premier League".
+    for side in sides:
+        if len(side) > 4 and side in competition and (left or right):
+            return f"a side repeats its own competition ({side})"
+    return ""
+
+
 def classify(item: Dict[str, Any]) -> Dict[str, Any]:
     """Stages 1-4 for a single event. Stage 5 needs the whole batch."""
     if not isinstance(item, dict):
@@ -281,14 +417,35 @@ def classify(item: Dict[str, Any]) -> Dict[str, Any]:
     name = _text(_gather(item, NAME_FIELDS))
     everything = " | ".join(part for part in (structured, competition, name) if part)
 
-    # 1. the source said so.
+    # 0. Not a fixture at all. A feed's generic header read as two teams
+    # publishes a card nobody can play - see is_generic_fixture.
+    generic = is_generic_fixture(item)
+    if generic:
+        return _verdict(CONFIRMED_OTHER, "not a fixture", generic)
+
+    # 1. the competition, matched exactly against the league map. First,
+    # because a league name identifies the sport outright - and ahead of the
+    # source's own sport field, which is free text a feed gets wrong: `Wolves
+    # vs Castle Rockers` arrived tagged `football` and is an ETPL cricket
+    # match.
+    for field in COMPETITION_FIELDS:
+        sport, matched = league_sport(item.get(field))
+        if not sport:
+            continue
+        if sport == "cricket":
+            return _verdict(CONFIRMED_CRICKET, "league map", matched)
+        if sport == "football":
+            return _verdict(CONFIRMED_FOOTBALL, "league map", matched)
+        return _verdict(CONFIRMED_OTHER, f"league map: {sport}", matched)
+
+    # 2. the source said so.
     for token in structured.replace("|", " ").split():
         if token in STRUCTURED_CRICKET:
             return _verdict(CONFIRMED_CRICKET, "source sport field", token)
         if token in STRUCTURED_FOOTBALL:
             return _verdict(CONFIRMED_FOOTBALL, "source sport field", token)
 
-    # 2. the competition. Ahead of the structured "other sport" values, because
+    # 3. the competition, by pattern. Ahead of the structured "other sport" values, because
     # a feed that files a Serie C fixture under "other" is wrong about the
     # sport and right about the competition.
     hit = _any(CRICKET_STRONG, competition)
@@ -298,7 +455,7 @@ def classify(item: Dict[str, Any]) -> Dict[str, Any]:
     if hit:
         return _verdict(CONFIRMED_FOOTBALL, "competition", hit)
 
-    # 3. the title.
+    # 4. the title.
     hit = _any(CRICKET_STRONG, name)
     if hit:
         return _verdict(CONFIRMED_CRICKET, "title", hit)
@@ -306,17 +463,34 @@ def classify(item: Dict[str, Any]) -> Dict[str, Any]:
     if hit:
         return _verdict(CONFIRMED_FOOTBALL, "title", hit)
 
-    # 4. a named other sport anywhere. Only now, so a cricket or football
-    # signal above always wins - "Cricket Review Top End T20 Series" must not
-    # be refused for the word "series".
-    sport, found = _other_sport_hit(everything)
+    # 5. a named other sport. Where the evidence sits decides how far it
+    # counts, because a team's name is a coincidence and a competition is a
+    # fact. "Guardians vs Dockers" is an ETPL cricket fixture that was refused
+    # as baseball for the word "guardians"; "Seoul W vs Incheon Red Angels W"
+    # is Korean women's football refused for "angels". Both were real matches,
+    # and both were lost to one word in a team's name.
+    sport, found = _other_sport_hit(" | ".join(
+        part for part in (structured, competition) if part))
     if sport:
         return _verdict(CONFIRMED_OTHER, f"{sport} gazetteer", found)
     for token in structured.replace("|", " ").split():
         if token in STRUCTURED_OTHER:
             return _verdict(CONFIRMED_OTHER, "source sport field", token)
 
-    # 5. club-name shapes, which only ever produce `likely`.
+    sport, found = _other_sport_hit(name)
+    if sport:
+        if not competition:
+            # Nothing but the names to go on, so they decide: `Boland
+            # Cavaliers v Suzuki Griquas` carries no competition and is rugby.
+            return _verdict(CONFIRMED_OTHER, f"{sport} gazetteer", found)
+        # A competition exists and named no sport this module recognises. A
+        # word in a team's name is not enough to overrule it, so the fixture
+        # is looked up rather than refused on the guess.
+        return _verdict(UNKNOWN,
+                        f"team name suggests {sport}, but the competition "
+                        "does not - needs the fixture", found)
+
+    # 6. club-name shapes, which only ever produce `likely`.
     hit = _any(FOOTBALL_WEAK, everything)
     if hit:
         return _verdict(LIKELY_FOOTBALL, "club-name shape", hit)

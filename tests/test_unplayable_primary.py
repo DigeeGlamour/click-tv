@@ -204,6 +204,50 @@ class AChannelLevelProofDoesNotVouchForThisRoute(Ledger):
         source = Path("scanner/unplayable_primary.py").read_text(encoding="utf-8")
         self.assertNotIn("sustained_proof.has_proof", source)
 
+class PromotingDoesNotDuplicateARoute(unittest.TestCase):
+    """A card commonly lists its own primary among the backups as well.
+
+    Putting the demoted primary back unconditionally printed it twice: the
+    published Zee Bangla card listed the same rgkkw.live URL as two separate
+    backups, and the catalogue's own duplicate-backup test caught it on the
+    next scheduled scan.
+    """
+
+    def setUp(self):
+        self.dir = tempfile.TemporaryDirectory()
+        self.path = Path(self.dir.name) / "measured.json"
+        self.path.write_text(json.dumps({"routes": {
+            "rgkkw.live/live/1Aoen7elp5/IgMJ60tmAa/98881.ts": {
+                "reason": "playback never started within the window"},
+        }}), encoding="utf-8")
+        self._real = playback_evidence.DEFAULT_PATH
+        playback_evidence.DEFAULT_PATH = str(self.path)
+        playback_evidence.reset_cache()
+
+    def tearDown(self):
+        playback_evidence.DEFAULT_PATH = self._real
+        playback_evidence.reset_cache()
+        self.dir.cleanup()
+
+    def test_the_demoted_primary_appears_once(self):
+        row = card(DEAD, [{"url": DEAD}, {"url": ALIVE}])
+        up.enforce([row])
+        urls = [b["url"] for b in row["backups"]]
+        self.assertEqual(len(urls), len(set(urls)), urls)
+        self.assertEqual(urls.count(DEAD), 1)
+
+    def test_the_playable_route_still_leads(self):
+        row = card(DEAD, [{"url": DEAD}, {"url": ALIVE}])
+        up.enforce([row])
+        self.assertEqual(row["url"], ALIVE)
+
+    def test_an_unrelated_backup_is_kept(self):
+        other = "https://third.example/z.m3u8"
+        row = card(DEAD, [{"url": DEAD}, {"url": ALIVE}, {"url": other}])
+        up.enforce([row])
+        self.assertIn(other, [b["url"] for b in row["backups"]])
+
+
 
 if __name__ == "__main__":
     unittest.main()

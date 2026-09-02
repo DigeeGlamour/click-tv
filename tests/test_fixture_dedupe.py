@@ -157,6 +157,131 @@ class FoldingKeepsTheRicherCard(unittest.TestCase):
         self.assertEqual(len(kept), 1)
         self.assertEqual(len(report), 2)
 
+class TheDuplicatesTheReportListed(unittest.TestCase):
+    """Seven pairs the site published as two cards each, on 2026-09-02.
+
+    Each one differed by something that is not a different club: an accent, a
+    club abbreviation, a city spelled in another language, or home and away
+    the other way round.
+    """
+
+    ACCENTS = [
+        ("Coquimbo Unido Vs Universidad de Concepción",
+         "Coquimbo Unido vs Universidad de Concepcion"),
+        ("Velez Sarsfield vs Boca Juniors",
+         "Vélez Sarsfield Vs Boca Juniors"),
+    ]
+    ABBREVIATIONS = [
+        ("CD Toluca Vs Club León", "Toluca vs Leon"),
+        ("Club America vs Monterrey", "Club América Vs CF Monterrey"),
+        ("Al Wahda FC vs Baniyas", "Al Wahda vs Baniyas SC"),
+    ]
+    PLACE_NAMES = [
+        ("Red Bull Salzburg Vs SK Rapid Wien",
+         "Red Bull Salzburg vs Rapid Vienna"),
+    ]
+    CROSSED = [
+        ("Real Sociedad vs RC Celta", "Celta Vigo vs Real Sociedad"),
+        ("Real Madrid vs Real Betis", "Real Betis vs Real Madrid"),
+    ]
+
+    def test_an_accent_is_not_a_different_club(self):
+        for left, right in self.ACCENTS:
+            with self.subTest(left=left):
+                self.assertTrue(folds(left, right))
+
+    def test_a_club_abbreviation_is_not_a_different_club(self):
+        for left, right in self.ABBREVIATIONS:
+            with self.subTest(left=left):
+                self.assertTrue(folds(left, right))
+
+    def test_a_city_in_another_language_is_the_same_city(self):
+        for left, right in self.PLACE_NAMES:
+            with self.subTest(left=left):
+                self.assertTrue(folds(left, right))
+
+    def test_home_and_away_the_other_way_round_is_one_match(self):
+        for left, right in self.CROSSED:
+            with self.subTest(left=left):
+                self.assertTrue(folds(left, right))
+
+    def test_an_identity_word_is_not_stripped_as_decoration(self):
+        # "Deportivo" is the club, not a prefix - stripping it stopped
+        # `Deportivo vs Valencia` matching `Deportivo de A Coruna Vs Valencia`.
+        self.assertTrue(folds("Deportivo vs Valencia",
+                              "Deportivo de A Coruna Vs Valencia"))
+        self.assertTrue(fd.same_side("deportivo", "deportivo de a coruna"))
+
+
+class CrossedCardsStillNeedDifferentOpponents(unittest.TestCase):
+    def test_a_shared_side_the_other_way_round_is_not_enough(self):
+        for left, right in (
+            ("Manchester United vs Arsenal", "Arsenal vs Manchester City"),
+            ("Real Madrid vs Barcelona", "Barcelona vs Real Sociedad"),
+            ("A Team vs B Team", "C Team vs A Team"),
+        ):
+            with self.subTest(left=left):
+                self.assertFalse(folds(left, right))
+
+
+class TheHomeSideComesFromTheFixture(unittest.TestCase):
+    """Neither card can say which order is right, so the fixture is asked."""
+
+    def setUp(self):
+        self.asked = []
+
+    def lookup(self, answer):
+        def ask(home, away, date):
+            self.asked.append((home, away, date))
+            return answer
+        return ask
+
+    def test_a_crossed_pair_is_turned_round_when_told_to(self):
+        rich = card("Real Madrid vs Real Betis", channels=[{"name": "A"}],
+                    url="https://a.test/x.m3u8")
+        thin = card("Real Betis vs Real Madrid")
+        kept, report = fd.fold([rich, thin], self.lookup("Real Betis"))
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(kept[0]["name"], "Real Betis vs Real Madrid")
+        self.assertEqual(kept[0]["name_before_home_away_fix"],
+                         "Real Madrid vs Real Betis")
+        self.assertTrue(kept[0]["home_away_corrected"])
+        self.assertEqual(report[0]["home_away_corrected"],
+                         "Real Betis vs Real Madrid")
+
+    def test_it_is_left_alone_when_the_order_is_already_right(self):
+        rich = card("Real Betis vs Real Madrid", channels=[{"name": "A"}],
+                    url="https://a.test/x.m3u8")
+        thin = card("Real Madrid vs Real Betis")
+        kept, _ = fd.fold([rich, thin], self.lookup("Real Betis"))
+        self.assertEqual(kept[0]["name"], "Real Betis vs Real Madrid")
+        self.assertNotIn("home_away_corrected", kept[0])
+
+    def test_a_silent_lookup_leaves_the_keeper_as_it_is(self):
+        rich = card("Real Madrid vs Real Betis", channels=[{"name": "A"}])
+        kept, _ = fd.fold([rich, card("Real Betis vs Real Madrid")],
+                          self.lookup(""))
+        self.assertEqual(kept[0]["name"], "Real Madrid vs Real Betis")
+
+    def test_the_lookup_is_asked_with_the_fixture_date(self):
+        rich = card("Real Madrid vs Real Betis", channels=[{"name": "A"}])
+        fd.fold([rich, card("Real Betis vs Real Madrid")], self.lookup(""))
+        self.assertEqual(self.asked, [("Real Madrid", "Real Betis",
+                                       KICKOFF[:10])])
+
+    def test_it_is_not_asked_for_a_pair_that_is_not_crossed(self):
+        fd.fold([card("Cagliari vs Inter", channels=[{"name": "A"}]),
+                 card("Cagliari Vs Inter Milan")], self.lookup("Inter"))
+        self.assertEqual(self.asked, [])
+
+    def test_a_lookup_that_throws_does_not_break_the_fold(self):
+        def explode(home, away, date):
+            raise RuntimeError("provider down")
+        kept, _ = fd.fold([card("Real Madrid vs Real Betis", channels=[{"name": "A"}]),
+                           card("Real Betis vs Real Madrid")], explode)
+        self.assertEqual(len(kept), 1)
+
+
 
 if __name__ == "__main__":
     unittest.main()

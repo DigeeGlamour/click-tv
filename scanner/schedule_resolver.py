@@ -395,6 +395,35 @@ def _resolve_fixture(
     )
 
 
+#: A feed publishes its own local clock, and not every feed is in Dhaka.
+#: FanCode is an Indian service on Indian Standard Time, so reading its
+#: fixtures as Bangladesh time put every one of them exactly thirty minutes
+#: early - the half hour between UTC+5:30 and UTC+6:00. Measured 2026-09-03:
+#: `Namibia vs Zimbabwe` published 11:30 where Cricket Namibia says 12:00, and
+#: `Real Sociedad vs RC Celta` 18:30 where LaLiga and thesportsdb say 19:00.
+#:
+#: Keyed on a fragment of the source id so every FanCode mirror is covered by
+#: one entry rather than eight - the first fix reached two adapters and left
+#: `sayanpal-fancode-mirror` still half an hour out.
+SOURCE_CLOCK_ZONES = (
+    ("fancode", "Asia/Kolkata"),
+    ("sonyliv", "Asia/Kolkata"),
+    ("jiotv", "Asia/Kolkata"),
+    ("willow", "Asia/Kolkata"),
+)
+
+
+def source_clock_zone(source_id: Any, default_zone: ZoneInfo) -> ZoneInfo:
+    """The timezone this feed's naive clocks are written in."""
+    marker = str(source_id or "").casefold()
+    for fragment, zone_name in SOURCE_CLOCK_ZONES:
+        if fragment in marker:
+            resolved = _zone(zone_name, zone_name, "+05:30")
+            if resolved is not None:
+                return resolved
+    return default_zone
+
+
 def _parse_source_time(value: Any, source_timezone: ZoneInfo, now: datetime) -> Optional[datetime]:
     text = str(value or "").strip()
     if not text:
@@ -1134,7 +1163,9 @@ def enrich_event_candidates(
     for original in candidates:
         item = copy.deepcopy(original)
         name = str(item.get("name") or "")
-        source_time = _parse_source_time(item.get("start_time"), source_zone, now_utc)
+        # The feed's own zone, not the site's. See SOURCE_CLOCK_ZONES.
+        item_zone = source_clock_zone(item.get("source_id"), source_zone)
+        source_time = _parse_source_time(item.get("start_time"), item_zone, now_utc)
         # `relevant` intentionally excludes completed fixtures.  Before using
         # the reusable-channel fallback, nevertheless check the full official
         # catalogue so an ended match link can never return as CHANNEL_LIVE.

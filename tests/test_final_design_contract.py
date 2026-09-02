@@ -172,7 +172,9 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn("Boolean(String(item.name || '').trim())", upcoming_filter)
         self.assertNotIn("isPlayable(item)", upcoming_filter.split("}")[0])
         self.assertIn("hasAlreadyKickedOff(item)", upcoming_filter)
-        self.assertIn("'LIVE NOW'", self.app)
+        # The live state still has a label of its own; it is written in Bengali
+        # now, like every other line on the card.
+        self.assertIn("LIVE_NOW: 'সরাসরি'", self.app)
         # The action names what the click does. A card with a usable link plays
         # on either tab, so the label follows playability rather than the tab.
         self.assertIn("const showWatchAction = playable;", self.app)

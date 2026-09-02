@@ -21,6 +21,7 @@ try:
     from scanner import deliverability
     from scanner import sport_filter
     from scanner import fixture_dedupe
+    from scanner import competition_labels
     from scanner.event_lifecycle import (
         DEFAULT_TODAY_ROUTING_MINUTES,
         ROUTE_LIVE_STATUSES,
@@ -55,6 +56,7 @@ except ImportError:
     from live_protection import probe_card_is_playable, protect_live_events
     import sport_filter
     import fixture_dedupe
+    import competition_labels
     from event_lifecycle import (
         DEFAULT_TODAY_ROUTING_MINUTES,
         ROUTE_LIVE_STATUSES,
@@ -1948,14 +1950,33 @@ def process_events(
     # Milan`, `Deportivo vs Valencia` beside `Deportivo de A Coruna Vs
     # Valencia`. Folded here, where both lists are final, and the richer card
     # absorbs the other's routes so nothing is lost by folding.
-    today_items, today_folded = fixture_dedupe.fold(today_items)
-    upcoming_items, upcoming_folded = fixture_dedupe.fold(upcoming_items)
+    # The home side is asked of the fixture only when two cards disagree about
+    # the order, which is rare, so the lookup costs nothing on a normal scan.
+    def _home_side(home: str, away: str, date: str) -> str:
+        try:
+            from scanner import fixture_lookup  # noqa: PLC0415 - optional
+            return fixture_lookup.home_side(home, away, date)
+        except Exception:  # noqa: BLE001 - a lookup must never break a scan
+            return ""
+
+    today_items, today_folded = fixture_dedupe.fold(today_items, _home_side)
+    upcoming_items, upcoming_folded = fixture_dedupe.fold(upcoming_items, _home_side)
     schedule_stats["duplicate_fixtures_folded"] = today_folded + upcoming_folded
     if today_folded or upcoming_folded:
         print(f"   duplicate fixtures folded: {len(today_folded)} in Today, "
               f"{len(upcoming_folded)} in Upcoming")
         for row in (today_folded + upcoming_folded)[:10]:
             print(f"      kept {row['kept']!r}, folded {row['folded']!r}")
+
+    # `Bundesliga` on its own reads as the German one, and the card was showing
+    # it for Austria Vienna. The teams say which country's competition it is.
+    competition_renames = (competition_labels.apply(today_items)
+                           + competition_labels.apply(upcoming_items))
+    schedule_stats["competition_labels_clarified"] = competition_renames
+    if competition_renames:
+        print(f"   competition labels clarified: {len(competition_renames)}")
+        for row in competition_renames[:10]:
+            print(f"      {row['name']}: {row['was']!r} -> {row['now']!r}")
 
     today_items, today_sport_report = sport_filter.apply(today_items)
     upcoming_items, upcoming_sport_report = sport_filter.apply(upcoming_items)

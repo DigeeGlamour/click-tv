@@ -373,6 +373,48 @@ def verify(team_a: str, team_b: str, date: str = "", competition: str = "",
             "reason": f"{len(providers)} providers agree on {best}"}
 
 
+def home_side(team_a: str, team_b: str, date: str = "",
+              fetch: Callable[[str], str] = _fetch) -> str:
+    """Which of the two is the home team, as the fixture itself records it.
+
+    Two feeds can order one fixture two ways - `Real Sociedad vs RC Celta` and
+    `Celta Vigo vs Real Sociedad` were both published for one LaLiga match -
+    and neither is authoritative on its own. The fixture is, so it is asked.
+
+    The provider's own search is the answer: `searchevents.php?e=A_vs_B` finds
+    the match only when A is the home side, so asking both ways round says
+    which is which. Reading `strHomeTeam` out of an undated search does not
+    work - it happily returns the reverse leg, and answered "Real Madrid" for a
+    match played at Betis.
+
+    Returns the home side spelled as the caller spelled it, or "" when the
+    fixture is not found or the two answers disagree.
+    """
+    team_a = " ".join(str(team_a or "").split())
+    team_b = " ".join(str(team_b or "").split())
+    if not team_a or not team_b or not date:
+        return ""
+    session = _Session(fetch)
+
+    def found(first: str, second: str) -> bool:
+        query = urllib.parse.quote(f"{first}_vs_{second}")
+        events = session.get(
+            "thesportsdb",
+            f"{SPORTSDB}/searchevents.php?e={query}&d={urllib.parse.quote(date)}",
+        ).get("event") or []
+        return any(isinstance(event, dict)
+                   and str(event.get("dateEvent") or "") == date
+                   for event in events)
+
+    a_at_home = found(team_a, team_b)
+    b_at_home = found(team_b, team_a)
+    if a_at_home and not b_at_home:
+        return team_a
+    if b_at_home and not a_at_home:
+        return team_b
+    return ""
+
+
 # ── The cache, because a fixture's sport does not change ─────────────────────
 
 def cache_key(team_a: str, team_b: str, date: str = "") -> str:

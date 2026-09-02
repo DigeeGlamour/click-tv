@@ -50,6 +50,21 @@ from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
 ADAPTER_STATS: Dict[str, Dict[str, Any]] = {}
 
 BDT = timezone(timedelta(hours=6), "BDT")
+#: FanCode is an Indian service and publishes Indian Standard Time. Reading its
+#: clock as Bangladesh time put every FanCode fixture exactly thirty minutes
+#: early - the half-hour between UTC+5:30 and UTC+6:00. Measured 2026-09-02:
+#: eight fixtures across five countries, all out by the same thirty minutes,
+#: and `Real Sociedad vs RC Celta` published 18:30 when LaLiga and
+#: thesportsdb both say 19:00.
+IST = timezone(timedelta(hours=5, minutes=30), "IST")
+PKT = timezone(timedelta(hours=5), "PKT")
+
+#: The zones a feed can name inside the value itself.
+_NAMED_ZONES = {
+    "IST": IST, "PKT": PKT, "BDT": BDT, "BD TIME": BDT,
+    "UTC": timezone.utc, "GMT": timezone.utc,
+    "BST": timezone(timedelta(hours=1), "BST"),
+}
 
 #: Which reader handles which configured source id.
 ADAPTER_BY_SOURCE: Dict[str, str] = {
@@ -244,15 +259,29 @@ _DATE_CLOCK = re.compile(
 )
 
 
-def _parse_clock(value: Any, now: Optional[datetime] = None) -> str:
-    """Any of the measured spellings -> ISO 8601 UTC. "" when unreadable."""
+def _parse_clock(value: Any, now: Optional[datetime] = None,
+                 tz: Optional[timezone] = None) -> str:
+    """Any of the measured spellings -> ISO 8601 UTC. "" when unreadable.
+
+    `tz` is the zone a naive value is in. It defaults to Bangladesh time,
+    which is what most of these feeds publish and what every caller assumed
+    before FanCode's Indian clock was found to be half an hour off.
+
+    A zone named inside the value itself wins over `tz`: the suffix used to be
+    stripped and thrown away, so "5 PM IST" was read as 5 PM in Dhaka.
+    """
     text = " ".join(str(value or "").split())
     if not text:
         return ""
     if text.isdigit():
         return _epoch(text, "ms" if len(text) >= 12 else "s")
 
-    reference = (now or datetime.now(timezone.utc)).astimezone(BDT)
+    zone = tz or BDT
+    named = _TZ_SUFFIX.search(text)
+    if named:
+        spelled = " ".join(named.group(0).strip(" ()").split()).upper()
+        zone = _NAMED_ZONES.get(spelled, zone)
+    reference = (now or datetime.now(timezone.utc)).astimezone(zone)
     cleaned = _TZ_SUFFIX.sub("", text).strip()
 
     day_shift = 0
@@ -269,7 +298,7 @@ def _parse_clock(value: Any, now: Optional[datetime] = None) -> str:
         except ValueError:
             continue
         if parsed.tzinfo is None:
-            parsed = parsed.replace(tzinfo=BDT)
+            parsed = parsed.replace(tzinfo=zone)
         return parsed.astimezone(timezone.utc).isoformat()
 
     match = _DATE_CLOCK.match(cleaned)
@@ -286,7 +315,7 @@ def _parse_clock(value: Any, now: Optional[datetime] = None) -> str:
                 year += 1
             try:
                 return datetime(
-                    year, month_number, int(day), hour24, int(minute or 0), tzinfo=BDT
+                    year, month_number, int(day), hour24, int(minute or 0), tzinfo=zone
                 ).astimezone(timezone.utc).isoformat()
             except ValueError:
                 return ""
@@ -330,6 +359,42 @@ def _collapse_self_versus(text: str) -> str:
     return text
 
 
+#: A date appended to a fixture title. The kickoff already has its own field,
+#: so carrying it in the name says the same thing twice and pushes the teams
+#: off the card: `Indore Hawks vs Chennai Strikers 2 Sep 2026`.
+_TITLE_DATE = re.compile(
+    r"\s*[-,|]?\s*\b(?:\d{1,2}\s+(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{2,4}|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\s+\d{1,2}(?:,)?\s+\d{2,4}|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})\s*$",
+    re.IGNORECASE)
+
+#: A status or quality word a feed sticks on the end of the title. The card
+#: shows the status from its own field, so `Costa Rica vs Bulgaria Live` reads
+#: as though "Live" were part of Bulgaria's name.
+_TITLE_STATUS = re.compile(
+    r"\s*[-,|]?\s*\b(?:live(?:\s+now)?|now\s+live|hd|fhd|uhd|sd|4k|full\s*match|highlights?|replay|stream(?:ing)?)\s*$",
+    re.IGNORECASE)
+
+
+def _tidy_fixture_title(text: str) -> str:
+    """Strip the date and the status a feed appended to a fixture name.
+
+    Both belong to fields of their own - `start_time` and `status` - and the
+    card renders them from there. Repeating them inside the name is how
+    `Indore Hawks vs Chennai Strikers 2 Sep 2026` and `Costa Rica vs Bulgaria
+    Live` reached the front page.
+    """
+    cleaned = " ".join(str(text or "").split())
+    for _ in range(3):
+        before = cleaned
+        cleaned = _TITLE_DATE.sub("", cleaned).strip(" -,|:")
+        cleaned = _TITLE_STATUS.sub("", cleaned).strip(" -,|:")
+        if cleaned == before:
+            break
+    # Never strip a title down to nothing, or to one side of the fixture.
+    if not cleaned or not _VERSUS.search(cleaned):
+        return " ".join(str(text or "").split())
+    return cleaned
+
+
 def _match_name(*parts: Any) -> str:
     """The cleanest "A vs B" available from the parts given, in order."""
     for part in parts:
@@ -338,7 +403,7 @@ def _match_name(*parts: Any) -> str:
             # "Series - 1st Test - England vs Pakistan" -> "England vs Pakistan"
             tail = text.rsplit(" - ", 1)[-1].strip()
             chosen = tail if _VERSUS.search(tail) else text
-            return _collapse_self_versus(chosen)
+            return _tidy_fixture_title(_collapse_self_versus(chosen))
     return _first_text(*parts)
 
 
@@ -461,7 +526,12 @@ def _record(
     logo = _first_text(*logos)
     return {
         "source_id": source_id,
-        "name": " ".join(str(name or "").split()),
+        # Cleaned here because this is the one exit every adapter uses.
+        # _match_name only tidies the branch that already reads as "A vs B",
+        # so a name built from team_1/team_2 or taken straight from a title
+        # slipped past it - five titles were still carrying a date or a
+        # trailing "Live" after the first attempt.
+        "name": _tidy_fixture_title(name),
         "status_raw": str(status_raw or ""),
         "competition": str(competition or "").strip(),
         "round": str(round_label or "").strip(),
@@ -1042,7 +1112,7 @@ def adapt_fancode(payload: Dict[str, Any], source_id: str) -> List[Dict[str, Any
                 logos=(row.get("src"),),
                 competition=_first_text(row.get("event_name")),
                 sport=_first_text(row.get("event_category")),
-                start_time=_parse_clock(row.get("startTime")),
+                start_time=_parse_clock(row.get("startTime"), tz=IST),
                 identity=_first_text(row.get("match_id")),
             )
         )
@@ -1249,7 +1319,7 @@ def adapt_sportlive_fancode(payload: Dict[str, Any], source_id: str) -> List[Dic
                 logos=(row.get("src"),),
                 competition=_first_text(row.get("event_name")),
                 sport=_first_text(row.get("event_category")),
-                start_time=_parse_clock(row.get("startTime")),
+                start_time=_parse_clock(row.get("startTime"), tz=IST),
                 identity=_first_text(row.get("match_id")),
             )
         )

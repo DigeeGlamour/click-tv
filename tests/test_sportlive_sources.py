@@ -162,7 +162,7 @@ class FancodeAdapterTests(unittest.TestCase):
         record = self._by_name("A vs B")
         self.assertEqual(record["channels"], [])
         self.assertTrue(record["metadata_only"])
-        self.assertEqual(record["start_time"], "2026-08-29T10:00:00+00:00")
+        self.assertEqual(record["start_time"], "2026-08-29T10:30:00+00:00")
         self.assertEqual(record["competition"], "Some Cup")
         self.assertEqual(record["sport"], "football")
 
@@ -173,7 +173,11 @@ class FancodeAdapterTests(unittest.TestCase):
 
     def test_start_time_is_parsed_to_timezone_aware_utc(self):
         record = self._by_name("Central Delhi Kings")
-        self.assertEqual(record["start_time"], "2026-08-28T13:00:00+00:00")
+        # 07:00 PM in the feed is 19:00 IST, because FanCode publishes Indian
+        # Standard Time and the Delhi Premier League is an Indian competition.
+        # This assertion used to read 13:00, which is 19:00 read as Dhaka time
+        # - the half hour that put every FanCode fixture on the site early.
+        self.assertEqual(record["start_time"], "2026-08-28T13:30:00+00:00")
         self.assertTrue(record["start_time"].endswith("+00:00"))
 
     def test_the_feeds_user_agent_reaches_the_server(self):

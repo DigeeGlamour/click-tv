@@ -286,44 +286,68 @@ def _normalize_series(raw: Mapping[str, Any], position: int) -> Dict[str, Any]:
 
     seasons: List[Dict[str, Any]] = []
     episode_payloads: Dict[int, List[Dict[str, Any]]] = {}
-    seen_seasons: set[int] = set()
+    season_titles: Dict[int, str] = {}
+    season_keys: Dict[int, set] = {}
     total_episodes = 0
 
+    # A repeated season number joins the season already collected instead of
+    # ending the scan. The staging catalogue is built from a TXT source that
+    # writes one `Season:` header per episode, so a season with eight episodes
+    # arrives as eight blocks all numbered the same - that is the format, not a
+    # mistake in the data. `Chokro 2` has eight `Season: S02` blocks (a batch
+    # link for episodes 01-07 and then each episode on its own), and treating
+    # them as eight separate seasons raised "Duplicate Season 2" and took the
+    # whole run down with it: Live Signal Scanner #1180 died there after an
+    # hour and 38 minutes of completed work.
+    #
+    # Merging is what the caller does one level up for duplicate series
+    # records, and it keeps the episodes rather than dropping the show.
     for season_position, raw_season in enumerate(raw_seasons, start=1):
         if not isinstance(raw_season, dict):
             continue
         number = _int(raw_season.get("number"), season_position)
-        if number in seen_seasons:
-            raise ValueError(f"Duplicate Season {number}: {name}")
-        seen_seasons.add(number)
         raw_episodes = raw_season.get("episodes")
         if not isinstance(raw_episodes, list) or not raw_episodes:
             continue
-        episodes: List[Dict[str, Any]] = []
-        seen_episode_keys: set[str] = set()
+        episodes = episode_payloads.setdefault(number, [])
+        seen_episode_keys = season_keys.setdefault(number, set())
         for episode_position, raw_episode in enumerate(raw_episodes, start=1):
             if not isinstance(raw_episode, dict) or raw_episode.get("enabled") is False:
                 continue
+            # Numbered across the whole season, not within this block, so two
+            # blocks cannot both produce an "ordinal 1" episode.
+            ordinal = len(episodes) + 1
             episode = _normalize_episode(
                 raw_episode,
                 series_id=series_id,
                 series_name=name,
                 category=category,
                 season_number=number,
-                ordinal=episode_position,
+                ordinal=ordinal,
             )
             key = _text(episode.get("episode_key"))
             if key in seen_episode_keys:
-                key = f"{key}-{episode_position:03d}"
-                episode["episode_key"] = key
-                episode["id"] = f"{episode['id']}-{episode_position:03d}"
+                # The same episode from two blocks - a batch link beside the
+                # individual files - is one episode, and the first spelling of
+                # it wins.
+                continue
             seen_episode_keys.add(key)
             episodes.append(episode)
         if not episodes:
+            episode_payloads.pop(number, None)
             continue
-        title = _text(raw_season.get("title"), "Specials" if number == 0 else f"Season {number}")
-        seasons.append({"number": number, "title": title, "count": len(episodes)})
-        episode_payloads[number] = episodes
+        if number not in season_titles:
+            season_titles[number] = _text(
+                raw_season.get("title"),
+                "Specials" if number == 0 else f"Season {number}",
+            )
+
+    for number, episodes in episode_payloads.items():
+        seasons.append({
+            "number": number,
+            "title": season_titles.get(number, f"Season {number}"),
+            "count": len(episodes),
+        })
         total_episodes += len(episodes)
 
     if not seasons:

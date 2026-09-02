@@ -82,7 +82,14 @@ def _swap_in(card: Dict[str, Any], index: int) -> Dict[str, Any]:
         else:
             card.pop(key, None)
 
-    card["backups"] = [demoted] + backups
+    # The demoted route often already sits in the backup list - a card
+    # commonly lists its primary there too - so putting it back unconditionally
+    # printed it twice. Measured: the published Zee Bangla card listed the same
+    # rgkkw.live URL as two separate backups, which the catalogue's own test
+    # caught on the next scan.
+    demoted_url = _url(demoted)
+    kept = [row for row in backups if _url(row) != demoted_url] if demoted_url else backups
+    card["backups"] = ([demoted] + kept) if demoted_url else kept
     card["primary_promoted_from_backup"] = True
     return card
 

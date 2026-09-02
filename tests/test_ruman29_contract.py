@@ -37,7 +37,11 @@ class Ruman29ContractTests(unittest.TestCase):
         self.assertIn("body::after{display:none", final_block)
 
     def test_today_channel_status_is_distinct_from_fixture_live(self) -> None:
-        self.assertIn("CHANNEL_LIVE: 'CHANNEL LIVE'", self.app)
+        # The two states stay separate. The wording is Bengali now, like every
+        # other line on the card - "CHANNEL LIVE" described how the scanner
+        # found the match rather than anything a viewer can act on.
+        self.assertIn("CHANNEL_LIVE: 'চ্যানেলে সরাসরি'", self.app)
+        self.assertIn("LIVE_NOW: 'সরাসরি'", self.app)
         self.assertIn("uiStatus === 'LIVE_NOW' || uiStatus === 'CHANNEL_LIVE'", self.app)
 
 
