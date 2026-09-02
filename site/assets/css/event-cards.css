@@ -786,3 +786,34 @@ body.playback-active .sidebar-section.event-list-mode .event-filter-menu{backdro
 @media (max-width:560px){
   .sidebar-data-age{font-size:11px!important;max-width:52%!important}
 }
+
+/* Report item [12], measured rather than assumed: the Upcoming card's
+   action button came out 40x32 in a 390px Chromium, because the 480px
+   block above shrinks the icon to 32px and hides the label. A finger needs
+   44px, and the label is what tells a viewer whether pressing plays
+   something or only opens the details. */
+@media (max-width:560px){
+  /* The last piece of sub-11px text on the page: the "vs" between the two
+     team names inside the card art. The names either side were raised long
+     ago and this was left at 7.5px, which is what a 390px Chromium still
+     measured on the live site. */
+  .sidebar-section.event-list-mode .event-art-versus em{font-size:11px!important}
+  /* The Upcoming card's serial badge, at 8px from final-design.css. The
+     Today card's equivalent is 11px, and a number a viewer reads to say
+     "the third one down" has to be one of them. */
+  .sidebar-section.event-list-mode .sidebar-channel-num{
+    min-width:18px!important;height:18px!important;font-size:11px!important;
+  }
+  .sidebar-section.event-list-mode .event-card-action{
+    min-width:44px!important;min-height:44px!important;font-size:11px!important;
+  }
+  .sidebar-section.event-list-mode .event-card-action i{
+    width:44px!important;height:44px!important;font-size:13px!important;
+  }
+}
+@media (hover:none){
+  .sidebar-section.event-list-mode .event-card-action,
+  .sidebar-section.event-list-mode .event-card-action i{
+    min-width:44px!important;min-height:44px!important;
+  }
+}
