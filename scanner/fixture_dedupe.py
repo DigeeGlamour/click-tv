@@ -277,9 +277,17 @@ def _absorb(keeper: Dict[str, Any], other: Dict[str, Any]) -> None:
         if not url or url in seen:
             continue
         seen.add(url)
+        # A backup is a route, not a card, so the folded card's own
+        # bookkeeping does not travel with it. `_source_timezone` holds a
+        # ZoneInfo, and nesting one here made the whole event payload
+        # unserialisable: the 18:26 scan on 2026-09-02 did all its work,
+        # then refused its own snapshot with "Object of type ZoneInfo is
+        # not JSON serializable" and carried both event files forward
+        # unchanged, so four home/away corrections never reached the page.
         backups.append(row if row is not other else
                        {key: value for key, value in other.items()
-                        if key not in ("backups", "channels", "source_ids")})
+                        if key not in ("backups", "channels", "source_ids")
+                        and not str(key).startswith("_")})
     if backups:
         keeper["backups"] = backups
 

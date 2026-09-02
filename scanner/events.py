@@ -710,6 +710,42 @@ def _strip_embed_streams(card: Dict[str, Any]) -> int:
     return removed
 
 
+def _drop_unserialisable(value: Any, path: str = "") -> List[str]:
+    """Remove anything json.dumps would refuse, and name what went.
+
+    The event payload is validated by serialising it, and a single
+    unserialisable value anywhere in it makes the scan refuse its own
+    snapshot and republish the previous one. That failure is silent on the
+    page - the file simply does not change - so this removes the value and
+    says which field it was.
+    """
+    dropped: List[str] = []
+    if isinstance(value, dict):
+        for key in list(value.keys()):
+            child = value[key]
+            where = f"{path}.{key}" if path else str(key)
+            if _publishable(child):
+                dropped.extend(_drop_unserialisable(child, where))
+            else:
+                value.pop(key, None)
+                dropped.append(where)
+    elif isinstance(value, list):
+        for index in range(len(value) - 1, -1, -1):
+            child = value[index]
+            where = f"{path}[{index}]"
+            if _publishable(child):
+                dropped.extend(_drop_unserialisable(child, where))
+            else:
+                value.pop(index)
+                dropped.append(where)
+    return dropped
+
+
+def _publishable(value: Any) -> bool:
+    """True when this value is a JSON type, without serialising it."""
+    return value is None or isinstance(value, (bool, int, float, str,
+                                               list, dict))
+
 def _payload(
     items: List[Dict[str, Any]],
     event_type: str,
@@ -734,6 +770,15 @@ def _payload(
     )
     for item in ordered:
         item.pop("_source_timezone", None)
+        # And anything else that cannot survive json.dumps, wherever it is
+        # nested. Stripping one known key at the top level was not enough:
+        # a folded card copied into `backups` carried its own ZoneInfo, the
+        # snapshot refused itself as unserialisable, and both event files
+        # were carried forward unchanged - every fix that scan had made,
+        # published nowhere, with nothing on the page to show it.
+        for path in _drop_unserialisable(item):
+            print("   dropped unpublishable field "
+                  + path + " from " + str(item.get("name"))[:40])
         # Strip first: relabelling numbers the generic channels that remain, so
         # removing one afterwards would leave a gap in the Server-N sequence.
         _strip_embed_streams(item)
