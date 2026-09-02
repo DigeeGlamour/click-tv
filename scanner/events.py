@@ -20,7 +20,7 @@ try:
     from scanner.live_protection import probe_card_is_playable, protect_live_events
     from scanner import deliverability
     from scanner import sport_filter
-    from scanner import fixture_dedupe
+    from scanner import fixture_dedupe, fixture_titles
     from scanner import competition_labels
     from scanner.event_lifecycle import (
         DEFAULT_TODAY_ROUTING_MINUTES,
@@ -56,6 +56,7 @@ except ImportError:
     from live_protection import probe_card_is_playable, protect_live_events
     import sport_filter
     import fixture_dedupe
+    import fixture_titles
     import competition_labels
     from event_lifecycle import (
         DEFAULT_TODAY_ROUTING_MINUTES,
@@ -1958,6 +1959,19 @@ def process_events(
             return fixture_lookup.home_side(home, away, date)
         except Exception:  # noqa: BLE001 - a lookup must never break a scan
             return ""
+
+    # The adapters tidy a title as they parse it, which never reaches a card
+    # carried through from an earlier publish - so `Indore Hawks vs Chennai
+    # Strikers 2 Sep 2026` was still on the page. Sweep the final lists, and
+    # do it before folding duplicates: a date on one copy of a fixture and not
+    # the other is exactly how a duplicate escapes.
+    title_fixes = (fixture_titles.apply(today_items)
+                   + fixture_titles.apply(upcoming_items))
+    schedule_stats["fixture_titles_tidied"] = title_fixes
+    if title_fixes:
+        print(f"   fixture titles tidied: {len(title_fixes)}")
+        for row in title_fixes[:10]:
+            print(f"      {row['was']!r} -> {row['now']!r}")
 
     today_items, today_folded = fixture_dedupe.fold(today_items, _home_side)
     upcoming_items, upcoming_folded = fixture_dedupe.fold(upcoming_items, _home_side)
