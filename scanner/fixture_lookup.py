@@ -502,9 +502,13 @@ def verify_many(fixtures: List[Tuple[str, str, str, str]],
 #: one confirmed reading is never re-bought and never confused with a sport
 #: verdict for the same fixture.
 HOME_AWAY_PREFIX = "home_away|"
-#: `home_side` costs two requests, so this is deliberately far below the
-#: sport budget. A confirmed answer is permanent, so the list settles.
-MAX_HOME_AWAY_LOOKUPS_PER_SCAN = 12
+#: `home_side` costs two requests. A confirmed answer is permanent, so the
+#: cost is paid once per fixture rather than once per scan: with around a
+#: hundred cards on the page, twelve pairs a scan needed nine scans to reach
+#: the end of the list, and `Real Madrid vs Real Betis` sat near the end of
+#: it, still reversed after a full run. Forty covers the list in three scans
+#: and then only asks about fixtures it has never seen before.
+MAX_HOME_AWAY_LOOKUPS_PER_SCAN = 40
 
 
 def resolve_home_sides(

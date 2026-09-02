@@ -285,3 +285,79 @@ class TheHomeSideComesFromTheFixture(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TwoFeedsDisagreeingAboutTheKickoff(unittest.TestCase):
+    """One match, two start times, so requiring the same instant kept both.
+
+    `Belfast Wolves vs Edinburgh Castle Rockers` was on Today Match twice on
+    2026-09-02: Willow's own schedule said 12:55 for "European T20 Premier
+    League 2026 - 11th Match", and bingstream said 13:15 for "ETPL". Same two
+    clubs, same afternoon, twenty minutes apart - and `same_fixture` compared
+    the timestamps as strings, so neither card folded into the other.
+    """
+
+    WILLOW = {
+        "name": "Belfast Wolves vs Edinburgh Castle Rockers",
+        "start_time": "2026-09-02T12:55:00+00:00",
+        "competition": "European T20 Premier League 2026 - 11th Match",
+        "channels": [{"name": "Willow"}, {"name": "Willow 2"}],
+        "source_ids": ["srhady-willow-event"],
+    }
+    BINGSTREAM = {
+        "name": "Belfast Wolves vs Edinburgh Castle Rockers",
+        "start_time": "2026-09-02T13:15:00+00:00",
+        "competition": "ETPL",
+        "channels": [{"name": "Server-1"}],
+        "source_ids": ["srhady-bingstream", "srhady-axsports-live"],
+    }
+
+    def test_the_two_cards_are_one_fixture(self):
+        self.assertTrue(fd.same_fixture(self.WILLOW,
+                                                    self.BINGSTREAM))
+
+    def test_they_fold_into_the_richer_card(self):
+        kept, folded = fd.fold([dict(self.WILLOW),
+                                            dict(self.BINGSTREAM)])
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(len(folded), 1)
+        self.assertEqual(kept[0]["start_time"], "2026-09-02T12:55:00+00:00")
+        self.assertIn("11th Match", kept[0]["competition"])
+
+    def test_an_hour_apart_is_two_fixtures(self):
+        later = dict(self.WILLOW, start_time="2026-09-02T13:56:00+00:00")
+        self.assertFalse(fd.same_fixture(self.WILLOW, later))
+
+    def test_a_later_session_the_same_day_is_not_folded(self):
+        evening = dict(self.WILLOW, start_time="2026-09-02T18:15:00+00:00")
+        self.assertFalse(fd.same_fixture(self.WILLOW, evening))
+
+    def test_the_tolerance_cannot_fold_a_different_pair(self):
+        other = dict(self.BINGSTREAM,
+                     name="Glasgow Cosmics vs Belfast Wolves")
+        self.assertFalse(fd.same_fixture(self.WILLOW, other))
+
+    def test_the_exact_string_still_matches(self):
+        same = dict(self.BINGSTREAM, start_time=self.WILLOW["start_time"])
+        self.assertTrue(fd.kickoff_matches(self.WILLOW, same))
+
+    def test_an_unparseable_time_is_not_close_to_anything(self):
+        broken = dict(self.WILLOW, start_time="soon")
+        self.assertFalse(fd.kickoff_matches(broken,
+                                                        self.BINGSTREAM))
+        self.assertFalse(fd.same_fixture(broken, self.BINGSTREAM))
+
+    def test_a_missing_time_never_matches(self):
+        for value in ("", None):
+            with self.subTest(value=value):
+                blank = dict(self.WILLOW, start_time=value)
+                self.assertFalse(fd.kickoff_matches(blank,
+                                                                self.BINGSTREAM))
+
+    def test_a_naive_timestamp_is_read_as_utc(self):
+        naive = dict(self.BINGSTREAM, start_time="2026-09-02T13:15:00")
+        self.assertTrue(fd.kickoff_matches(self.WILLOW, naive))
+
+    def test_the_tolerance_is_under_an_hour(self):
+        # A pair can play twice in a day; never twice within the hour.
+        self.assertLess(fd.KICKOFF_TOLERANCE_MINUTES, 60)

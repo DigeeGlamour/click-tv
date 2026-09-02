@@ -38,6 +38,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 _SPLIT = re.compile(r"\s+(?:vs?\.?|v|versus)\s+", re.IGNORECASE)
@@ -184,10 +185,42 @@ def _kickoff(item: Dict[str, Any]) -> str:
     return ""
 
 
+#: Two feeds can disagree by a few minutes about when one match starts.
+#: `Belfast Wolves vs Edinburgh Castle Rockers` was published twice on
+#: 2026-09-02 - Willow's own schedule said 12:55 for "European T20 Premier
+#: League 2026 - 11th Match" and bingstream said 13:15 for "ETPL" - and
+#: requiring the same instant to the second kept both cards on the page.
+#: A pair does not play twice inside an hour, so this is wide enough to
+#: fold a disagreement and far too narrow to fold a double-header.
+KICKOFF_TOLERANCE_MINUTES = 45
+
+
+def _kickoff_instant(item: Dict[str, Any]) -> Optional[datetime]:
+    written = _kickoff(item)
+    if not written:
+        return None
+    try:
+        parsed = datetime.fromisoformat(written.strip().replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    return parsed if parsed.tzinfo else parsed.replace(tzinfo=timezone.utc)
+
+
+def kickoff_matches(left: Dict[str, Any], right: Dict[str, Any]) -> bool:
+    """Same kickoff, allowing for two feeds rounding it differently."""
+    written = _kickoff(left)
+    if not written or not _kickoff(right):
+        return False
+    if written == _kickoff(right):
+        return True
+    first, second = _kickoff_instant(left), _kickoff_instant(right)
+    if first is None or second is None:
+        return False
+    return abs(first - second) <= timedelta(minutes=KICKOFF_TOLERANCE_MINUTES)
+
 def same_fixture(left: Dict[str, Any], right: Dict[str, Any]) -> bool:
     """The narrow rule, stated once."""
-    kickoff = _kickoff(left)
-    if not kickoff or kickoff != _kickoff(right):
+    if not kickoff_matches(left, right):
         return False
     left_sides, right_sides = sides(left), sides(right)
     if not left_sides or not right_sides:

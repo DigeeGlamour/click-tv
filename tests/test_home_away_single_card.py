@@ -191,9 +191,13 @@ class TheLookupIsPaidForOnce(unittest.TestCase):
             fixture_lookup.home_side_from(answers, "Arsenal", "Chelsea",
                                           "2026-09-05"), "")
 
-    def test_the_budget_is_far_below_the_sport_budget(self):
-        self.assertLess(fixture_lookup.MAX_HOME_AWAY_LOOKUPS_PER_SCAN,
-                        fixture_lookup.MAX_LOOKUPS_PER_SCAN)
+    def test_the_budget_is_bounded_and_covers_the_page_in_a_few_scans(self):
+        # Twelve a scan needed nine scans to reach the end of a hundred-card
+        # list, and left the reported card reversed after a full run. It still
+        # has to be a budget, though: this runs on every scan.
+        budget = fixture_lookup.MAX_HOME_AWAY_LOOKUPS_PER_SCAN
+        self.assertGreaterEqual(budget, 34, "a hundred cards in three scans")
+        self.assertLessEqual(budget, fixture_lookup.MAX_LOOKUPS_PER_SCAN)
 
     def test_the_budget_is_honoured(self):
         fetch, calls = self._provider()
