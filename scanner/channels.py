@@ -377,9 +377,56 @@ def process_tv_channels(
     )
 
     _write_allowlist_report(categorized, rejected_by_allowlist)
+    _report_proven_channels_that_are_missing(categorized)
 
     return categorized
 
+
+
+
+def _report_proven_channels_that_are_missing(categorized) -> None:
+    """Name any channel measured playing in a browser that is not published.
+
+    The registry records channels a real browser was watched playing for two
+    full windows. When one of those is not in the catalogue the scan just
+    wrote, that is worth a line: it is the difference between a source that
+    stopped answering and a rule quietly removing something the owner
+    restored on purpose.
+
+    Desh TV went on 2026-09-02 because every source now reports it at 410p
+    and the catalogue floor is 720p. That is a decision about the product,
+    not a bug to fix here - but it was only discoverable by reading a test
+    failure, which is the wrong place to learn it.
+    """
+    try:
+        from scanner import sustained_proof  # noqa: PLC0415
+        from scanner import channel_alias  # noqa: PLC0415
+    except ImportError:  # pragma: no cover - direct module execution
+        return
+    try:
+        registry = sustained_proof.load()
+    except Exception:  # noqa: BLE001 - a registry read must never break a scan
+        return
+
+    proven = {
+        channel_alias.canonical_channel_name(row.get("name")): str(row.get("name") or "")
+        for row in (registry.get("proofs") or {}).values()
+        if str(row.get("name") or "").strip()
+    }
+    if not proven:
+        return
+    published = {
+        channel_alias.canonical_channel_name(card.get("name"))
+        for name, cards in categorized.items() if name != "quarantine"
+        for card in cards if isinstance(card, dict)
+    }
+    missing = sorted(proven[key] for key in set(proven) - published)
+    if not missing:
+        return
+    print(f"   proven channels not in this catalogue: {len(missing)}")
+    for name in missing[:10]:
+        print(f"      {name} - measured playing before, no publishable "
+              f"route this scan")
 
 def _write_allowlist_report(
     categorized: Dict[str, List[Dict[str, Any]]],

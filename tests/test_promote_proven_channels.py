@@ -404,3 +404,75 @@ class RestoredStateTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class AProvenChannelLeavingIsSaidOutLoud(unittest.TestCase):
+    """Desh TV was only discoverable from a red test, which is the wrong place.
+
+    Every source began reporting it at 410p on 2026-09-02 and the 720p floor
+    dropped it. That is a decision about the product rather than a bug - but a
+    channel the owner restored, and that a browser was watched playing for two
+    full windows, must not leave the catalogue without the scan saying so.
+    """
+
+    def _report(self, catalogue):
+        import contextlib
+        import io
+
+        from scanner.channels import (  # noqa: PLC0415
+            _report_proven_channels_that_are_missing,
+        )
+
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            _report_proven_channels_that_are_missing(catalogue)
+        return out.getvalue()
+
+    def _proven_names(self):
+        from scanner import sustained_proof  # noqa: PLC0415
+
+        return [str(row.get("name") or "")
+                for row in (sustained_proof.load().get("proofs") or {}).values()
+                if str(row.get("name") or "").strip()]
+
+    def test_a_missing_proven_channel_is_named(self):
+        names = self._proven_names()
+        self.assertIn("Desh TV", names, "the fixture this test reasons about")
+        printed = self._report(
+            {"Bangla": [{"name": n} for n in names if n != "Desh TV"]})
+        self.assertIn("Desh TV", printed)
+        self.assertIn("proven channels not in this catalogue: 1", printed)
+
+    def test_a_complete_catalogue_says_nothing(self):
+        printed = self._report(
+            {"Bangla": [{"name": n} for n in self._proven_names()]})
+        self.assertEqual(printed, "")
+
+    def test_a_different_spelling_still_counts_as_present(self):
+        # Channel identity is canonical, not per-spelling: "NEXUS TV" became
+        # "Nexus TV" and the channel is still there.
+        names = self._proven_names()
+        catalogue = {"Bangla": [{"name": n.upper()} for n in names]}
+        self.assertEqual(self._report(catalogue), "")
+
+    def test_quarantine_does_not_count_as_published(self):
+        names = self._proven_names()
+        printed = self._report({
+            "Bangla": [{"name": n} for n in names if n != "Desh TV"],
+            "quarantine": [{"name": "Desh TV"}],
+        })
+        self.assertIn("Desh TV", printed)
+
+    def test_the_publish_stage_calls_it(self):
+        source = (ROOT / "scanner" / "channels.py").read_text(encoding="utf-8")
+        self.assertIn("_report_proven_channels_that_are_missing(categorized)",
+                      source)
+
+    def test_a_registry_that_cannot_be_read_does_not_break_the_scan(self):
+        from unittest import mock
+
+        from scanner import sustained_proof  # noqa: PLC0415
+
+        with mock.patch.object(sustained_proof, "load",
+                               side_effect=RuntimeError("no registry")):
+            self.assertEqual(self._report({"Bangla": []}), "")
