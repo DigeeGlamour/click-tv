@@ -29,6 +29,7 @@ from typing import Any, Deque, Dict, Iterable, List, Optional, Tuple
 from urllib.parse import urlsplit
 
 from scanner.bd_verifier import (
+    redact_public_report,
     _eligible_for_github_protection,
     _extract_bd_rules as _extract_bd_rules_for_protection,
     _migrate_sensitive_history_keys,
@@ -2083,9 +2084,20 @@ def run_fast_verification_pipeline(
     for item in final_results:
         status = str(item.get("verification_status") or "unknown")
         report_groups.setdefault(status, []).append(_report_item(item))
+    # Through the redactor, like the other writer of this same file. A stream
+    # URL can carry an Akamai path token - hdntl=exp=...~hmac=... - and this
+    # report is committed by every scan, so one unredacted row publishes a live
+    # credential to a public repository and there is no way to unpublish it.
+    #
+    # bd_verifier.py has redacted its write since the day that was found. This
+    # one did not, and this is the writer the scan actually uses: CI's own
+    # auto-commit 7e89e4e1e put a live token for
+    # live-d-01-icc-we.akamaized.net into reports/bd-verification.json on
+    # 2026-09-02. The test that was supposed to prevent it only checked
+    # bd_verifier.py for the call.
     _atomic_write_json(
         bd_report_path,
-        {
+        redact_public_report({
             "timestamp": _utc_now(),
             "mode": mode,
             "pipelined": True,
@@ -2100,7 +2112,7 @@ def run_fast_verification_pipeline(
             "unproven_hidden": unproven_hidden,
             "status_counts": final_counts,
             "groups": report_groups,
-        },
+        }),
     )
 
     performance = {

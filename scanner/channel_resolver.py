@@ -689,12 +689,6 @@ def resolve_channel_name(
     # form a channel group. Three sources carrying one "T Sports" feed for one
     # match published as three buttons reading "Server-1", "Server-2",
     # "Server-3" instead of one T Sports with a primary and two backups.
-    value, field = _first_nonempty(item, ("channel_name", "channelName", "channel"))
-    if value and _curated_alias_key(value, alias_map):
-        return finish(value, "explicit", field)
-    if value and looks_like_channel(strip_stream_noise(value, event_name) or value):
-        return finish(value, "explicit", field)
-
     def declared(value: str, confidence: str, field: str) -> Optional[ChannelName]:
         """Accept a field that *states* the broadcaster rather than implying it.
 
@@ -710,6 +704,25 @@ def resolve_channel_name(
             if probe and looks_like_channel(probe):
                 return finish(probe, confidence, field)
         return None
+
+    value, field = _first_nonempty(item, ("channel_name", "channelName", "channel"))
+    if value and _curated_alias_key(value, alias_map):
+        return finish(value, "explicit", field)
+    if value:
+        # `declared` rather than the cleaned form alone. A per-stream
+        # channel_name is the most explicit declaration a feed makes, and
+        # noise stripping can take the whole name off it: sm-sports-data
+        # offered "FOOTBALL HD" for Falkirk FC Vs Rangers, the quality marker
+        # came off, "FOOTBALL" was correctly refused as a bare category, and
+        # the declaration went into the bin with it - so the card published
+        # "Server-1" beside a real "BeIN2 SPORTS" and the name the source gave
+        # was simply lost. This is the same shape as the "AX Sports" case the
+        # helper below was written for, and the same shape as "T Sports"
+        # before it; the only reason it survived is that step 1 was not using
+        # the helper.
+        resolved = declared(value, "explicit", field)
+        if resolved is not None:
+            return resolved
 
     # 2. tvg-name.
     value, field = _first_nonempty(item, ("tvg_name", "tvg-name", "tvgName"))

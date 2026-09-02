@@ -28,6 +28,7 @@ try:
         authority_says_live,
         classify_state,
         event_destination,
+        minutes_to_kickoff,
     )
     from scanner.targeted_scan import fixture_key, has_valid_link
     from scanner.source_coverage import build_source_coverage, write_source_coverage
@@ -61,6 +62,7 @@ except ImportError:
         authority_says_live,
         classify_state,
         event_destination,
+        minutes_to_kickoff,
     )
     from targeted_scan import fixture_key, has_valid_link
     from source_coverage import build_source_coverage, write_source_coverage
@@ -302,6 +304,62 @@ def _write_sport_decisions(payload: Dict[str, Any]) -> None:
                           encoding="utf-8")
     except (OSError, TypeError, ValueError):
         pass
+
+
+#: The fields that make a card playable. An Upcoming card must carry none of
+#: them, so they are removed together - leaving one behind is how a card ends
+#: up with a channel chip that leads nowhere.
+_PLAYABLE_FIELDS = (
+    "url", "header_profile", "proxy_mode", "stream_type", "requires_headers",
+    "headers", "playback_id", "inherit_manifest_query", "referer",
+    "user_agent", "origin", "drm", "channels", "backups", "channel_count",
+    "default_channel_id", "primary_stream_key", "resolution",
+    "resolution_height", "verification_mode", "verification_badge", "verified",
+)
+
+
+def _hold_back_early_link(item: Dict[str, Any],
+                          minutes_to_kickoff: Optional[float],
+                          window_minutes: int) -> bool:
+    """Publish an Upcoming fixture without its stream until the window opens.
+
+    Upcoming is a list of fixtures, not a list of streams: a card there shows
+    when a match starts, and it gets a play button when the match is about to.
+    That is the whole point of the thirty-minute window - the scan starts
+    hunting a link then, and a fixture that has one crosses to Today Match.
+
+    Some feeds do not wait. `sm-sports-data` publishes the fixture and its
+    stream in one record, so on 2026-09-02 at 08:38 UTC ten Upcoming cards
+    carried a verified link and named channels for matches four to sixteen
+    hours away - `Real Madrid Vs Ajax` had two channels and a working
+    rmtv.akamaized.net URL nine and a half hours before kickoff. Nothing was
+    wrong with the link; it was simply on the wrong tab, offering a match
+    nobody could watch yet and leaving Today Match to look empty by
+    comparison.
+
+    So the link is held back rather than published early. The stream is not
+    lost: the same feed offers it again on the next scan, and once the fixture
+    is inside the window the clock routes the card to Today Match with the
+    link intact. The card keeps everything a fixture needs - name, kickoff,
+    competition, artwork, sport - and takes the shape the other 112 Upcoming
+    cards already have.
+    """
+    # An unknown kickoff is not a reason to take a link away: without a clock
+    # there is no window to be outside of, and the card is left exactly as the
+    # scan built it.
+    if minutes_to_kickoff is None or minutes_to_kickoff <= window_minutes:
+        return False
+    had_link = bool(str(item.get("url") or "").strip()) or bool(item.get("channels"))
+    if not had_link:
+        return False
+    for field in _PLAYABLE_FIELDS:
+        item.pop(field, None)
+    item["url"] = ""
+    item["metadata_only"] = True
+    item["available_link_count"] = 0
+    item["verification_status"] = "metadata_only"
+    item["link_held_until_window"] = True
+    return True
 
 
 def _strip_undeliverable_routes(item: Dict[str, Any]) -> int:
@@ -1584,6 +1642,7 @@ def process_events(
     today_unplayable = 0
     undeliverable_dropped = 0
     upcoming_stale = 0
+    early_links_held = 0
 
     for card in merged:
         if not isinstance(card, dict):
@@ -1639,6 +1698,16 @@ def process_events(
                 upcoming_stale += 1
                 continue
             _stamp_final_routing(card_copy, "upcoming")
+            # A fixture still outside the window publishes without its stream.
+            # See _hold_back_early_link: the clock brings it to Today Match with
+            # the link when the match is close, and until then Upcoming carries
+            # no play button that cannot be used.
+            if _hold_back_early_link(
+                card_copy,
+                minutes_to_kickoff(card_copy, now),
+                DEFAULT_TODAY_ROUTING_MINUTES,
+            ):
+                early_links_held += 1
             card_copy["status"] = str(
                 card_copy.get("schedule_status") or card_copy.get("status") or "UPCOMING"
             )
@@ -1960,6 +2029,12 @@ def process_events(
     # including the carried-forward ones the verifier never sees. Reported so a
     # number appears in the run log rather than only in a diff.
     schedule_stats["undeliverable_routes_dropped"] = undeliverable_dropped
+    # Upcoming holds fixtures, not streams. A card whose feed shipped a link
+    # hours early publishes without it and gains it when the clock brings the
+    # card to Today Match.
+    schedule_stats["early_links_held"] = early_links_held
+    if early_links_held:
+        print(f"   early links held back on Upcoming: {early_links_held}")
 
     # Written out so a wrong rejection can be audited after the fact: the name,
     # the source that carried it, and the evidence it was refused on.

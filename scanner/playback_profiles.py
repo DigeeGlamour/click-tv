@@ -67,9 +67,15 @@ SENSITIVE_QUERY_RE = re.compile(
 SENSITIVE_TOKEN_RE = re.compile(
     r"\b(hdntl|hdnea|__hdnea__|hdnts|hmac|signature|sig|token|policy|"
     r"license_key|clear_?keys?|clearkey|key_?id|kid|"
-    r"nimblesessionid)\s*=\s*[A-Za-z0-9%._~:\-]{16,}",
+    r"nimblesessionid)\s*=\s*[A-Za-z0-9%._~:\-=*]{16,}",
     re.IGNORECASE,
 )
+# `=`, `~` and `*` are in the class because an Akamai path token is a compound
+# value, not a single opaque string: hdntl=exp=...~acl=...~id=...~data=...~hmac=...
+# Without them the match stopped at "hdntl=exp" - three characters, short of
+# the sixteen this needs - so only the inner hmac was redacted and the rest of
+# the token stayed in the file. `/` and `&` are still outside the class, which
+# is what keeps a match inside one path segment or one query parameter.
 
 
 def _utc_now() -> str:

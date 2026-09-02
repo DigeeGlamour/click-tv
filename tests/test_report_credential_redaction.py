@@ -90,6 +90,30 @@ class TheBdReportGoesThroughItTests(unittest.TestCase):
         self.assertIn("_atomic_write_json(report_path, redact_public_report(report_data))",
                       source)
 
+    def test_every_writer_of_this_file_redacts(self):
+        """Checking one writer let the other one publish a live token.
+
+        `bd_verifier.py` had redacted its write since the day this was found;
+        `fast_pipeline.py` wrote the same file raw, and that is the writer a
+        scan actually uses. CI's own auto-commit 7e89e4e1e put a live Akamai
+        token for live-d-01-icc-we.akamaized.net into
+        reports/bd-verification.json on 2026-09-02, and the test above passed
+        the whole time.
+        """
+        for name in sorted((ROOT / "scanner").glob("*.py")):
+            source = name.read_text(encoding="utf-8")
+            if "bd-verification.json" not in source:
+                continue
+            if "_atomic_write_json" not in source:
+                continue  # a reader, not a writer
+            with self.subTest(module=name.name):
+                self.assertIn(
+                    "redact_public_report",
+                    source,
+                    f"{name.name} writes reports/bd-verification.json without "
+                    "going through redact_public_report",
+                )
+
     def test_the_committed_report_carries_no_token(self):
         path = ROOT / "reports" / "bd-verification.json"
         if not path.is_file():
