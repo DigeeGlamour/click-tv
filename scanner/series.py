@@ -620,6 +620,32 @@ def publish_prepared_series(
     if playback_collector.records:
         catalog = merge_public_catalog(root / "data", playback_collector)
 
+        # An episode card carries only its playback_id, so a season tree newer
+        # than the catalogue beside it publishes cards that open and play
+        # nothing - 137 of them reached CI, which refused the build. The two
+        # are written by the same sanitize_item call and cannot disagree within
+        # a run, so a disagreement here means the catalogue on disk is from an
+        # earlier vintage. Repair it from the cards own configuration, then
+        # insist, because shipping this silently is what went wrong before.
+        from scanner.series_catalogue import missing_episode_profiles, reconcile
+
+        if missing_episode_profiles(root / "data"):
+            repair = reconcile(root / "data", generated_at)
+            still_missing = missing_episode_profiles(root / "data")
+            if still_missing:
+                raise RuntimeError(
+                    f"{len(still_missing)} published episode(s) have no playback "
+                    f"profile and cannot be rebuilt from their own card: "
+                    + ", ".join(
+                        f"{row['series']} / {row['episode']}"
+                        for row in still_missing[:5]
+                    )
+                )
+            print(
+                f"   Playback catalogue reconciled: "
+                f"{repair['registered']} episode profile(s) re-registered"
+            )
+
         profile_report_path = root / "reports" / "playback-profiles.json"
         _atomic_write_json(profile_report_path, {
             "schema_version": 1,
