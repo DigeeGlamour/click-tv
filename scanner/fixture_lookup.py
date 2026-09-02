@@ -540,7 +540,8 @@ def resolve_home_sides(
     now = time.time()
     cache = load_cache(cache_path)
     answers: Dict[str, str] = {}
-    pending: List[Tuple[str, Tuple[str, str, str]]] = []
+    #: (cache key, fixture, whether this is a retry rather than a first ask)
+    pending: List[Tuple[str, Tuple[str, str, str], bool]] = []
     queued: set = set()
 
     for team_a, team_b, date in fixtures:
@@ -555,13 +556,22 @@ def resolve_home_sides(
             continue
         if key not in queued:
             queued.add(key)
-            pending.append((key, (team_a, team_b, date)))
+            pending.append((key, (team_a, team_b, date), key in cache))
 
     if not pending:
         return answers
 
+    # A fixture nobody has asked about yet goes first. Truncating the queue
+    # in list order starved the tail of the page: the cards near the top
+    # fall due again every twenty minutes and ate the whole budget, so
+    # `Real Madrid vs Real Betis` sat at position 100-odd and had still
+    # never been asked after several scans, while nine other fixtures were
+    # resolved and two of them corrected. Retries keep their turn - they
+    # just take it after everything that has never had one.
+    pending.sort(key=lambda job: job[2])
+
     def run(job):
-        key, (team_a, team_b, date) = job
+        key, (team_a, team_b, date), _retry = job
         try:
             home, unavailable = home_side_with_status(
                 team_a, team_b, date, fetch=fetch)

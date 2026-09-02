@@ -13,6 +13,7 @@ from the provider leaves the feed's order alone.
 """
 import json
 import tempfile
+import time
 import unittest
 import urllib.parse
 from pathlib import Path
@@ -347,3 +348,82 @@ class AProviderThatNeverAnswersIsNotAnAnswer(unittest.TestCase):
         printed = out.getvalue()
         self.assertIn("none resolved", printed)
         self.assertIn("unanswered by the provider", printed)
+
+
+class TheTailOfThePageGetsATurn(unittest.TestCase):
+    """Nine fixtures resolved, two cards corrected, and the reported one never
+    asked at all.
+
+    After a successful scan on 2026-09-02 the cache held 92 home/away entries -
+    9 resolved, 25 the provider had not answered, 58 it did not know - and
+    `Real Madrid vs Real Betis` was absent from all of them. The queue was
+    truncated in list order, and the cards near the top of the page fall due
+    again every twenty minutes, so they took the whole budget on every scan
+    while position 100-odd was never reached.
+    """
+
+    def setUp(self):
+        self.cache = Path(tempfile.mkdtemp()) / "lookups.json"
+
+    def _seed_due_retries(self, count):
+        stale = time.time() - 30 * 60
+        seeded = {}
+        for index in range(count):
+            key = fixture_lookup.HOME_AWAY_PREFIX + fixture_lookup.cache_key(
+                f"Early{index}", f"Foe{index}", "2026-09-04")
+            seeded[key] = {"home": "", "confirmed": False, "unavailable": True,
+                           "checked_at": stale,
+                           "fixture": f"Early{index} vs Foe{index}"}
+        fixture_lookup.save_cache(seeded, self.cache)
+        return [(f"Early{index}", f"Foe{index}", "2026-09-04")
+                for index in range(count)]
+
+    def _asked(self, pairs, budget):
+        seen = []
+
+        def fetch(url):
+            seen.append(urllib.parse.unquote(url))
+            return json.dumps({"event": None})
+
+        fixture_lookup.resolve_home_sides(pairs, fetch=fetch,
+                                          cache_path=self.cache, budget=budget)
+        return seen
+
+    def test_a_never_asked_fixture_beats_a_retry_for_the_last_slot(self):
+        pairs = self._seed_due_retries(3) + [
+            ("Real Madrid", "Real Betis", "2026-09-04")]
+        asked = self._asked(pairs, budget=1)
+        self.assertTrue(any("Real Betis" in line or "Real Madrid" in line
+                            for line in asked),
+                        f"the tail was starved again: {asked}")
+
+    def test_every_new_fixture_is_asked_before_any_retry(self):
+        retries = self._seed_due_retries(4)
+        fresh = [(f"New{index}", f"Rival{index}", "2026-09-04")
+                 for index in range(3)]
+        asked = self._asked(retries + fresh, budget=3)
+        self.assertFalse(any("Early" in line for line in asked),
+                         f"a retry took a slot from a first ask: {asked}")
+        for index in range(3):
+            with self.subTest(index=index):
+                self.assertTrue(any(f"New{index}" in line for line in asked))
+
+    def test_retries_still_get_their_turn_when_there_is_room(self):
+        retries = self._seed_due_retries(2)
+        asked = self._asked(retries + [("New0", "Rival0", "2026-09-04")],
+                            budget=3)
+        self.assertTrue(any("Early0" in line for line in asked))
+        self.assertTrue(any("New0" in line for line in asked))
+
+    def test_a_cached_answer_is_still_never_re_asked(self):
+        # Ordering must not turn a settled fixture back into a question.
+        fixture_lookup.save_cache({
+            fixture_lookup.HOME_AWAY_PREFIX + fixture_lookup.cache_key(
+                "Real Madrid", "Real Betis", "2026-09-04"): {
+                    "home": "Real Betis", "confirmed": True,
+                    "unavailable": False, "checked_at": time.time(),
+                    "fixture": "Real Madrid vs Real Betis"},
+        }, self.cache)
+        asked = self._asked([("Real Madrid", "Real Betis", "2026-09-04")],
+                            budget=5)
+        self.assertEqual(asked, [])
