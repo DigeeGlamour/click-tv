@@ -183,3 +183,48 @@ def enforce(items: Iterable[Dict[str, Any]]) -> Tuple[int, int, List[Dict[str, s
         })
 
     return promoted, hidden, report
+
+def dedupe_backup_urls(items: Iterable[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """One physical route, one entry in a card's backup list.
+
+    The same URL can arrive from two sources with different headers, so it
+    is two playback ids and passes any id-keyed check - and a viewer sees
+    one dead route offered twice. The published Zee Bangla card listed
+    `rgkkw.live/.../98881.ts` as Backup-1 and again as Backup-3, one from
+    manual-playlist-1 needing no headers and one from
+    smartplaytv-worker-stream needing them.
+
+    This was repaired once in the committed data by a script; the channels
+    scan at 19:00 on 2026-09-02 put it straight back and failed the run,
+    which is what a one-off repair without a pipeline rule looks like. The
+    first spelling of a route wins, because that is the order the merge
+    already decided.
+    """
+    removed: List[Dict[str, str]] = []
+    for card in items:
+        if not isinstance(card, dict):
+            continue
+        backups = card.get("backups")
+        if not isinstance(backups, list) or len(backups) < 2:
+            continue
+        seen = {_url(card)} - {""}
+        kept: List[Any] = []
+        for row in backups:
+            url = _url(row) if isinstance(row, dict) else ""
+            if url and url in seen:
+                removed.append({
+                    "name": str(card.get("name") or ""),
+                    "category": str(card.get("category") or ""),
+                    "url": url,
+                    "dropped": str(row.get("name") or ""),
+                })
+                continue
+            if url:
+                seen.add(url)
+            kept.append(row)
+        if len(kept) != len(backups):
+            card["backups"] = kept
+            if isinstance(card.get("available_link_count"), int):
+                card["available_link_count"] = len(kept) + (
+                    1 if _url(card) else 0)
+    return removed

@@ -284,3 +284,108 @@ class BackupDedupeTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TheDuplicateComesFromTwoSources(unittest.TestCase):
+    """A repair without a pipeline rule is undone by the next scan.
+
+    The Zee Bangla duplicate was folded out of the committed data once, by a
+    script. The channels scan at 19:00 on 2026-09-02 put it straight back and
+    failed the run: `rgkkw.live/.../98881.ts` as Backup-1 from
+    manual-playlist-1 needing no headers, and again as Backup-3 from
+    smartplaytv-worker-stream needing them.
+
+    Two sources, two header sets, so two playback ids - which is why nothing
+    keyed on the id noticed, and why a viewer was offered one dead route twice.
+    """
+
+    def test_the_same_url_from_two_sources_is_one_backup(self):
+        from scanner.unplayable_primary import dedupe_backup_urls
+
+        card = {
+            "name": "Zee Bangla",
+            "url": "https://stream.ottplus.bd/live/zee_bangla_abr/live/720/",
+            "available_link_count": 4,
+            "backups": [
+                {"name": "Backup-1", "url": "http://rgkkw.live/x/98881.ts",
+                 "requires_headers": False, "source_id": "manual-playlist-1",
+                 "playback_id": "ctv_" + "a" * 32},
+                {"name": "Backup-2",
+                 "url": "https://stream.ottplus.bd/live/zee_bangla_abr/index.m3u8"},
+                {"name": "Backup-3", "url": "http://rgkkw.live/x/98881.ts",
+                 "requires_headers": True,
+                 "source_id": "smartplaytv-worker-stream",
+                 "playback_id": "ctv_" + "b" * 32},
+            ],
+        }
+        dropped = dedupe_backup_urls([card])
+
+        self.assertEqual(len(dropped), 1)
+        self.assertEqual(dropped[0]["dropped"], "Backup-3")
+        urls = [row["url"] for row in card["backups"]]
+        self.assertEqual(len(urls), len(set(urls)))
+        self.assertIn("http://rgkkw.live/x/98881.ts", urls)
+
+    def test_the_first_spelling_of_the_route_is_the_one_kept(self):
+        from scanner.unplayable_primary import dedupe_backup_urls
+
+        card = {"name": "A", "url": "", "backups": [
+            {"name": "keep", "url": "http://one/x.ts"},
+            {"name": "drop", "url": "http://one/x.ts"},
+        ]}
+        dedupe_backup_urls([card])
+        self.assertEqual([row["name"] for row in card["backups"]], ["keep"])
+
+    def test_a_backup_that_repeats_the_primary_goes(self):
+        from scanner.unplayable_primary import dedupe_backup_urls
+
+        card = {"name": "A", "url": "http://one/x.ts", "backups": [
+            {"name": "same as primary", "url": "http://one/x.ts"},
+            {"name": "real backup", "url": "http://two/y.ts"},
+        ]}
+        dedupe_backup_urls([card])
+        self.assertEqual([row["name"] for row in card["backups"]],
+                         ["real backup"])
+
+    def test_the_link_count_follows(self):
+        from scanner.unplayable_primary import dedupe_backup_urls
+
+        card = {"name": "A", "url": "http://p/x", "available_link_count": 3,
+                "backups": [{"url": "http://one/x.ts"},
+                            {"url": "http://one/x.ts"}]}
+        dedupe_backup_urls([card])
+        self.assertEqual(card["available_link_count"], 2)
+
+    def test_distinct_routes_are_all_kept(self):
+        from scanner.unplayable_primary import dedupe_backup_urls
+
+        card = {"name": "A", "url": "http://p/x", "backups": [
+            {"url": "http://one/x.ts"}, {"url": "http://two/y.ts"},
+            {"url": "http://three/z.ts"}]}
+        self.assertEqual(dedupe_backup_urls([card]), [])
+        self.assertEqual(len(card["backups"]), 3)
+
+    def test_the_scan_applies_it_and_not_only_the_script(self):
+        channels = (Path(__file__).resolve().parent.parent / "scanner"
+                    / "channels.py").read_text(encoding="utf-8")
+        self.assertIn("unplayable_primary.dedupe_backup_urls", channels)
+
+        script = (Path(__file__).resolve().parent.parent / "scripts"
+                  / "repair-unplayable-primaries.py").read_text(encoding="utf-8")
+        self.assertIn("unplayable_primary.dedupe_backup_urls", script,
+                      "the script must share the rule, not copy it")
+
+    def test_no_published_card_repeats_a_route(self):
+        import glob
+
+        for path in glob.glob(str(Path(__file__).resolve().parent.parent
+                                  / "data" / "channels" / "*.json")):
+            payload = json.loads(Path(path).read_text(encoding="utf-8"))
+            for card in payload.get("channels") or []:
+                urls = [str(row.get("url") or "")
+                        for row in card.get("backups") or []
+                        if isinstance(row, dict) and str(row.get("url") or "")]
+                with self.subTest(card=card.get("name")):
+                    self.assertEqual(
+                        len(urls), len(set(urls)),
+                        f"{card.get('name')} repeats a backup route")

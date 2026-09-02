@@ -152,6 +152,17 @@ def _enforce_playable_primary(cards: List[Dict[str, Any]], pass_name: str) -> No
         import unplayable_primary  # type: ignore
 
     promoted, hidden, report = unplayable_primary.enforce(cards)
+    # One physical route, one entry. The same URL arriving from two sources
+    # with different headers is two playback ids, so nothing keyed on the id
+    # notices - and the published Zee Bangla card offered one dead rgkkw
+    # route twice. Repaired once by a script; the 19:00 channels scan put it
+    # straight back and failed the run, so the rule belongs here.
+    folded = unplayable_primary.dedupe_backup_urls(cards)
+    if folded:
+        print(f"   duplicate physical URLs folded out of backups "
+              f"({pass_name}): {len(folded)}")
+        for row in folded[:8]:
+            print(f"      {row['name']}: dropped {row['dropped']}")
     for row in report:
         row["pass"] = pass_name
     _PLAYABLE_PRIMARY_REPORT.extend(report)
