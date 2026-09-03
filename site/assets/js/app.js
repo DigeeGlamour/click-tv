@@ -2411,6 +2411,20 @@ function eventLivePhaseText(item) {
   return rest ? `${hours}h ${rest}m` : `${hours}h`;
 }
 
+/* "Started 41m ago", off the same measured elapsed clock the live badge uses.
+ *
+ * The match preview showed the kickoff time and nothing else, so a fixture
+ * that began forty-one minutes earlier read exactly like one that had not
+ * started: "Today - 8:00 PM BDT", at 8:41 PM. Measured 2026-09-03 on
+ * Kashi Rudras vs Noida Kings, kickoff 14:00 UTC, metadata_only with no
+ * channels at all.
+ */
+function eventStartedAgoText(item) {
+  const elapsed = eventLivePhaseText(item);
+  if (!elapsed) return '';
+  return elapsed === 'just now' ? 'Started just now' : `Started ${elapsed} ago`;
+}
+
 // Guide 18. User-facing wording for what the scanner already recorded.
 
 // Requirement 12. The card speaks the site's language, and it says the
@@ -3637,7 +3651,14 @@ function todayPosterHtml(item, parts) {
 function todayChannelPillsHtml(item) {
   const channels = eventChannels(item);
   if (!channels.length) {
-    return '<span class="channel-pill muted">চ্যানেল শীঘ্রই যোগ হবে</span>';
+    // "শীঘ্রই যোগ হবে" is a promise about the future, and after kickoff it is
+    // not one this card can keep. Measured 2026-09-03: Kashi Rudras vs Noida
+    // Kings started at 8:00 PM BDT with channels:[] and metadata_only, and at
+    // 8:41 PM the pill still said a channel would be added soon.
+    const started = Boolean(eventLivePhaseText(item));
+    return started
+      ? '<span class="channel-pill muted">চ্যানেল এখনো পাওয়া যায়নি</span>'
+      : '<span class="channel-pill muted">চ্যানেল শীঘ্রই যোগ হবে</span>';
   }
   return channels.map((channel) => {
     const label = String(channel?.name || '').trim() || 'Server';
@@ -4096,7 +4117,28 @@ function showEventPreview(item) {
   $('eventPreviewTitle').textContent = stripStreamNoise(parts.title);
   $('eventPreviewLeague').textContent = parts.competition || 'Live Sports';
   const countdown = eventCountdownText(item);
-  qs('span', $('eventPreviewTime')).textContent = [eventScheduleText(item), countdown].filter(Boolean).join(' • ');
+  // Two sentences in this panel were fixed text, and once kickoff passed both
+  // of them were false: it announced "Upcoming Match" over "Stream link will
+  // be added before the match starts" for a match already under way. The
+  // elapsed clock is the same one the live badge reads, so the panel now says
+  // how long ago the match began instead of only when it was due.
+  const startedAgo = countdown ? '' : eventStartedAgoText(item);
+  const hasStarted = Boolean(startedAgo);
+  qs('span', $('eventPreviewTime')).textContent =
+    [eventScheduleText(item), countdown, startedAgo].filter(Boolean).join(' • ');
+
+  const statusEl = $('eventPreviewStatus');
+  if (statusEl) {
+    statusEl.innerHTML = hasStarted
+      ? '<i class="fas fa-circle-play" aria-hidden="true"></i> Match Started'
+      : '<i class="far fa-calendar-alt" aria-hidden="true"></i> Upcoming Match';
+  }
+  const noteEl = $('eventPreviewNote');
+  if (noteEl) {
+    noteEl.innerHTML = hasStarted
+      ? '<i class="fas fa-satellite-dish" aria-hidden="true"></i> Kickoff has passed and no stream link has been found yet. It appears here as soon as one is.'
+      : '<i class="fas fa-satellite-dish" aria-hidden="true"></i> Stream link will be added before the match starts.';
+  }
 
   // Guide 29 and 32. The card stays clean; the level 3 facts surface here.
   const facts = $('eventPreviewFacts');
@@ -10006,6 +10048,36 @@ function initializeSeriesModule() {
   });
 }
 
+/* What selectMainView() calls a view, keyed by what state.view calls it.
+ *
+ * The two vocabularies are not the same and only overlap by luck.
+ * VIEW.UPCOMING and VIEW.CHANNEL happen to equal the strings the branches
+ * test, VIEW.EVENT ('event') does not equal 'today-match', and VIEW.FAVORITE
+ * ('favorite') does not equal 'favorites'. Passing state.view straight in
+ * therefore sent Today Match down the final else, where it looked for
+ * `manifest.channels['Today Match']`, found nothing, and answered with
+ * "এই বিভাগের JSON path পাওয়া যায়নি" over an emptied list - about
+ * thirty seconds after a first visit, on nothing more than a tab switch.
+ *
+ * The list came back on the next scroll or clock tick only because
+ * state.currentItems was never cleared, so the very next render put it back.
+ * That is why it read as a flicker rather than a failure.
+ *
+ * VIEW.MOVIE is deliberately absent: movies are not reached through this
+ * function at all, and a missing key skips the refresh rather than guessing.
+ */
+const VIEW_SELECT_KEYS = Object.freeze({
+  [VIEW.EVENT]: 'today-match',
+  [VIEW.UPCOMING]: 'upcoming',
+  [VIEW.CHANNEL]: 'channel',
+  [VIEW.FAVORITE]: 'favorites',
+  [VIEW.RECENT]: 'recent'
+});
+
+function selectKeyForView(view) {
+  return VIEW_SELECT_KEYS[view] || '';
+}
+
 function setupReturnToTabRefresh() {
   /* A tab left open for an hour shows an hour-old list.
 
@@ -10020,8 +10092,14 @@ function setupReturnToTabRefresh() {
     const since = Date.now() - (state.lastDataLoadedAt || 0);
     if (since < 30000) return;
     // Through the same entry point a tap uses, so the reload cannot drift
-    // from what a normal section change does.
-    selectMainView(state.view, state.selectedCategory, { silent: true })
+    // from what a normal section change does - but through it with the key
+    // that entry point actually reads. `state.view` is a VIEW value, and
+    // selectMainView switches on the string a chip passes, which is not the
+    // same alphabet: VIEW.EVENT is 'event' and the branch it needs is
+    // 'today-match'.
+    const key = selectKeyForView(state.view);
+    if (!key) return;
+    selectMainView(key, state.selectedCategory, { silent: true })
       .catch(() => {});
   });
 }

@@ -476,6 +476,30 @@
   min-height:0!important;
   border-bottom:0!important;
 }
+
+/* This bar is a flex ITEM of .sidebar-scroll-area, which is a COLUMN flex
+ * container, and #sidebarList next to it is `flex:0 0 auto` and cannot give
+ * way. So the bar was the only thing in that column able to shrink - and the
+ * `min-height:0` above let it shrink the whole way to nothing.
+ *
+ * Measured on the live site at 1900x950 with twelve cards: the bar computed
+ * to height 0 while its own content needed 24, so "আজকের ম্যাচ" and its
+ * count overflowed their own box and were painted 8px underneath the first
+ * row of cards. That is the whole bug - nothing was positioned or
+ * transformed, the header simply had no height left.
+ *
+ * A section header is not the thing that gives way when a list gets long, so
+ * it stops shrinking. `min-height:0` is left exactly as it was: with
+ * shrinking off it can no longer collapse anything, and the bar goes on
+ * sizing itself to its own two lines of text.
+ *
+ * Today Match only, by `:not(.upcoming-mode)` - Upcoming sets its own
+ * min-height of 34px on this same bar, which already stops it collapsing, and
+ * its layout is not being changed here.
+ */
+.sidebar-section.event-list-mode:not(.upcoming-mode) .sidebar-top-bar.card-list-meta{
+  flex:0 0 auto!important;
+}
 .sidebar-section.upcoming-mode .sidebar-top-bar.card-list-meta{
   align-items:center!important;
   min-height:34px!important;
