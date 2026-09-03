@@ -45,11 +45,12 @@ from scanner import route_evidence as rev
 #: for two weeks stops being forced and falls back to ordinary ranking.
 PREFERENCE_TTL_SECONDS = 14 * 24 * 3600
 
-DEFAULT_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "state",
-    "route-preference.json",
-)
+try:
+    from scanner import paths
+except ImportError:  # pragma: no cover - direct-module import path
+    import paths  # type: ignore
+
+DEFAULT_PATH = paths.state_path("route-preference.json")
 
 #: How many superseded proofs one channel keeps. Enough to read the history of
 #: a channel that has moved between CDNs a few times, bounded so a flapping

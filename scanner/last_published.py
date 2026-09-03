@@ -28,11 +28,12 @@ import os
 import threading
 from typing import Any, Dict, Optional
 
-DEFAULT_DIR = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "state",
-    "last-good",
-)
+try:
+    from scanner import paths
+except ImportError:  # pragma: no cover - direct-module import path
+    import paths  # type: ignore
+
+DEFAULT_DIR = paths.state_path("last-good")
 
 _LOCK = threading.Lock()
 _CACHE: Dict[str, Dict[str, Any]] = {}

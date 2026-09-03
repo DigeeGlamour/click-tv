@@ -780,7 +780,22 @@ def validate_stream_item(
         for stream in active_streams
     ]
     if len(set(active_identities)) != len(active_identities):
-        add_warning(f"{label} duplicate primary/backup configuration: {name}")
+        # An error, not a warning, since 2026-09-03. A route repeated with its
+        # entire configuration - same URL, same playback id, same headers,
+        # same DRM - is a button that costs a viewer a tap to learn nothing,
+        # and this used to be the only gate that saw it: the published-data
+        # check in tests/test_resolution_evidence.py fails the whole run over
+        # the same card, so one data byte was a warning here and a dead run
+        # there. Run #1211 died on Ananda TV while this printed [WARN] and
+        # said "Validation successful".
+        #
+        # Safe to refuse now because it is repaired before anything judges it.
+        # scanner/unplayable_primary.exact_route_identity is this exact tuple,
+        # the scan folds on it, and scripts/reconcile-generated-counts.py
+        # --fold-only applies it to the committed tree in its own workflow
+        # step before both gates run. So reaching here means the repair did
+        # not hold, which is worth stopping for.
+        add_error(f"{label} duplicate primary/backup configuration: {name}")
 
     # A bare-IP host is not a route that merely failed today - it is a route
     # with no path to the viewer at all. The proxy is the only way an http://

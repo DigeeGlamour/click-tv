@@ -28,6 +28,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+from scanner import unplayable_primary  # noqa: E402
 from scanner.output import _reconcile_manifest_counts, refresh_allowed_hosts  # noqa: E402
 
 
@@ -116,6 +117,129 @@ def _scrub_stale_playback_id(item: dict, playback_ids: set) -> bool:
         return False
     item["playback_id"] = ""
     return True
+
+
+def _route_bearing_files(repo_root: Path) -> list:
+    """Every committed file that lists playable routes.
+
+    All of them are written internally consistent by one scan and all of them
+    can be line-merged by the rebase below, so all of them are checked. The
+    two beyond data/ matter for their own reasons:
+
+      * state/last-good/<slug>.json is written by the same publish call as
+        data/channels/<slug>.json and committed beside it. A duplicate
+        repaired only in data/ comes straight back the next time
+        sudden-drop protection restores a category from here.
+      * data/snapshots/<slot>/ holds the copy every reader's manifest pointer
+        actually names; the flat data/<name>.json is its mirror.
+    """
+    data_root = repo_root / "data"
+    targets: list = []
+
+    channels_dir = data_root / "channels"
+    if channels_dir.is_dir():
+        targets.extend(sorted(channels_dir.glob("*.json")))
+
+    last_good_dir = repo_root / "state" / "last-good"
+    if last_good_dir.is_dir():
+        targets.extend(sorted(last_good_dir.glob("*.json")))
+
+    for name in ("today-match.json", "upcoming.json"):
+        path = data_root / name
+        if path.is_file():
+            targets.append(path)
+
+    snapshots_dir = data_root / "snapshots"
+    if snapshots_dir.is_dir():
+        targets.extend(sorted(snapshots_dir.glob("*/*.json")))
+
+    movies_dir = data_root / "movies"
+    if movies_dir.is_dir():
+        targets.extend(sorted(movies_dir.glob("*/page-*.json")))
+
+    return targets
+
+
+def _fold_duplicate_routes(repo_root: Path, changed: list) -> tuple:
+    """One physical route, one entry - and one number describing how many.
+
+    The card-level dedup below collapses two cards a merge duplicated. This
+    collapses two ENTRIES a merge duplicated inside one card, which is the
+    same failure one level down and was the gap that let run #1211 fail.
+
+    A rebase's 3-way text merge does not know a `backups` array is an array.
+    Two runs that each scanned channels from the same base produce two
+    versions of one card whose differing entries sit in non-overlapping
+    hunks, and `-X theirs` settles only what actually conflicts - so both
+    sides' entries survive. Measured at 24ff54a: Ananda TV shipped five
+    backup entries for two distinct routes, two of them named `Backup-2`,
+    with `available_link_count` still reading 4. The scan cannot emit that;
+    it numbers backups 1..N in one pass and folds repeats as it goes.
+
+    The rule itself is not repeated here - scanner/unplayable_primary.py owns
+    it, the scan applies the same function, and the committed data and the
+    next scan therefore cannot disagree about what a duplicate is.
+
+    Returns (routes_folded, counts_corrected).
+    """
+    folded = 0
+    counts = 0
+
+    for path in _route_bearing_files(repo_root):
+        try:
+            before = path.read_text(encoding="utf-8")
+        except OSError:
+            continue
+        if not before.strip():
+            continue
+        try:
+            payload = json.loads(before)
+        except json.JSONDecodeError:
+            continue
+        if not isinstance(payload, dict):
+            continue
+
+        touched = False
+        for list_key in ("channels", "movies", "items", "matches", "events"):
+            values = payload.get(list_key)
+            if not isinstance(values, list):
+                continue
+            cards = [item for item in values if isinstance(item, dict)]
+
+            dropped = unplayable_primary.dedupe_backup_urls(cards)
+            if dropped:
+                folded += len(dropped)
+                touched = True
+                for row in dropped[:8]:
+                    print(
+                        "   %s: %s dropped %s - a repeat of a route the card "
+                        "already offers" % (
+                            path.name,
+                            row.get("name") or "?",
+                            row.get("dropped") or "?",
+                        )
+                    )
+
+            # Whether or not anything was folded. `available_link_count` is a
+            # scalar describing a collection, which is exactly the shape of
+            # field a rebase resolves independently of the collection - and
+            # Duronto TV published 2 over a primary and two backups without
+            # any duplicate being involved at all.
+            for card in cards:
+                if not isinstance(card.get("available_link_count"), int):
+                    continue
+                correct = unplayable_primary.link_count(card)
+                if card["available_link_count"] != correct:
+                    card["available_link_count"] = correct
+                    counts += 1
+                    touched = True
+
+        if touched and _write_if_changed(path, before, payload):
+            changed.append(
+                str(path.relative_to(repo_root)).replace("\\", "/")
+            )
+
+    return folded, counts
 
 
 def _drop_orphaned_items(
@@ -283,11 +407,38 @@ def main() -> int:
     # An optional repository root argument keeps this testable against a
     # throwaway directory; real callers (the GitHub Actions workflow, the
     # local PC scan script) never pass one and it defaults to this repo.
-    repo_root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else ROOT
+    #
+    # --fold-only runs the duplicate-route repair and nothing else. The
+    # workflow uses it BEFORE the scan, where the only question is whether a
+    # previous run's rebase left a card the published-data checks will refuse.
+    # The full pass would also re-derive data/allowed-hosts.json, whose
+    # `updated_at` changes on every single call - and a step that commits
+    # whatever the script touched would then commit a new timestamp every
+    # run, for no reason.
+    flags = {arg for arg in sys.argv[1:] if arg.startswith("-")}
+    positional = [arg for arg in sys.argv[1:] if not arg.startswith("-")]
+    fold_only = "--fold-only" in flags
+
+    repo_root = Path(positional[0]).resolve() if positional else ROOT
     data_root = repo_root / "data"
     changed = []
 
-    # Referential integrity first: dropping unplayable items changes the very
+    # Before the count reconciliation, because folding a duplicate entry
+    # changes the very link count that pass is about to check.
+    folded, link_counts = _fold_duplicate_routes(repo_root, changed)
+
+    if fold_only:
+        if folded:
+            print(f"Folded {folded} duplicate route(s) out of published cards.")
+        if link_counts:
+            print(f"Corrected {link_counts} available_link_count field(s).")
+        if changed:
+            print("Reconciled: " + ", ".join(sorted(set(changed))))
+        else:
+            print("No duplicate route or stale link count found.")
+        return 0
+
+    # Referential integrity next: dropping unplayable items changes the very
     # counts the manifest reconciliation below is about to recompute.
     playback_ids = _catalog_playback_ids(data_root)
     removed, touched_movie_dirs = _drop_orphaned_items(
@@ -379,6 +530,10 @@ def main() -> int:
             if _write_if_changed(shard_file, before, shard_payload):
                 changed.append(f"data/playback/{shard_file.name}")
 
+    if folded:
+        print(f"Folded {folded} duplicate route(s) out of published cards.")
+    if link_counts:
+        print(f"Corrected {link_counts} available_link_count field(s).")
     if removed:
         print(f"Dropped {removed} item(s) with no surviving playback route.")
     if changed:

@@ -31,7 +31,8 @@ loses `publish_allowed`, and every decision is reported by name.
 """
 from __future__ import annotations
 
-from typing import Any, Dict, Iterable, List, Tuple
+import json
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 try:
     from scanner import playback_evidence
@@ -48,6 +49,75 @@ def _url(row: Any) -> str:
     if isinstance(row, dict):
         return str(row.get("url") or "").strip()
     return str(row or "").strip()
+
+
+def route_identity(row: Any) -> str:
+    """What makes two entries the same physical route.
+
+    The URL, when the entry has one - that is the rule the published-data
+    check asserts and the one the merge already applies.
+
+    A protected route has no URL at all: sanitisation strips the address of
+    anything that needs credentials, so the public card carries only the
+    content-addressed `playback_id`. Two such entries with one id are one
+    route, and comparing their (absent) URLs would call them distinct
+    forever. Only used as a fallback, so an entry that HAS a URL is judged
+    exactly as before.
+    """
+    url = _url(row)
+    if url:
+        return url
+    if isinstance(row, dict):
+        playback_id = str(row.get("playback_id") or "").strip()
+        if playback_id:
+            return "playback_id:" + playback_id
+    return ""
+
+
+def exact_route_identity(row: Any) -> Optional[Tuple[str, str, str, str]]:
+    """A byte-identical route configuration: same URL, same playback id, same
+    headers, same DRM.
+
+    Two entries matching on all four are the same route by every definition
+    there is, so folding one away can never cost a card a distinct way to
+    play. That is why this one is applied to the primary as well, and to a
+    card carrying only a single backup - neither of which the physical-route
+    rule below reaches.
+
+    This is deliberately the identity scripts/validate-pages.py refuses to
+    publish (`duplicate primary/backup configuration`). Sharing it is what
+    makes the two gates agree: after this has run, the condition that gate
+    rejects cannot be present.
+    """
+    if not isinstance(row, dict):
+        return None
+    return (
+        _url(row),
+        str(row.get("playback_id") or "").strip(),
+        json.dumps(row.get("headers") or {}, sort_keys=True),
+        json.dumps(row.get("drm") or {}, sort_keys=True),
+    )
+
+
+def link_count(card: Dict[str, Any]) -> int:
+    """What `available_link_count` must say, given what the card now holds.
+
+    One rule, and it is the merger's own (scanner/merger.py): the primary
+    counts as one link unless the card is metadata-only, plus one per backup.
+
+    Recomputed from the card rather than adjusted by a delta, because a count
+    that has drifted has no history worth preserving - Duronto TV published
+    `available_link_count: 2` over a primary and two backups, and Ananda TV
+    published 4 over five, because whatever grew the backup list never
+    revisited the number describing it.
+    """
+    backups = card.get("backups")
+    total = len(backups) if isinstance(backups, list) else 0
+    if card.get("metadata_only") is True:
+        return total
+    if route_identity(card):
+        total += 1
+    return total
 
 
 def _unplayable(url: str) -> str:
@@ -194,10 +264,26 @@ def dedupe_backup_urls(items: Iterable[Dict[str, Any]]) -> List[Dict[str, str]]:
     manual-playlist-1 needing no headers and one from
     smartplaytv-worker-stream needing them.
 
-    This was repaired once in the committed data by a script; the channels
-    scan at 19:00 on 2026-09-02 put it straight back and failed the run,
-    which is what a one-off repair without a pipeline rule looks like. The
-    first spelling of a route wins, because that is the order the merge
+    This was repaired once in the committed data by a script and came back,
+    so the rule was moved here, into the scan. It came back again anyway -
+    run #1211 failed on Ananda TV - and the second time the scan was not the
+    one putting it back.
+
+    The published card at 24ff54a is byte-identical to its predecessor except
+    that two backup entries appear twice, `available_link_count` still says 4
+    over five entries, and two entries share the name `Backup-2`. The merge
+    numbers backups 1..N in one pass and cannot emit that; a line-based text
+    merge of two independently generated files can, and does. The workflow
+    ends every run with `git rebase -X theirs origin/main`, `-X theirs`
+    settles only the hunks that actually conflict, and two runs that each
+    scanned channels from the same base leave non-conflicting hunks inside one
+    `backups` array - so git keeps both sides' entries.
+
+    So this rule runs in the scan AND in scripts/reconcile-generated-counts.py,
+    which is the step that runs after that rebase and before the push. This is
+    the only implementation of it; both callers reach it here.
+
+    The first spelling of a route wins, because that is the order the merge
     already decided.
     """
     removed: List[Dict[str, str]] = []
@@ -205,26 +291,51 @@ def dedupe_backup_urls(items: Iterable[Dict[str, Any]]) -> List[Dict[str, str]]:
         if not isinstance(card, dict):
             continue
         backups = card.get("backups")
-        if not isinstance(backups, list) or len(backups) < 2:
+        if not isinstance(backups, list) or not backups:
             continue
-        seen = {_url(card)} - {""}
+        # Two rules, and they reach different distances on purpose.
+        #
+        # The exact rule sees every card, including one with a single backup,
+        # and it is seeded from the primary - an entry repeating a route's
+        # whole configuration is noise wherever it sits.
+        #
+        # The physical-route rule (URL alone) is left reaching exactly as far
+        # as it always has: across the backups of a card that has more than
+        # one, seeded from the primary. Widening it to the single-backup case
+        # was tried and rejected. 19 published cards pair a `direct_first`
+        # primary needing no headers with one `proxy_first` backup on the SAME
+        # URL that does - Jago News 24, NRB TV, Mr Bean and sixteen more.
+        # Those are two delivery attempts at one address, direct and through
+        # the worker, and the proxied one is the whole reason
+        # workers/playback-proxy exists. Folding them would have quietly taken
+        # a working fallback off nineteen cards.
+        exact_seen = {exact_route_identity(card)} - {None}
+        route_seen = (
+            ({route_identity(card)} - {""}) if len(backups) > 1 else set()
+        )
         kept: List[Any] = []
         for row in backups:
-            url = _url(row) if isinstance(row, dict) else ""
-            if url and url in seen:
+            exact = exact_route_identity(row)
+            identity = route_identity(row) if isinstance(row, dict) else ""
+            repeated = (exact is not None and exact in exact_seen) or bool(
+                identity and identity in route_seen
+            )
+            if repeated:
                 removed.append({
                     "name": str(card.get("name") or ""),
                     "category": str(card.get("category") or ""),
-                    "url": url,
-                    "dropped": str(row.get("name") or ""),
+                    "url": identity or _url(card),
+                    "dropped": str(row.get("name") or "")
+                    if isinstance(row, dict) else "",
                 })
                 continue
-            if url:
-                seen.add(url)
+            if exact is not None:
+                exact_seen.add(exact)
+            if identity:
+                route_seen.add(identity)
             kept.append(row)
         if len(kept) != len(backups):
             card["backups"] = kept
             if isinstance(card.get("available_link_count"), int):
-                card["available_link_count"] = len(kept) + (
-                    1 if _url(card) else 0)
+                card["available_link_count"] = link_count(card)
     return removed

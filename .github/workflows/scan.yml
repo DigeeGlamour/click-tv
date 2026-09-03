@@ -1,18 +1,33 @@
 name: Live Signal Scanner
 
 on:
-  # NOTE on the `timezone:` keys below.
+  # EVERY cron below is UTC. GitHub Actions has no timezone for
+  # `schedule.cron` - POSIX cron only, always UTC.
   #
-  # GitHub Actions does not support a timezone for `schedule.cron` - only
-  # POSIX cron, always in UTC. The key is accepted by the YAML parser and then
-  # ignored, so every time here fires in UTC, six hours earlier than the
-  # comments claim: "movies at 04:37 Dhaka" actually runs at 04:37 UTC, which
-  # is 10:37 in Dhaka.
+  # Each one used to carry an "Asia/Dhaka" timezone key. GitHub's parser
+  # accepts an unknown key there and ignores it, so those five lines did
+  # nothing at all while reading as though the times were local, and every
+  # scan ran six hours earlier in Dhaka than the comment beside it claimed.
+  # They are removed rather than corrected, because a key with no effect is
+  # worse than no key: it is a claim about behaviour that is not true.
   #
-  # Left as it is rather than converted, because moving a production scan to a
-  # different hour is a scheduling decision for the owner, not a silent fix.
-  # The comments now say what happens. To honour the original intent, subtract
-  # six hours from each Dhaka time: 04:37 Dhaka -> "37 22 * * *" UTC.
+  # What each one actually means, in Dhaka time (UTC+6):
+  #
+  #   "3,23,43 * * * *"    today match, every 20 min
+  #   "1-59/5 * * * *"     upcoming targeted, every 5 min
+  #   "9 5,17 * * *"       upcoming full refresh, 11:09 and 23:09 Dhaka
+  #   "17 0,6,12,18 * * *" channels, 06:17 / 12:17 / 18:17 / 00:17 Dhaka
+  #   "37 4 * * *"         movies, 10:37 Dhaka
+  #
+  # The two daily ones were written intending 05:09/17:09 and 04:37 DHAKA. The
+  # hours are left exactly as they run today, because when a production scan
+  # happens is a scheduling decision for the owner, not something to change
+  # while fixing a comment. To honour the original intent, subtract six hours:
+  # 04:37 Dhaka is "37 22 * * *" UTC.
+  #
+  # Do not edit the two cron STRINGS "17 0,6,12,18 * * *" or "37 4 * * *"
+  # without updating `concurrency.group` below - it matches on them by text to
+  # decide which queue a run belongs to.
   schedule:
     # Requirement 4 — Today Match: প্রতি ২০ মিনিট।
     #
@@ -23,7 +38,6 @@ on:
     # 89, 209 and 246 minutes against crons asking for one every five. Moving
     # off the busiest minute is the one lever available from inside the file.
     - cron: "3,23,43 * * * *"
-      timezone: "Asia/Dhaka"
 
     # Requirement 4 — Upcoming targeted scan: প্রতি ৫ মিনিটে চলে, কিন্তু
     # scanner শুধু সেই fixture-গুলোর link খোঁজে যেগুলো ১৫ মিনিটের মধ্যে
@@ -33,15 +47,12 @@ on:
     # and this is the one that suffers most, because */5 is the single most
     # contended schedule on GitHub Actions.
     - cron: "1-59/5 * * * *"
-      timezone: "Asia/Dhaka"
 
     # Upcoming full refresh: দিনে দুবার পুরো fixture তালিকা আনে।
     - cron: "9 5,17 * * *"
-      timezone: "Asia/Dhaka"
 
     # TV Channels: প্রতি ৬ ঘণ্টা
     - cron: "17 0,6,12,18 * * *"
-      timezone: "Asia/Dhaka"
 
     # Movies: প্রতি দ্বিতীয় calendar date ভোর ৪:৩৭
     #
@@ -50,7 +61,6 @@ on:
     # across a month boundary because */2 counts days of the month. The
     # upstream playlist changes daily, so the scan does too.
     - cron: "37 4 * * *"
-      timezone: "Asia/Dhaka"
 
   workflow_dispatch:
     inputs:
@@ -192,6 +202,44 @@ jobs:
             live-signal-source-cache-${{ runner.os }}-${{ github.ref_name }}-
             live-signal-source-cache-${{ runner.os }}-
 
+      # A published-data check reads what is COMMITTED, and the validation
+      # below runs those checks inside a worktree created from HEAD. So one
+      # duplicated backup entry left in the tree by an earlier run fails
+      # THIS run before its scanner has started - and the scan that would
+      # have rewritten that very card never happens. Run #1211 died exactly
+      # there, with nothing wrong with the scan it was about to do.
+      #
+      # So the same reconciliation the push step runs after its rebase is
+      # run here, against what was checked out, in --fold-only mode: it
+      # touches nothing but a genuinely duplicated route or a link count
+      # that no longer matches its own list. It repairs through
+      # scanner/unplayable_primary.py, the rule the scan itself applies, so
+      # the repair and the next scan cannot disagree about what a duplicate
+      # is.
+      #
+      # Committed, not merely written: the worktree the tests read is built
+      # from HEAD, so an uncommitted repair would be invisible to the exact
+      # checks it exists to satisfy. With nothing to repair it commits
+      # nothing, so an ordinary run gains no commit from this step.
+      - name: Repair merge damage in the committed data before validating it
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "Live Signal Scanner"
+          git config user.email "scanner@users.noreply.github.com"
+
+          python scripts/reconcile-generated-counts.py --fold-only
+
+          if git diff --quiet -- data/ state/; then
+            echo "Nothing to repair; the committed data is self-consistent."
+          else
+            echo "Repaired before validation:"
+            git diff --stat -- data/ state/
+            git add data/ state/
+            git commit -m "Fold duplicate routes a merge left in the data"
+          fi
+
       - name: Validate scanner files
         shell: bash
         run: |
@@ -312,7 +360,21 @@ jobs:
           VALIDATE_TREE="${RUNNER_TEMP:-/tmp}/clicktv-validate-$$"
           git worktree add --detach --quiet "$VALIDATE_TREE" HEAD
           set +e
-          ( cd "$VALIDATE_TREE" && python -m unittest discover -s tests -p "test_*.py" -v )
+          # The worktree stops every module that resolves state/ and
+          # reports/ against the working directory. Nine of them do not:
+          # their default path is anchored to __file__, so it names THIS
+          # checkout however the suite is started, and
+          # state/route-persistence.json - the 13,736-line casualty above -
+          # is one of the nine. These two variables point them at the
+          # worktree's own copies: the same committed content the tests
+          # expect to read, thrown away with the tree afterwards. Unset,
+          # they change nothing. See scanner/paths.py.
+          (
+            cd "$VALIDATE_TREE" \
+              && CLICKTV_STATE_ROOT="$VALIDATE_TREE/state" \
+                 CLICKTV_REPORTS_ROOT="$VALIDATE_TREE/reports" \
+                 python -m unittest discover -s tests -p "test_*.py" -v
+          )
           VALIDATE_STATUS=$?
           set -e
           git worktree remove --force "$VALIDATE_TREE" || rm -rf "$VALIDATE_TREE"
@@ -383,9 +445,34 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+
+          # Freshness has to be read from origin/main too, not only from
+          # what this run happens to have checked out. Once channels
+          # crosses its 9 h limit, EVERY run created before the first
+          # catch-up manages to push still sees the old summary in its own
+          # checkout and plans the same catch-up - and with a five-minute
+          # cron against a ~15 min channels scan that is three or more runs
+          # scanning channels at once. Each then commits a whole
+          # independently regenerated catalogue and reconciles it with
+          # `rebase -X theirs`, which is where a text merge duplicates
+          # entries inside one card. Measured: channels commits at 21:18
+          # and 21:35, then again at 04:51 and 04:56, against a cron that
+          # asks for one every six hours.
+          #
+          # Best effort by design. A failed fetch, a summary that is not on
+          # the remote yet, or a first run on a new branch leaves the local
+          # answer in place - which is what this did before.
+          REMOTE_REPORTS="${RUNNER_TEMP:-/tmp}/origin-reports"
+          mkdir -p "$REMOTE_REPORTS"
+          if git fetch --quiet origin main 2>/dev/null; then
+            for CATALOGUE in channels movies; do
+              git show "origin/main:reports/scan-summary-$CATALOGUE.json" > "$REMOTE_REPORTS/scan-summary-$CATALOGUE.json" 2>/dev/null || rm -f "$REMOTE_REPORTS/scan-summary-$CATALOGUE.json"
+            done
+          fi
           python scripts/select-scan-mode.py \
             --scheduled "${{ steps.scan_mode.outputs.mode }}" \
             --event-name "${{ github.event_name }}" \
+            --remote-reports-dir "$REMOTE_REPORTS" \
             > /dev/null
 
       # A run that waited out its own cadence has nothing useful left to write,
@@ -671,8 +758,14 @@ jobs:
             # count from the file it actually describes, right after the
             # rebase that could have introduced the drift.
             "$PYTHON_BIN" scripts/reconcile-generated-counts.py
-            if ! git diff --quiet -- data/; then
-              git add data/
+            # state/ as well as data/. The same rebase merges
+            # state/last-good/<slug>.json, which the commit above already
+            # staged, and that file is what sudden-drop protection restores
+            # a category FROM - so a repair applied only to data/ would ship
+            # beside an unrepaired restore source and come straight back the
+            # next time a category is preserved.
+            if ! git diff --quiet -- data/ state/; then
+              git add data/ state/
               git commit --amend --no-edit
             fi
           }

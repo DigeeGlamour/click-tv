@@ -31,11 +31,12 @@ from scanner import persistence_store
 from scanner import route_evidence as rev
 
 #: Where the audit lands. Reports only; never read back by the scanner.
-DEFAULT_AUDIT_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "reports",
-    "visibility-model-audit.json",
-)
+try:
+    from scanner import paths
+except ImportError:  # pragma: no cover - direct-module import path
+    import paths  # type: ignore
+
+DEFAULT_AUDIT_PATH = paths.reports_path("visibility-model-audit.json")
 
 #: Every recorded decision this process has seen.
 _LEDGER: List[Dict[str, Any]] = []

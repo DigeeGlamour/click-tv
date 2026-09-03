@@ -24,11 +24,12 @@ from typing import Any, Dict, List, Optional
 
 from scanner import route_evidence as rev
 
-DEFAULT_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "state",
-    "route-evidence-cache.json",
-)
+try:
+    from scanner import paths
+except ImportError:  # pragma: no cover - direct-module import path
+    import paths  # type: ignore
+
+DEFAULT_PATH = paths.state_path("route-evidence-cache.json")
 
 #: How long an observation is kept.
 #:

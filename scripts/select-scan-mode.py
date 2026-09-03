@@ -101,17 +101,37 @@ def hours_stale(
     mode: str,
     reports_dir: str,
     now: Optional[datetime.datetime] = None,
+    remote_reports_dir: str = "",
 ) -> Optional[float]:
     """Hours since this mode last completed, or None when it never has.
 
     None is not "fresh". A repository with no summary for a mode has never
     scanned it here, which is the strongest possible case for scanning it.
+
+    `remote_reports_dir` holds the same summaries as they exist on
+    origin/main, and the NEWEST completion across the two wins. A run reads
+    its own checkout, which was made before any run still in flight pushed -
+    so once a catalogue goes overdue, every run created in that window
+    independently concludes it is overdue and they all scan it at once. Each
+    then reconciles a whole regenerated catalogue through `rebase -X theirs`,
+    and that text merge is what duplicates entries inside a card.
+
+    Only ever makes a mode look FRESHER, never staler, and a missing or
+    unreadable remote copy is simply no opinion - so the worst this can do is
+    leave the local answer exactly as it was.
     """
-    when = last_scan_at(mode, reports_dir)
-    if when is None:
+    stamps = [
+        stamp
+        for stamp in (
+            last_scan_at(mode, reports_dir),
+            last_scan_at(mode, remote_reports_dir) if remote_reports_dir else None,
+        )
+        if stamp is not None
+    ]
+    if not stamps:
         return None
     moment = now or datetime.datetime.now(datetime.timezone.utc)
-    return (moment - when).total_seconds() / 3600.0
+    return (moment - max(stamps)).total_seconds() / 3600.0
 
 
 def choose(
@@ -120,6 +140,7 @@ def choose(
     event_name: str = "schedule",
     reports_dir: str = "",
     now: Optional[datetime.datetime] = None,
+    remote_reports_dir: str = "",
 ) -> Tuple[str, str, str]:
     """Return (mode, catchup, why). `catchup` is "" when nothing is overdue."""
     mode = str(scheduled or "").strip().lower()
@@ -133,7 +154,12 @@ def choose(
     for candidate in CATCHUP_ORDER:
         if candidate == mode:
             continue
-        stale = hours_stale(candidate, reports, now=now)
+        stale = hours_stale(
+            candidate,
+            reports,
+            now=now,
+            remote_reports_dir=remote_reports_dir,
+        )
         if stale is None:
             return mode, candidate, "%s has no recorded scan here" % candidate
         limit = STALE_AFTER_HOURS[candidate]
@@ -152,15 +178,28 @@ def main(argv: Any = None) -> int:
     parser.add_argument("--scheduled", required=True)
     parser.add_argument("--event-name", default="schedule")
     parser.add_argument("--reports-dir", default="")
+    parser.add_argument(
+        "--remote-reports-dir",
+        default="",
+        help=(
+            "a directory holding origin/main's scan-summary-<mode>.json "
+            "files; the newest completion across it and --reports-dir wins"
+        ),
+    )
     args = parser.parse_args(argv)
 
     mode, catchup, why = choose(
         args.scheduled,
         event_name=args.event_name,
         reports_dir=args.reports_dir,
+        remote_reports_dir=args.remote_reports_dir,
     )
     for candidate in CATCHUP_ORDER:
-        stale = hours_stale(candidate, args.reports_dir or os.path.join(ROOT, "reports"))
+        stale = hours_stale(
+            candidate,
+            args.reports_dir or os.path.join(ROOT, "reports"),
+            remote_reports_dir=args.remote_reports_dir,
+        )
         print(
             "  %-9s last scan %s"
             % (candidate, "never" if stale is None else "%.1f h ago" % stale),

@@ -33,11 +33,12 @@ import os
 import re
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-DEFAULT_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "state",
-    "movie-first-seen.json",
-)
+try:
+    from scanner import paths
+except ImportError:  # pragma: no cover - direct-module import path
+    import paths  # type: ignore
+
+DEFAULT_PATH = paths.state_path("movie-first-seen.json")
 
 #: How long a movie counts as new. One week: long enough that a viewer who
 #: opens the site twice a week still sees the badge, short enough that "new"

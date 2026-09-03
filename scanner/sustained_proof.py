@@ -26,11 +26,12 @@ import json
 import os
 from typing import Any, Dict, Optional, Tuple
 
-DEFAULT_PROOF_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "state",
-    "sustained-playback-proof.json",
-)
+try:
+    from scanner import paths
+except ImportError:  # pragma: no cover - direct-module import path
+    import paths  # type: ignore
+
+DEFAULT_PROOF_PATH = paths.state_path("sustained-playback-proof.json")
 
 
 def _key(kind: str, name: str) -> str:

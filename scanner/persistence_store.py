@@ -25,11 +25,12 @@ from typing import Any, Dict, List, Optional
 
 from scanner import route_evidence as rev
 
-DEFAULT_STORE_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "state",
-    "route-persistence.json",
-)
+try:
+    from scanner import paths
+except ImportError:  # pragma: no cover - direct-module import path
+    import paths  # type: ignore
+
+DEFAULT_STORE_PATH = paths.state_path("route-persistence.json")
 
 #: Fields kept per observation. Anything else a caller passes is dropped, so a
 #: careless caller cannot leak a stream URL into a committed state file.

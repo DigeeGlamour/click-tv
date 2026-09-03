@@ -41,11 +41,12 @@ import json
 import os
 from typing import Any, Dict, List, Optional
 
-DEFAULT_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "state",
-    "measured-playback-failures.json",
-)
+try:
+    from scanner import paths
+except ImportError:  # pragma: no cover - direct-module import path
+    import paths  # type: ignore
+
+DEFAULT_PATH = paths.state_path("measured-playback-failures.json")
 
 BADGE = "Playback Unproven"
 
