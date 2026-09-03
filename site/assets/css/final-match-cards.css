@@ -17,6 +17,40 @@
  * for the two panels.
  */
 
+/* The design file's own palette.
+ *
+ * THE root cause of the mismatch: the approved design declares these in its
+ * :root, and this site declares none of them - only --live-green exists
+ * anywhere in its stylesheets. So every `background:var(--card-bg)` and
+ * `border:1px solid var(--border)` written here resolved to an invalid
+ * value and was dropped, while the rules that carried a fallback
+ * (`var(--font-display,'Oswald',sans-serif)`) applied normally. That is
+ * exactly what the live site measured: every size, column and font correct,
+ * every background and border missing - which is why the initials sat as
+ * floating text with no 56px box around them.
+ *
+ * Declared on the event list rather than :root, so the palette exists for
+ * Today Match and Upcoming Match and nowhere else on the site.
+ */
+.sidebar-section.event-list-mode{
+  --card-bg:#12141a;
+  --card-bg-hover:#181b23;
+  --border:rgba(255,255,255,.08);
+  --border-hover:rgba(255,255,255,.18);
+  --text-1:#f5f6f8;
+  --text-2:#8b93a3;
+  --text-3:#565d6b;
+  --red:#ff1e3d;
+  --red-dim:rgba(255,30,61,.14);
+  --red-border:rgba(255,30,61,.4);
+  --gold:#ffb703;
+  --steel:#4a9eee;
+  --live-green:#2be08a;
+  --green-dim:rgba(43,224,138,.14);
+  --font-display:'Oswald',sans-serif;
+  --font-body:'Hind Siliguri',sans-serif;
+}
+
 /* ── Today Match ─────────────────────────────────────────────────────────── */
 
 /* True masonry: one grid, 1px rows, and each card spanning the number of rows
@@ -428,16 +462,38 @@
 }
 .sidebar-section.event-list-mode .sport-filter:focus{ border-color:var(--red-border)!important; }
 
-/* ── The two tab headers ─────────────────────────────────────────────────── */
+/* ── The two tab headers ─────────────────────────────────────────────────
 
+   আজকের ম্যাচ            ৭টি ম্যাচ · ৫টি লাইভ      baseline, 16px below
+   পরবর্তী ম্যাচ          ১১৯টি ম্যাচ               centred, 34px tall
+   ───────────────────────────────────────────────────────────────────── */
+.sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:baseline!important;
+  margin:0 0 16px!important;
+  padding:0!important;
+  min-height:0!important;
+  border-bottom:0!important;
+}
+.sidebar-section.upcoming-mode .sidebar-top-bar.card-list-meta{
+  align-items:center!important;
+  min-height:34px!important;
+  margin-bottom:8px!important;
+}
 .sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta .sidebar-count{
-  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-family:var(--font-display)!important;
   font-size:19px!important;font-weight:700!important;color:#fff!important;
+  margin:0!important;
 }
 .sidebar-section.event-list-mode .sidebar-count-detail{
   margin-left:auto!important;color:var(--text-2)!important;
-  font-family:var(--font-body,'Hind Siliguri',sans-serif)!important;
+  font-family:var(--font-body)!important;
   font-size:12.5px!important;font-weight:400!important;
+  display:inline!important;max-width:none!important;
+}
+.sidebar-section.upcoming-mode .sidebar-count-detail{
+  font-size:14px!important;font-weight:600!important;
 }
 
 /* ── Phone ───────────────────────────────────────────────────────────────── */
@@ -498,5 +554,26 @@
     min-width:88px!important;height:30px!important;padding:0 9px!important;font-size:9.5px!important;
   }
   .sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta .sidebar-count{ font-size:18px!important; }
-  .sidebar-section.event-list-mode .sidebar-count-detail{ font-size:12px!important; }
+  .sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta{ margin-bottom:8px!important; }
+  .sidebar-section.upcoming-mode .sidebar-top-bar.card-list-meta{ margin-bottom:7px!important; }
+  .sidebar-section.upcoming-mode .sidebar-count-detail{ font-size:13px!important; }
+}
+
+/* ── Nothing the design does not draw ────────────────────────────────────
+
+   The data-age line and the older sport-filter button are both real
+   features, but the approved Today and Upcoming headers carry the title
+   and the count and nothing else. Kept out of these two tabs only - every
+   other view still has them.
+
+   Last in the file, in its own block, because an earlier version of this
+   rule lived inside the header section and was overwritten when that
+   section was rewritten - which is why the label was still on the page.
+   ───────────────────────────────────────────────────────────────────── */
+.sidebar-section.event-list-mode #dataFreshness,
+.sidebar-section.event-list-mode .sidebar-data-age,
+.sidebar-section.event-list-mode #eventFilterWrap,
+.sidebar-section.event-list-mode .event-filter-wrap,
+.sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta .sort-select{
+  display:none!important;
 }

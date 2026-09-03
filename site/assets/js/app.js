@@ -2039,6 +2039,11 @@ function renderCurrentList(reset = true, options = {}) {
   // scoped to this one class so Upcoming keeps its existing single-column
   // list exactly as it is.
   sidebarList.classList.toggle('today-grid', state.view === VIEW.EVENT);
+  // The two tabs' headers differ in the approved design - Today's count is
+  // 12.5px on a baseline-aligned row, Upcoming's is 14px/600 on a centred one -
+  // so the section says which tab it is showing.
+  sidebarSection.classList.toggle('today-mode', state.view === VIEW.EVENT);
+  sidebarSection.classList.toggle('upcoming-mode', state.view === VIEW.UPCOMING);
   if (reset) {
     cancelPendingImages(sidebarList);
     sidebarList.replaceChildren();
@@ -3813,9 +3818,15 @@ function buildLogoBox(url, teamName) {
 function createUpcomingTeamRow(item, visualIndex, ctx) {
   const { card, playable, parts, channelOnly, sport } = ctx;
   const [teamOne, teamTwo] = splitUpcomingTeams(parts.title);
-  // Only a real team badge is used as a team badge. An event banner is not one,
-  // and putting it in a logo box would state something the data never said.
+  // The design's own priority, in its own order: both published team badges
+  // when the fixture has them, otherwise the one image the row does have for
+  // the left side, and initials for whatever is still missing. Requiring both
+  // badges left 58 of 60 boxes showing initials on the live site, which is not
+  // the page the design draws.
   const badges = eventTeamBadges(item);
+  const artwork = eventArtworkChain(item);
+  const homeBadge = badges?.home || String(item?.home_badge_url || '').trim() || artwork[0] || '';
+  const awayBadge = badges?.away || String(item?.away_badge_url || '').trim() || '';
 
   card.className = [
     'sidebar-item event-ref-card tv-focusable schedule-row universal-team-row',
@@ -3844,7 +3855,7 @@ function createUpcomingTeamRow(item, visualIndex, ctx) {
   category.className = 'universal-category';
   category.textContent = channelOnly ? 'CHANNEL' : String(sport.label || '').toUpperCase();
   left.appendChild(category);
-  left.appendChild(buildLogoBox(badges?.home || '', teamOne));
+  left.appendChild(buildLogoBox(homeBadge, teamOne));
   const nameOne = document.createElement('div');
   nameOne.className = 'universal-team-name';
   nameOne.textContent = teamOne;
@@ -3875,7 +3886,7 @@ function createUpcomingTeamRow(item, visualIndex, ctx) {
   league.className = 'universal-league';
   league.textContent = parts.competition || '';
   right.appendChild(league);
-  right.appendChild(buildLogoBox(badges?.away || '', teamTwo));
+  right.appendChild(buildLogoBox(awayBadge, teamTwo));
   const nameTwo = document.createElement('div');
   nameTwo.className = 'universal-team-name';
   nameTwo.textContent = teamTwo;
