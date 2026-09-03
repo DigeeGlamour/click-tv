@@ -776,9 +776,18 @@ class TheFixtureAndItsChannelsAreOneCard(unittest.TestCase):
         for field in ("logo", "provider_poster_url", "artwork_candidates"):
             self.assertIn(field, chain, field)
 
-    def test_a_half_broken_crest_pair_is_replaced_whole(self):
-        """One team showing and the other missing is not an honest card."""
-        self.assertIn("crests.replaceWith", APP)
+    def test_a_half_broken_crest_pair_cannot_happen(self):
+        """One team showing and the other missing is not an honest card.
+
+        The finalised row gives each side its own box, so a badge that fails to
+        load falls back to that team's initials inside the same 56px box. The
+        pair is never half-drawn, and neither side can collapse and pull the
+        row out of alignment.
+        """
+        body = APP.split("function buildLogoBox(", 1)[1].split("\nfunction ", 1)[0]
+        self.assertIn("addEventListener('error'", body)
+        self.assertIn("box.classList.add('initials')", body)
+        self.assertIn("teamInitials(teamName)", body)
 
     def test_every_chip_states_both_counts(self):
         """Section 5 lists Primary *and* Backups, so a zero is still shown.

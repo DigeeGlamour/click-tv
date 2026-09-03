@@ -174,8 +174,12 @@ class Requirement11And12And13CardUi(unittest.TestCase):
             self.assertIn(token, self.app)
 
     def test_an_upcoming_card_carries_one_status_not_two(self):
-        card = self.app.split("function createEventCard(")[1].split("\nfunction ")[0]
-        self.assertIn("countdown || statusLabel", card)
+        # The finalised row states the wait once, in the centre column between
+        # the two teams - a status pill beside it would say the same thing
+        # twice in two different words.
+        card = self.app.split("function createUpcomingTeamRow(")[1].split("\nfunction ")[0]
+        self.assertIn("countdown.className = 'countdown'", card)
+        self.assertNotIn("event-status-pill", card)
 
     def test_the_metadata_row_is_one_compact_line(self):
         self.assertIn("function eventMetaRowTextBn(", self.app)

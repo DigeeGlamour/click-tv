@@ -42,7 +42,7 @@ class Ruman29ContractTests(unittest.TestCase):
         # found the match rather than anything a viewer can act on.
         self.assertIn("CHANNEL_LIVE: 'চ্যানেলে সরাসরি'", self.app)
         self.assertIn("LIVE_NOW: 'সরাসরি'", self.app)
-        self.assertIn("uiStatus === 'LIVE_NOW' || uiStatus === 'CHANNEL_LIVE'", self.app)
+        self.assertIn("status === 'LIVE_NOW' || status === 'CHANNEL_LIVE'", self.app)
 
 
 if __name__ == "__main__":

@@ -177,9 +177,12 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn("LIVE_NOW: 'সরাসরি'", self.app)
         # The action names what the click does. A card with a usable link plays
         # on either tab, so the label follows playability rather than the tab.
-        self.assertIn("const showWatchAction = playable;", self.app)
-        self.assertIn("showWatchAction ? (channelOnly ? 'Watch Channel' : 'Watch') : 'Details'", self.app)
+        # The finalised row is itself the action: the delegated list handler
+        # plays a card that has a link and opens the details popup for one that
+        # does not, which is what the chevron on the row points at. There is no
+        # separate Watch/Details button on it any more.
         self.assertIn('showEventPreview(item)', self.app)
+        self.assertIn('universal-chevron', self.app)
         self.assertIn('.event-ref-card', self.reference_css)
         self.assertIn('.event-status-pill.upcoming', self.reference_css)
         self.assertIn('.event-status-pill.live', self.reference_css)
@@ -233,7 +236,7 @@ class FinalDesignContractTests(unittest.TestCase):
             "function eventVerificationLabel(", # 18, fixture verification
             "function toggleEventReminder(",    # 20, reminder
             "function updateEventCardClocks(",  # in-place clock tick
-            "event-now-playing",                # 13, now playing marker
+            "active-channel",                   # 13, now playing marker
         ):
             self.assertIn(marker, self.app)
 

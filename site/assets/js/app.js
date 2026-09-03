@@ -1930,66 +1930,83 @@ function applyFilterAndSort() {
 // Guide 23. The headline count answers "how many", the breakdown answers "of
 // what" - and the breakdown is desktop-only so it never crowds a phone. Kept
 // as its own function because requirement 8's diff path needs it too.
+/* The two tab headers, exactly as the design writes them: the title on the
+ * left and the count on the right, in Bengali digits.
+ *
+ *     আজকের ম্যাচ            ৭টি ম্যাচ · ৫টি লাইভ
+ *     পরবর্তী ম্যাচ          ১১৯টি ম্যাচ
+ *
+ * The numbers come from the live data, so they move; the wording and the
+ * digits do not become English when they do.
+ */
 function setEventListCount() {
   const events = state.filteredItems;
   if (state.view === VIEW.EVENT) {
-    const channels = events.filter((entry) => isChannelOnlyEventCard(entry)).length;
-    const matches = events.length - channels;
-    // The headline used to read "27 Live" because everything on this tab was.
-    // Routing now brings a fixture across 30 minutes before kickoff, so the
-    // count and the word stopped agreeing - and a viewer reading "27 Live" and
-    // finding a countdown on the first card has been told something untrue by
-    // the one line that is supposed to summarise the tab.
     const live = events.filter((entry) => {
       const status = eventUiStatus(entry);
       return status === 'LIVE_NOW' || status === 'CHANNEL_LIVE';
     }).length;
     const detail = [
-      live ? `${live} Live` : '',
-      matches ? `${matches} Match${matches === 1 ? '' : 'es'}` : '',
-      channels ? `${channels} Channel${channels === 1 ? '' : 's'}` : ''
-    ].filter(Boolean).join(' • ');
-    setSidebarCount(
-      `${events.length} ${events.length === 1 ? 'Match' : 'Matches'}`,
-      events.length ? detail : ''
-    );
+      `${toBanglaDigits(events.length)}টি ম্যাচ`,
+      live ? `${toBanglaDigits(live)}টি লাইভ` : ''
+    ].filter(Boolean).join(' · ');
+    setSidebarCount('আজকের ম্যাচ', events.length ? detail : '');
     return;
   }
-  const todayKey = eventDhakaDayKey(new Date());
-  const todayCount = events.filter((entry) => {
-    const start = eventStartDate(entry);
-    return start ? eventDhakaDayKey(start) === todayKey : false;
-  }).length;
-  const later = events.length - todayCount;
-  const detail = [
-    todayCount ? `${todayCount} Today` : '',
-    later ? `${later} Later` : ''
-  ].filter(Boolean).join(' • ');
-  setSidebarCount(`${events.length} Upcoming`, events.length ? detail : '');
+  setSidebarCount(
+    'পরবর্তী ম্যাচ',
+    events.length ? `${toBanglaDigits(events.length)}টি ম্যাচ` : ''
+  );
 }
 
-// Today Match redesign: two real DOM columns instead of CSS column-count.
-// column-count clips a negative-offset absolute child (the serial badge,
-// floated half outside the card's own top-left corner) to its column box
-// regardless of overflow set anywhere up the ancestor chain - confirmed by
-// direct testing. Two independent flex columns have no such clipping
-// context, so the badge can sit exactly where the reference puts it. Every
-// other view keeps appending flat children straight into #sidebarList,
-// unchanged.
-function ensureTodayMatchColumns() {
-  let left = sidebarList.querySelector(':scope > .tm-col[data-tm-col="0"]');
-  let right = sidebarList.querySelector(':scope > .tm-col[data-tm-col="1"]');
-  if (!left || !right) {
-    sidebarList.replaceChildren();
-    left = document.createElement('div');
-    left.className = 'tm-col';
-    left.dataset.tmCol = '0';
-    right = document.createElement('div');
-    right.className = 'tm-col';
-    right.dataset.tmCol = '1';
-    sidebarList.append(left, right);
+/* Today Match is one grid with 1px rows; each card spans the rows its own
+ * content needs, so a short card leaves no dead space and the next card packs
+ * upward. Two fixed columns could not do that - a card could only ever sit
+ * under the card above it, however tall that one happened to be.
+ */
+function ensureTodayGrid() {
+  sidebarList.classList.add('today-grid');
+  return sidebarList;
+}
+
+function layoutTodayMasonry() {
+  if (state.view !== VIEW.EVENT) return;
+  const grid = sidebarList;
+  if (!grid || !grid.classList.contains('today-grid')) return;
+
+  const style = getComputedStyle(grid);
+  const rowGap = parseFloat(style.rowGap) || 0;
+  const rowHeight = parseFloat(style.gridAutoRows) || 1;
+  const cards = qsa(':scope > .poster-card', grid);
+
+  cards.forEach((card) => { card.style.gridRowEnd = 'auto'; });
+  cards.forEach((card) => {
+    const height = card.getBoundingClientRect().height;
+    const span = Math.ceil((height + rowGap) / (rowHeight + rowGap));
+    card.style.gridRowEnd = `span ${Math.max(1, span)}`;
+  });
+}
+
+function scheduleTodayMasonry() {
+  requestAnimationFrame(() => requestAnimationFrame(layoutTodayMasonry));
+}
+
+/* Re-measure whenever a card can change height: after its poster loads, when
+ * the window changes, and when anything inside it resizes. */
+function watchTodayCardForMasonry(card) {
+  if (!card || card.dataset.masonryWatched === '1') return;
+  card.dataset.masonryWatched = '1';
+  if (window.ResizeObserver) {
+    if (!state.todayMasonryObserver) {
+      state.todayMasonryObserver = new ResizeObserver(scheduleTodayMasonry);
+    }
+    state.todayMasonryObserver.observe(card);
   }
-  return [left, right];
+  qsa('img', card).forEach((image) => {
+    if (image.complete) return;
+    image.addEventListener('load', scheduleTodayMasonry, { once: true });
+    image.addEventListener('error', scheduleTodayMasonry, { once: true });
+  });
 }
 
 function renderCurrentList(reset = true, options = {}) {
@@ -2021,11 +2038,11 @@ function renderCurrentList(reset = true, options = {}) {
   // Today Match redesign: a two-column masonry list, by direct request -
   // scoped to this one class so Upcoming keeps its existing single-column
   // list exactly as it is.
-  sidebarList.classList.toggle('tm-columns', state.view === VIEW.EVENT);
+  sidebarList.classList.toggle('today-grid', state.view === VIEW.EVENT);
   if (reset) {
     cancelPendingImages(sidebarList);
     sidebarList.replaceChildren();
-    if (state.view === VIEW.EVENT) ensureTodayMatchColumns();
+    if (state.view === VIEW.EVENT) ensureTodayGrid();
     state.renderedCount = 0;
     state.renderedUids.clear();
     state.lastRenderedDayKey = '';
@@ -2105,27 +2122,68 @@ function eventDayKey(item) {
   return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
 }
 
-function createDayHeading(item) {
-  const date = eventStartDate(item);
-  const heading = document.createElement('div');
-  heading.className = 'event-day-heading';
-  heading.setAttribute('role', 'presentation');
-
+/* One day of Upcoming fixtures: the date badge, the sport filter on the first
+ * day only, and the rows beneath it in a single bordered list - the shape the
+ * design uses.
+ *
+ *     আজ · ২ সেপ্টেম্বর                              [ ▼ ALL ]
+ */
+function upcomingDayLabel(date) {
   const today = new Date();
   const tomorrow = new Date(today.getTime() + 86400000);
   const sameDay = (a, b) => a.getFullYear() === b.getFullYear()
     && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  const dayAndMonth = date.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long' });
+  if (sameDay(date, today)) return `আজ · ${dayAndMonth}`;
+  if (sameDay(date, tomorrow)) return `আগামীকাল · ${dayAndMonth}`;
+  return dayAndMonth;
+}
 
-  let label;
-  if (sameDay(date, today)) label = 'আজ';
-  else if (sameDay(date, tomorrow)) label = 'আগামীকাল';
-  else {
-    label = date.toLocaleDateString('bn-BD', {
-      weekday: 'long', day: 'numeric', month: 'long',
-    });
-  }
-  heading.textContent = label;
-  return heading;
+/* Cricket and football are the only two sports this site publishes, so those
+ * are the only two the filter offers beside All. There is deliberately no
+ * "Other": an event that is neither never reaches this list. */
+function buildUpcomingSportFilter() {
+  const wrap = document.createElement('label');
+  wrap.className = 'sport-filter-wrap';
+  wrap.setAttribute('aria-label', 'Sport filter');
+  wrap.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+    + ' stroke-width="2" aria-hidden="true"><path d="M4 5h16l-6 7v5l-4 2v-7L4 5z"/></svg>';
+
+  const select = document.createElement('select');
+  select.className = 'sport-filter';
+  select.id = 'upcoming-sport-filter';
+  [['all', 'ALL'], ['cricket', 'CRICKET'], ['football', 'FOOTBALL']].forEach(([value, label]) => {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = label;
+    select.appendChild(option);
+  });
+  select.value = ['cricket', 'football'].includes(state.eventSportFilter)
+    ? state.eventSportFilter
+    : 'all';
+  select.addEventListener('change', () => setEventSportFilter(select.value));
+  wrap.appendChild(select);
+  return wrap;
+}
+
+function createDayHeading(item, options = {}) {
+  const date = eventStartDate(item);
+  const day = document.createElement('div');
+  day.className = 'schedule-day';
+
+  const head = document.createElement('div');
+  head.className = 'day-label upcoming-day-head';
+  head.setAttribute('role', 'presentation');
+  const label = document.createElement('span');
+  label.textContent = date ? upcomingDayLabel(date) : 'সময় নিশ্চিত নয়';
+  head.appendChild(label);
+  if (options.withFilter) head.appendChild(buildUpcomingSportFilter());
+
+  const list = document.createElement('div');
+  list.className = 'schedule-list';
+
+  day.append(head, list);
+  return day;
 }
 
 function appendNextChunk(limit = null) {
@@ -2147,14 +2205,18 @@ function appendNextChunk(limit = null) {
   if (!chunk.length) return;
 
   if (state.view === VIEW.EVENT) {
-    const [colLeft, colRight] = ensureTodayMatchColumns();
-    const fragments = [document.createDocumentFragment(), document.createDocumentFragment()];
+    const grid = ensureTodayGrid();
+    const fragment = document.createDocumentFragment();
+    const added = [];
     chunk.forEach(({ item, index }) => {
-      fragments[index % 2].appendChild(createChannelCard(item, index));
+      const card = createChannelCard(item, index);
+      added.push(card);
+      fragment.appendChild(card);
       state.renderedUids.add(item._uid);
     });
-    colLeft.appendChild(fragments[0]);
-    colRight.appendChild(fragments[1]);
+    grid.appendChild(fragment);
+    added.forEach(watchTodayCardForMasonry);
+    scheduleTodayMasonry();
   } else {
     const fragment = document.createDocumentFragment();
     chunk.forEach(({ item, index }) => {
@@ -2163,19 +2225,29 @@ function appendNextChunk(limit = null) {
       // tomorrow passes without a mark and a viewer scrolling for "what is on
       // later" cannot tell which day they have reached. A heading is written
       // in when the day changes.
-      if (state.view === VIEW.UPCOMING) {
-        const day = eventDayKey(item);
-        if (day && day !== state.lastRenderedDayKey) {
-          state.lastRenderedDayKey = day;
-          fragment.appendChild(createDayHeading(item));
-        }
-      }
       const card = state.view === VIEW.MOVIE
         ? (seriesModule?.isSeriesItem(item)
           ? seriesModule.createSeriesCard(item, index)
           : createMovieCard(item, index))
         : createChannelCard(item, index);
       state.renderedUids.add(item._uid);
+      if (state.view === VIEW.UPCOMING) {
+        // Rows live inside their day's list, so the day is one bordered block
+        // rather than a heading floating above loose cards.
+        const day = eventDayKey(item);
+        if (day && day !== state.lastRenderedDayKey) {
+          state.lastRenderedDayKey = day;
+          const firstDay = !sidebarList.querySelector('.schedule-day')
+            && !fragment.querySelector('.schedule-day');
+          fragment.appendChild(createDayHeading(item, { withFilter: firstDay }));
+        }
+        const lists = fragment.querySelectorAll('.schedule-day > .schedule-list');
+        const openList = lists.length
+          ? lists[lists.length - 1]
+          : sidebarList.querySelector('.schedule-day:last-of-type > .schedule-list');
+        (openList || fragment).appendChild(card);
+        return;
+      }
       fragment.appendChild(card);
     });
     sidebarList.appendChild(fragment);
@@ -2394,6 +2466,15 @@ function eventLivePhaseTextBn(item) {
   return rest
     ? `${toBanglaDigits(hours)} ঘণ্টা ${toBanglaDigits(rest)} মিনিট`
     : `${toBanglaDigits(hours)} ঘণ্টা`;
+}
+
+/* The kickoff clock the Upcoming row shows: the site's existing Bangladesh
+ * conversion, written in Bengali digits as the design writes it - ৮:৩০ PM.
+ * Never the raw or UTC timestamp. */
+function eventClockTextBn(item) {
+  const start = eventStartDate(item);
+  if (!start) return 'সময় নিশ্চিত নয়';
+  return toBanglaDigits(eventDhakaTime(start));
 }
 
 function eventStartedTextBn(item) {
@@ -2806,6 +2887,13 @@ function renderEventSportFilter() {
   const menu = $('eventFilterMenu');
   if (!wrap || !button || !menu) return;
 
+  // Upcoming carries the design's own ALL / CRICKET / FOOTBALL select in its
+  // first day row, so the older control would be a second filter beside it.
+  if (state.view === VIEW.UPCOMING) {
+    wrap.hidden = true;
+    closeEventSportFilter();
+    return;
+  }
   const isEventView = state.view === VIEW.UPCOMING || state.view === VIEW.EVENT;
   const groups = isEventView ? eventSportCounts(eventFilterBaseItems()) : [];
   const active = state.eventSportFilter;
@@ -3118,15 +3206,12 @@ function reconcileEventCards() {
 
   const wanted = state.filteredItems.slice(0, Math.max(state.renderedCount, CHANNEL_INITIAL_CHUNK));
   const isTodayMatch = state.view === VIEW.EVENT;
-  const [colLeft, colRight] = isTodayMatch ? ensureTodayMatchColumns() : [null, null];
+  if (isTodayMatch) ensureTodayGrid();
   const fragment = document.createDocumentFragment();
-  const fragments = isTodayMatch
-    ? [document.createDocumentFragment(), document.createDocumentFragment()]
-    : null;
   state.renderedUids.clear();
 
   wanted.forEach((item, index) => {
-    const target = isTodayMatch ? fragments[index % 2] : fragment;
+    const target = fragment;
     const previous = existing.get(item._uid);
     if (previous && isPinnedSession(item)) {
       // The playing card keeps its exact node: no innerHTML, no listeners
@@ -3152,11 +3237,10 @@ function reconcileEventCards() {
   });
 
   existing.forEach((node) => node.remove());
+  sidebarList.replaceChildren(fragment);
   if (isTodayMatch) {
-    colLeft.replaceChildren(fragments[0]);
-    colRight.replaceChildren(fragments[1]);
-  } else {
-    sidebarList.replaceChildren(fragment);
+    qsa(':scope > .poster-card', sidebarList).forEach(watchTodayCardForMasonry);
+    scheduleTodayMasonry();
   }
   state.renderedCount = state.renderedUids.size;
   updateFavoriteUi();
@@ -3512,9 +3596,98 @@ function todayCardState(item) {
     : { tone: 'soon', label: countdown };
 }
 
+/* The finalised Today Match card, ported from the owner's design file.
+ *
+ * A poster-led card: artwork, status ribbon, serial, sport badge, then the
+ * league, the title, a gold rule and the channel buttons - and nothing else.
+ * No verification badge, resolution, source or stream count reaches the
+ * viewer; those stay in the data where they belong.
+ */
+function todayRibbon(item) {
+  const state = todayCardState(item);
+  if (state.tone === 'live') return { className: 'ribbon', label: 'Live' };
+  // The two non-live ribbons the design defines, and they mean different
+  // things: one is a kickoff that has passed with no link yet, the other is a
+  // match about to start.
+  if (state.tone === 'waiting') {
+    return { className: 'ribbon updating', label: 'লিংক আপডেট হচ্ছে' };
+  }
+  return { className: 'ribbon updating', label: 'শুরু হচ্ছে' };
+}
+
+function todayPosterHtml(item, parts) {
+  const artwork = eventArtworkChain(item);
+  const first = artwork[0] || '';
+  if (!first) {
+    return `<div class="poster"><span class="beam-bg"></span>${eventArtFallbackHtml(item, parts)}</div>`;
+  }
+  const rest = artwork.slice(1);
+  return `<div class="poster has-img" style="background-image:url('${escapeHtml(first)}');">`
+    + `<img class="poster-fit-image" src="${escapeHtml(first)}" alt="" loading="lazy"`
+    + ` decoding="async" referrerpolicy="no-referrer" data-event-art`
+    + ` data-art-fallbacks="${escapeHtml(JSON.stringify(rest))}">`
+    + `</div>`;
+}
+
+function todayChannelPillsHtml(item) {
+  const channels = eventChannels(item);
+  if (!channels.length) {
+    return '<span class="channel-pill muted">চ্যানেল শীঘ্রই যোগ হবে</span>';
+  }
+  return channels.map((channel) => {
+    const label = String(channel?.name || '').trim() || 'Server';
+    return `<span class="channel-pill" role="button" tabindex="0"`
+      + ` data-channel-id="${escapeHtml(String(channel?.id ?? ''))}"`
+      + ` title="${escapeHtml(label)}">${escapeHtml(label)}</span>`;
+  }).join('');
+}
+
+/* Only one Today channel button is green at a time, across every card on the
+ * tab - the green means "this is what the player is showing", and the player
+ * shows one thing.
+ */
+function markActiveTodayChannel(pill) {
+  qsa('#sidebarList .channel-pill.active-channel').forEach((entry) => {
+    entry.classList.remove('active-channel');
+  });
+  if (pill) pill.classList.add('active-channel');
+}
+
+function bindTodayChannelPills(card, item) {
+  const lower = card.querySelector('.card-lower');
+  if (!lower) return;
+  const activate = async (pill) => {
+    if (!pill || pill.classList.contains('muted')) return;
+    const channelId = pill.dataset.channelId;
+    if (!channelId) return;
+    // The green lands immediately, so a stream that takes a moment to decode
+    // still looks like the click registered.
+    markActiveTodayChannel(pill);
+    const ok = await selectEventChannel(eventChannelId(item), channelId);
+    if (!ok) pill.classList.remove('active-channel');
+  };
+  lower.addEventListener('click', (event) => {
+    const pill = event.target?.closest?.('.channel-pill');
+    if (!pill || !lower.contains(pill)) return;
+    // The pill is its own control: the click must not also be read as "play
+    // this card", which would restart on the default channel.
+    event.preventDefault();
+    event.stopPropagation();
+    activate(pill);
+  });
+  lower.addEventListener('keydown', (event) => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    const pill = event.target?.closest?.('.channel-pill');
+    if (!pill || !lower.contains(pill)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    activate(pill);
+  });
+}
+
 function createTodayMatchCardV2(item, visualIndex, ctx) {
   const { card, playable, parts, channelOnly, sport } = ctx;
-  card.className = ['sidebar-item event-ref-card tv-focusable event-live-card tm-card-v2',
+  card.className = ['sidebar-item event-ref-card tv-focusable poster-card',
     playable ? 'is-playable' : 'is-scheduled'].filter(Boolean).join(' ');
   card.tabIndex = 0;
   card.setAttribute('role', 'button');
@@ -3534,20 +3707,25 @@ function createTodayMatchCardV2(item, visualIndex, ctx) {
     maybePreconnect(item.url);
   });
 
-  const todayState = todayCardState(item);
+  const ribbon = todayRibbon(item);
   card.innerHTML = `
-    <span class="tm-serial">${visualIndex + 1}</span>
-    <div class="tm-poster">
-      ${eventArtHtml(item, parts)}
-      <span class="tm-category">${escapeHtml(channelOnly ? 'CHANNEL' : sport.label)}</span>
-      <span class="tm-state tm-state-${todayState.tone}">${escapeHtml(todayState.label)}</span>
-      <div class="tm-info">
-        ${parts.competition ? `<div class="tm-league">${escapeHtml(parts.competition)}</div>` : ''}
-        <div class="tm-title">${escapeHtml(parts.title)}</div>
-      </div>
-    </div>`;
+    ${todayPosterHtml(item, parts)}
+    <div class="poster-caption">
+      ${parts.competition ? `<p class="league-tag">${escapeHtml(parts.competition)}</p>` : ''}
+      <h4 class="match-title">${escapeHtml(parts.title)}</h4>
+      <div class="gold-rule"></div>
+    </div>
+    <div class="card-lower">${todayChannelPillsHtml(item)}</div>`;
 
-  // Section 10's fallback chain is unchanged - only the shell around it is new.
+  const poster = card.querySelector('.poster');
+  if (poster) {
+    poster.insertAdjacentHTML('beforeend',
+      `<span class="${ribbon.className}"><span class="dot"></span>${escapeHtml(ribbon.label)}</span>`
+      + `<span class="rank-tag">${visualIndex + 1}</span>`
+      + `<span class="sport-tag">${escapeHtml(channelOnly ? 'CHANNEL' : sport.label)}</span>`);
+  }
+
+  // Section 10's fallback chain is unchanged - only the frame around it is new.
   const image = qs('img[data-event-art]', card);
   image?.addEventListener('error', () => {
     let remaining = [];
@@ -3556,83 +3734,101 @@ function createTodayMatchCardV2(item, visualIndex, ctx) {
     if (next) {
       image.dataset.artFallbacks = JSON.stringify(remaining);
       image.src = next;
+      const frame = image.closest('.poster');
+      if (frame) frame.style.backgroundImage = `url('${next}')`;
       return;
     }
-    if (image.parentElement) image.replaceWith(...htmlToNodes(eventArtFallbackHtml(item, parts)));
+    const frame = image.closest('.poster');
+    if (frame) {
+      frame.classList.remove('has-img');
+      frame.style.backgroundImage = '';
+      image.remove();
+      frame.insertAdjacentHTML('afterbegin',
+        `<span class="beam-bg"></span>${eventArtFallbackHtml(item, parts)}`);
+    }
   });
-  const crests = qs('[data-event-art-crests]', card);
-  if (crests) {
-    crests.querySelectorAll('img').forEach((crest) => {
-      crest.addEventListener('error', () => {
-        if (crests.parentElement) crests.replaceWith(...htmlToNodes(eventArtFallbackHtml(item, parts)));
-      });
-    });
-  }
 
-  const stripHtml = eventChannelStripHtml(item, true);
-  if (!stripHtml) {
-    card.classList.add('event-card-no-channels', 'tm-one-channel');
-    return card;
-  }
-  const shell = document.createElement('div');
-  shell.className = 'event-card-shell tm-shell';
-  shell.dataset.uid = item._uid;
-  shell.dataset.eventShell = '1';
-  shell.appendChild(card);
-  shell.append(...htmlToNodes(stripHtml));
-  bindEventChannelStrip(shell, item);
-  updateEventChannelStrip(shell, item);
-  return shell;
+  bindTodayChannelPills(card, item);
+  if (!eventChannels(item).length) card.classList.add('event-card-no-channels');
+  return card;
 }
 
-function createEventCard(item, visualIndex) {
-  const card = document.createElement('div');
-  const playable = isPlayable(item);
-  const uiStatus = eventUiStatus(item);
-  const liveLike = uiStatus === 'LIVE_NOW' || uiStatus === 'CHANNEL_LIVE';
-  const upcoming = !liveLike;
-  const rawParts = eventDisplayParts(item);
-  const parts = { title: stripStreamNoise(rawParts.title), competition: rawParts.competition };
-  const channelOnly = isChannelOnlyEventCard(item);
-  const sport = eventSport(item);
+/* The finalised Upcoming Match row, ported from the owner's design file.
+ *
+ * One universal two-team layout for every fixture - there is no separate
+ * single-logo, double-logo or old list variant:
+ *
+ *     CRICKET                              Womens Asia Cup
+ *     [ LOGO 1 ]        ৮:৩০ PM            [ LOGO 2 ]
+ *   Sri Lanka Women   ১ ঘণ্টা ১৩ মিনিট পর   Indonesia Women
+ *                        VS
+ *
+ * The category sits above the first logo and the league above the second, so
+ * each side reads as one column.
+ */
+function teamInitials(name) {
+  const words = String(name || '').replace(/[^A-Za-z0-9 ]+/g, ' ').trim().split(/\s+/).filter(Boolean);
+  if (!words.length) return 'TBD';
+  if (words.length === 1) return words[0].slice(0, 3).toUpperCase();
+  if (words.length === 2) return (words[0][0] + words[1][0]).toUpperCase();
+  return (words[0][0] + words[1][0] + words[words.length - 1][0]).toUpperCase();
+}
 
-  if (state.view === VIEW.EVENT) {
-    return createTodayMatchCardV2(item, visualIndex, { card, playable, parts, channelOnly, sport });
+function splitUpcomingTeams(title) {
+  const parts = String(title || '').split(/\s+(?:vs\.?|v)\s+/i);
+  if (parts.length >= 2) {
+    return [parts[0].trim(), parts.slice(1).join(' vs ').trim()];
+  }
+  return [String(title || 'Team 1').trim(), 'TBD'];
+}
+
+/* A logo box is always the same size. When there is no badge, or the badge
+ * fails to load, the same box shows the team's initials rather than
+ * collapsing and pulling the row out of alignment. */
+function buildLogoBox(url, teamName) {
+  const box = document.createElement('div');
+  box.className = 'universal-logo';
+
+  if (!url) {
+    box.classList.add('initials');
+    box.textContent = teamInitials(teamName);
+    return box;
   }
 
-  // Guide 12. The action names what the click actually does. A card with a
-  // verified link plays when tapped on either tab, so labelling it "Details"
-  // there — as this card used to on the Upcoming tab — was a promise the
-  // click handler did not keep. Cards with no link keep Details.
-  const showWatchAction = playable;
-  const streams = eventStreamSummary(item);
-  const statusLabel = channelOnly && liveLike
-    ? eventStatusLabel('CHANNEL_LIVE')
-    : eventStatusLabel(uiStatus);
+  const image = document.createElement('img');
+  image.src = url;
+  image.alt = '';
+  image.loading = 'lazy';
+  image.decoding = 'async';
+  image.referrerPolicy = 'no-referrer';
+  image.addEventListener('error', () => {
+    box.replaceChildren();
+    box.classList.add('initials');
+    box.textContent = teamInitials(teamName);
+  });
+  box.appendChild(image);
+  return box;
+}
 
-  // The live card leads with when it began; the upcoming card leads with when
-  // it starts and how long that is away.
-  const scheduleText = liveLike ? (eventStartedTextBn(item) || '') : '';
-  const countdown = upcoming ? eventCountdownTextBn(item) : '';
-  const phase = liveLike ? eventLivePhaseTextBn(item) : '';
-  const metaText = upcoming ? eventMetaRowTextBn(item, streams) : '';
-  const verification = eventVerificationLabel(item);
+function createUpcomingTeamRow(item, visualIndex, ctx) {
+  const { card, playable, parts, channelOnly, sport } = ctx;
+  const [teamOne, teamTwo] = splitUpcomingTeams(parts.title);
+  // Only a real team badge is used as a team badge. An event banner is not one,
+  // and putting it in a logo box would state something the data never said.
+  const badges = eventTeamBadges(item);
 
   card.className = [
-    'sidebar-item event-ref-card tv-focusable',
-    upcoming ? 'event-upcoming-card' : 'event-live-card',
+    'sidebar-item event-ref-card tv-focusable schedule-row universal-team-row',
     playable ? 'is-playable' : 'is-scheduled',
-    channelOnly ? 'event-channel-card' : 'event-fixture-card',
-    // A short landscape screen lets the countdown stand in for the clock, but
-    // only on a card that actually has one — a fixture whose kickoff has
-    // passed while it waits for a link has no countdown and must keep its
-    // clock, or it would answer "when" with nothing at all.
-    countdown ? 'has-countdown' : ''
+    channelOnly ? 'event-channel-card' : 'event-fixture-card'
   ].filter(Boolean).join(' ');
   card.tabIndex = 0;
   card.setAttribute('role', 'button');
   card.setAttribute('aria-label', [
-    parts.title, statusLabel, scheduleText, countdown, streams.text
+    parts.title,
+    parts.competition,
+    eventStatusLabel(eventUiStatus(item)),
+    eventCountdownTextBn(item)
   ].filter(Boolean).join('. '));
   card.dataset.uid = item._uid;
   card.dataset.itemIndex = String(visualIndex);
@@ -3642,113 +3838,71 @@ function createEventCard(item, visualIndex) {
     maybePreconnect(item.url);
   });
 
-  const favoriteKey = item.id || item.url;
-  const reminderKey = item.id || item.url || item.name;
-  const actionLabel = showWatchAction ? (channelOnly ? 'Watch Channel' : 'Watch') : 'Details';
+  const left = document.createElement('div');
+  left.className = 'universal-side universal-left';
+  const category = document.createElement('span');
+  category.className = 'universal-category';
+  category.textContent = channelOnly ? 'CHANNEL' : String(sport.label || '').toUpperCase();
+  left.appendChild(category);
+  left.appendChild(buildLogoBox(badges?.home || '', teamOne));
+  const nameOne = document.createElement('div');
+  nameOne.className = 'universal-team-name';
+  nameOne.textContent = teamOne;
+  left.appendChild(nameOne);
 
-  // The footer is two fixed rows rather than one wrapping bag of chips: with
-  // five chips free to wrap, the row count depended on the title's width and
-  // the tallest cards spilled past their own clipped box. Row one carries the
-  // status, row two the supporting detail on a single ellipsised line.
-  // The clock spans carry data-clock so the 30s tick can rewrite their text
-  // without rebuilding the list.
-  // One status, not two. An upcoming card used to carry STARTING SOON *and*
-  // "Starts in 17m" side by side, which said the same thing twice and pushed
-  // the rest of the card into a third line. The countdown is the more useful
-  // of the pair, so when there is one it becomes the status; a fixture with no
-  // countdown left keeps the worded badge.
-  const statusRow = upcoming
-    ? `<span class="event-status-pill upcoming${countdown ? ' is-countdown' : ''}" data-clock="countdown"><i class="fas ${countdown ? 'fa-hourglass-half' : 'fa-calendar-alt'}" aria-hidden="true"></i>${escapeHtml(countdown || statusLabel)}</span>`
-    : [
-      `<span class="event-status-pill live"><span class="pulse-dot" aria-hidden="true"></span>${escapeHtml(statusLabel)}</span>`,
-      `<span class="event-card-phase" data-clock="phase"${phase ? '' : ' hidden'}>${escapeHtml(phase)}</span>`
-    ].join('');
-
-  // One supporting line: the clock, then the stream state. The verification
-  // tick rides inside the clock chip instead of being a chip of its own, so it
-  // can no longer wrap onto a line by itself the way it did on the live site.
-  const verifiedTick = upcoming
-    ? `<i class="fas ${verification === 'Verification Pending' ? 'fa-circle-question' : 'fa-circle-check'} event-verified-tick ${verification === 'Verification Pending' ? 'pending' : 'ok'}" aria-hidden="true"></i>`
-    : '';
-  const metaRow = upcoming
-    ? `<span class="event-card-time" data-clock="meta" title="${escapeHtml([metaText, verification].filter(Boolean).join(' · '))}"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(metaText)}${verifiedTick}</span>`
-    : [
-      scheduleText
-        ? `<span class="event-card-time" data-clock="schedule"><i class="far fa-clock" aria-hidden="true"></i>${escapeHtml(scheduleText)}</span>`
-        : '',
-      `<span class="event-card-streams ${streams.ready ? 'ready' : 'waiting'}" title="${escapeHtml(streams.text)}"><i class="fas ${streams.ready ? 'fa-circle-play' : 'fa-hourglass-start'}" aria-hidden="true"></i>${escapeHtml(streams.shortBn || streams.short)}</span>`
-    ].filter(Boolean).join('');
-
-  card.innerHTML = `
-    <span class="sidebar-channel-num">${visualIndex + 1}</span>
-    <div class="event-card-art">
-      ${eventArtHtml(item, parts)}
-      <span class="event-card-art-shade"></span>
-      <span class="event-sport-badge"><i class="fas ${sport.icon}" aria-hidden="true"></i>${escapeHtml(channelOnly ? 'CHANNEL' : sport.label)}</span>
-    </div>
-    <div class="event-card-details">
-      <div class="event-card-title">${escapeHtml(parts.title)}</div>
-      ${parts.competition
-        ? `<div class="event-card-competition"><i class="fas fa-trophy" aria-hidden="true"></i>${escapeHtml(parts.competition)}</div>`
-        : (channelOnly ? '<div class="event-card-competition muted">Event information unavailable</div>' : '')}
-      <div class="event-card-footer">
-        <div class="event-card-status-row">
-          <span class="event-now-playing"><span class="playing-equalizer" aria-hidden="true"><span></span><span></span><span></span></span>NOW PLAYING</span>
-          ${statusRow}
-        </div>
-        <div class="event-card-meta-row">${metaRow}</div>
-      </div>
-    </div>
-    <span class="event-card-action ${showWatchAction ? 'watch' : 'reminder'}"><i class="fas ${showWatchAction ? 'fa-play' : 'fa-circle-info'}" aria-hidden="true"></i><span>${escapeHtml(actionLabel)}</span></span>
-    ${playable
-      ? `<button class="card-fav-btn" data-favorite-id="${escapeHtml(favoriteKey)}" type="button" title="Bookmark" aria-label="Bookmark ${escapeHtml(parts.title)}"><i class="far fa-star"></i></button>`
-      : `<button class="card-remind-btn" data-reminder-id="${escapeHtml(reminderKey)}" type="button" title="Remind Me" aria-pressed="false" aria-label="Remind me about ${escapeHtml(parts.title)}"><i class="far fa-bell"></i></button>`}`;
-
-  // Section 10. A broken picture moves to the next real picture this fixture has,
-  // and only reaches initials when every one of them has failed.
-  const image = qs('img[data-event-art]', card);
-  image?.addEventListener('error', () => {
-    let remaining = [];
-    try { remaining = JSON.parse(image.dataset.artFallbacks || '[]'); } catch (_) { remaining = []; }
-    const next = Array.isArray(remaining) ? remaining.shift() : null;
-    if (next) {
-      image.dataset.artFallbacks = JSON.stringify(remaining);
-      image.src = next;
-      return;
-    }
-    if (image.parentElement) image.replaceWith(...htmlToNodes(eventArtFallbackHtml(item, parts)));
-  });
-  // A crest pair is only honest while both crests are there; if either fails the
-  // whole pair is replaced rather than leaving one team showing.
-  const crests = qs('[data-event-art-crests]', card);
-  if (crests) {
-    crests.querySelectorAll('img').forEach((crest) => {
-      crest.addEventListener('error', () => {
-        if (crests.parentElement) crests.replaceWith(...htmlToNodes(eventArtFallbackHtml(item, parts)));
-      });
-    });
+  const center = document.createElement('div');
+  center.className = 'universal-center';
+  const time = document.createElement('div');
+  time.className = 'time';
+  time.textContent = eventClockTextBn(item);
+  center.appendChild(time);
+  const countdownText = eventCountdownTextBn(item);
+  if (countdownText) {
+    const countdown = document.createElement('div');
+    countdown.className = 'countdown';
+    countdown.dataset.clock = 'countdown';
+    countdown.textContent = countdownText;
+    center.appendChild(countdown);
   }
-  qs('.card-fav-btn', card)?.addEventListener('click', (event) => toggleFavorite(item._uid, event));
-  qs('.card-remind-btn', card)?.addEventListener('click', (event) => toggleEventReminder(item._uid, event));
+  const versus = document.createElement('div');
+  versus.className = 'vs-label';
+  versus.textContent = 'VS';
+  center.appendChild(versus);
 
-  // Sections 1/2/4. One real fixture is one main card, and the selector goes
-  // under it - inside a shell, so the locked 152px row above keeps its exact
-  // geometry and every card in the list keeps the same height as every other.
-  // A card with no resolved channel returns the bare row it always was.
-  const stripHtml = eventChannelStripHtml(item);
-  if (!stripHtml) {
-    card.classList.add('event-card-no-channels');
-    return card;
-  }
-  const shell = document.createElement('div');
-  shell.className = 'event-card-shell';
-  shell.dataset.uid = item._uid;
-  shell.dataset.eventShell = '1';
-  shell.appendChild(card);
-  shell.append(...htmlToNodes(stripHtml));
-  bindEventChannelStrip(shell, item);
-  updateEventChannelStrip(shell, item);
-  return shell;
+  const right = document.createElement('div');
+  right.className = 'universal-side universal-right';
+  const league = document.createElement('div');
+  league.className = 'universal-league';
+  league.textContent = parts.competition || '';
+  right.appendChild(league);
+  right.appendChild(buildLogoBox(badges?.away || '', teamTwo));
+  const nameTwo = document.createElement('div');
+  nameTwo.className = 'universal-team-name';
+  nameTwo.textContent = teamTwo;
+  right.appendChild(nameTwo);
+
+  const chevron = document.createElement('span');
+  chevron.className = 'universal-chevron';
+  chevron.setAttribute('aria-hidden', 'true');
+  chevron.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none"'
+    + ' stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
+
+  card.replaceChildren(left, center, right, chevron);
+  return card;
+}
+
+function createEventCard(item, visualIndex) {
+  const card = document.createElement('div');
+  const playable = isPlayable(item);
+  const rawParts = eventDisplayParts(item);
+  const parts = { title: stripStreamNoise(rawParts.title), competition: rawParts.competition };
+  const channelOnly = isChannelOnlyEventCard(item);
+  const sport = eventSport(item);
+  const ctx = { card, playable, parts, channelOnly, sport };
+
+  return state.view === VIEW.EVENT
+    ? createTodayMatchCardV2(item, visualIndex, ctx)
+    : createUpcomingTeamRow(item, visualIndex, ctx);
 }
 
 function htmlToNodes(html) {

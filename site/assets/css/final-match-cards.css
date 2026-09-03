@@ -1,0 +1,502 @@
+/* The finalised Today Match and Upcoming Match card system.
+ *
+ * Ported from the owner's approved design file
+ * (clicktv-today-only-one-green-active-button.html), which is the source of
+ * truth for both tabs. That file was built up through several rounds of
+ * overrides, so what is written here is the *effective* rule at the end of its
+ * cascade, not the first declaration of each selector.
+ *
+ * It loads after every other stylesheet so the earlier Today/Upcoming rules
+ * are superseded rather than deleted - the older sheets still own the channel
+ * grid, the movie grid and the player, and nothing here reaches outside the
+ * event list.
+ *
+ * The design file scopes everything to #panel-today / #panel-upcoming. This
+ * site renders both tabs into one #sidebarList, which carries `today-grid` on
+ * Today Match and `upcoming-grid` on Upcoming, so those two classes stand in
+ * for the two panels.
+ */
+
+/* ── Today Match ─────────────────────────────────────────────────────────── */
+
+/* True masonry: one grid, 1px rows, and each card spanning the number of rows
+ * its own content needs. A short card therefore leaves no dead space under it
+ * and the next card packs upward, which two fixed columns could not do.
+ */
+.sidebar-section.event-list-mode #sidebarList.today-grid{
+  display:grid!important;
+  grid-template-columns:1fr 1fr!important;
+  grid-auto-rows:1px!important;
+  column-gap:14px!important;
+  row-gap:7px!important;
+  align-items:start!important;
+  padding:0!important;
+}
+
+.sidebar-section.event-list-mode #sidebarList.today-grid > .poster-card{
+  position:relative!important;
+  align-self:start!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  width:auto!important;
+  margin:0!important;
+  padding:0!important;
+  border-radius:10px!important;
+  overflow:hidden!important;
+  background:var(--card-bg)!important;
+  border:1px solid var(--border)!important;
+  box-shadow:none!important;
+  transition:transform .15s ease,border-color .15s ease!important;
+  display:block!important;
+  cursor:pointer;
+}
+.sidebar-section.event-list-mode #sidebarList.today-grid > .poster-card:hover{
+  transform:translateY(-3px)!important;
+  border-color:var(--border-hover)!important;
+}
+
+/* Poster: the artwork stays whole. A blurred copy fills the frame behind it so
+ * the box is never letterboxed onto flat black, and the real image is
+ * contained in front of it rather than cropped.
+ */
+.sidebar-section.event-list-mode .poster-card .poster{
+  position:relative!important;
+  height:150px!important;
+  overflow:hidden!important;
+  margin:0!important;
+  border-radius:0!important;
+}
+.sidebar-section.event-list-mode .poster-card .poster.has-img{
+  background-size:cover!important;
+  background-position:center!important;
+  background-repeat:no-repeat!important;
+  background-color:#090b10!important;
+}
+.sidebar-section.event-list-mode .poster-card .poster.has-img::after{
+  content:""!important;
+  position:absolute!important;
+  inset:-10px!important;
+  background:inherit!important;
+  background-size:cover!important;
+  background-position:center!important;
+  filter:blur(12px)!important;
+  opacity:.48!important;
+  transform:scale(1.08)!important;
+  z-index:0!important;
+  pointer-events:none!important;
+}
+.sidebar-section.event-list-mode .poster-card .poster.has-img::before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  background:linear-gradient(180deg, rgba(0,0,0,.6) 0%, rgba(0,0,0,.05) 40%, rgba(0,0,0,.35) 100%)!important;
+  z-index:2!important;
+  pointer-events:none!important;
+}
+.sidebar-section.event-list-mode .poster-card .poster-fit-image{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center!important;
+  display:block!important;
+  z-index:1!important;
+  padding:2px!important;
+  box-sizing:border-box!important;
+  border-radius:0!important;
+  background:none!important;
+}
+.sidebar-section.event-list-mode .poster-card .poster .beam-bg{
+  position:absolute!important;inset:0!important;
+  background:repeating-linear-gradient(115deg, rgba(255,255,255,.05) 0 2px, transparent 2px 26px),
+             linear-gradient(160deg, #16263f, #0b111c)!important;
+}
+
+.sidebar-section.event-list-mode .poster-card .ribbon{
+  position:absolute!important;
+  top:0!important;left:0!important;
+  background:var(--red)!important;
+  color:#fff!important;
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-weight:500!important;
+  font-size:11px!important;
+  letter-spacing:.5px!important;
+  padding:5px 16px 5px 10px!important;
+  clip-path:polygon(0 0,100% 0,84% 100%,0 100%)!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  z-index:3!important;
+  border:0!important;
+  border-radius:0!important;
+  height:auto!important;
+  line-height:1!important;
+}
+.sidebar-section.event-list-mode .poster-card .ribbon .dot{
+  width:5px!important;height:5px!important;border-radius:50%!important;
+  background:#fff!important;animation:tmRibbonBlink 1.4s infinite!important;
+  display:block!important;flex:none!important;
+}
+@keyframes tmRibbonBlink{ 50%{ opacity:.25; } }
+.sidebar-section.event-list-mode .poster-card .ribbon.updating{
+  background:var(--gold)!important;color:#1c1401!important;
+}
+.sidebar-section.event-list-mode .poster-card .ribbon.updating .dot{ background:#1c1401!important; }
+
+.sidebar-section.event-list-mode .poster-card .rank-tag{
+  position:absolute!important;
+  top:8px!important;right:8px!important;
+  width:22px!important;height:22px!important;
+  min-width:22px!important;
+  border-radius:4px!important;
+  background:rgba(0,0,0,.55)!important;
+  color:#fff!important;
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-weight:500!important;font-size:11px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  z-index:3!important;border:0!important;padding:0!important;
+}
+.sidebar-section.event-list-mode .poster-card .sport-tag{
+  position:absolute!important;
+  bottom:8px!important;right:8px!important;
+  background:rgba(0,0,0,.6)!important;
+  color:var(--gold)!important;
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-weight:400!important;font-size:10px!important;
+  letter-spacing:.8px!important;
+  padding:3px 10px!important;
+  border-radius:3px!important;
+  z-index:3!important;border:0!important;
+  height:auto!important;line-height:1.2!important;
+}
+
+.sidebar-section.event-list-mode .poster-card .poster-caption{
+  padding:12px 14px 0!important;margin:0!important;
+}
+.sidebar-section.event-list-mode .poster-card .league-tag{
+  font-size:11px!important;color:var(--text-2)!important;margin:0 0 2px!important;
+  font-family:var(--font-body,'Hind Siliguri',sans-serif)!important;font-weight:400!important;
+  white-space:normal!important;overflow:visible!important;
+}
+.sidebar-section.event-list-mode .poster-card .match-title{
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-weight:500!important;font-size:19px!important;
+  color:#fff!important;margin:0 0 8px!important;line-height:1.16!important;
+  white-space:normal!important;overflow:visible!important;text-overflow:clip!important;
+  display:block!important;-webkit-line-clamp:none!important;
+}
+.sidebar-section.event-list-mode .poster-card .gold-rule{
+  width:32px!important;height:2px!important;background:var(--gold)!important;
+  margin:0 0 12px!important;border:0!important;
+}
+
+.sidebar-section.event-list-mode .poster-card .card-lower{
+  padding:0 14px 14px!important;
+  display:flex!important;flex-wrap:wrap!important;gap:8px!important;
+  margin:0!important;
+}
+.sidebar-section.event-list-mode .poster-card .channel-pill{
+  border:1px solid var(--border-hover)!important;
+  color:var(--text-2)!important;
+  font-family:var(--font-body,'Hind Siliguri',sans-serif)!important;
+  font-size:10.5px!important;font-weight:600!important;
+  padding:6px 8px!important;
+  border-radius:4px!important;
+  text-align:center!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  flex:0 1 calc(50% - 4px)!important;
+  box-sizing:border-box!important;
+  background:transparent!important;
+  line-height:1.3!important;
+  min-height:0!important;
+}
+.sidebar-section.event-list-mode .poster-card .channel-pill.muted{
+  color:var(--text-3)!important;font-weight:400!important;font-style:italic!important;
+  border-style:dashed!important;cursor:default!important;
+}
+.sidebar-section.event-list-mode .poster-card .channel-pill:not(.muted){ cursor:pointer!important; }
+
+/* One playable channel gets the whole row, with the play glyph in front. */
+.sidebar-section.event-list-mode .poster-card .card-lower > .channel-pill:not(.muted):only-child{
+  flex:1 1 100%!important;width:100%!important;max-width:none!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;gap:5px!important;
+}
+.sidebar-section.event-list-mode .poster-card .card-lower > .channel-pill:not(.muted):only-child::before{
+  content:"\25B6";flex:none;font-size:.82em;line-height:1;color:currentColor;
+}
+/* An odd count leaves the last button unpaired, so it takes the full row
+ * rather than sitting half-width beside nothing. */
+.sidebar-section.event-list-mode .poster-card .card-lower:has(> .channel-pill:nth-child(odd):last-child) > .channel-pill:last-child{
+  flex:1 1 100%!important;width:100%!important;max-width:none!important;
+  margin-left:0!important;margin-right:0!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  text-align:center!important;
+}
+/* The clicked channel, and only ever one of them on the whole tab. */
+.sidebar-section.event-list-mode .poster-card .channel-pill:not(.muted).active-channel{
+  background:var(--green-dim)!important;
+  border-color:var(--live-green)!important;
+  color:var(--live-green)!important;
+}
+
+/* ── Upcoming Match ──────────────────────────────────────────────────────── */
+
+.sidebar-section.event-list-mode #sidebarList.upcoming-grid:not(.today-grid){
+  display:block!important;
+  grid-template-columns:none!important;
+  padding:0!important;
+}
+.sidebar-section.event-list-mode .schedule-day{
+  margin:0 0 26px!important;
+}
+.sidebar-section.event-list-mode .schedule-day:last-child{ margin-bottom:0!important; }
+
+.sidebar-section.event-list-mode .day-label.upcoming-day-head{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-weight:500!important;font-size:13px!important;
+  color:var(--text-2)!important;
+  padding:0 0 9px!important;
+  border-bottom:1px solid var(--border)!important;
+  margin:0 0 2px!important;
+  position:static!important;
+  background:none!important;
+}
+/* The date reads as a control-sized badge, matching the filter beside it. */
+.sidebar-section.event-list-mode .upcoming-day-head > span:first-child{
+  height:30px!important;min-width:92px!important;padding:0 12px!important;
+  border:1px solid var(--border-hover)!important;border-radius:7px!important;
+  background:#10131a!important;color:var(--text-1)!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-size:10px!important;letter-spacing:.25px!important;white-space:nowrap!important;
+  box-sizing:border-box!important;
+}
+
+.sidebar-section.event-list-mode .schedule-list{
+  background:var(--card-bg)!important;
+  border:1px solid var(--border)!important;
+  border-radius:10px!important;
+  padding:0 16px!important;
+  display:block!important;
+}
+
+.sidebar-section.event-list-mode .schedule-row.universal-team-row{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 92px minmax(0,1fr) 16px!important;
+  column-gap:8px!important;
+  align-items:stretch!important;
+  min-height:164px!important;
+  height:auto!important;max-height:none!important;
+  padding:12px 0!important;
+  margin-left:-8px!important;
+  padding-left:8px!important;
+  border:0!important;
+  border-bottom:1px solid var(--border)!important;
+  border-left:2px solid transparent!important;
+  border-radius:0!important;
+  background:transparent!important;
+  transition:background-color .15s ease, border-color .15s ease!important;
+  box-shadow:none!important;
+  width:auto!important;
+}
+.sidebar-section.event-list-mode .schedule-list > .schedule-row:last-child{ border-bottom:none!important; }
+.sidebar-section.event-list-mode .schedule-row.universal-team-row:hover{
+  background:rgba(255,255,255,.025)!important;
+  border-left-color:var(--gold)!important;
+}
+
+.sidebar-section.event-list-mode .universal-team-row .universal-side{
+  min-width:0!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  gap:5px!important;
+}
+.sidebar-section.event-list-mode .universal-team-row .universal-left{ grid-column:1!important; }
+.sidebar-section.event-list-mode .universal-team-row .universal-center{
+  grid-column:2!important;
+  align-self:center!important;justify-self:center!important;
+  width:92px!important;
+  display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;
+  text-align:center!important;min-width:0!important;
+}
+.sidebar-section.event-list-mode .universal-team-row .universal-right{ grid-column:3!important; }
+.sidebar-section.event-list-mode .universal-team-row .universal-chevron{
+  grid-column:4!important;align-self:center!important;
+  color:var(--text-3)!important;flex:none!important;
+}
+
+.sidebar-section.event-list-mode .universal-team-row .universal-category{
+  margin:0!important;white-space:nowrap!important;
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-size:9.5px!important;letter-spacing:.5px!important;
+  color:var(--text-2)!important;
+  border:1px solid var(--border-hover)!important;
+  padding:4px 8px!important;border-radius:3px!important;
+  background:transparent!important;display:inline-block!important;
+  height:auto!important;line-height:1.2!important;
+}
+.sidebar-section.event-list-mode .universal-team-row .universal-league{
+  width:100%!important;max-width:118px!important;min-height:22px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-size:9.5px!important;letter-spacing:.3px!important;line-height:1.15!important;
+  color:var(--text-2)!important;text-align:center!important;
+  white-space:normal!important;overflow-wrap:anywhere!important;margin:0!important;
+}
+
+/* Every logo, real or fallback, occupies the identical box. */
+.sidebar-section.event-list-mode .universal-team-row .universal-logo{
+  width:56px!important;height:56px!important;
+  min-width:56px!important;min-height:56px!important;
+  max-width:56px!important;max-height:56px!important;
+  box-sizing:border-box!important;
+  border-radius:10px!important;
+  background:var(--card-bg-hover)!important;
+  border:1px solid var(--border)!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  overflow:hidden!important;flex:none!important;margin:0!important;padding:0!important;
+}
+.sidebar-section.event-list-mode .universal-team-row .universal-logo img{
+  width:100%!important;height:100%!important;box-sizing:border-box!important;
+  object-fit:contain!important;object-position:center!important;
+  padding:1px!important;margin:0!important;display:block!important;
+  border-radius:0!important;background:none!important;
+}
+.sidebar-section.event-list-mode .universal-team-row .universal-logo.initials{
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-size:14px!important;font-weight:600!important;letter-spacing:.4px!important;
+  color:#fff!important;text-align:center!important;
+  background:linear-gradient(145deg,var(--card-bg-hover),#0d1420)!important;
+}
+
+.sidebar-section.event-list-mode .universal-team-row .universal-team-name{
+  width:100%!important;max-width:132px!important;margin:0!important;
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-weight:500!important;font-size:16.5px!important;line-height:1.3!important;
+  color:#fff!important;text-align:center!important;
+  white-space:normal!important;overflow:visible!important;text-overflow:clip!important;
+  overflow-wrap:anywhere!important;-webkit-line-clamp:none!important;
+}
+
+.sidebar-section.event-list-mode .universal-team-row .universal-center .time{
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-weight:600!important;font-size:14.5px!important;
+  color:#fff!important;line-height:1.1!important;white-space:nowrap!important;margin:0!important;
+}
+.sidebar-section.event-list-mode .universal-team-row .universal-center .countdown{
+  font-size:12px!important;color:var(--gold)!important;
+  margin:12px 0 0!important;line-height:1.3!important;text-align:center!important;
+  font-family:var(--font-body,'Hind Siliguri',sans-serif)!important;font-weight:400!important;
+}
+.sidebar-section.event-list-mode .universal-team-row .universal-center .vs-label{
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-size:14px!important;font-weight:600!important;
+  color:var(--text-2)!important;letter-spacing:.8px!important;margin:7px 0 0!important;
+}
+
+/* The filter that sits in the first day row. Only ALL / CRICKET / FOOTBALL. */
+.sidebar-section.event-list-mode .sport-filter-wrap{
+  position:relative!important;display:flex!important;align-items:center!important;flex:none!important;
+}
+.sidebar-section.event-list-mode .sport-filter-wrap svg{
+  position:absolute!important;left:9px!important;width:12px!important;height:12px!important;
+  color:var(--text-2)!important;pointer-events:none!important;
+}
+.sidebar-section.event-list-mode .sport-filter{
+  appearance:none!important;-webkit-appearance:none!important;
+  height:30px!important;min-width:92px!important;
+  padding:0 22px 0 27px!important;
+  border:1px solid var(--border-hover)!important;border-radius:7px!important;
+  background:#10131a!important;color:var(--text-1)!important;
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-size:10px!important;letter-spacing:.25px!important;
+  outline:none!important;cursor:pointer!important;box-sizing:border-box!important;
+}
+.sidebar-section.event-list-mode .sport-filter-wrap::after{
+  content:""!important;position:absolute!important;right:9px!important;top:50%!important;
+  width:5px!important;height:5px!important;
+  border-right:1.5px solid var(--text-2)!important;
+  border-bottom:1.5px solid var(--text-2)!important;
+  transform:translateY(-65%) rotate(45deg)!important;pointer-events:none!important;
+}
+.sidebar-section.event-list-mode .sport-filter:focus{ border-color:var(--red-border)!important; }
+
+/* ── The two tab headers ─────────────────────────────────────────────────── */
+
+.sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta .sidebar-count{
+  font-family:var(--font-display,'Oswald',sans-serif)!important;
+  font-size:19px!important;font-weight:700!important;color:#fff!important;
+}
+.sidebar-section.event-list-mode .sidebar-count-detail{
+  margin-left:auto!important;color:var(--text-2)!important;
+  font-family:var(--font-body,'Hind Siliguri',sans-serif)!important;
+  font-size:12.5px!important;font-weight:400!important;
+}
+
+/* ── Phone ───────────────────────────────────────────────────────────────── */
+
+@media (max-width:767px){
+  .sidebar-section.event-list-mode #sidebarList.today-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    column-gap:10px!important;row-gap:10px!important;
+  }
+  .sidebar-section.event-list-mode .poster-card .poster{
+    height:auto!important;aspect-ratio:16/9!important;
+  }
+  .sidebar-section.event-list-mode .poster-card .poster-caption{ padding:10px 11px 0!important; }
+  .sidebar-section.event-list-mode .poster-card .match-title{ font-size:17px!important; }
+  .sidebar-section.event-list-mode .poster-card .card-lower{ padding:0 11px 11px!important; }
+
+  .sidebar-section.event-list-mode .schedule-list{
+    width:100%!important;padding:0 8px!important;border-radius:9px!important;overflow:hidden!important;
+  }
+  .sidebar-section.event-list-mode .schedule-row.universal-team-row{
+    width:100%!important;
+    grid-template-columns:minmax(0,1fr) 78px minmax(0,1fr) 12px!important;
+    column-gap:4px!important;
+    min-height:154px!important;
+    padding:11px 0!important;
+    margin-left:0!important;padding-left:0!important;
+    border-left:0!important;
+  }
+  .sidebar-section.event-list-mode .universal-team-row .universal-center{ width:78px!important; }
+  .sidebar-section.event-list-mode .universal-team-row .universal-logo{
+    width:58px!important;height:58px!important;
+    min-width:58px!important;min-height:58px!important;
+    max-width:58px!important;max-height:58px!important;
+  }
+  .sidebar-section.event-list-mode .universal-team-row .universal-category{
+    font-size:8.5px!important;padding:4px 7px!important;
+  }
+  .sidebar-section.event-list-mode .universal-team-row .universal-league{
+    max-width:100px!important;min-height:20px!important;font-size:8.5px!important;line-height:1.15!important;
+  }
+  .sidebar-section.event-list-mode .universal-team-row .universal-team-name{
+    max-width:112px!important;font-size:16px!important;line-height:1.22!important;
+  }
+  .sidebar-section.event-list-mode .universal-team-row .universal-center .time{ font-size:15.5px!important; }
+  .sidebar-section.event-list-mode .universal-team-row .universal-center .countdown{
+    margin-top:8px!important;font-size:12px!important;line-height:1.25!important;
+  }
+  .sidebar-section.event-list-mode .universal-team-row .universal-center .vs-label{
+    margin-top:5px!important;font-size:15px!important;
+  }
+  .sidebar-section.event-list-mode .universal-team-row .universal-chevron{
+    width:12px!important;height:12px!important;
+  }
+  .sidebar-section.event-list-mode .sport-filter{
+    min-width:88px!important;height:30px!important;font-size:9.5px!important;
+  }
+  .sidebar-section.event-list-mode .upcoming-day-head > span:first-child{
+    min-width:88px!important;height:30px!important;padding:0 9px!important;font-size:9.5px!important;
+  }
+  .sidebar-section.event-list-mode .sidebar-top-bar.card-list-meta .sidebar-count{ font-size:18px!important; }
+  .sidebar-section.event-list-mode .sidebar-count-detail{ font-size:12px!important; }
+}

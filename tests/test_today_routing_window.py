@@ -152,8 +152,12 @@ class TheCardSaysWhichStateItIsInTests(unittest.TestCase):
     )
 
     def test_the_card_carries_a_state_badge(self):
+        # The finalised card carries the state as the corner ribbon: red for
+        # live, gold for a link still being looked for or a match about to
+        # start. The state itself is still decided by todayCardState.
         self.assertIn("function todayCardState(item)", self.APP)
-        self.assertIn("tm-state tm-state-", self.APP)
+        self.assertIn("function todayRibbon(item)", self.APP)
+        self.assertIn("'ribbon updating'", self.APP)
 
     def test_all_four_states_are_styled(self):
         for tone in ("live", "ready", "soon", "waiting"):
@@ -171,14 +175,17 @@ class TheCardSaysWhichStateItIsInTests(unittest.TestCase):
         reading it and finding a countdown on the first card has been told
         something untrue by the one line that summarises the tab."""
         block = self.APP[self.APP.index("function setEventListCount()"):]
-        block = block[:block.index("const todayKey")]
+        block = block[:block.index("\nfunction ")]
         headline = block[block.index("setSidebarCount("):]
         headline = headline[:headline.index("return;")]
+        # The headline names the tab; it does not claim anything about the
+        # cards on it. Bengali, like every other line the viewer reads.
+        self.assertIn("'আজকের ম্যাচ'", headline)
         self.assertNotIn("Live", headline,
                          "the headline still calls every card live")
-        self.assertIn("'Match' : 'Matches'", headline)
-        # The live count moves into the detail line, where it is true.
-        self.assertIn("${live} Live", block)
+        # Both counts move into the detail line, where they are true.
+        self.assertIn("টি লাইভ", block)
+        self.assertIn("টি ম্যাচ", block)
 
 
 class TheClockOutranksASportPreferenceOnUpcomingTests(unittest.TestCase):

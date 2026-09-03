@@ -23,6 +23,8 @@ INDEX = (SITE / "index.html").read_text(encoding="utf-8")
 SW = (SITE / "sw.js").read_text(encoding="utf-8")
 CHANNEL_CSS = (SITE / "assets/css/event-channel-cards.css").read_text(encoding="utf-8")
 EVENT_CSS = (SITE / "assets/css/event-cards.css").read_text(encoding="utf-8")
+FINAL_CSS = (ROOT / "site" / "assets" / "css" / "final-match-cards.css").read_text(
+    encoding="utf-8")
 
 
 def _code_only(text: str) -> str:
@@ -95,9 +97,17 @@ class Section2TheHardLockHolds(unittest.TestCase):
         self.assertIsNotNone(shell)
         self.assertIn("height:auto!important", shell.group(1))
 
-    def test_the_strip_is_built_as_a_sibling_of_the_locked_row(self):
-        self.assertIn("shell.appendChild(card)", APP)
-        self.assertIn("shell.append(...htmlToNodes(stripHtml))", APP)
+    def test_the_channel_buttons_are_built_inside_the_card(self):
+        """The approved design puts them there.
+
+        The older architecture hung the strip beside the row in a shell so the
+        row could keep one locked height. The design the owner signed off has
+        the buttons in the card's own `.card-lower`, which makes the card one
+        node and its height its own content's business - which is also what
+        the masonry needs.
+        """
+        self.assertIn('<div class="card-lower">${todayChannelPillsHtml(item)}</div>', APP)
+        self.assertNotIn("shell.appendChild(card)", APP)
 
 
 class Section4And5TheChannelChip(unittest.TestCase):
@@ -197,11 +207,12 @@ class Section9And13NoFakeChannelBar(unittest.TestCase):
         self.assertIn("if (channels.length < 1) return '';", APP)
         self.assertIn("event-card-no-channels", APP)
 
-    def test_a_card_with_no_strip_is_returned_as_the_bare_row(self):
-        block = APP.split("const stripHtml = eventChannelStripHtml(item);", 1)[1]
-        block = block.split("return shell;", 1)[0]
-        self.assertIn("if (!stripHtml) {", block)
-        self.assertIn("return card;", block)
+    def test_a_card_with_no_channel_says_so_in_its_own_words(self):
+        # Never an empty row, and never an invented broadcaster.
+        body = APP.split("function todayChannelPillsHtml(", 1)[1].split("\nfunction ", 1)[0]
+        self.assertIn("channel-pill muted", body)
+        self.assertIn("চ্যানেল শীঘ্রই যোগ হবে", body)
+        self.assertIn("event-card-no-channels", APP)
 
     def test_the_chip_name_comes_only_from_the_published_channel(self):
         """Section 9: no invented name. The label is channel.name and nothing
@@ -291,9 +302,9 @@ class Section17SmartFilterIsUntouched(unittest.TestCase):
 
     def test_an_event_hides_with_its_channels_because_they_share_a_node(self):
         """Section 17: filtering hides the event and its channels together. They
-        do, by construction - the strip is inside the shell the filter removes."""
-        self.assertIn("shell.appendChild(card)", APP)
-        self.assertIn("shell.append(...htmlToNodes(stripHtml))", APP)
+        do, by construction - the buttons are inside the card the filter
+        removes, which is one node."""
+        self.assertIn('<div class="card-lower">${todayChannelPillsHtml(item)}</div>', APP)
 
     def test_the_filter_stylesheet_is_not_touched_by_this_phase(self):
         self.assertIn("assets/css/smart-filter.css", INDEX)
@@ -363,9 +374,10 @@ class TodayMatchCardV2(unittest.TestCase):
     def test_the_minimal_card_is_only_reached_from_the_today_match_tab(self):
         body = APP.split("function createEventCard(item, visualIndex) {", 1)[1].split(
             "\nfunction ", 1)[0]
-        self.assertIn("if (state.view === VIEW.EVENT) {", body)
+        self.assertIn("state.view === VIEW.EVENT", body)
         self.assertNotIn("state.view === VIEW.EVENT && liveLike", body)
         self.assertIn("createTodayMatchCardV2(", body)
+        self.assertIn("createUpcomingTeamRow(", body)
 
     def test_the_minimal_card_carries_none_of_the_hidden_fields(self):
         body = APP.split("function createTodayMatchCardV2(", 1)[1].split(
@@ -380,7 +392,8 @@ class TodayMatchCardV2(unittest.TestCase):
     def test_the_minimal_card_keeps_serial_badge_category_league_and_title(self):
         body = APP.split("function createTodayMatchCardV2(", 1)[1].split(
             "\nfunction createEventCard", 1)[0]
-        for required in ("tm-serial", "tm-category", "tm-league", "tm-title", "tm-poster"):
+        for required in ("rank-tag", "sport-tag", "league-tag", "match-title",
+                         "poster-caption", "gold-rule"):
             self.assertIn(required, body)
 
     def test_a_single_channel_gets_one_full_width_button(self):
@@ -416,25 +429,28 @@ class TodayMatchCardV2(unittest.TestCase):
         self.assertNotIn("channelChipIconHtml", minimal_branch)
         self.assertNotIn("channelChipSummary", minimal_branch)
 
-    def test_the_early_return_precedes_the_full_cards_own_computations(self):
-        # Upcoming's own path runs exactly as it always has, only ever hit
-        # when the minimal-card branch's early return did not fire above it.
+    def test_the_tab_decides_which_of_the_two_cards_is_built(self):
+        # Two finalised designs, one per tab, sharing nothing but the data:
+        # the poster card on Today Match, the two-team row on Upcoming.
         body = APP.split("function createEventCard(item, visualIndex) {", 1)[1].split(
             "\nfunction ", 1)[0]
+        self.assertIn("state.view === VIEW.EVENT", body)
         self.assertLess(
             body.index("createTodayMatchCardV2("),
-            body.index("showWatchAction"),
+            body.index("createUpcomingTeamRow("),
         )
 
-    def test_the_today_match_list_becomes_two_real_dom_columns(self):
-        # CSS column-count clips a negative-offset absolute child (the serial
-        # badge) to its column box regardless of overflow set up the
-        # ancestor chain - confirmed by direct testing. Two real DOM columns
-        # have no such clipping context, so app.js splits cards into them
-        # itself rather than relying on column-count.
-        self.assertIn("function ensureTodayMatchColumns()", APP)
-        self.assertIn("#sidebarList.tm-columns{", EVENT_CSS)
-        self.assertIn("grid-template-columns:repeat(2,minmax(0,1fr))!important", EVENT_CSS)
+    def test_the_today_match_list_is_one_packing_grid(self):
+        # The approved design packs the two columns itself: one grid of 1px
+        # rows, each card spanning the rows its own content needs. Two fixed
+        # DOM columns could not do that - a card could only sit under the card
+        # above it, however tall that one happened to be, which is exactly the
+        # empty space under a short card the owner asked to be rid of.
+        self.assertIn("function ensureTodayGrid()", APP)
+        self.assertIn("function layoutTodayMasonry()", APP)
+        self.assertIn("grid-template-columns:1fr 1fr!important", FINAL_CSS)
+        self.assertIn("grid-auto-rows:1px!important", FINAL_CSS)
+        self.assertIn("card.style.gridRowEnd = `span ${Math.max(1, span)}`", APP)
         self.assertNotIn("column-count:2!important", EVENT_CSS)
 
     def test_the_masonry_columns_are_scoped_away_from_upcoming(self):
@@ -443,16 +459,16 @@ class TodayMatchCardV2(unittest.TestCase):
         # single-column flex layout, unmodified.
         body = APP.split("function renderCurrentList(reset = true, options = {}) {", 1)[1].split(
             "\nfunction ", 1)[0]
-        self.assertIn("sidebarList.classList.toggle('tm-columns', state.view === VIEW.EVENT)", body)
+        self.assertIn("sidebarList.classList.toggle('today-grid', state.view === VIEW.EVENT)", body)
 
-    def test_a_card_next_to_its_channel_grid_never_splits_across_columns(self):
-        # Each card (or its shell, when it has a channel strip) is one DOM
-        # node appended whole into exactly one of the two column containers -
-        # there is no mid-card break to guard against, by construction.
+    def test_a_card_is_appended_whole_into_the_one_grid(self):
+        # One node, one grid cell, so there is no mid-card break to guard
+        # against. The alternating split into two column containers is gone:
+        # the grid decides where a card lands from its own height.
         for fn_name in ("appendNextChunk", "reconcileEventCards"):
             body = APP.split(f"function {fn_name}(", 1)[1].split("\nfunction ", 1)[0]
-            self.assertIn("index % 2", body, fn_name)
-            self.assertIn("ensureTodayMatchColumns()", body, fn_name)
+            self.assertIn("ensureTodayGrid()", body, fn_name)
+            self.assertNotIn("index % 2", body, fn_name)
 
 
 class NoPlaceholdersAreLeftBehind(unittest.TestCase):
