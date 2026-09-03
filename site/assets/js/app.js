@@ -3047,7 +3047,9 @@ function setupEventSportFilter() {
   window.addEventListener('resize', () => closeEventSportFilter());
   // Scrolling the catalogue keeps the menu glued to its button rather than
   // dismissing it, so a stray scroll never interrupts a choice.
-  qsa('.sidebar-scroll-area').forEach((area) => area.addEventListener('scroll', positionEventSportFilter, { passive: true }));
+  // Both, because which of the two scrolls depends on the viewport: the list
+  // on desktop, the area on a phone.
+  qsa('.sidebar-scroll-area, .sidebar-list').forEach((area) => area.addEventListener('scroll', positionEventSportFilter, { passive: true }));
   window.addEventListener('scroll', positionEventSportFilter, { passive: true });
 }
 
@@ -4273,7 +4275,15 @@ async function handleSidebarScroll() {
 
   try {
     const mobileFlow = window.matchMedia('(max-width: 1000px)').matches;
-    const scrollHost = sidebarScrollArea || sidebarList;
+    // Whichever element is actually scrolling. On desktop that is now the
+    // list, so the scroll area's own scrollHeight equals its clientHeight -
+    // and `sidebarScrollArea || sidebarList` would have picked the area,
+    // where `nearBottom()` is then true from the very first scroll event and
+    // every remaining chunk gets appended at once. Same test
+    // getSidebarScrollTop already uses.
+    const scrollHost = [sidebarScrollArea, sidebarList].find(
+      (element) => element && element.scrollHeight > element.clientHeight + 1
+    ) || sidebarScrollArea || sidebarList;
     const nearBottom = () =>
       scrollHost.scrollTop + scrollHost.clientHeight >= scrollHost.scrollHeight - (mobileFlow ? 360 : 260);
     const nextFrame = () => new Promise((resolve) => requestAnimationFrame(resolve));

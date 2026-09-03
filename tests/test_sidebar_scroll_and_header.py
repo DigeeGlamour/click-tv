@@ -93,6 +93,93 @@ class TheScrollHandleFollowsTheCursor(unittest.TestCase):
         self.assertIsNotNone(block)
 
 
+class TheHandleStartsWhereTheCardsStart(unittest.TestCase):
+    """The track began 40px above the first card, in every category.
+
+    A scrollbar track is exactly as tall as the element that scrolls, and the
+    element that scrolled was `.sidebar-scroll-area` - which holds the section
+    header as well as the list. Measured on the published build at 1900x900
+    and 1366x768, identically at both:
+
+        Today Match   track top 98   first card top 138   40px above
+        Upcoming      track top 98   first card top 140   42px above
+        Live TV       track top 98   first card top 139   41px above
+        Movies        track top 98   first card top 139   41px above
+
+    A track cannot be shortened, so the list itself becomes the scroller and
+    the header stops scrolling with it. After: the track starts at 138/140 on
+    the two event tabs and 132 on the two catalogue tabs, against first items
+    at 138/140/139 - flush, or 7px out by the list's own padding.
+
+    Desktop only. Below 1001px the panel scrolls the way it always did, which
+    is measured too: at 1000px and under, the scroller is still the area.
+    """
+
+    def setUp(self):
+        self.css = REFERENCE_CSS.read_text(encoding="utf-8")
+        self.js = APP_JS.read_text(encoding="utf-8")
+        found = re.search(r"@media \(min-width: 1001px\)\s*\{(.*?)\n\}",
+                          self.css, re.S)
+        self.assertIsNotNone(found, "the desktop scroller block is gone")
+        self.block = found.group(1).replace(" ", "")
+
+    def test_the_scroll_area_no_longer_scrolls(self):
+        self.assertRegex(
+            self.block,
+            r"\.sidebar-scroll-area\{overflow:hidden!important\}",
+        )
+
+    def test_the_list_becomes_the_scroller(self):
+        rule = re.search(
+            r"\.sidebar-scroll-area>\.sidebar-list\{(.*?)\}", self.block, re.S
+        )
+        self.assertIsNotNone(rule, "the list is not made the scroller")
+        body = rule.group(1)
+        self.assertIn("flex:1 1 auto".replace(" ", ""), body)
+        self.assertIn("min-height:0", body)
+        self.assertIn("overflow-y:auto", body)
+
+    def test_the_header_cannot_be_squeezed_by_the_new_flex_list(self):
+        """The list is `flex:1 1 auto` here, so app.css's `flex:0 0 auto` on it
+        is no longer what keeps the header from collapsing - this is."""
+        self.assertRegex(
+            self.block,
+            r"\.sidebar-scroll-area>\.sidebar-top-bar\.card-list-meta\{"
+            r"flex:0 0 auto!important\}".replace(" ", ""),
+        )
+
+    def test_it_is_scoped_to_the_desktop_layout(self):
+        """1001px is where app.css stops handing the panel to the page scroll
+        and reference-design's own mobile blocks stop applying."""
+        self.assertIn("@media (min-width: 1001px)", self.css)
+
+    def test_the_growth_check_reads_whichever_element_scrolls(self):
+        """`sidebarScrollArea || sidebarList` picked the area unconditionally.
+        With the area no longer scrolling, scrollHeight equals clientHeight
+        there, `nearBottom()` is true from the first scroll event, and every
+        remaining chunk is appended at once."""
+        body = re.search(r"async function handleSidebarScroll\(\) \{(.*?)\n\}",
+                         self.js, re.S)
+        self.assertIsNotNone(body, "handleSidebarScroll moved")
+        text = body.group(1)
+        self.assertNotIn("const scrollHost = sidebarScrollArea || sidebarList", text)
+        self.assertIn("element.scrollHeight > element.clientHeight + 1", text)
+
+    def test_a_category_change_still_returns_both_to_the_top(self):
+        """Whichever one is scrolling, the reset has to reach it."""
+        fn = re.search(r"function scrollSidebarToTop\(\) \{(.*?)\n\}",
+                       self.js, re.S)
+        self.assertIsNotNone(fn, "scrollSidebarToTop moved")
+        body = fn.group(1)
+        self.assertIn("sidebarList.scrollTop = 0", body)
+        self.assertIn("sidebarScrollArea.scrollTop = 0", body)
+
+    def test_the_filter_menu_follows_both_scrollers(self):
+        """The menu is position:fixed and is re-glued to its button on scroll;
+        which element scrolls now depends on the viewport."""
+        self.assertIn("'.sidebar-scroll-area, .sidebar-list'", self.js)
+
+
 class TheMoviesHeaderFitsItsRow(unittest.TestCase):
     def setUp(self):
         self.js = APP_JS.read_text(encoding="utf-8")

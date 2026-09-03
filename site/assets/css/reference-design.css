@@ -655,6 +655,39 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.sidebar-scroll-area
   background:rgba(102,123,153,.72)!important;border-radius:999px!important;
 }
 
+/* The handle starts where the cards start.
+ *
+ * A scrollbar track is as tall as the element that scrolls, and the element
+ * that scrolled was .sidebar-scroll-area - which holds the section header as
+ * well as the list. So the track began at the top of the panel, 34 to 42px
+ * above the first card, in every category:
+ *
+ *     Today Match   scroll area top 98   first card top 138
+ *     Upcoming      scroll area top 98   first card top 140
+ *     Live TV       scroll area top 98   first card top 132
+ *
+ * There is no way to shorten a track, so the list itself becomes the
+ * scroller and the header stops scrolling with it. The header was already
+ * the first flex item of a column flex container, so it only has to stop
+ * flexing; the list takes the remaining height and scrolls inside it.
+ *
+ * Desktop only, on purpose. Below 1001px app.css hands the whole panel to
+ * the page scroll and reference-design gives .sidebar-scroll-area
+ * overflow:visible under 980px - and a touch device shows no handle at all
+ * (see the block above), so there is nothing here to line up.
+ */
+@media (min-width: 1001px) {
+  .sidebar-scroll-area{overflow:hidden!important}
+  .sidebar-scroll-area > .sidebar-top-bar.card-list-meta{flex:0 0 auto!important}
+  .sidebar-scroll-area > .sidebar-list{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+  }
+}
+
 /* The list handle answers to the cursor, and to nothing else.
  *
  * It used to answer to `:focus-within` as well, and that is what made it

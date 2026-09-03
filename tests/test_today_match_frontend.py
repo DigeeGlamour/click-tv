@@ -76,8 +76,15 @@ class TheHeaderKeepsItsHeight(unittest.TestCase):
         )
 
     def test_the_reason_it_could_shrink_still_holds(self):
-        """If #sidebarList ever becomes shrinkable, the rule above stops being
-        the fix and this test should be the thing that says so."""
+        """The base rule that made the header the only shrinkable item.
+
+        Above 1001px this is no longer the thing doing the work:
+        reference-design.css hands the scroll to the list there, as
+        `flex:1 1 auto`, so the list CAN give way and the header is held open
+        by its own `flex:0 0 auto` in that same block - asserted in
+        tests/test_sidebar_scroll_and_header.py. Below 1001px this base rule
+        is still what stops the collapse, so it is still asserted here.
+        """
         self.assertRegex(
             APP_CSS.read_text(encoding="utf-8"),
             r"\.sidebar-scroll-area\s*>\s*\.sidebar-list\s*\{[^}]*flex:\s*0\s+0\s+auto",
