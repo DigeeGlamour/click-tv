@@ -655,6 +655,34 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.sidebar-scroll-area
   background:rgba(102,123,153,.72)!important;border-radius:999px!important;
 }
 
+/* No dead player on Upcoming, on a phone.
+ *
+ * Nothing on Upcoming can be played - every card there is a fixture with a
+ * kickoff still ahead of it - so on a phone the player was a black
+ * half-screen sitting between the tabs and the list, pushing the first
+ * fixture below the fold for no return.
+ *
+ * Unconditional while Upcoming is showing, including when a stream started
+ * on Today Match is still running. Hiding it only while idle was tried and
+ * is close to useless: the first playable Today match starts on a first
+ * visit, so something is decoding almost whenever a viewer reaches this
+ * tab, and the player would still be there.
+ *
+ * The one consequence, stated rather than designed around: a match that
+ * was playing keeps its sound while Upcoming is open. Tapping Today Match
+ * brings the player and its controls straight back, which is one tap on
+ * the row directly above the list.
+ *
+ * Phone and tablet only. The desktop layout puts the player in its own
+ * column beside the list, where it costs the list nothing.
+ */
+@media (max-width: 1000px) {
+  body.upcoming-view #videoContainer,
+  body.upcoming-view .video-section > .video-meta{
+    display:none!important;
+  }
+}
+
 /* The handle starts where the cards start.
  *
  * A scrollbar track is as tall as the element that scrolls, and the element

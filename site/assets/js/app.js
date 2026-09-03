@@ -1377,14 +1377,22 @@ async function selectMainView(view, category, options = {}) {
     renderCurrentList(true);
     hidePlayerMessage();
 
-    // The first match used to start playing on its own the moment the page
-    // loaded. Nobody asked for it: it spends the viewer's data, talks over
-    // whatever they were listening to, and picks the match for them. The card
-    // is selected so the player shows what it would play, and the viewer
-    // presses it.
+    // The first playable match starts on a first visit, by the owner's
+    // request. It had been changed to select-and-wait; the reasons recorded
+    // for that were real - it spends the viewer's data and talks over
+    // whatever they were listening to - and the owner has asked for the
+    // original behaviour back, so this is deliberate rather than a
+    // regression.
+    //
+    // Only on a genuine first load (`options.initial`), only when nothing is
+    // already playing, and never on Upcoming, where nothing is playable.
+    // Passed userInitiated=false so the player knows this was not a gesture:
+    // a browser that refuses to sound an unprompted stream is caught at
+    // NotAllowedError, the stream continues muted, and the existing unlock
+    // affordance gives the viewer their sound back on the first tap.
     if (options.initial && !state.currentItem && state.currentItems.length && kind !== VIEW.UPCOMING) {
       const firstPlayable = state.currentItems.find(isPlayable);
-      if (firstPlayable) selectWithoutPlaying(firstPlayable);
+      if (firstPlayable) startPlayback(firstPlayable, false);
     }
   } catch (error) {
     if (error.name === 'AbortError' || sessionId !== state.dataSessionId) return;
@@ -2063,6 +2071,10 @@ function renderCurrentList(reset = true, options = {}) {
   // so the section says which tab it is showing.
   sidebarSection.classList.toggle('today-mode', state.view === VIEW.EVENT);
   sidebarSection.classList.toggle('upcoming-mode', state.view === VIEW.UPCOMING);
+  // Read by the stylesheet, which drops the player on a phone while Upcoming
+  // is showing. Nothing on Upcoming can be played, so on a phone the player
+  // was a black half-screen between the tabs and the list.
+  document.body.classList.toggle('upcoming-view', state.view === VIEW.UPCOMING);
   // The freshness stamp is per-view now, so it has to be re-decided whenever
   // the view is. Otherwise leaving Movies leaves it hidden until the next
   // thirty-second tick happens to run.
@@ -3723,6 +3735,37 @@ function markActiveTodayChannel(pill) {
     entry.classList.remove('active-channel');
   });
   if (pill) pill.classList.add('active-channel');
+}
+
+/* The green, worked out from what is playing rather than from what was
+ * clicked.
+ *
+ * markActiveTodayChannel above was only ever called from the pill's own click
+ * handler, so pressing the CARD started a stream and turned nothing green -
+ * and with several cards each offering several servers, nothing on the tab
+ * said which one the player was on. Re-rendering the list lost the green for
+ * the same reason: it was a class somebody had added by hand, not something
+ * the list could work out again.
+ *
+ * activeChannelId() is the same function the player itself asks which channel
+ * to play, and it answers for a card nobody has chosen a server on: the
+ * card's default, or its first. So a card press and a pill press now agree,
+ * and so does the list after it is rebuilt.
+ */
+function syncActiveTodayChannel() {
+  const playing = state.currentItem;
+  const wantedUid = playing?._uid || '';
+  const wantedChannel = playing ? String(activeChannelId(playing) || '') : '';
+  qsa('#sidebarList [data-uid]').forEach((card) => {
+    const isPlayingCard = Boolean(wantedUid) && card.dataset.uid === wantedUid;
+    qsa('.channel-pill', card).forEach((pill) => {
+      const active = isPlayingCard
+        && !pill.classList.contains('muted')
+        && String(pill.dataset.channelId || '') === wantedChannel
+        && wantedChannel !== '';
+      pill.classList.toggle('active-channel', active);
+    });
+  });
 }
 
 function bindTodayChannelPills(card, item) {
@@ -8625,6 +8668,7 @@ function updateActiveCards() {
       card.appendChild(eq);
     }
   });
+  syncActiveTodayChannel();
   seriesModule?.updateActiveCards?.();
 }
 
