@@ -450,7 +450,18 @@ class TodayMatchCardV2(unittest.TestCase):
         self.assertIn("function layoutTodayMasonry()", APP)
         self.assertIn("grid-template-columns:1fr 1fr!important", FINAL_CSS)
         self.assertIn("grid-auto-rows:1px!important", FINAL_CSS)
-        self.assertIn("card.style.gridRowEnd = `span ${Math.max(1, span)}`", APP)
+        # The span still comes from the card's own measured height with a
+        # floor of one row - that is the packing rule and it has not changed.
+        #
+        # This used to assert one exact expression,
+        # "card.style.gridRowEnd = `span ${Math.max(1, span)}`". The write is
+        # now guarded so it only happens when the span really changes, because
+        # the unguarded version re-laid out every card on every scroll tick
+        # that reached it. The arithmetic below is the part that decides the
+        # layout; see tests/test_today_match_frontend.py for why the reset
+        # pass that used to precede it had to go.
+        self.assertIn("Math.ceil((height + rowGap) / (rowHeight + rowGap))", APP)
+        self.assertIn("card.style.gridRowEnd = next", APP)
         self.assertNotIn("column-count:2!important", EVENT_CSS)
 
     def test_the_masonry_columns_are_scoped_away_from_upcoming(self):

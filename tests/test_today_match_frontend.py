@@ -196,5 +196,74 @@ class AStartedMatchSaysSo(unittest.TestCase):
         self.assertRegex(preview, r"countdown \? '' : eventStartedAgoText\(item\)")
 
 
+class TheMasonryKeepsTheViewersPlace(unittest.TestCase):
+    """Scrolling down through Today Match kept snapping back to the top.
+
+    `layoutTodayMasonry` set every card to `grid-row-end:auto` before
+    measuring it. Measured at 1900x950 with the list scrolled to 600px:
+
+        before the reset   scrollTop 600   scrollHeight 1577
+        during the reset   scrollTop   0   scrollHeight  836   <- collapsed
+        after restoring    scrollTop   0   scrollHeight 1577   <- 600px lost
+
+    The browser clamps scrollTop to whatever still fits, and restoring the
+    spans cannot give it back. It fired on every poster that finished
+    loading, every appended page and every resize, which is what the jumping
+    was.
+
+    The reset was never needed. These cards are `align-self:start` with
+    `height:auto`, so a card's box is its own content height whether or not a
+    span is allocating grid space for it - measured across twelve cards, the
+    heights with spans applied and with them reset are identical to the tenth
+    of a pixel. With the reset gone the resulting layout is identical too:
+    two columns, no overlapping pairs, the same vertical gaps.
+    """
+
+    def setUp(self):
+        self.js = APP_JS.read_text(encoding="utf-8")
+        found = re.search(
+            r"function layoutTodayMasonry\(\) \{(.*?)\n\}", self.js, re.S
+        )
+        self.assertIsNotNone(found, "layoutTodayMasonry moved")
+        self.body = found.group(1)
+
+    def test_it_never_collapses_the_grid_to_measure_it(self):
+        """The one line that threw the scroll position away."""
+        self.assertNotIn("gridRowEnd = 'auto'", self.body)
+        self.assertNotIn('gridRowEnd = "auto"', self.body)
+
+    def test_it_still_assigns_a_span_from_the_measured_height(self):
+        self.assertIn("getBoundingClientRect().height", self.body)
+        self.assertIn("gridRowEnd = next", self.body)
+        self.assertIn("span ${span}", self.body)
+
+    def test_it_only_writes_when_the_span_actually_changes(self):
+        """An unconditional write invalidates layout for every card on every
+        scroll tick that reaches here."""
+        self.assertIn("if (card.style.gridRowEnd !== next)", self.body)
+
+    def test_the_property_that_makes_the_reset_unnecessary_is_still_set(self):
+        """If a card ever stops being start-aligned with an auto height, its
+        box stops being its content height and the measurement above becomes
+        wrong. That is the precondition, so it is asserted here."""
+        css = CARDS_CSS.read_text(encoding="utf-8")
+        rule = re.search(
+            r"#sidebarList\.today-grid > \.poster-card\s*\{([^}]*)\}", css
+        )
+        self.assertIsNotNone(rule, "the Today card rule moved")
+        body = rule.group(1).replace(" ", "")
+        self.assertIn("align-self:start", body)
+        self.assertIn("height:auto", body)
+
+    def test_the_grid_still_uses_one_pixel_rows(self):
+        """The span arithmetic is written against `grid-auto-rows:1px`."""
+        css = CARDS_CSS.read_text(encoding="utf-8")
+        rule = re.search(
+            r"#sidebarList\.today-grid\s*\{([^}]*)\}", css
+        )
+        self.assertIsNotNone(rule)
+        self.assertIn("grid-auto-rows:1px", rule.group(1).replace(" ", ""))
+
+
 if __name__ == "__main__":
     unittest.main()

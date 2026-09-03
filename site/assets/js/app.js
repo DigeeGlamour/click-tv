@@ -1979,11 +1979,30 @@ function layoutTodayMasonry() {
   const rowHeight = parseFloat(style.gridAutoRows) || 1;
   const cards = qsa(':scope > .poster-card', grid);
 
-  cards.forEach((card) => { card.style.gridRowEnd = 'auto'; });
+  // Measured in place. There used to be a pass here that set every card back
+  // to `grid-row-end:auto` before measuring, and it threw the viewer's scroll
+  // position away every time it ran.
+  //
+  // Measured at 1900x950 with the list scrolled to 600px: collapsing the
+  // spans took the container's scrollHeight from 1577 to 836, the browser
+  // clamped scrollTop to 0 to fit, and restoring the spans put the height
+  // back with the scroll still at the top. A 600px jump - and it fired on
+  // every poster that finished loading, every appended page and every
+  // resize, which is why scrolling down through Today Match kept snapping
+  // back.
+  //
+  // The pass was never needed. These cards are `align-self:start` with
+  // `height:auto`, so a card's box is its own content height whether or not
+  // a span is allocating grid space for it: measured across twelve cards,
+  // the heights with the spans applied and with them reset are the same
+  // numbers to the tenth of a pixel.
   cards.forEach((card) => {
     const height = card.getBoundingClientRect().height;
-    const span = Math.ceil((height + rowGap) / (rowHeight + rowGap));
-    card.style.gridRowEnd = `span ${Math.max(1, span)}`;
+    const span = Math.max(1, Math.ceil((height + rowGap) / (rowHeight + rowGap)));
+    const next = `span ${span}`;
+    // Only when it actually changes: an unconditional write invalidates
+    // layout for every card on every scroll tick that lands here.
+    if (card.style.gridRowEnd !== next) card.style.gridRowEnd = next;
   });
 }
 
@@ -2044,6 +2063,10 @@ function renderCurrentList(reset = true, options = {}) {
   // so the section says which tab it is showing.
   sidebarSection.classList.toggle('today-mode', state.view === VIEW.EVENT);
   sidebarSection.classList.toggle('upcoming-mode', state.view === VIEW.UPCOMING);
+  // The freshness stamp is per-view now, so it has to be re-decided whenever
+  // the view is. Otherwise leaving Movies leaves it hidden until the next
+  // thirty-second tick happens to run.
+  renderDataFreshness();
   if (reset) {
     cancelPendingImages(sidebarList);
     sidebarList.replaceChildren();
@@ -2068,8 +2091,21 @@ function renderCurrentList(reset = true, options = {}) {
         state.movieIndex?.status_counts?.manual_trusted ||
         manualTrustedItemCount()
       );
-      const manualText = manualTotal > 0 ? `${manualTotal} Manual · ` : '';
-      setSidebarCount(`${manualText}${state.currentItems.length}/${totalKnown} Movies loaded`);
+      // One line, and this was three facts crammed into it:
+      // "29 Manual · 30/29 Movies loaded" wrapped onto two lines in the
+      // sidebar header and ran into the freshness stamp sitting beside it.
+      //
+      // The count slot keeps the number a viewer acts on. The denominator is
+      // only worth its width while there is more to come - once everything
+      // known has loaded, "30/29" is arithmetic nobody asked for. The manual
+      // figure moves to the detail slot, which exists for exactly this and
+      // already hides itself on a narrow screen.
+      const loaded = state.currentItems.length;
+      const more = Number.isFinite(totalKnown) && totalKnown > loaded;
+      setSidebarCount(
+        more ? `${loaded}/${totalKnown} Movies` : `${loaded} Movies`,
+        manualTotal > 0 ? `${manualTotal} Manual` : ''
+      );
     }
   } else if (state.view === VIEW.UPCOMING || state.view === VIEW.EVENT) {
     sidebarList.classList.remove('movie-grid');
@@ -3099,6 +3135,14 @@ function dataAgeLabel(minutes) {
 function renderDataFreshness() {
   const node = $("dataFreshness");
   if (!node) return;
+  // Not on Movies. It shares the one header row with the movie count, which
+  // is the pair that collided, and the owner does not need a movie catalogue
+  // stamped with how many minutes ago it was written - unlike a live match
+  // list, where the age of the data is the whole point.
+  if (state.view === VIEW.MOVIE) {
+    node.hidden = true;
+    return;
+  }
   const minutes = dataAgeMinutes();
   const label = dataAgeLabel(minutes);
   if (!label) {

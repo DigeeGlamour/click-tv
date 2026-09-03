@@ -308,9 +308,9 @@ body{
   grid-template-columns:215px minmax(0,1fr) clamp(390px,24vw,460px)!important;
 }
 .sidebar-scroll-area{padding:0 3px 0 10px!important;background:transparent!important;scrollbar-width:none!important;scrollbar-color:#53657f transparent!important}
-.sidebar-scroll-area:hover,.sidebar-scroll-area:focus-within{scrollbar-width:thin!important}
+.sidebar-scroll-area:hover,.sidebar-list:focus-visible{scrollbar-width:thin!important}
 .sidebar-scroll-area::-webkit-scrollbar{display:block!important;width:0!important}
-.sidebar-scroll-area:hover::-webkit-scrollbar,.sidebar-scroll-area:focus-within::-webkit-scrollbar{width:4px!important}
+.sidebar-scroll-area:hover::-webkit-scrollbar,.sidebar-list:focus-visible::-webkit-scrollbar{width:4px!important}
 .sidebar-scroll-area::-webkit-scrollbar-thumb{background:#53657f!important;border-radius:999px!important}
 .sidebar-top-bar.card-list-meta{min-height:34px!important;padding:1px 5px 9px!important;border-bottom:1px solid #202b3d!important}
 .sidebar-count{color:#f5f7fb!important;font-size:17px!important;font-weight:900!important}
@@ -625,7 +625,7 @@ html,body,.sidebar-scroll-area,.sidebar-list,.fs-drawer-list,.chips-container-wr
 .final-main-nav,.final-sub-nav,.series-season-strip,.series-drawer-seasons,.fs-series-seasons,.fs-series-episodes,.series-detail-scroll{
   scrollbar-width:none!important;scrollbar-color:rgba(102,123,153,.72) transparent!important;
 }
-html:hover,body:hover,.sidebar-scroll-area:hover,.sidebar-scroll-area:focus-within,.sidebar-list:hover,.sidebar-list:focus-within,
+html:hover,body:hover,.sidebar-scroll-area:hover,.sidebar-list:hover,.sidebar-list:focus-visible,
 .fs-drawer-list:hover,.fs-drawer-list:focus-within,.chips-container-wrap:hover,.movie-subcategory-bar:hover,
 .final-main-nav:hover,.final-sub-nav:hover,.series-season-strip:hover,.series-drawer-seasons:hover,
 .fs-series-seasons:hover,.fs-series-episodes:hover,.fs-series-episodes:focus-within,.series-detail-scroll:hover,.series-detail-scroll:focus-within{
@@ -637,8 +637,8 @@ html::-webkit-scrollbar,body::-webkit-scrollbar,.sidebar-scroll-area::-webkit-sc
 .series-drawer-seasons::-webkit-scrollbar,.fs-series-seasons::-webkit-scrollbar,.fs-series-episodes::-webkit-scrollbar,.series-detail-scroll::-webkit-scrollbar{
   display:block!important;width:0!important;height:0!important;
 }
-html:hover::-webkit-scrollbar,body:hover::-webkit-scrollbar,.sidebar-scroll-area:hover::-webkit-scrollbar,.sidebar-scroll-area:focus-within::-webkit-scrollbar,
-.sidebar-list:hover::-webkit-scrollbar,.sidebar-list:focus-within::-webkit-scrollbar,.fs-drawer-list:hover::-webkit-scrollbar,
+html:hover::-webkit-scrollbar,body:hover::-webkit-scrollbar,.sidebar-scroll-area:hover::-webkit-scrollbar,
+.sidebar-list:hover::-webkit-scrollbar,.sidebar-list:focus-visible::-webkit-scrollbar,.fs-drawer-list:hover::-webkit-scrollbar,
 .chips-container-wrap:hover::-webkit-scrollbar,.movie-subcategory-bar:hover::-webkit-scrollbar,.final-main-nav:hover::-webkit-scrollbar,
 .final-sub-nav:hover::-webkit-scrollbar,.series-season-strip:hover::-webkit-scrollbar,.series-drawer-seasons:hover::-webkit-scrollbar,
 .fs-series-seasons:hover::-webkit-scrollbar,.fs-series-episodes:hover::-webkit-scrollbar,.series-detail-scroll:hover::-webkit-scrollbar{
@@ -653,6 +653,41 @@ html::-webkit-scrollbar-thumb,body::-webkit-scrollbar-thumb,.sidebar-scroll-area
 .final-main-nav::-webkit-scrollbar-thumb,.final-sub-nav::-webkit-scrollbar-thumb,.series-season-strip::-webkit-scrollbar-thumb,
 .series-drawer-seasons::-webkit-scrollbar-thumb,.fs-series-seasons::-webkit-scrollbar-thumb,.fs-series-episodes::-webkit-scrollbar-thumb,.series-detail-scroll::-webkit-scrollbar-thumb{
   background:rgba(102,123,153,.72)!important;border-radius:999px!important;
+}
+
+/* The list handle answers to the cursor, and to nothing else.
+ *
+ * It used to answer to `:focus-within` as well, and that is what made it
+ * stick. #sidebarList carries tabindex="0", so ONE click or tap anywhere in
+ * the list focused it, `:focus-within` stayed true for as long as focus sat
+ * there, and the handle stayed drawn with the cursor nowhere near it.
+ *
+ * Measured in Chromium on the published build, cursor parked in the corner:
+ *
+ *     idle                  scrollbar-width: none
+ *     cursor over the list  scrollbar-width: thin     <- wanted
+ *     cursor moved away     scrollbar-width: none
+ *     after one click       scrollbar-width: thin     <- :hover false,
+ *                                                        :focus-within true
+ *
+ * `:focus-visible` in its place keeps a keyboard user their handle - they
+ * still need to see what they are scrolling - while a mouse click and a
+ * touch tap, neither of which match it, leave the handle alone.
+ *
+ * A touch device gets no handle at all, which is how it behaved before: it
+ * has no cursor to reveal one with, and a tap that focused the list was the
+ * only thing that ever produced one.
+ */
+@media (hover: none) {
+  .sidebar-scroll-area,.sidebar-scroll-area:hover,
+  .sidebar-list,.sidebar-list:hover,.sidebar-list:focus-visible{
+    scrollbar-width:none!important;
+  }
+  .sidebar-scroll-area::-webkit-scrollbar,.sidebar-scroll-area:hover::-webkit-scrollbar,
+  .sidebar-list::-webkit-scrollbar,.sidebar-list:hover::-webkit-scrollbar,
+  .sidebar-list:focus-visible::-webkit-scrollbar{
+    width:0!important;height:0!important;
+  }
 }
 
 /* Modern Today/Upcoming event cards. Other catalog cards keep their approved design. */
