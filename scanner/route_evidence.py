@@ -383,21 +383,104 @@ def derive_tenant(host: str) -> Tuple[Optional[str], str]:
     return sub, "host_sub_label"
 
 
+#: A query parameter whose NAME says its value is a credential rather than a
+#: discriminator. Deliberately the same shape the published-data check in
+#: tests/test_enforcement_behaviour.py calls a leak, so the identity built here
+#: and the gate that judges the file it lands in cannot disagree.
+#:
+#: The locked removable list matches names EXACTLY, and that is what let this
+#: through: `play_token` is not `token`, so it was preserved verbatim - into a
+#: dict key in state/route-evidence-cache.json, which every scan commits.
+CREDENTIAL_QUERY_NAME_PATTERN = re.compile(
+    r"(?:^|[_-])(?:access[_-]?token|api[_-]?key|auth|authorization|"
+    r"cookie|credential|expires?|hdnea|jwt|key|policy|session|sig|"
+    r"signature|token)(?:$|[_-])",
+    re.IGNORECASE,
+)
+
+#: Never masked and never dropped, whatever the name looks like. The lock's own
+#: derivation is the reason: 22 published channels share one host and path and
+#: differ only by "?id=NNN", so any rule that touched a discriminator would
+#: fuse distinct channels into one identity.
+NEVER_REMOVABLE_QUERY_PARAMS = frozenset(
+    str(name).lower()
+    for name in (
+        _lock("normalization_allowlist.never_removable_examples",
+              ["id", "ch", "channel", "stream"]) or ()
+    )
+)
+
+#: What a masked credential looks like inside an identity. Starts with "{" so
+#: the leak check reads it as a placeholder, exactly as "{redacted}" is read.
+CREDENTIAL_MASK_PREFIX = "{cred:"
+
+
+def _masked_credential(name: str, value: str) -> str:
+    """Keep a credential-bearing parameter discriminating without writing it.
+
+    Dropping it is the obvious move and it is the wrong one. A route id is a
+    dict key in a file committed on every scan, but it is also the identity
+    every ledger is keyed by, and two accounts on one host can differ only by
+    their token - removing it could fuse them, which is the single thing the
+    locked allowlist exists to prevent.
+
+    A digest keeps distinct values distinct, so nothing can fuse, while the
+    value itself is never written down. Truncated on purpose: 40 bits
+    separates every route one repository sees, and a truncated digest has far
+    too many preimages to be a reversible copy of a short secret.
+
+    Measured 2026-09-03: one route of 18,296 carried `?play_token=` in the
+    clear into state/route-evidence-cache.json, and removing that parameter
+    fused zero routes - so it was an expiring credential by the lock's own
+    test, never a discriminator.
+    """
+    digest = hashlib.sha256(
+        f"{name.lower()}={value}".encode("utf-8")
+    ).hexdigest()
+    return f"{CREDENTIAL_MASK_PREFIX}{digest[:10]}}}"
+
+
 def normalize_source_identity(url: str) -> str:
     """Canonical source identity under the CLOSED allowlist.
 
     Only allowlisted volatile parameters are dropped. Identity parameters, the
-    full path and the host are preserved verbatim.
+    full path and the host are preserved verbatim - except that a parameter
+    whose name declares it a credential keeps its NAME and its power to
+    discriminate while its value becomes a digest. See _masked_credential.
     """
     split = urllib.parse.urlsplit(str(url or ""))
     host = (split.hostname or "").lower()
     port = f":{split.port}" if split.port and split.port not in (80, 443) else ""
-    kept = [
-        (key, value)
-        for key, value in urllib.parse.parse_qsl(split.query, keep_blank_values=True)
-        if key.lower() not in REMOVABLE_QUERY_PARAMS
-    ]
-    query = urllib.parse.urlencode(sorted(kept))
+
+    kept: List[Tuple[str, str]] = []
+    for key, value in urllib.parse.parse_qsl(
+        split.query, keep_blank_values=True
+    ):
+        lowered = key.lower()
+        if lowered in REMOVABLE_QUERY_PARAMS:
+            continue
+        if (
+            value
+            and lowered not in NEVER_REMOVABLE_QUERY_PARAMS
+            and not value.startswith(CREDENTIAL_MASK_PREFIX)
+            and CREDENTIAL_QUERY_NAME_PATTERN.search(key)
+        ):
+            value = _masked_credential(key, value)
+        kept.append((key, value))
+
+    # Assembled rather than handed to urlencode, which would percent-encode the
+    # braces and leave the mask unrecognisable as a placeholder. Every other
+    # value is quoted exactly as urlencode quoted it, so no identity that
+    # carries no credential changes by a single byte.
+    query = "&".join(
+        f"{urllib.parse.quote_plus(key)}="
+        + (
+            value
+            if value.startswith(CREDENTIAL_MASK_PREFIX)
+            else urllib.parse.quote_plus(value)
+        )
+        for key, value in sorted(kept)
+    )
     return f"{host}{port}{split.path}" + (f"?{query}" if query else "")
 
 

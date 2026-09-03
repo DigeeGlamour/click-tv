@@ -1,54 +1,94 @@
 {
-  "_comment": [
-    "PHASE 0b LOCKS. THE_EXCLUSIVE_UPDATE.txt L7 lists exactly four values as",
-    "deliberately unspecified and to be locked here before any classifier code",
-    "runs: the keyframe/media-window threshold, the normalization allowlist, the",
-    "persistence TTL, and the target-environment matrix. Every number below is",
-    "derived from a Phase 0 measurement recorded in the-new-latest-plan/phase0/,",
-    "and the deriving measurement is named in the entry. Nothing here is a guess.",
-    "Changing a locked value is a policy change: bump lock_version and say why."
+ "_comment": [
+  "PHASE 0b LOCKS. THE_EXCLUSIVE_UPDATE.txt L7 lists exactly four values as",
+  "deliberately unspecified and to be locked here before any classifier code",
+  "runs: the keyframe/media-window threshold, the normalization allowlist, the",
+  "persistence TTL, and the target-environment matrix. Every number below is",
+  "derived from a Phase 0 measurement recorded in the-new-latest-plan/phase0/,",
+  "and the deriving measurement is named in the entry. Nothing here is a guess.",
+  "Changing a locked value is a policy change: bump lock_version and say why."
+ ],
+ "lock_version": 2,
+ "locked_from_phase0_evidence": "the-new-latest-plan/phase0/",
+ "keyframe_media_window": {
+  "min_media_clock_seconds": 10.0,
+  "below_threshold_verdict": "unknown",
+  "derivation": "One intra interval measured at 482 KB (proxy) / 576 KB (direct) on the raw-TS route, at roughly one I-slice per second of media clock. A sample smaller than the interval cannot observe whether a keyframe exists, so any keyframe or media-window verdict below 10 s of measured media clock is 'unknown' rather than negative.",
+  "measured_current_gate_bytes": 16384,
+  "measured_current_gate_pct_of_one_intra_interval": 2.8,
+  "consequence": "The existing 16 KiB probe can never produce a keyframe verdict. It stays a reachability probe only."
+ },
+ "normalization_allowlist": {
+  "policy": "closed",
+  "removable_query_params": [
+   "token",
+   "signature",
+   "sig",
+   "expires",
+   "hdnts",
+   "session",
+   "sid",
+   "nonce",
+   "_t",
+   "cb"
   ],
-  "lock_version": 1,
-  "locked_from_phase0_evidence": "the-new-latest-plan/phase0/",
-
-  "keyframe_media_window": {
-    "min_media_clock_seconds": 10.0,
-    "below_threshold_verdict": "unknown",
-    "derivation": "One intra interval measured at 482 KB (proxy) / 576 KB (direct) on the raw-TS route, at roughly one I-slice per second of media clock. A sample smaller than the interval cannot observe whether a keyframe exists, so any keyframe or media-window verdict below 10 s of measured media clock is 'unknown' rather than negative.",
-    "measured_current_gate_bytes": 16384,
-    "measured_current_gate_pct_of_one_intra_interval": 2.8,
-    "consequence": "The existing 16 KiB probe can never produce a keyframe verdict. It stays a reachability probe only."
-  },
-
-  "normalization_allowlist": {
-    "policy": "closed",
-    "removable_query_params": ["token", "signature", "sig", "expires", "hdnts", "session", "sid", "nonce", "_t", "cb"],
-    "never_removable_examples": ["id", "ch", "channel", "stream"],
-    "derivation": "22 published channels share one host and path and differ only by '?id=NNN'. An open policy that stripped unrecognised parameters would fuse those 22 distinct channels into a single identity, so a parameter is removed only when named above. Each name above appears in the published set only as an expiring credential or cache-buster, never as the sole discriminator between two channels.",
-    "confirmed_against": "phase0-static.json source-identity section"
-  },
-
-  "persistence": {
-    "ttl_seconds": 1800,
-    "min_separate_windows": 2,
-    "min_window_separation_seconds": 120,
-    "derivation": "Measured CDN cache TTL bounds were <= 17 s (Zee Bangla), <= 23 s (beIN SPORTS 1) and <= 18 s (BEIN SPORTS 6). Two observations closer together than the cache TTL can be one cached response counted twice, so window separation is locked at 120 s, more than 5x the largest measured bound. The 1800 s TTL gives a candidate span long enough that a provider-side restart or a short regional outage expires out of it.",
-    "reset_requires_full_sustained_success": true,
-    "reset_definition": "A complete 120 s PASS (startup <= 10 s, media progress >= 115 s, cumulative stall <= 5 s where a stall is any stagnant interval > 2 s at 1 s sampling, zero fatal errors, every announced render track progressing), or an equivalent sustained-success observation of at least the same duration and continuity where a full browser session is unavailable but continuous media delivery is measured across the same window.",
-    "does_not_reset": [
-      "HTTP 200 on the URL",
-      "a manifest or playlist fetch succeeding",
-      "a short byte sample succeeding, including the 16 KiB probe",
-      "any observation shorter than the full window",
-      "a startup that begins and then fails inside the window"
-    ],
-    "derivation_of_reset_rule": "All four hidden channels' primaries return HTTP 200 with a valid small manifest from this vantage while stored as failed_player_twice, and the raw-TS route returns 10.6 MB of clean media before a clean early EOF. Under a loose reset rule either observation would have reset the counter forever."
-  },
-
-  "target_environment_matrix": {
-    "declared": true,
-    "profiles": ["desktop_chrome", "android_chrome", "iphone_safari", "android_tv"],
-    "derivation": "The player special-cases TV-class user agents (TV, AndroidTV, AFT, SmartTV, BRAVIA, MiBOX, TV Bro) in its own code, so a TV profile is a distinct environment and not covered by a desktop result. iPhone Safari is a separate engine family. These four are the profiles actually executed by scripts/browser-target-matrix-check.py.",
-    "consequence": "Global scope via route (b) requires a failure on all four. Fewer than four leaves the verdict environment-scoped."
+  "never_removable_examples": [
+   "id",
+   "ch",
+   "channel",
+   "stream"
+  ],
+  "derivation": "22 published channels share one host and path and differ only by '?id=NNN'. An open policy that stripped unrecognised parameters would fuse those 22 distinct channels into a single identity, so a parameter is removed only when named above. Each name above appears in the published set only as an expiring credential or cache-buster, never as the sole discriminator between two channels.",
+  "confirmed_against": "phase0-static.json source-identity section",
+  "credential_value_mask": {
+   "policy": "mask_value_keep_parameter",
+   "applies_to": "any query parameter whose NAME matches the credential shape in scanner/route_evidence.CREDENTIAL_QUERY_NAME_PATTERN, which is the same shape the published-data leak check in tests/test_enforcement_behaviour.py uses",
+   "exempt": [
+    "id",
+    "ch",
+    "channel",
+    "stream"
+   ],
+   "replacement": "{cred:<first 10 hex of sha256(name=value)>}",
+   "derivation": "Removing such a parameter was rejected: a route id is also the key every evidence ledger uses, and two accounts on one host can differ only by their token, so removal could fuse them - the exact failure the closed allowlist exists to prevent. Masking keeps distinct values distinct while the value is never written down. Verified on the committed cache: removing play_token would have fused 0 routes, and masking changes no identity that carries no credential.",
+   "consequence": "A route that carried a credential in the clear gets a new identity once, and its accumulated evidence starts again. One route was affected when this was locked."
   }
+ },
+ "persistence": {
+  "ttl_seconds": 1800,
+  "min_separate_windows": 2,
+  "min_window_separation_seconds": 120,
+  "derivation": "Measured CDN cache TTL bounds were <= 17 s (Zee Bangla), <= 23 s (beIN SPORTS 1) and <= 18 s (BEIN SPORTS 6). Two observations closer together than the cache TTL can be one cached response counted twice, so window separation is locked at 120 s, more than 5x the largest measured bound. The 1800 s TTL gives a candidate span long enough that a provider-side restart or a short regional outage expires out of it.",
+  "reset_requires_full_sustained_success": true,
+  "reset_definition": "A complete 120 s PASS (startup <= 10 s, media progress >= 115 s, cumulative stall <= 5 s where a stall is any stagnant interval > 2 s at 1 s sampling, zero fatal errors, every announced render track progressing), or an equivalent sustained-success observation of at least the same duration and continuity where a full browser session is unavailable but continuous media delivery is measured across the same window.",
+  "does_not_reset": [
+   "HTTP 200 on the URL",
+   "a manifest or playlist fetch succeeding",
+   "a short byte sample succeeding, including the 16 KiB probe",
+   "any observation shorter than the full window",
+   "a startup that begins and then fails inside the window"
+  ],
+  "derivation_of_reset_rule": "All four hidden channels' primaries return HTTP 200 with a valid small manifest from this vantage while stored as failed_player_twice, and the raw-TS route returns 10.6 MB of clean media before a clean early EOF. Under a loose reset rule either observation would have reset the counter forever."
+ },
+ "target_environment_matrix": {
+  "declared": true,
+  "profiles": [
+   "desktop_chrome",
+   "android_chrome",
+   "iphone_safari",
+   "android_tv"
+  ],
+  "derivation": "The player special-cases TV-class user agents (TV, AndroidTV, AFT, SmartTV, BRAVIA, MiBOX, TV Bro) in its own code, so a TV profile is a distinct environment and not covered by a desktop result. iPhone Safari is a separate engine family. These four are the profiles actually executed by scripts/browser-target-matrix-check.py.",
+  "consequence": "Global scope via route (b) requires a failure on all four. Fewer than four leaves the verdict environment-scoped."
+ },
+ "lock_version_history": [
+  {
+   "version": 1,
+   "why": "Phase 0b locked the four values THE_EXCLUSIVE_UPDATE.txt L7 left deliberately unspecified."
+  },
+  {
+   "version": 2,
+   "why": "normalization_allowlist gained credential_value_mask. The removable list matches names exactly, so `play_token` was not `token` and survived verbatim into a route id - which is a dict key in state/route-evidence-cache.json, committed on every scan. Measured 2026-09-03 on run #1214's output: one route of 18,296 carried a live 10-character play_token in the clear, and tests/test_enforcement_behaviour.py failed the whole run over it. Names are not extended and nothing new is removed, so no identity is fused; only the VALUE of a credential-named parameter becomes a digest."
+  }
+ ]
 }
