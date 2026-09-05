@@ -1,7 +1,7 @@
 {
   "category": "Other",
-  "updated_at": "2026-09-05T01:33:57.040186+00:00",
-  "count": 406,
+  "updated_at": "2026-09-05T02:13:05.141711+00:00",
+  "count": 402,
   "channels": [
     {
       "id": "30a-music",
@@ -282,10 +282,10 @@
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
+      "verification_mode": "transient_rescue",
+      "verification_status": "retryable_pending",
+      "verification_badge": "Temporary",
+      "verified": false,
       "publish_allowed": true,
       "source_pipeline": "tv",
       "original_source_pipeline": "tv",
@@ -307,6 +307,8 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
+      "transient_rescue_count": 1,
+      "vantage_note": "a timeout error from this run's egress on a route the published catalogue was already carrying. Held for one more scan instead of being deleted; a second consecutive transient answer, or any permanent one, fails it.",
       "playback_id": "ctv_7e0fb286e8914fde4932046cbcb1c920"
     },
     {
@@ -1575,8 +1577,8 @@
       "source_ids": [
         "manual-playlist-1"
       ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
+      "quality_unknown": true,
+      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
       "playback_id": "ctv_837631d486b2c31a50004f1e794070c6"
     },
     {
@@ -2357,8 +2359,8 @@
       "source_ids": [
         "manual-playlist-1"
       ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
+      "quality_unknown": true,
+      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
       "playback_id": "ctv_082fa964419834c4fb8faebdcffbc975"
     },
     {
@@ -2709,28 +2711,8 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "sm-iptv-combined",
       "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "url": "https://jtvs.ncare.live/Gznr84Woj7UEye3OPVeWq2ForboWAgdV/jonmobhumitv.stream/tracks-v1a1/mono.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_first",
-          "stream_type": "hls",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "smartplaytv-worker-stream",
-          "host": "jtvs.ncare.live",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_c474da25966fe184b45c7cfbc478d9d3"
-        }
-      ],
+      "available_link_count": 1,
+      "backups": [],
       "source_provenance": [
         {
           "source_id": "sm-iptv-combined",
@@ -3910,6 +3892,46 @@
       "playback_id": "ctv_ed4d263a81ae4ac0cfcc49558df26feb"
     },
     {
+      "id": "relaks-radio",
+      "name": "Relaks Radio",
+      "primary_stream_key": "8925513cf87febdee4f59acfd5a451cbfd8ad8bbd5fea107228c31f77664ce81",
+      "sport_type": "",
+      "logo": "https://s3.aynaott.com/storage/2127a03bd8ebe021b6bff9bdcdfb1973",
+      "category": "Other",
+      "url": "http://stream.spicefmbd.com/stream.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "abusaeeidx-mrgify-bdix",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-jiotv",
+          "source_name": "SM IPTV JioTV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-jiotv"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_ed4d263a81ae4ac0cfcc49558df26feb"
+    },
+    {
       "id": "rri-net",
       "name": "RRI Net",
       "primary_stream_key": "497fc664b55bd62a26aeace99b596cbb1e7effd9908f7a80cf16e3d80bc12ee7",
@@ -4428,52 +4450,6 @@
       "resolution": "FHD",
       "resolution_height": 1080,
       "playback_id": "ctv_2d81558bbca7cf151c20c73f8177a4e8"
-    },
-    {
-      "id": "spice-fm",
-      "name": "Spice FM",
-      "primary_stream_key": "cd89531f858cf218fdc0a6cec7390a8bc3cb796f0f1854f94380d37817afa1fb",
-      "sport_type": "",
-      "logo": "https://s3.aynaott.com/storage/d51be74cd5c23e19cb7e8c81029c2af9",
-      "category": "Other",
-      "url": "https://stream.spicefmbd.com/stream.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "abusaeeidx-mrgify-bdix",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "abusaeeidx-mrgify-bdix",
-          "source_name": "Mrgify BDIX IPTV",
-          "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
-        },
-        {
-          "source_id": "sm-iptv-combined",
-          "source_name": "SM IPTV Combined Live TV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
-        }
-      ],
-      "source_ids": [
-        "abusaeeidx-mrgify-bdix",
-        "sm-iptv-combined"
-      ],
-      "quality_unknown": true,
-      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
-      "playback_id": "ctv_5cbcc10c25621e05d8fbaee2e5a0e348"
     },
     {
       "id": "stream-122",
@@ -5050,10 +5026,10 @@
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
+      "verification_mode": "transient_rescue",
+      "verification_status": "retryable_pending",
+      "verification_badge": "Temporary",
+      "verified": false,
       "publish_allowed": true,
       "source_pipeline": "tv",
       "original_source_pipeline": "tv",
@@ -5075,6 +5051,8 @@
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
+      "transient_rescue_count": 1,
+      "vantage_note": "a timeout error from this run's egress on a route the published catalogue was already carrying. Held for one more scan instead of being deleted; a second consecutive transient answer, or any permanent one, fails it.",
       "playback_id": "ctv_022b0e10d44b63b0805236fc71a5f4de"
     },
     {
@@ -5836,46 +5814,6 @@
       "resolution": "FHD",
       "resolution_height": 1080,
       "playback_id": "ctv_689cd635a7f4256a0a680674d80caea9"
-    },
-    {
-      "id": "tvri-papua",
-      "name": "TVRI Papua",
-      "primary_stream_key": "966aab3cc9a6f5091a038f0597911b8b9ed0f246a816e52048e9993f2ab9b62f",
-      "sport_type": "",
-      "logo": "",
-      "category": "Other",
-      "url": "https://ott-balancer.tvri.go.id/live/eds/Papua/hls/Papua.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1"
-      ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "playback_id": "ctv_dae8a7b648bb2f56ad2f0d89ce16b0de"
     },
     {
       "id": "tvri-riau",
@@ -7284,46 +7222,6 @@
       "playback_id": "ctv_72ac80acea2cd0652b790505b2a3fddd"
     },
     {
-      "id": "asianet-movies",
-      "name": "Asianet Movies",
-      "primary_stream_key": "d23bfe24c65198d047e0dba8b41613d043fdeb0f1a095104691bd4383736b3e7",
-      "sport_type": "",
-      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Asianet_Movies_HD.png",
-      "category": "Other",
-      "url": "https://hey-lookme.shop/live.php?id=459",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "media",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "sm-iptv-jiotv",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "sm-iptv-jiotv",
-          "source_name": "SM IPTV JioTV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
-        }
-      ],
-      "source_ids": [
-        "sm-iptv-jiotv"
-      ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "playback_id": "ctv_395e08df7e21754d5e112fd6c4538da5"
-    },
-    {
       "id": "asianet-news",
       "name": "Asianet News",
       "primary_stream_key": "36dcddf2e415e9af8322ef7838a525f886de6dcb48ca344cf6dcac8f3cb47742",
@@ -8004,6 +7902,46 @@
       "playback_id": "ctv_31bc670c9faa39902886e8815e4b748a"
     },
     {
+      "id": "da-news-plus",
+      "name": "DA News Plus",
+      "primary_stream_key": "4ab52232de3ce7012c4963ba79d0129cc0002c8acc6777fa1482beab80c8d22f",
+      "sport_type": "",
+      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/DA_News_Plus.png",
+      "category": "Other",
+      "url": "https://hey-lookme.shop/live.php?id=1797",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "media",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "sm-iptv-jiotv",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-jiotv",
+          "source_name": "SM IPTV JioTV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-jiotv"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_1b0d46640a89fc9d6cc1e85f3d33b9a6"
+    },
+    {
       "id": "dada-bhagwan-foundation",
       "name": "Dada Bhagwan Foundation",
       "primary_stream_key": "b75137d61b903d99bbe77585a3672fb266f1cf1aee0b89b6c6c16e571819a117",
@@ -8602,46 +8540,6 @@
       "resolution": "HD",
       "resolution_height": 720,
       "playback_id": "ctv_3af0d1bc5a6182903272cd6badf255c9"
-    },
-    {
-      "id": "g-tv",
-      "name": "G TV",
-      "primary_stream_key": "b300382a4ce03a012622e052a7e209415308ef34ba1bd1811110cb7567635fe3",
-      "sport_type": "",
-      "logo": "https://raw.githubusercontent.com/AsimDipto/Logo-box/refs/heads/main/Bangladesh/gtv-hd-bd.png",
-      "category": "Other",
-      "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/gazibdz.stream/tracks-v1a1/mono.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "sm-iptv-combined",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "sm-iptv-combined",
-          "source_name": "SM IPTV Combined Live TV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
-        }
-      ],
-      "source_ids": [
-        "sm-iptv-combined"
-      ],
-      "quality_unknown": true,
-      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
-      "playback_id": "ctv_c538e53f95478480960a7306edb5c6aa"
     },
     {
       "id": "g94-news",
@@ -12384,6 +12282,46 @@
       "playback_id": "ctv_4a7a098c5ab1678dcaacdfb0da6ec792"
     },
     {
+      "id": "ott-club",
+      "name": "OTT CLUB",
+      "primary_stream_key": "905e4e44b70177a9bb85f4c1841f04ade0b534f58a56f3b294648356e8b6be8f",
+      "sport_type": "",
+      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/3_0_TV.png",
+      "category": "Other",
+      "url": "http://czrb8vng.ottclub.xyz/iptv/AHMQNVLWUTM5PW/6554/index.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "sm-iptv-combined",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-combined"
+      ],
+      "quality_unknown": true,
+      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
+      "playback_id": "ctv_c538e53f95478480960a7306edb5c6aa"
+    },
+    {
       "id": "otv",
       "name": "OTV",
       "primary_stream_key": "cceb1d19bd0d4cf1d86ad996437674f28faa17efddbb3f707e6fcb04d12fd971",
@@ -15692,46 +15630,6 @@
       "playback_id": "ctv_b19092df25745025321b5352f0fc495b"
     },
     {
-      "id": "toi-global",
-      "name": "TOI Global",
-      "primary_stream_key": "f080f5fcfe5459948d90acdec67f632409b8813ce16e6c5e14f4eb6efbcebefc",
-      "sport_type": "",
-      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/npnhm84gz9.png",
-      "category": "Other",
-      "url": "https://hey-lookme.shop/live.php?id=3440",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "media",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "sm-iptv-jiotv",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "sm-iptv-jiotv",
-          "source_name": "SM IPTV JioTV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
-        }
-      ],
-      "source_ids": [
-        "sm-iptv-jiotv"
-      ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "playback_id": "ctv_0fabfb9b38df7a83f3fbbaa51ceada87"
-    },
-    {
       "id": "travelxp",
       "name": "Travelxp",
       "primary_stream_key": "8943f1f2eb383b75e18dbb73f4acfe870dc4a958827d2b9efa96106686bea020",
@@ -15770,86 +15668,6 @@
       "resolution": "FHD",
       "resolution_height": 1080,
       "playback_id": "ctv_f243fa72094e888e9a6df0893b573c2b"
-    },
-    {
-      "id": "tulja-bhavani",
-      "name": "Tulja Bhavani",
-      "primary_stream_key": "34b45f58d12cd46e77e95ac1753a76602a237959925b54b0827f293a5a3f5456",
-      "sport_type": "",
-      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Tulja_Bhavani.png",
-      "category": "Other",
-      "url": "https://hey-lookme.shop/live.php?id=1159",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "media",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "sm-iptv-jiotv",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "sm-iptv-jiotv",
-          "source_name": "SM IPTV JioTV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
-        }
-      ],
-      "source_ids": [
-        "sm-iptv-jiotv"
-      ],
-      "quality_unknown": true,
-      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
-      "playback_id": "ctv_b9930395974b3ab5e8bcbf3824d43d7b"
-    },
-    {
-      "id": "tv45",
-      "name": "TV45",
-      "primary_stream_key": "fe53989d1ecd09d0201f172d691e42ca362f2b6c4f28cd761db1dcf7a7c3035b",
-      "sport_type": "",
-      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/TV45.png",
-      "category": "Other",
-      "url": "https://hey-lookme.shop/live.php?id=2954",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "media",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "sm-iptv-jiotv",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "sm-iptv-jiotv",
-          "source_name": "SM IPTV JioTV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
-        }
-      ],
-      "source_ids": [
-        "sm-iptv-jiotv"
-      ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "playback_id": "ctv_6ec7ea142717490687131d90a08b30cf"
     },
     {
       "id": "tv9-bharatvarsh",
