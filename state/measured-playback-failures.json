@@ -5109,6 +5109,18 @@
         "window_seconds": 0.0,
         "evidence_report": "reports/delivery-path-check.json"
       }
+    },
+    "live.balajibroadband.com:3500/live/762.m3u8": {
+      "route_id": "live.balajibroadband.com:3500/live/762.m3u8",
+      "url_public_template": "{id}.balajibroadband.com/live/{file}",
+      "reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
     }
   },
   "note": "Routes a real browser measured and could not play, each with the vantage it was measured from. Marks the card; never hides it, never changes publish_allowed, never demotes another route. Keyed by route, so a channel recovers when its route changes - or when a later measurement from any vantage passes, which supersedes the failure rather than deleting it."
