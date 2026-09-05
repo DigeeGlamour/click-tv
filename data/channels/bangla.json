@@ -1,7 +1,7 @@
 {
   "category": "Bangla",
-  "updated_at": "2026-09-05T20:54:18.327788+00:00",
-  "count": 46,
+  "updated_at": "2026-09-05T22:25:15.501074+00:00",
+  "count": 45,
   "channels": [
     {
       "id": "ahsan-tv",
@@ -178,27 +178,8 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "abusaeeidx-mrgify-bdix",
       "metadata_only": false,
-      "available_link_count": 3,
+      "available_link_count": 2,
       "backups": [
-        {
-          "name": "Backup-2",
-          "url": "https://tvsen6.aynaott.com/pKb5k6NnzxsKpWUs6E8M/tracks-v1a1/mono.ts.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-iptv-combined",
-          "host": "tvsen6.aynaott.com",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_6598842db985dc5b7db967547e1851ac"
-        },
         {
           "name": "Backup-3",
           "url": "https://tvsen6.aynaott.com/pKb5k6NnzxsKpWUs6E8M/index.m3u8",
@@ -338,12 +319,13 @@
     {
       "id": "atn-news",
       "name": "ATN News",
-      "primary_stream_key": "f813f6bd1cf7b662af4b491123fee54653b05392af86cd4cc5e2a6eccebc8d8d",
+      "primary_stream_key": "5b2425b552ef68cffb2b826c1d41465234880ab1decfa6f52230c0d02d354572",
       "sport_type": "",
       "logo": "https://s3.aynaott.com/storage/8a3c5215dc0b943dc0a80333c0ab21ce",
       "category": "Bangla",
+      "url": "https://tvsen6.aynaott.com/da6WMXAk/index.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
+      "proxy_mode": "direct_first",
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
@@ -381,9 +363,8 @@
         },
         {
           "name": "Backup-2",
-          "url": "https://tvsen6.aynaott.com/da6WMXAk/index.m3u8",
           "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
+          "proxy_mode": "proxy_only",
           "stream_type": "hls",
           "requires_headers": false,
           "inherit_manifest_query": false,
@@ -396,7 +377,16 @@
           "host": "tvsen6.aynaott.com",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_718109929c4e8fe55c5829abe05d38d5"
+          "playback_id": "ctv_43756b74ba603c1c6d5bf42365926199",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [
+              "token"
+            ],
+            "drm": false
+          }
         }
       ],
       "source_provenance": [
@@ -404,23 +394,26 @@
           "source_id": "abusaeeidx-mrgify-bdix",
           "source_name": "Mrgify BDIX IPTV",
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
+        },
+        {
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
-        "abusaeeidx-mrgify-bdix"
+        "abusaeeidx-mrgify-bdix",
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_43756b74ba603c1c6d5bf42365926199",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [
-          "token"
-        ],
-        "drm": false
-      }
+      "playback_id": "ctv_718109929c4e8fe55c5829abe05d38d5"
     },
     {
       "id": "bangla-tv",
@@ -937,14 +930,32 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "abusaeeidx-mrgify-bdix",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
-          "url": "http://premiumtvs.space/live/YqXTywueEV/damp2purchase/434.ts",
+          "url": "https://cache.devm3u.top/hls/channeli.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
-          "stream_type": "mpegts",
+          "stream_type": "hls",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "smartplaytv-worker-stream",
+          "host": "cache.devm3u.top",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_4843b577a6ccde727b07ecb3ac12d6bb"
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "hls",
           "requires_headers": false,
           "inherit_manifest_query": false,
           "verification_mode": "global",
@@ -952,11 +963,20 @@
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "sm-iptv-combined",
-          "host": "premiumtvs.space",
+          "source_id": "abusaeeidx-mrgify-bdix",
+          "host": "tvsen6.aynaott.com",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_fc6846ebb9cf970cbcdfebd6872ea18d"
+          "playback_id": "ctv_ea6ea798735b298093e4235f3d607d3c",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [
+              "token"
+            ],
+            "drm": false
+          }
         }
       ],
       "source_provenance": [
@@ -981,18 +1001,9 @@
         "sm-iptv-combined",
         "sm-aynaott-auto-update"
       ],
-      "quality_unknown": true,
-      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
-      "playback_id": "ctv_7fe0acc562d60cc1add9a3d8c2cc3091",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [
-          "token"
-        ],
-        "drm": false
-      }
+      "resolution": "HD",
+      "resolution_height": 720,
+      "playback_id": "ctv_6574be016f72a904e85b2dff620d15cd"
     },
     {
       "id": "channel-s",
@@ -1165,7 +1176,7 @@
       "name": "Deepto TV",
       "primary_stream_key": "785a81f20965fb6b78e8e39ac581b65dfbd40ce77e5985cdada5452798df4366",
       "sport_type": "",
-      "logo": "https://raw.githubusercontent.com/NmAlifKhan/Channel-Icon/refs/heads/tv/deepto-tv-seeklogo.png",
+      "logo": "https://s3.aynaott.com/storage/76717b7a598a30815a1bdb16ecd3af6c",
       "category": "Bangla",
       "url": "https://byphdgllyk.gpcdn.net/hls/deeptotv/0_1/index.m3u8",
       "header_profile": "android_tv",
@@ -1184,8 +1195,35 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "manual-playlist-1",
       "metadata_only": false,
-      "available_link_count": 3,
+      "available_link_count": 5,
       "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "hls",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "abusaeeidx-mrgify-bdix",
+          "host": "tvsen5.aynaott.com",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_ae145992c41f065d22b9d531a810e599",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [
+              "token"
+            ],
+            "drm": false
+          }
+        },
         {
           "name": "Backup-2",
           "url": "https://byphdgllyk.gpcdn.net/hls/deeptotv/index.m3u8",
@@ -1206,7 +1244,7 @@
           "playback_id": "ctv_a8ce02a1220a67451aaca42e3b655df2"
         },
         {
-          "name": "Backup-2",
+          "name": "Backup-3",
           "url": "http://byphdgllyk.gpcdn.net/hls/deeptotv/0_1/index.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
@@ -1223,6 +1261,25 @@
           "resolution": "HD",
           "resolution_height": 720,
           "playback_id": "ctv_2d8fd57c29b6d96ba62f5a343fed4c38"
+        },
+        {
+          "name": "Backup-4",
+          "url": "https://tvsen5.aynaott.com/tK2BNdfsdfsdf/index.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "direct_first",
+          "stream_type": "hls",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-aynaott-auto-update",
+          "host": "tvsen5.aynaott.com",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_5576f1f50a76e6ff62cff8743ef891d1"
         }
       ],
       "source_provenance": [
@@ -1425,6 +1482,44 @@
       "backups": [
         {
           "name": "Backup-1",
+          "url": "https://tvsen6.aynaott.com/fbgZV3X17hwWcyfZ4pdb/index.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "direct_first",
+          "stream_type": "hls",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "abusaeeidx-mrgify-bdix",
+          "host": "tvsen6.aynaott.com",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_84da3bbec65907909d4a9685afbef6fe"
+        },
+        {
+          "name": "Backup-2",
+          "url": "https://cache.devm3u.top/hls/ekhon.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "smartplaytv-worker-stream",
+          "host": "cache.devm3u.top",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_1eb995679db1421c4dfd56ac46d1c1e8"
+        },
+        {
+          "name": "Backup-4",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "hls",
@@ -1449,44 +1544,6 @@
             ],
             "drm": false
           }
-        },
-        {
-          "name": "Backup-2",
-          "url": "https://cache.devm3u.top/hls/ekhon.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_first",
-          "stream_type": "hls",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "smartplaytv-worker-stream",
-          "host": "cache.devm3u.top",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_1eb995679db1421c4dfd56ac46d1c1e8"
-        },
-        {
-          "name": "Backup-4",
-          "url": "https://tvsen6.aynaott.com/fbgZV3X17hwWcyfZ4pdb/index.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "abusaeeidx-mrgify-bdix",
-          "host": "tvsen6.aynaott.com",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_84da3bbec65907909d4a9685afbef6fe"
         }
       ],
       "source_provenance": [
@@ -1512,11 +1569,11 @@
     {
       "id": "ekushey-tv",
       "name": "Ekushey TV",
-      "primary_stream_key": "968125605a6db0b66617b960468c736b7b41801004e6fffeb7a14f5838e1e315",
+      "primary_stream_key": "fe0ba74c425481af3ee192e8ec4c7e617cc524723fea1a8dc048035589c66741",
       "sport_type": "",
       "logo": "https://i.ibb.co/0rR6nG7/Picsart-23-06-07-10-32-27-069.png",
       "category": "Bangla",
-      "url": "https://ekusheyserver.com/etvlivesn.m3u8",
+      "url": "https://ekusheyserver.com/hls-live/livepkgr/_definst_/liveevent/livestream3.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "hls",
@@ -1555,7 +1612,7 @@
           "playback_id": "ctv_0605fb9e93b4e9dc44a53685dd996ef2"
         },
         {
-          "name": "Backup-2",
+          "name": "Backup-3",
           "url": "http://ekusheyserver.com/etvlivesn.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
@@ -1591,12 +1648,13 @@
     {
       "id": "global-tv",
       "name": "Global TV",
-      "primary_stream_key": "75083e9f7f5264c5b7f3435010ff4303fc422f9845897293c2ba6232b35544b1",
+      "primary_stream_key": "151f5dc545697eec5125626d51725100873d74985ce1889e5a2d6f20d60ed490",
       "sport_type": "",
       "logo": "https://s3.aynaott.com/storage/ffd7ba9b76ad555933f94bcb7ff26b44",
       "category": "Bangla",
+      "url": "https://tvsen6.aynaott.com/y0q9eFAuquAtvTxRzUHq/index.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
+      "proxy_mode": "direct_first",
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
@@ -1615,9 +1673,8 @@
       "backups": [
         {
           "name": "Backup-1",
-          "url": "https://tvsen6.aynaott.com/y0q9eFAuquAtvTxRzUHq/index.m3u8",
           "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
+          "proxy_mode": "proxy_only",
           "stream_type": "hls",
           "requires_headers": false,
           "inherit_manifest_query": false,
@@ -1630,7 +1687,16 @@
           "host": "tvsen6.aynaott.com",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_248cf172a665c48b4c49f1da2fc98181"
+          "playback_id": "ctv_7cf967270e9958d9febd87133413a745",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [
+              "token"
+            ],
+            "drm": false
+          }
         }
       ],
       "source_provenance": [
@@ -1638,23 +1704,20 @@
           "source_id": "abusaeeidx-mrgify-bdix",
           "source_name": "Mrgify BDIX IPTV",
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
-        "abusaeeidx-mrgify-bdix"
+        "abusaeeidx-mrgify-bdix",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_7cf967270e9958d9febd87133413a745",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [
-          "token"
-        ],
-        "drm": false
-      }
+      "playback_id": "ctv_248cf172a665c48b4c49f1da2fc98181"
     },
     {
       "id": "gtv-news",
@@ -1695,66 +1758,6 @@
       "resolution": "FHD",
       "resolution_height": 1080,
       "playback_id": "ctv_d8184e25a979623c6dbdcd4845021bb6"
-    },
-    {
-      "id": "jago-news-24",
-      "name": "Jago News 24",
-      "primary_stream_key": "84ee017e22c1be0d61383128894acc33b7743b675c4608f9068168d765b0c4f6",
-      "sport_type": "",
-      "logo": "https://www.jagobd.com/wp-content/uploads/2024/08/jagonews.jpg",
-      "category": "Bangla",
-      "url": "https://app.ncare.live/live-orgin/jagonews24.stream/playlist.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "sm-iptv-combined",
-      "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "url": "https://app.ncare.live/live-orgin/jagonews24.stream/playlist.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_first",
-          "stream_type": "hls",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "smartplaytv-worker-stream",
-          "host": "app.ncare.live",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_431069f8188aa50532476484018174f6"
-        }
-      ],
-      "source_provenance": [
-        {
-          "source_id": "sm-iptv-combined",
-          "source_name": "SM IPTV Combined Live TV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
-        }
-      ],
-      "source_ids": [
-        "sm-iptv-combined"
-      ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "playback_id": "ctv_00af71c56ededdd5dd4bc3f85bb577f4"
     },
     {
       "id": "ktv-bangla",
@@ -1930,12 +1933,13 @@
     {
       "id": "mohona-tv",
       "name": "Mohona TV",
-      "primary_stream_key": "7ac7207cb5a564eb63f58e6af7ad3fc9ccfc224fa5801e45558b1d50a0d6e3ad",
+      "primary_stream_key": "3fad2a4d61ad5909bcafeee1b0fe3de6045c03ef39fdcc6a42e64f8625c563ca",
       "sport_type": "",
       "logo": "https://s3.aynaott.com/storage/73082846fdc15d9f0e7268b104c55d92",
       "category": "Bangla",
+      "url": "https://stream.ottplus.live/live/mohona_tv_abr/index.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
+      "proxy_mode": "direct_first",
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
@@ -1948,7 +1952,7 @@
       "original_source_pipeline": "tv",
       "content_kind": "live_tv",
       "routing_reason": "configured_tv_pipeline",
-      "source_id": "abusaeeidx-mrgify-bdix",
+      "source_id": "manual-playlist-1",
       "metadata_only": false,
       "available_link_count": 4,
       "backups": [
@@ -2008,13 +2012,11 @@
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
-          "verification_badge": "Playback Unproven",
+          "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-aynaott-auto-update",
           "host": "tvsen6.aynaott.com",
-          "playback_unproven": true,
-          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
           "resolution": "HD",
           "resolution_height": 720,
           "playback_id": "ctv_9fb3e863166748873b6f9f9e59d745b5"
@@ -2070,11 +2072,11 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "sm-iptv-combined",
       "metadata_only": false,
-      "available_link_count": 4,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
-          "url": "https://cache.devm3u.top/hls/mohona.m3u8",
+          "url": "https://cache.devm3u.top/hls/moviebangla.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
           "stream_type": "hls",
@@ -2089,82 +2091,52 @@
           "host": "cache.devm3u.top",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_38fcd09ffdfec24902f07e57061cb3e2"
+          "playback_id": "ctv_465a41a3d590a40c9bfbc3061b4bafa1"
         },
         {
           "name": "Backup-2",
-          "url": "https://tvsen6.aynaott.com/AkyX5dunzju4cpo26dr7/index.m3u8",
+          "url": "http://alvetv.com/moviebanglatv/8080/index.m3u8",
           "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
+          "proxy_mode": "proxy_first",
           "stream_type": "hls",
           "requires_headers": false,
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
-          "verification_badge": "Playback Unproven",
+          "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "sm-aynaott-auto-update",
-          "host": "tvsen6.aynaott.com",
-          "playback_unproven": true,
-          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_9fb3e863166748873b6f9f9e59d745b5"
-        },
-        {
-          "name": "Backup-3",
-          "url": "https://stream.ottplus.live/live/mohona_tv_abr/index.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "transient_rescue",
-          "verification_status": "retryable_pending",
-          "verification_badge": "Temporary",
-          "verified": false,
-          "publish_allowed": true,
           "source_id": "manual-playlist-1",
-          "host": "stream.ottplus.live",
-          "transient_rescue_count": 1,
+          "host": "alvetv.com",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_1c888c600fe6a02d450f9a42c47a77dd"
+          "playback_id": "ctv_f24ce9aa850dd060b891d8b365fee950"
         }
       ],
       "source_provenance": [
         {
-          "source_id": "abusaeeidx-mrgify-bdix",
-          "source_name": "Mrgify BDIX IPTV",
-          "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
         }
       ],
       "source_ids": [
-        "abusaeeidx-mrgify-bdix"
+        "sm-iptv-combined"
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_28f3c53ad6ebc492220f4fe73103384a",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [
-          "token"
-        ],
-        "drm": false
-      }
+      "playback_id": "ctv_40baa55f93d938dd99cb38fe867a772f"
     },
     {
       "id": "my-tv",
       "name": "My TV",
-      "primary_stream_key": "f3be9ffd3930bfa5cafeece83c7d6689c2895fe75951b5fb0ab1255b13794f3e",
+      "primary_stream_key": "08997fe0d3bdcffc4719dc2da1ea7c491675c9167ac81c3b5da55d372dbc59c0",
       "sport_type": "",
       "logo": "https://s3.aynaott.com/storage/c5b2c623863fbe4033d59d52ff7371ac",
       "category": "Bangla",
+      "url": "https://tvsen6.aynaott.com/XMpHaEf0ANBhv8w6NWR7/index.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
+      "proxy_mode": "direct_first",
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
@@ -2203,7 +2175,7 @@
         {
           "name": "Backup-2",
           "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
+          "proxy_mode": "proxy_only",
           "stream_type": "hls",
           "requires_headers": false,
           "inherit_manifest_query": false,
@@ -2216,7 +2188,16 @@
           "host": "tvsen6.aynaott.com",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_3032af1115a28016678cc0f2b12204e0"
+          "playback_id": "ctv_8a45715293793c8df7a29ad013ec2483",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [
+              "token"
+            ],
+            "drm": false
+          }
         }
       ],
       "source_provenance": [
@@ -2226,33 +2207,24 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_8a45715293793c8df7a29ad013ec2483",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [
-          "token"
-        ],
-        "drm": false
-      }
+      "playback_id": "ctv_3032af1115a28016678cc0f2b12204e0"
     },
     {
       "id": "nagorik-tv",
@@ -2385,7 +2357,7 @@
       "name": "Nexus TV",
       "primary_stream_key": "9ea677007b033b46c91667da03549b1541a628bd176b1ba571a5b3eb64370ecf",
       "sport_type": "",
-      "logo": "https://s3.aynaott.com/storage/90635c3edf6e3c8dd92210b7248f1fa0",
+      "logo": "https://i.ibb.co.com/xqhhGHXc/NEXUS-TELEVISION-HD.png",
       "category": "Bangla",
       "url": "https://stream.ottplus.live/live/nexus_tv_abr/index.m3u8",
       "header_profile": "android_tv",
@@ -2404,37 +2376,10 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "manual-playlist-1",
       "metadata_only": false,
-      "available_link_count": 4,
+      "available_link_count": 2,
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "abusaeeidx-mrgify-bdix",
-          "host": "tvsen6.aynaott.com",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_16979ba2706fca614e2cf11a791819ae",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [
-              "token"
-            ],
-            "drm": false
-          }
-        },
-        {
-          "name": "Backup-2",
           "url": "https://cache.devm3u.top/hls/nexus.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
@@ -2451,25 +2396,6 @@
           "resolution": "HD",
           "resolution_height": 720,
           "playback_id": "ctv_d47ca83f18886b1517c8f191fd7cf2d8"
-        },
-        {
-          "name": "Backup-3",
-          "url": "https://tvsen6.aynaott.com/Epm7WrFa/index.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "abusaeeidx-mrgify-bdix",
-          "host": "tvsen6.aynaott.com",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_f61b9aea95566ce82e2318704ce6f195"
         }
       ],
       "source_provenance": [
@@ -2650,21 +2576,21 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "manual-playlist-1",
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "HD",
       "resolution_height": 720,
@@ -2741,7 +2667,7 @@
       "name": "Rongeen TV",
       "primary_stream_key": "652c5a2fd381b7014106c7d085202be7cf742a7adbb584369176047a2ae663aa",
       "sport_type": "",
-      "logo": "https://i.ibb.co/qMYwcmxf/Rongeen-TV-logo-with-slogan-2019.webp",
+      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Rongeen_TV.png",
       "category": "Bangla",
       "url": "https://server.thelegitpro.in/rongeentv/rongeentv/index.m3u8",
       "header_profile": "android_tv",
@@ -3048,8 +2974,28 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "sm-iptv-combined",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "https://cache.devm3u.top/hls/somoy.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "smartplaytv-worker-stream",
+          "host": "cache.devm3u.top",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_47f5de3ac74cd43bca279f12f21cf674"
+        }
+      ],
       "source_provenance": [
         {
           "source_id": "sm-iptv-combined",
