@@ -59,7 +59,24 @@ const REF = "main";
  * mode can write the wrong data under it.
  *
  *   cadenceMinutes    the declared cadence, used only to size the silence watch
+ *   reports           the published summaries that prove this mode ran; the
+ *                     NEWEST of them is the freshness figure
  *   telegramEveryTick whether every bad tick may send a Telegram message
+ *
+ * `upcoming-targeted` needs two reports, and finding that out cost a wrong
+ * alert on the first live tick. scanner/output.py aliases `upcoming-targeted`
+ * to `upcoming` before naming its report, so a targeted run that actually
+ * chases a link writes `scan-summary-upcoming.json`. The literal
+ * `scan-summary-upcoming-targeted.json` is written only by scan.py's two early
+ * exits - "nothing is inside the window" and "output preserved". Watching just
+ * the second one means reporting silence exactly when targeted is working,
+ * which is worse than not watching at all. So both are read and the newer
+ * wins: every targeted outcome moves exactly one of them.
+ *
+ * The twice-daily `upcoming` full refresh also writes the second file, so it
+ * can mask a targeted outage - for fifteen minutes, twice a day. That is the
+ * honest cost of the only signal the scanner publishes, and it is a far
+ * smaller hole than the one it closes.
  *
  * `telegramEveryTick` is false for the five-minute mode and true for the
  * twenty-minute one. That is not a preference: a permanent fault on a
@@ -73,11 +90,16 @@ const SCHEDULES = {
   "3,23,43 * * * *": {
     mode: "today",
     cadenceMinutes: 20,
+    reports: ["scan-summary-today.json"],
     telegramEveryTick: true,
   },
   "1-59/5 * * * *": {
     mode: "upcoming-targeted",
     cadenceMinutes: 5,
+    reports: [
+      "scan-summary-upcoming.json",
+      "scan-summary-upcoming-targeted.json",
+    ],
     telegramEveryTick: false,
   },
 };
@@ -157,13 +179,13 @@ async function tick(env, cron, scheduledTime) {
   // targeted report going stale while today kept writing is precisely the
   // fault that went unnoticed for 115 hours.
   const staleAfter = job.cadenceMinutes * STALE_AFTER_CADENCES;
-  const stale = await staleness(job.mode);
-  if (stale.error) {
+  const stale = await staleness(job.reports);
+  if (stale.ageMinutes === null) {
     notes.push(`freshness unreadable: ${stale.error}`);
   } else {
     notes.push(
       `last ${job.mode} scan ${stale.ageMinutes} min ago ` +
-      `(stale after ${staleAfter} min)`
+      `(stale after ${staleAfter} min, from ${stale.report})`
     );
   }
 
@@ -284,27 +306,56 @@ async function findOurRun(env, firedAt) {
   }
 }
 
-/** How long ago the published summary says the last scan of `mode` finished. */
-async function staleness(mode) {
+/**
+ * How long ago this mode last published, taken from the NEWEST of its reports.
+ *
+ * A mode whose outcomes are written to different files is fresh if any of them
+ * is fresh, so one unreadable report never manufactures silence on its own -
+ * it is only reported when no report could be read at all.
+ */
+async function staleness(reports) {
+  const errors = [];
+  let newest = null;
+  let from = "";
+  for (const report of reports) {
+    const one = await readReport(report);
+    if (one.stamp === null) {
+      errors.push(`${report}: ${one.error}`);
+      continue;
+    }
+    if (newest === null || one.stamp > newest) {
+      newest = one.stamp;
+      from = report;
+    }
+  }
+  if (newest === null) {
+    return { ageMinutes: null, report: "", error: errors.join("; ") };
+  }
+  return {
+    ageMinutes: Math.round((Date.now() - newest) / 60000),
+    report: from,
+    error: errors.join("; "),
+  };
+}
+
+/** One published summary's `last_scan`, as epoch milliseconds. */
+async function readReport(report) {
   const url =
     `https://raw.githubusercontent.com/${OWNER}/${REPO}/${REF}` +
-    `/reports/scan-summary-${mode}.json`;
+    `/reports/${report}`;
   try {
     const response = await fetch(`${url}?t=${Date.now()}`, {
       headers: { "User-Agent": USER_AGENT, "Cache-Control": "no-cache" },
     });
     if (!response.ok) {
-      return { ageMinutes: null, error: `HTTP ${response.status}` };
+      return { stamp: null, error: `HTTP ${response.status}` };
     }
     const body = await response.json();
     const stamp = Date.parse(body.last_scan);
-    if (!stamp) return { ageMinutes: null, error: "no readable last_scan" };
-    return {
-      ageMinutes: Math.round((Date.now() - stamp) / 60000),
-      error: "",
-    };
+    if (!stamp) return { stamp: null, error: "no readable last_scan" };
+    return { stamp, error: "" };
   } catch (error) {
-    return { ageMinutes: null, error: String(error).slice(0, 200) };
+    return { stamp: null, error: String(error).slice(0, 200) };
   }
 }
 

@@ -219,7 +219,7 @@ const freshFor = (mode) =>
 /** A tick where everything works; returns what was dispatched and asked for. */
 async function happyTick(cron, scheduledTime = Date.now()) {
   let dispatchBody = null;
-  let freshnessUrl = "";
+  const freshnessUrls = [];
   let runsUrl = "";
   const calls = await tick({ GITHUB_DISPATCH_TOKEN: "t" }, (url, options) => {
     if (url.includes("/dispatches")) {
@@ -227,15 +227,15 @@ async function happyTick(cron, scheduledTime = Date.now()) {
       return new Response(null, { status: 204 });
     }
     if (url.includes("/runs")) { runsUrl = url; return json({ workflow_runs: [] }); }
-    freshnessUrl = url;
+    freshnessUrls.push(url);
     return json({ last_scan: new Date().toISOString() });
   }, cron, scheduledTime);
-  return { calls, dispatchBody, freshnessUrl, runsUrl };
+  return { calls, dispatchBody, freshnessUrls, runsUrl };
 }
 
 // --- each cron presses its own button -------------------------------------
 {
-  const { calls, dispatchBody, freshnessUrl } = await happyTick(TODAY_CRON);
+  const { calls, dispatchBody, freshnessUrls } = await happyTick(TODAY_CRON);
   check("the today cron POSTs to the workflow's dispatches endpoint",
     calls.some((c) => c.url.endsWith("/actions/workflows/scan.yml/dispatches")
       && c.options.method === "POST"));
@@ -243,20 +243,46 @@ async function happyTick(cron, scheduledTime = Date.now()) {
     dispatchBody && dispatchBody.ref === "main"
     && dispatchBody.inputs.mode === "today",
     JSON.stringify(dispatchBody));
-  check("the today cron watches the today report",
-    freshnessUrl.includes("/reports/scan-summary-today.json"), freshnessUrl);
+  check("the today cron watches the today report, and only that one",
+    freshnessUrls.length === 1
+    && freshnessUrls[0].includes("/reports/scan-summary-today.json"),
+    JSON.stringify(freshnessUrls));
   check("it sends the token as a bearer header",
     calls[0].options.headers.Authorization === "Bearer t");
 }
 {
-  const { dispatchBody, freshnessUrl } = await happyTick(TARGETED_CRON);
+  const { dispatchBody, freshnessUrls } = await happyTick(TARGETED_CRON);
   check("the targeted cron sends ref=main and mode=upcoming-targeted",
     dispatchBody && dispatchBody.ref === "main"
     && dispatchBody.inputs.mode === "upcoming-targeted",
     JSON.stringify(dispatchBody));
-  check("the targeted cron watches the targeted report, not today's",
-    freshnessUrl.includes("/reports/scan-summary-upcoming-targeted.json"),
-    freshnessUrl);
+  // Both, because a targeted run writes a DIFFERENT file depending on whether
+  // it found anything: scanner/output.py aliases upcoming-targeted to upcoming
+  // before naming the report, so a run that chased a link writes
+  // scan-summary-upcoming.json, while scan.py's "nothing in the window" exit
+  // writes scan-summary-upcoming-targeted.json. Watching only the second one
+  // reports silence exactly when targeted is working - which is what the first
+  // live tick did, at 09:56Z on 2026-09-06, before this was corrected.
+  check("the targeted cron watches BOTH reports a targeted run can write",
+    freshnessUrls.length === 2
+    && freshnessUrls.some((u) => u.includes("/reports/scan-summary-upcoming.json"))
+    && freshnessUrls.some((u) => u.includes("/reports/scan-summary-upcoming-targeted.json")),
+    JSON.stringify(freshnessUrls));
+  check("neither of them is today's report",
+    !freshnessUrls.some((u) => u.includes("scan-summary-today.json")),
+    JSON.stringify(freshnessUrls));
+}
+
+// The alias that caused it, asserted against the scanner itself rather than
+// remembered. If output.py ever stops folding upcoming-targeted into upcoming,
+// this Worker is watching one file too many and should be told.
+{
+  const output = readFileSync(join(ROOT, "scanner", "output.py"), "utf8");
+  check("scanner/output.py still aliases upcoming-targeted to upcoming",
+    /"upcoming-targeted":\s*"upcoming"/.test(output));
+  const scan = readFileSync(join(ROOT, "scan.py"), "utf8");
+  check("scan.py still writes the literal per-mode summary on its early exits",
+    /scan-summary-\{mode\}\.json/.test(scan));
 }
 
 // --- an unrecognised cron presses nothing ---------------------------------
