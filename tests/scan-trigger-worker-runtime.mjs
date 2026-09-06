@@ -81,17 +81,29 @@ check("no [vars] block: every input is a secret",
 const workerCrons = [...tomlSettings.matchAll(/"([^"]+)"/g)]
   .map((m) => m[1])
   .filter((value) => /^[\d,*/\- ]+$/.test(value) && value.split(" ").length === 5);
-check("the worker schedules exactly two crons", workerCrons.length === 2,
+const declared = [...source.matchAll(/^\s{2}"([^"]+)":\s*\{/gm)].map((m) => m[1]);
+check("today is always scheduled", workerCrons.includes(TODAY_CRON),
   JSON.stringify(workerCrons));
-check("both are the repository's own declared cadences",
-  workerCrons.includes(TODAY_CRON) && workerCrons.includes(TARGETED_CRON)
-  && workflow.includes(`"${TODAY_CRON}"`) && workflow.includes(`"${TARGETED_CRON}"`),
+check("every scheduled cron is a repository cadence, declared in scan.yml",
+  workerCrons.every((cron) => workflow.includes(`"${cron}"`)),
   JSON.stringify(workerCrons));
-check("every scheduled cron has a mode in SCHEDULES, and vice versa",
-  workerCrons.every((cron) => source.includes(`"${cron}":`))
-  && [...source.matchAll(/^\s{2}"([^"]+)":\s*\{/gm)].map((m) => m[1]).sort()
-     .join("|") === [...workerCrons].sort().join("|"),
-  JSON.stringify([...source.matchAll(/^\s{2}"([^"]+)":\s*\{/gm)].map((m) => m[1])));
+// One direction is a hard rule: a scheduled cron with no mode dispatches
+// nothing. The other is deliberately loose - SCHEDULES may hold a mode that is
+// not currently scheduled, which is how a cron is paused without deleting the
+// code and tests that run it. Every such mode must be named as PAUSED in the
+// toml, so a paused trigger is a written decision and not a forgotten one.
+check("every scheduled cron has a mode in SCHEDULES",
+  workerCrons.every((cron) => declared.includes(cron)),
+  JSON.stringify({ workerCrons, declared }));
+for (const cron of declared) {
+  if (workerCrons.includes(cron)) continue;
+  const mode = (source.split(`"${cron}":`)[1] || "").match(/mode:\s*"([^"]+)"/);
+  check(`the unscheduled mode "${mode && mode[1]}" is documented as PAUSED`,
+    toml.includes(`PAUSED: ${mode && mode[1]}`) && toml.includes(cron),
+    cron);
+}
+check("the targeted mode is still supported in code, scheduled or not",
+  declared.includes(TARGETED_CRON) && workflow.includes(`"${TARGETED_CRON}"`));
 
 // The rule findOurRun leans on: the two dispatch minute sets never come within
 // the one minute of backward clock slack the run lookup allows. If a cron is

@@ -40,12 +40,41 @@ preview_urls = false
 # Both were run against GitHub's native schedule alone for months; the external
 # trigger changes who presses the button, not what the button does.
 #
-# EVERY cron here must also be a key of SCHEDULES in src/index.js, and every
-# key there must be a cron here. A trigger with no entry dispatches nothing -
-# deliberately, because a scheduler that guesses a mode writes the wrong data.
-# tests/scan-trigger-worker-runtime.mjs fails if the two lists ever disagree.
+# EVERY cron here must be a key of SCHEDULES in src/index.js. A trigger with no
+# entry dispatches nothing - deliberately, because a scheduler that guesses a
+# mode writes the wrong data. The reverse is allowed: SCHEDULES may hold a mode
+# that is not scheduled, which is how a cron is paused without deleting the code
+# that runs it. PAUSED_MODES below must name every one of those.
+#
+# PAUSED: upcoming-targeted ("1-59/5 * * * *")
+#
+# It ran externally from 09:56Z to 10:16Z on 2026-09-06 and worked - runs #1297
+# and #1301 both SUCCESS, correct mode, guard executed, suite skipped, ledger
+# fresh. It is paused for something it did not cause and did expose.
+#
+# Three concurrency groups write data/today-match.json and data/upcoming.json:
+# events-v4 (today, upcoming), targeted-v1 (upcoming-targeted) and catalogue-v4
+# (channels, movies, all). Runs in DIFFERENT groups run at the same time, and
+# the push step ends with `git rebase -X theirs origin/main`. That is a
+# three-way merge per file; `-X theirs` settles only the hunks that conflict,
+# so two non-conflicting regions of a regenerated JSON array are both kept and
+# a fixture appears twice. scripts/reconcile-generated-counts.py repairs the
+# counts afterwards but never the duplicate records.
+#
+# Measured: 0 duplicates in the 40 writes before, then 3 in the 15 minutes
+# after - 90edb2faf (today, 1 dup: myanmar-u20-vs-maldives-u20, where both
+# merge sides are still distinguishable by their carried_forward fields) and
+# 69e1afcdd (movies, 2 dups). The hazard was created by the PROMPT 44/45
+# targeted split and hidden by GitHub delivering 6.7% of its schedules; a cron
+# that actually fires every five minutes makes the overlap routine.
+#
+# Duplicate cards violate the locked grouping rule - one match, one card - so
+# the trigger is off until the push step dedupes by id after the rebase.
+# Re-enabling is one line: put the cron back and redeploy. Nothing else needs
+# to change; src/index.js already knows this mode and the tests already cover
+# it end to end.
 [triggers]
-crons = ["3,23,43 * * * *", "1-59/5 * * * *"]
+crons = ["3,23,43 * * * *"]
 
 # No [vars] block. Everything this Worker needs is a secret, and a secret set
 # with `wrangler secret put` is never written to this file:
