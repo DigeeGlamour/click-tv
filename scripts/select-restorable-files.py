@@ -92,12 +92,25 @@ def is_event_surface(path: str) -> bool:
     return path in EVENT_SURFACES or path.startswith(EVENT_SURFACE_PREFIX)
 
 
+def exists(ref: str, path: str) -> bool:
+    return subprocess.run(["git", "cat-file", "-e", "%s:%s" % (ref, path)],
+                          capture_output=True).returncode == 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--ours", required=True,
                         help="the commit this run produced")
     parser.add_argument("--base", required=True,
                         help="the commit this run branched from")
+    parser.add_argument("--theirs",
+                        help="what was on main. Needed to name the surfaces "
+                             "this run must TAKE from there rather than merely "
+                             "not restore - the rebase replays this run's own "
+                             "change first, so leaving a file out of the "
+                             "restore does not undo it.")
+    parser.add_argument("--out-theirs",
+                        help="file to write those NUL-separated paths to")
     parser.add_argument("--out", required=True,
                         help="file to write the NUL-separated result to. Not "
                              "stdout: bash strips a NUL out of a command "
@@ -123,9 +136,22 @@ def main() -> int:
             print("  %d event surface(s) left to whoever published them last"
                   % len(skipped), file=sys.stderr)
 
-    payload = "\0".join(keep) + ("\0" if keep else "")
-    with open(args.out, "w", encoding="utf-8", newline="") as handle:
-        handle.write(payload)
+    def write(path, paths):
+        with open(path, "w", encoding="utf-8", newline="") as handle:
+            handle.write("\0".join(paths) + ("\0" if paths else ""))
+
+    write(args.out, keep)
+
+    if args.out_theirs:
+        # Not restoring a file is not the same as not publishing it. The rebase
+        # replays this run's own commit, so a surface it rewrote is already
+        # applied by the time the restore runs, and the only way to leave it to
+        # whoever published it last is to check that version out.
+        take = [path for path in skipped if args.theirs and exists(args.theirs, path)]
+        write(args.out_theirs, take)
+        if take:
+            print("  %d of them will be taken from the newer publish instead"
+                  % len(take), file=sys.stderr)
     return 0
 
 

@@ -699,7 +699,14 @@ class ACatalogueRunDoesNotRepublishEvents(unittest.TestCase):
         repo.build(
             base={
                 self.RECEIPT: base_receipt,
-                "data/upcoming.json": '{"updated_at": "15:28:40", "items": []}\n',
+                # NOT the same bytes as `our_events`. The first version of this
+                # test made the base and our side identical, so the rebase had
+                # no change of ours to apply and the assertion passed without
+                # the code doing anything - and a channels run undid 54 minutes
+                # of events in production at 19:57 with the test green. A
+                # catalogue run really does rewrite these files: it mirrors them
+                # into the new snapshot slot it is writing.
+                "data/upcoming.json": '{"updated_at": "15:28:40", "slot": "s0", "items": []}\n',
                 "data/channels/sports.json": '{"count": 78}\n',
             },
             origin={
@@ -723,8 +730,8 @@ class ACatalogueRunDoesNotRepublishEvents(unittest.TestCase):
     def test_a_catalogue_run_leaves_the_event_files_to_the_events_run(self):
         repo, _ = self._run(
             our_receipt='{"generated_at": "2026-09-06T15:28:40+00:00"}\n',
-            origin_events='{"updated_at": "16:30:55", "items": ["fresh"]}\n',
-            our_events='{"updated_at": "15:28:40", "items": []}\n',
+            origin_events='{"updated_at": "16:30:55", "slot": "s1", "items": ["fresh"]}\n',
+            our_events='{"updated_at": "15:28:40", "slot": "s2", "items": []}\n',
         )
         self.assertIn(
             "16:30:55",
@@ -735,8 +742,8 @@ class ACatalogueRunDoesNotRepublishEvents(unittest.TestCase):
     def test_but_it_still_keeps_the_catalogue_it_did_scan(self):
         repo, _ = self._run(
             our_receipt='{"generated_at": "2026-09-06T15:28:40+00:00"}\n',
-            origin_events='{"updated_at": "16:30:55", "items": ["fresh"]}\n',
-            our_events='{"updated_at": "15:28:40", "items": []}\n',
+            origin_events='{"updated_at": "16:30:55", "slot": "s1", "items": ["fresh"]}\n',
+            our_events='{"updated_at": "15:28:40", "slot": "s2", "items": []}\n',
         )
         self.assertIn(
             '"count": 84',
@@ -749,8 +756,8 @@ class ACatalogueRunDoesNotRepublishEvents(unittest.TestCase):
         keeps the list it rescanned every source to build."""
         repo, _ = self._run(
             our_receipt='{"generated_at": "2026-09-06T16:29:02+00:00"}\n',
-            origin_events='{"updated_at": "16:30:55", "items": ["theirs"]}\n',
-            our_events='{"updated_at": "16:29:02", "items": ["ours"]}\n',
+            origin_events='{"updated_at": "16:30:55", "slot": "s1", "items": ["theirs"]}\n',
+            our_events='{"updated_at": "16:29:02", "slot": "s2", "items": ["ours"]}\n',
         )
         self.assertIn(
             "16:29:02",
@@ -779,6 +786,21 @@ class ACatalogueRunDoesNotRepublishEvents(unittest.TestCase):
         self.assertIn('mapfile -t -d \'\' KEEP < "$LIST"', function)
         self.assertNotIn(
             '"$(\"$PYTHON_BIN\" scripts/select-restorable-files.py', function)
+
+    def test_the_surfaces_it_does_not_own_are_taken_not_merely_skipped(self):
+        """Leaving a file out of the restore does not undo the rebase.
+
+        The rebase replays this run's own commit first, so a surface it
+        rewrote without scanning is already applied by the time the restore
+        runs. Measured at 19:57 on 2026-09-06: a channels run undid 54 minutes
+        of events with the selector working exactly as designed.
+        """
+        function = _extract_function("rebase_keeping_our_generated_files")
+        self.assertIn('--out-theirs "$TLIST"', function)
+        self.assertIn('git checkout "$THEIRS" -- "${TAKE[@]}"', function)
+        rebase = function.index("git rebase -X theirs")
+        take = function.index('git checkout "$THEIRS" -- "${TAKE[@]}"')
+        self.assertLess(rebase, take, "the take must follow the rebase")
 
 
 if __name__ == "__main__":

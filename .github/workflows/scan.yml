@@ -932,24 +932,36 @@ jobs:
             # could not start would silently restore nothing - which is the
             # guard turning itself off. A plain command under `set -e`
             # aborts the push instead, and the file keeps the bytes.
-            local KEEP=() LIST
-            LIST="$(mktemp)"
+            local THEIRS
+            THEIRS="$(git rev-parse origin/main)"
+
+            local KEEP=() TAKE=() LIST TLIST
+            LIST="$(mktemp)"; TLIST="$(mktemp)"
             if [[ "${#OURS[@]}" -gt 0 ]]; then
-              "$PYTHON_BIN" scripts/select-restorable-files.py --ours "$PRE" --base "$MERGE_BASE" --out "$LIST" -- "${OURS[@]}"
+              "$PYTHON_BIN" scripts/select-restorable-files.py --ours "$PRE" --base "$MERGE_BASE" --theirs "$THEIRS" --out "$LIST" --out-theirs "$TLIST" -- "${OURS[@]}"
               if [[ -s "$LIST" ]]; then
                 mapfile -t -d '' KEEP < "$LIST"
               fi
+              if [[ -s "$TLIST" ]]; then
+                mapfile -t -d '' TAKE < "$TLIST"
+              fi
             fi
-            rm -f "$LIST"
-            echo "${#KEEP[@]} of them will be kept whole."
-
-            local THEIRS
-            THEIRS="$(git rev-parse origin/main)"
+            rm -f "$LIST" "$TLIST"
+            echo "${#KEEP[@]} of them will be kept whole, ${#TAKE[@]} taken from main."
 
             git rebase -X theirs origin/main
 
             if [[ "${#KEEP[@]}" -gt 0 ]]; then
               git checkout "$PRE" -- "${KEEP[@]}"
+            fi
+            # Not restoring is not enough. The rebase replays this run's own
+            # commit, so a surface it rewrote without scanning is already
+            # applied by the time the restore runs - measured at 19:57 on
+            # 2026-09-06, when a channels run still undid 54 minutes of
+            # events with the selector working correctly. The only way to
+            # leave a surface to whoever published it last is to take it.
+            if [[ "${#TAKE[@]}" -gt 0 ]]; then
+              git checkout "$THEIRS" -- "${TAKE[@]}"
             fi
 
             # Keeping the event lists whole loses whatever the other run
