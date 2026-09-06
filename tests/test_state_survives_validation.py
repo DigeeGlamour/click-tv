@@ -2,8 +2,13 @@
 
 Around thirty tests call the persistence helpers on their default paths, and
 those paths point at the working tree. Running the suite therefore rewrites the
-repository's real state/ and reports/ - and the workflow runs the suite in the
-"Validate scanner files" step, before the scanner and before the commit.
+repository's real state/ and reports/ - and the workflow runs the suite before
+the scanner and before the commit.
+
+PROMPT 46 moved the suite out of "Validate scanner files" into a step of its
+own, so the five-minute targeted run can skip it - FINAL_2 ধাপ ৯. Nothing
+about the damage or the two defences changed; this file finds the step that
+runs the suite rather than naming one.
 
 Measured on 2026-08-29, one local `python -m unittest discover -s tests` run:
 
@@ -53,11 +58,52 @@ class ValidationStepTests(unittest.TestCase):
             WORKFLOW.read_text(encoding="utf-8")
         )["jobs"]["scan"]["steps"]
         self.names = [str(step.get("name") or "") for step in self.steps]
+        # Whichever step runs the suite. It was inside "Validate scanner
+        # files" and is now its own step; either way it is the one to check.
+        self.suite_index = next(
+            index for index, step in enumerate(self.steps)
+            if "unittest discover" in str(step.get("run") or ""))
+        self.suite = self.steps[self.suite_index]
+        self.body = str(self.suite.get("run") or "")
         self.validate = self.steps[self.names.index("Validate scanner files")]
-        self.body = str(self.validate.get("run") or "")
+        self.validate_body = str(self.validate.get("run") or "")
 
     def test_the_suite_still_runs(self):
         self.assertIn("unittest discover", self.body)
+
+    def test_exactly_one_step_runs_it(self):
+        """Two copies would double a five-minute run's cost and could
+        disagree about which modes skip it."""
+        running = [str(step.get("name") or "") for step in self.steps
+                   if "unittest discover" in str(step.get("run") or "")]
+        self.assertEqual(1, len(running), running)
+
+    def test_only_the_targeted_mode_skips_it(self):
+        """FINAL_2 ধাপ ৯: the five-minute run must not pay for ~2800 tests.
+
+        Every other mode - today, upcoming, channels, movies, all - has no
+        condition to fail, so the suite runs for them exactly as before.
+        """
+        condition = str(self.suite.get("if") or "")
+        self.assertIn("steps.scan_mode.outputs.mode", condition)
+        self.assertIn("!=", condition)
+        self.assertIn("upcoming-targeted", condition)
+        for mode in ("today", "upcoming", "channels", "movies", "all"):
+            self.assertNotIn("'%s'" % mode, condition, mode)
+
+    def test_it_reads_the_selected_mode_so_a_manual_run_counts_too(self):
+        """The cron would miss a workflow_dispatch of the same mode."""
+        self.assertLess(self.names.index("Select scan mode"), self.suite_index)
+
+    def test_the_cheap_validation_did_not_move_with_it(self):
+        """What a targeted run still gets: every required file present,
+        LF-only shell scripts, py_compile over every module, and the three
+        node --check passes plus the worker runtime test."""
+        for check in ("REQUIRED_FILES=(", "must use LF line endings",
+                      "python -m py_compile", "node --check",
+                      "node tests/playback-worker-runtime.mjs"):
+            self.assertIn(check, self.validate_body, check)
+        self.assertNotIn("unittest discover", self.validate_body)
 
     def test_the_suite_runs_in_a_throwaway_worktree(self):
         """The real fix: the tests cannot reach the scanner's tree at all.
@@ -91,6 +137,7 @@ class ValidationStepTests(unittest.TestCase):
         )
 
     def test_it_happens_before_the_scanner_reads_the_ledger(self):
+        self.assertLess(self.suite_index, self.names.index("Run scanner"))
         self.assertLess(
             self.names.index("Validate scanner files"),
             self.names.index("Run scanner"),
@@ -217,9 +264,10 @@ class TheAbsoluteStatePathsCanBeSentElsewhere(unittest.TestCase):
         steps = yaml.safe_load(
             WORKFLOW.read_text(encoding="utf-8")
         )["jobs"]["scan"]["steps"]
+        # The step that runs the suite - PROMPT 46 gave it one of its own.
         body = next(
             str(step.get("run") or "") for step in steps
-            if str(step.get("name") or "") == "Validate scanner files"
+            if "unittest discover" in str(step.get("run") or "")
         )
         self.assertIn('CLICKTV_STATE_ROOT="$VALIDATE_TREE/state"', body)
         self.assertIn('CLICKTV_REPORTS_ROOT="$VALIDATE_TREE/reports"', body)

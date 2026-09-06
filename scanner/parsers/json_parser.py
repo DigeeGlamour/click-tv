@@ -918,6 +918,10 @@ def parse_json_content(
 
                 "start_time": start_time,
                 "end_time": end_time,
+                # END_KEYS are "end_time"/"endTime"/"end" on the fixture
+                # itself - a feed naming the field that plainly is naming
+                # the match's end. See event_adapters.end_time_stated.
+                "end_time_stated": bool(str(end_time or "").strip()),
                 "competition": competition,
                 "event_url": event_url,
 

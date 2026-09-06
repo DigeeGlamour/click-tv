@@ -127,7 +127,11 @@ class Requirement2StreamMerge(unittest.TestCase):
 
 
 class Requirement3SourceCoverage(unittest.TestCase):
-    """Fetched -> Parsed -> Matched -> Published -> Dropped -> Drop Reason."""
+    """raw_items -> parsed -> sport allowed -> deduped -> published -> dropped.
+
+    The stage names are FINAL_3's (PROMPT 27). The report they belong to
+    answers the same question it always did: where was this source lost?
+    """
 
     def test_every_stage_is_reported_per_source(self):
         report = build_source_coverage(
@@ -139,13 +143,15 @@ class Requirement3SourceCoverage(unittest.TestCase):
         )
         rows = {row["source_id"]: row for row in report["sources"]}
         self.assertEqual(set(rows), {"src-a", "src-b", "src-c"})
-        for column in ("fetched", "parsed", "matched", "published", "dropped", "drop_reason"):
+        for column in ("raw_items", "parsed_events", "sport_allowed_events",
+                       "deduped_events", "published_unique_fixtures",
+                       "dropped_count", "drop_reasons"):
             self.assertIn(column, rows["src-a"])
-        self.assertEqual(rows["src-a"]["published"], 1)
-        self.assertEqual(rows["src-b"]["dropped"], 1)
-        self.assertTrue(rows["src-b"]["drop_reason"])
-        self.assertEqual(rows["src-c"]["fetched"], 0)
-        self.assertIn("nothing fetched", rows["src-c"]["drop_reason"])
+        self.assertEqual(rows["src-a"]["published_unique_fixtures"], 1)
+        self.assertEqual(rows["src-b"]["dropped_count"], 1)
+        self.assertTrue(rows["src-b"]["drop_reasons"])
+        self.assertEqual(rows["src-c"]["raw_items"], 0)
+        self.assertIn("nothing fetched", rows["src-c"]["drop_reasons"][0])
 
     def test_a_backup_contributor_counts_as_published(self):
         report = build_source_coverage(
@@ -159,8 +165,8 @@ class Requirement3SourceCoverage(unittest.TestCase):
             }],
         )
         rows = {row["source_id"]: row for row in report["sources"]}
-        self.assertEqual(rows["src-b"]["published"], 1)
-        self.assertEqual(rows["src-b"]["dropped"], 0)
+        self.assertEqual(rows["src-b"]["published_unique_fixtures"], 1)
+        self.assertEqual(rows["src-b"]["dropped_count"], 0)
 
 
 class Requirement6LiveProtection(unittest.TestCase):

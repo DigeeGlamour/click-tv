@@ -6,6 +6,7 @@ observed being mislabelled in production and must survive anyway. Every case in
 2026-08-30 whose `sport_type` said "other".
 """
 import pathlib
+import re
 import unittest
 
 from scanner import sport_filter as sf
@@ -299,16 +300,42 @@ class Reporting(unittest.TestCase):
 
 
 class LiveTvIsUntouched(unittest.TestCase):
-    def test_the_filter_is_only_reachable_from_the_event_pipeline(self):
-        # Live TV keeps Sports, Movies and Drama. Guard it by asserting that no
-        # module other than the event pipeline imports this one.
-        importers = sorted(
+    def test_only_the_event_pipeline_can_filter_with_it(self):
+        """Live TV keeps Sports, Movies and Drama.
+
+        The guard used to be "nothing else may import this module". That
+        was a proxy for the thing actually worth protecting - nothing else
+        may DROP a card with it - and the proxy stopped fitting when the
+        schedule resolver began asking `classify` how long a football match
+        lasts (PROMPT 16). Reading a verdict removes nothing; `apply` is the
+        call that removes things, and it stays where it was.
+        """
+        removers = sorted(
             path.name
             for path in pathlib.Path("scanner").glob("*.py")
-            if "sport_filter" in path.read_text(encoding="utf-8")
+            if "sport_filter.apply(" in path.read_text(encoding="utf-8")
             and path.name != "sport_filter.py"
         )
-        self.assertEqual(importers, ["events.py"], importers)
+        self.assertEqual(removers, ["events.py"], removers)
+
+    def test_and_only_two_modules_call_into_it_at_all(self):
+        """Matched on use, not on mention. `event_lifecycle` names
+        `sport_filter.CRICKET_FORMATS` in a comment, to say what its own
+        duration table is keyed by - which is documentation, not a
+        dependency, and must not read as one."""
+        callers = sorted(
+            path.name
+            for path in pathlib.Path("scanner").glob("*.py")
+            if re.search(
+                r"^\s*(?:from\s+\S+\s+)?import\s+sport_filter|^[^#\n]*\bsport_filter\.",
+                path.read_text(encoding="utf-8"),
+                re.MULTILINE,
+            )
+            and path.name != "sport_filter.py"
+        )
+        self.assertEqual(
+            callers, ["events.py", "schedule_resolver.py"], callers
+        )
 
 
 class KnownTeamVsTeamGoesToTheFixtureLookup(unittest.TestCase):

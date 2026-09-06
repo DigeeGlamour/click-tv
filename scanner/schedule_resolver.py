@@ -10,6 +10,18 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from scanner import sport_filter
+from scanner.event_lifecycle import (
+    CRICKET_FORMAT_MINUTES,
+    END_SOURCE_ASSUMED,
+    END_SOURCE_PROVIDER,
+    END_SOURCE_SPORT,
+    END_TIME_SOURCES,
+    SPORT_DURATION_MINUTES,
+    end_time_is_provider_stated,
+    end_time_provenance,
+)
+
 
 def _norm(value: Any) -> str:
     text = str(value or "").casefold()
@@ -39,6 +51,32 @@ def _zone(name: Any, fallback: str = "UTC", offset: Any = "+00:00") -> timezone 
         return _offset_zone(offset)
 
 
+#: Where a card's `end_time` came from. Three values, and the difference
+#: between them is the difference between knowing and guessing.
+#:
+#:   provider  something stated an actual finish time. Today that means an
+#:             explicit `end` on a fixture in config/event-fixtures.json -
+#:             a five-day Test finishing 2026-08-17T18:00, which no
+#:             duration could produce. Reading an explicit end out of an
+#:             upstream feed is PROMPT 15 and does not exist yet.
+#:   sport     computed from how long this kind of match lasts - the
+#:             competition's own `duration_minutes`.
+#:   assumed   a generic system fallback that knows nothing about the
+#:             fixture. `kickoff + events.provider_event_hours` is this,
+#:             and so is the hard-coded 240 minutes.
+#:
+#: Measured on 2026-09-05, before this field existed: 344 of 344 published
+#: cards carried an end_time, 343 of them exactly 240 minutes after
+#: kickoff, and every one was stamped `schedule_verified = True`. Not one
+#: came from a provider. That stamp is what `verified_end_passed` trusts,
+#: which is why FINAL_2 calls this step the most important one - but
+#: changing what that function trusts is PROMPT 19, not this.
+#: The vocabulary and its two readers now live in event_lifecycle, which
+#: is the module that has to decide whether an end time is an authority.
+#: Imported above and re-exported here, so `schedule_resolver.
+#: end_time_provenance` still means exactly what it did.
+
+
 def _iso_utc(value: datetime) -> str:
     return value.astimezone(timezone.utc).replace(microsecond=0).isoformat()
 
@@ -58,12 +96,24 @@ def _fixture_record(
     if start.tzinfo is None:
         start = start.replace(tzinfo=source_zone)
     if end_text:
+        # The catalogue states when this fixture finishes. A five-day Test
+        # ending on day five is not something a duration can express, so
+        # this is knowledge, not arithmetic.
         end = datetime.fromisoformat(end_text)
         if end.tzinfo is None:
             end = end.replace(tzinfo=source_zone)
+        end_source = END_SOURCE_PROVIDER
+    elif competition.get("duration_minutes"):
+        # How long this kind of match lasts - Tests 480, The Hundred 210.
+        end = start + timedelta(
+            minutes=int(competition["duration_minutes"])
+        )
+        end_source = END_SOURCE_SPORT
     else:
-        duration = int(competition.get("duration_minutes") or 240)
-        end = start + timedelta(minutes=duration)
+        # Knows nothing about the fixture. Unchanged at 240 minutes: this
+        # step names the guess, it does not correct it.
+        end = start + timedelta(minutes=240)
+        end_source = END_SOURCE_ASSUMED
     return {
         "fixture_id": f"{competition.get('id')}:{_norm(name).replace(' ', '-')}",
         "name": name,
@@ -87,6 +137,7 @@ def _fixture_record(
         }),
         "start": start.astimezone(timezone.utc),
         "end": end.astimezone(timezone.utc),
+        "end_source": end_source,
         "venue": venue,
         "schedule_source_url": str(competition.get("source_url") or ""),
     }
@@ -268,6 +319,70 @@ def _round_labels(value: str) -> set[Tuple[str, str]]:
     return {
         (match.group(1), match.group(2).casefold().rstrip("s"))
         for match in _ROUND_LABEL.finditer(str(value or ""))
+    }
+
+
+#: What the local fixture catalogue is currently able to do.
+#:
+#: ACTIVE               at least one fixture has not finished yet
+#: NO_FUTURE_FIXTURES   every fixture is in the past - the file is a record,
+#:                      not a schedule, and both readers of it are already
+#:                      guarded by the clock
+#: EMPTY                the file parses and lists nothing
+#: MISSING              no file at all
+CATALOGUE_ACTIVE = "ACTIVE"
+CATALOGUE_NO_FUTURE = "NO_FUTURE_FIXTURES"
+CATALOGUE_EMPTY = "EMPTY"
+CATALOGUE_MISSING = "MISSING"
+
+
+def catalogue_state(
+    path: str | Path = "config/event-fixtures.json",
+    now: Optional[datetime] = None,
+) -> Dict[str, Any]:
+    """Whether the local catalogue can still schedule anything, and say so.
+
+    A dead catalogue is not a bug on its own - the provider path carries the
+    fixtures and this file is a hand-written list nobody has updated. What was
+    a bug is that it looked identical to a live one from the outside:
+    `catalogue: 0` in a scan report means "nothing matched" and "this stopped
+    being a schedule nine days ago" equally well.
+
+    Reporting only. Nothing here filters, matches or refuses anything - both
+    readers already ignore a finished fixture by their own clock guards.
+    """
+    reference = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    target = Path(path)
+    if not target.exists():
+        return {"state": CATALOGUE_MISSING, "path": str(target), "fixtures": 0,
+                "past": 0, "future": 0, "newest_kickoff": "",
+                "oldest_kickoff": "", "days_since_newest": None,
+                "schedulable_now": 0}
+
+    fixtures = load_fixtures(target)
+    if not fixtures:
+        return {"state": CATALOGUE_EMPTY, "path": str(target), "fixtures": 0,
+                "past": 0, "future": 0, "newest_kickoff": "",
+                "oldest_kickoff": "", "days_since_newest": None,
+                "schedulable_now": 0}
+
+    starts = [fixture["start"] for fixture in fixtures]
+    # The same test `enrich_event_candidates` applies: a fixture whose end has
+    # passed is never considered, whatever else is in the file.
+    schedulable = [fixture for fixture in fixtures if fixture["end"] > reference]
+    newest = max(starts)
+    return {
+        "state": CATALOGUE_ACTIVE if schedulable else CATALOGUE_NO_FUTURE,
+        "path": str(target),
+        "fixtures": len(fixtures),
+        "past": sum(1 for start in starts if start < reference),
+        "future": sum(1 for start in starts if start >= reference),
+        "newest_kickoff": newest.isoformat(),
+        "oldest_kickoff": min(starts).isoformat(),
+        "days_since_newest": round(
+            (reference - newest).total_seconds() / 86400.0, 1),
+        # What this scan could actually have matched against.
+        "schedulable_now": len(schedulable),
     }
 
 
@@ -491,6 +606,10 @@ def _apply_fixture(item: Dict[str, Any], fixture: Dict[str, Any], source_time: O
     resolved["start_time"] = _iso_utc(fixture["start"])
     resolved["start_at"] = resolved["start_time"]
     resolved["end_time"] = _iso_utc(fixture["end"])
+    # Written wherever end_time is, so the two cannot come apart.
+    resolved["end_time_source"] = str(
+        fixture.get("end_source") or END_SOURCE_ASSUMED
+    )
     resolved["schedule_verified"] = True
     resolved["schedule_source_url"] = fixture["schedule_source_url"]
     if source_time is None:
@@ -541,7 +660,8 @@ def _today_source_channel_fallback(item: Dict[str, Any]) -> Optional[Dict[str, A
     # A provider clock or title is not authoritative fixture evidence.  Clear
     # it so the frontend cannot turn a reusable channel into UPCOMING/LIVE_NOW.
     for field in (
-        "start_time", "start_at", "end_time", "end_at", "fixture_id",
+        "start_time", "start_at", "end_time", "end_at", "end_time_source",
+        "fixture_id",
         "schedule_source_url", "time_verification", "source_time_delta_minutes",
     ):
         fallback.pop(field, None)
@@ -564,6 +684,12 @@ DEFAULT_FIXTURE_AUTHORITY_SOURCES = frozenset({
 
 # A provider feed gives a kickoff time but almost never an end time, so a
 # window has to be assumed to decide when a card stops being current.
+#: The generic assumed fallback for a fixture's end, and only that. No
+#: provider states it - it is kickoff plus these hours, computed here,
+#: and `end_time_source` records the result as `assumed` so nothing
+#: downstream reads it as evidence. It is reached only when a stated end
+#: and a known sport length have both failed; on a real scan of 282
+#: published cards that was 65 of them.
 DEFAULT_PROVIDER_EVENT_HOURS = 4
 
 PROVIDER_LIVE_STATUSES = frozenset({"LIVE", "LIVE_NOW", "IN_PROGRESS", "STARTED"})
@@ -572,6 +698,29 @@ PROVIDER_DEAD_STATUSES = frozenset({
     "COMPLETED", "ENDED", "FINISHED", "CLOSED", "UNSCHEDULED",
     "CANCELLED", "POSTPONED", "ABANDONED",
 })
+
+#: Why a fixture-authority candidate produced no card. Every name here is an
+#: existing `return None` in `_provider_fixture_item` - nothing new refuses
+#: anything, and the counts are only a reading of what already happened.
+#: FINAL_3, part 4-gha names the first three; the fourth is in the code at the
+#: `is_upcoming and schedule_status == "ENDED"` branch, where a not-started
+#: fixture whose kickoff has already passed is refused as a stale listing.
+REJECT_DEAD_STATUS = "provider_dead_status"
+REJECT_NOT_LIVE_OR_UPCOMING = "status_neither_live_nor_upcoming"
+REJECT_NO_KICKOFF = "kickoff_missing_and_not_live"
+REJECT_UPCOMING_ALREADY_PAST = "upcoming_kickoff_already_passed"
+
+PROVIDER_REJECT_REASONS = (
+    REJECT_DEAD_STATUS,
+    REJECT_NOT_LIVE_OR_UPCOMING,
+    REJECT_NO_KICKOFF,
+    REJECT_UPCOMING_ALREADY_PAST,
+)
+
+#: How many named rejected fixtures the report carries. Names, sources and
+#: statuses only - never a URL, a token or a header, because this report is
+#: read and pasted by people.
+PROVIDER_REJECT_SAMPLE_LIMIT = 60
 
 
 UNUSABLE_STREAM_STATUSES = frozenset({
@@ -600,11 +749,133 @@ def _provider_status(item: Dict[str, Any]) -> str:
     ).strip().upper()
 
 
+#: Where a feed writes the end of a fixture, in the order they are tried.
+#: These are the fields the adapters already fill - no new extraction was
+#: written for this, because the representation was already there and
+#: already reaching us:
+#:
+#:   parsers/event_adapters.py  `_record(..., end_time=end_iso)` for the
+#:     SonyLiv-shaped feeds, and `end_time=_parse_clock(row["End time"])`
+#:     for the tabular one. `flatten_records` copies it onto every
+#:     candidate as `end_time`.
+#:   parsers/json_parser.py     END_KEYS = ("end_time", "endTime", "end"),
+#:     read from the item and from its event block.
+#:
+#: What was missing was the last step: `_provider_fixture_item` overwrote
+#: the field with `start + provider_event_hours` before anything could
+#: read it, so a stated end was collected and then thrown away.
+PROVIDER_END_FIELDS = ("end_time", "end_at", "end")
+
+
+#: Sports whose fallback length is decided by the sport rather than by
+#: `events.provider_event_hours`, which knows nothing about any of them
+#: and gives all of them four hours.
+#:
+#: Cricket does not take a single length. `SPORT_DURATION_MINUTES` carries
+#: it at 480 minutes, written with a Test day in mind, and nearly every
+#: cricket fixture here is a T20 or shorter - so cricket is answered from
+#: CRICKET_FORMAT_MINUTES by the format PROMPT 17 reads, not from that
+#: entry.
+SPORT_DERIVED_ENDS = ("football", "cricket")
+
+
+def _sport_end_minutes(item: Dict[str, Any]) -> Optional[int]:
+    """How long this fixture lasts, from what sport it is. None if unknown.
+
+    Two things already in the codebase, joined up rather than rewritten:
+
+      scanner/sport_filter.classify   the evidence rules that already decide
+                                      what sport a card is, from its name,
+                                      competition and the feed's own label.
+                                      Reused so this cannot disagree with the
+                                      tab the card ends up on.
+      event_lifecycle.SPORT_DURATION_MINUTES
+                                      the duration table, which already reads
+                                      `"football": 150`. It was only ever
+                                      consulted by `estimated_end` for a card
+                                      with no end_time at all - and since every
+                                      card gets one, it had never run.
+
+    A guess it may be, but it is a guess about football rather than about
+    nothing: 150 minutes covers 90 plus stoppage, half time and a delayed
+    kick-off, where `kickoff + provider_event_hours` gives every fixture on
+    the site the same four hours whatever it is.
+
+    One length here means something different from the others. A Test's
+    480 minutes is a DAY of a Test, not the Test: it decides how long a
+    card keeps its place on a tab, and it is not evidence that the match
+    is over - five days of it may remain. Nothing may read it as a finish.
+    PROMPT 19 is what enforces that, by letting only `provider` count as an
+    authoritative end; until then a Test is still safer than it was, since
+    the alternative was the same four hours as everything else.
+    """
+    verdict = sport_filter.classify(item)
+    state = str(verdict.get("state") or "")
+    if "football" in SPORT_DERIVED_ENDS and state in sport_filter.FOOTBALL_STATES:
+        minutes = SPORT_DURATION_MINUTES.get("football")
+        return int(minutes) if minutes else None
+    if "cricket" in SPORT_DERIVED_ENDS and state in sport_filter.CRICKET_STATES:
+        # PROMPT 17 reads the format; this turns it into a length. An
+        # unrecognised format answers 300 rather than falling through to
+        # the generic four hours - "some kind of cricket" is still more
+        # than nothing, and it is not a guess at T20 or ODI.
+        fmt = sport_filter.cricket_format(item)["format"]
+        minutes = CRICKET_FORMAT_MINUTES.get(fmt)
+        return int(minutes) if minutes else None
+    return None
+
+
+def _provider_end_time(
+    item: Dict[str, Any],
+    start: datetime,
+    source_timezone: ZoneInfo,
+    now: datetime,
+) -> Optional[datetime]:
+    """The end time this feed stated, in UTC, or None if it stated none.
+
+    Parsed with `_parse_source_time`, the same function the kickoff goes
+    through - so a naive clock lands in the feed's own zone rather than
+    the site's, "Z" is understood, and the awkward shapes it already
+    knows about keep working. Reusing it is the point: a second clock
+    parser would be a second set of bugs.
+
+    Two ways a value is refused, and both return None rather than
+    guessing:
+
+      not a match end
+                    the adapter that read the field did not mark it as one.
+                    A feed can carry an end that is not the fixture's -
+                    SonyLiv's `contractEndDate` is a licence expiry, 915
+                    minutes past kickoff on a T20 - and this file cannot
+                    tell those apart from the outside. The adapter can, so
+                    it does: see `end_time_stated`.
+      unparseable   the field held something that is not a time.
+      ends at or before kickoff
+                    a match cannot finish before it starts. This is what
+                    a zero, an empty epoch or a mismatched date looks
+                    like once parsed, and calling that "provider" would
+                    retire the card the moment it was published.
+
+    A refusal is not a fallback: the caller falls back on its own, and
+    labels what it falls back to honestly.
+    """
+    if item.get("end_time_stated") is not True:
+        return None
+    for field in PROVIDER_END_FIELDS:
+        parsed = _parse_source_time(item.get(field), source_timezone, now)
+        if parsed is None or parsed <= start:
+            continue
+        return parsed
+    return None
+
+
 def _provider_fixture_item(
     item: Dict[str, Any],
     source_time: Optional[datetime],
     now_utc: datetime,
     event_hours: int,
+    source_timezone: Optional[ZoneInfo] = None,
+    rejection: Optional[Dict[str, Any]] = None,
 ) -> Optional[Dict[str, Any]]:
     """Turn one fixture-authority feed entry into a scheduled event.
 
@@ -616,31 +887,75 @@ def _provider_fixture_item(
     the match has started is itself sufficient evidence to publish a card.
     """
     status = _provider_status(item)
+
+    def refuse(reason: str) -> None:
+        """Say which of the existing refusals this was.
+
+        `rejection` is an out-parameter and nothing more: the four `return
+        None`s below are exactly the four that were here before, in the same
+        order, on the same evidence. A caller that passes no dict gets the
+        behaviour it always had.
+        """
+        if rejection is not None:
+            rejection["reason"] = reason
+            rejection["status"] = status
+
     if status in PROVIDER_DEAD_STATUSES:
+        refuse(REJECT_DEAD_STATUS)
         return None
 
     is_live = status in PROVIDER_LIVE_STATUSES
     is_upcoming = status in PROVIDER_UPCOMING_STATUSES
     if not is_live and not is_upcoming:
+        refuse(REJECT_NOT_LIVE_OR_UPCOMING)
         return None
 
     start = source_time
     if start is None:
         if not is_live:
             # No kickoff time and not currently playing: nothing to schedule.
+            refuse(REJECT_NO_KICKOFF)
             return None
         start = now_utc
 
     resolved = copy.deepcopy(item)
-    end = start + timedelta(hours=max(1, event_hours))
+    # A stated end beats a computed one. Nothing here computes better than
+    # the feed knows, and `start + provider_event_hours` knows nothing at
+    # all - it is the same four hours for a T20 and a Test day.
+    provider_end = _provider_end_time(
+        item, start, source_timezone or timezone.utc, now_utc
+    )
+    if provider_end is not None:
+        end = provider_end
+        end_source = END_SOURCE_PROVIDER
+    else:
+        sport_minutes = _sport_end_minutes(item)
+        if sport_minutes is not None:
+            end = start + timedelta(minutes=sport_minutes)
+            end_source = END_SOURCE_SPORT
+        else:
+            end = start + timedelta(hours=max(1, event_hours))
+            end_source = END_SOURCE_ASSUMED
     if is_live:
         # The feed says this is playing now, which outranks a guessed window;
         # a long format like a Test day would otherwise read as already ended.
-        end = max(end, now_utc + timedelta(hours=1))
+        extended = max(end, now_utc + timedelta(hours=1))
+        if extended != end:
+            # This system moved the time, so the time is this system's now.
+            # Saying "provider" about a number a provider did not give is
+            # the whole fault being fixed - it cannot be reintroduced here
+            # for the one card where the feed contradicts itself.
+            end = extended
+            end_source = END_SOURCE_ASSUMED
 
     resolved["start_time"] = _iso_utc(start)
     resolved["start_at"] = resolved["start_time"]
     resolved["end_time"] = _iso_utc(end)
+    # Decided above: "provider" only when this feed stated an end and that
+    # statement survived unchanged. Otherwise `kickoff +
+    # events.provider_event_hours` - this system's arithmetic, which is how
+    # 343 cards came to look like verified four-hour fixtures.
+    resolved["end_time_source"] = end_source
     resolved["source_start_time"] = str(item.get("start_time") or "")
     resolved["schedule_verified"] = True
     resolved["schedule_authority"] = str(item.get("source_id") or "provider_feed")
@@ -677,9 +992,74 @@ def _provider_fixture_item(
     elif is_upcoming and resolved.get("schedule_status") == "ENDED":
         # A not-started fixture whose kickoff has already passed means the feed
         # is stale. Publishing it would show a match that is over.
+        refuse(REJECT_UPCOMING_ALREADY_PAST)
         return None
 
     return resolved
+
+
+def _rejected_sport(item: Dict[str, Any]) -> str:
+    """cricket, football, or empty - by the same classifier the tabs use."""
+    try:
+        from scanner import sport_filter
+    except ImportError:  # scanner/ on sys.path directly
+        try:
+            import sport_filter  # type: ignore
+        except ImportError:
+            return ""
+    try:
+        verdict = sport_filter.classify(item)
+    except Exception:  # noqa: BLE001 - reporting must never break a scan
+        return ""
+    state = str(verdict.get("state") or "")
+    if state in sport_filter.CRICKET_STATES:
+        return "cricket"
+    if state in sport_filter.FOOTBALL_STATES:
+        return "football"
+    return ""
+
+
+def _record_provider_rejection(
+    stats: Dict[str, Any],
+    item: Dict[str, Any],
+    rejection: Dict[str, Any],
+    source_time: Optional[datetime],
+) -> None:
+    """Note why one authority candidate produced no card.
+
+    The aggregate stays exactly what it was; this only says what it was made
+    of. A rejected cricket or football fixture is named, because that is the
+    one case where the number matters - the same way sport_filter.py names
+    every event it discards.
+    """
+    reason = str(rejection.get("reason") or "unrecorded")
+    reasons = stats.setdefault("provider_rejected_reasons", {})
+    reasons[reason] = int(reasons.get(reason, 0)) + 1
+
+    source_id = str(item.get("source_id") or "").strip() or "unknown-source"
+    by_source = stats.setdefault("provider_rejected_by_source", {})
+    bucket = by_source.setdefault(source_id, {})
+    bucket[reason] = int(bucket.get(reason, 0)) + 1
+    bucket["total"] = int(bucket.get("total", 0)) + 1
+
+    sport = _rejected_sport(item)
+    if not sport:
+        return
+    named = stats.setdefault("provider_rejected_fixtures", [])
+    if len(named) >= PROVIDER_REJECT_SAMPLE_LIMIT:
+        stats["provider_rejected_fixtures_truncated"] = (
+            int(stats.get("provider_rejected_fixtures_truncated", 0)) + 1
+        )
+        return
+    named.append({
+        "name": str(item.get("name") or "").strip(),
+        "competition": str(item.get("competition") or "").strip(),
+        "sport": sport,
+        "source_id": source_id,
+        "status": str(rejection.get("status") or "").strip(),
+        "reason": reason,
+        "start_time": _iso_utc(source_time) if source_time else "",
+    })
 
 
 def _event_identity_name(value: Any) -> str:
@@ -1049,6 +1429,7 @@ def attach_streams_to_fixtures(
         attached["name"] = fixture["name"]
         for field in (
             "competition", "fixture_id", "start_time", "start_at", "end_time",
+            "end_time_source",
             "schedule_status", "status", "schedule_verified",
             "schedule_source_url", "time_verification", "schedule_authority",
         ):
@@ -1085,6 +1466,7 @@ def attach_streams_to_fixtures(
         attached["name"] = fixture["name"]
         for field in (
             "competition", "fixture_id", "start_time", "start_at", "end_time",
+            "end_time_source",
             "schedule_status", "status", "schedule_verified",
             "schedule_source_url", "time_verification", "schedule_authority",
         ):
@@ -1155,6 +1537,11 @@ def enrich_event_candidates(
         "catalogue": 0,
         "provider_fixture": 0,
         "provider_rejected": 0,
+        # One aggregate said 98 and nothing else. If five of those were real
+        # cricket or football fixtures there was no way to find out.
+        "provider_rejected_reasons": {r: 0 for r in PROVIDER_REJECT_REASONS},
+        "provider_rejected_by_source": {},
+        "provider_rejected_fixtures": [],
         "ambiguous_suppressed": 0,
         "unverified_suppressed": 0,
     }
@@ -1222,14 +1609,18 @@ def enrich_event_candidates(
         # evidence enough on its own; a stream-only playlist is not and still
         # falls through to the channel handling below.
         if str(item.get("source_id") or "").strip() in authority:
+            rejection: Dict[str, Any] = {}
             provider_item = _provider_fixture_item(
-                item, source_time, now_utc, provider_event_hours
+                item, source_time, now_utc, provider_event_hours,
+                source_timezone=item_zone,
+                rejection=rejection,
             )
             if provider_item is not None:
                 stats["provider_fixture"] += 1
                 output.append(provider_item)
                 continue
             stats["provider_rejected"] += 1
+            _record_provider_rejection(stats, item, rejection, source_time)
             continue
 
         # A stream source's own date is useful evidence, but it is not

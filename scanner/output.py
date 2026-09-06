@@ -1633,9 +1633,28 @@ def publish_scan_outputs(
         reports_root / "pipeline-performance.json"
     )
 
+    # FINAL_3, part 4-ka: "streams_attached == 0 হলে সেটা warning, নীরব
+    # সাফল্য নয়". The scan whose every card was a stale carry-forward
+    # finished as `completed_with_warnings` for unrelated route errors
+    # and said nothing at all about having attached no stream.
+    stream_health = _load_json_file(
+        reports_root / "event-schedule.json").get("stream_health")
+    # A coverage invariant that starts failing is a report telling the
+    # truth about being untrustworthy. It says so where the numbers are
+    # read, not only in the file nobody opened.
+    coverage_invariants = _load_json_file(
+        reports_root / "today-source-coverage.json").get("invariants")
+    coverage_failures = (
+        list(coverage_invariants.get("failures") or [])
+        if isinstance(coverage_invariants, dict) else [])
+    stream_warnings = (
+        list(stream_health.get("warnings") or [])
+        if isinstance(stream_health, dict) else [])
+
     scan_status = (
         "completed_with_warnings"
-        if source_errors or output_safety_items
+        if source_errors or output_safety_items or stream_warnings
+        or coverage_failures
         else "completed"
     )
 
@@ -1648,6 +1667,9 @@ def publish_scan_outputs(
         "quarantined_movies": quarantined_movie_count,
         "rejected_low_quality": len(rejected_items),
         "output_safety_warnings": len(output_safety_items),
+        "stream_warnings": stream_warnings,
+        "coverage_invariant_failures": coverage_failures,
+        "stream_health": stream_health if isinstance(stream_health, dict) else {},
         "movie_output_preserved": movie_output_preserved,
         "allowed_playback_hosts": _safe_int(allowed_hosts_payload.get("count"), 0, 0),
         "catalogued_playback_sources": len(playback_collector.records),

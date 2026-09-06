@@ -119,16 +119,49 @@ concurrency:
   # with no traffic in it. Runs since have started and finished normally.
   #
   # Leave them. They cost nothing but a line in the UI.
+  #
+  # THE TARGETED SPLIT (PROMPT 44/45, FINAL_2 ধাপ ৯)
+  #
+  # The five-minute link hunt used to share `live-signal-events-v4` with the
+  # twenty-minute today scan. A group holds one run in progress and one
+  # pending and DROPS the rest, and a today run takes far longer than five
+  # minutes end to end - checkout, tests, scan, push, rebase retry - so every
+  # targeted trigger that arrived during one was queued behind it or thrown
+  # away. The ladder then loses ticks it never knows about: it is written to
+  # survive a missed tick, and it should not have to.
+  #
+  # So targeted gets a queue of its own, and only targeted:
+  #
+  #   live-signal-targeted-v1    upcoming-targeted   (cron 1-59/5, or dispatch)
+  #   live-signal-catalogue-v4   channels, movies, all
+  #   live-signal-events-v4      today, upcoming     (unchanged)
+  #
+  # Only workflow-level context exists here - `github.event.schedule` and
+  # `inputs.mode`. The job's own "Select scan mode" step has not run when this
+  # is evaluated, so its output cannot be read; matching the cron string is the
+  # only thing available, which is why the crons are named in a comment at the
+  # top of this file as unsafe to edit alone.
   group: >-
     live-signal-${{
-      (github.event.schedule == '17 0,6,12,18 * * *'
-       || github.event.schedule == '37 4 * * *'
-       || inputs.mode == 'channels'
-       || inputs.mode == 'movies'
-       || inputs.mode == 'all')
-      && 'catalogue' || 'events'
-    }}-v4
-  cancel-in-progress: false
+      (github.event.schedule == '1-59/5 * * * *'
+       || inputs.mode == 'upcoming-targeted')
+      && 'targeted-v1'
+      || ((github.event.schedule == '17 0,6,12,18 * * *'
+           || github.event.schedule == '37 4 * * *'
+           || inputs.mode == 'channels'
+           || inputs.mode == 'movies'
+           || inputs.mode == 'all')
+          && 'catalogue-v4' || 'events-v4')
+    }}
+  # Only the targeted run cancels its predecessor. A five-minute hunt that is
+  # still going when the next one starts is working on a staler view of the
+  # same fixtures, and the newer run re-reads the ledger from disk, so nothing
+  # it was going to record is lost: the attempt it had not yet written was not
+  # an attempt. today, upcoming, channels and movies keep `false` - they write
+  # whole trees and a half-finished one must not be interrupted.
+  cancel-in-progress: >-
+    ${{ github.event.schedule == '1-59/5 * * * *'
+        || inputs.mode == 'upcoming-targeted' }}
 
 jobs:
   scan:
@@ -350,6 +383,65 @@ jobs:
           node --check site/assets/js/series.js
           node --check site/sw.js
           node tests/playback-worker-runtime.mjs
+
+      - name: Select scan mode
+        id: scan_mode
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            MODE="${{ inputs.mode }}"
+          elif [[ "${{ github.event.schedule }}" == "3,23,43 * * * *" ]]; then
+            MODE="today"
+          elif [[ "${{ github.event.schedule }}" == "1-59/5 * * * *" ]]; then
+            MODE="upcoming-targeted"
+          elif [[ "${{ github.event.schedule }}" == "9 5,17 * * *" ]]; then
+            MODE="upcoming"
+          elif [[ "${{ github.event.schedule }}" == "17 0,6,12,18 * * *" ]]; then
+            MODE="channels"
+          elif [[ "${{ github.event.schedule }}" == "37 4 * * *" ]]; then
+            MODE="movies"
+          elif [[ "${{ github.event_name }}" == "schedule" ]]; then
+            # A scheduled trigger whose cron matches no branch above means
+            # `on.schedule` and this selector have drifted apart. That drift is
+            # not hypothetical: it ran "channels" 11 times in 24 hours against a
+            # four-a-day cron while "today" and "upcoming-targeted" never ran at
+            # all, and the only symptom was a targeted report 115 hours stale.
+            #
+            # Failing here is the point. A run that cannot tell which mode it was
+            # triggered for must not write data under a guessed one - and the
+            # failure reaches the owner, because the Telegram step below is
+            # `if: failure()`. Silence was the whole fault.
+            echo "::error title=Unrecognised schedule::github.event.schedule was '${{ github.event.schedule }}', which no branch of this step matches. Add a branch for it, or fix on.schedule - the two must agree. Declared crons: 3,23,43 * * * * / 1-59/5 * * * * / 9 5,17 * * * / 17 0,6,12,18 * * * / 37 4 * * *"
+            exit 1
+          else
+            MODE="channels"
+          fi
+
+          echo "Selected scan mode: $MODE"
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+
+      # PROMPT 46 / FINAL_2 ধাপ ৯. The suite is ~2800 tests and the targeted
+      # trigger fires every five minutes. Running it there burns GitHub
+      # minutes on the one mode that has to be quick, and delays the link hunt
+      # it exists to perform - so targeted skips it, and only targeted.
+      #
+      # What targeted still runs, in the step above and unchanged: every
+      # required file present, shell scripts LF-only, py_compile over scan.py
+      # and every scanner/, scripts/ and tests/ module, node --check on all
+      # three site scripts, and the playback worker runtime test. What it still
+      # runs below: the delivery-path check, the Cloudflare Pages output
+      # validation, the generated-count reconciliation and the push safety.
+      #
+      # It reads the selected mode rather than the cron, so a manual
+      # `upcoming-targeted` dispatch is treated the same way as the schedule.
+      - name: Run the full test suite
+        if: steps.scan_mode.outputs.mode != 'upcoming-targeted'
+        shell: bash
+        run: |
+          set -euo pipefail
+
           # The suite runs in a throwaway worktree, not in the tree the scanner
           # is about to read. A worktree shares the object database, so this
           # costs a checkout and no clone, and whatever the tests write is
@@ -402,31 +494,6 @@ jobs:
           git status --porcelain -- state reports | head -40
           git checkout -- state reports
           git status --porcelain -- state reports
-
-      - name: Select scan mode
-        id: scan_mode
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            MODE="${{ inputs.mode }}"
-          elif [[ "${{ github.event.schedule }}" == "0,20,40 * * * *" ]]; then
-            MODE="today"
-          elif [[ "${{ github.event.schedule }}" == "*/5 * * * *" ]]; then
-            MODE="upcoming-targeted"
-          elif [[ "${{ github.event.schedule }}" == "9 5,17 * * *" ]]; then
-            MODE="upcoming"
-          elif [[ "${{ github.event.schedule }}" == "17 0,6,12,18 * * *" ]]; then
-            MODE="channels"
-          elif [[ "${{ github.event.schedule }}" == "37 4 * * *" ]]; then
-            MODE="movies"
-          else
-            MODE="channels"
-          fi
-
-          echo "Selected scan mode: $MODE"
-          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
 
       # Five crons ask for roughly 370 runs a day. GitHub delivered ten on
       # 2026-08-27, nine on 08-28 and nine on 08-29, against ninety-five on

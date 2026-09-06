@@ -98,38 +98,109 @@ class StalenessGuardTests(unittest.TestCase):
         self.assertGreater(int(targeted.group(1)), 5 * 60)
 
 
+#: Every trigger this workflow declares, as (schedule, dispatch mode).
+TRIGGERS = (
+    ("1-59/5 * * * *", ""),
+    ("3,23,43 * * * *", ""),
+    ("17 0,6,12,18 * * *", ""),
+    ("37 4 * * *", ""),
+    ("", "today"),
+    ("", "upcoming"),
+    ("", "upcoming-targeted"),
+    ("", "channels"),
+    ("", "movies"),
+    ("", "all"),
+)
+
+#: The modes that write a whole tree and must never be interrupted.
+WRITER_TRIGGERS = tuple(
+    (schedule, mode) for schedule, mode in TRIGGERS
+    if mode != "upcoming-targeted" and schedule != "1-59/5 * * * *"
+)
+
+
+def _evaluate(expression, schedule="", mode=""):
+    """Render a workflow-level expression the way the runner does.
+
+    The evaluator lives in test_targeted_concurrency, which is where it is
+    itself tested against GitHub's operand-returning `&&`/`||`.
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    try:
+        from test_targeted_concurrency import _render
+    except ImportError:  # pragma: no cover - discovered as a package
+        from tests.test_targeted_concurrency import _render
+
+    return _render(str(expression), schedule=schedule, mode=mode)
+
+
 class ConcurrencyTests(unittest.TestCase):
-    def test_the_group_name_records_why_it_was_rotated(self):
+    def test_every_group_the_expression_can_produce_is_versioned(self):
         """A rotation without its reason looks like churn to the next reader.
 
-        The group has been rotated twice for the same cause: runs left pending
-        in it forever. A concurrency group holds one run in progress and one
-        pending, so anything behind them is dropped - six workflow_dispatch
-        runs stuck since 2026-08-05 stopped scheduled runs appearing at all,
-        and a pushed fix went unused for over two hours.
+        The group has been rotated for the same cause more than once: runs left
+        pending in it forever. A concurrency group holds one run in progress and
+        one pending, so anything behind them is dropped - six workflow_dispatch
+        runs stuck since 2026-08-05 stopped scheduled runs appearing at all, and
+        a pushed fix went unused for over two hours.
+
+        PROMPT 44 split targeted into `live-signal-targeted-v1`, so the version
+        now lives inside each branch of the expression rather than at the end of
+        one string. Every branch is checked, which is stricter than the single
+        match this replaces.
         """
         if not WORKFLOW.is_file():
             self.skipTest("no workflow")
         text = WORKFLOW.read_text(encoding="utf-8")
         group = (_load().get("concurrency") or {}).get("group") or ""
-        self.assertRegex(
-            str(group), r"-v\d+$",
-            "the group carries no version, so a jam cannot be rotated away",
-        )
+        for schedule, mode in TRIGGERS:
+            rendered = _evaluate(group, schedule, mode)
+            with self.subTest(schedule=schedule, mode=mode):
+                self.assertRegex(
+                    rendered, r"^live-signal-[a-z]+-v\d+$",
+                    "%r is not a rotatable versioned group" % rendered,
+                )
         head = text.split("concurrency:", 1)[-1].split("group:", 1)[0]
         self.assertIn("pending", head.lower())
 
-    def test_the_one_writer_guarantee_is_still_in_place(self):
-        """The guard reduces the backlog; it must not weaken write safety."""
+    def test_no_data_writer_is_ever_cancelled_mid_run(self):
+        """The guard reduces the backlog; it must not weaken write safety.
+
+        PROMPT 45 lets the five-minute targeted run cancel its own predecessor -
+        the newer one carries fresher data for the same fixtures and re-reads
+        the ledger from disk, so an attempt it had not yet written was not an
+        attempt. Every mode that writes a whole tree still runs to completion.
+        """
         if not WORKFLOW.is_file():
             self.skipTest("no workflow")
-        payload = _load()
-        concurrency = payload.get("concurrency") or {}
+        concurrency = _load().get("concurrency") or {}
         self.assertTrue(str(concurrency.get("group") or "").strip())
-        self.assertFalse(
-            concurrency.get("cancel-in-progress"),
-            "cancelling a data writer mid-run is what the group exists to stop",
-        )
+        cancel = concurrency.get("cancel-in-progress")
+        for schedule, mode in WRITER_TRIGGERS:
+            with self.subTest(schedule=schedule, mode=mode):
+                self.assertEqual(
+                    "false", _evaluate(cancel, schedule, mode),
+                    "cancelling a data writer mid-run is what the group exists "
+                    "to stop",
+                )
+
+    def test_the_one_mode_that_cancels_is_alone_in_its_queue(self):
+        """A cancel only ever reaches the run's own group, so the split is what
+        makes it safe: nothing else can be standing there."""
+        if not WORKFLOW.is_file():
+            self.skipTest("no workflow")
+        concurrency = _load().get("concurrency") or {}
+        group, cancel = concurrency.get("group"), concurrency.get("cancel-in-progress")
+        cancelling = {
+            _evaluate(group, schedule, mode)
+            for schedule, mode in TRIGGERS
+            if _evaluate(cancel, schedule, mode) == "true"
+        }
+        others = {
+            _evaluate(group, schedule, mode) for schedule, mode in WRITER_TRIGGERS
+        }
+        self.assertEqual({"live-signal-targeted-v1"}, cancelling)
+        self.assertFalse(cancelling & others)
 
 
 if __name__ == "__main__":

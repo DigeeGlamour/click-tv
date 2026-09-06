@@ -234,7 +234,8 @@ def _epoch(value: Any, unit: str = "s") -> str:
         return ""
 
 
-#: Every clock spelling the eleven feeds actually use, measured.
+#: Every clock spelling these feeds actually use, measured on the event
+#: registry as it stood on 2026-08-20, when eleven feeds were registered.
 _TIME_PATTERNS = (
     "%Y-%m-%d %H:%M:%S",            # tapmad, sm-sportsdata (12 of 158)
     "%d/%m/%Y %I:%M:%S %p",         # sm-sportsdata (146 of 158)
@@ -413,7 +414,8 @@ _URL_TEXT = re.compile(r"(?i)^https?://\S+$")
 def _deep_urls(value: Any, limit: int = 8) -> List[str]:
     """Every http(s) string inside a nested structure, in document order.
 
-    The known key names cover what the eleven feeds serve today. This is the
+    The known key names cover what the registered feeds serve today. This is
+    the
     safety net for the day one of them moves its link one level deeper: the
     rule is that a stream URL must be found even when it is nested inside
     objects or arrays, and a key-name lookup alone cannot promise that.
@@ -519,6 +521,19 @@ def _record(
     sport: str = "",
     start_time: str = "",
     end_time: str = "",
+    # Does `end_time` say when the MATCH finishes?
+    #
+    # Not every end a feed carries is one. SonyLiv sends
+    # `contractEndDate` - when its licence to carry the content expires -
+    # which this file has always used to work out LIVE vs FINISHED, and
+    # which is fine for that. It is not a finishing time: measured on
+    # 2026-09-05, `Fazilka Falcons vs Bathinda Royals` carried one 915
+    # minutes after its own start, for a T20.
+    #
+    # So the adapter that read the value says whether it means what it
+    # looks like, because that is the only place the answer is known.
+    # Default False: silence is not evidence.
+    end_time_stated: bool = False,
     source_says_ended: Optional[bool] = None,
     identity: str = "",
 ) -> Dict[str, Any]:
@@ -538,6 +553,7 @@ def _record(
         "sport": str(sport or "").strip().lower(),
         "start_time": start_time,
         "end_time": end_time,
+        "end_time_stated": bool(end_time_stated and str(end_time or "").strip()),
         "source_says_ended": source_says_ended,
         "logo": logo,
         "logo_candidates": [str(x or "").strip() for x in logos if str(x or "").strip()],
@@ -666,6 +682,9 @@ def adapt_sonyliv(payload: Dict[str, Any], source_id: str) -> List[Dict[str, Any
                 round_label=_first_text(info.get("episodeTitle")),
                 sport=sport,
                 start_time=start_iso,
+                # `contractEndDate`. Still used above to decide LIVE vs
+                # FINISHED, which is what it is good for, and deliberately
+                # NOT offered as a finishing time - see `end_time_stated`.
                 end_time=end_iso,
                 source_says_ended=True if status == "FINISHED" else None,
                 identity=_first_text(info.get("contentId")),
@@ -1235,6 +1254,11 @@ def adapt_spaced_keys(payload: Dict[str, Any], source_id: str) -> List[Dict[str,
                 sport=_first_text(row.get("Category")),
                 start_time=_parse_clock(row.get("Start time")),
                 end_time=end_time,
+                # A fixture row with "Start time" and "End time" beside each
+                # other. Measured on 2026-09-05: 24 rows carrying one, and
+                # `Milan vs Juventus` reads 18:45 -> 21:00 - a football
+                # match, not a rights window.
+                end_time_stated=True,
                 source_says_ended=_ended_by_clock(end_time),
                 identity="",
             )
@@ -1491,8 +1515,9 @@ def adapter_report() -> Dict[str, Any]:
 # Per-record LIVE / UPCOMING routing
 # ---------------------------------------------------------------------------
 
-# Measured, not assumed. The 442 records the eleven feeds served on
-# 2026-08-20 carry exactly seven distinct status strings:
+# Measured, not assumed. The 442 records served on 2026-08-20 - by the
+# eleven feeds registered at that date - carry exactly seven distinct
+# status strings:
 #
 #   LIVE 17 | Live 3 | LIVE_NOW 5 | 1H 2      -> playing now
 #   NS 173 | UPCOMING 155 | Upcoming 10       -> not started
@@ -1526,7 +1551,7 @@ def _status_token(value: Any) -> str:
 def record_pipeline(record: Dict[str, Any], default: str = "today_match") -> str:
     """Which tab this one record belongs to, decided after parsing.
 
-    The eleven sources are registered once each, in
+    Every event source is registered once, in
     config/sources/today-match.json, because every one of them mixes states
     inside a single file - axsports serves 3 live and 84 not-started rows from
     the same array. Routing therefore cannot come from which config file a
@@ -1612,6 +1637,7 @@ def flatten_records(
             "original_status": record["status_raw"],
             "start_time": record.get("start_time") or "",
             "end_time": record.get("end_time") or "",
+            "end_time_stated": bool(record.get("end_time_stated")),
             "competition": record.get("competition") or "",
             "event_url": "",
             "tvg_id": record.get("identity") or "",

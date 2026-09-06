@@ -81,6 +81,41 @@ DEFAULT_CONFIRMATIONS_REQUIRED = 3
 # purpose: an estimate that is merely optimistic must not start the clock.
 DEFAULT_ESTIMATE_GRACE_MINUTES = 90
 
+#: How long a finished fixture keeps its place on Today Match. Fallback
+#: only: the live value is config/settings.json ->
+#: event_lifecycle.post_match_grace_minutes, which asks for 20. Kept at 0 -
+#: what the code did before the grace existed, an immediate retirement - so
+#: a missing config reproduces the old behaviour rather than inventing a
+#: window nobody configured.
+DEFAULT_POST_MATCH_GRACE_MINUTES = 0
+
+#: Where a card's `end_time` came from - see PROMPT 14. Defined here, and
+#: re-exported by schedule_resolver, because this is the module that has to
+#: consult it: schedule_resolver already imports this one, so the reverse
+#: would be a cycle, and two copies of the rule would be worse than either.
+END_SOURCE_PROVIDER = "provider"
+END_SOURCE_SPORT = "sport"
+END_SOURCE_ASSUMED = "assumed"
+END_TIME_SOURCES = (END_SOURCE_PROVIDER, END_SOURCE_SPORT, END_SOURCE_ASSUMED)
+
+
+def end_time_provenance(card: Dict[str, Any]) -> str:
+    """How much a card's `end_time` is worth, read safely.
+
+    A card published before this field existed carries an end_time and no
+    provenance. It reads as "assumed", which is what it is: every one of
+    them was `kickoff + provider_event_hours`. Silence is never evidence
+    of a provider, and an unrecognised value is not either - so nothing
+    can be promoted to `provider` by accident, only by a writer saying so.
+    """
+    value = str(card.get("end_time_source") or "").strip().lower()
+    return value if value in END_TIME_SOURCES else END_SOURCE_ASSUMED
+
+
+def end_time_is_provider_stated(card: Dict[str, Any]) -> bool:
+    """True only when the card itself says a provider stated the end."""
+    return end_time_provenance(card) == END_SOURCE_PROVIDER
+
 # Fallback durations, used only to estimate an end time when the fixture did not
 # publish one. Deliberately long, because over-estimating costs nothing here and
 # under-estimating is what section 21 exists to prevent.
@@ -98,6 +133,35 @@ SPORT_DURATION_MINUTES = {
     "esports": 5 * 60,
 }
 DEFAULT_DURATION_MINUTES = 4 * 60
+
+#: How long a cricket match lasts, by format. The single "cricket" entry
+#: above is 8 hours, written for a Test day, and on 2026-09-05 every one of
+#: the 25 cricket cards on the site was T20 or shorter - so one number for
+#: the sport is wrong for almost all of it.
+#:
+#: FINAL_2 ধাপ ੩ sets five of these. `Hundred` it names as a token to
+#: detect but gives no length for, so the length comes from the evidence
+#: already in this repository: config/event-fixtures.json has carried
+#: `the-hundred-2026: duration_minutes = 210` since before any of this. It
+#: is kept as its own entry rather than folded into T20 - a hundred balls
+#: an innings is not twenty overs an innings, and the config already knew.
+#:
+#: Keyed by the strings in sport_filter.CRICKET_FORMATS. Deliberately not
+#: imported from there: this module is the one Live TV code paths reach,
+#: and sport_filter must stay out of them.
+CRICKET_FORMAT_MINUTES = {
+    "T10": 150,
+    "T20": 240,
+    "ODI": 480,
+    # A day of a Test, not the Test. See the note in
+    # schedule_resolver._sport_end_minutes: this length says when to stop
+    # showing a card, and it is never evidence that a Test has finished.
+    "Test": 480,
+    "Hundred": 210,
+    # Cricket, format unknown. Longer than a T20 and shorter than an ODI,
+    # because guessing either would be worse than admitting neither.
+    "unknown": 300,
+}
 
 _STATUS_FIELDS = (
     "authority_status", "fixture_status", "schedule_status", "status",
@@ -161,7 +225,24 @@ def verified_end_passed(
     probe_alive=411 with released_stale=0. `Sri Lanka vs India 1st Test` had a
     verified end_time of 2026-08-19 and was still being published as LIVE_NOW
     eleven days later, its channel still answering, exactly as it always will.
+
+    What "the fixture stating in its own words when it finishes" requires
+    is the fixture actually having said it. `schedule_verified` alone does
+    not show that and never did: this system stamps it on every card it
+    resolves, including the ones whose end time it invented itself. On
+    2026-09-05 that was 344 of 344 published cards, 343 of them exactly
+    240 minutes past kickoff - so this function was reading its own
+    arithmetic back as an authority, which is FINAL_1 রায় ১০.
+
+    So the end must be `provider` - stated by the feed or the catalogue.
+    A `sport` estimate is a good guess about a format and an `assumed` one
+    is a guess about nothing; neither ends a match. They still support the
+    softer `estimate_passed` path, with its own grace, exactly as before.
+    A Test day's 480 minutes is the case that matters most: five more days
+    of the match may remain, and nothing here may call that a finish.
     """
+    if not end_time_is_provider_stated(card):
+        return False
     if card.get("schedule_verified") is not True:
         return False
     end = None
@@ -243,6 +324,15 @@ class LifecycleVerdict:
     reason: str
     confirmations: int = 0
     protections: List[str] = field(default_factory=list)
+    #: When the first genuine end signal for this fixture was seen. Set
+    #: once and carried forward unchanged; the post-match grace is
+    #: measured from it, so a second FT on the next scan must not move
+    #: it or the card would be held for another full grace period.
+    ended_seen_at: str = ""
+    #: How many consecutive scans have seen an end signal that a trusted
+    #: authority was contradicting at the time. Reset to 0 the moment the
+    #: contradiction stops, in either direction.
+    contradicted_end_confirmations: int = 0
 
     @property
     def retired(self) -> bool:
@@ -276,6 +366,7 @@ def decide(
     *,
     now: Optional[datetime] = None,
     confirmations_required: int = DEFAULT_CONFIRMATIONS_REQUIRED,
+    post_match_grace_minutes: int = DEFAULT_POST_MATCH_GRACE_MINUTES,
 ) -> LifecycleVerdict:
     """Section 21's end-detection decision for one Today Match card.
 
@@ -285,19 +376,87 @@ def decide(
     """
     reference = now or datetime.now(timezone.utc)
 
-    # 1. A currently-playing session is the strongest protection in the system.
-    #    The catalogue entry may still be retired below on a strong end signal,
-    #    but nothing here ever removes the card out from under a viewer.
+    # 1. A currently-playing session is the strongest protection in the
+    #    system, and it protects the thing that matters: the stream a
+    #    viewer already has open. It does not protect the LISTING for ever.
+    #
+    #    FINAL_2 ধাপ ੪ settles the question it raises - "FT আসার পরেও কেউ
+    #    দেখতে থাকলে কী হবে?" - as: grace শেষ হলে card তালিকা থেকে যাবে,
+    #    কিন্তু চলমান playback থামবে না. Those are two different things and
+    #    nothing in this file confuses them: retiring a card removes a row
+    #    from today-match.json. It revokes no URL, ends no session and
+    #    writes nothing to state/playing-sessions.json, which this system
+    #    only ever reads.
+    #
+    #    Without the second half of this condition an ended fixture with one
+    #    viewer left open would sit on Today Match for ever, which is the
+    #    "চিরদিন Today-তে আটকে থাকবে" case. It still leaves through
+    #    END_PENDING and the full post-match grace, never abruptly.
     if signals.currently_playing and not signals.strong_end:
-        return LifecycleVerdict(
-            LIVE, True, "a viewer is watching this event right now",
-            protections=["currently_playing"],
-        )
+        if not verified_end_passed(card, reference):
+            return LifecycleVerdict(
+                LIVE, True, "a viewer is watching this event right now",
+                protections=["currently_playing"],
+            )
 
-    # 2. An authority saying "finished" in its own words is enough.
+    # 2. An authority saying "finished" in its own words is enough to stop
+    #    calling this live - but not to make the card vanish from under the
+    #    people who were just watching it. FINAL_2 ধাপ ੪: the state goes
+    #    END_PENDING and the card stays published, for the post-match grace.
+    #
+    #    `ended_seen_at` is stamped on the first sighting and carried
+    #    forward untouched afterwards. The grace runs from when the match
+    #    was first seen to be over, not from the most recent scan that
+    #    noticed - otherwise every scan would restart it and the card
+    #    would never leave.
+    # 1b. Two sources disagreeing is not an authority speaking.
+    #
+    #    One feed carrying FT while THIS scan's fixture authority says the
+    #    match is in progress is the case FINAL_2 ধাপ ੪ asks not to act on:
+    #    "এক source ENDED, বিশ্বস্ত source LIVE হলে সাথে সাথে মুছবেন না". A single
+    #    stale row in one playlist is the ordinary way this happens.
+    #
+    #    So the end is held, not discarded: the disputed sightings are
+    #    counted, and once `confirmations_required` scans in a row have
+    #    seen the same thing the end is credible and the lifecycle moves
+    #    on. That is the existing confirmation mechanism and the existing
+    #    central `confirmations_required`, not a new source ranking.
+    #
+    #    Nothing is stamped while the dispute stands - in particular not
+    #    `ended_seen_at`, which would start the post-match grace on
+    #    evidence that may evaporate on the next scan.
+    disputed = 0
+    if signals.strong_end and signals.authority_live is True:
+        disputed = _contradicted_end_count(card) + 1
+        if disputed < max(1, int(confirmations_required)):
+            return LifecycleVerdict(
+                LIVE, True,
+                "an end signal is disputed by a trusted authority still calling this live",
+                protections=["authority_live"],
+                contradicted_end_confirmations=disputed,
+            )
+
     if signals.strong_end or signals.authority_live is False:
+        seen = _ended_seen_at(card, reference)
+        if _post_match_grace_remains(seen, reference, post_match_grace_minutes):
+            return LifecycleVerdict(
+                END_PENDING, True,
+                "finished, holding for the post-match grace",
+                confirmations=0,
+                protections=(
+                    ["currently_playing"] if signals.currently_playing else []
+                ),
+                ended_seen_at=seen,
+                # Carried, not cleared. Dropping it here restarted the
+                # tally on the next scan, so a permanently disputed
+                # fixture cycled LIVE / END_PENDING / LIVE and never
+                # reached the grace at all.
+                contradicted_end_confirmations=disputed,
+            )
         return LifecycleVerdict(
             ENDED, False, "authoritative finished status", confirmations=0,
+            ended_seen_at=seen,
+            contradicted_end_confirmations=disputed,
         )
 
     # 2b. The fixture's own verified end time, which is the same authority
@@ -307,10 +466,22 @@ def decide(
     #     that happens to broadcast all day. Without this the protections held
     #     434 finished matches on Today Match indefinitely.
     if verified_end_passed(card, reference):
+        seen = _ended_seen_at(card, reference)
+        if _post_match_grace_remains(seen, reference, post_match_grace_minutes):
+            return LifecycleVerdict(
+                END_PENDING, True,
+                "the fixture's own verified end time has passed - holding for the post-match grace",
+                confirmations=0,
+                protections=(
+                    ["currently_playing"] if signals.currently_playing else []
+                ),
+                ended_seen_at=seen,
+            )
         return LifecycleVerdict(
             ENDED, False,
             "the fixture's own verified end time has passed",
             confirmations=0,
+            ended_seen_at=seen,
         )
 
     protections: List[str] = []
@@ -371,6 +542,57 @@ def decide(
     )
 
 
+def _contradicted_end_count(card: Dict[str, Any]) -> int:
+    """How many scans in a row have seen a disputed end signal."""
+    try:
+        return max(0, int(card.get("contradicted_end_confirmations") or 0))
+    except (TypeError, ValueError):
+        return 0
+
+
+def _post_match_grace_remains(
+    ended_seen_at: str,
+    now: datetime,
+    grace_minutes: int,
+) -> bool:
+    """Is the fixture still inside its post-match grace?
+
+    Measured from the FIRST end signal, never from this scan - which is
+    what stops a repeated FT holding the card open for ever. The
+    boundary is inclusive of the last minute and exclusive of the
+    grace itself: at `ended_seen_at + grace` exactly, the grace is
+    over and the card goes.
+
+    A grace of zero, which is the fallback, means no holding at all -
+    the behaviour this system had before the window existed.
+    """
+    minutes = max(0, int(grace_minutes))
+    if minutes == 0:
+        return False
+    seen = parse_time(ended_seen_at)
+    if seen is None:
+        return False
+    return now < seen + timedelta(minutes=minutes)
+
+
+def _ended_seen_at(card: Dict[str, Any], now: datetime) -> str:
+    """When this fixture was FIRST seen to be over.
+
+    What the card already says, whenever it says anything readable. A
+    fixture that is finished on one scan is finished on the next, and
+    every one of those scans would otherwise write its own "now" and
+    push the removal another grace period into the future.
+
+    Only an unreadable or absent value is replaced, and then with this
+    scan's reference time rather than a wall clock, so a run started at
+    a fixed `now` stays reproducible.
+    """
+    existing = str(card.get("ended_seen_at") or "").strip()
+    if existing and parse_time(existing) is not None:
+        return existing
+    return now.isoformat()
+
+
 def apply_verdict(card: Dict[str, Any], verdict: LifecycleVerdict) -> Dict[str, Any]:
     """Stamp the lifecycle decision onto a published card."""
     updated = dict(card)
@@ -382,6 +604,22 @@ def apply_verdict(card: Dict[str, Any], verdict: LifecycleVerdict) -> Dict[str, 
     else:
         updated.pop("end_pending", None)
         updated.pop("end_pending_confirmations", None)
+    # Written whenever the verdict carries one, and never cleared: the
+    # grace has to be measured from the first sighting, and a card that
+    # went END_PENDING and then briefly looked live again must not get a
+    # fresh window out of it. The only writer is `_ended_seen_at` below,
+    # which prefers what the card already says.
+    if verdict.ended_seen_at:
+        updated["ended_seen_at"] = verdict.ended_seen_at
+    # Zero is written as well as cleared: the count has to be able to go
+    # back down, or a single disputed scan would leave a card one tick
+    # from being retired for ever afterwards.
+    if verdict.contradicted_end_confirmations:
+        updated["contradicted_end_confirmations"] = (
+            verdict.contradicted_end_confirmations
+        )
+    else:
+        updated.pop("contradicted_end_confirmations", None)
     if verdict.protections:
         updated["lifecycle_protections"] = list(verdict.protections)
     return updated
@@ -427,6 +665,7 @@ def minutes_to_kickoff(card: Dict[str, Any], now: Optional[datetime] = None) -> 
 def event_destination(
     card: Dict[str, Any],
     now: Optional[datetime] = None,
+    routing_minutes: int = DEFAULT_TODAY_ROUTING_MINUTES,
 ) -> str:
     """Decide Today Match vs Upcoming from the event, not from its source file.
 
@@ -440,6 +679,15 @@ def event_destination(
 
     Returns "today_match", "upcoming", "ended", or whatever the source pipeline
     says when no status resolved.
+
+    `routing_minutes` is how long before kickoff a fixture crosses over. It
+    comes from config/settings.json -> event_lifecycle.move_to_today_minutes,
+    passed in by the caller, and it is the SAME key the targeted hunt reads.
+    That is the point of it being an argument: the two were separate numbers
+    that happened to be equal, and the day they stopped being equal a card
+    would arrive on Today Match with nothing looking for its link. The default
+    below is a fallback for a caller that has no settings to hand, never a
+    second opinion about the timing.
     """
     status = str(card.get("schedule_status") or card.get("status") or "").strip().upper()
     if status == "ENDED":
@@ -455,7 +703,7 @@ def event_destination(
     # under "upcoming".
     if status in ROUTE_UPCOMING_STATUSES:
         remaining = minutes_to_kickoff(card, now)
-        if remaining is not None and remaining <= DEFAULT_TODAY_ROUTING_MINUTES:
+        if remaining is not None and remaining <= max(0, int(routing_minutes)):
             return "today_match"
         return "upcoming"
 

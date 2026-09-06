@@ -16,6 +16,7 @@ import hashlib
 import re
 from scanner import playback_evidence
 from scanner import route_preference
+from scanner.lifecycle_config import lifecycle_settings
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
@@ -290,7 +291,8 @@ def _is_publishable_stream(stream: Dict[str, Any]) -> bool:
         return False
 
     # Section 21. A feed stating the match is over is the strongest
-    # verdict there is, and five of the eleven event feeds supply one:
+    # verdict there is, and five of the event feeds registered in 2026-08
+    # supplied one:
     # sm-sportsdata's FINISHED (75 records on 2026-08-20), axsports and
     # bingstream with has_ended, footy-live with an End time already
     # past. Verified playback proves the URL still answers, not that the
@@ -1093,6 +1095,22 @@ def participant_fold_key(
     if "|" not in key:
         return ""
     left, right = (part.strip() for part in key.split("|", 1))
+    # The fixture's own category, read from its title and its competition.
+    # It decides two things below, and it is read once so they cannot
+    # disagree: which alias entries this fixture may reach, and the tag the
+    # key ends with.
+    category = ""
+    # The same alias table fixture_dedupe.sides() reads, so the merge
+    # layer and the tabs cannot disagree about who is playing. One exact
+    # lookup per side; an unlisted club is returned unchanged.
+    try:
+        from scanner.team_identity import canonical_team, fixture_gender
+
+        category = fixture_gender(item)
+        left, right = (canonical_team(left, category) or left,
+                       canonical_team(right, category) or right)
+    except Exception:  # noqa: BLE001 - never break grouping over a name
+        category = ""
     # "Cpl T20 Vs Cpl T20" is a tournament placeholder wearing a fixture's
     # clothes, not a match between two sides.
     if not left or not right or left == right:
@@ -1104,7 +1122,12 @@ def participant_fold_key(
     # the difference because "women" is one of the words it removes, so the
     # gender is carried in the key explicitly and a neutral title never folds
     # into a gendered one.
-    return "|".join(sorted((left, right))) + "#" + _gender(raw_name or name)
+    # The category the title states, or - when the title is neutral - the one
+    # its competition states. A fixture in a women's league is a women's
+    # fixture however neutrally its title is written, and reading only the
+    # title tagged it as though it might be a men's one.
+    return ("|".join(sorted((left, right))) + "#"
+            + (category or _gender(raw_name or name)))
 
 
 def event_id_without_broadcaster(
@@ -1162,8 +1185,9 @@ def _competitions_compatible(
 ) -> bool:
     """Whether two competition names can describe one fixture.
 
-    String equality split real fixtures in two. Measured on the eleven feeds at
-    2026-08-20T16:40, all four duplicated Upcoming cards had the same
+    String equality split real fixtures in two. Measured at 2026-08-20T16:40,
+    on the eleven feeds registered then, all four duplicated Upcoming cards
+    had the same
     participants and the same kickoff to the second, and differed only here:
 
         "caribbean premier league"  vs "caribbean premier league 16th match"
@@ -1195,6 +1219,19 @@ def _competitions_compatible(
     )
 
 
+def _categories_compatible(left_fold: str, right_fold: str) -> bool:
+    """Whether two fold keys state the same category, when both state one.
+
+    `participant_fold_key` ends with "#" plus the fixture's category, so the
+    answer is already computed; this only reads it. A key that is missing
+    decides nothing, which is what keeps this from refusing pairs that have
+    always merged.
+    """
+    if not left_fold or not right_fold:
+        return True
+    return left_fold.rsplit("#", 1)[-1] == right_fold.rsplit("#", 1)[-1]
+
+
 def _identity_compatible(
     left: Tuple[str, str, str, Optional[int]],
     right: Tuple[str, str, str, Optional[int]],
@@ -1216,6 +1253,15 @@ def _identity_compatible(
         # nothing else.
         if not left_fold or left_fold != right_fold:
             return False
+    elif not _categories_compatible(left_fold, right_fold):
+        # Equal slugs skip the fold key entirely, and the fold key is where
+        # the category lives. Two cards can carry the same neutral title, one
+        # in a men's league and one in the women's league of the same country,
+        # at the same hour - one slug between them - so the check meant to keep
+        # a neutral title out of a gendered one never ran, and the two were
+        # called one fixture. Measured on the tree before this change: both
+        # the merge layer and the tabs' rule said they were the same match.
+        return False
     # "other" means the sport could not be determined, so it must behave like a
     # missing field rather than a value that contradicts a known sport.
     blank = {"", "other"}
@@ -2187,6 +2233,9 @@ def merge_candidates(
     previous_primary_keys: Optional[Dict[str, str]] = None,
 ) -> List[Dict[str, Any]]:
     settings = _load_json_file(settings_path)
+    # The same key the targeted hunt reads, so a fixture reaches Today Match
+    # at the moment something starts looking for its link, not before it.
+    routing_minutes = lifecycle_settings(settings)["move_to_today_minutes"]
     link_policy = settings.get("link_policy", {})
     if not isinstance(link_policy, dict):
         link_policy = {}
@@ -2302,7 +2351,7 @@ def merge_candidates(
             # two groups whenever one relay was configured under an "upcoming"
             # feed and another under a "today" feed - and then routed both into
             # Today Match, side by side, as two cards for one match.
-            destination = event_destination(c)
+            destination = event_destination(c, routing_minutes=routing_minutes)
             bucket = (
                 destination if destination in ("today_match", "upcoming") else pipeline
             )
@@ -2566,6 +2615,11 @@ def merge_candidates(
             "start_time",
             "start_at",
             "end_time",
+            # Travels with end_time. A merged card that kept the time and
+            # lost where it came from would read as `assumed` - which is
+            # safe, but wrong for the one fixture in a hundred that has a
+            # real stated end.
+            "end_time_source",
             "competition",
             "fixture_id",
             "venue",

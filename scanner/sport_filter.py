@@ -127,6 +127,132 @@ CRICKET_WEAK = [_word(p) for p in (
     "royal challengers", "rajvansh", "soormas", "strikers", "blasters",
 )]
 
+# ── Cricket formats ────────────────────────────────────────────
+#
+# How long a cricket match lasts depends entirely on which kind it is: a
+# T10 runs about two and a half hours and a Test runs five days. The
+# duration table treats them all as one sport at eight hours, written with
+# a Test in mind, and on 2026-09-05 all 24 cricket fixtures on the site
+# were T20 or shorter.
+#
+# This says WHICH. It does not say how long - that is PROMPT 18 - and
+# nothing here removes, reorders or hides a card.
+#
+# The rules are the ones already in this file: whole-word tokens through
+# `_word`, gathered from the same name/competition/sport fields the sport
+# verdict uses. Deterministic - the same card always answers the same.
+CRICKET_T10 = "T10"
+CRICKET_T20 = "T20"
+CRICKET_ODI = "ODI"
+CRICKET_TEST = "Test"
+CRICKET_HUNDRED = "Hundred"
+CRICKET_FORMAT_UNKNOWN = "unknown"
+CRICKET_FORMATS = (
+    CRICKET_T10, CRICKET_T20, CRICKET_ODI, CRICKET_TEST, CRICKET_HUNDRED,
+    CRICKET_FORMAT_UNKNOWN,
+)
+
+#: Every format is tried, not just the first - a card matching two of them
+#: is ambiguous, and ambiguous is not the same as whichever came first.
+CRICKET_FORMAT_PATTERNS = (
+    (CRICKET_HUNDRED, [_word(p) for p in (
+        "the ?hundred", "hundred ball", "100 ?ball",
+    )]),
+    (CRICKET_TEST, [_word(p) for p in (
+        "tests?", "test match(?:es)?", "first class",
+        "world test championship", "wtc", "ashes",
+        "ranji", "duleep trophy", "sheffield shield", "plunket shield",
+        "county championship", "quaid-e-azam",
+    )]),
+    (CRICKET_ODI, [_word(p) for p in (
+        "odis?", "one ?day international(?:s)?", "list a",
+        "50 ?overs?", "d50", "vijay hazare", "royal london", "marsh cup",
+        "ford trophy",
+    )]),
+    (CRICKET_T20, [_word(p) for p in (
+        "t20i?s?", "twenty ?20", "20 ?overs?",
+        "ipl", "bbl", "psl", "cpl", "wpl", "lpl", "bpl", "mlc",
+        "ilt20", "sa20", "big bash", "vitality blast", "super smash",
+        "syed mushtaq", "indian premier league", "big bash league",
+        "pakistan super league", "caribbean premier league",
+        "lanka premier league", "bangladesh premier league",
+        "major league cricket", "blast",
+    )]),
+    (CRICKET_T10, [_word(p) for p in (
+        "t10s?", "10 ?overs?", "abu dhabi t10",
+    )]),
+)
+
+#: Deliberately absent from every list above. "World Cup", "Asia Cup" and
+#: "Champions Trophy" are each played in more than one format, so a card
+#: carrying only one of them is ambiguous and stays `unknown` rather than
+#: being guessed at.
+CRICKET_FORMAT_NOT_EVIDENCE = (
+    "world cup", "asia cup", "champions trophy", "tri series", "tour",
+)
+
+
+def _is_cricket(item: Dict[str, Any]) -> bool:
+    """Whether the sport rules already in this file call this cricket.
+
+    The gate matters because format tokens are ambiguous outside cricket:
+    `blast` is Vitality Blast and a dozen other things, `mlc` is Major
+    League Cricket and Major League Cricket only here. Asking the sport
+    question first stops a stray token inventing a cricket answer.
+
+    It delegates rather than deciding, so it inherits that verdict exactly -
+    including where the verdict is already wrong. `BBL` is the Big Bash
+    League to CRICKET_STRONG and the German basketball league to everyone
+    else, and a basketball card carrying it is called cricket today, before
+    this function is reached. Correcting that is a sport-classification
+    change with tab-routing consequences, not a format one; it is recorded
+    rather than quietly patched here.
+    """
+    stamped = _text(item.get("sport_class"))
+    if stamped:
+        return stamped in CRICKET_STATES
+    return classify(item).get("state") in CRICKET_STATES
+
+
+def cricket_format(item: Dict[str, Any]) -> Dict[str, str]:
+    """Which format of cricket this fixture is, with the evidence for it.
+
+    Returns `{"format": ..., "evidence": ..., "reason": ...}` where format is
+    one of CRICKET_FORMATS. `unknown` is a real answer and the common one -
+    returned whenever the card does not say, and whenever it says two
+    different things.
+
+    Nothing is inferred from a card merely being cricket. A fixture labelled
+    only "cricket" is `unknown`, because that is exactly what is known.
+    """
+    if not _is_cricket(item):
+        return {"format": CRICKET_FORMAT_UNKNOWN,
+                "evidence": "",
+                "reason": "not cricket"}
+    text = " | ".join((
+        _gather(item, NAME_FIELDS),
+        _gather(item, COMPETITION_FIELDS),
+        _gather(item, SPORT_FIELDS),
+    ))
+    hits = []
+    for name, patterns in CRICKET_FORMAT_PATTERNS:
+        found = _any(patterns, text)
+        if found:
+            hits.append((name, found))
+    if not hits:
+        return {"format": CRICKET_FORMAT_UNKNOWN,
+                "evidence": "",
+                "reason": "no format token"}
+    if len(hits) > 1:
+        return {
+            "format": CRICKET_FORMAT_UNKNOWN,
+            "evidence": ", ".join("%s=%s" % pair for pair in hits),
+            "reason": "ambiguous: %s" % " and ".join(h[0] for h in hits),
+        }
+    name, found = hits[0]
+    return {"format": name, "evidence": found, "reason": "token"}
+
+
 # ── Football ──────────────────────────────────────────────────────────────────
 FOOTBALL_STRONG = [_word(p) for p in (
     "football", "soccer", "futbol", "fútbol", "futebol", "socca",

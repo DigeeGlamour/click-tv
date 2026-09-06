@@ -1,7 +1,9 @@
 """The four corrections to claude-solution-14.
 
-1. The targeted Upcoming scan targets a fixture once, stops once it has a valid
-   link, and does no work for unrelated fixtures.
+1. The targeted Upcoming scan targets a fixture once per five-minute slot,
+   stops once it has a valid link, and does no work for unrelated fixtures.
+   It used to target a fixture once and never again, which is corrected
+   below - an empty attempt is no longer a permanent verdict.
 2. A Today LIVE event is never removed for missing scans while its previous link
    is still live and playable - only END/FT or a genuinely dead link removes it.
 3. Publishing is snapshot level: Today/Upcoming, the playback catalogue and its
@@ -73,7 +75,7 @@ def playable(name, minutes, **extra):
 
 
 # ---------------------------------------------------------------- correction 1
-class Correction1TargetedScanRunsOncePerFixture(unittest.TestCase):
+class Correction1TargetedScanRunsOncePerSlot(unittest.TestCase):
     """T-15 minutes, once per fixture, and never again after a valid link."""
 
     def test_only_a_fixture_inside_the_window_is_targeted(self):
@@ -92,13 +94,29 @@ class Correction1TargetedScanRunsOncePerFixture(unittest.TestCase):
         self.assertEqual(len(inside.targets), 1)
         self.assertEqual(len(outside.targets), 0)
 
-    def test_a_fixture_already_kicked_off_is_not_an_upcoming_target(self):
+    def test_a_fixture_that_has_just_kicked_off_is_still_a_target(self):
+        """The window closed at kickoff, which meant the search stopped at the
+        moment a viewer would first look for the match. It now runs ten
+        minutes past - the same ten minutes settings.json keeps a kicked-off
+        fixture on the Upcoming tab, which is the list this planner reads."""
         plan = select_targets([fixture("A vs B", -5)], {"fixtures": {}}, now=NOW)
-        self.assertEqual(len(plan.targets), 0)
+        self.assertEqual(len(plan.targets), 1)
+        self.assertEqual(plan.outside_window, 0)
 
-    def test_a_scanned_fixture_is_never_targeted_again(self):
-        """A five-minute trigger must not rescan a fixture it has already
-        scanned once - link found or not."""
+    def test_a_fixture_well_past_kickoff_is_not(self):
+        """Ten minutes, not indefinitely. Past that the fixture is Today Match
+        business, not an Upcoming target."""
+        for minutes_past in (11, 30, 240):
+            with self.subTest(minutes_past=minutes_past):
+                plan = select_targets(
+                    [fixture("A vs B", -minutes_past)], {"fixtures": {}}, now=NOW)
+                self.assertEqual(len(plan.targets), 0)
+                self.assertEqual(plan.outside_window, 1)
+
+    def test_a_fixture_that_has_its_link_is_never_targeted_again(self):
+        """Still true, for the right reason now. It is not skipped because
+        it was tried - it is skipped because there is nothing left to hunt
+        for. `already_resolved` says which."""
         card = playable("Arsenal vs Chelsea", 10)
         with tempfile.TemporaryDirectory() as tmp:
             state = Path(tmp) / "targeting.json"
@@ -112,10 +130,14 @@ class Correction1TargetedScanRunsOncePerFixture(unittest.TestCase):
                 again = select_targets([card], load_ledger(state), now=later)
                 self.assertEqual(len(again.targets), 0, f"tick {tick}")
                 self.assertEqual(again.already_attempted, 1, f"tick {tick}")
+                self.assertEqual(again.already_resolved, 1, f"tick {tick}")
+                self.assertEqual(again.same_bucket, 0, f"tick {tick}")
 
-    def test_a_fixture_that_produced_nothing_is_still_not_retried(self):
-        """The corrected rule. -15 gets the one scan; -10 and -5 get none, even
-        though that scan came back empty."""
+    def test_a_fixture_that_produced_nothing_is_retried_in_the_next_slot(self):
+        """The correction to the correction. An empty attempt at -15 is not a
+        verdict on the fixture, it is a verdict on that moment - the source may
+        publish the link at -10. Eight fixtures in the committed ledger were
+        left unresolved forever by treating the two as the same thing."""
         card = fixture("Arsenal vs Chelsea", 15)
         with tempfile.TemporaryDirectory() as tmp:
             state = Path(tmp) / "targeting.json"
@@ -123,40 +145,73 @@ class Correction1TargetedScanRunsOncePerFixture(unittest.TestCase):
             self.assertEqual(len(first.targets), 1)
             save_ledger(record_outcome(load_ledger(state), first, [card], now=NOW), state)
 
-            ledger = load_ledger(state)
-            record = ledger["fixtures"][fixture_key(card)]
+            record = load_ledger(state)["fixtures"][fixture_key(card)]
             self.assertTrue(record["attempted"])
             self.assertFalse(record["resolved"], "no link was found")
             self.assertEqual(record["attempts"], 1)
 
-            # -10 and -5 minutes: the trigger fires, the fixture is not a target.
-            for minutes_before in (10, 5, 1):
+            # -10 and -5 minutes: the trigger fires and the fixture IS a target.
+            for expected_attempts, minutes_before in enumerate((10, 5), start=2):
                 tick = NOW + timedelta(minutes=15 - minutes_before)
+                ledger = load_ledger(state)
                 retry = select_targets([card], ledger, now=tick)
                 self.assertEqual(
-                    len(retry.targets), 0, f"-{minutes_before} minute trigger",
+                    len(retry.targets), 1, f"-{minutes_before} minute trigger",
                 )
-                self.assertEqual(retry.already_attempted, 1)
-                self.assertFalse(retry.should_scan)
+                self.assertEqual(retry.already_attempted, 0)
+                self.assertTrue(retry.should_scan)
+                save_ledger(
+                    record_outcome(ledger, retry, [card], now=tick), state)
+                record = load_ledger(state)["fixtures"][fixture_key(card)]
+                self.assertEqual(record["attempts"], expected_attempts)
 
-    def test_the_attempt_count_never_climbs_past_one(self):
+            # The first attempt is still the first attempt.
+            self.assertEqual(record["attempted_at"], NOW.isoformat())
+
+    def test_one_slot_spends_exactly_one_attempt(self):
+        """Four triggers inside the same five minutes - a queued workflow, a
+        re-run, a catch-up - still cost the fixture one attempt."""
         card = fixture("Arsenal vs Chelsea", 12)
         with tempfile.TemporaryDirectory() as tmp:
             state = Path(tmp) / "targeting.json"
+            skipped = []
             for _ in range(4):
                 plan = select_targets([card], load_ledger(state), now=NOW)
+                skipped.append(plan.same_bucket)
                 save_ledger(record_outcome(load_ledger(state), plan, [card], now=NOW), state)
             record = load_ledger(state)["fixtures"][fixture_key(card)]
         self.assertEqual(record["attempts"], 1)
+        self.assertEqual(skipped, [0, 1, 1, 1], "the slot was not what stopped it")
 
-    def test_a_ledger_from_the_previous_build_still_suppresses(self):
-        """An upgrade must not hand every already-tried fixture a fresh scan."""
+    def test_a_ledger_from_the_previous_build_is_given_one_more_chance(self):
+        """An upgrade hands an already-tried but UNRESOLVED fixture a fresh
+        attempt, and that is the point rather than a regression: those are the
+        eight the old rule had given up on. It costs one attempt each.
+
+        The alternative - reading a missing `last_attempt_bucket` as "this slot
+        is already spent" - would suppress exactly the fixtures the change
+        exists to rescue, until their entries were pruned hours later.
+        """
         from scanner.targeted_scan import is_attempted
 
         card = fixture("Arsenal vs Chelsea", 10)
-        legacy = {"fixtures": {fixture_key(card): {"attempts": 2, "resolved": False}}}
-        self.assertTrue(is_attempted(legacy, fixture_key(card)))
-        self.assertEqual(len(select_targets([card], legacy, now=NOW).targets), 0)
+        key = fixture_key(card)
+        legacy = {"fixtures": {key: {"attempts": 2, "resolved": False}}}
+        # The history is still readable; it is simply no longer the gate.
+        self.assertTrue(is_attempted(legacy, key))
+        plan = select_targets([card], legacy, now=NOW)
+        self.assertEqual(len(plan.targets), 1)
+        self.assertEqual(plan.already_attempted, 0)
+
+    def test_a_resolved_entry_from_the_previous_build_still_suppresses(self):
+        """The half of the old guarantee that must survive: a fixture that
+        already had a link is not rescanned after an upgrade either."""
+        card = fixture("Arsenal vs Chelsea", 10)
+        key = fixture_key(card)
+        legacy = {"fixtures": {key: {"attempts": 1, "resolved": True}}}
+        plan = select_targets([card], legacy, now=NOW)
+        self.assertEqual(len(plan.targets), 0)
+        self.assertEqual(plan.already_resolved, 1)
 
     def test_a_metadata_only_card_does_not_count_as_a_valid_link(self):
         self.assertFalse(has_valid_link(playable("A vs B", 5, metadata_only=True)))

@@ -9,8 +9,8 @@ rather than fixed it.
 
 The flow the owner asked for:
 
-    more than 30 min away  ->  Upcoming
-    30 min or less         ->  Today Match, counting down
+    more than 25 min away  ->  Upcoming
+    25 min or less         ->  Today Match, counting down
     stream resolved        ->  Today Match, stream ready
     kicked off             ->  Today Match, LIVE
     kicked off, no stream  ->  Today Match, still looking - for 30 minutes
@@ -26,11 +26,17 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from scanner import events  # noqa: E402
+from scanner.lifecycle_config import lifecycle_settings  # noqa: E402
 from scanner.event_lifecycle import (  # noqa: E402
     DEFAULT_TODAY_ROUTING_MINUTES,
     event_destination,
     minutes_to_kickoff,
 )
+
+#: What production routes on: config/settings.json -> event_lifecycle.
+_LIFECYCLE = lifecycle_settings(settings_path=ROOT / "config" / "settings.json")
+CONFIGURED_ROUTING_MINUTES = _LIFECYCLE["move_to_today_minutes"]
+CONFIGURED_NO_LINK_GRACE = _LIFECYCLE["no_link_today_grace_minutes"]
 
 NOW = datetime(2026, 8, 30, 14, 0, tzinfo=timezone.utc)
 
@@ -46,33 +52,81 @@ def fixture(minutes_away, status="STARTING_SOON", **fields):
 
 
 class RoutingCrossesBeforeKickoffTests(unittest.TestCase):
-    def test_the_window_is_thirty_minutes(self):
-        self.assertEqual(30, DEFAULT_TODAY_ROUTING_MINUTES)
+    def test_the_window_comes_from_config_and_is_twenty_five(self):
+        """It was a constant, and a constant is where the drift started."""
+        self.assertEqual(25, CONFIGURED_ROUTING_MINUTES)
 
-    def test_it_matches_the_hunt_window(self):
-        """A fixture arriving on Today Match before anything is looking for its
-        link would sit there with nothing to show."""
-        import json
-        settings = json.loads(
-            (ROOT / "config" / "settings.json").read_text(encoding="utf-8")
+    def test_the_constant_is_a_fallback_not_the_source_of_truth(self):
+        """Still 30, and still what a caller with no settings to hand gets.
+        A fallback is a way to survive a missing config, not a second
+        opinion - so it stays at the old behaviour deliberately."""
+        self.assertEqual(30, DEFAULT_TODAY_ROUTING_MINUTES)
+        self.assertEqual(
+            "today_match",
+            event_destination(fixture(28), NOW),
+            "the default argument is no longer the old 30-minute window",
         )
-        self.assertEqual(DEFAULT_TODAY_ROUTING_MINUTES,
-                         settings["events"]["targeted_window_minutes"])
+
+    def test_the_hunt_window_and_the_routing_threshold_are_the_same_number(self):
+        """The guarantee this protects: a fixture must not arrive on Today
+        Match before anything is looking for its link, or it sits there with
+        nothing to show.
+
+        Both were 30 and equal by hand, which is how they were able to drift.
+        PROMPT 10 moved the hunt to config and left routing on its constant,
+        opening a five-minute gap that was recorded at the time. PROMPT 11
+        closes it: they are now the same key, so they cannot disagree.
+        """
+        from scanner.lifecycle_config import targeted_timings
+        hunt = targeted_timings(
+            settings_path=ROOT / "config" / "settings.json")["window_minutes"]
+        self.assertEqual(hunt, CONFIGURED_ROUTING_MINUTES,
+                         "the hunt and the routing threshold disagree again")
+        self.assertEqual(0, CONFIGURED_ROUTING_MINUTES - hunt)
+
+    def test_they_are_the_same_key_and_not_two_equal_numbers(self):
+        """Equal values are what the old fault looked like from outside."""
+        from scanner.lifecycle_config import lifecycle_settings
+        for threshold in (17, 25, 41):
+            with self.subTest(threshold=threshold):
+                supplied = {"event_lifecycle": {"move_to_today_minutes": threshold}}
+                resolved = lifecycle_settings(supplied)["move_to_today_minutes"]
+                self.assertEqual(threshold, resolved)
+                self.assertEqual(
+                    "upcoming",
+                    event_destination(fixture(threshold + 1), NOW,
+                                      routing_minutes=resolved),
+                )
+                self.assertEqual(
+                    "today_match",
+                    event_destination(fixture(threshold), NOW,
+                                      routing_minutes=resolved),
+                )
 
     def test_the_owners_worked_example(self):
-        """An 8pm match, checked at each of the times they named."""
+        """An 8pm match, at the configured threshold rather than the old one.
+
+        The owner asked for 20 to 25 minutes; FINAL_2 chose 25 because a late
+        GitHub tick would otherwise push a viewer past the 20-minute edge.
+        The 7:30 PM row therefore reads "upcoming" now, where it used to read
+        "today_match" - the change being made, not a regression.
+        """
         for minutes_away, expected in (
             (180, "upcoming"),      # 5:00 PM
             (60, "upcoming"),       # 7:00 PM
-            (31, "upcoming"),       # 7:29 PM
-            (30, "today_match"),    # 7:30 PM
+            (30, "upcoming"),       # 7:30 PM  - was today_match at 30
+            (26, "upcoming"),       # 7:34 PM
+            (25, "today_match"),    # 7:35 PM  - the boundary
+            (20, "today_match"),    # 7:40 PM
             (15, "today_match"),    # 7:45 PM
             (1, "today_match"),     # 7:59 PM
             (0, "today_match"),     # 8:00 PM
             (-30, "today_match"),   # 8:30 PM
         ):
             self.assertEqual(
-                expected, event_destination(fixture(minutes_away), NOW),
+                expected,
+                event_destination(fixture(minutes_away), NOW,
+                                  routing_minutes=CONFIGURED_ROUTING_MINUTES),
                 f"a fixture {minutes_away} minutes from kickoff",
             )
 
@@ -113,31 +167,67 @@ class AFixtureWithNoLinkDoesNotSitThereTests(unittest.TestCase):
     never carry a stream arrives on Today Match and would otherwise stay. It
     shows honestly - "still looking" - but only while that is still plausible."""
 
-    def test_the_grace_is_thirty_minutes(self):
+    def test_the_grace_comes_from_config_and_is_twenty_five(self):
+        self.assertEqual(25, CONFIGURED_NO_LINK_GRACE)
+
+    def test_the_constant_is_a_fallback_not_the_source_of_truth(self):
+        """Still 30, and still what a caller with no settings gets. It is how
+        a missing config reproduces the old behaviour instead of quietly
+        adopting a new one."""
         self.assertEqual(30, events.TODAY_NO_LINK_GRACE_MINUTES)
+        self.assertTrue(
+            events._is_today_fresh(fixture(-28), NOW, 12),
+            "the default argument no longer reproduces the old 30-minute grace",
+        )
 
     def test_kept_while_the_hunt_is_still_plausible(self):
-        self.assertTrue(events._is_today_fresh(fixture(-10), NOW, 12))
+        for minutes_past in (0, 5, 10, 24, 25):
+            with self.subTest(minutes_past=minutes_past):
+                self.assertTrue(events._is_today_fresh(
+                    fixture(-minutes_past), NOW, 12, CONFIGURED_NO_LINK_GRACE))
 
     def test_dropped_once_it_is_not(self):
-        self.assertFalse(events._is_today_fresh(fixture(-31), NOW, 12))
+        for minutes_past in (26, 31, 90):
+            with self.subTest(minutes_past=minutes_past):
+                self.assertFalse(events._is_today_fresh(
+                    fixture(-minutes_past), NOW, 12, CONFIGURED_NO_LINK_GRACE))
+
+    def test_the_boundary_follows_a_custom_config_value(self):
+        """The number is a decision about the owner's site, not the code."""
+        from scanner.lifecycle_config import lifecycle_settings
+        for grace in (5, 25, 45):
+            resolved = lifecycle_settings(
+                {"event_lifecycle": {"no_link_today_grace_minutes": grace}}
+            )["no_link_today_grace_minutes"]
+            with self.subTest(grace=grace):
+                self.assertEqual(grace, resolved)
+                self.assertTrue(events._is_today_fresh(
+                    fixture(-grace), NOW, 12, resolved))
+                self.assertFalse(events._is_today_fresh(
+                    fixture(-(grace + 1)), NOW, 12, resolved))
+
+    def test_a_no_link_fixture_still_arrives_and_is_not_dropped_on_arrival(self):
+        """The half that matters most: crossing at T-25 with nothing to play
+        must not be the same thing as being thrown away."""
+        arriving = fixture(25, status="LINK_UPDATING",
+                           schedule_status="LINK_UPDATING")
+        self.assertEqual("today_match", event_destination(
+            arriving, NOW, routing_minutes=CONFIGURED_ROUTING_MINUTES))
+        self.assertTrue(events._is_today_fresh(
+            arriving, NOW, 12, CONFIGURED_NO_LINK_GRACE))
 
     def test_a_fixture_with_a_link_is_never_dropped_by_this_rule(self):
         """It is live and being watched; only the end-of-match rules retire it."""
-        self.assertTrue(
-            events._is_today_fresh(fixture(-31, playback_id="ctv_abc"), NOW, 12)
-        )
-        self.assertTrue(
-            events._is_today_fresh(fixture(-31, url="https://a.example/x.m3u8"), NOW, 12)
-        )
-        self.assertTrue(
-            events._is_today_fresh(
-                fixture(-31, channels=[{"id": "c1"}]), NOW, 12
-            )
-        )
+        for extra in ({"playback_id": "ctv_abc"},
+                      {"url": "https://a.example/x.m3u8"},
+                      {"channels": [{"id": "c1"}]}):
+            with self.subTest(**extra):
+                self.assertTrue(events._is_today_fresh(
+                    fixture(-90, **extra), NOW, 12, CONFIGURED_NO_LINK_GRACE))
 
     def test_a_fixture_that_has_not_started_is_untouched(self):
-        self.assertTrue(events._is_today_fresh(fixture(20), NOW, 12))
+        self.assertTrue(events._is_today_fresh(
+            fixture(20), NOW, 12, CONFIGURED_NO_LINK_GRACE))
 
 
 class TheCardSaysWhichStateItIsInTests(unittest.TestCase):

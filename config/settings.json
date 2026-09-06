@@ -4,11 +4,10 @@
     "timezone": "Asia/Dhaka",
     "fixture_catalogue": "config/event-fixtures.json",
     "today_max_age_hours": 12,
-    "targeted_window_minutes": 30,
-    "targeted_window_note": "How long BEFORE kickoff the targeted trigger starts hunting for a fixture's stream link. Distinct from upcoming_past_grace_minutes, which is how long AFTER kickoff a fixture may still sit on Upcoming without one. The trigger runs every five minutes, so 30 gives six attempts before the whistle. Set to match the tab routing threshold: a fixture that moves onto Today Match 30 minutes out should have the hunt already running for it, not start it ten minutes later. It was hard-coded at 15 in scanner/targeted_scan.py and is read from here now.",
+    "targeted_window_retired_note": "targeted_window_minutes lived here and asked whoever edited it to remember to keep it equal to the tab routing threshold in scanner/event_lifecycle.py - the same decision, written in two files. It is now event_lifecycle.move_to_today_minutes and nothing else. An older settings.json that still carries the old key is read through scanner/lifecycle_config.py LEGACY_KEYS, but only when the new key is absent, so there is never more than one live answer.",
     "upcoming_past_grace_hours": 3,
     "upcoming_past_grace_minutes": 10,
-    "upcoming_past_grace_note": "How long a fixture that has already kicked off may stay on Upcoming. The -15 minute targeted trigger runs every five minutes, so ten gives a feed two more attempts after the whistle and no more. It was 45, and at 16:14 the owner was looking at a 15:30 match still badged LINK UPDATING - which is not a link being updated, it is a match the feeds never carried. Nothing is lost by dropping it: a fixture that has no link cannot be watched from Upcoming either, and the moment a source does carry a live link the fixture routes straight to Today Match, from the feeds rather than from this file. The hours key above is kept only so an older config still loads.",
+    "upcoming_past_grace_note": "How long a fixture that has already kicked off may stay on Upcoming. The -15 minute targeted trigger runs every five minutes, so ten leaves room for up to two more attempts after the whistle and no more - however many of those five-minute ticks actually arrive. It was 45, and at 16:14 the owner was looking at a 15:30 match still badged LINK UPDATING - which is not a link being updated, it is a match the feeds never carried. Nothing is lost by dropping it: a fixture that has no link cannot be watched from Upcoming either, and the moment a source does carry a live link the fixture routes straight to Today Match, from the feeds rather than from this file. The hours key above is kept only so an older config still loads.",
     "upcoming_future_days": 120,
     "fixture_authority_sources": [
       "srhady-sonyliv-live",
@@ -36,20 +35,11 @@
     "provider_event_hours": 4,
     "allowed_sports": [
       "cricket",
-      "football",
-      "tennis",
-      "basketball",
-      "baseball",
-      "hockey",
-      "rugby",
-      "volleyball",
-      "golf",
-      "motorsport",
-      "racing",
-      "esports",
-      "other"
+      "football"
     ],
-    "attach_embed_streams": false
+    "attach_embed_streams": false,
+    "allowed_sports_note": "The sports Today Match and Upcoming may publish, and the last gate they pass through: scanner/events.py _payload drops any card whose sport_type is not in this list. It named thirteen sports while two were ever published, which read as a policy nobody was enforcing. It is not redundant with scanner/sport_filter.py - the filter decides what a fixture IS from its own evidence and stamps sport_type accordingly, and this says which of those may reach a tab. Narrowing it changed nothing on the day it was measured: every one of the 282 published cards was already cricket or football, and the filter only ever keeps those two.",
+    "provider_event_hours_note": "The generic assumed fallback for when a fixture ends - nothing more. The name says provider and no provider states this: it is kickoff + these hours, computed here, and end_time_source records it as 'assumed' so no downstream rule mistakes it for evidence. It is reached only after both better answers fail: a provider that stated an end (end_time_source 'provider') and a sport whose length is known (sport). Measured on a real scan of 282 published cards: sport 194, assumed 83, provider 5 - and 65 of the assumed ones end exactly four hours after kickoff, which is this setting. Still load-bearing, so the value is unchanged."
   },
   "source_timeout_seconds": 10,
   "stream_timeout_seconds": 6,
@@ -622,6 +612,13 @@
     "alias_file": "config/channel-aliases.json"
   },
   "event_lifecycle": {
+    "_note": "The Today/Upcoming lifecycle timings, in one place. Read through scanner/lifecycle_config.py, which is the only module that knows the fallbacks. Every value here is minutes unless its name says otherwise.",
+    "_target_retry_note": "The retry ladder, as implemented. The trigger fires every five minutes and a fixture inside the window is attempted at most once per five-minute bucket, from move_to_today_minutes before kickoff until target_retry_until_min after it. How many attempts that comes to is a consequence of how many ticks actually arrived, not a promise: a missed tick shortens the ladder and does not break it. The note this replaces promised a fixed count of attempts before the whistle, which was a guarantee the code never made - and at the time the code tried once and stopped. A usable verified stream ends the ladder (resolved: true); a resolved fixture whose published link later dies is reopened by the refresh path and takes its turn under the same bucket rule.",
+    "move_to_today_minutes": 25,
+    "target_retry_interval_min": 5,
+    "target_retry_until_min": 10,
+    "post_match_grace_minutes": 20,
+    "no_link_today_grace_minutes": 25,
     "confirmations_required": 3,
     "estimate_grace_minutes": 90,
     "unscheduled_carry_hours": 3,

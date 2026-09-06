@@ -17,7 +17,11 @@ from typing import Any, Dict, List, Optional, Tuple
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 try:
-    from scanner.live_protection import probe_card_is_playable, protect_live_events
+    from scanner.live_protection import (
+        is_authoritatively_ended,
+        probe_card_is_playable,
+        protect_live_events,
+    )
     from scanner import deliverability
     from scanner import sport_filter
     from scanner import fixture_dedupe, fixture_titles
@@ -29,10 +33,22 @@ try:
         authority_says_live,
         classify_state,
         event_destination,
+        has_strong_end_signal,
         minutes_to_kickoff,
     )
+    from scanner.lifecycle_config import lifecycle_settings
     from scanner.targeted_scan import fixture_key, has_valid_link
-    from scanner.source_coverage import build_source_coverage, write_source_coverage
+    from scanner.fixture_stream_health import (
+        build_fixture_stream_health,
+        write_fixture_stream_health,
+    )
+    from scanner.source_coverage import (
+        build_source_coverage,
+        check_invariants,
+        load_configured_sources,
+        load_source_health,
+        write_source_coverage,
+    )
     from scanner.merger import (
         event_sport,
         load_previous_primary_keys,
@@ -42,10 +58,17 @@ try:
         same_real_fixture,
         sport_sort_index,
     )
+    from scanner.event_archive import (
+        archive_retired,
+        drop_resurrected,
+        load_archive,
+    )
     from scanner.schedule_resolver import (
         DEFAULT_FIXTURE_AUTHORITY_SOURCES,
         DEFAULT_PROVIDER_EVENT_HOURS,
         attach_streams_to_fixtures,
+        catalogue_state,
+        end_time_is_provider_stated,
         enrich_event_candidates,
         reuse_published_event_ids,
     )
@@ -53,7 +76,11 @@ except ImportError:
     module_dir = str(Path(__file__).resolve().parent)
     if module_dir not in sys.path:
         sys.path.insert(0, module_dir)
-    from live_protection import probe_card_is_playable, protect_live_events
+    from live_protection import (  # type: ignore
+        is_authoritatively_ended,
+        probe_card_is_playable,
+        protect_live_events,
+    )
     import sport_filter
     import fixture_dedupe
     import fixture_titles
@@ -65,10 +92,22 @@ except ImportError:
         authority_says_live,
         classify_state,
         event_destination,
+        has_strong_end_signal,
         minutes_to_kickoff,
     )
+    from lifecycle_config import lifecycle_settings
     from targeted_scan import fixture_key, has_valid_link
-    from source_coverage import build_source_coverage, write_source_coverage
+    from fixture_stream_health import (  # type: ignore
+        build_fixture_stream_health,
+        write_fixture_stream_health,
+    )
+    from source_coverage import (  # type: ignore
+        build_source_coverage,
+        check_invariants,
+        load_configured_sources,
+        load_source_health,
+        write_source_coverage,
+    )
     from merger import (
         event_sport,
         load_previous_primary_keys,
@@ -78,14 +117,26 @@ except ImportError:
         same_real_fixture,
         sport_sort_index,
     )
+    from event_archive import (  # type: ignore
+        archive_retired,
+        drop_resurrected,
+        load_archive,
+    )
     from schedule_resolver import (
         DEFAULT_FIXTURE_AUTHORITY_SOURCES,
         DEFAULT_PROVIDER_EVENT_HOURS,
         attach_streams_to_fixtures,
+        catalogue_state,
+        end_time_is_provider_stated,
         enrich_event_candidates,
         reuse_published_event_ids,
     )
 
+
+#: A card that left Today Match in one of these states finished; anything
+#: else that left simply moved or was missed. Only the first kind is a
+#: retirement worth remembering.
+ARCHIVED_LIFECYCLE_STATES = frozenset({"ENDED", "PURGED"})
 
 DEFAULT_TODAY_MAX_AGE_HOURS = 12
 DEFAULT_UPCOMING_PAST_GRACE_HOURS = 3
@@ -455,6 +506,11 @@ def _is_playable(item: Dict[str, Any]) -> bool:
 #: is still plausible. Half an hour past the whistle with nothing found is not a
 #: link being updated; it is a match nobody is carrying, and leaving it fills
 #: Today Match with exactly the clutter moving it there was meant to clear.
+#: Fallback only. The live value is config/settings.json ->
+#: event_lifecycle.no_link_today_grace_minutes, resolved once per run in
+#: `process_events` and passed down. Kept at 30 - what the code did before
+#: the config existed - so a missing config reproduces old behaviour rather
+#: than quietly adopting a new one.
 TODAY_NO_LINK_GRACE_MINUTES = 30
 
 
@@ -468,13 +524,21 @@ def _has_any_route(item: Dict[str, Any]) -> bool:
 
 
 
-def _routed_early_without_a_link(item: Dict[str, Any], now: datetime) -> bool:
+def _routed_early_without_a_link(
+    item: Dict[str, Any],
+    now: datetime,
+    routing_minutes: int = DEFAULT_TODAY_ROUTING_MINUTES,
+    no_link_grace_minutes: int = TODAY_NO_LINK_GRACE_MINUTES,
+) -> bool:
     """Is this on Today Match only because kickoff is close, with no stream yet?
 
-    True for the window the routing rule opens - from 30 minutes before kickoff
-    until TODAY_NO_LINK_GRACE_MINUTES after it - and only while the card really
-    has no route. A card that has a link, or one an authority is calling live,
-    is not this.
+    True for the window the routing rule opens - from `routing_minutes` before
+    kickoff until `no_link_grace_minutes` after it - and only while the card
+    really has no route. A card that has a link, or one an authority is
+    calling live, is not this.
+
+    The upper bound has to be the routing threshold itself, or this describes
+    a different window from the one that put the card here.
     """
     if _has_any_route(item):
         return False
@@ -487,12 +551,17 @@ def _routed_early_without_a_link(item: Dict[str, Any], now: datetime) -> bool:
     if start is None:
         return False
     minutes_away = (start - now).total_seconds() / 60.0
-    return -TODAY_NO_LINK_GRACE_MINUTES <= minutes_away <= DEFAULT_TODAY_ROUTING_MINUTES
+    return (
+        -max(0, int(no_link_grace_minutes))
+        <= minutes_away
+        <= max(0, int(routing_minutes))
+    )
 
 def _is_today_fresh(
     item: Dict[str, Any],
     now: datetime,
     max_age_hours: int,
+    no_link_grace_minutes: int = TODAY_NO_LINK_GRACE_MINUTES,
 ) -> bool:
     schedule_status = str(
         item.get("schedule_status") or item.get("status") or ""
@@ -510,9 +579,19 @@ def _is_today_fresh(
         return False
 
     # An official multi-day fixture remains current until its authoritative
-    # end time.  The generic age guard below is only a fallback for feeds that
+    # end time. The generic age guard below is only a fallback for feeds that
     # do not carry a verified schedule.
-    if item.get("schedule_verified") is True and end_time is not None:
+    #
+    # "Authoritative" has to mean stated, not computed. This read
+    # `schedule_verified is True` alone, which this system stamps on every
+    # card it resolves - so a fixture whose end time was `kickoff + 4 hours`,
+    # invented here, bought a four-hour exemption from every rule below it.
+    # Measured on 2026-09-05: 344 of 344 published cards took that branch,
+    # which meant the 25-minute no-link grace at the bottom of this function
+    # could never be reached by anything. A card that never found a link sat
+    # on Today Match until its invented end time - four hours - instead of
+    # the twenty-five minutes config asks for. (PROMPT 13, Finding A.)
+    if end_time is not None and end_time_is_provider_stated(item):
         return True
 
     start_time = _parse_datetime(
@@ -526,11 +605,15 @@ def _is_today_fresh(
         return False
     if start_time < now - timedelta(hours=max_age_hours):
         return False
-    # Arrived here 30 minutes before kickoff, and the feeds never produced a
-    # stream. See TODAY_NO_LINK_GRACE_MINUTES.
+    # It was brought here early by the routing rule and the feeds never
+    # produced a stream. The card shows honestly - "still looking" - but only
+    # while that is still plausible, which is `no_link_grace_minutes` past
+    # kickoff. A card that HAS a link is never dropped by this rule; only the
+    # end-of-match rules retire that one.
     if (
         not _has_any_route(item)
-        and start_time < now - timedelta(minutes=TODAY_NO_LINK_GRACE_MINUTES)
+        and start_time
+        < now - timedelta(minutes=max(0, int(no_link_grace_minutes)))
     ):
         return False
     return True
@@ -1378,7 +1461,8 @@ def _authority_states(
     for candidate in candidates:
         if not isinstance(candidate, dict):
             continue
-        # Four of the eleven feeds state the end themselves - axsports and
+        # Four of the feeds registered in 2026-08 stated the end themselves -
+        # axsports and
         # bingstream with has_ended, sm-sportsdata with status FINISHED,
         # footy-live with an End time already past - and the adapters carry
         # that through as source_says_ended. A feed saying "this is over" is
@@ -1485,6 +1569,119 @@ def _drop_upcoming_cards_already_live(
     ]
 
 
+def _link_is_carried(item: Dict[str, Any]) -> bool:
+    """Whether this card's route is one an earlier scan found.
+
+    Live protection republishes a card this scan never saw, links and
+    all. Counting those as this scan's work is what let a targeted scan
+    stall for 114 hours while every report looked healthy.
+    """
+    return bool(str(item.get("carried_forward_reason") or "").strip()) or (
+        _safe_int(item.get("carried_forward_misses"), 0, 0, 10_000) > 0)
+
+
+def _stream_health(
+    today_items: List[Dict[str, Any]],
+    upcoming_items: List[Dict[str, Any]],
+    schedule_stats: Dict[str, Any],
+) -> Dict[str, Any]:
+    """How many published fixtures can actually be played, and warn if none.
+
+    FINAL_3, part 4-ka: a scan that attached no stream to any fixture
+    finished as an ordinary success and said nothing. The two numbers are
+    kept apart deliberately - a route carried from an earlier scan is a
+    fixture the viewer can play, and it is not evidence that this scan
+    found anything.
+    """
+    published = list(today_items) + list(upcoming_items)
+    playable = [item for item in published if _is_playable(item)]
+    carried = [item for item in playable if _link_is_carried(item)]
+    fresh = len(playable) - len(carried)
+
+    warnings: List[str] = []
+    if published and not playable:
+        warnings.append(
+            "no published fixture has a playable route: "
+            f"{len(published)} card(s), 0 with a stream")
+    elif playable and not fresh:
+        warnings.append(
+            "every playable route was carried from an earlier scan: "
+            f"{len(carried)} card(s), 0 found by this scan")
+
+    return {
+        "published_fixtures": len(published),
+        "fixtures_with_stream": len(playable),
+        "fixtures_with_fresh_stream": fresh,
+        "fixtures_with_carried_stream": len(carried),
+        "today_with_stream": sum(1 for item in today_items if _is_playable(item)),
+        "upcoming_with_stream": sum(
+            1 for item in upcoming_items if _is_playable(item)),
+        # The cross-match stage, unchanged and no longer mistaken for
+        # the published total.
+        "streams_attached": int(schedule_stats.get("streams_attached") or 0),
+        "state": "degraded" if warnings else "ok",
+        "warnings": warnings,
+    }
+
+
+def _admit_to_today(
+    card: Dict[str, Any],
+    now: datetime,
+    *,
+    routing_minutes: int,
+    no_link_grace_minutes: int,
+    today_max_age_hours: int,
+) -> Tuple[Optional[Dict[str, Any]], str, int]:
+    """Put a card on Today Match, or say why it cannot go.
+
+    A fixture routed here by the clock rather than by a live status has
+    not been found a stream yet - that is the normal state 25 minutes
+    before kickoff, and the reason it was moved across is so the viewer
+    can see it coming. Requiring a playable link here deleted it from
+    both tabs instead: measured on 2026-08-30, six cards vanished this
+    way, `Rakow Czestochowa vs Jagiellonia` among them, gone from
+    Upcoming and never arriving on Today Match.
+
+    So it publishes as a schedule card, exactly as Upcoming has always
+    published one, and the card says which state it is in. The
+    playability gate still applies to everything else.
+
+    This exists as one function because two paths need it: the ordinary
+    scan, and a targeted trigger promoting a fixture that crossed the
+    threshold while it was carrying the card forward. Measured on
+    2026-09-05, three fixtures - `Fujieda MYFC vs Vanraure Hachinohe`
+    among them - crossed T-25 during a targeted run and stayed on
+    Upcoming, because a targeted trigger only ever promoted a fixture
+    whose link had arrived. A second copy of these rules would have
+    been a second routing policy, free to disagree with this one.
+
+    Mutates and returns the card it is given. The reason is one of
+    "admitted", "unplayable" or "stale", and the int is how many
+    undeliverable routes were stripped on the way through.
+    """
+    dropped = _strip_undeliverable_routes(card)
+    if _routed_early_without_a_link(
+        card, now, routing_minutes, no_link_grace_minutes
+    ):
+        card["metadata_only"] = True
+        card["allow_without_stream"] = True
+        card.setdefault("verification_status", "metadata_only")
+        card["publish_allowed"] = True
+    elif not _is_playable(card):
+        return None, "unplayable", dropped
+    if not _is_today_fresh(card, now, today_max_age_hours, no_link_grace_minutes):
+        return None, "stale", dropped
+    _stamp_final_routing(card, "today_match")
+    card["status"] = str(
+        card.get("schedule_status")
+        or card.get("status")
+        or ("CHANNEL_LIVE" if card.get("today_source_channel") else "LIVE_NOW")
+    )
+    # Section 21's lifecycle, stamped on a card this scan actually saw.
+    card["lifecycle_state"] = classify_state(card, now)
+    return card, "admitted", dropped
+
+
 def process_events(
     bd_results_path: str = "working/bd-results.json",
     settings_path: str = "config/settings.json",
@@ -1510,6 +1707,15 @@ def process_events(
     """
     results = _load_required_results(bd_results_path)
     settings = _load_optional_json(settings_path)
+    # One key decides when a fixture crosses to Today Match AND when the
+    # targeted trigger starts hunting for its link. They were two numbers
+    # that happened to be equal; keeping them equal by hand is the fault.
+    lifecycle_timings = lifecycle_settings(settings)
+    routing_minutes = lifecycle_timings["move_to_today_minutes"]
+    # How long past kickoff a card that never found a link keeps its place on
+    # Today Match. Distinct from the routing threshold above, which is the
+    # other side of the same window.
+    no_link_grace_minutes = lifecycle_timings["no_link_today_grace_minutes"]
     event_settings = settings.get("events") if isinstance(settings.get("events"), dict) else {}
     fixture_path = str(event_settings.get("fixture_catalogue") or fixture_path)
     timezone_name = str(
@@ -1698,42 +1904,31 @@ def process_events(
 
         card_copy = dict(card)
         card_copy["_source_timezone"] = source_timezone
-        pipeline = _destination_for(card_copy, now)
+        # The same threshold the merger grouped on and the same one the
+        # targeted hunt opens at - config/settings.json ->
+        # event_lifecycle.move_to_today_minutes. Left to its default this
+        # published a card to Today Match at T-30 while the merger, the
+        # hunt and every rule below were working to 25.
+        pipeline = _destination_for(
+            card_copy, now, routing_minutes=routing_minutes
+        )
 
         if pipeline == "today_match":
-            undeliverable_dropped += _strip_undeliverable_routes(card_copy)
-            # A fixture routed here by the clock rather than by a live status
-            # has not been found a stream yet - that is the normal state 30
-            # minutes before kickoff, and the reason it was moved across is so
-            # the viewer can see it coming. Requiring a playable link here
-            # deleted it from both tabs instead: measured on 2026-08-30, six
-            # cards vanished this way, `Raków Częstochowa vs Jagiellonia` among
-            # them, gone from Upcoming and never arriving on Today Match.
-            #
-            # So it publishes as a schedule card, exactly as Upcoming has always
-            # published one, and the card says which state it is in. The
-            # playability gate still applies to everything else.
-            pre_kickoff = _routed_early_without_a_link(card_copy, now)
-            if pre_kickoff:
-                card_copy["metadata_only"] = True
-                card_copy["allow_without_stream"] = True
-                card_copy.setdefault("verification_status", "metadata_only")
-                card_copy["publish_allowed"] = True
-            elif not _is_playable(card_copy):
-                today_unplayable += 1
-                continue
-            if not _is_today_fresh(card_copy, now, today_max_age_hours):
-                today_stale += 1
-                continue
-            _stamp_final_routing(card_copy, "today_match")
-            card_copy["status"] = str(
-                card_copy.get("schedule_status")
-                or card_copy.get("status")
-                or ("CHANNEL_LIVE" if card_copy.get("today_source_channel") else "LIVE_NOW")
+            admitted, reason, dropped = _admit_to_today(
+                card_copy,
+                now,
+                routing_minutes=routing_minutes,
+                no_link_grace_minutes=no_link_grace_minutes,
+                today_max_age_hours=today_max_age_hours,
             )
-            # Section 21's lifecycle, stamped on a card this scan actually saw.
-            card_copy["lifecycle_state"] = classify_state(card_copy, now)
-            today_items.append(card_copy)
+            undeliverable_dropped += dropped
+            if admitted is None:
+                if reason == "unplayable":
+                    today_unplayable += 1
+                else:
+                    today_stale += 1
+                continue
+            today_items.append(admitted)
 
         elif pipeline == "upcoming":
             undeliverable_dropped += _strip_undeliverable_routes(card_copy)
@@ -1753,7 +1948,7 @@ def process_events(
             if _hold_back_early_link(
                 card_copy,
                 minutes_to_kickoff(card_copy, now),
-                DEFAULT_TODAY_ROUTING_MINUTES,
+                routing_minutes,
             ):
                 early_links_held += 1
             card_copy["status"] = str(
@@ -1799,15 +1994,44 @@ def process_events(
 
         kept: List[Dict[str, Any]] = []
         seen_ids: set = set()
+        # Fixtures this trigger is carrying forward that have crossed the
+        # routing threshold in the meantime. They belong on Today Match
+        # whether or not this trigger found them a link, and a targeted
+        # trigger fires every five minutes - so it is usually the first
+        # thing to notice the crossing at all.
+        crossed_while_carried: List[Dict[str, Any]] = []
         for previous in previous_upcoming_items:
             event_id = str(previous.get("id") or "")
             seen_ids.add(event_id)
             fresh = refreshed.get(event_id)
+            candidate = fresh if fresh is not None else dict(previous)
+            candidate["_source_timezone"] = source_timezone
+            # The ordinary scan's decision, taken by the ordinary scan's
+            # function, on the ordinary scan's threshold. A targeted
+            # trigger is a smaller scan, not a different set of rules.
+            if _destination_for(
+                candidate, now, routing_minutes=routing_minutes
+            ) == "today_match":
+                admitted, reason, dropped = _admit_to_today(
+                    candidate,
+                    now,
+                    routing_minutes=routing_minutes,
+                    no_link_grace_minutes=no_link_grace_minutes,
+                    today_max_age_hours=today_max_age_hours,
+                )
+                undeliverable_dropped += dropped
+                if admitted is None:
+                    if reason == "unplayable":
+                        today_unplayable += 1
+                    else:
+                        today_stale += 1
+                    continue
+                crossed_while_carried.append(admitted)
+                continue
             if fresh is not None:
                 kept.append(fresh)
                 continue
-            carried = dict(previous)
-            carried["_source_timezone"] = source_timezone
+            carried = candidate
             undeliverable_dropped += _strip_undeliverable_routes(carried)
             if not _is_upcoming_fresh(
                 carried, now, upcoming_past_grace_minutes, upcoming_future_days
@@ -1850,6 +2074,16 @@ def process_events(
             for card in today_items
             if targeted_keys is None or fixture_key(card) in targeted_keys
         }
+        # A fixture that crossed while being carried is promoted even though
+        # this trigger found it no link - that IS the crossing, and the card
+        # it already had is the card that moves. `setdefault` so a fixture
+        # this trigger actually rescanned keeps the fresher copy.
+        crossed_ids: set = set()
+        for card in crossed_while_carried:
+            event_id = str(card.get("id") or "")
+            if event_id and event_id not in promoted:
+                promoted[event_id] = card
+                crossed_ids.add(event_id)
         kept_today: List[Dict[str, Any]] = []
         seen_today: set = set()
         for previous in previous_today_published:
@@ -1879,7 +2113,9 @@ def process_events(
             carried = dict(previous)
             carried["_source_timezone"] = source_timezone
             undeliverable_dropped += _strip_undeliverable_routes(carried)
-            if not _is_today_fresh(carried, now, today_max_age_hours):
+            if not _is_today_fresh(
+                carried, now, today_max_age_hours, no_link_grace_minutes
+            ):
                 today_stale += 1
                 continue
             kept_today.append(carried)
@@ -1889,6 +2125,9 @@ def process_events(
         schedule_stats["targeted_promoted_to_today"] = len(
             [key for key in promoted if key not in seen_today]
         )
+        # Split out so a report can tell the two apart: a fixture whose link
+        # arrived, and a fixture whose kickoff simply came close enough.
+        schedule_stats["targeted_promoted_without_link"] = len(crossed_ids)
         today_items = kept_today
         skip_live_protection = True
 
@@ -1923,6 +2162,12 @@ def process_events(
             confirmations_required=_safe_int(
                 lifecycle_cfg.get("confirmations_required"), 3, 1, 100
             ),
+            # How long a finished fixture keeps its place before it is
+            # retired. Config asks for 20; the fallback is 0, which is the
+            # immediate retirement this had before the window existed.
+            post_match_grace_minutes=lifecycle_timings[
+                "post_match_grace_minutes"
+            ],
             unscheduled_carry_hours=_safe_int(
                 lifecycle_cfg.get("unscheduled_carry_hours"), 3, 1, 240
             ),
@@ -1938,6 +2183,34 @@ def process_events(
         )
         schedule_stats["live_protection"] = protection_stats
 
+        # Whatever protection just let go of. `previous_today_items` is
+        # what was published last time and `today_items` is what survives
+        # now, so the difference is exactly the set that left - and only
+        # the ones that left because they finished are archived. A card
+        # that merely moved tabs, or that this scan simply did not see,
+        # is not a retirement and must not be remembered as one.
+        surviving = {str(card.get("id") or "") for card in today_items}
+        # Protection knows one thing the cards cannot: this scan's
+        # authority verdict. A fixture released because the authority
+        # said it had finished carries no end signal of its own, and a
+        # real scan showed exactly that - released_ended 1, archived 0.
+        released_ended = {
+            str(event_id) for event_id in
+            (protection_stats.get("released_ended_ids") or [])
+        }
+        retired = [
+            card for card in previous_today_items
+            if str(card.get("id") or "") not in surviving
+            and (
+                str(card.get("id") or "") in released_ended
+                or str(card.get("lifecycle_state") or "").upper()
+                in ARCHIVED_LIFECYCLE_STATES
+                or has_strong_end_signal(card)
+                or is_authoritatively_ended(card)
+            )
+        ]
+        schedule_stats["event_archive"] = archive_retired(retired, now=now)
+
     attach_embed_streams = False
     events_cfg = settings.get("events")
     if isinstance(events_cfg, dict):
@@ -1951,6 +2224,24 @@ def process_events(
     schedule_stats["sports_poster_enrichment"] = _apply_supplementary_sports_artwork(
         today_items + upcoming_items
     )
+
+    # A fixture that has already finished does not get to come back. The
+    # source it came from is still carrying the same row - nothing tells a
+    # playlist that a match is over - and without this the next scan reads
+    # it as a fixture it has never seen. Its kickoff is in the past by then,
+    # so it would return as an Upcoming card for tomorrow.
+    #
+    # Both tabs are filtered, because the same row can arrive at either.
+    event_archive = load_archive()
+    today_items, resurrected_today = drop_resurrected(today_items, event_archive)
+    upcoming_items, resurrected_upcoming = drop_resurrected(
+        upcoming_items, event_archive
+    )
+    schedule_stats["resurrection_blocked"] = {
+        "today": len(resurrected_today),
+        "upcoming": len(resurrected_upcoming),
+        "names": (resurrected_today + resurrected_upcoming)[:20],
+    }
 
     # A fixture belongs to exactly one tab. Once it has a link it is live, and
     # Today Match owns it; leaving the Upcoming copy in place shows the same
@@ -2148,6 +2439,18 @@ def process_events(
     # Routes no viewer could ever reach, removed from every publish path -
     # including the carried-forward ones the verifier never sees. Reported so a
     # number appears in the run log rather than only in a diff.
+    # A hand-written catalogue that stopped being updated looks exactly
+    # like one that simply had no match today. Both readers of it are
+    # already guarded by the clock, so nothing is suppressed here - the
+    # scan just stops implying the file is still a schedule.
+    schedule_stats["fixture_catalogue"] = catalogue_state(fixture_path, now)
+    if schedule_stats["fixture_catalogue"]["state"] != "ACTIVE":
+        print("   fixture catalogue: %s (%s fixture(s), newest kickoff "
+              "%s day(s) ago) - contributing nothing to this scan"
+              % (schedule_stats["fixture_catalogue"]["state"],
+                 schedule_stats["fixture_catalogue"]["fixtures"],
+                 schedule_stats["fixture_catalogue"]["days_since_newest"]))
+
     schedule_stats["undeliverable_routes_dropped"] = undeliverable_dropped
     # Upcoming holds fixtures, not streams. A card whose feed shipped a link
     # hours early publishes without it and gains it when the clock brings the
@@ -2193,26 +2496,87 @@ def process_events(
     # Requirement 3. One row per configured source, with the exact stage a
     # contribution was lost at and why.
     try:
+        configured = load_configured_sources()
         coverage = build_source_coverage(
-            configured_sources=[
-                {"id": source_id}
-                for source_id in sorted({
-                    str(c.get("source_id") or "")
-                    for c in raw_event_candidates
-                    if str(c.get("source_id") or "")
-                })
-            ],
+            # From the configuration, not from what happened to survive.
+            # Reading the surviving candidates made a source that returned
+            # nothing impossible to see in the one report meant to show it.
+            configured_sources=configured,
             raw_candidates=raw_event_candidates,
             parsed_candidates=raw_event_candidates,
             matched_candidates=event_candidates,
-            published_items=today_items + upcoming_items,
+            # Every stage the funnel actually has, each from the list
+            # that stage produced. `merged` is the deduped one: a
+            # fixture three sources carried is one card by then, and
+            # counting it from `event_candidates` would report three.
+            deduped_candidates=merged,
+            published_today_items=today_items,
+            published_upcoming_items=upcoming_items,
+            # fetch_status, http_status and raw_items belong to the
+            # loader, which is the only thing that saw the response.
+            # A source whose every record lost an exact-duplicate check
+            # must still report what it fetched.
+            source_health=load_source_health(),
+            # What a metadata-only layer contributed. Without this the
+            # row says 489 fetched and 0 published, and that reads as
+            # waste - it is the design: streamed_provider.py section 23
+            # denies it card authority and lets it enrich instead.
+            metadata_contributions={
+                "streamed-fixtures": schedule_stats.get("streamed_enrichment"),
+            } if isinstance(schedule_stats.get("streamed_enrichment"), dict)
+            else None,
         )
+        # The report is checked against itself before it is written. A
+        # report that is wrong about its own numbers is worse than no
+        # report, and every one of these checks exists because a number
+        # in this file had already been believed once.
+        coverage["invariants"] = check_invariants(
+            coverage,
+            configured_sources=configured,
+            today_items=today_items,
+            upcoming_items=upcoming_items,
+            stream_health=schedule_stats.get("stream_health"),
+        )
+        for failure in coverage["invariants"]["failures"]:
+            print(f"   COVERAGE INVARIANT FAILED: {failure}")
         write_source_coverage(coverage)
         result_coverage = coverage
     except Exception as error:  # pragma: no cover - reporting must never break a scan
         result_coverage = {"error": str(error)}
 
+    # FINAL_2 ধাপ ৬ / FINAL_3 অংশ ৫. The scan reports hundreds of source
+    # errors and the number counts routes, so nobody can tell whether a
+    # match was lost or a spare backup died. Counted against fixtures,
+    # it becomes a sentence: this many fixtures were touched, this many
+    # were left with nothing.
+    try:
+        stream_health_report = build_fixture_stream_health(
+            raw_event_candidates, today_items, upcoming_items,
+            # The ladder already records what it tried; this report only
+            # joins it to the fixture the attempts were for.
+            fixtures=event_candidates, now=now)
+        write_fixture_stream_health(stream_health_report)
+        schedule_stats["fixture_stream_health"] = stream_health_report["totals"]
+    except Exception as error:  # pragma: no cover - a report never breaks a scan
+        schedule_stats["fixture_stream_health"] = {"error": str(error)}
+
     result["source_coverage"] = result_coverage
+    # The stream counters, measured where the answer actually is.
+    #
+    # `streams_attached` counts one stage: a stream-only playlist entry
+    # cross-matched to a fixture that came from somewhere else. Most
+    # feeds carry the fixture and its links in the same record, so that
+    # stage does nothing and the number is 0 on a healthy scan - while
+    # `fixtures_with_stream`, whose name promises the published truth,
+    # was reporting the same stage and so read 0 beside 33 playable
+    # cards. A warning built on that would have fired on every scan and
+    # been switched off within a week.
+    schedule_stats["stream_health"] = _stream_health(
+        today_items, upcoming_items, schedule_stats)
+    schedule_stats["fixtures_with_attached_stream"] = int(
+        schedule_stats.get("fixtures_with_stream") or 0)
+    schedule_stats["fixtures_with_stream"] = (
+        schedule_stats["stream_health"]["fixtures_with_stream"])
     result["schedule"] = {
         "timezone": timezone_name,
         **schedule_stats,

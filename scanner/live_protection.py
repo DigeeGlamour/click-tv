@@ -908,6 +908,7 @@ def protect_live_events(
     playing_event_ids: Optional[Set[str]] = None,
     authority_states: Optional[Dict[str, Optional[bool]]] = None,
     confirmations_required: int = 3,
+    post_match_grace_minutes: int = 0,
     unscheduled_carry_hours: int = DEFAULT_UNSCHEDULED_CARRY_HOURS,
     unscheduled_carry_confirmations: int = DEFAULT_UNSCHEDULED_CARRY_CONFIRMATIONS,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
@@ -945,6 +946,12 @@ def protect_live_events(
     stats = {
         "carried_forward": 0,
         "released_ended": 0,
+        # The ids behind that count. A fixture released because it
+        # finished is a retirement, and the evidence for it - this
+        # scan's authority verdict - exists here and nowhere else. The
+        # publish path archives exactly these, rather than guessing
+        # from fields the published card may never have carried.
+        "released_ended_ids": [],
         "released_dead_link": 0,
         "released_stale": 0,
         # Retired by the no-schedule fallback below rather than by a real end
@@ -1001,10 +1008,35 @@ def protect_live_events(
 
         verdict: Optional[bool] = None
         if not strong_end and probe is not None:
-            try:
-                verdict = probe(previous)
-            except Exception:
-                verdict = None
+            if previous.get("metadata_only") is True and not card_playback_ids(
+                previous
+            ):
+                # A card that SAYS it has no stream - `metadata_only` is the
+                # LINK UPDATING state - and has no route to probe either.
+                # "Inconclusive" would be the wrong
+                # word: there is nothing here that could be playable, and
+                # saying so is a fact about the card rather than a policy
+                # about it. Section 21 then treats it like any other card
+                # with nothing playable - it still needs its estimated end
+                # to have passed AND several consecutive scans to agree
+                # before it is retired.
+                #
+                # This used to be unreachable. `verified_end_passed` caught
+                # every card first, because it asked only for
+                # `schedule_verified` and this system stamps that on
+                # everything it resolves. Once PROMPT 19 required the end
+                # to have been STATED, a card with no link and no stated
+                # end fell through to the inconclusive branch and was held
+                # for ever: measured on 2026-09-05,
+                # `Selaqui Strikers vs Herbertpur Knight Riders` was still
+                # on Today Match 33 hours after its kickoff, with no link
+                # and no authority, on "holding, not retiring".
+                verdict = False
+            else:
+                try:
+                    verdict = probe(previous)
+                except Exception:
+                    verdict = None
         if verdict is True:
             stats["probe_alive"] += 1
         elif verdict is False:
@@ -1070,12 +1102,19 @@ def protect_live_events(
         decision = decide_lifecycle(
             previous, signals, now=reference,
             confirmations_required=confirmations_required,
+            post_match_grace_minutes=post_match_grace_minutes,
         )
         states = stats["lifecycle_states"]
         states[decision.state] = int(states.get(decision.state, 0)) + 1
 
         if decision.state == ENDED:
             misses.pop(event_id, None)
+            if (strong_end or signals.authority_live is False
+                    or str(previous.get("ended_seen_at") or "").strip()):
+                # Finished for certain: the feed said so, the authority
+                # said so, or it already stood through its post-match
+                # grace with the stamp on it.
+                stats["released_ended_ids"].append(event_id)
             if strong_end or signals.authority_live is False:
                 stats["released_ended"] += 1
             elif signals.estimate_passed:

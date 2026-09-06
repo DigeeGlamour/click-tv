@@ -182,10 +182,23 @@ class OneRealFixtureIsOneCard(unittest.TestCase):
         fixture under a "today" feed - and then routed into Today beside it.
         """
         source = (ROOT / "scanner/merger.py").read_text(encoding="utf-8")
-        self.assertIn("event_destination(c)", source)
+        self.assertIn("event_destination(c, routing_minutes=routing_minutes)", source)
         self.assertIn("bucket", source)
         live_from_upcoming_feed = {"source_pipeline": "upcoming", "schedule_status": "LIVE_NOW"}
         self.assertEqual(event_destination(live_from_upcoming_feed), "today_match")
+
+    def test_the_merge_routes_on_the_configured_threshold(self):
+        """Grouping and routing agree only while they use the SAME number.
+
+        The merge groups by where a fixture will land, so if it decided that
+        with one threshold and the publisher decided with another, a fixture
+        between the two would be grouped for one tab and published to the
+        other. Both read event_lifecycle.move_to_today_minutes."""
+        source = (ROOT / "scanner/merger.py").read_text(encoding="utf-8")
+        self.assertIn(
+            'routing_minutes = lifecycle_settings(settings)["move_to_today_minutes"]',
+            source,
+        )
 
 
 class AParticipantLessLabelBindsToItsFixture(unittest.TestCase):

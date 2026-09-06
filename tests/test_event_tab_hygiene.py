@@ -58,10 +58,35 @@ class TodayMatchIsNotAnArchiveTests(unittest.TestCase):
         ))
 
     def test_a_match_on_now_is_fresh(self):
+        """On now and watchable - so it carries a route, which is what
+        separates it from the case below."""
         self.assertTrue(events._is_today_fresh(
             card(start_time=(NOW - timedelta(hours=2)).isoformat(),
                  end_time=(NOW + timedelta(hours=3)).isoformat(),
+                 schedule_verified=True,
+                 playback_id="ctv_abc"),
+            NOW, 12,
+        ))
+
+    def test_the_same_card_with_no_link_at_all_is_not(self):
+        """Two hours past kickoff with nothing to play is exactly what the
+        no-link grace exists to remove. It used to survive anyway:
+        `schedule_verified` plus an end time exempted a card from this rule,
+        and every card had both. Only a provider-stated end earns that
+        exemption now - PROMPT 13 Finding A, closed in PROMPT 19."""
+        self.assertFalse(events._is_today_fresh(
+            card(start_time=(NOW - timedelta(hours=2)).isoformat(),
+                 end_time=(NOW + timedelta(hours=3)).isoformat(),
                  schedule_verified=True),
+            NOW, 12,
+        ))
+
+    def test_but_a_provider_stated_end_still_keeps_it(self):
+        self.assertTrue(events._is_today_fresh(
+            card(start_time=(NOW - timedelta(hours=2)).isoformat(),
+                 end_time=(NOW + timedelta(hours=3)).isoformat(),
+                 schedule_verified=True,
+                 end_time_source="provider"),
             NOW, 12,
         ))
 
@@ -76,7 +101,9 @@ class TodayMatchIsNotAnArchiveTests(unittest.TestCase):
         source = (ROOT / "scanner" / "events.py").read_text(encoding="utf-8")
         carry = source[source.index("for previous in previous_today_published:"):]
         carry = carry[:carry.index("for event_id, card in promoted.items():")]
-        self.assertIn("_is_today_fresh(carried, now, today_max_age_hours)", carry)
+        self.assertIn("_is_today_fresh(", carry)
+        self.assertIn("carried, now, today_max_age_hours, no_link_grace_minutes",
+                      carry)
         self.assertIn("today_stale += 1", carry)
 
 
@@ -124,13 +151,19 @@ class UpcomingDropsWhatHasAlreadyStartedTests(unittest.TestCase):
 class TheTwoSidesOfKickoffTests(unittest.TestCase):
     """Two windows, one on each side of the whistle, easy to confuse.
 
-    targeted_window_minutes   how long BEFORE kickoff the trigger starts
-                              hunting for a fixture's stream link
-    upcoming_past_grace_minutes  how long AFTER kickoff a fixture may still sit
-                              on Upcoming without one
+    event_lifecycle.move_to_today_minutes    how long BEFORE kickoff the
+                              trigger hunts for a fixture's stream link
+    event_lifecycle.target_retry_until_min   how long AFTER kickoff it keeps
+                              hunting
+    events.upcoming_past_grace_minutes       how long AFTER kickoff a fixture
+                              may still sit on Upcoming without one
 
     The trigger runs every five minutes, so each is really a number of
-    attempts: 30 before the whistle is six, 10 after is two more.
+    attempts: 25 before the whistle is five, 10 after is two more.
+
+    The first of these used to be `events.targeted_window_minutes`, whose own
+    note asked whoever edited it to remember to keep it equal to the routing
+    threshold in another file. It is one decision, so it is now one key.
     """
 
     def _events(self):
@@ -140,8 +173,16 @@ class TheTwoSidesOfKickoffTests(unittest.TestCase):
         )["events"]
 
     def test_the_hunt_starts_before_kickoff(self):
-        window = self._events()["targeted_window_minutes"]
-        self.assertEqual(30, window)
+        from scanner.lifecycle_config import targeted_timings
+        timings = targeted_timings(
+            settings_path=ROOT / "config" / "settings.json")
+        self.assertEqual(25, timings["window_minutes"])
+
+    def test_the_hunt_continues_past_the_whistle(self):
+        from scanner.lifecycle_config import targeted_timings
+        timings = targeted_timings(
+            settings_path=ROOT / "config" / "settings.json")
+        self.assertEqual(10, timings["after_kickoff_minutes"])
 
     def test_it_is_read_from_config_not_hard_coded(self):
         """It sat at 15 in scanner/targeted_scan.py, where changing it meant
@@ -149,7 +190,7 @@ class TheTwoSidesOfKickoffTests(unittest.TestCase):
         import sys as _sys
         _sys.path.insert(0, str(ROOT))
         import scan
-        self.assertEqual(30, scan._targeted_window_minutes())
+        self.assertEqual(25, scan._targeted_window_minutes())
 
     def test_a_missing_or_absurd_value_falls_back(self):
         """A window of zero would stop the trigger hunting at all, and a huge
@@ -159,10 +200,24 @@ class TheTwoSidesOfKickoffTests(unittest.TestCase):
         import scan
         self.assertEqual(15, scan.TARGETED_WINDOW_MINUTES)
 
-    def test_the_two_windows_are_separate_settings(self):
-        events = self._events()
-        self.assertIn("targeted_window_minutes", events)
-        self.assertIn("upcoming_past_grace_minutes", events)
+    def test_the_retired_setting_is_gone_from_config(self):
+        """Two live answers to one question is the fault, not the fix."""
+        self.assertNotIn("targeted_window_minutes", self._events())
+
+    def test_an_older_settings_file_still_loads(self):
+        """Only when the new key is absent - it never overrules it."""
+        from scanner.lifecycle_config import lifecycle_settings
+        older = {"events": {"targeted_window_minutes": 30}}
+        self.assertEqual(30, lifecycle_settings(older)["move_to_today_minutes"])
+        both = {"events": {"targeted_window_minutes": 30},
+                "event_lifecycle": {"move_to_today_minutes": 25}}
+        self.assertEqual(25, lifecycle_settings(both)["move_to_today_minutes"])
+
+    def test_the_two_sides_of_kickoff_are_still_separate_settings(self):
+        from scanner.lifecycle_config import FIELDS
+        self.assertIn("move_to_today_minutes", FIELDS)
+        self.assertIn("target_retry_until_min", FIELDS)
+        self.assertIn("upcoming_past_grace_minutes", self._events())
 
 
 class AFixtureBelongsToExactlyOneTabTests(unittest.TestCase):

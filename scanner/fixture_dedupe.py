@@ -104,10 +104,61 @@ def _clean(text: Any) -> str:
     return " ".join(plain.split()).casefold()
 
 
+def _identity_module():
+    """scanner.team_identity, or None when it cannot be imported."""
+    try:
+        from scanner import team_identity
+    except ImportError:  # pragma: no cover - flat layout
+        try:
+            import team_identity  # type: ignore
+        except ImportError:
+            return None
+    return team_identity
+
+
+def _canonical(name: str, gender: str = "") -> str:
+    """The club's canonical spelling, from the shared alias table.
+
+    An exact lookup and nothing else - see scanner/team_identity.py. A club
+    with no entry comes back unchanged, so this can only ever relate two
+    spellings somebody has verified are one club.
+
+    `gender` is the fixture's own evidence, and it only ever *narrows* what
+    the lookup may use: an entry the table scopes to one category is
+    reachable only by a fixture whose own title or competition states that
+    category. No case is named here - they live in the table, as data.
+    """
+    module = _identity_module()
+    if module is None:
+        return name
+    try:
+        return module.canonical_team(name, gender) or name
+    except Exception:  # noqa: BLE001 - a name must never break grouping
+        return name
+
+
+def fixture_gender(item: Dict[str, Any]) -> str:
+    """The fixture's own gender evidence, from the shared helper."""
+    module = _identity_module()
+    if module is None:
+        return ""
+    try:
+        return module.fixture_gender(item)
+    except Exception:  # noqa: BLE001
+        return ""
+
+
 def sides(item: Dict[str, Any]) -> Optional[Tuple[str, str]]:
-    """The two teams, cleaned, or None when the title is not a fixture."""
+    """The two teams, cleaned and canonical, or None when the title is not
+    a fixture.
+
+    Comparison only: `correct_home_away` rewrites a title from `_teams_of`,
+    which is the feed's own spelling, so a canonical name is never what a
+    viewer reads.
+    """
     name = str(item.get("name") or item.get("match_name") or "")
-    parts = [_clean(part) for part in _SPLIT.split(name)]
+    gender = fixture_gender(item)
+    parts = [_canonical(_clean(part), gender) for part in _SPLIT.split(name)]
     parts = [part for part in parts if len(part) > 2]
     if len(parts) != 2:
         return None
@@ -222,6 +273,18 @@ def same_fixture(left: Dict[str, Any], right: Dict[str, Any]) -> bool:
     """The narrow rule, stated once."""
     if not kickoff_matches(left, right):
         return False
+    # A men's fixture and a women's fixture between the same two clubs are
+    # two fixtures. The merge layer has always refused to fold a neutral
+    # title into a gendered one - participant_fold_key carries the category
+    # in the key - and this is the same refusal, so the tabs' narrower rule
+    # and the merge layer cannot answer differently.
+    module = _identity_module()
+    if module is not None:
+        try:
+            if not module.genders_compatible(left, right):
+                return False
+        except Exception:  # noqa: BLE001
+            pass
     left_sides, right_sides = sides(left), sides(right)
     if not left_sides or not right_sides:
         return False

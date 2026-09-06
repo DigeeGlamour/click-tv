@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "_note": "Deterministic canonical team names, for FINAL_2's identity rule ('normalized teams + competition + kickoff bucket'). Exact normalized string on the left, canonical normalized string on the right - there is no scoring, no substring test and no token overlap here, and nothing may be added on a hunch. A key is only written after the same real fixture has been observed published under both spellings AND an independent source has been checked, and the evidence is recorded beside it. Read by scanner/team_identity.py, which is the only place that loads this file; scanner/fixture_dedupe.py and scanner/merger.py both ask that module, so the tabs, the merge and the archive cannot disagree about who is playing.",
+  "_forbidden": "No generic rule may be expressed here or derived from it: not 'drop United', not 'drop City', not 'drop FC', and not 'drop a trailing W'. Manchester United and Manchester City are two clubs and must never share a canonical name; a men's fixture and a women's fixture between the same two clubs are two fixtures. Each entry maps one exact spelling to one canonical name and affects nothing else.",
+  "aliases": {
+    "brighton hove albion": {
+      "canonical": "brighton",
+      "evidence": "2026-09-05: srhady-bingstream published provider:brighton-vs-leeds|premier league|2026-09-05 and sm-sports-data published provider:brighton-hove-albion-vs-leeds-united|premier league|2026-09-05 - one Premier League fixture, same 14:00 kickoff, two cards."
+    },
+    "brighton and hove albion": {
+      "canonical": "brighton",
+      "evidence": "The same club, written with the word rather than the ampersand; the ampersand form normalises to 'brighton and hove albion' before lookup."
+    },
+    "leeds united": {
+      "canonical": "leeds",
+      "evidence": "2026-09-05: the same pair of cards. There is one Leeds club in these feeds, spelled 'Leeds' by one and 'Leeds United' by the other."
+    },
+    "racing club de santander": {
+      "canonical": "racing santander",
+      "evidence": "2026-09-05 16:30Z, one LaLiga fixture published as THREE cards: sm-sports-data 'Rayo Vallecano Vs Real Racing Club', the six fancode feeds 'Rayo Vallecano vs Racing Club de Santander', and srhady-tapmad-bd 'Rayo Vallecano vs Racing Santander'. Independent check: ESPN esp.1 event 401882889, 'Racing Santander at Rayo Vallecano', 2026-09-05T16:30Z - one such fixture that day. ESPN's team record is id 87, slug esp.racing_santander, displayName 'Racing Santander'."
+    },
+    "real racing club": {
+      "canonical": "racing santander",
+      "evidence": "The club's registered name is Real Racing Club de Santander. Same 2026-09-05 fixture as above, sm-sports-data's spelling. The pairing is not unique to that match: stream-history holds 'Getafe vs Real Racing Club' and 'Getafe vs Racing Santander', and 'Real Racing Club Vs Elche' beside 'Racing Santander vs Villarreal', from different feeds. Not to be confused with Racing Club (Avellaneda, Argentina), Racing Louisville or Racing Cordoba, none of which is spelled this way in these feeds."
+    },
+    "brighton w": {
+      "canonical": "brighton",
+      "gender": "women",
+      "evidence": "2026-09-06 11:00Z, one Women's Super League fixture published twice: srhady-bingstream + srhady-axsports-live 'Brighton W vs Arsenal W' (competition 'FA WSL'), and ten feeds led by sm-sports-data 'Brighton Vs Arsenal' (competition \"Women's Super League\"). Independent check: ESPN eng.w.1 - league 'English Women's Super League', abbreviation \"Women's Super League\" - 'Arsenal at Brighton & Hove Albion', 2026-09-06T11:00Z. ESPN's men's eng.1 on that date carries only Everton-Man United 13:00 and Arsenal-Chelsea 15:30: no men's Brighton fixture at all, and none at 11:00."
+    },
+    "arsenal w": {
+      "canonical": "arsenal",
+      "gender": "women",
+      "evidence": "The other side of the same 2026-09-06 Women's Super League fixture."
+    }
+  },
+  "_gender_scope": "An entry may carry \"gender\": \"women\" (or \"men\"). A scoped entry is applied ONLY to a fixture whose own evidence - its title or its competition, read with scanner/schedule_resolver._gender - says the same thing. It is how 'Brighton W' can be canonicalised to 'Brighton' for a Women's Super League fixture without ever letting a women's fixture fold into a men's one. It is NOT a rule about the letter W: no suffix is stripped, and a spelling with no entry here is left exactly as it is."
+}

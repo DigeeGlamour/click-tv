@@ -31,6 +31,7 @@ from scanner.fast_pipeline import run_fast_verification_pipeline
 from scanner.normalizer import normalize_all_candidates
 from scanner.planner import plan_candidates
 from scanner.source_loader import collect_candidates
+from scanner.lifecycle_config import targeted_timings
 from scanner.security import redact_sensitive_text
 from scanner.targeted_scan import (
     DEFAULT_WINDOW_MINUTES as TARGETED_WINDOW_MINUTES,
@@ -132,24 +133,19 @@ def _write_scan_progress(mode: str, stage: str, **details: Any) -> None:
 def _targeted_window_minutes() -> int:
     """How long before kickoff the targeted trigger starts hunting for a link.
 
-    Read from config/settings.json rather than hard-coded, because it is a
-    scheduling decision about the owner's site and not a property of the code.
-    The trigger runs every five minutes, so the value is really a number of
-    attempts before the whistle: 15 gives three, 10 gives two.
+    One value, one place: config/settings.json -> event_lifecycle ->
+    move_to_today_minutes. It used to be events.targeted_window_minutes, whose
+    own note asked whoever edited it to remember to keep it equal to the tab
+    routing threshold in another file. That is the same decision written twice,
+    and this scanner has already been bitten once by two copies of one number
+    drifting apart.
 
-    Not to be confused with `upcoming_past_grace_minutes`, which is the other
-    side of kickoff - how long a fixture may still sit on Upcoming afterwards
-    without a link.
+    Not to be confused with `target_retry_until_min`, which is the other side
+    of kickoff - how long the hunt continues after the whistle.
     """
-    try:
-        with open(PROJECT_ROOT / "config" / "settings.json", "r", encoding="utf-8") as handle:
-            events_settings = (json.load(handle).get("events") or {})
-        value = int(events_settings.get("targeted_window_minutes") or 0)
-    except (OSError, ValueError, TypeError, AttributeError):
-        return TARGETED_WINDOW_MINUTES
-    if value <= 0 or value > 240:
-        return TARGETED_WINDOW_MINUTES
-    return value
+    return targeted_timings(
+        settings_path=PROJECT_ROOT / "config" / "settings.json"
+    )["window_minutes"]
 
 def _load_required_json(file_path: str | Path) -> Dict[str, Any]:
     path = Path(file_path)
@@ -1101,7 +1097,7 @@ def run_pipeline(
             fixture_path=PROJECT_ROOT / "config" / "event-fixtures.json",
             state_path=PROJECT_ROOT / "state" / "upcoming-targeting.json",
             now=run_started_at,
-            window_minutes=_targeted_window_minutes(),
+            settings_path=PROJECT_ROOT / "config" / "settings.json",
         )
         print(
             f"   Targeted window: -{targeted_plan.window_minutes} minutes; "
@@ -1372,6 +1368,19 @@ def run_pipeline(
             now=run_started_at,
         )
         save_ledger(ledger, ledger_path)
+        # The per-fixture report was written before this ledger existed,
+        # so its ladder columns describe the previous run. Refresh those
+        # three columns now that the attempts are final - nothing else in
+        # the report is touched.
+        try:
+            from scanner.fixture_stream_health import refresh_ladder_fields
+
+            refresh_ladder_fields(
+                PROJECT_ROOT / "reports" / "fixture-stream-health.json",
+                ledger=ledger,
+            )
+        except Exception as error:  # noqa: BLE001 - a report never breaks a scan
+            print(f"   fixture stream health ladder refresh skipped: {error}")
         resolved_now = sum(
             1
             for key in targeted_plan.targets
@@ -1383,8 +1392,8 @@ def run_pipeline(
         }
         print(
             f"   Targeted fixtures resolved: {resolved_now}/"
-            f"{len(targeted_plan.targets)}; every target is now marked "
-            "attempted and will not be scanned again"
+            f"{len(targeted_plan.targets)}; the rest keep their place in the "
+            "ladder and are eligible again in the next five-minute slot"
         )
 
     if prepared_series is not None:
