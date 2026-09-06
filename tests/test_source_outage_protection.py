@@ -543,6 +543,31 @@ class ProductivityLedger(unittest.TestCase):
         self.assertEqual(states["feed"]["state"], source_outage.OUTAGE)
 
 
+class TheTwoGuardsDivideTheSpace(unittest.TestCase):
+    """Everything gone was already refused; some gone was not.
+
+    `scanner/output.py validate_event_snapshot` refuses to publish a scan whose
+    Upcoming list came back completely empty while cards are published. That
+    guard was in place on 2026-09-06 and did not fire, because 123 of 143 is not
+    empty - and the 20 missing ones were the whole problem. The hold covers the
+    partial case; nothing here weakens the total one.
+    """
+
+    def test_an_entirely_empty_upcoming_is_still_refused_at_the_publish_gate(self):
+        from scanner.output import validate_event_snapshot
+        ok, reason = validate_event_snapshot(
+            {"upcoming": {"count": 0, "items": []}}, 0, 143)
+        self.assertFalse(ok)
+        self.assertIn("refusing to replace a good snapshot", reason)
+
+    def test_a_partial_list_passes_that_gate_which_is_why_this_rule_exists(self):
+        from scanner.output import validate_event_snapshot
+        partial = [{"id": "e%d" % index} for index in range(123)]
+        ok, _ = validate_event_snapshot(
+            {"upcoming": {"count": 123, "items": partial}}, 0, 143)
+        self.assertTrue(ok)
+
+
 class TwentyPlayableCardsToZero(unittest.TestCase):
     """The other half of the same outage, at the size it really happened.
 
