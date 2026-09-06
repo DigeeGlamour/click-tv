@@ -1,0 +1,40 @@
+name = "click-tv-scan-trigger"
+main = "src/index.js"
+compatibility_date = "2026-09-06"
+
+# Nothing about this Worker is reachable from the internet. It has no `fetch`
+# handler and no route, and workers_dev is off so no *.workers.dev URL is
+# published for it. Its only entry point is the cron below.
+workers_dev = false
+
+# The repository's own declared Today cadence, minute for minute
+# (`3,23,43 * * * *` in .github/workflows/scan.yml). Firing on the same minutes
+# is deliberate: when GitHub also delivers its native trigger, the two land in
+# the same concurrency group - live-signal-events-v4 - and GitHub runs one and
+# drops the other, so the effective cadence stays twenty minutes. Offsetting
+# them would double the scan rate, which is a cadence nobody chose.
+#
+# upcoming-targeted is NOT scheduled here. The pilot is today only, and the
+# targeted cron stays with GitHub until this one has been observed working.
+[triggers]
+crons = ["3,23,43 * * * *"]
+
+# No [vars] block. Everything this Worker needs is a secret, and a secret set
+# with `wrangler secret put` is never written to this file:
+#
+#   wrangler secret put GITHUB_DISPATCH_TOKEN   (required)
+#   wrangler secret put TELEGRAM_BOT_TOKEN      (optional, for the silence alert)
+#   wrangler secret put TELEGRAM_CHAT_ID        (optional, same)
+#
+# GITHUB_DISPATCH_TOKEN must be a fine-grained personal access token scoped to
+# DigeeGlamour/click-tv alone, with exactly:
+#
+#   Actions    Read and write     <- required by the dispatches endpoint
+#   Metadata   Read               <- mandatory, granted automatically
+#
+# and nothing else. In particular it does NOT need Contents: the workflow's own
+# GITHUB_TOKEN does the committing under the `permissions: contents: write` the
+# workflow already declares.
+
+# No kv_namespaces. No d1_databases. No durable_objects. No queues.
+# This Worker stores nothing, and is not a control plane.
