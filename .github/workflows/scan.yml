@@ -308,6 +308,12 @@ jobs:
             scanner/live_protection.py
             scanner/snapshot_publish.py
             scanner/targeted_scan.py
+            scripts/detect-merge-corruption.py
+            scripts/reconcile-generated-counts.py
+            tests/test_generated_data_rebase_integrity.py
+            tests/fixtures/rebase-merge/base-today-match.json
+            tests/fixtures/rebase-merge/origin-today-match.json
+            tests/fixtures/rebase-merge/mine-today-match.json
             manual/movies.txt
             manual/movies.json
             manual/channel-logos.json
@@ -855,9 +861,59 @@ jobs:
             fi
           }
 
+          # `-X theirs` is applied per HUNK, not per file. The comment above
+          # says it "resolves exactly those conflicting files in favour of the
+          # commit being replayed", and that is the intent - but git merges the
+          # two sides of a pretty-printed JSON array wherever their edits do
+          # not overlap, so a collection can come back holding one record
+          # twice. On 2026-09-06 that shipped: 90edb2faf carried 25 items under
+          # `"count": 24` with myanmar-u20-vs-maldives-u20 on two Today cards,
+          # and 69e1afcdd, rebasing onto it, carried two more.
+          #
+          # So the intent is enforced per FILE. The files this run actually
+          # regenerated are restored WHOLE from the pre-rebase commit, and
+          # nothing else is touched: a file only the other run wrote keeps its
+          # version from main, which is the property `-X theirs` was chosen for
+          # in the first place. Never a directory - `git checkout <tree> --
+          # data/` would drag back this run's stale copy of every file it did
+          # not write.
+          rebase_keeping_our_generated_files() {
+            local PRE MERGE_BASE
+            PRE="$(git rev-parse HEAD)"
+            MERGE_BASE="$(git merge-base HEAD origin/main)"
+
+            # Exactly the generated paths this run changed since it branched.
+            # -z because a path is bytes, not a line. ACMR excludes deletions:
+            # `git checkout <tree> -- <deleted path>` cannot restore what the
+            # tree does not have, and a delete is not damage a merge invents.
+            local OURS=()
+            mapfile -t -d '' OURS < <(
+              git diff -z --name-only --diff-filter=ACMR                 "$MERGE_BASE" "$PRE" -- data reports state
+            )
+            echo "This run regenerated ${#OURS[@]} file(s); they will be kept whole."
+
+            git rebase -X theirs origin/main
+
+            if [[ "${#OURS[@]}" -gt 0 ]]; then
+              git checkout "$PRE" -- "${OURS[@]}"
+              if ! git diff --cached --quiet; then
+                echo "Restored this run's own output over the rebase merge:"
+                git diff --cached --name-only | sed 's/^/  /'
+                git commit --amend --no-edit
+              else
+                echo "The rebase left this run's output untouched; nothing to restore."
+              fi
+            fi
+          }
+
           PYTHON_BIN="$(command -v python3 || command -v python)"
           git fetch origin main
-          git rebase -X theirs origin/main
+          rebase_keeping_our_generated_files
+          # LOOK before repairing. reconcile_generated_counts makes a merged
+          # collection self-consistent, which is what let the duplicates above
+          # pass validate-pages.py, so anything a merge left behind has to be
+          # reported - and a duplicate id refused - while it is still visible.
+          "$PYTHON_BIN" scripts/detect-merge-corruption.py
           reconcile_generated_counts
 
           for ATTEMPT in 1 2 3; do
@@ -873,7 +929,8 @@ jobs:
             echo "Push attempt $ATTEMPT failed. Retrying..."
             sleep 5
             git fetch origin main
-            git rebase -X theirs origin/main
+            rebase_keeping_our_generated_files
+            "$PYTHON_BIN" scripts/detect-merge-corruption.py
             reconcile_generated_counts
           done
 

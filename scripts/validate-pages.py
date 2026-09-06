@@ -1285,6 +1285,28 @@ def validate_event_file(
 
     actual_count = len(items)
 
+    # The same textual merge described below can keep BOTH sides' copy of one
+    # event, and that is not self-healing in the way a wrong count is: two
+    # cards for one match is the locked grouping rule broken, live, until the
+    # next full rewrite. Observed on 2026-09-06 in 90edb2faf (one duplicate)
+    # and 69e1afcdd (two), where the count check below only warned and the
+    # publish went through. A duplicate id is an error, not a warning: nothing
+    # downstream can tell the two apart, so nothing downstream can repair it.
+    seen_event_ids: dict[str, int] = {}
+    for number, item in enumerate(items, start=1):
+        if not isinstance(item, dict):
+            continue
+        event_id = str(item.get("id") or "").strip()
+        if not event_id:
+            continue
+        if event_id in seen_event_ids:
+            add_error(
+                f"{relative_path(event_path)} duplicate event id: {event_id} "
+                f"(#{seen_event_ids[event_id]} এবং #{number})"
+            )
+        else:
+            seen_event_ids[event_id] = number
+
     # A declared `count` here is the same kind of self-healing race as the
     # playback shard count below: GitHub Actions, a local PC scan and Colab
     # can each publish this event file around the same time, and git merges
