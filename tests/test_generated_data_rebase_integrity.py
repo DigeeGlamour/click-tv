@@ -594,6 +594,25 @@ class TheWorkflowStillWiresItUp(unittest.TestCase):
             self.assertEqual(provenance[role]["items"], items)
             self.assertTrue(provenance[role]["byte_identical_to_git_blob"])
 
+    def test_the_fixtures_on_disk_still_have_the_bytes_they_were_taken_with(self):
+        """A three-way merge is sensitive to every byte, so a fixture that has
+        drifted is replaying something other than what shipped - silently.
+
+        This is not hypothetical. .gitattributes marks these `-text`, but that
+        rule landed in a later commit than the fixtures themselves, so during
+        one rebase they were checked out before it applied and Windows rewrote
+        all three to CRLF. The tests still passed. Only the hashes noticed.
+        """
+        import hashlib
+
+        provenance = json.loads((FIXTURES / "PROVENANCE.json").read_text(encoding="utf-8"))
+        for role in HISTORICAL:
+            with self.subTest(fixture=role):
+                raw = (FIXTURES / f"{role}-today-match.json").read_bytes()
+                self.assertEqual(len(raw), provenance[role]["bytes"])
+                self.assertEqual(hashlib.sha256(raw).hexdigest(), provenance[role]["sha256"])
+                self.assertNotIn(b"\r\n", raw, "line endings were rewritten")
+
 
 if __name__ == "__main__":
     unittest.main()
