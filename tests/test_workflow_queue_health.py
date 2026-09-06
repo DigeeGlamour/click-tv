@@ -43,10 +43,18 @@ class StalenessGuardTests(unittest.TestCase):
     def _step(self, name):
         return self.steps[self.names.index(name)]
 
-    def test_the_guard_exists_and_runs_only_for_schedules(self):
+    def test_the_guard_exists_and_covers_the_frequent_modes(self):
+        """Renamed: it used to read "only for schedules", and that stopped
+        being true when an external scheduler started dispatching the same two
+        frequent modes. The guarantee it exists for - a run past its own
+        cadence does not write - is unchanged and now covers both paths.
+        `tests/test_dispatch_staleness_guard.py` proves the decision by running
+        the step's own bash."""
         self.assertIn("Skip a superseded run of a frequent mode", self.names)
-        step = self._step("Skip a superseded run of a frequent mode")
-        self.assertIn("schedule", str(step.get("if")))
+        condition = str(self._step("Skip a superseded run of a frequent mode").get("if"))
+        self.assertIn("schedule", condition)
+        self.assertIn("today", condition)
+        self.assertIn("upcoming-targeted", condition)
 
     def test_it_runs_after_the_mode_is_known(self):
         """It has to read the mode to decide, so order matters."""

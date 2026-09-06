@@ -556,9 +556,26 @@ jobs:
       # past their own interval. channels, movies and the twice-daily upcoming
       # refresh always run: they are infrequent, they are the ones that publish
       # the catalogue, and a late one is still worth having.
+      #
+      # A dispatched run of those same two modes is dropped on the same
+      # terms. The guard was written when only the cron created them, and
+      # the note above already records what the gap costs: "six
+      # workflow_dispatch runs have been queued since 2026-08-05 and 08-11
+      # and cannot be cancelled from here". An external scheduler firing on
+      # the Today cadence would add to that queue, and a today run that has
+      # waited out its own interval has nothing useful left to write -
+      # whoever created it.
+      #
+      # The two modes are named here rather than left to the `case` below,
+      # so which ones get this protection is a decision on the face of the
+      # step. channels, movies, upcoming and all are untouched by both the
+      # condition and the `case`, from the cron or by hand.
       - name: Skip a superseded run of a frequent mode
         id: staleness
-        if: github.event_name == 'schedule'
+        if: >-
+          github.event_name == 'schedule'
+          || inputs.mode == 'today'
+          || inputs.mode == 'upcoming-targeted'
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
