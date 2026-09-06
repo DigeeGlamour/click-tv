@@ -186,12 +186,43 @@ def url_of(stream: Any) -> str:
     return str(record.get("url") or "").strip()
 
 
-def published_routes() -> List[Dict[str, str]]:
-    """Every route on every published card, primary and backup."""
+#: The published files that carry event cards - Today Match and Upcoming.
+EVENT_FILES = ("today-match.json", "upcoming.json")
+
+#: What a scan is allowed to ask about.
+#:
+#: "all" is every published route and stays the default: today, upcoming,
+#: channels, movies and all keep the sweep they have always had.
+#:
+#: "events" exists for `upcoming-targeted` alone, and it is not a shortcut.
+#: Measured on 2026-09-06 over seven real targeted runs, this step was 138.4s
+#: of a 267s job - 51.9% - and 535 of its 865 routes were Live TV channels
+#: that a targeted run does not read, does not write and cannot change. The
+#: run was spending more than half its life on other people's routes while a
+#: five-minute cadence cancelled it at the finish line.
+#:
+#: Scoping loses no verification of the targeted run's OWN output: a targeted
+#: run publishes event routes, and under "events" it still checks every one of
+#: them. Channel routes keep their coverage from the today scan (three an
+#: hour) and from the channels and movies scans, which is where it came from
+#: before the targeted trigger existed.
+SCOPES = ("all", "events")
+
+
+def published_routes(scope: str = "all") -> List[Dict[str, str]]:
+    """Every route on every published card, primary and backup.
+
+    With scope="events", only the event files - the routes a targeted scan is
+    responsible for.
+    """
+    if scope not in SCOPES:
+        raise ValueError(f"unknown scope {scope!r}; expected one of {SCOPES}")
     rows: List[Dict[str, str]] = []
     seen: set = set()
-    files = sorted(glob.glob(os.path.join(ROOT, "data", "channels", "*.json")))
-    for name in ("today-match.json", "upcoming.json"):
+    files: List[str] = []
+    if scope == "all":
+        files.extend(sorted(glob.glob(os.path.join(ROOT, "data", "channels", "*.json"))))
+    for name in EVENT_FILES:
         path = os.path.join(ROOT, "data", name)
         if os.path.isfile(path):
             files.append(path)
@@ -346,6 +377,14 @@ def main(argv: Any = None) -> int:
     parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--scope",
+        choices=SCOPES,
+        default="all",
+        help="all = every published route (the default, and what today, "
+             "channels, movies, upcoming and all use). events = only the "
+             "Today Match and Upcoming routes, for upcoming-targeted.",
+    )
     parser.add_argument("--out", default="reports/delivery-path-check.json")
     args = parser.parse_args(argv)
 
@@ -353,11 +392,14 @@ def main(argv: Any = None) -> int:
     if not available:
         print("[Delivery Path] no https playback proxy configured; nothing to do")
         return 0
-    rows = published_routes()
+    rows = published_routes(args.scope)
     if args.limit:
         rows = rows[:args.limit]
     print(f"[Delivery Path] {len(rows)} published route(s), "
-          f"{len(available)} proxy/proxies")
+          f"scope={args.scope}, {len(available)} proxy/proxies")
+    if args.scope == "events":
+        print("   channel routes are NOT swept in this scope - the today, "
+              "channels and movies scans keep that coverage")
 
     def check(index_and_row):
         index, row = index_and_row

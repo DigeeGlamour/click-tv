@@ -311,6 +311,8 @@ jobs:
             scripts/detect-merge-corruption.py
             scripts/reconcile-generated-counts.py
             tests/test_generated_data_rebase_integrity.py
+            tests/test_delivery_path_scope.py
+            scripts/verify-delivery-path.py
             tests/fixtures/rebase-merge/base-today-match.json
             tests/fixtures/rebase-merge/origin-today-match.json
             tests/fixtures/rebase-merge/mine-today-match.json
@@ -758,7 +760,31 @@ jobs:
         shell: bash
         run: |
           set -uo pipefail
-          python -u scripts/verify-delivery-path.py --workers 8 --timeout 20             2>&1 | tail -40
+
+          # Every mode sweeps every published route, except the five-minute
+          # one, which sweeps only what it is responsible for.
+          #
+          # Measured over seven real targeted runs on 2026-09-06: this step was
+          # 138.4s of a 267s job - 51.9% - and 535 of its 865 routes were Live
+          # TV channels. A targeted run does not read, write or change a
+          # channel route. It was spending more than half its life on them
+          # while a five-minute cadence cancelled it at the finish line, twice
+          # in eight runs.
+          #
+          # Nothing about its own verification changes: a targeted run
+          # publishes event routes, and under `events` it still checks every
+          # one of them. Channel coverage stays where it came from before the
+          # targeted trigger existed - the today scan three times an hour, plus
+          # the channels and movies scans. This step is `continue-on-error`
+          # either way; its product is state/measured-playback-failures.json,
+          # read by the NEXT scan.
+          SCOPE=all
+          if [[ "${{ steps.scan_mode.outputs.mode }}" == "upcoming-targeted" ]]; then
+            SCOPE=events
+          fi
+          echo "delivery path scope: $SCOPE (mode ${{ steps.scan_mode.outputs.mode }})"
+
+          python -u scripts/verify-delivery-path.py --workers 8 --timeout 20             --scope "$SCOPE" 2>&1 | tail -40
 
       - name: Validate generated Cloudflare Pages output
         if: steps.staleness.outputs.stale != 'yes' || steps.catchup.outputs.catchup != ''
