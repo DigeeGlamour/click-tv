@@ -358,6 +358,39 @@ def keep_the_catalogue_honest(
     return kept, written
 
 
+def read_surface(data_dir: Path, name: str) -> Dict[str, Any]:
+    try:
+        payload = json.loads((data_dir / ("%s.json" % name)).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def settle_catalogue_in_tree(data_dir: Path, theirs_ref: str) -> List[str]:
+    """Make the tree able to play every event card that is in it.
+
+    Asked of the files on disk rather than of anything this run merged, because
+    the cards may have arrived without passing through a merge at all - a run
+    that never scanned events still ends up publishing the lists it took from
+    main, beside a playback catalogue that is its own.
+    """
+    written: List[str] = []
+    for name in SURFACES:
+        items = items_of(read_surface(data_dir, name))
+        if not items:
+            continue
+        kept, records = keep_the_catalogue_honest(data_dir, theirs_ref, items)
+        written.extend(records)
+        if len(kept) != len(items):
+            payload = read_surface(data_dir, name)
+            written.extend(write_surface(data_dir, name, payload, kept))
+    if written:
+        print("  catalogue settled for the event cards in the tree:")
+        for path in written:
+            print("    %s" % path)
+    return written
+
+
 def write_surface(data_dir: Path, name: str, payload: Dict[str, Any],
                   items: List[Dict[str, Any]]) -> List[str]:
     """The flat mirror and the slot the manifest names, kept identical."""
@@ -397,12 +430,21 @@ def main() -> int:
     # that with the live one would offer back every fixture the live one has
     # retired since - the resurrection this file exists to prevent, arriving by
     # the front door.
+    data_dir = ROOT / args.data_dir
+
     if not _selector().scanned_events(args.ours, args.base):
         print("  this run did not scan events; its lists are not a side of any "
               "merge")
+        # Its lists are still IN the tree, though - taken from whoever
+        # published them last - and its playback catalogue is its own. Those
+        # two can disagree: a channels run at 20:59 on 2026-09-06 took main's
+        # event cards and kept its own catalogue, and every scan for the next
+        # hour failed on `playback_id catalogue-এ নেই: Warriors vs Nevis
+        # Patriots`. Whatever event cards end up in the tree, the tree has to
+        # be able to play them.
+        settle_catalogue_in_tree(data_dir, args.theirs)
         return 0
 
-    data_dir = ROOT / args.data_dir
     now = datetime.now(timezone.utc)
     grace = past_grace_minutes(ROOT / "config" / "settings.json")
     archive = load_archive()
@@ -506,6 +548,13 @@ def main() -> int:
     print("  merged event lists written:")
     for path in written + carried:
         print("    %s" % path)
+
+    # And then the same question of the finished tree. The check above only saw
+    # the cards the merge ADDED, and a card whose own copy came from the other
+    # side - `theirs rescanned`, 24 of them on the first real run - carries the
+    # other side's playback ids while sitting under a key we already had. It is
+    # cheap and it is the only pass that sees everything that will publish.
+    settle_catalogue_in_tree(data_dir, args.theirs)
     return 0
 
 

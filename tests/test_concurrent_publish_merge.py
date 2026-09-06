@@ -351,6 +351,45 @@ class ACardAndTheRecordThatPlaysItMoveTogether(unittest.TestCase):
         self.assertEqual(merge.catalog_shard_for(self.ID_A),
                          catalog_shard_for(self.ID_A))
 
+    def surface(self, name, items):
+        with open(os.path.join(self.data, "%s.json" % name), "w",
+                  encoding="utf-8") as handle:
+            json.dump({"count": len(items), "items": items}, handle)
+
+    def test_the_tree_is_settled_for_cards_that_never_passed_a_merge(self):
+        """The fault that took production down for an hour.
+
+        A channels run takes main's event cards - correctly - and keeps its own
+        playback catalogue, which was assembled from a checkout that predated
+        them. `ctv_fb6deb43351f2bfb916acd2392a0850b` went out of shard fb
+        between 20:58 and 20:59 with a live Today card still pointing at it,
+        and every scan for the next hour failed on it. The question has to be
+        asked of the files on disk, because these cards arrive without passing
+        through any merge at all.
+        """
+        self.their_catalogue({self.ID_A: {"url": "https://theirs.test/a.m3u8"}})
+        self.surface("today-match", [card("a-vs-b", playback_id=self.ID_A)])
+        self.surface("upcoming", [])
+        written = merge.settle_catalogue_in_tree(self.data_path, "theirs")
+        self.assertTrue(written)
+        self.assertIn(self.ID_A, merge.catalogue_ids(self.data_path))
+
+    def test_a_settled_tree_needs_no_second_pass(self):
+        self.write_shard("aa", {self.ID_A: {"url": "https://ours.test/a.m3u8"}})
+        self.their_catalogue({})
+        self.surface("today-match", [card("a-vs-b", playback_id=self.ID_A)])
+        self.surface("upcoming", [])
+        self.assertEqual(merge.settle_catalogue_in_tree(self.data_path, "theirs"), [])
+
+    def test_an_unplayable_card_is_removed_from_the_file_on_disk(self):
+        self.their_catalogue({})
+        self.surface("today-match", [card("a-vs-b", playback_id=self.ID_A),
+                                     card("c-vs-d")])
+        self.surface("upcoming", [])
+        merge.settle_catalogue_in_tree(self.data_path, "theirs")
+        left = merge.items_of(merge.read_surface(self.data_path, "today-match"))
+        self.assertEqual([item["id"] for item in left], ["c-vs-d"])
+
 
 class AListThatWentBackwardsIsNotASide(unittest.TestCase):
     """Defence in depth against the fault above.
