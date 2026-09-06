@@ -46,35 +46,36 @@ preview_urls = false
 # that is not scheduled, which is how a cron is paused without deleting the code
 # that runs it. PAUSED_MODES below must name every one of those.
 #
-# PAUSED: upcoming-targeted ("1-59/5 * * * *")
+# BOTH modes are scheduled again as of 2026-09-06.
 #
-# It ran externally from 09:56Z to 10:16Z on 2026-09-06 and worked - runs #1297
-# and #1301 both SUCCESS, correct mode, guard executed, suite skipped, ledger
-# fresh. It is paused for something it did not cause and did expose.
+# upcoming-targeted was paused between 10:21Z and 13:0xZ. It was never the
+# trigger that was wrong: it ran cleanly from 09:56Z to 10:25Z - #1297, #1301,
+# #1302 and #1303 all SUCCESS, correct mode, guard executed, suite skipped,
+# ledger fresh. What it did was make two latent faults fire, and both are now
+# fixed and verified in production:
 #
-# Three concurrency groups write data/today-match.json and data/upcoming.json:
-# events-v4 (today, upcoming), targeted-v1 (upcoming-targeted) and catalogue-v4
-# (channels, movies, all). Runs in DIFFERENT groups run at the same time, and
-# the push step ends with `git rebase -X theirs origin/main`. That is a
-# three-way merge per file; `-X theirs` settles only the hunks that conflict,
-# so two non-conflicting regions of a regenerated JSON array are both kept and
-# a fixture appears twice. scripts/reconcile-generated-counts.py repairs the
-# counts afterwards but never the duplicate records.
+#   1. Three concurrency groups write data/today-match.json and
+#      data/upcoming.json, and the push step ended with
+#      `git rebase -X theirs origin/main` - a three-way merge per file, where
+#      `-X theirs` settles only the CONFLICTING hunks, so two non-conflicting
+#      regions of a regenerated JSON array were both kept and a fixture
+#      appeared on two cards. Measured: 0 duplicates in the 40 writes before,
+#      4 in the half hour after. Fixed in 73fabc9ca - the files this run
+#      regenerated are restored whole from the pre-rebase commit, and
+#      scripts/detect-merge-corruption.py refuses a duplicate id before
+#      reconcile can make it look valid.
 #
-# Measured: 0 duplicates in the 40 writes before, then 3 in the 15 minutes
-# after - 90edb2faf (today, 1 dup: myanmar-u20-vs-maldives-u20, where both
-# merge sides are still distinguishable by their carried_forward fields) and
-# 69e1afcdd (movies, 2 dups). The hazard was created by the PROMPT 44/45
-# targeted split and hidden by GitHub delivering 6.7% of its schedules; a cron
-# that actually fires every five minutes makes the overlap routine.
+#   2. A targeted run spent 138.4s of 267s asking the proxies about 535 Live
+#      TV routes it does not touch, so a five-minute cadence cancelled it at
+#      the finish line - 2 of 8 runs. Fixed in c70fd7d02: this mode sweeps
+#      only the routes it publishes. Measured after: 5-7s, whole job 100-154s.
 #
-# Duplicate cards violate the locked grouping rule - one match, one card - so
-# the trigger is off until the push step dedupes by id after the rebase.
-# Re-enabling is one line: put the cron back and redeploy. Nothing else needs
-# to change; src/index.js already knows this mode and the tests already cover
-# it end to end.
+# So the cadence, the group and cancel-in-progress are unchanged and were
+# never the problem. If a mode is ever paused again, delete its cron here and
+# write "PAUSED: <mode>" above - tests/scan-trigger-worker-runtime.mjs
+# requires that line for any mode in SCHEDULES with no trigger.
 [triggers]
-crons = ["3,23,43 * * * *"]
+crons = ["3,23,43 * * * *", "1-59/5 * * * *"]
 
 # No [vars] block. Everything this Worker needs is a secret, and a secret set
 # with `wrangler secret put` is never written to this file:
