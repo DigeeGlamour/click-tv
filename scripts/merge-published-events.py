@@ -48,6 +48,7 @@ sys.path.insert(0, str(ROOT))
 
 from scanner import fixture_dedupe  # noqa: E402
 from scanner.event_archive import drop_resurrected, load_archive  # noqa: E402
+from scanner.playback_profiles import catalog_shard_for  # noqa: E402
 from scanner.targeted_scan import fixture_key  # noqa: E402
 
 SURFACES = ("today-match", "upcoming")
@@ -182,6 +183,174 @@ def still_publishable(item: Dict[str, Any], now: datetime, grace: int) -> bool:
     return start >= now - timedelta(minutes=grace)
 
 
+def shown(path: Path) -> str:
+    """A path to print. Relative to the repository when it is inside it, which
+    is every real run; absolute when it is not, which is only ever a test."""
+    try:
+        return str(path.relative_to(ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path)
+
+
+def playback_ids_in(item: Any) -> List[str]:
+    """Every playback id anywhere on a card - the card, its backups, its
+    channels and their backups. scripts/validate-pages.py checks all of them."""
+    found: List[str] = []
+
+    def walk(value: Any) -> None:
+        if isinstance(value, dict):
+            for key, inner in value.items():
+                if key == "playback_id":
+                    text = str(inner or "").strip()
+                    if text and text not in found:
+                        found.append(text)
+                else:
+                    walk(inner)
+        elif isinstance(value, list):
+            for inner in value:
+                walk(inner)
+
+    walk(item)
+    return found
+
+
+def catalogue_ids(data_dir: Path) -> set:
+    """Every id this tree's catalogue can serve, sharded or not."""
+    ids: set = set()
+    shard_dir = data_dir / "playback"
+    if shard_dir.is_dir():
+        for shard in sorted(shard_dir.glob("*.json")):
+            try:
+                records = json.loads(shard.read_text(encoding="utf-8")).get("records")
+            except (OSError, ValueError):
+                continue
+            if isinstance(records, dict):
+                ids.update(records)
+    try:
+        legacy = json.loads(
+            (data_dir / "playback-sources.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        legacy = {}
+    records = legacy.get("records") if isinstance(legacy, dict) else None
+    if isinstance(records, dict):
+        ids.update(records)
+    return ids
+
+
+def records_from(ref: str, wanted: List[str]) -> Dict[str, Any]:
+    """Those ids' catalogue records, read out of the other side's tree."""
+    found: Dict[str, Any] = {}
+    by_shard: Dict[str, List[str]] = {}
+    for playback_id in wanted:
+        by_shard.setdefault(catalog_shard_for(playback_id), []).append(playback_id)
+    for shard, ids in by_shard.items():
+        payload = blob(ref, "data/playback/%s.json" % shard) or {}
+        records = payload.get("records")
+        if not isinstance(records, dict):
+            continue
+        for playback_id in ids:
+            if playback_id in records:
+                found[playback_id] = records[playback_id]
+    missing = [pid for pid in wanted if pid not in found]
+    if missing:
+        payload = blob(ref, "data/playback-sources.json") or {}
+        records = payload.get("records")
+        if isinstance(records, dict):
+            for playback_id in missing:
+                if playback_id in records:
+                    found[playback_id] = records[playback_id]
+    return found
+
+
+def add_records(data_dir: Path, records: Dict[str, Any]) -> List[str]:
+    """Write those records into this tree's shards. Counts are left to
+    scripts/reconcile-generated-counts.py, which runs next and owns them."""
+    written: List[str] = []
+    by_shard: Dict[str, Dict[str, Any]] = {}
+    for playback_id, record in records.items():
+        by_shard.setdefault(catalog_shard_for(playback_id), {})[playback_id] = record
+    for shard, entries in by_shard.items():
+        path = data_dir / "playback" / ("%s.json" % shard)
+        if not path.parent.is_dir():
+            continue
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if not isinstance(payload.get("records"), dict):
+            continue
+        payload["records"].update(entries)
+        payload["count"] = len(payload["records"])
+        path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+                        encoding="utf-8", newline="\n")
+        written.append(shown(path))
+    return written
+
+
+def has_direct_url(item: Dict[str, Any]) -> bool:
+    for key in ("url", "stream_url", "link"):
+        if str(item.get(key) or "").strip():
+            return True
+    for channel in item.get("channels") or ():
+        if isinstance(channel, dict) and str(channel.get("url") or "").strip():
+            return True
+    return False
+
+
+def keep_the_catalogue_honest(
+    data_dir: Path, theirs_ref: str, added: List[Dict[str, Any]],
+) -> Tuple[List[Dict[str, Any]], List[str]]:
+    """A card and the record that plays it are one thing; move them together.
+
+    Measured the hour this merge shipped: run 1411 took four Today cards from
+    the other run, and `AFC Toronto W vs Calgary Wild W` referred to a playback
+    id that lived only in the other run's catalogue. The next scan republished
+    the card, scripts/validate-pages.py refused the whole publish, and every
+    run after it failed on the same line until this was fixed. A card the tree
+    cannot play is not a card that was rescued.
+    """
+    wanted: List[str] = []
+    for item in added:
+        for playback_id in playback_ids_in(item):
+            if playback_id not in wanted:
+                wanted.append(playback_id)
+    if not wanted:
+        return added, []
+
+    have = catalogue_ids(data_dir)
+    missing = [playback_id for playback_id in wanted if playback_id not in have]
+    if not missing:
+        return added, []
+
+    fetched = records_from(theirs_ref, missing)
+    written = add_records(data_dir, fetched) if fetched else []
+    if fetched:
+        print("  carried %d playback record(s) across with the cards that use "
+              "them" % len(fetched))
+
+    unresolved = {pid for pid in missing if pid not in fetched}
+    if not unresolved:
+        return added, written
+
+    kept: List[Dict[str, Any]] = []
+    for item in added:
+        ids = set(playback_ids_in(item))
+        if not ids & unresolved:
+            kept.append(item)
+            continue
+        if has_direct_url(item):
+            # The url is the real route now. Same repair as
+            # reconcile-generated-counts.py makes for a stale id.
+            item["playback_id"] = ""
+            kept.append(item)
+            print("  cleared an unplayable playback id on %r"
+                  % str(item.get("name")))
+        else:
+            print("  dropped %r: its only route is a playback id this tree "
+                  "cannot serve" % str(item.get("name")))
+    return kept, written
+
+
 def write_surface(data_dir: Path, name: str, payload: Dict[str, Any],
                   items: List[Dict[str, Any]]) -> List[str]:
     """The flat mirror and the slot the manifest names, kept identical."""
@@ -193,7 +362,7 @@ def write_surface(data_dir: Path, name: str, payload: Dict[str, Any],
     written: List[str] = []
     flat = data_dir / ("%s.json" % name)
     flat.write_text(body, encoding="utf-8", newline="\n")
-    written.append(str(flat.relative_to(ROOT)))
+    written.append(shown(flat))
 
     manifest = data_dir / "manifest.json"
     try:
@@ -205,7 +374,7 @@ def write_surface(data_dir: Path, name: str, payload: Dict[str, Any],
         slot_file = data_dir / "snapshots" / slot / ("%s.json" % name)
         if slot_file.parent.is_dir():
             slot_file.write_text(body, encoding="utf-8", newline="\n")
-            written.append(str(slot_file.relative_to(ROOT)))
+            written.append(shown(slot_file))
     return written
 
 
@@ -233,6 +402,7 @@ def main() -> int:
 
     merged_lists: Dict[str, List[Dict[str, Any]]] = {}
     payloads: Dict[str, Dict[str, Any]] = {}
+    carried: List[str] = []
     changed_any = False
 
     for name in SURFACES:
@@ -260,6 +430,15 @@ def main() -> int:
         if stale:
             stale_keys = {key_of(item) for item in stale}
             merged = [item for item in merged if key_of(item) not in stale_keys]
+            added = [item for item in added if key_of(item) not in stale_keys]
+
+        playable, records = keep_the_catalogue_honest(
+            data_dir, args.theirs, added)
+        carried.extend(records)
+        if len(playable) != len(added):
+            survived = {id(item) for item in playable}
+            dropped = {key_of(item) for item in added if id(item) not in survived}
+            merged = [item for item in merged if key_of(item) not in dropped]
 
         print("  %s: ours %d, theirs %d, base %d -> %d "
               "(%d theirs added, %d theirs rescanned, %d we retired, "
@@ -303,8 +482,8 @@ def main() -> int:
         written.extend(write_surface(data_dir, name, payloads.get(name) or {},
                                      merged_lists[name]))
     print("  merged event lists written:")
-    for path in written:
-        print("    %s" % path.replace("\\", "/"))
+    for path in written + carried:
+        print("    %s" % path)
     return 0
 
 

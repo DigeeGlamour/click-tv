@@ -243,6 +243,115 @@ class TheHistoricalDuplicateMergeStaysFixed(unittest.TestCase):
             self.assertIn(merge.key_of(item), keys)
 
 
+class ACardAndTheRecordThatPlaysItMoveTogether(unittest.TestCase):
+    """The fault the merge shipped with, and what closed it.
+
+    Run 1411 took four Today cards from the other run. `AFC Toronto W vs
+    Calgary Wild W` referred to a playback id that lived only in the other
+    run's catalogue, the next scan republished the card, and
+    scripts/validate-pages.py refused the whole publish:
+
+        [ERROR] today_match event #19 playback_id catalogue-এ নেই:
+                AFC Toronto W vs Calgary Wild W
+
+    Run 1413 failed on it. The Today scan seven minutes later rebuilt the list
+    from its own sources and the reference went with it - so it self-healed,
+    which is exactly why it needed catching rather than waiting for.
+    """
+
+    ID_A = "ctv_" + "a" * 32
+    ID_B = "ctv_" + "b" * 32
+
+    def setUp(self):
+        import tempfile
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.data = os.path.join(self.tmp.name, "data")
+        os.makedirs(os.path.join(self.data, "playback"))
+        self.write_shard("aa", {})
+        self.write_shard("bb", {})
+        from pathlib import Path
+        self.data_path = Path(self.data)
+
+    def write_shard(self, shard, records):
+        path = os.path.join(self.data, "playback", "%s.json" % shard)
+        with open(path, "w", encoding="utf-8") as handle:
+            json.dump({"shard": shard, "count": len(records),
+                       "records": records}, handle)
+
+    def their_catalogue(self, records):
+        """Stand in for `git show theirs:data/playback/<shard>.json`."""
+        original = merge.blob
+
+        def fake(ref, path):
+            if path.startswith("data/playback/"):
+                shard = path.rsplit("/", 1)[-1].split(".")[0]
+                held = {k: v for k, v in records.items()
+                        if merge.catalog_shard_for(k) == shard}
+                return {"records": held}
+            return original(ref, path)
+
+        merge.blob = fake
+        self.addCleanup(setattr, merge, "blob", original)
+
+    def test_every_playback_id_on_a_card_is_found(self):
+        item = {"playback_id": self.ID_A,
+                "backups": [{"playback_id": self.ID_B}],
+                "channels": [{"backups": [{"playback_id": "ctv_" + "c" * 32}]}]}
+        self.assertEqual(
+            merge.playback_ids_in(item),
+            [self.ID_A, self.ID_B, "ctv_" + "c" * 32])
+
+    def test_the_record_is_carried_across_with_the_card(self):
+        self.their_catalogue({self.ID_A: {"url": "https://theirs.test/a.m3u8"}})
+        added = [card("a-vs-b", playback_id=self.ID_A)]
+        kept, written = merge.keep_the_catalogue_honest(
+            self.data_path, "theirs", added)
+        self.assertEqual([item["id"] for item in kept], ["a-vs-b"])
+        self.assertTrue(written)
+        self.assertIn(self.ID_A, merge.catalogue_ids(self.data_path))
+
+    def test_an_id_this_tree_already_serves_needs_nothing(self):
+        self.write_shard("aa", {self.ID_A: {"url": "https://ours.test/a.m3u8"}})
+        self.their_catalogue({})
+        added = [card("a-vs-b", playback_id=self.ID_A)]
+        kept, written = merge.keep_the_catalogue_honest(
+            self.data_path, "theirs", added)
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(written, [])
+
+    def test_a_card_whose_only_route_cannot_be_served_is_dropped(self):
+        """Better a fixture missing than a publish refused for every card."""
+        self.their_catalogue({})
+        added = [card("a-vs-b", playback_id=self.ID_A)]
+        kept, _ = merge.keep_the_catalogue_honest(
+            self.data_path, "theirs", added)
+        self.assertEqual(kept, [])
+
+    def test_a_card_with_a_real_url_keeps_its_place_without_the_id(self):
+        self.their_catalogue({})
+        added = [card("a-vs-b", playback_id=self.ID_A,
+                      url="https://direct.test/a.m3u8")]
+        kept, _ = merge.keep_the_catalogue_honest(
+            self.data_path, "theirs", added)
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(kept[0]["playback_id"], "")
+        self.assertEqual(kept[0]["url"], "https://direct.test/a.m3u8")
+
+    def test_a_metadata_only_card_is_untouched(self):
+        self.their_catalogue({})
+        added = [card("a-vs-b")]
+        kept, written = merge.keep_the_catalogue_honest(
+            self.data_path, "theirs", added)
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(written, [])
+
+    def test_the_shard_key_is_the_scanners_own(self):
+        from scanner.playback_profiles import catalog_shard_for
+        self.assertEqual(merge.catalog_shard_for(self.ID_A),
+                         catalog_shard_for(self.ID_A))
+
+
 class ARunThatNeverScannedEventsIsNotASide(unittest.TestCase):
     """A catalogue run holds a stale copy of both lists. Merging that with the
     live one would offer back every fixture the live one has retired since."""
