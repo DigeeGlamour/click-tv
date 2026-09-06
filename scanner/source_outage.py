@@ -5,8 +5,10 @@ from 14:04:15Z onwards - the feed's own `total_matches` fell to 0 while forty
 matches were being played - and stayed that way. Its Today Match cards survived,
 because scanner/live_protection.py carries a live card whose source stopped
 listing it. Its Upcoming cards had no such rule, so the first full scan after the
-outage published `published_upcoming: 0` for it and 18 real fixtures left the
-page in one commit:
+outage published `published_upcoming: 0` for it and 16 real fixtures left the
+page in one commit. Twenty-six cards left the list; ten of them were the same
+fixture republished under another feed's spelling, which the identity rules
+relate, so sixteen is what was actually lost:
 
     14:09  upcoming-targeted   Upcoming 143   sm-sports-data pubU 36
     14:11  today               Upcoming 123   sm-sports-data pubU  0   <- here
@@ -267,6 +269,7 @@ def hold_upcoming_through_outage(
     still_upcoming: Callable[[Dict[str, Any]], bool],
     fixture_key: Callable[[Dict[str, Any]], str],
     is_ended: Optional[Callable[[Dict[str, Any]], bool]] = None,
+    is_same_fixture: Optional[Callable[[Dict[str, Any], Dict[str, Any]], bool]] = None,
     hold_minutes: int = DEFAULT_HOLD_MINUTES,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Re-add previously published Upcoming cards whose author went silent.
@@ -293,11 +296,11 @@ def hold_upcoming_through_outage(
     if not outages:
         return kept, stats
 
+    published = [card for card in list(kept) + list(today_items)
+                 if isinstance(card, dict)]
     published_ids = set()
     published_keys = set()
-    for card in list(kept) + list(today_items):
-        if not isinstance(card, dict):
-            continue
+    for card in published:
         event_id = _text(card.get("id"))
         if event_id:
             published_ids.add(event_id)
@@ -305,15 +308,31 @@ def hold_upcoming_through_outage(
         if key:
             published_keys.add(key)
 
+    def already_here(previous: Dict[str, Any]) -> bool:
+        """Whether this scan published this fixture, under any spelling.
+
+        The id and the key are exact, and a fixture that arrived from a
+        different feed this time arrives under that feed's spelling of it. The
+        duplicate fold settles that within one tab; nothing settles it across
+        two, so the semantic question is asked here, before anything is added.
+        """
+        event_id = _text(previous.get("id"))
+        if event_id and event_id in published_ids:
+            return True
+        key = fixture_key(previous)
+        if key and key in published_keys:
+            return True
+        if is_same_fixture is None:
+            return False
+        return any(is_same_fixture(previous, card) for card in published)
+
     def refuse(reason: str) -> None:
         stats["refused"][reason] = stats["refused"].get(reason, 0) + 1
 
     for previous in previous_items or ():
         if not isinstance(previous, dict):
             continue
-        event_id = _text(previous.get("id"))
-        key = fixture_key(previous)
-        if (event_id and event_id in published_ids) or (key and key in published_keys):
+        if already_here(previous):
             continue
         stats["considered"] += 1
 

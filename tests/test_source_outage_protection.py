@@ -3,8 +3,9 @@
 The replay in `RealIncidentReplay` is the 2026-09-06 14:11:49Z scan, byte for
 byte: `tests/fixtures/source-outage/` holds what was published at 14:09:08Z,
 what the 14:11:49Z full scan merged instead, and the per-source health that scan
-recorded. Eighteen real fixtures left the page on that commit. The rest of the
-file is the class of fault rather than that instance of it.
+recorded. Twenty-six cards left that publish; ten were the same fixture under
+another feed's spelling, so sixteen fixtures were actually lost. The rest of
+the file is the class of fault rather than that instance of it.
 """
 from __future__ import annotations
 
@@ -254,6 +255,23 @@ class HoldRules(unittest.TestCase):
         self.assertEqual(kept, [])
         self.assertEqual(stats["considered"], 0)
 
+    def test_the_same_fixture_on_today_under_another_spelling_is_not_re_added(self):
+        """The fold settles a spelling variant within one tab. Across two tabs
+        nothing does, so the identity question is asked here."""
+        promoted = card(id="different-id", name="Home Town vs Away City",
+                        fixture_id="provider:home-town-vs-away-city|x|2026-09-06")
+        kept, stats = self.hold(
+            [card()], today=[promoted],
+            is_same_fixture=lambda left, right: True)
+        self.assertEqual(kept, [])
+        self.assertEqual(stats["considered"], 0)
+
+    def test_an_unrelated_fixture_does_not_block_the_hold(self):
+        kept, stats = self.hold(
+            [card()], today=[card(id="other", name="Other vs Else")],
+            is_same_fixture=lambda left, right: False)
+        self.assertEqual(stats["held"], 1)
+
     def test_a_finished_fixture_is_not_held(self):
         kept, stats = self.hold(
             [card(status="FINISHED")],
@@ -325,7 +343,8 @@ class RealIncidentReplay(unittest.TestCase):
             states=states if states is not None else self.states,
             now=NOW,
             still_upcoming=lambda item: True,
-            fixture_key=fixture_key)
+            fixture_key=fixture_key,
+            is_same_fixture=fixture_dedupe.same_fixture)
 
     def test_the_fixtures_are_the_real_published_lists(self):
         self.assertEqual(len(self.before), 143)
@@ -341,17 +360,20 @@ class RealIncidentReplay(unittest.TestCase):
             self.assertEqual(self.states[source_id]["state"],
                              source_outage.PRODUCTIVE, source_id)
 
-    def test_every_card_the_scan_dropped_is_held_and_none_is_refused(self):
+    def test_every_fixture_the_scan_dropped_is_held_and_none_is_refused(self):
+        """26 cards left that publish; 10 of them were the same fixture the
+        scan republished under another feed's spelling, so 16 fixtures were
+        actually lost and 16 come back."""
         kept, stats = self.replay()
-        self.assertEqual(stats["held"], 26)
-        self.assertEqual(stats["considered"], 26)
+        self.assertEqual(stats["held"], 16)
+        self.assertEqual(stats["considered"], 16)
         self.assertEqual(stats["refused"], {})
-        self.assertEqual(len(kept), 149)
+        self.assertEqual(len(kept), 139)
 
     def test_every_held_card_was_scheduled_by_the_silent_feed(self):
         kept, _ = self.replay()
         held = [item for item in kept if item.get("source_outage_hold_reason")]
-        self.assertEqual(len(held), 26)
+        self.assertEqual(len(held), 16)
         for item in held:
             self.assertEqual(item["source_outage_authority"], "sm-sports-data")
 
@@ -371,16 +393,27 @@ class RealIncidentReplay(unittest.TestCase):
         clash = [item for item in kept if fixture_key(item) in today_keys]
         self.assertEqual(clash, [])
 
-    def test_the_duplicate_fold_settles_the_spelling_variants(self):
-        """A held card meets the ordinary fold, so a feed that republished the
-        same fixture under its own spelling does not produce two cards."""
+    def test_a_spelling_the_scan_republished_is_never_held_at_all(self):
+        """`SK Beveren Vs Oud Heverlee Leuven` is `SK Beveren vs OH Leuven`.
+
+        Refusing it here is better than folding it afterwards: the fold works
+        within one tab, and a fixture the scan promoted to Today would have had
+        nothing to fold against.
+        """
+        kept, _ = self.replay()
+        held = {str(item.get("name")) for item in kept
+                if item.get("source_outage_hold_reason")}
+        for spelling in ("SK Beveren Vs Oud Heverlee Leuven",
+                         "Deportivo Alavés Vs Osasuna",
+                         "Racing Club Vs Atlético Tucumán"):
+            self.assertNotIn(spelling.encode().decode("unicode_escape"), held)
+
+    def test_the_fold_finds_nothing_left_to_do(self):
+        """Which is the point: no duplicate is created and then cleaned up."""
         kept, _ = self.replay()
         folded, rows = fixture_dedupe.fold(kept, lambda home, away, date: "")
-        self.assertEqual(len(folded), len(kept) - len(rows))
+        self.assertEqual(rows, [])
         self.assertEqual(len(folded), 139)
-        names = {str(item.get("name")) for item in folded}
-        self.assertIn("SK Beveren Vs Oud Heverlee Leuven", names)
-        self.assertNotIn("SK Beveren vs OH Leuven", names)
 
     def test_no_source_id_and_no_stream_url_is_lost_by_holding(self):
         kept, _ = self.replay()

@@ -2275,6 +2275,9 @@ def process_events(
                 card, now, upcoming_past_grace_minutes, upcoming_future_days
             ),
             fixture_key=fixture_key,
+            # The same identity rule the fold uses, asked across both tabs -
+            # which is the one place the fold cannot reach.
+            is_same_fixture=fixture_dedupe.same_fixture,
             is_ended=lambda card: (
                 is_authoritatively_ended(card)
                 or has_strong_end_signal(card)
