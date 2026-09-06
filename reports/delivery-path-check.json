@@ -1,12 +1,48 @@
 {
  "mode": "delivery_path_check",
  "note": "Asked the live playback proxies for every published route, with the site origin, exactly as the player does. Only a permanent refusal is recorded; a timeout, 429 or 5xx is left alone.",
- "checked": 65,
- "served": 52,
- "refused": 0,
- "refused_but_single_use": 0,
- "no_verdict": 13,
- "recorded": 0,
- "cleared": 0,
- "refusals": []
+ "checked": 856,
+ "served": 833,
+ "refused": 8,
+ "refused_but_single_use": 1,
+ "no_verdict": 15,
+ "recorded": 6,
+ "cleared": 1,
+ "refusals": [
+  {
+   "name": "NTV",
+   "where": "backup1",
+   "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too"
+  },
+  {
+   "name": "Al Jazeera",
+   "where": "primary",
+   "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too"
+  },
+  {
+   "name": "Saudi Quran",
+   "where": "primary",
+   "detail": "the playback proxy refuses this route: error code: 1003"
+  },
+  {
+   "name": "BBC World",
+   "where": "primary",
+   "detail": "the playback proxy refuses this route: error code: 1003"
+  },
+  {
+   "name": "Bungo TV",
+   "where": "primary",
+   "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too"
+  },
+  {
+   "name": "Bein Sports 1",
+   "where": "backup1",
+   "detail": "the playback proxy refuses this route: error code: 1003"
+  },
+  {
+   "name": "Sri Lanka Women vs Bangladesh Women",
+   "where": "backup1",
+   "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it"
+  }
+ ]
 }
