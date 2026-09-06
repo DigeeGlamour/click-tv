@@ -3,3 +3,10 @@
 *.cmd text eol=crlf
 *.bat text eol=crlf
 *.ps1 text eol=crlf
+
+# The rebase-merge fixtures are real published files, kept so the merge
+# that produced 2026-09-06's duplicate cards can be replayed exactly.
+# A three-way merge is sensitive to every byte, so line endings must not
+# be rewritten on checkout - on Windows that would silently change what
+# tests/test_generated_data_rebase_integrity.py is replaying.
+tests/fixtures/rebase-merge/*.json -text
