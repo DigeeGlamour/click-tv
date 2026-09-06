@@ -406,5 +406,94 @@ class TheAliasTableStaysEvidenceLed(unittest.TestCase):
         self.assertIn("_forbidden", raw)
 
 
+class AnApostropheJoinsAWordItDoesNotSeparateOne(unittest.TestCase):
+    """`Newell's Old Boys` and `Newells Old Boys` are one club.
+
+    Found 2026-09-06 by sweeping every published pair at one kickoff that the
+    rules refuse and asking which token refuses them. The answer here was not a
+    word at all: the punctuation rule replaced the apostrophe with a space, so
+    one feed gave "newell s old boys" and the other "newells old boys", and one
+    Argentinian fixture published twice.
+    """
+
+    def fixture(self, name, kickoff="2026-09-06T22:00:00+00:00"):
+        return {"name": name, "start_time": kickoff, "competition": "Liga"}
+
+    def test_the_two_spellings_are_one_fixture(self):
+        self.assertTrue(fixture_dedupe.same_fixture(
+            self.fixture("Rosario Central vs Newell's Old Boys"),
+            self.fixture("Rosario Central Vs Newells Old Boys")))
+
+    def test_both_identity_modules_normalise_it_the_same_way(self):
+        for module in (fixture_dedupe, team_identity):
+            with self.subTest(module=module.__name__):
+                clean = getattr(module, "_clean", None) or module.normalize_team
+                self.assertEqual(clean("Newell's"), clean("Newells"))
+
+    def test_every_apostrophe_a_feed_might_use(self):
+        for mark in ("'", "’", "ʼ", "`", "´"):
+            with self.subTest(mark=mark):
+                self.assertEqual(fixture_dedupe._clean("Newell%sd" % mark),
+                                 "newelld")
+
+    def test_other_punctuation_still_separates(self):
+        self.assertEqual(fixture_dedupe._clean("Bayer 04-Leverkusen"),
+                         "bayer 04 leverkusen")
+
+
+class TheClubFormListGrewOnEvidence(unittest.TestCase):
+    """Three abbreviations, each found by the same dataset-wide sweep.
+
+    Across 39 publishes and 6419 published cards, six pairs sat at one kickoff
+    with one side identical and the other differing by a single token. Three of
+    those tokens are club-form abbreviations and are added here; the other
+    three are not, and are not.
+    """
+
+    def fixture(self, name, kickoff="2026-09-06T19:00:00+00:00"):
+        return {"name": name, "start_time": kickoff, "competition": "Liga"}
+
+    def test_rcd_is_real_club_deportivo(self):
+        """RCD Espanyol and Espanyol were both on Today Match at 19:00."""
+        self.assertTrue(fixture_dedupe.same_fixture(
+            self.fixture("Espanyol vs Sevilla"),
+            self.fixture("RCD Espanyol vs Sevilla FC")))
+
+    def test_ks_is_klub_sportowy(self):
+        self.assertTrue(fixture_dedupe.same_fixture(
+            self.fixture("Cracovia Krakow vs Gornik Zabrze"),
+            self.fixture("KS Cracovia Vs Gornik Zabrze")))
+
+    def test_estac_is_the_troyes_club_form(self):
+        self.assertTrue(fixture_dedupe.same_fixture(
+            self.fixture("Estac Troyes vs Strasbourg"),
+            self.fixture("Troyes Vs RC Strasbourg")))
+
+    def test_none_of_them_can_empty_a_name(self):
+        for word in ("rcd", "ks", "estac"):
+            with self.subTest(word=word):
+                self.assertEqual(team_identity.structural_form(word), word)
+
+    def test_the_anchor_rule_still_refuses_two_spellings_at_once(self):
+        """Both sides merely similar is still not a fixture. This is what keeps
+        `Manchester United vs Arsenal` and `Manchester City vs Arsenal` apart,
+        and it is why `Baltika Kaliningrad vs Lokomotiv Moscow` is still two
+        cards beside `Baltika vs Lokomotiv` - recorded, not quietly folded."""
+        self.assertFalse(fixture_dedupe.same_fixture(
+            self.fixture("Manchester United vs Arsenal"),
+            self.fixture("Manchester City vs Arsenal")))
+        self.assertFalse(fixture_dedupe.same_fixture(
+            self.fixture("Baltika vs Lokomotiv"),
+            self.fixture("Baltika Kaliningrad Vs Lokomotiv Moscow")))
+
+    def test_a_rename_is_not_a_form_word(self):
+        """Chicago Red Stars became Chicago Stars FC. That is a fact about one
+        club, so it belongs in the alias table with its evidence or nowhere -
+        never in a list of words that carry no identity."""
+        self.assertFalse(fixture_dedupe.same_fixture(
+            self.fixture("Chicago Stars FC Vs North Carolina Courage"),
+            self.fixture("Chicago Red Stars W vs North Carolina Courage W")))
+
+
 if __name__ == "__main__":
     unittest.main()

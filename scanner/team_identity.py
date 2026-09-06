@@ -33,6 +33,13 @@ from typing import Any, Dict, Optional, Tuple
 
 ALIAS_FILE = Path("config") / "team-aliases.json"
 
+#: An apostrophe joins a word to its possessive; it does not separate two
+#: words. Replacing it with a space made `Newell's Old Boys` into
+#: "newell s old boys" while the feed that spells it `Newells Old Boys` gave
+#: "newells old boys", and one Argentinian fixture published twice for the
+#: length of a scan. Removed rather than spaced, and only the apostrophe:
+#: every other mark still separates.
+_APOSTROPHE = re.compile("['’ʼ`´]+")
 _PUNCT = re.compile(r"[^\w\s]+", re.UNICODE)
 
 #: Loaded once per process, keyed by the path it came from. A scan reads this
@@ -61,7 +68,7 @@ def normalize_team(value: Any) -> str:
     `Brighton & Hove Albion` and `Brighton and Hove Albion` reach the table as
     the same string, because the ampersand is punctuation and the word is not.
     """
-    plain = _PUNCT.sub(" ", _fold_accents(value))
+    plain = _PUNCT.sub(" ", _fold_accents(_APOSTROPHE.sub("", str(value or ""))))
     return " ".join(plain.split()).casefold()
 
 
@@ -210,8 +217,8 @@ def canonical_team(value: Any, gender: str = "",
 #: table instead, with the evidence written beside it.
 CLUB_FORM_WORDS = frozenset((
     "fc", "cf", "sc", "ac", "as", "afc", "sv", "fsv", "vfl", "vfb", "tsv",
-    "bsc", "sk", "fk", "cd", "ca", "ud", "ss", "rc", "sd", "cs", "ce", "cp",
-    "gd", "sl", "club", "societa", "sociedade",
+    "bsc", "sk", "fk", "cd", "ca", "ud", "ss", "rc", "rcd", "sd", "cs", "ce",
+    "cp", "gd", "sl", "ks", "estac", "club", "societa", "sociedade",
 ))
 
 #: A leading ordinal is only ever dropped in front of one of those words -

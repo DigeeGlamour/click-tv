@@ -50,6 +50,13 @@ _NOISE = re.compile(
 _SUFFIX = re.compile(
     r"\b(?:fc|afc|sc|cf|ac|as|ss|ssc|cd|ud|sd|club|futbol|football)\b",
     re.IGNORECASE)
+#: An apostrophe joins a word to its possessive; it does not separate two
+#: words. Replacing it with a space made `Newell's Old Boys` into
+#: "newell s old boys" while the feed that spells it `Newells Old Boys` gave
+#: "newells old boys", and one Argentinian fixture published twice for the
+#: length of a scan. Removed rather than spaced, and only the apostrophe:
+#: every other mark still separates.
+_APOSTROPHE = re.compile("['’ʼ`´]+")
 _PUNCT = re.compile(r"[^\w\s]+", re.UNICODE)
 
 #: Club abbreviations one feed prints and another drops. Leading ones matter as
@@ -99,7 +106,7 @@ MIN_INITIALISM = 3
 
 
 def _clean(text: Any) -> str:
-    plain = _PUNCT.sub(" ", _fold_accents(text))
+    plain = _PUNCT.sub(" ", _fold_accents(_APOSTROPHE.sub("", str(text or ""))))
     plain = _NOISE.sub(" ", plain)
     return " ".join(plain.split()).casefold()
 
