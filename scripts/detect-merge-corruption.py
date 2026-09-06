@@ -21,10 +21,19 @@ So the order is: rebase, restore this run's own files whole, LOOK, then
 reconcile. This script is the LOOK.
 
 WHAT IT DOES ABOUT WHAT IT FINDS
-  duplicate id   -> exit 1. The push fails. Two records with one id cannot be
-                    told apart by anything downstream, so nothing downstream
-                    can repair it, and the locked grouping rule - one match,
-                    one card - is already broken at that point.
+  duplicate id   -> exit 1, in anything the site is publishing right now. The
+                    push fails. Two records with one id cannot be told apart by
+                    anything downstream, so nothing downstream can repair it,
+                    and the locked grouping rule - one match, one card - is
+                    already broken at that point.
+
+                    In a snapshot slot that is NOT the live one, it is reported
+                    and the push continues. scanner/snapshot_publish.py rotates
+                    s0/s1/s2 round-robin and rewrites the whole slot before it
+                    becomes live, so a stale slot can never be served - while
+                    failing on one would be a deadlock with no way out: every
+                    run would refuse to push, and the only thing that rewrites
+                    that slot is a run that pushes.
   count mismatch -> reported loudly, exit 0. reconcile-generated-counts.py is
                     the designed repair and still runs. What must not happen
                     is the repair happening SILENTLY: a count that disagrees
@@ -56,6 +65,33 @@ SCAN_ROOTS = ("data",)
 ITEMS_KEY = "items"
 COUNT_KEY = "count"
 
+SNAPSHOT_DIRECTORY = "data/snapshots/"
+
+
+def live_snapshot_directory() -> str:
+    """The slot data/manifest.json currently points at, or "" if unreadable.
+
+    Everything under data/snapshots/ that is not this slot is a previous or
+    future round-robin position, rewritten in full before it is ever served.
+    """
+    manifest = PROJECT_ROOT / "data" / "manifest.json"
+    try:
+        payload = json.loads(manifest.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        # Unreadable manifest: treat every slot as live. Refusing too much is
+        # recoverable by a person; publishing a duplicate is not.
+        return ""
+    directory = (payload.get("snapshot") or {}).get("directory") or ""
+    return str(directory).strip().strip("/")
+
+
+def is_published_now(relative: str, live_slot: str) -> bool:
+    if not relative.startswith(SNAPSHOT_DIRECTORY):
+        return True  # the flat mirrors the site also serves
+    if not live_slot:
+        return True
+    return relative.startswith(live_slot.rstrip("/") + "/")
+
 
 def annotate(level: str, message: str) -> None:
     """Print, and ask GitHub to surface it in the run summary if we are in CI."""
@@ -78,8 +114,10 @@ def collections_under(root: Path):
 
 def main() -> int:
     duplicates: list[str] = []
+    stale_duplicates: list[str] = []
     mismatches: list[str] = []
     checked = 0
+    live_slot = live_snapshot_directory()
 
     for scan_root in SCAN_ROOTS:
         root = PROJECT_ROOT / scan_root
@@ -112,9 +150,11 @@ def main() -> int:
                     for number, value in enumerate(ids, start=1)
                     if value == identity
                 ]
-                duplicates.append(f"{relative}: id {identity!r} at {positions}")
+                where = duplicates if is_published_now(relative, live_slot) else stale_duplicates
+                where.append(f"{relative}: id {identity!r} at {positions}")
 
     print(f"merge corruption check: {checked} generated collection(s)")
+    print(f"  live snapshot slot: {live_slot or '(unreadable - treating all as live)'}")
 
     if mismatches:
         annotate(
@@ -127,6 +167,16 @@ def main() -> int:
     else:
         print("  every collection agrees with its own count")
 
+    if stale_duplicates:
+        annotate(
+            "warning",
+            "A snapshot slot that is not the live one holds the same id twice. "
+            "snapshot_publish.py rewrites a slot in full before it is served, "
+            "so this cannot reach anyone - and failing on it would stop every "
+            "future push, which is the only thing that would rewrite it:\n  "
+            + "\n  ".join(stale_duplicates),
+        )
+
     if duplicates:
         annotate(
             "error",
@@ -137,7 +187,7 @@ def main() -> int:
         )
         return 1
 
-    print("  no duplicate ids")
+    print("  no duplicate ids in anything published now")
     return 0
 
 

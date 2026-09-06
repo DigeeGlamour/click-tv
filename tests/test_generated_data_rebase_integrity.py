@@ -430,6 +430,7 @@ class TheDetectorRunsBeforeAnythingIsTidiedAway(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout)
         self.assertIn("every collection agrees with its own count", result.stdout)
         self.assertIn("no duplicate ids", result.stdout)
+        self.assertNotIn("snapshot slot that is not the live one", result.stdout)
         self.assertNotIn("::error::", result.stdout)
         self.assertNotIn("::warning::", result.stdout)
 
@@ -446,6 +447,87 @@ class TheDetectorRunsBeforeAnythingIsTidiedAway(unittest.TestCase):
                     {"today-match.json": self._collection(ids, declared=declared)}
                 )
                 self.assertEqual(result.returncode, 1, result.stdout)
+
+
+class ARotatingSnapshotSlotMustNotDeadlockThePush(unittest.TestCase):
+    """snapshot_publish.py cycles s0/s1/s2 and rewrites a slot in full before
+    it is served, so a duplicate left behind in a slot that is not live cannot
+    reach anyone. Failing the push on one would be unrecoverable: the only
+    thing that rewrites that slot is a run that pushes."""
+
+    CLEAN = '{"count": 2, "items": [{"id": "a"}, {"id": "b"}]}\n'
+    DAMAGED = '{"count": 3, "items": [{"id": "a"}, {"id": "b"}, {"id": "a"}]}\n'
+
+    def _tree(self, prefix: str) -> Path:
+        import tempfile
+
+        root = Path(tempfile.mkdtemp(prefix=prefix))
+        self.addCleanup(shutil.rmtree, root, ignore_errors=True)
+        (root / "scripts").mkdir()
+        shutil.copy2(DETECTOR, root / "scripts" / DETECTOR.name)
+        return root
+
+    @staticmethod
+    def _write(path: Path, payload: str) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(payload, encoding="utf-8", newline="\n")
+
+    @staticmethod
+    def _detect(root: Path) -> subprocess.CompletedProcess:
+        import sys
+
+        return subprocess.run(
+            [sys.executable, str(root / "scripts" / DETECTOR.name)],
+            cwd=root,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+
+    def _run(self, live_slot: str, damaged_slot: str) -> subprocess.CompletedProcess:
+        root = self._tree("slots-")
+        data = root / "data"
+        self._write(data / "today-match.json", self.CLEAN)
+        self._write(data / "snapshots" / live_slot / "today-match.json", self.CLEAN)
+        self._write(data / "snapshots" / damaged_slot / "today-match.json", self.DAMAGED)
+        self._write(
+            data / "manifest.json",
+            json.dumps({"snapshot": {"directory": f"data/snapshots/{live_slot}"}}),
+        )
+        return self._detect(root)
+
+    def test_a_duplicate_in_the_previous_slot_is_reported_but_not_fatal(self):
+        result = self._run(live_slot="s1", damaged_slot="s0")
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("snapshot slot that is not the live one", result.stdout)
+        self.assertIn("::warning::", result.stdout)
+        self.assertNotIn("::error::", result.stdout)
+
+    def test_a_duplicate_in_the_live_slot_still_fails(self):
+        result = self._run(live_slot="s0", damaged_slot="s0")
+        self.assertEqual(result.returncode, 1, result.stdout)
+        self.assertIn("::error::", result.stdout)
+
+    def test_a_duplicate_in_the_flat_mirror_still_fails(self):
+        root = self._tree("slots-flat-")
+        data = root / "data"
+        self._write(data / "today-match.json", self.DAMAGED)
+        self._write(data / "snapshots" / "s1" / "today-match.json", self.CLEAN)
+        self._write(
+            data / "manifest.json",
+            json.dumps({"snapshot": {"directory": "data/snapshots/s1"}}),
+        )
+        result = self._detect(root)
+        self.assertEqual(result.returncode, 1, result.stdout)
+
+    def test_an_unreadable_manifest_treats_every_slot_as_live(self):
+        root = self._tree("slots-nomanifest-")
+        self._write(root / "data" / "snapshots" / "s0" / "today-match.json", self.DAMAGED)
+        result = self._detect(root)
+        # Refusing too much is something a person can undo in a minute.
+        # Publishing a duplicate is not.
+        self.assertEqual(result.returncode, 1, result.stdout)
 
 
 class TheWorkflowStillWiresItUp(unittest.TestCase):
