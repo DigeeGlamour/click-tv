@@ -300,20 +300,30 @@ class TheStepIsStillAdvisory(unittest.TestCase):
     """4: failure behaviour and continue-on-error semantics unchanged."""
 
     def setUp(self) -> None:
-        import yaml
+        # Read the step's own YAML lines as text. pyyaml is NOT installed on
+        # the Actions runner - an `import yaml` here failed the whole suite in
+        # run #1315 and with it a production today scan, which is exactly the
+        # trap tests/test_scan_mode_selector.py already carries a guard for.
+        # Text is enough for these four fields and needs nothing installed.
+        text = WORKFLOW.read_text(encoding="utf-8").replace("\r\n", "\n")
+        start = text.index(
+            "      - name: Check the delivery path a viewer actually uses\n")
+        body = text[start:]
+        self.header = body[:body.index("        run: |\n")]
 
-        doc = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
-        self.step = [
-            s for s in doc["jobs"]["scan"]["steps"]
-            if s.get("name") == "Check the delivery path a viewer actually uses"
-        ][0]
+    def _header_value(self, key: str) -> str | None:
+        for line in self.header.splitlines():
+            stripped = line.strip()
+            if stripped.startswith(f"{key}:"):
+                return stripped[len(key) + 1:].strip()
+        return None
 
     def test_4_continue_on_error_is_still_true(self):
-        self.assertIs(self.step.get("continue-on-error"), True)
+        self.assertEqual(self._header_value("continue-on-error"), "true")
 
     def test_4_the_run_condition_is_unchanged(self):
         self.assertEqual(
-            self.step.get("if"),
+            self._header_value("if"),
             "steps.staleness.outputs.stale != 'yes' "
             "|| steps.catchup.outputs.catchup != ''",
         )
@@ -323,7 +333,7 @@ class TheStepIsStillAdvisory(unittest.TestCase):
         output, so the step must not become conditional on the mode."""
         run = _delivery_step_run()
         self.assertIn("scripts/verify-delivery-path.py", run)
-        self.assertNotIn("if: steps.scan_mode", str(self.step.get("if")))
+        self.assertNotIn("steps.scan_mode", self._header_value("if") or "")
 
     def test_4_the_worker_and_timeout_arguments_are_unchanged(self):
         run = _delivery_step_run()
