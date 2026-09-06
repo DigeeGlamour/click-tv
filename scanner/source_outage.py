@@ -41,6 +41,7 @@ records, and per-card provenance the card already carries.
 """
 from __future__ import annotations
 
+import copy
 import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -78,7 +79,6 @@ EMPTY = "EMPTY"
 UNREACHABLE = "UNREACHABLE"
 
 _SUCCESS_STATUSES = frozenset({"success", "success_empty"})
-_EMPTY_STATUSES = frozenset({"success_empty"})
 
 
 def _now() -> datetime:
@@ -175,10 +175,10 @@ def read_source_states(
             entry["reason"] = f"answered with {raw_items} record(s)"
             continue
 
+        # Everything that reaches here produced nothing. The request either
+        # worked and the body was empty, or it did not work at all.
         entry["content_state"] = (
-            EMPTY if status in _SUCCESS_STATUSES or status in _EMPTY_STATUSES
-            else UNREACHABLE
-        )
+            EMPTY if status in _SUCCESS_STATUSES else UNREACHABLE)
         productive_at = parse_time(record.get("last_productive"))
         if productive_at is None or entry["last_productive_items"] <= 0:
             entry["reason"] = (
@@ -339,7 +339,10 @@ def hold_upcoming_through_outage(
             refuse("hold window exhausted")
             continue
 
-        card = dict(previous)
+        # A deep copy: the pipeline stages after this one relabel channels
+        # and strip embed streams in place, and the previous snapshot this
+        # was read from must not change under them.
+        card = copy.deepcopy(previous)
         card["source_outage_hold_since"] = since.isoformat()
         card["source_outage_hold_scans"] = _int(
             previous.get("source_outage_hold_scans")) + 1
