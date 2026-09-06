@@ -23,6 +23,7 @@ try:
         protect_live_events,
     )
     from scanner import deliverability
+    from scanner import source_outage
     from scanner import sport_filter
     from scanner import fixture_dedupe, fixture_titles
     from scanner import competition_labels
@@ -81,6 +82,7 @@ except ImportError:
         probe_card_is_playable,
         protect_live_events,
     )
+    import source_outage  # type: ignore
     import sport_filter
     import fixture_dedupe
     import fixture_titles
@@ -1580,6 +1582,14 @@ def _link_is_carried(item: Dict[str, Any]) -> bool:
         _safe_int(item.get("carried_forward_misses"), 0, 0, 10_000) > 0)
 
 
+def _sources_in_outage(schedule_stats: Dict[str, Any]) -> List[str]:
+    outage = schedule_stats.get("source_outage")
+    if not isinstance(outage, dict):
+        return []
+    names = outage.get("sources_in_outage")
+    return [str(name) for name in names] if isinstance(names, list) else []
+
+
 def _stream_health(
     today_items: List[Dict[str, Any]],
     upcoming_items: List[Dict[str, Any]],
@@ -1598,17 +1608,30 @@ def _stream_health(
     carried = [item for item in playable if _link_is_carried(item)]
     fresh = len(playable) - len(carried)
 
+    # Whose silence it is. The warning was true and unattributable, which is how
+    # it read as a scanner fault for an hour on 2026-09-06 while the cause was
+    # one upstream feed answering with an empty body. The verdict is unchanged -
+    # a scan that found nothing is degraded whatever the reason - but a degraded
+    # scan that can name the source it is degraded BY is a different report to
+    # read.
+    outage = _sources_in_outage(schedule_stats)
+    attribution = (
+        f"; source(s) that produced nothing this scan: {', '.join(outage)}"
+        if outage else ""
+    )
+
     warnings: List[str] = []
     if published and not playable:
         warnings.append(
             "no published fixture has a playable route: "
-            f"{len(published)} card(s), 0 with a stream")
+            f"{len(published)} card(s), 0 with a stream{attribution}")
     elif playable and not fresh:
         warnings.append(
             "every playable route was carried from an earlier scan: "
-            f"{len(carried)} card(s), 0 found by this scan")
+            f"{len(carried)} card(s), 0 found by this scan{attribution}")
 
     return {
+        "sources_in_outage": outage,
         "published_fixtures": len(published),
         "fixtures_with_stream": len(playable),
         "fixtures_with_fresh_stream": fresh,
@@ -2210,6 +2233,65 @@ def process_events(
             )
         ]
         schedule_stats["event_archive"] = archive_retired(retired, now=now)
+
+    # The Upcoming half of the same question, and the half that had no answer.
+    #
+    # Live protection above carries a Today card whose source stopped listing
+    # it. Nothing did that for Upcoming, so on 2026-09-06 a feed that answered
+    # HTTP 200 with an empty body from 14:04Z took 18 published fixtures off the
+    # page at 14:11Z - not because anything said those matches were off, but
+    # because the scan that rebuilds the list had nothing to rebuild them from.
+    #
+    # Held only while the feed that SCHEDULED the fixture is provably silent,
+    # for a bounded window, and only for cards that are still upcoming on their
+    # own clock. Placed here so a held card goes on to face the archive filter,
+    # the both-tabs filter, the duplicate fold and the sport filter exactly as a
+    # freshly scanned one does.
+    #
+    # A targeted trigger is excluded for the same reason it skips live
+    # protection: it already republishes the whole snapshot, so it has nothing
+    # to lose and no evidence with which to decide.
+    if skip_live_protection:
+        schedule_stats["source_outage"] = {"skipped": "targeted scan"}
+    else:
+        previous_upcoming_published = [
+            item for item in
+            (_load_optional_json(Path("data") / "upcoming.json").get("items") or [])
+            if isinstance(item, dict)
+        ]
+        outage_states = source_outage.read_source_states(
+            now=now,
+            memory_hours=lifecycle_timings["source_outage_memory_hours"],
+            record_max_age_minutes=lifecycle_timings[
+                "source_outage_record_max_age_minutes"],
+        )
+        upcoming_items, outage_stats = source_outage.hold_upcoming_through_outage(
+            upcoming_items,
+            previous_upcoming_published,
+            today_items,
+            states=outage_states,
+            now=now,
+            still_upcoming=lambda card: _is_upcoming_fresh(
+                card, now, upcoming_past_grace_minutes, upcoming_future_days
+            ),
+            fixture_key=fixture_key,
+            is_ended=lambda card: (
+                is_authoritatively_ended(card)
+                or has_strong_end_signal(card)
+                or str(card.get("lifecycle_state") or "").upper()
+                in ARCHIVED_LIFECYCLE_STATES
+            ),
+            hold_minutes=lifecycle_timings["source_outage_hold_minutes"],
+        )
+        schedule_stats["source_outage"] = outage_stats
+        if outage_stats.get("sources_in_outage"):
+            print("   source outage: "
+                  f"{', '.join(outage_stats['sources_in_outage'])} produced "
+                  f"nothing this scan; {outage_stats['held']} Upcoming card(s) "
+                  f"held, {outage_stats['considered'] - outage_stats['held']} "
+                  "refused")
+            for name in outage_stats.get("held_names", [])[:10]:
+                print(f"      held {name!r}")
 
     attach_embed_streams = False
     events_cfg = settings.get("events")

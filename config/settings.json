@@ -622,6 +622,10 @@
     "confirmations_required": 3,
     "estimate_grace_minutes": 90,
     "unscheduled_carry_hours": 3,
-    "unscheduled_carry_confirmations": 36
+    "unscheduled_carry_confirmations": 36,
+    "_source_outage_note": "The Upcoming half of unscheduled_carry_hours. A feed that answers but produces nothing cannot withdraw the fixtures it scheduled, so those cards are held rather than deleted - bounded by these three values and by the fixture's own clock. Read by scanner/source_outage.py through scanner/events.py. Measured on 2026-09-06: sm-sports-data answered HTTP 200 with an empty body from 14:04Z and the 14:11Z full scan published 0 Upcoming cards for it, 18 real fixtures gone in one commit, while its Today cards survived on live protection.",
+    "source_outage_hold_minutes": 180,
+    "source_outage_memory_hours": 6,
+    "source_outage_record_max_age_minutes": 45
   }
 }

@@ -1063,6 +1063,25 @@ def _merge_health_history(
         record["total_scans"] = total_scans
         record["average_response_time_ms"] = average
 
+        # Whether the source produced anything, kept apart from whether it
+        # answered. `success_empty` is a success - the request worked - and it
+        # is also the shape a source takes when its maintainer empties the
+        # file, which on 2026-09-06 deleted 18 published fixtures in one scan.
+        # `last_success` cannot tell those apart because it is set by both, so
+        # productivity is recorded separately. Read by
+        # scanner/source_outage.py, which will not protect anything for a
+        # source that has no productive scan on record.
+        raw_items = _safe_int(current.get("raw_items", 0), 0, 0)
+        if status != "disabled":
+            if raw_items > 0:
+                record["last_productive"] = current.get("last_scan")
+                record["last_productive_items"] = raw_items
+                record["consecutive_unproductive"] = 0
+            else:
+                record["consecutive_unproductive"] = (
+                    _safe_int(previous.get("consecutive_unproductive", 0), 0, 0) + 1
+                )
+
         if status in {"success", "success_empty"}:
             record["last_success"] = current.get("last_scan")
             record["consecutive_failures"] = 0

@@ -42,8 +42,15 @@ verified before any behaviour hangs off them:
     estimate_grace_minutes       slack on an estimated end time
     unscheduled_carry_hours      how long a card with no kickoff is carried
     unscheduled_carry_confirmations
+    source_outage_hold_minutes   how long an Upcoming card is held while the
+                                 feed that scheduled it produces nothing
+    source_outage_memory_hours   how recently that feed must have produced
+                                 records for its silence to read as an outage
+    source_outage_record_max_age_minutes
+                                 how fresh a health record must be to count as
+                                 this scan's evidence
 
-The last four already had consumers and already had these values; they are
+Four of these already had consumers and already had these values; they are
 listed here so the block is the whole picture rather than half of it.
 """
 from __future__ import annotations
@@ -107,6 +114,18 @@ FIELDS: Dict[str, Tuple[int, int, int]] = {
     "estimate_grace_minutes": (90, 0, 24 * 60),
     "unscheduled_carry_hours": (3, 1, 240),
     "unscheduled_carry_confirmations": (36, 1, 100000),
+
+    # The Upcoming half of unscheduled_carry_hours, read by
+    # scanner/source_outage.py. A feed that answers and produces nothing has
+    # not said its fixtures are off, so the cards it scheduled are held rather
+    # than deleted - for this long, and no longer.
+    "source_outage_hold_minutes": (180, 0, 24 * 60),
+    # How recently that feed must have produced records for its silence to
+    # read as an outage at all. A source that has always been empty protects
+    # nothing.
+    "source_outage_memory_hours": (6, 0, 240),
+    # How fresh a health record must be to count as this scan's evidence.
+    "source_outage_record_max_age_minutes": (45, 1, 24 * 60),
 }
 
 
