@@ -564,6 +564,7 @@ def _is_today_fresh(
     now: datetime,
     max_age_hours: int,
     no_link_grace_minutes: int = TODAY_NO_LINK_GRACE_MINUTES,
+    post_match_grace_minutes: int = 0,
 ) -> bool:
     schedule_status = str(
         item.get("schedule_status") or item.get("status") or ""
@@ -575,9 +576,22 @@ def _is_today_fresh(
         item.get("end_time"),
         item.get("_source_timezone", timezone.utc),
     )
-    # Today Match is a live surface, not a recent-results archive.  Remove a
-    # card as soon as its authoritative fixture end_time is reached.
-    if end_time is not None and end_time <= now:
+    # Today Match is a live surface, not a recent-results archive. Remove a
+    # card once its authoritative fixture end_time is reached - after the
+    # post-match grace FINAL_2 asks for, and not before it.
+    #
+    # The grace defaults to 0, which is what this did before it existed, so a
+    # caller that does not pass one gets the old arithmetic. The targeted
+    # trigger passes it, because otherwise the two paths disagree about when a
+    # match is over and the card flickers: measured on 2026-09-06,
+    # `Alaves vs Osasuna` (16:30 kickoff, football, end 19:00) was published at
+    # 18:59, dropped by the 19:03 trigger with filtered_stale=2, and published
+    # again by the 19:09 full scan - which was holding it at END_PENDING for
+    # exactly this grace. One of the two had to be wrong, and FINAL_2 says
+    # which.
+    if end_time is not None and end_time + timedelta(
+        minutes=max(0, int(post_match_grace_minutes))
+    ) <= now:
         return False
 
     # An official multi-day fixture remains current until its authoritative
@@ -2137,7 +2151,8 @@ def process_events(
             carried["_source_timezone"] = source_timezone
             undeliverable_dropped += _strip_undeliverable_routes(carried)
             if not _is_today_fresh(
-                carried, now, today_max_age_hours, no_link_grace_minutes
+                carried, now, today_max_age_hours, no_link_grace_minutes,
+                lifecycle_timings["post_match_grace_minutes"],
             ):
                 today_stale += 1
                 continue

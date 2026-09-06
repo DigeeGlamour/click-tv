@@ -346,5 +346,69 @@ class NothingLaterIsStarted(unittest.TestCase):
         self.assertIn("currently_playing", verdict.protections)
 
 
+class TheTargetedTriggerHonoursTheSameGrace(unittest.TestCase):
+    """Both paths must agree about when a match is over.
+
+    Measured 2026-09-06. `Alaves vs Osasuna`, 16:30 kickoff, football, end
+    19:00:
+
+        18:59:31  upcoming-targeted   published
+        19:03:51  upcoming-targeted   dropped, filtered_stale=2
+        19:09:17  today               published again, END_PENDING
+
+    The full scan was holding it for exactly this grace. The trigger's
+    carry-through was retiring it at end_time with none, so a card the viewer
+    could still be watching flickered off the page and back four minutes later.
+    """
+
+    from scanner import events  # noqa: PLC0415 - a test module, read once
+
+    NOW = datetime(2026, 9, 6, 19, 3, tzinfo=UTC)
+
+    def card(self, end_offset_minutes):
+        return {
+            "id": "alaves-vs-osasuna",
+            "name": "Alaves vs Osasuna",
+            "schedule_status": "LIVE_NOW",
+            "start_time": (self.NOW - timedelta(minutes=153)).isoformat(),
+            "end_time": (self.NOW + timedelta(minutes=end_offset_minutes)).isoformat(),
+            "url": "https://a.test/x.m3u8",
+            "playback_id": "ctv_" + "a" * 32,
+        }
+
+    def fresh(self, item, grace):
+        return self.events._is_today_fresh(item, self.NOW, 12, 25, grace)
+
+    def test_without_a_grace_the_card_goes_the_moment_the_clock_says_so(self):
+        """The behaviour before, kept as the default so no other caller moved."""
+        self.assertFalse(self.fresh(self.card(-3), 0))
+
+    def test_with_the_grace_it_is_still_published(self):
+        self.assertTrue(self.fresh(self.card(-3), GRACE))
+
+    def test_and_it_goes_when_the_grace_runs_out(self):
+        self.assertFalse(self.fresh(self.card(-(GRACE + 1)), GRACE))
+
+    def test_the_boundary_is_the_grace_exactly(self):
+        self.assertTrue(self.fresh(self.card(-(GRACE - 1)), GRACE))
+        self.assertFalse(self.fresh(self.card(-GRACE), GRACE))
+
+    def test_an_authoritative_ended_still_goes_at_once(self):
+        """The grace is for a clock running out, not for a feed saying FT."""
+        item = self.card(-1)
+        item["schedule_status"] = "ENDED"
+        self.assertFalse(self.fresh(item, GRACE))
+
+    def test_the_carry_through_passes_the_configured_value(self):
+        source = (ROOT / "scanner" / "events.py").read_text(encoding="utf-8")
+        self.assertIn('lifecycle_timings["post_match_grace_minutes"],', source)
+
+    def test_the_default_keeps_every_other_caller_where_it_was(self):
+        import inspect
+        signature = inspect.signature(self.events._is_today_fresh)
+        self.assertEqual(
+            signature.parameters["post_match_grace_minutes"].default, 0)
+
+
 if __name__ == "__main__":
     unittest.main()
