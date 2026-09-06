@@ -13,6 +13,13 @@ compatibility_date = "2026-09-06"
 # published for it. Its only entry point is the cron below.
 workers_dev = false
 
+# workers_dev is not the whole story. A deploy that leaves `preview_urls`
+# unset turns it ON - the 2026-09-06 deploy printed `preview_urls: false ->
+# true` and published a *.workers.dev preview host for a Worker whose whole
+# design note says nothing about it is reachable from the internet. It is
+# written down here so the next deploy cannot re-enable it by omission.
+preview_urls = false
+
 # The repository's own declared cadences, minute for minute, copied from
 # .github/workflows/scan.yml. Firing on the same minutes is deliberate: when
 # GitHub also delivers its native trigger, the two land in the SAME concurrency

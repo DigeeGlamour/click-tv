@@ -66,7 +66,11 @@ const tomlSettings = toml
 check("no KV, D1, durable object or queue is configured",
   !/\b(kv_namespaces|d1_databases|durable_objects|queues)\b/.test(tomlSettings));
 check("workers_dev is off, so nothing is publicly reachable",
-  /workers_dev\s*=\s*false/.test(toml));
+  /workers_dev\s*=\s*false/.test(tomlSettings));
+// Left unset, a deploy turns preview URLs on and publishes a *.workers.dev
+// host for this Worker. Observed on the 2026-09-06 deploy.
+check("preview urls are off too, and said so explicitly",
+  /preview_urls\s*=\s*false/.test(tomlSettings));
 check("no route or custom domain is configured either",
   !/^\s*(routes?|route)\s*=/m.test(tomlSettings)
   && !/^\s*\[\[routes\]\]/m.test(tomlSettings));
