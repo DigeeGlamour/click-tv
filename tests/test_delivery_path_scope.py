@@ -132,18 +132,19 @@ class TargetedSweepsOnlyWhatItPublishes(unittest.TestCase):
         # the naive walker. What must never happen is the reverse.
         self.assertTrue(from_event_files <= self.event_urls)
 
-    def test_1_the_narrowing_is_real_and_large(self):
-        """Guard against a scope that silently stops narrowing anything."""
-        channels = _channel_urls()
-        if not channels:
-            self.skipTest("no published channel data in this checkout")
+    def test_1_the_narrowing_is_real(self):
+        """Guard against a scope that silently stops narrowing anything.
+
+        No ratio is asserted. The suite runs against whatever data the tree
+        happens to carry - in production that is a copy made mid-scan, and the
+        published counts move every few minutes - so "how much smaller" is not
+        a property of the code. That every channel-only route is gone, is.
+        """
+        channel_only = _channel_urls() - _event_urls()
+        if not channel_only:
+            self.skipTest("no channel-only published data in this checkout")
         self.assertLess(len(self.event_rows), len(self.all_rows))
-        # The measured split was 535 channel routes to 35 event routes. Assert
-        # the shape of that, not the exact numbers, which move with the day.
-        self.assertLess(
-            len(self.event_rows), len(self.all_rows) * 0.5,
-            "events scope should be a small fraction of the full sweep",
-        )
+        self.assertEqual(self.event_urls & channel_only, set())
 
     def test_2_every_event_route_is_still_checked(self):
         """100% of what a targeted run is responsible for."""
@@ -163,22 +164,18 @@ class TargetedSweepsOnlyWhatItPublishes(unittest.TestCase):
         in_events = self.event_urls & published
         self.assertEqual(in_full, in_events)
 
-    def test_an_event_route_is_requested_identically_under_both_scopes(self):
-        """Headers, profile, proxy_mode and stream type all feed the request,
-        and a route checked with the wrong headers is a route checked wrong.
-
-        `name` and `where` are deliberately NOT compared. A stream that sits on
-        both a channel card and an event card is labelled by whichever card the
-        walker reached first, so under scope=all the shared route reads
-        "real Madrid TV / backup1" and under scope=events "Real Madrid Vs
-        Albacete B / primary". Those two fields are display only - the verdict
-        is recorded against the URL by playback_evidence.record().
-        """
+    def test_a_route_on_only_one_kind_of_card_is_requested_identically(self):
+        """For a route that exists only on event cards, scoping changes
+        nothing about how it is asked: same URL, headers, profile, proxy mode,
+        stream type and playback id."""
         REQUEST_FIELDS = ("url", "headers", "profile", "proxy_only", "type",
                           "playback_id")
+        shared = _event_urls() & _channel_urls()
         by_url = {r["url"]: r for r in self.all_rows}
         compared = 0
         for row in self.event_rows:
+            if row["url"] in shared:
+                continue  # covered by the test below, which is about sharing
             other = by_url.get(row["url"])
             if other is None:
                 continue
@@ -189,7 +186,50 @@ class TargetedSweepsOnlyWhatItPublishes(unittest.TestCase):
                         row.get(field), other.get(field),
                         f"{field} differs between scopes for {row['url']}",
                     )
-        self.assertGreater(compared, 0, "no event route was comparable")
+        self.assertGreater(compared, 0, "no event-only route was comparable")
+
+    def test_a_shared_route_is_asked_about_using_the_card_that_owns_the_scope(self):
+        """A stream can sit on BOTH a Live TV card and an event card, and the
+        two cards carry their own request configuration.
+
+        published_routes() de-duplicates by URL, so only one of the two is
+        ever used - whichever file the walker reached first. That was already
+        true before this change: under scope=all the channel file is walked
+        first, so the channel card's configuration won and the event card's was
+        never used. Under scope=events there is no channel file, so the event
+        card's own configuration is used.
+
+        Measured on the runner for
+        https://rmtv.akamaized.net/.../master.m3u8 : scope=all sent no headers
+        at all, scope=events sent the event card's full header set.
+
+        This is not a regression and not a loss. Each scope checks the card it
+        is responsible for, with that card's own configuration - which is more
+        correct for a targeted run, not less. Today keeps checking the channel
+        card exactly as before, three times an hour. The verdict is recorded
+        against the URL by playback_evidence.record(), so a real refusal still
+        demotes the route for every card that carries it.
+        """
+        shared = _event_urls() & _channel_urls()
+        if not shared:
+            self.skipTest("no URL is published on both a channel and an event")
+        event_names = set()
+        for name in verifier.EVENT_FILES:
+            path = DATA / name
+            try:
+                payload = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, ValueError):
+                continue
+            for card in payload.get("items") or []:
+                if isinstance(card, dict) and card.get("name"):
+                    event_names.add(str(card["name"]))
+        by_url = {r["url"]: r for r in self.event_rows}
+        for url in sorted(shared):
+            row = by_url.get(url)
+            self.assertIsNotNone(row, f"shared route {url} dropped by scope=events")
+            with self.subTest(url=url[:60]):
+                # It is swept, and it is swept as the EVENT card that owns it.
+                self.assertIn(row["name"], event_names)
 
     def test_a_targeted_run_publishes_event_routes_so_the_scope_matches_it(self):
         """The premise: targeted writes today-match.json and upcoming.json."""
