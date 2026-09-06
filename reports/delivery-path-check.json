@@ -1,12 +1,43 @@
 {
  "mode": "delivery_path_check",
  "note": "Asked the live playback proxies for every published route, with the site origin, exactly as the player does. Only a permanent refusal is recorded; a timeout, 429 or 5xx is left alone.",
- "checked": 48,
- "served": 38,
- "refused": 0,
+ "checked": 841,
+ "served": 821,
+ "refused": 6,
  "refused_but_single_use": 0,
- "no_verdict": 10,
- "recorded": 0,
+ "no_verdict": 14,
+ "recorded": 5,
  "cleared": 0,
- "refusals": []
+ "refusals": [
+  {
+   "name": "NTV",
+   "where": "backup1",
+   "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too"
+  },
+  {
+   "name": "Al Jazeera",
+   "where": "primary",
+   "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too"
+  },
+  {
+   "name": "Saudi Quran",
+   "where": "primary",
+   "detail": "the playback proxy refuses this route: error code: 1003"
+  },
+  {
+   "name": "BBC World",
+   "where": "primary",
+   "detail": "the playback proxy refuses this route: error code: 1003"
+  },
+  {
+   "name": "Bungo TV",
+   "where": "primary",
+   "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too"
+  },
+  {
+   "name": "Bein Sports 1",
+   "where": "backup1",
+   "detail": "the playback proxy refuses this route: error code: 1003"
+  }
+ ]
 }
