@@ -1,4 +1,10 @@
-name = "click-tv-scan-trigger"
+# The Worker that already holds the GITHUB_DISPATCH_TOKEN secret, created in
+# the Cloudflare dashboard on 2026-09-06 at 07:30Z. The name has to match it
+# exactly: a secret belongs to one Worker, it cannot be read back out, and
+# deploying under any other name creates a second Worker with the code and
+# the cron but no token - which is what happened once and is why this line
+# is now a decision rather than a default. It also matches this directory.
+name = "scan-trigger"
 main = "src/index.js"
 compatibility_date = "2026-09-06"
 
