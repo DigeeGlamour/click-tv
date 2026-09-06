@@ -178,8 +178,16 @@ class _Repo:
         )
         # Outside the repository under test: a stray untracked file would show
         # up in `git status` and make the "nothing left behind" assertion lie.
+        # It is removed straight after the run rather than left in the system
+        # temp directory for the rest of the machine's life.
         script_path = self.root.parent / f"{self.root.name}-shipped.sh"
         script_path.write_text(script, encoding="utf-8", newline="\n")
+        try:
+            return self._bash(script_path)
+        finally:
+            script_path.unlink(missing_ok=True)
+
+    def _bash(self, script_path: Path) -> subprocess.CompletedProcess:
         return subprocess.run(
             [BASH, str(script_path)],
             cwd=self.root,
