@@ -10,8 +10,9 @@
  * wanted — not because anything in the workflow is wrong.
  *
  * WHAT IT DOES
- * On its own cron it calls the repository's existing workflow through
- * `workflow_dispatch` with an explicit mode. That is the whole job.
+ * On each of its crons it calls the repository's existing workflow through
+ * `workflow_dispatch` with the mode that cron is responsible for. That is the
+ * whole job.
  *
  * WHAT IT DELIBERATELY DOES NOT DO
  *   - no KV, no D1, no Durable Object, no storage of any kind
@@ -20,21 +21,27 @@
  *   - no `fetch` handler: with `workers_dev = false` and no route, nothing
  *     about this Worker is reachable from the internet
  * The scanner, its state and its reports are untouched. This Worker only
- * presses the button that GitHub's own scheduler presses unreliably.
+ * presses the buttons that GitHub's own scheduler presses unreliably.
  *
  * IT IS A SECOND PATH, NOT A REPLACEMENT
  * The repository's native crons stay declared. GitHub's 6.7% is a poor floor
  * but it is not zero, and two independent schedulers must both fail before the
  * data goes stale. An externally dispatched run lands in the SAME concurrency
- * group as its native cron — `live-signal-events-v4` for today — so when both
- * fire, GitHub runs one and drops the other. That is the duplicate guard, and
- * it already existed before this Worker.
+ * group as its native cron, because scan.yml computes the group from
+ * `inputs.mode` as well as `github.event.schedule`:
+ *
+ *   today             -> live-signal-events-v4    cancel-in-progress false
+ *   upcoming-targeted -> live-signal-targeted-v1  cancel-in-progress true
+ *
+ * So when both schedulers fire, GitHub holds one behind the other (today) or
+ * cancels the older one (targeted). That is the duplicate guard, and it
+ * already existed before this Worker. No new lock is invented here.
  *
  * CADENCE
- * The cron in wrangler.toml is the repository's own declared Today cadence,
+ * Every cron below is the repository's own declared cadence for that mode,
  * minute for minute. Firing on the same minutes means a duplicate collapses in
  * the concurrency group instead of doubling the scan rate; no new cadence is
- * invented here.
+ * invented here either.
  */
 
 const OWNER = "DigeeGlamour";
@@ -42,22 +49,49 @@ const REPO = "click-tv";
 const WORKFLOW_FILE = "scan.yml";
 const REF = "main";
 
-/** The one mode this Worker is responsible for during the pilot. */
-const MODE = "today";
-
-/** The declared Today cadence, in minutes. Used only to size the watch below. */
-const CADENCE_MINUTES = 20;
+/**
+ * Which cron means which mode.
+ *
+ * The keys are the exact cron strings from wrangler.toml, which are in turn the
+ * exact strings from `.github/workflows/scan.yml`. `controller.cron` hands back
+ * the string Cloudflare matched, so this is a lookup and never a guess: a cron
+ * that is not a key here dispatches NOTHING, because a scheduler that guesses a
+ * mode can write the wrong data under it.
+ *
+ *   cadenceMinutes    the declared cadence, used only to size the silence watch
+ *   telegramEveryTick whether every bad tick may send a Telegram message
+ *
+ * `telegramEveryTick` is false for the five-minute mode and true for the
+ * twenty-minute one. That is not a preference: a permanent fault on a
+ * five-minute cron is twelve identical messages an hour, which is how a bot
+ * gets muted, and a muted bot is the same silence this Worker exists to break.
+ * Throttled ticks still write the full report to the Cloudflare log — nothing
+ * is hidden, only the phone is spared. Today keeps its original every-tick
+ * behaviour untouched.
+ */
+const SCHEDULES = {
+  "3,23,43 * * * *": {
+    mode: "today",
+    cadenceMinutes: 20,
+    telegramEveryTick: true,
+  },
+  "1-59/5 * * * *": {
+    mode: "upcoming-targeted",
+    cadenceMinutes: 5,
+    telegramEveryTick: false,
+  },
+};
 
 /**
- * How old the published Today summary may get before it is called silence.
- * Three cadences: one missed trigger is normal on any scheduler, three in a
- * row is not.
+ * How old a published summary may get before it is called silence, as a
+ * multiple of that mode's own cadence. Three cadences: one missed trigger is
+ * normal on any scheduler, three in a row is not. today -> 60 min,
+ * upcoming-targeted -> 15 min.
  */
-const STALE_AFTER_MINUTES = CADENCE_MINUTES * 3;
+const STALE_AFTER_CADENCES = 3;
 
-const FRESHNESS_URL =
-  `https://raw.githubusercontent.com/${OWNER}/${REPO}/${REF}` +
-  `/reports/scan-summary-${MODE}.json`;
+/** At most one throttled Telegram message per this many minutes. */
+const THROTTLE_WINDOW_MINUTES = 30;
 
 const USER_AGENT = "click-tv-scan-trigger";
 
@@ -67,15 +101,37 @@ export default {
    * waitUntil so a slow GitHub response cannot truncate the alert path.
    */
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(tick(env, event.scheduledTime));
+    ctx.waitUntil(tick(env, event.cron, event.scheduledTime));
   },
 };
 
-async function tick(env, scheduledTime) {
-  const firedAt = new Date(scheduledTime || Date.now()).toISOString();
+async function tick(env, cron, scheduledTime) {
+  const firedAtMs = scheduledTime || Date.now();
+  const firedAt = new Date(firedAtMs).toISOString();
+
+  const job = SCHEDULES[cron];
+  if (!job) {
+    // A trigger this Worker has no mode for. Dispatch nothing: the workflow's
+    // own selector fails loudly on an unrecognised schedule for exactly this
+    // reason, and a dispatch with a guessed mode would defeat it by arriving
+    // as a perfectly well-formed request for the wrong scan.
+    const known = Object.keys(SCHEDULES)
+      .map((value) => JSON.stringify(value))
+      .join(", ");
+    const message =
+      `click-tv scan-trigger ${firedAt}\n` +
+      `UNKNOWN CRON ${JSON.stringify(cron)} - no dispatch was sent.\n` +
+      `This Worker only knows: ${known}.\n` +
+      `A trigger was added to wrangler.toml without adding it to SCHEDULES in ` +
+      `src/index.js, or removed from SCHEDULES without removing the trigger.`;
+    console.error(message);
+    await alert(env, `⚠️ ${message}`);
+    return;
+  }
+
   const notes = [];
 
-  const dispatched = await dispatch(env);
+  const dispatched = await dispatch(env, job.mode);
   notes.push(
     dispatched.ok
       ? `dispatch accepted (HTTP ${dispatched.status})`
@@ -97,26 +153,54 @@ async function tick(env, scheduledTime) {
   // The check that catches the failure nobody else can see. A workflow that
   // never starts produces no failed run, so `if: failure()` inside the
   // workflow can never fire for it — the only symptom is a timestamp that
-  // stops moving.
-  const stale = await staleness();
+  // stops moving. Each mode watches its OWN published summary, because the
+  // targeted report going stale while today kept writing is precisely the
+  // fault that went unnoticed for 115 hours.
+  const staleAfter = job.cadenceMinutes * STALE_AFTER_CADENCES;
+  const stale = await staleness(job.mode);
   if (stale.error) {
     notes.push(`freshness unreadable: ${stale.error}`);
   } else {
-    notes.push(`last ${MODE} scan ${stale.ageMinutes} min ago`);
+    notes.push(
+      `last ${job.mode} scan ${stale.ageMinutes} min ago ` +
+      `(stale after ${staleAfter} min)`
+    );
   }
 
-  const bad = !dispatched.ok || (stale.ageMinutes !== null &&
-    stale.ageMinutes > STALE_AFTER_MINUTES);
+  const bad = !dispatched.ok ||
+    (stale.ageMinutes !== null && stale.ageMinutes > staleAfter);
 
-  const summary = `click-tv scan-trigger ${firedAt}\nmode=${MODE}\n` +
+  const summary = `click-tv scan-trigger ${firedAt}\nmode=${job.mode}\n` +
     notes.map((line) => `- ${line}`).join("\n");
 
-  if (bad) {
-    console.error(summary);
+  if (!bad) {
+    console.log(summary);
+    return;
+  }
+
+  // Always log; message the phone only when this tick is allowed to.
+  console.error(summary);
+  if (mayMessage(job, firedAtMs)) {
     await alert(env, `⚠️ ${summary}`);
   } else {
-    console.log(summary);
+    console.error(
+      `telegram throttled: ${job.mode} sends at most one message per ` +
+      `${THROTTLE_WINDOW_MINUTES} min; the report above stands.`
+    );
   }
+}
+
+/**
+ * Stateless throttle. This Worker stores nothing, so "have I already sent one?"
+ * cannot be remembered — it is derived from the clock instead: only the first
+ * tick of each throttle window may message. With a five-minute cadence that is
+ * the tick at :01 and the one at :31, so at most two messages an hour, and a
+ * fault that persists is still reported twice an hour forever.
+ */
+function mayMessage(job, firedAtMs) {
+  if (job.telegramEveryTick) return true;
+  const minute = new Date(firedAtMs).getUTCMinutes();
+  return (minute % THROTTLE_WINDOW_MINUTES) < job.cadenceMinutes;
 }
 
 /**
@@ -124,7 +208,7 @@ async function tick(env, scheduledTime) {
  * Actions read and write. It never touches contents — the workflow's own
  * GITHUB_TOKEN does the committing.
  */
-async function dispatch(env) {
+async function dispatch(env, mode) {
   const token = env.GITHUB_DISPATCH_TOKEN;
   if (!token) {
     return { ok: false, status: 0, detail: "GITHUB_DISPATCH_TOKEN is not set" };
@@ -142,7 +226,7 @@ async function dispatch(env) {
         "User-Agent": USER_AGENT,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ ref: REF, inputs: { mode: MODE } }),
+      body: JSON.stringify({ ref: REF, inputs: { mode } }),
     });
     // 204 No Content is the documented success. Anything else is a failure,
     // including a 2xx that is not 204.
@@ -162,7 +246,14 @@ async function dispatch(env) {
  *   - it must be a workflow_dispatch, not a schedule
  *   - it must be on our ref
  *   - it must have been created at or after this tick fired
- * If nothing matches, this returns null and the caller says so.
+ *
+ * The dispatches endpoint returns no run id, and the runs list does not carry
+ * `inputs`, so the mode cannot be confirmed from the API either. What keeps
+ * the two modes from being mistaken for each other is the clock: the today
+ * minutes (3, 23, 43) and the targeted minutes (1, 6, 11 ... 56) are never
+ * closer than two minutes apart, and the backward slack below is one. The test
+ * suite asserts that separation, so if a cron is ever changed in a way that
+ * breaks it, the tests fail before the reports start lying.
  */
 async function findOurRun(env, firedAt) {
   const token = env.GITHUB_DISPATCH_TOKEN;
@@ -193,10 +284,13 @@ async function findOurRun(env, firedAt) {
   }
 }
 
-/** How long ago the published summary says the last scan of MODE finished. */
-async function staleness() {
+/** How long ago the published summary says the last scan of `mode` finished. */
+async function staleness(mode) {
+  const url =
+    `https://raw.githubusercontent.com/${OWNER}/${REPO}/${REF}` +
+    `/reports/scan-summary-${mode}.json`;
   try {
-    const response = await fetch(`${FRESHNESS_URL}?t=${Date.now()}`, {
+    const response = await fetch(`${url}?t=${Date.now()}`, {
       headers: { "User-Agent": USER_AGENT, "Cache-Control": "no-cache" },
     });
     if (!response.ok) {
@@ -224,15 +318,24 @@ async function alert(env, text) {
   const chat = env.TELEGRAM_CHAT_ID;
   if (!token || !chat) return;
   try {
-    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "User-Agent": USER_AGENT },
-      body: JSON.stringify({
-        chat_id: chat,
-        text,
-        disable_web_page_preview: true,
-      }),
-    });
+    const response = await fetch(
+      `https://api.telegram.org/bot${token}/sendMessage`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "User-Agent": USER_AGENT },
+        body: JSON.stringify({
+          chat_id: chat,
+          text,
+          disable_web_page_preview: true,
+        }),
+      },
+    );
+    // A failure here cannot itself be alerted about — the alert channel is
+    // what failed — so it is recorded in the Worker log, and it must never
+    // take the tick down.
+    if (!response.ok) {
+      console.error(`telegram alert rejected: HTTP ${response.status}`);
+    }
   } catch (error) {
     console.error(`telegram alert failed: ${error}`);
   }

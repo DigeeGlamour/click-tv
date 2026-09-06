@@ -13,17 +13,32 @@ compatibility_date = "2026-09-06"
 # published for it. Its only entry point is the cron below.
 workers_dev = false
 
-# The repository's own declared Today cadence, minute for minute
-# (`3,23,43 * * * *` in .github/workflows/scan.yml). Firing on the same minutes
-# is deliberate: when GitHub also delivers its native trigger, the two land in
-# the same concurrency group - live-signal-events-v4 - and GitHub runs one and
-# drops the other, so the effective cadence stays twenty minutes. Offsetting
-# them would double the scan rate, which is a cadence nobody chose.
+# The repository's own declared cadences, minute for minute, copied from
+# .github/workflows/scan.yml. Firing on the same minutes is deliberate: when
+# GitHub also delivers its native trigger, the two land in the SAME concurrency
+# group, because scan.yml computes the group from `inputs.mode` as well as
+# `github.event.schedule`. Offsetting them would double the scan rate, which is
+# a cadence nobody chose.
 #
-# upcoming-targeted is NOT scheduled here. The pilot is today only, and the
-# targeted cron stays with GitHub until this one has been observed working.
+#   "3,23,43 * * * *"  -> today              live-signal-events-v4
+#                                            cancel-in-progress false: the two
+#                                            runs stack, one waits, neither is
+#                                            interrupted mid-write
+#   "1-59/5 * * * *"   -> upcoming-targeted  live-signal-targeted-v1
+#                                            cancel-in-progress true: the newer
+#                                            link hunt replaces the older one,
+#                                            which is what targeted has always
+#                                            done for its native cron
+#
+# Both were run against GitHub's native schedule alone for months; the external
+# trigger changes who presses the button, not what the button does.
+#
+# EVERY cron here must also be a key of SCHEDULES in src/index.js, and every
+# key there must be a cron here. A trigger with no entry dispatches nothing -
+# deliberately, because a scheduler that guesses a mode writes the wrong data.
+# tests/scan-trigger-worker-runtime.mjs fails if the two lists ever disagree.
 [triggers]
-crons = ["3,23,43 * * * *"]
+crons = ["3,23,43 * * * *", "1-59/5 * * * *"]
 
 # No [vars] block. Everything this Worker needs is a secret, and a secret set
 # with `wrangler secret put` is never written to this file:
