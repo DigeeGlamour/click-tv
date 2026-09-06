@@ -46,8 +46,6 @@ import sys
 import tempfile
 import unittest
 
-import yaml
-
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
@@ -66,6 +64,14 @@ INTENDED = {
 
 
 def _document():
+    # PyYAML is not installed on the GitHub runner, and this module was the
+    # only one of the workflow tests importing it at module level - so the
+    # whole suite errored there while every sibling skipped cleanly. The
+    # import is guarded here the same way they guard theirs.
+    try:
+        import yaml
+    except ImportError:  # pragma: no cover - depends on the runner
+        raise unittest.SkipTest("pyyaml unavailable")
     doc = yaml.safe_load(WORKFLOW.read_text(encoding="utf-8"))
     # PyYAML reads the bare key `on` as the boolean True.
     triggers = doc.get("on")
