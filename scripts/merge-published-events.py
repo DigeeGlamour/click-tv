@@ -92,6 +92,13 @@ def items_of(payload: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return [item for item in items if isinstance(item, dict)] if isinstance(items, list) else []
 
 
+def _stamp(payload: Optional[Dict[str, Any]]) -> str:
+    """When a published surface was written, as it says itself."""
+    if not isinstance(payload, dict):
+        return ""
+    return str(payload.get("updated_at") or "").strip()
+
+
 def key_of(item: Dict[str, Any]) -> str:
     """One fixture's identity. The scanner's own key, with the id as a fallback
     for a card the key cannot describe - never an empty string, because two
@@ -421,7 +428,22 @@ def main() -> int:
             payloads[name] = ours_payload
             continue
 
-        base = items_of(blob(args.base, path))
+        base_payload = blob(args.base, path)
+        base = items_of(base_payload)
+
+        # If main's copy of this surface is OLDER than the one this run started
+        # from, main went backwards - and a fixture it offers may be one that
+        # was retired an hour ago. Take nothing from a list that is behind the
+        # base; ours is the newer of the two by definition then.
+        if _stamp(theirs_payload) and _stamp(base_payload) \
+                and _stamp(theirs_payload) < _stamp(base_payload):
+            print("  %s: main's copy is older than this run's base (%s < %s); "
+                  "taking nothing from it"
+                  % (name, _stamp(theirs_payload), _stamp(base_payload)))
+            merged_lists[name] = ours
+            payloads[name] = ours_payload
+            continue
+
         merged, stats = three_way(base, ours, theirs)
 
         our_keys = set(index(ours))

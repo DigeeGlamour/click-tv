@@ -352,6 +352,30 @@ class ACardAndTheRecordThatPlaysItMoveTogether(unittest.TestCase):
                          catalog_shard_for(self.ID_A))
 
 
+class AListThatWentBackwardsIsNotASide(unittest.TestCase):
+    """Defence in depth against the fault above.
+
+    If main's copy of a surface is older than the one this run started from,
+    main went backwards, and a fixture it offers may be one that was retired an
+    hour ago. Taking nothing from it is the only safe answer - and it costs
+    nothing, because ours is then the newer of the two by definition.
+    """
+
+    def test_the_stamp_is_the_files_own_updated_at(self):
+        self.assertEqual(merge._stamp({"updated_at": "2026-09-06T19:53:30"}),
+                         "2026-09-06T19:53:30")
+
+    def test_a_missing_stamp_does_not_pretend_to_be_one(self):
+        self.assertEqual(merge._stamp({}), "")
+        self.assertEqual(merge._stamp(None), "")
+
+    def test_the_guard_reads_the_two_stamps_in_the_right_order(self):
+        with open(SCRIPT, encoding="utf-8") as handle:
+            source = handle.read()
+        self.assertIn("_stamp(theirs_payload) < _stamp(base_payload)", source)
+        self.assertIn("taking nothing from it", source)
+
+
 class ARunThatNeverScannedEventsIsNotASide(unittest.TestCase):
     """A catalogue run holds a stale copy of both lists. Merging that with the
     live one would offer back every fixture the live one has retired since."""
