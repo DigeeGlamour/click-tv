@@ -27,8 +27,10 @@ from __future__ import annotations
 
 import json
 import re
+import shlex
 import shutil
 import subprocess
+import sys
 import unittest
 from collections import Counter
 from pathlib import Path
@@ -171,8 +173,23 @@ class _Repo:
         self.commit("what this run scanned")
 
     def run_shipped_function(self) -> subprocess.CompletedProcess:
+        # The function shells out to the selector, so the repository under test
+        # carries the real script rather than a stand-in, and PYTHON_BIN is
+        # resolved the way the push step resolves it.
+        selector = PROJECT_ROOT / "scripts" / "select-restorable-files.py"
+        self.write("scripts/select-restorable-files.py",
+                   selector.read_text(encoding="utf-8"))
+        self._git("add", "-A")
+        self._git("commit", "-q", "--amend", "--no-edit")
+        # The push step resolves PYTHON_BIN with `command -v python3 || command
+        # -v python`, which on the runner is a real interpreter. On a developer
+        # machine it can be Windows' App Execution Alias, which prints an
+        # advertisement and exits - so the interpreter running the tests is
+        # named here instead. What is under test is the function, not how a
+        # laptop spells python.
         script = (
             "set -euo pipefail\n"
+            'PYTHON_BIN=%s\n' % shlex.quote(sys.executable)
             + _extract_function("rebase_keeping_our_generated_files")
             + "\nrebase_keeping_our_generated_files\n"
         )
@@ -574,7 +591,7 @@ class TheWorkflowStillWiresItUp(unittest.TestCase):
 
     def test_the_restore_never_takes_a_whole_directory(self):
         function = _extract_function("rebase_keeping_our_generated_files")
-        self.assertIn('git checkout "$PRE" -- "${OURS[@]}"', function)
+        self.assertIn('git checkout "$PRE" -- "${KEEP[@]}"', function)
         for directory in ("data/", "reports/", "state/"):
             self.assertNotIn(f'git checkout "$PRE" -- {directory}', function)
 
@@ -612,6 +629,118 @@ class TheWorkflowStillWiresItUp(unittest.TestCase):
                 self.assertEqual(len(raw), provenance[role]["bytes"])
                 self.assertEqual(hashlib.sha256(raw).hexdigest(), provenance[role]["sha256"])
                 self.assertNotIn(b"\r\n", raw, "line endings were rewritten")
+
+
+@unittest.skipIf(BASH is None or GIT is None, "bash and git are required")
+class ACatalogueRunDoesNotRepublishEvents(unittest.TestCase):
+    """The second fault the whole-file restore made possible.
+
+    A channels or movies run does not scan events, and the snapshot publisher
+    still mirrors the event files into the slot it is writing - from the copy
+    that run checked out when it started. Restoring those WHOLE republishes an
+    old list, internally consistent and so invisible to every validator.
+
+        d7923f8ab  2026-09-06 16:37:13  channels
+                   snapshot generation 500 -> 491
+                   data/upcoming.json updated_at 16:30:55 -> 15:28:40
+                   Today Match 26 cards -> 38, Upcoming 104 -> 113
+
+    The receipt that settles it is reports/event-schedule.json: process_events
+    writes it, a catalogue run leaves it alone.
+    """
+
+    RECEIPT = "reports/event-schedule.json"
+
+    def _repo(self, *, our_receipt, origin_events, our_events) -> _Repo:
+        import tempfile
+
+        root = Path(tempfile.mkdtemp(prefix="rebase-catalogue-"))
+        self.addCleanup(shutil.rmtree, root, ignore_errors=True)
+        repo = _Repo(root)
+        base_receipt = '{"generated_at": "2026-09-06T15:28:40+00:00"}\n'
+        repo.build(
+            base={
+                self.RECEIPT: base_receipt,
+                "data/upcoming.json": '{"updated_at": "15:28:40", "items": []}\n',
+                "data/channels/sports.json": '{"count": 78}\n',
+            },
+            origin={
+                self.RECEIPT: '{"generated_at": "2026-09-06T16:30:55+00:00"}\n',
+                "data/upcoming.json": origin_events,
+            },
+            mine={
+                self.RECEIPT: our_receipt,
+                "data/upcoming.json": our_events,
+                "data/channels/sports.json": '{"count": 84}\n',
+            },
+        )
+        return repo
+
+    def _run(self, **kwargs):
+        repo = self._repo(**kwargs)
+        result = repo.run_shipped_function()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        return repo, result
+
+    def test_a_catalogue_run_leaves_the_event_files_to_the_events_run(self):
+        repo, _ = self._run(
+            our_receipt='{"generated_at": "2026-09-06T15:28:40+00:00"}\n',
+            origin_events='{"updated_at": "16:30:55", "items": ["fresh"]}\n',
+            our_events='{"updated_at": "15:28:40", "items": []}\n',
+        )
+        self.assertIn(
+            "16:30:55",
+            (repo.root / "data" / "upcoming.json").read_text(encoding="utf-8"),
+            "a run that did not scan events republished an old event list",
+        )
+
+    def test_but_it_still_keeps_the_catalogue_it_did_scan(self):
+        repo, _ = self._run(
+            our_receipt='{"generated_at": "2026-09-06T15:28:40+00:00"}\n',
+            origin_events='{"updated_at": "16:30:55", "items": ["fresh"]}\n',
+            our_events='{"updated_at": "15:28:40", "items": []}\n',
+        )
+        self.assertIn(
+            '"count": 84',
+            (repo.root / "data" / "channels" / "sports.json").read_text(
+                encoding="utf-8"),
+        )
+
+    def test_an_events_run_still_keeps_its_own_list_whole(self):
+        """The rule this must not break: a full scan overtaken at the push
+        keeps the list it rescanned every source to build."""
+        repo, _ = self._run(
+            our_receipt='{"generated_at": "2026-09-06T16:29:02+00:00"}\n',
+            origin_events='{"updated_at": "16:30:55", "items": ["theirs"]}\n',
+            our_events='{"updated_at": "16:29:02", "items": ["ours"]}\n',
+        )
+        self.assertIn(
+            "16:29:02",
+            (repo.root / "data" / "upcoming.json").read_text(encoding="utf-8"),
+            "an events run lost the list it had just scanned",
+        )
+
+    def test_the_selector_names_no_scan_mode(self):
+        """It reads a receipt, not a mode. `channels` and `movies` and `today`
+        are not decisions this file is allowed to make."""
+        source = (PROJECT_ROOT / "scripts"
+                  / "select-restorable-files.py").read_text(encoding="utf-8")
+        body = "\n".join(
+            line for line in source.splitlines()
+            if not line.lstrip().startswith("#")
+        ).split('"""')[-1]
+        for mode in ('"channels"', '"movies"', '"today"', '"upcoming"',
+                     "'channels'", "'movies'", "'today'"):
+            self.assertNotIn(mode, body)
+
+    def test_the_workflow_passes_the_list_through_a_file(self):
+        """A NUL cannot survive a command substitution, and a path is the one
+        thing that may contain everything else."""
+        function = _extract_function("rebase_keeping_our_generated_files")
+        self.assertIn('--out "$LIST"', function)
+        self.assertIn('mapfile -t -d \'\' KEEP < "$LIST"', function)
+        self.assertNotIn(
+            '"$(\"$PYTHON_BIN\" scripts/select-restorable-files.py', function)
 
 
 if __name__ == "__main__":

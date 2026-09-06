@@ -916,12 +916,37 @@ jobs:
             mapfile -t -d '' OURS < <(
               git diff -z --name-only --diff-filter=ACMR                 "$MERGE_BASE" "$PRE" -- data reports state
             )
-            echo "This run regenerated ${#OURS[@]} file(s); they will be kept whole."
+            echo "This run regenerated ${#OURS[@]} file(s)."
+
+            # ...of which it may only keep the ones it actually produced.
+            # A catalogue run does not scan events and still rewrites the
+            # event files, from the copy it checked out when it started:
+            # restoring those whole put a 62-minute-old Today Match back on
+            # the site at 16:37 on 2026-09-06, internally consistent and so
+            # invisible to every validator. The selector asks each run
+            # whether it wrote reports/event-schedule.json this time.
+            # Through a file, not a pipe or a command substitution. A
+            # command substitution strips the NUL that separates the paths
+            # and joins them into one nonexistent pathspec; `mapfile < <()`
+            # keeps the NUL but hides the exit status, so a selector that
+            # could not start would silently restore nothing - which is the
+            # guard turning itself off. A plain command under `set -e`
+            # aborts the push instead, and the file keeps the bytes.
+            local KEEP=() LIST
+            LIST="$(mktemp)"
+            if [[ "${#OURS[@]}" -gt 0 ]]; then
+              "$PYTHON_BIN" scripts/select-restorable-files.py --ours "$PRE" --base "$MERGE_BASE" --out "$LIST" -- "${OURS[@]}"
+              if [[ -s "$LIST" ]]; then
+                mapfile -t -d '' KEEP < "$LIST"
+              fi
+            fi
+            rm -f "$LIST"
+            echo "${#KEEP[@]} of them will be kept whole."
 
             git rebase -X theirs origin/main
 
-            if [[ "${#OURS[@]}" -gt 0 ]]; then
-              git checkout "$PRE" -- "${OURS[@]}"
+            if [[ "${#KEEP[@]}" -gt 0 ]]; then
+              git checkout "$PRE" -- "${KEEP[@]}"
               if ! git diff --cached --quiet; then
                 echo "Restored this run's own output over the rebase merge:"
                 git diff --cached --name-only | sed 's/^/  /'
