@@ -173,12 +173,23 @@ class _Repo:
         self.commit("what this run scanned")
 
     def run_shipped_function(self) -> subprocess.CompletedProcess:
-        # The function shells out to the selector, so the repository under test
-        # carries the real script rather than a stand-in, and PYTHON_BIN is
-        # resolved the way the push step resolves it.
-        selector = PROJECT_ROOT / "scripts" / "select-restorable-files.py"
-        self.write("scripts/select-restorable-files.py",
-                   selector.read_text(encoding="utf-8"))
+        # The function shells out to two scripts, and one of them imports the
+        # scanner to fold duplicates and read the archive - so the repository
+        # under test carries the real files rather than stand-ins. Anything
+        # less would be testing a paraphrase.
+        for name in ("select-restorable-files.py", "merge-published-events.py"):
+            self.write("scripts/%s" % name,
+                       (PROJECT_ROOT / "scripts" / name).read_text(encoding="utf-8"))
+        shutil.copytree(PROJECT_ROOT / "scanner", self.root / "scanner",
+                        ignore=shutil.ignore_patterns("__pycache__"),
+                        dirs_exist_ok=True)
+        self.write("config/settings.json",
+                   (PROJECT_ROOT / "config" / "settings.json").read_text(
+                       encoding="utf-8"))
+        # The real repository ignores these; without the line here, running a
+        # script leaves bytecode behind and "nothing left in the worktree"
+        # becomes a claim about the test rather than about the function.
+        self.write(".gitignore", "__pycache__/\n*.py[cod]\n")
         self._git("add", "-A")
         self._git("commit", "-q", "--amend", "--no-edit")
         # The push step resolves PYTHON_BIN with `command -v python3 || command
@@ -311,7 +322,15 @@ class TwoRunsWritingAtOnce(unittest.TestCase):
         )
         return '{\n  "count": %d,\n  "items": [\n%s\n  ]\n}\n' % (len(ids), items)
 
-    def test_A_both_runs_wrote_the_same_file_so_ours_wins_whole(self):
+    def test_A_both_runs_wrote_the_same_file_so_it_is_merged_by_fixture(self):
+        """Ours wins per fixture; a fixture only they found is still theirs.
+
+        This asserted "ours wins whole" until 2026-09-06 17:14, when a targeted
+        trigger republished its own checkout and dropped all 8 fixtures the
+        Today scan had just found. Whole-file was never the goal - not merging
+        by LINE was. `remote` is a fixture the other run found and this one had
+        no opinion about, and dropping it is a loss, not a resolution.
+        """
         repo = self._repo(
             base={"data/today-match.json": self._collection("a", "b")},
             origin={"data/today-match.json": self._collection("a", "b", "remote")},
@@ -322,11 +341,30 @@ class TwoRunsWritingAtOnce(unittest.TestCase):
 
         merged = repo.root / "data" / "today-match.json"
         ids = [item["id"] for item in _items(merged)]
-        self.assertEqual(ids, ["a", "b", "ours", "extra"])
-        # The union - what the bug produced - would have kept "remote" too.
-        self.assertNotIn("remote", ids)
+        for mine in ("a", "b", "ours", "extra"):
+            self.assertIn(mine, ids, "this run's own card was lost")
+        self.assertIn("remote", ids, "the other run's card was lost")
         self.assertEqual(_declared_count(merged), len(ids))
         self.assertEqual(_duplicate_ids(merged), set())
+
+    def test_A2_a_card_this_run_retired_is_not_offered_back(self):
+        """The half that keeps the merge from being a resurrection engine.
+
+        `gone` is in the base and in theirs and not in ours: this run looked at
+        it and let it go. Absence on our side is a decision when the base has
+        it, and an omission only when the base does not.
+        """
+        repo = self._repo(
+            base={"data/today-match.json": self._collection("a", "gone")},
+            origin={"data/today-match.json": self._collection("a", "gone", "found")},
+            mine={"data/today-match.json": self._collection("a")},
+        )
+        result = repo.run_shipped_function()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        ids = [item["id"] for item in _items(repo.root / "data" / "today-match.json")]
+        self.assertNotIn("gone", ids, "a card this run retired came back")
+        self.assertIn("found", ids, "a card only the other run had was lost")
+        self.assertEqual(ids, ["a", "found"])
 
     def test_B_each_run_wrote_a_different_file_so_both_survive(self):
         repo = self._repo(

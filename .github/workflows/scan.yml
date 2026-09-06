@@ -943,17 +943,30 @@ jobs:
             rm -f "$LIST"
             echo "${#KEEP[@]} of them will be kept whole."
 
+            local THEIRS
+            THEIRS="$(git rev-parse origin/main)"
+
             git rebase -X theirs origin/main
 
             if [[ "${#KEEP[@]}" -gt 0 ]]; then
               git checkout "$PRE" -- "${KEEP[@]}"
-              if ! git diff --cached --quiet; then
-                echo "Restored this run's own output over the rebase merge:"
-                git diff --cached --name-only | sed 's/^/  /'
-                git commit --amend --no-edit
-              else
-                echo "The rebase left this run's output untouched; nothing to restore."
-              fi
+            fi
+
+            # Keeping the event lists whole loses whatever the other run
+            # published while this one was scanning: at 17:14 on 2026-09-06
+            # a targeted trigger republished its own checkout and dropped
+            # all 8 fixtures the Today scan had just found. So the two
+            # lists are merged by fixture identity - the merge git would
+            # do if it could read the file.
+            "$PYTHON_BIN" scripts/merge-published-events.py --base "$MERGE_BASE" --ours "$PRE" --theirs "$THEIRS"
+            git add -A data
+
+            if ! git diff --cached --quiet; then
+              echo "Reconciled this run's own output with the rebase merge:"
+              git diff --cached --name-only | sed 's/^/  /'
+              git commit --amend --no-edit
+            else
+              echo "The rebase left this run's output untouched; nothing to reconcile."
             fi
           }
 
