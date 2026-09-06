@@ -286,6 +286,23 @@ FOOTBALL_WEAK = [_word(p) for p in (
 # ── Everything else, named so it can be refused with confidence ───────────────
 # The two-word forms matter: "Bulls", "Sharks", "Lions", "Chiefs" and "Tigers"
 # each belong to three different sports, so only unambiguous names are listed.
+#: Words that identify a sport outright and cannot be a club name or a
+#: football/cricket competition. Read BEFORE the source's sport field, unlike
+#: OTHER_SPORTS below - see step 1b in classify() for why the two are separate
+#: and what happened when they were not.
+#:
+#: Nothing goes in here that a team could be called. "Rally", "Masters" and
+#: "Открытие" style sponsor words are deliberately absent; so is every word
+#: already proven dangerous - guardians, mavericks, wimbledon, dockers.
+UNAMBIGUOUS_OTHER_SPORT = [_word(p) for p in (
+    "fim", "motogp", "moto ?2", "moto ?3", "moto ?junior", "motocross",
+    "supercross", "superbike", "nascar", "indycar", "indy ?nxt",
+    "formula ?[123e]", "grand ?prix", "wrc",
+    "ppa tour", "pickleball",
+    "bmx", "velodrome",
+)]
+
+
 OTHER_SPORTS = {
     "tennis": [_word(p) for p in (
         "tennis", "atp", "wta", "wimbledon", "roland ?garros",
@@ -294,6 +311,9 @@ OTHER_SPORTS = {
     "table tennis / pickleball": [_word(p) for p in (
         "table ?tennis", "ping ?pong", "pickleball", "mlp finals", "ptt",
         "padel", "squash",
+        # Professional Pickleball Association. "PPA Tour: Cary-Championship
+        # Sunday" was published as football for the same reason FIM was.
+        "ppa tour", "ppa",
     )],
     "basketball": [_word(p) for p in (
         "basketball", "nba", "wnba", "euroleague", "fiba",
@@ -311,6 +331,10 @@ OTHER_SPORTS = {
         "formula ?[123e]", "f1", "motogp", "moto2", "moto3", "nascar",
         "indycar", "indy ?nxt", "wrc", "rally", "le ?mans", "gt world",
         "superbike", "dtm", "grand ?prix", "milwaukee mile",
+        # FIM is the governing body; its championships are motorcycle races
+        # and none of them is football, whatever the word "championship" in
+        # the title makes event_sport think.
+        "fim", "moto ?junior", "motocross", "supercross", "speedway gp",
     )],
     "kabaddi": [_word(p) for p in ("kabaddi", "pkl", "pro kabaddi")],
     "wrestling / mma / boxing": [_word(p) for p in (
@@ -563,6 +587,39 @@ def classify(item: Dict[str, Any]) -> Dict[str, Any]:
         if sport == "football":
             return _verdict(CONFIRMED_FOOTBALL, "league map", matched)
         return _verdict(CONFIRMED_OTHER, f"league map: {sport}", matched)
+
+    # 1b. a governing body or race series in the record's own words.
+    #
+    # Ahead of the sport field, and the ONLY change to how that field is read.
+    # scanner/merger.py builds every event card with
+    # `sport_type = event_sport(base_item)`, and event_sport matches a loose
+    # word list - the bare word "championship" sits in its football pattern
+    # for the EFL. So "FIM MotoJunior World Championship-Valencia" was derived
+    # as football, written into sport_type, and read back below as "source
+    # sport field": the merge layer's guess returning as this module's
+    # evidence. It published a motorcycle race on Today Match as football on
+    # 2026-09-06, with "PPA Tour: Cary-Championship Sunday" beside it.
+    #
+    # Two things this deliberately is NOT.
+    #
+    # It is not "ignore sport_type". Measured on the 193 cards published that
+    # afternoon, ignoring it would have unpublished 66 of them: "Jupiler Pro
+    # League", "Úrvalsdeild", "NB I" and the rest reach no other rule here, so
+    # for most cards that field is the only evidence this module has.
+    #
+    # It is not the full OTHER_SPORTS gazetteer either. Running that here cost
+    # five false positives on the same 193 cards - "Meerut Mavericks" read as
+    # basketball, "Dublin Guardians" as baseball, "AFC Wimbledon" as tennis -
+    # which is exactly what the notes at step 5 warn about: a club is allowed
+    # to be named after another sport. That is why the gazetteer stays where
+    # it is, behind the competition and the title.
+    #
+    # UNAMBIGUOUS_OTHER_SPORT is the narrow subset that cannot be a club or a
+    # football/cricket competition: governing bodies and race series.
+    hit = _any(UNAMBIGUOUS_OTHER_SPORT, " | ".join(
+        part for part in (competition, name) if part))
+    if hit:
+        return _verdict(CONFIRMED_OTHER, "governing body or race series", hit)
 
     # 2. the source said so.
     for token in structured.replace("|", " ").split():

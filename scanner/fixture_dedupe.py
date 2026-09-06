@@ -119,9 +119,15 @@ def _identity_module():
 def _canonical(name: str, gender: str = "") -> str:
     """The club's canonical spelling, from the shared alias table.
 
-    An exact lookup and nothing else - see scanner/team_identity.py. A club
-    with no entry comes back unchanged, so this can only ever relate two
-    spellings somebody has verified are one club.
+    A verified alias first - see scanner/team_identity.py - and after that the
+    structural form, which removes only the club-form words that cannot carry
+    identity ("1 FSV Mainz 05" and "FSV Mainz 05" are one club; "1860 Munich"
+    keeps its number, because no club-form word follows it). Two spellings are
+    never related by similarity, only by the table or by a word that means
+    nothing on its own.
+
+    The tabs read this and the merge layer reads participant_fold_key; both go
+    through the same function so they cannot disagree about who is playing.
 
     `gender` is the fixture's own evidence, and it only ever *narrows* what
     the lookup may use: an entry the table scopes to one category is
@@ -132,7 +138,7 @@ def _canonical(name: str, gender: str = "") -> str:
     if module is None:
         return name
     try:
-        return module.canonical_team(name, gender) or name
+        return module.identity_form(name, gender) or name
     except Exception:  # noqa: BLE001 - a name must never break grouping
         return name
 
@@ -207,6 +213,23 @@ def _same_token(left: str, right: str) -> bool:
     return _is_initialism(short, long)
 
 
+#: Words that mark a DIFFERENT squad of the same club: a reserve side, an
+#: age group, a B team. "Juventus" and "Juventus U23" are two teams and play
+#: two matches, but a front-to-back token comparison relates them, because
+#: every token they share does agree - the qualifier is only ever the extra
+#: one on the end.
+#:
+#: So a qualifier on one side and not the other means two teams, always.
+_SQUAD_QUALIFIER = re.compile(
+    r"^(?:u\s?\d{1,2}|under\s?\d{1,2}|ii|iii|iv|b|c|"
+    r"reserves?|castilla|atletico\s?b|next\s?gen|academy|youth|dev)$",
+    re.IGNORECASE)
+
+
+def _squad_qualifiers(tokens: List[str]) -> set:
+    return {token.lower() for token in tokens if _SQUAD_QUALIFIER.match(token)}
+
+
 def same_side(left: str, right: str) -> bool:
     """Whether two spellings name the same team.
 
@@ -223,6 +246,10 @@ def same_side(left: str, right: str) -> bool:
         return False
     if left_tokens == right_tokens:
         return True
+    # A reserve or age-group side is not its senior club, however well the
+    # tokens they share line up.
+    if _squad_qualifiers(left_tokens) != _squad_qualifiers(right_tokens):
+        return False
     shared = min(len(left_tokens), len(right_tokens))
     return all(_same_token(left_tokens[index], right_tokens[index])
                for index in range(shared))
@@ -422,6 +449,96 @@ def _fix_home_away(keeper: Dict[str, Any], other: Dict[str, Any],
     return corrected
 
 
+#: The round or format a broadcaster puts in the title or the competition:
+#: "3rd ODI", "1st Test", "2nd T20I", "11th Match". Two feeds naming the same
+#: round of the same series are naming one match.
+_ROUND = re.compile(
+    r"\b(\d{1,2})\s*(?:st|nd|rd|th)?\s+"
+    r"(odis?|tests?|t20is?|t20s?|matches?|match|games?|legs?|rounds?)\b",
+    re.IGNORECASE)
+
+
+def round_of(item: Dict[str, Any]) -> str:
+    """"3 odi" for anything that says 3rd ODI, in the title or competition."""
+    for field in ("name", "match_name", "competition", "series"):
+        found = _ROUND.search(_clean(item.get(field)))
+        if found:
+            noun = found.group(2).lower().rstrip("s")
+            if noun == "matche":
+                noun = "match"
+            return "%s %s" % (found.group(1), noun)
+    return ""
+
+
+def has_feed_kickoff(item: Dict[str, Any]) -> bool:
+    """Whether the FEED gave a kickoff, rather than the scan stamping one.
+
+    A playlist that only says "LIVE NOW" carries no time, and the pipeline
+    writes the moment of the scan into start_time so the card can be sorted.
+    That value is not a kickoff and must never be compared as one: on
+    2026-09-06 "3rd ODI England vs Ireland" carried 13:47:26 - the minute the
+    scan ran - while the same match, published by two other feeds as
+    "England W vs Ireland W", carried the real 09:30. Keyed on the stamp they
+    were four hours apart and stayed two cards.
+    """
+    return bool(str(item.get("source_start_time") or "").strip())
+
+
+def _timeless_identity(item: Dict[str, Any]) -> Optional[Tuple[str, str, str]]:
+    """(side, side, round) for a card whose time came from the scan."""
+    if has_feed_kickoff(item):
+        return None
+    both = sides(item)
+    round_token = round_of(item)
+    if not both or not round_token:
+        return None
+    return (_bare(both[0]), _bare(both[1]), round_token)
+
+
+def _absorb_timeless(kept: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """Fold a timeless card into the fixture it can only be.
+
+    The general rule, and the whole of it: a card the feed gave no kickoff for
+    is the same match as another card when the participants agree, the round
+    agrees, the day agrees - and there is EXACTLY ONE such card. One candidate
+    is an identification; two is a question, and a question is left as two
+    cards. That is what keeps a genderless "3rd ODI England vs Ireland" off a
+    women's fixture on a day when the men play the same round, without
+    needing to know which of them the broadcaster meant.
+    """
+    report: List[Dict[str, str]] = []
+    for item in list(kept):
+        identity = _timeless_identity(item)
+        if identity is None:
+            continue
+        day = _kickoff(item)[:10]
+        matches = []
+        for other in kept:
+            if other is item or _timeless_identity(other) is not None:
+                continue
+            both = sides(other)
+            if not both or round_of(other) != identity[2]:
+                continue
+            if _kickoff(other)[:10] != day:
+                continue
+            pair = (_bare(both[0]), _bare(both[1]))
+            if pair == identity[:2] or pair == (identity[1], identity[0]):
+                matches.append(other)
+        if len(matches) != 1:
+            continue  # nothing to fold into, or a question rather than an answer
+        keeper = matches[0]
+        _absorb(keeper, item)
+        kept.remove(item)
+        report.append({
+            "kept": str(keeper.get("name") or "")[:70],
+            "folded": str(item.get("name") or "")[:70],
+            "kickoff": _kickoff(keeper),
+            "home_away_corrected": "",
+            "rule": "timeless card, one candidate for %s" % identity[2],
+        })
+    return report
+
+
 def fold(items: List[Dict[str, Any]],
          home_lookup: Optional[Any] = None
          ) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
@@ -433,7 +550,15 @@ def fold(items: List[Dict[str, Any]],
     kept: List[Dict[str, Any]] = []
     report: List[Dict[str, str]] = []
 
-    for item in items:
+    # Timeless cards are matched FIRST, while the evidence is still spread
+    # across the cards that carry it. "England W vs Ireland W" states the
+    # round, "England Women Vs Ireland Women" states the category, and the two
+    # fold into each other below - so by the time that has happened the round
+    # may live only on the card that was absorbed. Read before, not after.
+    working = [item for item in items if isinstance(item, dict)]
+    report.extend(_absorb_timeless(working))
+
+    for item in working:
         if not isinstance(item, dict):
             continue
         match = next((existing for existing in kept if same_fixture(existing, item)),

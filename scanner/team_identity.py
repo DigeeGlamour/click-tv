@@ -147,6 +147,13 @@ def fixture_gender(item: Any) -> str:
             verdict = ""
         if verdict:
             return verdict
+    # Nothing in the words _gender knows. A competition can still state the
+    # category outright - Liga F, NWSL, Frauen-Bundesliga - and a fixture in a
+    # women's league is a women's fixture however neutrally it is titled.
+    for field in GENDER_FIELDS:
+        value = normalize_team(item.get(field))
+        if value and _WOMEN_COMPETITIONS.search(value):
+            return "women"
     return ""
 
 
@@ -183,6 +190,100 @@ def canonical_team(value: Any, gender: str = "",
         if found:
             return found
     return table.get(name, name)
+
+
+#: Club-form words that are part of a club's legal name and never its
+#: distinctive part. Removing one can only ever leave the name that identifies
+#: the club, which is why this is a closed list and not a heuristic:
+#:
+#:      "1 FSV Mainz 05"  and  "FSV Mainz 05"   ->  "mainz 05"
+#:      "CA Lanus"        and  "Lanus"          ->  "lanus"
+#:      "Seattle Reign FC" and "Seattle Reign"  ->  "seattle reign"
+#:
+#: Nothing goes in here that is a club on its own. "Real", "Sporting",
+#: "Athletic", "Racing", "Dynamo" and "Union" are deliberately absent - each
+#: names a different club depending on the city beside it, and dropping the
+#: word would relate clubs nobody has verified are one. "Deportivo" is out
+#: for the same reason and was briefly in by mistake: on its own it names
+#: Deportivo La Coruña, and tests/test_fixture_dedupe.py guards it as an
+#: identity word. "Deportivo Alavés" reaches "Alavés" through the alias
+#: table instead, with the evidence written beside it.
+CLUB_FORM_WORDS = frozenset((
+    "fc", "cf", "sc", "ac", "as", "afc", "sv", "fsv", "vfl", "vfb", "tsv",
+    "bsc", "sk", "fk", "cd", "ca", "ud", "ss", "rc", "sd", "cs", "ce", "cp",
+    "gd", "sl", "club", "societa", "sociedade",
+))
+
+#: A leading ordinal is only ever dropped in front of one of those words -
+#: the German "1. FC" / "1. FSV" convention. A bare leading number that is not
+#: followed by a club-form word is left alone, because "1860 Munich" and
+#: "09 Wolfsburg" carry it as part of the name.
+_LEADING_ORDINAL = re.compile(r"^\s*(\d{1,2})\s+(?=([a-z]+))")
+
+#: A round or format a broadcaster prefixes to the first participant:
+#: "3rd ODI England vs Ireland" splits into "3rd ODI England" and "Ireland",
+#: so the round travels inside the club name and no key can match. Removed
+#: only from the FRONT, and only when a recognised round noun follows the
+#: number, so "1860 Munich" and "09 Wolfsburg" keep theirs.
+_ROUND_PREFIX = re.compile(
+    r"^(?:live\s*[:-]?\s*)?\d{1,2}\s*(?:st|nd|rd|th)?\s+"
+    r"(?:odis?|tests?|t20is?|t20s?|matches?|match|games?|legs?|rounds?)\b\s*[:-]?\s*",
+    re.IGNORECASE)
+
+#: Gender words a participant's own name may carry. They are REMOVED from the
+#: participant and carried separately, never dropped outright: the merge key
+#: ends with the fixture's category, so a women's fixture and a men's fixture
+#: between the same clubs stay two fixtures. Stripping the word without
+#: keeping the category is what the working agreement forbids.
+_GENDER_WORDS = re.compile(
+    r"\b(?:w|women|womens|ladies|femenino|femenina|feminina|frauen|m|men|mens)\b")
+
+#: Competitions whose name states the category even when the fixture's title
+#: does not. "Real Madrid Vs Eibar" in Liga F is a women's fixture; read from
+#: the title alone it looked like it might be the men's one, and so it stayed
+#: a second card beside "Real Madrid W vs Eibar W".
+_WOMEN_COMPETITIONS = re.compile(
+    r"\b(?:liga\s?f|nwsl|wsl|frauen[\s-]?bundesliga|femenina|femenino|feminina|"
+    r"women'?s?|ladies|damallsvenskan|kvindeliga|serie\s?a\s?femminile)\b")
+
+
+def structural_form(value: Any) -> str:
+    """The club name with legal-form words and gender markers removed.
+
+    Deterministic and closed: it deletes only words from CLUB_FORM_WORDS, a
+    leading ordinal in front of one of them, and gender markers. It never
+    compares two names, never scores similarity and never shortens a name to
+    nothing - a name that would be emptied comes back normalized instead.
+    """
+    name = normalize_team(value)
+    if not name:
+        return ""
+    name = _ROUND_PREFIX.sub("", name)
+    name = _LEADING_ORDINAL.sub(
+        lambda m: "" if m.group(2) in CLUB_FORM_WORDS else m.group(0), name)
+    tokens = name.split()
+    stripped = " ".join(t for t in tokens if t not in CLUB_FORM_WORDS)
+    stripped = " ".join(_GENDER_WORDS.sub(" ", stripped).split())
+    return stripped or name
+
+
+def identity_form(value: Any, gender: str = "",
+                  path: Path | str = ALIAS_FILE) -> str:
+    """What the merge layer compares: a verified alias, else the structure.
+
+    The alias table still comes first and still wins - it is the only place
+    two genuinely different spellings of one club may be related, and every
+    entry in it was checked against a real source. structural_form only
+    removes words that cannot carry identity, so it relates
+    "1 FSV Mainz 05" to "FSV Mainz 05" without relating anything else.
+    """
+    canonical = canonical_team(value, gender, path)
+    aliased = canonical != normalize_team(value)
+    if aliased:
+        # A verified alias is the answer; structure is not applied on top of
+        # it, so the table stays the single place a club is renamed.
+        return canonical
+    return structural_form(canonical)
 
 
 def clear_cache() -> None:

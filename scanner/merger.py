@@ -1104,11 +1104,18 @@ def participant_fold_key(
     # layer and the tabs cannot disagree about who is playing. One exact
     # lookup per side; an unlisted club is returned unchanged.
     try:
-        from scanner.team_identity import canonical_team, fixture_gender
+        from scanner.team_identity import identity_form, fixture_gender
 
         category = fixture_gender(item)
-        left, right = (canonical_team(left, category) or left,
-                       canonical_team(right, category) or right)
+        # identity_form is canonical_team plus the structural form: a verified
+        # alias still wins outright, and after that only words that cannot
+        # carry identity are removed - the club-form abbreviations and a
+        # leading ordinal in front of one. That is what relates
+        # "1 FSV Mainz 05" to "FSV Mainz 05" and "CA Lanus" to "Lanus"
+        # without relating two clubs nobody checked. The gender markers it
+        # removes are not lost: they are the `#` tag this key ends with.
+        left, right = (identity_form(left, category) or left,
+                       identity_form(right, category) or right)
     except Exception:  # noqa: BLE001 - never break grouping over a name
         category = ""
     # "Cpl T20 Vs Cpl T20" is a tournament placeholder wearing a fixture's
@@ -2494,6 +2501,13 @@ def merge_candidates(
             # primary in place; requirement 11 sorts on the sport.
             "primary_stream_key": _stream_identity_key(primary),
             "sport_type": event_sport(base_item) if group_pipeline in _EVENT_PIPELINES else "",
+            # event_sport() guesses from a loose word list - the bare word
+            # "championship" sits in its football pattern for the EFL - and
+            # sport_filter reads sport_type as "the source said so". Without
+            # this flag the guess comes back as its own evidence: a FIM
+            # MotoJunior race published on Today Match as football.
+            # sport_filter._source_sport_fields() skips a value marked here.
+            "sport_type_derived": group_pipeline in _EVENT_PIPELINES,
             # Whichever member of the group actually carried artwork. The logo
             # used to be read off base_item alone, so one T Sports feed relayed
             # by three sources kept its logo only when the source that happened

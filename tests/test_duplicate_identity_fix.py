@@ -205,15 +205,34 @@ class Case2GenderSafe(unittest.TestCase):
                              team_identity.normalize_team(name),
                              f"{name} must not be canonicalised")
 
-    def test_a_womens_card_never_folds_into_a_neutral_one_by_default(self):
-        # Racing Louisville W / Racing Louisville is the same shape as CASE 2
-        # and has NO alias, so it must still be two fixtures.
+    def test_a_womens_card_never_folds_into_a_GENUINELY_neutral_one(self):
+        """The guard this test exists for: a men's fixture and a women's
+        fixture between the same clubs at the same hour are two fixtures.
+
+        It used to assert that with NWSL on one side and "NWSL Women" on the
+        other, because at the time nothing could read a category out of a
+        competition. That made it a test of a limitation rather than of the
+        rule: there is no men's NWSL, so a card in it is a women's card
+        however neutrally its title is written - which is why
+        "Seattle Reign FC Vs San Diego Wave FC" and "Seattle Reign FC W vs
+        San Diego Wave W" were published as two cards for one match on
+        2026-09-06. The pair below is the real thing the rule protects.
+        """
+        left = _card("Arsenal W vs Chelsea W",
+                     competition="Women's Super League", start=LALIGA_KICKOFF)
+        right = _card("Arsenal vs Chelsea",
+                      competition="Premier League", start=LALIGA_KICKOFF)
+        self.assertFalse(fixture_dedupe.same_fixture(left, right))
+        self.assertFalse(same_real_fixture(left, right))
+
+    def test_a_women_only_league_makes_a_neutral_title_a_womens_fixture(self):
+        """The corrected half of the case above, proven both ways."""
         left = _card("Racing Louisville W vs Angel City W",
                      competition="NWSL Women", start=LALIGA_KICKOFF)
         right = _card("Racing Louisville Vs Angel City FC",
                       competition="NWSL", start=LALIGA_KICKOFF)
-        self.assertFalse(fixture_dedupe.same_fixture(left, right))
-        self.assertFalse(same_real_fixture(left, right))
+        self.assertEqual(team_identity.fixture_gender(right), "women")
+        self.assertTrue(fixture_dedupe.same_fixture(left, right))
 
     def test_gender_is_read_from_the_competition_as_well_as_the_title(self):
         self.assertEqual(
