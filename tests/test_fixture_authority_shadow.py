@@ -381,6 +381,35 @@ class EspnStatusTests(unittest.TestCase):
                       description="Result"),
             fixture_authority.FINISHED)
 
+    def test_lunch_is_in_play_and_no_longer_needs_the_coarse_fallback(self):
+        """A resolution audit over 15 dates and ~2,950 events on 2026-09-07
+        found exactly one description reaching its answer through `state`
+        rather than through the description table - `desc=Lunch, state=in`,
+        two events. Same answer, now stated where the others are."""
+        self.assertIn("lunch", fixture_authority.ESPN_STATUS_BY_DESCRIPTION)
+        self.assertEqual(self.norm(status="in", state="", description="Lunch"),
+                         fixture_authority.LIVE)
+
+    def test_the_description_table_holds_no_state_espn_has_not_sent(self):
+        """`innings break` sat in both tables for a day on nothing but my
+        expectation of what a cricket feed ought to say. Observed states only,
+        and this is the assertion that keeps it that way."""
+        for never_seen in ("innings break", "tea", "rain delay", "halftime"):
+            self.assertNotIn(never_seen,
+                             fixture_authority.ESPN_STATUS_BY_DESCRIPTION,
+                             never_seen)
+            self.assertNotIn(never_seen,
+                             fixture_authority.LIVESCORE_STATUS_BY_TEXT,
+                             never_seen)
+
+    def test_every_livescore_text_key_is_a_spelling_of_an_observed_meaning(self):
+        """The text table is a fallback for a familiar word under an
+        unfamiliar code, so a spelling variant of an observed state is fair.
+        A state the feed has never sent is not."""
+        observed = set(fixture_authority.LIVESCORE_STATUS_BY_ESID.values())
+        for key, value in fixture_authority.LIVESCORE_STATUS_BY_TEXT.items():
+            self.assertIn(value, observed, key)
+
     def test_stumps_is_in_play_not_finished(self):
         """ESPN's own state for Stumps is "in": it is the end of a day's play
         in a multi-day match, not the end of the match."""

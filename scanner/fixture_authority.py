@@ -145,12 +145,18 @@ LIVESCORE_STATUS_BY_ESID: Dict[int, str] = {
 
 #: The same answers keyed by the text, for a response that carries a status
 #: string this module has seen alongside an Esid it has not.
+#:
+#: Every MEANING here has come back from this feed. The extra keys are only
+#: spellings of those - "postponed" beside the observed "Postp." - because
+#: this table exists for the case where a familiar word arrives under an
+#: unfamiliar code. A state the feed has never sent gets no entry, however
+#: plausible: `innings break` was in this table for a day on nothing but my
+#: expectation of what a cricket feed ought to say, and is gone.
 LIVESCORE_STATUS_BY_TEXT: Dict[str, str] = {
     "ns": UPCOMING,
     "ft": FINISHED,
     "play in progress": LIVE,
     "between innings": LIVE,
-    "innings break": LIVE,
     "postp.": POSTPONED,
     "postponed": POSTPONED,
     "canc.": CANCELLED,
@@ -298,16 +304,23 @@ ESPN_STATUS_BY_NAME: Dict[str, str] = {
 #: sweep: Scheduled 153, Result 140, Final 36, Live 9, Stumps 4,
 #: Abandoned 1, No result 1, Drinks 1 (local).
 #:
-#: `Stumps` and `Drinks` are LIVE on purpose: ESPN's own `state` for both is
-#: "in". Stumps is the end of a day's play in a multi-day match, not the end
-#: of the match. `No result` is its own answer - the match happened and
+#: `Stumps`, `Drinks` and `Lunch` are LIVE on purpose: ESPN's own `state` for
+#: each is "in". Stumps is the end of a day's play in a multi-day match, not
+#: the end of the match. `No result` is its own answer - the match happened and
 #: produced none - and flattening it into FINISHED would lose that.
+#:
+#: `Lunch` earned its line the way `Between innings` did. A resolution audit
+#: over 15 dates and ~2,950 events on 2026-09-07 found exactly one description
+#: reaching its answer through the coarse `state` fallback rather than through
+#: this table - `desc=Lunch, state=in`, two events - and the fallback is
+#: meant to be a last resort, not a place a known state lives. Same answer,
+#: now stated.
 ESPN_STATUS_BY_DESCRIPTION: Dict[str, str] = {
     "scheduled": UPCOMING,
     "live": LIVE,
     "stumps": LIVE,
     "drinks": LIVE,
-    "innings break": LIVE,
+    "lunch": LIVE,
     "result": FINISHED,
     "final": FINISHED,
     "full time": FINISHED,
