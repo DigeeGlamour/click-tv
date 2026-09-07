@@ -2131,6 +2131,12 @@ def process_events(
     # card there is nothing left in the published payload for a later scan to
     # read it off.
     today_authority_finished: List[Dict[str, Any]] = []
+    # Refused because OUR OWN estimate of the sport's length ran out, which is
+    # a different fact from an authority saying the match is over and a
+    # different fact again from a card being too old for the tab. All three
+    # were being added to `today_stale`, so a scan report could not tell them
+    # apart - and the report is where a policy about ends has to be checkable.
+    today_estimate_expired = 0
     # Cards a targeted trigger dropped for age. Absence and staleness are not
     # retirements, so this list is not archived as it stands - it is filtered
     # for terminal evidence the card already carries, below.
@@ -2235,6 +2241,8 @@ def process_events(
                     today_stale += 1
                 if reason == "authority_finished":
                     today_authority_finished.append(card_copy)
+                elif reason == "estimate_expired":
+                    today_estimate_expired += 1
                 continue
             today_items.append(admitted)
 
@@ -2337,6 +2345,8 @@ def process_events(
                         today_stale += 1
                     if reason == "authority_finished":
                         today_authority_finished.append(candidate)
+                    elif reason == "estimate_expired":
+                        today_estimate_expired += 1
                     continue
                 crossed_while_carried.append(admitted)
                 continue
@@ -2994,6 +3004,36 @@ def process_events(
     allowed_sports = None
     if isinstance(events_cfg, dict):
         allowed_sports = events_cfg.get("allowed_sports")
+
+    # What ended what, this scan. Written to the report rather than to
+    # today-match.json: the published payload is a locked shape, and this is
+    # accounting, not card content.
+    basis = {"provider_or_authority": 0, "estimate": 0, "none": 0}
+    for card in today_items:
+        if not isinstance(card, dict):
+            continue
+        if str(card.get("lifecycle_state") or "").upper() not in (
+                "END_PENDING", "ENDED", "PURGED"):
+            basis["none"] += 1
+        elif str(card.get("lifecycle_end_basis") or "").lower() == "estimate":
+            basis["estimate"] += 1
+        else:
+            basis["provider_or_authority"] += 1
+    schedule_stats["end_decisions"] = {
+        # A fixture authority said the match was over.
+        "authority_finished": len(today_authority_finished),
+        # Our own estimate of the sport's length ran out. Never an FT, and
+        # never recorded as a retirement - see scanner/event_lifecycle.py.
+        "estimate_expired": today_estimate_expired,
+        # Too old for the tab, or no route within the no-link grace. Nothing
+        # to do with an end at all.
+        "stale_or_aged": max(
+            0, today_stale - today_estimate_expired
+            - len(today_authority_finished)),
+        "unplayable": today_unplayable,
+        # What the cards that ARE published are holding on.
+        "published_retiring_by_basis": basis,
+    }
 
     result = {
         "today_match": _payload(

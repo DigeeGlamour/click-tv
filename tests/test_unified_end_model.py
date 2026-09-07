@@ -611,3 +611,28 @@ class NothingElseMoved(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TheReportCanBeChecked(unittest.TestCase):
+    """A policy about ends that a scan report cannot show is a policy nobody
+    can verify. All three refusals were being added to `today_stale`."""
+
+    SOURCE = read(os.path.join(str(ROOT), "scanner", "events.py"))
+
+    def test_each_kind_of_refusal_is_counted_separately(self):
+        self.assertIn('schedule_stats["end_decisions"]', self.SOURCE)
+        for key in ('"authority_finished":', '"estimate_expired":',
+                    '"stale_or_aged":', '"published_retiring_by_basis":'):
+            self.assertIn(key, self.SOURCE)
+
+    def test_the_counter_is_incremented_on_both_admission_paths(self):
+        self.assertEqual(
+            2, self.SOURCE.count('elif reason == "estimate_expired":'),
+            "the ordinary routing loop and the targeted promotion both refuse "
+            "an estimate-expired fixture, and both have to be counted")
+
+    def test_the_published_payload_shape_is_not_touched(self):
+        payload = self.SOURCE.split("def _payload(", 1)[1].split(
+            "def _stamp_channel_names(", 1)[0]
+        self.assertNotIn("end_decisions", payload)
+        self.assertNotIn("lifecycle_end_basis", payload)
