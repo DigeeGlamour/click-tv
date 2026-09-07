@@ -1,29 +1,29 @@
 {
-  "generated_at": "2026-09-07T05:07:30.933858+00:00",
+  "generated_at": "2026-09-07T05:27:22.919816+00:00",
   "configured_source_count": 21,
   "content_states": {
     "FRESH": 12,
-    "STALE": 5,
-    "EMPTY": 4,
+    "STALE": 4,
+    "EMPTY": 5,
     "UNREACHABLE": 0
   },
   "source_count": 21,
   "unconfigured_source_count": 1,
   "totals": {
-    "raw_items": 714,
-    "parsed_events": 249,
-    "sport_allowed_events": 208,
-    "deduped_events": 225,
+    "raw_items": 707,
+    "parsed_events": 243,
+    "sport_allowed_events": 202,
+    "deduped_events": 224,
     "published_unique_fixtures": 229,
     "published_today": 9,
     "published_upcoming": 220,
     "dropped_count": 0,
     "verified_streams": 1,
-    "failed_streams": 176
+    "failed_streams": 170
   },
   "unconfigured_totals": {
-    "raw_items": 325,
-    "parsed_events": 325,
+    "raw_items": 323,
+    "parsed_events": 323,
     "sport_allowed_events": 0,
     "deduped_events": 0,
     "published_unique_fixtures": 0,
@@ -145,25 +145,24 @@
     {
       "source_id": "0matbank-trysports-football-live",
       "configured": true,
-      "fetch_status": "success",
-      "http_status": 304,
-      "raw_items": 7,
-      "parsed_events": 7,
-      "sport_allowed_events": 7,
+      "fetch_status": "success_empty",
+      "http_status": 200,
+      "raw_items": 0,
+      "parsed_events": 0,
+      "sport_allowed_events": 0,
       "deduped_events": 0,
       "published_unique_fixtures": 0,
       "published_today": 0,
       "published_upcoming": 0,
       "dropped_count": 0,
       "drop_reasons": [
-        "every fixture this source carries has already kicked off",
-        "reached verification and no link passed"
+        "nothing fetched from this source"
       ],
-      "newest_fixture_start": "2026-09-07T02:00:00+00:00",
+      "newest_fixture_start": "",
       "future_fixture_count": 0,
-      "content_state": "STALE",
+      "content_state": "EMPTY",
       "verified_streams": 0,
-      "failed_streams": 7
+      "failed_streams": 0
     },
     {
       "source_id": "srhady-bingstream",
@@ -235,7 +234,7 @@
       "source_id": "srhady-crichd-footy-live",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 11,
       "parsed_events": 3,
       "sport_allowed_events": 2,
@@ -255,7 +254,7 @@
       "source_id": "srhady-willow-event",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 20,
       "parsed_events": 19,
       "sport_allowed_events": 18,
@@ -473,11 +472,11 @@
       "source_id": "iptvflixbd-fancode-data",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 304,
+      "http_status": 200,
       "raw_items": 37,
-      "parsed_events": 1,
-      "sport_allowed_events": 1,
-      "deduped_events": 20,
+      "parsed_events": 2,
+      "sport_allowed_events": 2,
+      "deduped_events": 19,
       "published_unique_fixtures": 20,
       "published_today": 1,
       "published_upcoming": 19,
@@ -487,7 +486,7 @@
       "future_fixture_count": 19,
       "content_state": "FRESH",
       "verified_streams": 0,
-      "failed_streams": 1
+      "failed_streams": 2
     }
   ],
   "unconfigured_sources": [
@@ -496,8 +495,8 @@
       "configured": false,
       "fetch_status": "success",
       "http_status": 0,
-      "raw_items": 325,
-      "parsed_events": 325,
+      "raw_items": 323,
+      "parsed_events": 323,
       "sport_allowed_events": 0,
       "deduped_events": 0,
       "published_unique_fixtures": 0,
@@ -518,13 +517,13 @@
         "artwork": 14,
         "embed_backups": 0,
         "embed_channels": 0,
-        "unmatched": 302,
+        "unmatched": 300,
         "matched_by_participants": 3
       }
     }
   ],
   "invariants": {
-    "checked_at": "2026-09-07T05:07:30.936498+00:00",
+    "checked_at": "2026-09-07T05:27:22.922492+00:00",
     "passed": 10,
     "failed": 0,
     "failures": [],
@@ -547,7 +546,7 @@
       {
         "name": "a fetched configured source has a row even at raw_items 0",
         "passed": true,
-        "detail": "4 row(s) at zero, 0 without a reason"
+        "detail": "5 row(s) at zero, 0 without a reason"
       },
       {
         "name": "a candidate that is not published has an explicit drop reason",
