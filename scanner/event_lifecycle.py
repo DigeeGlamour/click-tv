@@ -81,6 +81,22 @@ DEFAULT_CONFIRMATIONS_REQUIRED = 3
 # purpose: an estimate that is merely optimistic must not start the clock.
 DEFAULT_ESTIMATE_GRACE_MINUTES = 90
 
+#: What a PROVIDER-STATED end is owed on top of itself: nothing.
+#:
+#: The fixture said when it finishes, so there is no uncertainty to be
+#: generous about, and the only cushion it gets is the post-match grace
+#: FINAL_2 asks for - 20 minutes, applied by the END_PENDING path like every
+#: other end. `DEFAULT_ESTIMATE_GRACE_MINUTES` above is for ESTIMATES, and
+#: `verified_end_passed` took it as its default only because that function
+#: began life as part of the estimate path.
+#:
+#: Reading 90 there meant a provider-ended fixture reached END_PENDING at
+#: end + 90 and left at end + 110, while `events._is_today_fresh` removed the
+#: card at end + 20. Two clocks, and the one that matched FINAL_2 was the one
+#: with no lifecycle behind it. This is that number, given a name, so both
+#: paths can use it.
+PROVIDER_END_GRACE_MINUTES = 0
+
 #: How long a finished fixture keeps its place on Today Match. Fallback
 #: only: the live value is config/settings.json ->
 #: event_lifecycle.post_match_grace_minutes, which asks for 20. Kept at 0 -
@@ -186,6 +202,33 @@ def statuses_of(card: Dict[str, Any]) -> List[str]:
 def has_strong_end_signal(card: Dict[str, Any]) -> bool:
     """Section 21. Did an authority say, in its own words, that this is over?"""
     return any(status in STRONG_END_STATUSES for status in statuses_of(card))
+
+
+def fixture_authority_says_live(card: Dict[str, Any]) -> Optional[bool]:
+    """What a FIXTURE AUTHORITY says about this match, or None.
+
+    Deliberately narrower than `authority_says_live` below, which reads every
+    status field a card carries. Those fields hold what a stream playlist
+    called the row, and a playlist's `LIVE_NOW` is a statement about a
+    listing: `Toluca vs Monterrey` was published `LIVE_NOW` on seven
+    consecutive full scans, four hours after full time, because that is what
+    the feed still said. FINAL_1 রায় ১০ is the same point about links - a
+    working URL proves the ROUTE works and says nothing about the match.
+
+    `authority_status` is the one field written by a fixture authority,
+    scanner/authority_status.py, and only when the evidence earned it: two
+    independent upstream families agreeing, or one repeating itself for
+    `confirmations_required` scans. So it is the only field entitled to veto
+    a bounded expiry, and the only one this asks.
+    """
+    status = _normalize_status(card.get("authority_status"))
+    if not status:
+        return None
+    if status in STRONG_END_STATUSES:
+        return False
+    if status in LIVE_STATUSES:
+        return True
+    return None
 
 
 def authority_says_live(card: Dict[str, Any]) -> Optional[bool]:
@@ -333,6 +376,13 @@ class LifecycleVerdict:
     #: authority was contradicting at the time. Reset to 0 the moment the
     #: contradiction stops, in either direction.
     contradicted_end_confirmations: int = 0
+    #: True when the only thing that ended this card was our own estimate of
+    #: how long its sport lasts. The card goes; the FIXTURE is not declared
+    #: finished, and a caller must not report it as finished. Stated as a
+    #: field rather than left in a comment, because the difference between
+    #: "our clock ran out" and "the match is over" is the whole of PROMPT
+    #: 19 and a caller cannot infer it from the state alone.
+    estimated_only: bool = False
 
     @property
     def retired(self) -> bool:
@@ -465,7 +515,7 @@ def decide(
     #     a link probe, and a link probe cannot tell a live match from a channel
     #     that happens to broadcast all day. Without this the protections held
     #     434 finished matches on Today Match indefinitely.
-    if verified_end_passed(card, reference):
+    if verified_end_passed(card, reference, PROVIDER_END_GRACE_MINUTES):
         seen = _ended_seen_at(card, reference)
         if _post_match_grace_remains(seen, reference, post_match_grace_minutes):
             return LifecycleVerdict(
@@ -482,6 +532,75 @@ def decide(
             "the fixture's own verified end time has passed",
             confirmations=0,
             ended_seen_at=seen,
+        )
+
+    # 2c. The card is still being listed, its own ESTIMATED end passed long
+    #     ago, and no fixture authority says the match is on.
+    #
+    #     This is the bound that was missing, and its absence is why one had
+    #     to be improvised elsewhere: `events._is_today_fresh` was dropping a
+    #     card at `end_time + post_match_grace` whatever the end time's
+    #     source, with no evidence, no state and no record - a lifecycle rule
+    #     living in a tab filter. Measured over 367 real departures, 86 were
+    #     decided that way and not one had a provider-stated end that had
+    #     passed. Both requirements have to hold at once: a `sport` length
+    #     looked up from a format table and an `assumed` kickoff-plus-four-
+    #     hours may never be dressed up as an authoritative FT, AND a fixture
+    #     no authority covers may not sit on Today Match for ever.
+    #
+    #     So this retires the CARD without claiming anything about the
+    #     FIXTURE, and `estimated_only` travels with the verdict to say so.
+    #     An estimate cannot tell a finished T20 that a playlist still lists
+    #     from day two of a Test that has not been played yet, so no caller
+    #     may write this down as a finish. Nothing needs to be written down:
+    #     the refusal re-derives itself, because the next scan reads the same
+    #     clock and reaches the same answer.
+    #
+    #     Three guards, each doing real work:
+    #
+    #       seen_in_this_scan   an ABSENT card is protected by requirement 6
+    #                           and keeps its existing treatment exactly:
+    #                           absence may be an outage, and only an
+    #                           authority or a probe proving every link dead
+    #                           retires it. This fires only for a card a feed
+    #                           is actively still publishing.
+    #       estimate_passed     the caller's own reading of
+    #                           `estimate_passed`, which is a generous sport
+    #                           length plus `estimate_grace_minutes` - 90
+    #                           minutes past 240 for a T20, past 150 for
+    #                           football, past 480 for a day of a Test. It is
+    #                           LATER than the filter it replaces, so no card
+    #                           leaves sooner than it does today.
+    #       authority_live      a fixture authority calling the match live
+    #                           vetoes it outright, because an authority owns
+    #                           the status.
+    #
+    #     Placed above the link protections for the reason 2b is - a probe
+    #     proves the link, not the match - and below 2b, because a provider
+    #     stating an end outranks us estimating one.
+    if (
+        signals.seen_in_this_scan
+        and signals.estimate_passed
+        and signals.authority_live is not True
+        and not signals.currently_playing
+    ):
+        seen = _ended_seen_at(card, reference)
+        if _post_match_grace_remains(seen, reference, post_match_grace_minutes):
+            return LifecycleVerdict(
+                END_PENDING, True,
+                "the estimated end has long passed and no fixture authority "
+                "says otherwise - holding for the post-match grace",
+                confirmations=0,
+                ended_seen_at=seen,
+                estimated_only=True,
+            )
+        return LifecycleVerdict(
+            ENDED, False,
+            "the estimated end has long passed and no fixture authority says "
+            "otherwise - an estimate, never recorded as a finish",
+            confirmations=0,
+            ended_seen_at=seen,
+            estimated_only=True,
         )
 
     protections: List[str] = []
@@ -575,6 +694,28 @@ def _post_match_grace_remains(
     return now < seen + timedelta(minutes=minutes)
 
 
+def retirement_grace_expired(
+    card: Dict[str, Any],
+    now: datetime,
+    post_match_grace_minutes: int,
+) -> bool:
+    """Has a retirement the card ALREADY carries finished its grace?
+
+    Public because a scan mode that cannot decide an end still has to be able
+    to finish one another scan started. `ended_seen_at` is stamped by
+    `apply_verdict` and never moved afterwards, so this is arithmetic on
+    somebody else's decision rather than a decision of its own - which is
+    exactly the authority a targeted trigger is allowed to have.
+
+    False when the card carries no retirement at all. Absence of a stamp is
+    not the expiry of one.
+    """
+    if parse_time(card.get("ended_seen_at")) is None:
+        return False
+    return not _post_match_grace_remains(
+        str(card.get("ended_seen_at") or ""), now, post_match_grace_minutes)
+
+
 def _ended_seen_at(card: Dict[str, Any], now: datetime) -> str:
     """When this fixture was FIRST seen to be over.
 
@@ -622,6 +763,12 @@ def apply_verdict(card: Dict[str, Any], verdict: LifecycleVerdict) -> Dict[str, 
         updated.pop("contradicted_end_confirmations", None)
     if verdict.protections:
         updated["lifecycle_protections"] = list(verdict.protections)
+    # Written and cleared, so a card that leaves on an estimate and later
+    # gets a real authority verdict does not keep saying "estimate".
+    if verdict.estimated_only:
+        updated["lifecycle_end_basis"] = "estimate"
+    else:
+        updated.pop("lifecycle_end_basis", None)
     return updated
 
 

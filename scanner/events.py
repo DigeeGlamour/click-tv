@@ -28,17 +28,23 @@ try:
     from scanner import fixture_dedupe, fixture_titles
     from scanner import competition_labels
     from scanner.event_lifecycle import (
+        DEFAULT_ESTIMATE_GRACE_MINUTES,
         DEFAULT_TODAY_ROUTING_MINUTES,
         ROUTE_LIVE_STATUSES,
         ROUTE_UPCOMING_STATUSES,
         LifecycleSignals,
+        PROVIDER_END_GRACE_MINUTES,
         apply_verdict as apply_lifecycle_verdict,
         authority_says_live,
         classify_state,
         decide as lifecycle_decide,
+        estimate_passed,
         event_destination,
+        fixture_authority_says_live,
         has_strong_end_signal,
         minutes_to_kickoff,
+        retirement_grace_expired,
+        verified_end_passed,
     )
     from scanner.lifecycle_config import lifecycle_settings
     from scanner.targeted_scan import fixture_key, has_valid_link
@@ -95,17 +101,23 @@ except ImportError:
     import fixture_titles
     import competition_labels
     from event_lifecycle import (
+        DEFAULT_ESTIMATE_GRACE_MINUTES,
         DEFAULT_TODAY_ROUTING_MINUTES,
         ROUTE_LIVE_STATUSES,
         ROUTE_UPCOMING_STATUSES,
         LifecycleSignals,
+        PROVIDER_END_GRACE_MINUTES,
         apply_verdict as apply_lifecycle_verdict,
         authority_says_live,
         classify_state,
         decide as lifecycle_decide,
+        estimate_passed,
         event_destination,
+        fixture_authority_says_live,
         has_strong_end_signal,
         minutes_to_kickoff,
+        retirement_grace_expired,
+        verified_end_passed,
     )
     from lifecycle_config import lifecycle_settings
     from targeted_scan import fixture_key, has_valid_link
@@ -531,6 +543,11 @@ def _is_playable(item: Dict[str, Any]) -> bool:
 #: than quietly adopting a new one.
 TODAY_NO_LINK_GRACE_MINUTES = 30
 
+#: Lifecycle states that mean a retirement is already under way. A card in one
+#: of these has a grace running, and finishing that grace is the only end
+#: decision a scan mode without an authority or a probe is entitled to make.
+_RETIRING_STATES = frozenset({"END_PENDING", "ENDED", "PURGED"})
+
 
 def _has_any_route(item: Dict[str, Any]) -> bool:
     if str(item.get("playback_id") or "").strip():
@@ -592,22 +609,79 @@ def _is_today_fresh(
         item.get("end_time"),
         item.get("_source_timezone", timezone.utc),
     )
-    # Today Match is a live surface, not a recent-results archive. Remove a
-    # card once its authoritative fixture end_time is reached - after the
-    # post-match grace FINAL_2 asks for, and not before it.
+    # This function used to end matches, and that was the fault.
     #
-    # The grace defaults to 0, which is what this did before it existed, so a
-    # caller that does not pass one gets the old arithmetic. The targeted
-    # trigger passes it, because otherwise the two paths disagree about when a
-    # match is over and the card flickers: measured on 2026-09-06,
-    # `Alaves vs Osasuna` (16:30 kickoff, football, end 19:00) was published at
-    # 18:59, dropped by the 19:03 trigger with filtered_stale=2, and published
-    # again by the 19:09 full scan - which was holding it at END_PENDING for
-    # exactly this grace. One of the two had to be wrong, and FINAL_2 says
-    # which.
-    if end_time is not None and end_time + timedelta(
-        minutes=max(0, int(post_match_grace_minutes))
-    ) <= now:
+    # It dropped a card once `end_time + post_match_grace` had passed,
+    # whatever the end time's SOURCE - so a `sport` length looked up from a
+    # format table and an `assumed` kickoff-plus-four-hours retired a fixture
+    # that `event_lifecycle.verified_end_passed` was refusing to retire,
+    # because that function requires the end to be provider-STATED and gives
+    # it 90 minutes rather than 20. Two clocks on one card, and the faster,
+    # weaker one won because it ran first and removed the row outright: no
+    # lifecycle state, no reason, no grace measured from a first sighting, no
+    # authority veto, nothing recorded.
+    #
+    # Measured over 367 real departures since 2026-09-06 12:00Z: 86 were
+    # decided by that arithmetic - 46 on a `sport` estimate, 35 on an
+    # `assumed` one - and NOT ONE departure in 367 had a provider-stated end
+    # that had passed. It also disagreed with itself: the admission path
+    # called this with a grace of 0 and the targeted carry-through with 20,
+    # so a third definition sat between the other two.
+    #
+    # The end decision now belongs to `event_lifecycle.decide`, which weighs
+    # the authority, the estimate, the links and the confirmations together
+    # and says what it based its answer on. What is left here is what this
+    # was always for: whether a card still belongs on a live surface.
+    #
+    # A retirement an earlier FULL scan already decided is honoured, though.
+    # Finishing a grace somebody else started is arithmetic on their stamp,
+    # not a decision of its own - and it is the whole of the authority a
+    # targeted trigger has over an end. `Alaves vs Osasuna` is the case that
+    # made the point: dropped by the 19:03 trigger with filtered_stale=2 and
+    # published again by the 19:09 full scan, which was holding it at
+    # END_PENDING for exactly this grace.
+    # A retirement an earlier full scan decided, in its two halves.
+    #
+    # Expired, the card goes - that is the grace finishing, and finishing one
+    # somebody else started is the whole of the authority a scan mode without
+    # a probe or an authority has over an end.
+    #
+    # Still running, the card STAYS, and the guards below do not get to cut it
+    # short: they are about a card's age and its routes, not about its end,
+    # and a card inside the grace it was granted must not be dropped by one of
+    # them a minute early.
+    #
+    # And with no stamp at all, neither half applies. `decide()` returns
+    # END_PENDING with no `ended_seen_at` when it has no authority and no
+    # usable link verdict - "holding, not retiring" - so there is no grace to
+    # honour, and the card falls through to the age guard exactly as it always
+    # did. Short-circuiting to True here instead would have exempted it from
+    # `today_max_age_hours` and from the no-link grace as well, which is how
+    # 125 END_PENDING departures in a first measurement of this change came
+    # back as "kept": an unbounded card, which is the fault at the other end
+    # of this one.
+    if str(item.get("lifecycle_state") or "").upper() in _RETIRING_STATES:
+        if retirement_grace_expired(item, now, post_match_grace_minutes):
+            return False
+        if _parse_datetime(
+            item.get("ended_seen_at"),
+            item.get("_source_timezone", timezone.utc),
+        ) is not None:
+            return True
+
+    # The fixture's own PROVIDER-STATED end, asked of the lifecycle's own
+    # function so one definition serves both paths. A targeted trigger runs
+    # no lifecycle, so without this it would have to re-derive the answer and
+    # would be free to derive a different one.
+    #
+    # The post-match grace is added because that is what the card would be
+    # owed if a full scan had got here first - it would be END_PENDING with a
+    # stamp, and the branch above would hold it for exactly this long. Adding
+    # it makes the two paths agree instead of flickering for one cycle.
+    if verified_end_passed(
+        item, now,
+        PROVIDER_END_GRACE_MINUTES + max(0, int(post_match_grace_minutes)),
+    ):
         return False
 
     # An official multi-day fixture remains current until its authoritative
@@ -1706,6 +1780,7 @@ def _admit_to_today(
     no_link_grace_minutes: int,
     today_max_age_hours: int,
     post_match_grace_minutes: int = 0,
+    estimate_grace_minutes: int = DEFAULT_ESTIMATE_GRACE_MINUTES,
 ) -> Tuple[Optional[Dict[str, Any]], str, int]:
     """Put a card on Today Match, or say why it cannot go.
 
@@ -1731,8 +1806,16 @@ def _admit_to_today(
     been a second routing policy, free to disagree with this one.
 
     Mutates and returns the card it is given. The reason is one of
-    "admitted", "unplayable", "stale" or "authority_finished", and the int
-    is how many undeliverable routes were stripped on the way through.
+    "admitted", "unplayable", "stale", "authority_finished" or
+    "estimate_expired", and the int is how many undeliverable routes were
+    stripped on the way through.
+
+    The last two are both ends and are not the same end, which is the
+    distinction this function exists to keep straight: "authority_finished"
+    is a fixture authority saying the match is over, and
+    "estimate_expired" is our own guess at how long its sport lasts having
+    run out. One is recorded as a retirement; the other only takes the card
+    off a live surface.
     """
     dropped = _strip_undeliverable_routes(card)
     authority_state = ""
@@ -1757,6 +1840,45 @@ def _admit_to_today(
             return None, "authority_finished", dropped
         card = apply_lifecycle_verdict(card, verdict)
         authority_state = verdict.state
+    elif (verified_end_passed(card, now, PROVIDER_END_GRACE_MINUTES)
+            or estimate_passed(card, now, estimate_grace_minutes)):
+        # The bound that `_is_today_fresh` used to improvise, asked of the
+        # layer that owns it.
+        #
+        # A feed is still listing this fixture and its own estimated end went
+        # by more than `estimate_grace_minutes` ago - 90 minutes past 240 for
+        # a T20, past 150 for football, past 480 for a day of a Test. That is
+        # LATER than the arithmetic this replaces, so no card leaves sooner
+        # than it does today; it leaves for a stated reason instead, with a
+        # lifecycle state, a grace measured from the first sighting, and a
+        # veto for the one thing entitled to give it: a fixture authority
+        # calling the match live.
+        #
+        # `seen_in_this_scan` is what separates this from requirement 6. A
+        # card this scan FOUND is being published by its source right now, so
+        # its own clock is all the evidence there is; a card this scan MISSED
+        # is handled by `live_protection`, where absence may be an outage and
+        # only an authority or a probe proving every link dead retires it.
+        #
+        # No link verdict is passed. There is none to pass - nothing probes on
+        # this path - and a working route would not be one anyway: FINAL_1
+        # রায় ১০ says a live URL proves the route, not the match, and most of
+        # these are channel feeds that answer all day.
+        verdict = lifecycle_decide(
+            card,
+            LifecycleSignals(
+                authority_live=fixture_authority_says_live(card),
+                estimate_passed=True,
+                seen_in_this_scan=True,
+            ),
+            now=now,
+            post_match_grace_minutes=post_match_grace_minutes,
+        )
+        if not verdict.publish:
+            return None, "estimate_expired", dropped
+        if verdict.state in _RETIRING_STATES:
+            card = apply_lifecycle_verdict(card, verdict)
+            authority_state = verdict.state
     if _routed_early_without_a_link(
         card, now, routing_minutes, no_link_grace_minutes
     ):
@@ -1766,7 +1888,13 @@ def _admit_to_today(
         card["publish_allowed"] = True
     elif not _is_playable(card):
         return None, "unplayable", dropped
-    if not _is_today_fresh(card, now, today_max_age_hours, no_link_grace_minutes):
+    # The grace is passed here too. It used to default to 0 on this path
+    # while the targeted carry-through passed 20, so the two paths disagreed
+    # about the length of a grace as well as about what starts one.
+    if not _is_today_fresh(
+        card, now, today_max_age_hours, no_link_grace_minutes,
+        post_match_grace_minutes,
+    ):
         return None, "stale", dropped
     _stamp_final_routing(card, "today_match")
     card["status"] = str(

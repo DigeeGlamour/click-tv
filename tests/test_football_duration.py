@@ -173,13 +173,14 @@ class TheEstimateIsNotProof(unittest.TestCase):
             "url": "https://a.example/x.m3u8",
         }
 
-    def _carried(self, card, offset):
+    def _carried(self, card, offset, post_match_grace=0):
         import tempfile
         kept, _ = protect_live_events(
             [], [card], probe=lambda _c: True,
             now=KICKOFF + timedelta(minutes=offset),
             state_path=Path(tempfile.mkdtemp()) / "state.json",
             grace_minutes=90, authority_states={},
+            post_match_grace_minutes=post_match_grace,
         )
         return bool(kept)
 
@@ -212,10 +213,45 @@ class TheEstimateIsNotProof(unittest.TestCase):
 
     def test_a_stated_end_still_retires_it_on_time(self):
         """The path is not gone - it now requires what it always claimed
-        to require."""
+        to require.
+
+        The boundary moved from end + 90 to end + 0, and the 90 is why:
+        `verified_end_passed` took `DEFAULT_ESTIMATE_GRACE_MINUTES` as its
+        default because it began life inside the estimate path, and a
+        provider-STATED end has no uncertainty for a grace to cover. The
+        fixture said when it finishes. So it now reads
+        `PROVIDER_END_GRACE_MINUTES`, which is 0, and the only cushion is the
+        post-match grace FINAL_2 asks for - asserted below, since a caller
+        passing one is the production case.
+
+        This is also what removed the second clock: `events._is_today_fresh`
+        was dropping the card at end + post_match_grace while this path held
+        it for another 90 minutes, and the one that matched FINAL_2 was the
+        one with no lifecycle behind it.
+        """
         stated = self._card(150, "provider")
-        self.assertTrue(self._carried(stated, 239))
+        self.assertFalse(self._carried(stated, 151))
         self.assertFalse(self._carried(stated, 241))
+        # With the grace a real scan passes, the card keeps its place - and
+        # the grace runs from the FIRST sighting of the end, not from the end
+        # time, which is what stops a repeated verdict holding a card open for
+        # ever. So a card seen for the first time at 241 still gets its full
+        # 20 minutes, and only one already carrying the stamp can run out.
+        self.assertTrue(self._carried(stated, 151, post_match_grace=20))
+        self.assertTrue(self._carried(stated, 241, post_match_grace=20))
+        seen = dict(stated, ended_seen_at=(
+            KICKOFF + timedelta(minutes=150)).isoformat())
+        self.assertTrue(self._carried(seen, 169, post_match_grace=20))
+        self.assertFalse(self._carried(seen, 171, post_match_grace=20))
+
+    def test_a_sport_estimate_is_still_not_a_stated_end(self):
+        """The distinction the whole file is about, restated at the new
+        boundary: the same 150 minutes, guessed rather than stated, retires
+        nothing on this path however long ago it passed."""
+        guessed = self._card(150, "sport")
+        for offset in (151, 241, 400):
+            with self.subTest(offset=offset):
+                self.assertTrue(self._carried(guessed, offset))
 
     def test_a_normal_match_is_never_near_the_boundary(self):
         """90 + stoppage + half time is about T+120, and the card is still

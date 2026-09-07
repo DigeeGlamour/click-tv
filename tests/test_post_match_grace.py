@@ -359,6 +359,22 @@ class TheTargetedTriggerHonoursTheSameGrace(unittest.TestCase):
     The full scan was holding it for exactly this grace. The trigger's
     carry-through was retiring it at end_time with none, so a card the viewer
     could still be watching flickered off the page and back four minutes later.
+
+    PROMPT 26 finished the job, because passing the same grace to both paths
+    had not made them agree - it had left them agreeing on the LENGTH of a
+    grace while still disagreeing about what starts one. `_is_today_fresh`
+    began a retirement from any `end_time` it could find, `assumed` included;
+    `event_lifecycle` refuses to retire anything on an estimate. Over 367 real
+    departures, 86 were decided by the filter's arithmetic and not one had a
+    provider-stated end that had passed.
+
+    So `_is_today_fresh` no longer starts retirements at all. It finishes the
+    ones a full scan started - arithmetic on an `ended_seen_at` somebody else
+    stamped, which is the whole of the authority a trigger without a probe or
+    an authority is entitled to - and it still honours a provider-stated end,
+    because that is the lifecycle's own rule and both paths must read it the
+    same way. An `assumed` end retires nothing here now; `decide()` reaches
+    that verdict, states what it based it on, and takes the grace with it.
     """
 
     from scanner import events  # noqa: PLC0415 - a test module, read once
@@ -379,19 +395,55 @@ class TheTargetedTriggerHonoursTheSameGrace(unittest.TestCase):
     def fresh(self, item, grace):
         return self.events._is_today_fresh(item, self.NOW, 12, 25, grace)
 
-    def test_without_a_grace_the_card_goes_the_moment_the_clock_says_so(self):
-        """The behaviour before, kept as the default so no other caller moved."""
-        self.assertFalse(self.fresh(self.card(-3), 0))
+    def test_an_assumed_end_no_longer_starts_a_retirement_here(self):
+        """`self.card` states no `end_time_source`, so it reads `assumed` -
+        this system's own kickoff-plus-four-hours. Whatever grace is passed,
+        and however long ago that guess expired, the filter keeps the card:
+        starting a retirement is `decide()`'s to do."""
+        for offset in (-3, -(GRACE - 1), -GRACE, -(GRACE + 1), -600):
+            for grace in (0, GRACE):
+                with self.subTest(offset=offset, grace=grace):
+                    self.assertTrue(self.fresh(self.card(offset), grace))
+
+    def test_a_retirement_a_full_scan_started_is_finished_here(self):
+        """The other half. END_PENDING with a stamp is a decision another scan
+        made, and the trigger honours it to the minute rather than re-deriving
+        it - which is what stopped the two paths disagreeing."""
+        retiring = self.card(-3)
+        retiring["lifecycle_state"] = "END_PENDING"
+        retiring["ended_seen_at"] = (
+            self.NOW - timedelta(minutes=GRACE - 1)).isoformat()
+        self.assertTrue(self.fresh(retiring, GRACE))
+        retiring["ended_seen_at"] = (
+            self.NOW - timedelta(minutes=GRACE)).isoformat()
+        self.assertFalse(self.fresh(retiring, GRACE))
+        retiring["ended_seen_at"] = (
+            self.NOW - timedelta(minutes=GRACE + 1)).isoformat()
+        self.assertFalse(self.fresh(retiring, GRACE))
+
+    def test_an_end_pending_card_with_no_stamp_keeps_its_place(self):
+        """`decide()` returns END_PENDING with no `ended_seen_at` when it has
+        no authority and no usable link verdict - "holding, not retiring".
+        Absence of a stamp is not the expiry of one."""
+        holding = self.card(-600)
+        holding["lifecycle_state"] = "END_PENDING"
+        self.assertTrue(self.fresh(holding, GRACE))
+
+    def test_a_provider_stated_end_is_still_honoured_here(self):
+        """Because it is the lifecycle's own rule, and both paths have to read
+        it the same way. `PROVIDER_END_GRACE_MINUTES` is 0, so the card goes
+        once the stated end plus the post-match grace has passed."""
+        stated = self.card(-1)
+        stated["end_time_source"] = "provider"
+        stated["schedule_verified"] = True
+        self.assertTrue(self.fresh(stated, GRACE))
+        gone = self.card(-(GRACE + 1))
+        gone["end_time_source"] = "provider"
+        gone["schedule_verified"] = True
+        self.assertFalse(self.fresh(gone, GRACE))
 
     def test_with_the_grace_it_is_still_published(self):
         self.assertTrue(self.fresh(self.card(-3), GRACE))
-
-    def test_and_it_goes_when_the_grace_runs_out(self):
-        self.assertFalse(self.fresh(self.card(-(GRACE + 1)), GRACE))
-
-    def test_the_boundary_is_the_grace_exactly(self):
-        self.assertTrue(self.fresh(self.card(-(GRACE - 1)), GRACE))
-        self.assertFalse(self.fresh(self.card(-GRACE), GRACE))
 
     def test_an_authoritative_ended_still_goes_at_once(self):
         """The grace is for a clock running out, not for a feed saying FT."""

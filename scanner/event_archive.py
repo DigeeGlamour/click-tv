@@ -56,6 +56,21 @@ ARCHIVED_STATES = frozenset({"ENDED", "PURGED"})
 #: be a lifecycle rule invented in a housekeeping file.
 NEVER_ARCHIVED_STATUSES = frozenset({"POSTPONED", "SUSPENDED"})
 
+#: What `lifecycle_end_basis` says when the only thing that ended a card was
+#: our own estimate of how long its sport lasts.
+#:
+#: Such a retirement is a statement about the CARD and not about the FIXTURE,
+#: so it is not remembered as one. An estimate cannot tell a finished T20 that
+#: a playlist still lists from day two of a Test that has not been played yet,
+#: and getting that wrong bars the Test for good: a day of a Test is 480
+#: minutes in `CRICKET_FORMAT_MINUTES` and the match is five days long.
+#:
+#: Nothing is lost by not writing it down. The refusal re-derives itself -
+#: the next scan reads the same clock, reaches the same verdict and declines
+#: the card again - which is exactly what an archive row would have achieved,
+#: without the part that cannot be undone.
+ESTIMATE_END_BASIS = "estimate"
+
 #: What `authority_status` may say for this fixture to count as over. Written
 #: only by scanner/authority_status.py, and only when the evidence earned it:
 #: two independent upstream families agreeing, or one repeating itself for
@@ -183,6 +198,13 @@ def terminal_provenance(
                 return "provider_end_time"
         except Exception:  # noqa: BLE001
             pass
+    # An estimate-only retirement stamps `ended_seen_at` like any other, so
+    # without this the grace below would read it as evidence and remember a
+    # card that nothing had declared finished. Checked here rather than at the
+    # top because a real end arriving later outranks it: the authority and
+    # feed branches above are reached first and answer for themselves.
+    if _text(card.get("lifecycle_end_basis")).lower() == ESTIMATE_END_BASIS:
+        return ""
     seen = _parse(card.get("ended_seen_at"))
     if seen is not None and reference >= seen + timedelta(
             minutes=max(0, int(post_match_grace_minutes))):
