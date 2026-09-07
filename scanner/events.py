@@ -31,8 +31,11 @@ try:
         DEFAULT_TODAY_ROUTING_MINUTES,
         ROUTE_LIVE_STATUSES,
         ROUTE_UPCOMING_STATUSES,
+        LifecycleSignals,
+        apply_verdict as apply_lifecycle_verdict,
         authority_says_live,
         classify_state,
+        decide as lifecycle_decide,
         event_destination,
         has_strong_end_signal,
         minutes_to_kickoff,
@@ -43,7 +46,7 @@ try:
         build_fixture_stream_health,
         write_fixture_stream_health,
     )
-    from scanner import authority_shadow, fixture_authority
+    from scanner import authority_shadow, authority_status, fixture_authority
     from scanner.source_coverage import (
         build_source_coverage,
         check_invariants,
@@ -93,8 +96,11 @@ except ImportError:
         DEFAULT_TODAY_ROUTING_MINUTES,
         ROUTE_LIVE_STATUSES,
         ROUTE_UPCOMING_STATUSES,
+        LifecycleSignals,
+        apply_verdict as apply_lifecycle_verdict,
         authority_says_live,
         classify_state,
+        decide as lifecycle_decide,
         event_destination,
         has_strong_end_signal,
         minutes_to_kickoff,
@@ -106,6 +112,7 @@ except ImportError:
         write_fixture_stream_health,
     )
     import authority_shadow  # type: ignore
+    import authority_status  # type: ignore
     import fixture_authority  # type: ignore
     from source_coverage import (  # type: ignore
         build_source_coverage,
@@ -1694,6 +1701,7 @@ def _admit_to_today(
     routing_minutes: int,
     no_link_grace_minutes: int,
     today_max_age_hours: int,
+    post_match_grace_minutes: int = 0,
 ) -> Tuple[Optional[Dict[str, Any]], str, int]:
     """Put a card on Today Match, or say why it cannot go.
 
@@ -1719,10 +1727,32 @@ def _admit_to_today(
     been a second routing policy, free to disagree with this one.
 
     Mutates and returns the card it is given. The reason is one of
-    "admitted", "unplayable" or "stale", and the int is how many
-    undeliverable routes were stripped on the way through.
+    "admitted", "unplayable", "stale" or "authority_finished", and the int
+    is how many undeliverable routes were stripped on the way through.
     """
     dropped = _strip_undeliverable_routes(card)
+    authority_state = ""
+    # A fixture the authorities have retired, on the path for cards this scan
+    # actually saw. The carried-forward path reaches the same conclusion
+    # through `live_protection` and `decide()`; this asks the same function
+    # so the two cannot disagree about when a match is over - which is the
+    # flicker `_is_today_fresh` already carries a comment about.
+    #
+    # `authority_status` is stamped by scanner/authority_status.py and only
+    # ever when the evidence earned it: two independent upstream families, or
+    # one repeating itself for `confirmations_required` scans.
+    if has_strong_end_signal(card) and str(
+            card.get("authority_status") or "").strip():
+        verdict = lifecycle_decide(
+            card,
+            LifecycleSignals(strong_end=True, seen_in_this_scan=True),
+            now=now,
+            post_match_grace_minutes=post_match_grace_minutes,
+        )
+        if not verdict.publish:
+            return None, "authority_finished", dropped
+        card = apply_lifecycle_verdict(card, verdict)
+        authority_state = verdict.state
     if _routed_early_without_a_link(
         card, now, routing_minutes, no_link_grace_minutes
     ):
@@ -1741,7 +1771,13 @@ def _admit_to_today(
         or ("CHANNEL_LIVE" if card.get("today_source_channel") else "LIVE_NOW")
     )
     # Section 21's lifecycle, stamped on a card this scan actually saw.
-    card["lifecycle_state"] = classify_state(card, now)
+    #
+    # An authority end decided above wins here, and has to: `classify_state`
+    # reads `authority_status` and answers ENDED, which is the right
+    # CLASSIFICATION and the wrong thing to publish - the card is owed its
+    # post-match grace first, and `decide()` already worked out how much of it
+    # is left.
+    card["lifecycle_state"] = authority_state or classify_state(card, now)
     return card, "admitted", dropped
 
 
@@ -1950,9 +1986,6 @@ def process_events(
     # Guide 30.8: an event that moved from Upcoming to Today Match keeps the
     # card it already had rather than appearing as a new one.
     schedule_stats["reused_event_ids"] = reuse_published_event_ids(merged)
-    # Set below, once every publish path has been through
-    # _strip_undeliverable_routes, so the number is visible in the report
-    # rather than only in a diff.
 
     now = reference_now
     skip_live_protection = False
@@ -1963,6 +1996,69 @@ def process_events(
     undeliverable_dropped = 0
     upcoming_stale = 0
     early_links_held = 0
+
+
+    # SOURCE DATA != FIXTURE TRUTH, and now the difference is allowed to act.
+    #
+    # Read here rather than at the end of the scan, because the answer has to
+    # reach the routing loop, `_admit_to_today` and `live_protection` - all
+    # three of which decide whether a card stays. The same rows are handed to
+    # the report at the bottom, so what the lifecycle acted on and what the
+    # report shows cannot drift apart.
+    #
+    # Nothing below reads these stamps unless the evidence earned them:
+    # scanner/authority_status.py writes `authority_status` only for a terminal
+    # state agreed by two independent upstream families, or one family
+    # repeating itself for `confirmations_required` scans. POSTPONED and
+    # SUSPENDED are recorded and never applied; an unavailable authority, an
+    # unmatched fixture, an UNKNOWN status and a disagreement all leave the
+    # existing rules exactly as they were.
+    authority_rows: Dict[str, List[Dict[str, Any]]] = {}
+    authority_health: Dict[str, Any] = {}
+    authority_shadow_rows: List[Dict[str, Any]] = []
+    # A targeted trigger republishes the tabs a full scan already settled;
+    # it must not be the run that retires a card on evidence it did not
+    # gather, which is the same reason live protection is skipped for it.
+    targeted_scan = targeted_window_minutes > 0 or targeted_keys is not None
+    authority_enabled = (
+        isinstance(event_settings, dict)
+        and event_settings.get("fixture_authority_shadow") is True
+    )
+    if authority_enabled and not targeted_scan:
+        try:
+            authority_rows, authority_health = fixture_authority.collect(now=now)
+            authority_shadow_rows, authority_apply_stats = authority_status.apply(
+                merged, authority_rows, authority_health, now=now,
+                confirmations_required=lifecycle_timings[
+                    "confirmations_required"],
+                post_match_grace_minutes=lifecycle_timings[
+                    "post_match_grace_minutes"],
+            )
+            schedule_stats["authority_status"] = authority_apply_stats
+            print("   fixture authority (applied): %d ended by authority, "
+                  "%d awaiting confirmation, %d confirmed live, %d recorded "
+                  "only, %d conflict"
+                  % (authority_apply_stats["applied"],
+                     authority_apply_stats["pending_confirmation"],
+                     authority_apply_stats["live"],
+                     authority_apply_stats["recorded"],
+                     authority_apply_stats["conflict"]))
+            for entry in authority_apply_stats["applied_fixtures"]:
+                print("      %s -> %s (%s, %s) remove_after %s"
+                      % (entry["name"][:44], entry["status"],
+                         entry["confidence"],
+                         ", ".join(entry["upstream_families"]),
+                         entry["remove_after"][11:19]))
+        except Exception as error:  # pragma: no cover - never breaks a scan
+            schedule_stats["authority_status"] = {"error": str(error)}
+    else:
+        schedule_stats["authority_status"] = {
+            "skipped": ("targeted scan" if authority_enabled
+                        else "events.fixture_authority_shadow is not enabled")}
+
+    # Set below, once every publish path has been through
+    # _strip_undeliverable_routes, so the number is visible in the report
+    # rather than only in a diff.
 
     for card in merged:
         if not isinstance(card, dict):
@@ -1986,6 +2082,8 @@ def process_events(
                 routing_minutes=routing_minutes,
                 no_link_grace_minutes=no_link_grace_minutes,
                 today_max_age_hours=today_max_age_hours,
+                post_match_grace_minutes=lifecycle_timings[
+                    "post_match_grace_minutes"],
             )
             undeliverable_dropped += dropped
             if admitted is None:
@@ -2084,6 +2182,8 @@ def process_events(
                     routing_minutes=routing_minutes,
                     no_link_grace_minutes=no_link_grace_minutes,
                     today_max_age_hours=today_max_age_hours,
+                    post_match_grace_minutes=lifecycle_timings[
+                        "post_match_grace_minutes"],
                 )
                 undeliverable_dropped += dropped
                 if admitted is None:
@@ -2212,6 +2312,32 @@ def process_events(
         previous_today_items = [
             item for item in (previous_today.get("items") or []) if isinstance(item, dict)
         ]
+        # The authorities have to reach the carried-forward cards too, and this
+        # is where those cards enter. They are the ones that need it most: all
+        # three Today cards on 2026-09-07 06:29Z were carried, and
+        # `Toluca vs Monterrey` was held by `lifecycle_reason: "still live:
+        # primary_playable, backup_playable"` - a link probe, three hours after
+        # a 90-minute game. The stamp is what lets `decide()` see the end.
+        if authority_rows:
+            try:
+                carried_rows, carried_stats = authority_status.apply(
+                    previous_today_items, authority_rows, authority_health,
+                    now=now,
+                    confirmations_required=lifecycle_timings[
+                        "confirmations_required"],
+                    post_match_grace_minutes=lifecycle_timings[
+                        "post_match_grace_minutes"],
+                )
+                authority_shadow_rows.extend(carried_rows)
+                schedule_stats["authority_status_carried"] = carried_stats
+                for entry in carried_stats["applied_fixtures"]:
+                    print("   fixture authority ends a carried card: %s -> %s "
+                          "(%s, %s)"
+                          % (entry["name"][:44], entry["status"],
+                             entry["confidence"],
+                             ", ".join(entry["upstream_families"])))
+            except Exception as error:  # pragma: no cover - never breaks a scan
+                schedule_stats["authority_status_carried"] = {"error": str(error)}
         # config/settings.json declared event_lifecycle for a while without
         # anything reading it, so the tuned values were inert and the function
         # defaults were what actually ran. They are read here now, which is
@@ -2704,28 +2830,36 @@ def process_events(
     # INCONCLUSIVE, never evidence about a fixture, and the whole block is
     # wrapped like every other report here - a shadow observation must not be
     # able to cost a scan its publish.
-    # Two gates, both deliberate. The settings flag keeps this off unless a
-    # configuration asks for it, so a scan assembled in a test does no network
-    # I/O; and a targeted trigger skips it, because that trigger fires every
-    # five minutes and republishes the tabs a full scan already settled -
-    # twelve requests a time to somebody else's API, twelve times an hour, for
-    # a report that would say the same thing. Full scans run every twenty
-    # minutes and that is often enough to watch a status turn.
-    if not isinstance(event_settings, dict) or (
-            event_settings.get("fixture_authority_shadow") is not True):
+    # The report, built from the rows the lifecycle already acted on rather
+    # than from a second, later comparison that could disagree with it. The
+    # fetch happened before routing - see the block above `for card in merged`
+    # - so nothing here reaches the network, and nothing here can change a
+    # card: `result` was built from the settled tabs above.
+    if not authority_enabled:
         schedule_stats["fixture_authority_shadow"] = {
             "skipped": "events.fixture_authority_shadow is not enabled"}
-    elif skip_live_protection:
+    elif targeted_scan:
         schedule_stats["fixture_authority_shadow"] = {"skipped": "targeted scan"}
     else:
         try:
-            authority_rows, authority_health = fixture_authority.collect(now=now)
             shadow_report = authority_shadow.build(
                 today_items, upcoming_items, authority_rows, authority_health,
                 now=now)
+            # Whatever the authorities said about a fixture that has since left
+            # the tabs is kept too: a card retired by an authority this scan is
+            # exactly the row a reader will come looking for.
+            published = {row["fixture_id"] or row["card_id"]
+                         for row in shadow_report["fixtures"]}
+            for row in authority_shadow_rows:
+                key = row.get("fixture_id") or row.get("card_id")
+                if key and key not in published:
+                    published.add(key)
+                    shadow_report.setdefault("retired_or_unpublished", []).append(row)
             authority_shadow.write(shadow_report)
-            schedule_stats["fixture_authority_shadow"] = (
-                authority_shadow.summarize(shadow_report))
+            schedule_stats["fixture_authority_shadow"] = authority_shadow.summarize(
+                shadow_report)
+            schedule_stats["fixture_authority_shadow"]["not_published"] = len(
+                shadow_report.get("retired_or_unpublished") or [])
             shadow_totals = shadow_report["totals"]
             print("   fixture authority (shadow): %d fixture(s) - %d verified, "
                   "%d partial, %d unverified, %d conflict; %d confirmed by two "

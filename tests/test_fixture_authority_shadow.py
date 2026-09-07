@@ -969,26 +969,36 @@ class ShadowChangesNothingTests(unittest.TestCase):
         can turn it on by accident."""
         source = read(os.path.join(ROOT, "scanner", "events.py"))
         self.assertIn(
-            'event_settings.get("fixture_authority_shadow") is not True',
-            source)
+            'event_settings.get("fixture_authority_shadow") is True', source)
+        self.assertIn("if authority_enabled and not targeted_scan:", source)
 
     def test_the_targeted_trigger_skips_it(self):
+        """A trigger that republishes settled tabs must not be the run that
+        reads an authority or acts on one."""
         source = read(os.path.join(ROOT, "scanner", "events.py"))
+        self.assertIn(
+            "targeted_scan = targeted_window_minutes > 0 "
+            "or targeted_keys is not None", source)
         marker = source.index("fixture_authority.collect(now=now)")
-        window = source[marker - 900:marker]
-        self.assertIn("elif skip_live_protection:", window)
+        self.assertIn("if authority_enabled and not targeted_scan:",
+                      source[marker - 400:marker])
+        self.assertIn('{"skipped": "targeted scan"}', source)
 
     def test_production_settings_enable_it(self):
         settings = json.loads(read(
             os.path.join(ROOT, "config", "settings.json")))
         self.assertIs(settings["events"]["fixture_authority_shadow"], True)
 
-    def test_the_shadow_step_runs_after_the_payload_is_built(self):
-        """It reads settled tabs. If it ran earlier it could be tempted to
-        write to them."""
+    def test_the_report_is_built_after_the_payload_is(self):
+        """The report reads settled tabs. The authority FETCH now happens
+        earlier, because scanner/authority_status.py needs the answer before
+        anything routes a card - but the report is still built from the tabs
+        after `result` exists, so building it cannot change one."""
         source = read(os.path.join(ROOT, "scanner", "events.py"))
         self.assertLess(source.index('"today_match": _payload('),
-                        source.index("fixture_authority.collect(now=now)"))
+                        source.index("authority_shadow.build("))
+        self.assertLess(source.index("fixture_authority.collect(now=now)"),
+                        source.index("    for card in merged:"))
 
 
 # =======================================================================
