@@ -170,6 +170,18 @@ class TargetedSweepsOnlyWhatItPublishes(unittest.TestCase):
         stream type and playback id."""
         REQUEST_FIELDS = ("url", "headers", "profile", "proxy_only", "type",
                           "playback_id")
+        if not self.event_rows:
+            # The guard its five siblings above already have, and the one this
+            # test was missing. The suite runs against whatever the tree
+            # happens to carry, and at a quiet hour that is legitimately
+            # nothing: measured 2026-09-07 07:24Z, Today Match held one card -
+            # `Mohali Kings vs Ludhiana Lions`, LINK_UPDATING, no url and no
+            # backups - and Upcoming carried no route at all, so there was
+            # nothing to compare and the unguarded assertion failed a
+            # production scan before it could publish. Sixteen minutes earlier
+            # the same code found nine comparable routes. "How many routes are
+            # published right now" is not a property of the code.
+            self.skipTest("no published event route in this checkout")
         shared = _event_urls() & _channel_urls()
         by_url = {r["url"]: r for r in self.all_rows}
         compared = 0
