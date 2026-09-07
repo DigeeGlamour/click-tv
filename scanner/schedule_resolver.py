@@ -682,6 +682,48 @@ DEFAULT_FIXTURE_AUTHORITY_SOURCES = frozenset({
     "srhady-willow-event-upcoming",
 })
 
+#: The event-source registry, whose ids are the only ones the gate above can
+#: ever match.
+CONFIGURED_EVENT_SOURCES_PATH = "config/sources/today-match.json"
+
+
+def configured_event_source_ids(
+    path: str | Path = CONFIGURED_EVENT_SOURCES_PATH,
+) -> frozenset:
+    """Every id in the event-source registry. An unreadable file is empty."""
+    try:
+        payload = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return frozenset()
+    sources = payload.get("sources") if isinstance(payload, dict) else None
+    if not isinstance(sources, list):
+        return frozenset()
+    return frozenset(
+        str(entry.get("id")).strip()
+        for entry in sources
+        if isinstance(entry, dict) and str(entry.get("id") or "").strip()
+    )
+
+
+def default_authority_source_ids(
+    path: str | Path = CONFIGURED_EVENT_SOURCES_PATH,
+) -> frozenset:
+    """The fallback used when settings declares no authority list.
+
+    The two names in `DEFAULT_FIXTURE_AUTHORITY_SOURCES` come from the guide
+    and are kept, but neither has ever been a configured source id - not in
+    any of the 13 revisions of the registry. So the fallback matched nothing,
+    which means a `fixture_authority_sources` key that went missing or
+    malformed would refuse every candidate and publish empty tabs. The
+    registry's own ids are unioned in so the fallback lands where the
+    settings file already points rather than nowhere.
+
+    This cannot change a normal scan: settings supplies a list, so
+    `authority_source_ids is None` is unreachable while it does, and the union
+    only ever widens a set that is currently empty in practice.
+    """
+    return DEFAULT_FIXTURE_AUTHORITY_SOURCES | configured_event_source_ids(path)
+
 # A provider feed gives a kickoff time but almost never an end time, so a
 # window has to be assumed to decide when a card stops being current.
 #: The generic assumed fallback for a fixture's end, and only that. No
@@ -1526,7 +1568,7 @@ def enrich_event_candidates(
         and fixture["start"] <= now_utc + timedelta(days=future_days)
     ]
     authority = (
-        DEFAULT_FIXTURE_AUTHORITY_SOURCES
+        default_authority_source_ids()
         if authority_source_ids is None
         else {str(value).strip() for value in authority_source_ids if str(value).strip()}
     )

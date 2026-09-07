@@ -1,0 +1,71 @@
+{
+  "registry": "fixture_authority",
+  "description": "Feeds that state what a fixture IS - participants, competition, kickoff, status - as their subject, rather than stating how to play one. This registry is deliberately separate from config/sources/today-match.json: that file is the stream-source registry, every entry of which is currently also listed in events.fixture_authority_sources, so 'authority' there means 'configured' and draws no distinction. Nothing here is fetched for its streams and nothing here contributes a route.",
+  "shadow_only_note": "Every authority below is shadow_only in this step. The scan fetches them, matches them against the published Today Match and Upcoming fixtures, and writes reports/fixture-authority-shadow.json. No verdict from this registry may add a card, remove a card, change a status, change a kickoff, change a lifecycle state, change a badge, or alter fixture_id. A fetch that fails is INCONCLUSIVE - authority unavailable - and never evidence that a fixture ended or never existed.",
+  "authorities": [
+    {
+      "id": "livescore",
+      "name": "LiveScore public app API",
+      "upstream_family": "LiveScore",
+      "adapter": "livescore_date",
+      "url_template": "https://prod-public-api.livescore.com/v1/api/app/date/{sport}/{date}/0",
+      "date_format": "%Y%m%d",
+      "sport_paths": {
+        "cricket": "cricket",
+        "football": "soccer"
+      },
+      "auth": "none",
+      "role": "PRIMARY_FIXTURE_AUTHORITY",
+      "shadow_only": true,
+      "enabled": true,
+      "verified": {
+        "ci_runner": "ubuntu-24.04, Azure westus, 2026-09-07",
+        "verdict": "CI_REACHABLE",
+        "cricket": "HTTP 200, 2 stages, 3 events",
+        "soccer": "HTTP 200, 74 stages, 121 events",
+        "fields": "Eid, T1/T2 with team IDs, Snm competition, CompId, Cnm country, Esd kickoff (UTC, checked against a known 01:30Z kickoff), Eps/Esid status, EtTx cricket type and gender, ErnInf round",
+        "coverage": "82 published cards: 54 matched outright by fixture_dedupe.same_fixture, 16 more after a spelling difference, 12 genuinely absent (Sher-E-Punjab T20, Oman D50, Dehradun T20 League, Belarusian Premier League)"
+      },
+      "limitations": {
+        "license": "LiveScore's own app API. Public and unauthenticated, but not an official third-party interface. Recorded, not hidden.",
+        "unobserved": "Football half-time and the in-play football codes have never come back in any sample - 17 dates, 6,240 soccer events, none in play at the sampling hour. Not mapped, because they were not seen.",
+        "blank_state": "Esid 0 with an empty status string was observed once. It maps to UNKNOWN."
+      }
+    },
+    {
+      "id": "espn-header",
+      "name": "ESPN scoreboard header API",
+      "upstream_family": "ESPN",
+      "adapter": "espn_header",
+      "url_template": "https://site.web.api.espn.com/apis/v2/scoreboard/header?sport={sport}&dates={date}&limit={limit}",
+      "date_format": "%Y%m%d",
+      "default_limit": 300,
+      "sport_paths": {
+        "cricket": "cricket",
+        "football": "soccer"
+      },
+      "auth": "none",
+      "role": "SECONDARY_FIXTURE_AUTHORITY",
+      "also": "STATUS_CORROBORATOR",
+      "shadow_only": true,
+      "enabled": true,
+      "verified": {
+        "ci_runner": "ubuntu-24.04, 2026-09-07",
+        "verdict": "ESPN_HEADER_CI_REACHABLE",
+        "cricket": "HTTP 200, 6 leagues, 8 events; 344 events and 31 leagues across 15 dates with zero fetch failures",
+        "soccer": "HTTP 200, 27 leagues, 75 events; 2,339 events and 91 leagues across 15 dates with zero fetch failures",
+        "fields": "id, uid, competitionId, date (ISO with Z), competitors[] with team id, displayName, abbreviation, homeAway, logo, isNational, winner, score; league name and id; status, summary, fullStatus.type.state/name/description/detail; eventType and class for cricket; title for the round",
+        "params": "dates=YYYYMMDD selects a day; limit is honoured up to the day's own size (limit=1000 returned 352)",
+        "cache": "Cache-Control max-age 1-10 seconds"
+      },
+      "limitations": {
+        "host_note": "site.web.api.espn.com. The site.api.espn.com scoreboard endpoints and hs-consumer-api.espncricinfo.com answered 403 from both this network and the CI runner; this is a different host and was probed as its own candidate, not judged by that result.",
+        "soccer_name": "For soccer, `name` and `shortName` carry the SEASON ('2026-27 English Premier League'), not the fixture. The fixture name has to be built from competitors[] using homeAway. For cricket, `name` is the fixture ('Kuwait v Qatar').",
+        "end_date": "`endDate` is a season or window end, not a match end. A T20 that finished on 2026-09-06 carried endDate 2026-09-08T23:59Z. It must never be read as an end-of-match time.",
+        "unobserved": "STATUS_HALFTIME and STATUS_FIRST_HALF have not been observed. STATUS_SECOND_HALF has (once). Nothing unobserved is mapped.",
+        "transient": "HTTP 502 was seen twice locally on a date fetch and never on the runner. A 502 is INCONCLUSIVE."
+      }
+    }
+  ],
+  "independent_witness_rule": "Mirrors, forks, GitHub copies, language variants and backup endpoints of one upstream are ONE witness. The seven FanCode feeds are one FanCode family; the two Tapmad feeds share an id space and are one Tapmad family. LiveScore and ESPN are separate upstreams with separate id spaces, so neither one's event id may be treated as the other's - an association between them has to be proven from participants, competition and kickoff. scanner/upstream_family.py holds the map."
+}

@@ -43,6 +43,7 @@ try:
         build_fixture_stream_health,
         write_fixture_stream_health,
     )
+    from scanner import authority_shadow, fixture_authority
     from scanner.source_coverage import (
         build_source_coverage,
         check_invariants,
@@ -66,6 +67,7 @@ try:
     )
     from scanner.schedule_resolver import (
         DEFAULT_FIXTURE_AUTHORITY_SOURCES,
+        default_authority_source_ids,
         DEFAULT_PROVIDER_EVENT_HOURS,
         attach_streams_to_fixtures,
         catalogue_state,
@@ -103,6 +105,8 @@ except ImportError:
         build_fixture_stream_health,
         write_fixture_stream_health,
     )
+    import authority_shadow  # type: ignore
+    import fixture_authority  # type: ignore
     from source_coverage import (  # type: ignore
         build_source_coverage,
         check_invariants,
@@ -126,6 +130,7 @@ except ImportError:
     )
     from schedule_resolver import (
         DEFAULT_FIXTURE_AUTHORITY_SOURCES,
+        default_authority_source_ids,
         DEFAULT_PROVIDER_EVENT_HOURS,
         attach_streams_to_fixtures,
         catalogue_state,
@@ -1916,7 +1921,10 @@ def process_events(
     # stay in separate groups and the card publishes with nothing to play.
     event_candidates, attach_stats = attach_streams_to_fixtures(
         event_candidates,
-        authority_source_ids or set(DEFAULT_FIXTURE_AUTHORITY_SOURCES),
+        # Same fallback as the enrichment gate, for the same reason: the
+        # two names in the constant have never been configured source ids,
+        # so on their own they match nothing.
+        authority_source_ids or set(default_authority_source_ids()),
         attachment_pool=attachment_pool,
     )
     schedule_stats.update(attach_stats)
@@ -2680,6 +2688,57 @@ def process_events(
         schedule_stats["fixture_stream_health"] = stream_health_report["totals"]
     except Exception as error:  # pragma: no cover - a report never breaks a scan
         schedule_stats["fixture_stream_health"] = {"error": str(error)}
+
+    # SOURCE DATA != FIXTURE TRUTH, observed and nothing more.
+    #
+    # Every published card says `schedule_verified: true` and
+    # `time_verification: provider_feed`, which means a feed said so. This asks
+    # two feeds whose subject IS the fixture - LiveScore and ESPN, both probed
+    # from a CI runner first - what they say about each card, and writes
+    # reports/fixture-authority-shadow.json.
+    #
+    # It is deliberately the last thing that happens and it is deliberately
+    # read-only: `today_items` and `upcoming_items` are already settled when it
+    # runs, `result` is already built from them above, and nothing below reads
+    # its output except the report. An authority that cannot be reached is
+    # INCONCLUSIVE, never evidence about a fixture, and the whole block is
+    # wrapped like every other report here - a shadow observation must not be
+    # able to cost a scan its publish.
+    # Two gates, both deliberate. The settings flag keeps this off unless a
+    # configuration asks for it, so a scan assembled in a test does no network
+    # I/O; and a targeted trigger skips it, because that trigger fires every
+    # five minutes and republishes the tabs a full scan already settled -
+    # twelve requests a time to somebody else's API, twelve times an hour, for
+    # a report that would say the same thing. Full scans run every twenty
+    # minutes and that is often enough to watch a status turn.
+    if not isinstance(event_settings, dict) or (
+            event_settings.get("fixture_authority_shadow") is not True):
+        schedule_stats["fixture_authority_shadow"] = {
+            "skipped": "events.fixture_authority_shadow is not enabled"}
+    elif skip_live_protection:
+        schedule_stats["fixture_authority_shadow"] = {"skipped": "targeted scan"}
+    else:
+        try:
+            authority_rows, authority_health = fixture_authority.collect(now=now)
+            shadow_report = authority_shadow.build(
+                today_items, upcoming_items, authority_rows, authority_health,
+                now=now)
+            authority_shadow.write(shadow_report)
+            schedule_stats["fixture_authority_shadow"] = (
+                authority_shadow.summarize(shadow_report))
+            shadow_totals = shadow_report["totals"]
+            print("   fixture authority (shadow): %d fixture(s) - %d verified, "
+                  "%d partial, %d unverified, %d conflict; %d confirmed by two "
+                  "independent authorities"
+                  % (shadow_totals["fixtures"], shadow_totals["verified"],
+                     shadow_totals["partial_authority"],
+                     shadow_totals["unverified"], shadow_totals["conflict"],
+                     shadow_totals["matched_by_two_independent_authorities"]))
+            for unavailable in shadow_report["authority_unavailable"]:
+                print("   fixture authority unavailable: %s (INCONCLUSIVE - "
+                      "not evidence about any fixture)" % unavailable)
+        except Exception as error:  # pragma: no cover - never breaks a scan
+            schedule_stats["fixture_authority_shadow"] = {"error": str(error)}
 
     result["source_coverage"] = result_coverage
     # The stream counters, measured where the answer actually is.
