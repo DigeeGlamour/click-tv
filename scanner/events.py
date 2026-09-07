@@ -1634,11 +1634,29 @@ def _stream_health(
         if outage else ""
     )
 
+    # A card whose route is a playback id and nothing else. `_is_playable`
+    # asks for a URL on the card, which is the right question for admission -
+    # it is about a route this scan proved - and the wrong one for a report
+    # about what the viewer can watch: scripts/validate-pages.py accepts a
+    # published card carrying a playback id and no URL at all, because the
+    # catalogue holds the proven URL and headers for it.
+    #
+    # Measured 2026-09-07 01:39: this said "0 with a stream" of 80 cards while
+    # six of them were playable through the catalogue, and had been all night.
+    # No decision here changes - the verdict below is the same verdict - but a
+    # warning that says zero when the answer is six is not a true report, and
+    # FINAL_3 asks these reports to be true.
+    catalogue_only = [item for item in published
+                      if item not in playable
+                      and str(item.get("playback_id") or "").strip()]
+    also = (f", {len(catalogue_only)} playable through the catalogue"
+            if catalogue_only else "")
+
     warnings: List[str] = []
     if published and not playable:
         warnings.append(
             "no published fixture has a playable route: "
-            f"{len(published)} card(s), 0 with a stream{attribution}")
+            f"{len(published)} card(s), 0 with a stream{also}{attribution}")
     elif playable and not fresh:
         warnings.append(
             "every playable route was carried from an earlier scan: "
@@ -1648,6 +1666,9 @@ def _stream_health(
         "sources_in_outage": outage,
         "published_fixtures": len(published),
         "fixtures_with_stream": len(playable),
+        # Reported beside it, never folded into it: the two answer different
+        # questions and one of them gates admission.
+        "fixtures_playable_via_catalogue": len(catalogue_only),
         "fixtures_with_fresh_stream": fresh,
         "fixtures_with_carried_stream": len(carried),
         "today_with_stream": sum(1 for item in today_items if _is_playable(item)),

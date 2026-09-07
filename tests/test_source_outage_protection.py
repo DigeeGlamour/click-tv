@@ -522,6 +522,33 @@ class StreamHealthAttribution(unittest.TestCase):
         self.assertEqual(without["sources_in_outage"], [])
         self.assertNotIn(";", without["warnings"][0])
 
+    def test_a_catalogue_route_is_counted_and_named(self):
+        """`_is_playable` asks for a URL on the card - the right question for
+        admission, the wrong one for a report about what the viewer can watch.
+        validate-pages.py publishes a card carrying a playback id and no URL,
+        because the catalogue holds the proven URL for it.
+
+        Measured 2026-09-07 01:39: "0 with a stream" of 80 cards, six of them
+        playable through the catalogue and playable all night.
+        """
+        card = {"id": "c", "playback_id": "ctv_" + "a" * 32,
+                "publish_allowed": True}
+        health = _stream_health([card], [], {})
+        self.assertEqual(health["fixtures_with_stream"], 0)
+        self.assertEqual(health["fixtures_playable_via_catalogue"], 1)
+        self.assertIn("1 playable through the catalogue", health["warnings"][0])
+
+    def test_the_verdict_is_unchanged_by_saying_so(self):
+        """A scan that proved no route of its own is still degraded."""
+        card = {"id": "c", "playback_id": "ctv_" + "a" * 32,
+                "publish_allowed": True}
+        self.assertEqual(_stream_health([card], [], {})["state"], "degraded")
+
+    def test_a_card_with_no_route_at_all_adds_nothing(self):
+        health = _stream_health([{"id": "c", "publish_allowed": True}], [], {})
+        self.assertEqual(health["fixtures_playable_via_catalogue"], 0)
+        self.assertNotIn("catalogue", health["warnings"][0])
+
     def test_a_scan_that_found_a_route_is_still_healthy(self):
         fresh = self.playable(id="b")
         health = _stream_health(
