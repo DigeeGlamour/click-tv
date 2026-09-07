@@ -64,9 +64,11 @@ try:
         sport_sort_index,
     )
     from scanner.event_archive import (
+        archive_refusal,
         archive_retired,
         drop_resurrected,
         load_archive,
+        terminal_provenance,
     )
     from scanner.schedule_resolver import (
         DEFAULT_FIXTURE_AUTHORITY_SOURCES,
@@ -131,9 +133,11 @@ except ImportError:
         sport_sort_index,
     )
     from event_archive import (  # type: ignore
+        archive_refusal,
         archive_retired,
         drop_resurrected,
         load_archive,
+        terminal_provenance,
     )
     from schedule_resolver import (
         DEFAULT_FIXTURE_AUTHORITY_SOURCES,
@@ -1993,6 +1997,16 @@ def process_events(
     upcoming_items: List[Dict[str, Any]] = []
     today_stale = 0
     today_unplayable = 0
+    # Cards this scan SAW and refused, because the authorities had already
+    # retired the fixture. They never reach `today_items`, so the retirement
+    # would otherwise be decided and then forgotten - and unlike an absent
+    # card there is nothing left in the published payload for a later scan to
+    # read it off.
+    today_authority_finished: List[Dict[str, Any]] = []
+    # Cards a targeted trigger dropped for age. Absence and staleness are not
+    # retirements, so this list is not archived as it stands - it is filtered
+    # for terminal evidence the card already carries, below.
+    targeted_dropped: List[Dict[str, Any]] = []
     undeliverable_dropped = 0
     upcoming_stale = 0
     early_links_held = 0
@@ -2091,6 +2105,8 @@ def process_events(
                     today_unplayable += 1
                 else:
                     today_stale += 1
+                if reason == "authority_finished":
+                    today_authority_finished.append(card_copy)
                 continue
             today_items.append(admitted)
 
@@ -2191,6 +2207,8 @@ def process_events(
                         today_unplayable += 1
                     else:
                         today_stale += 1
+                    if reason == "authority_finished":
+                        today_authority_finished.append(candidate)
                     continue
                 crossed_while_carried.append(admitted)
                 continue
@@ -2284,6 +2302,7 @@ def process_events(
                 lifecycle_timings["post_match_grace_minutes"],
             ):
                 today_stale += 1
+                targeted_dropped.append(carried)
                 continue
             kept_today.append(carried)
         for event_id, card in promoted.items():
@@ -2307,6 +2326,42 @@ def process_events(
         # protection here would probe cards this trigger never scanned and
         # retire them on behalf of a scan that did not look for them.
         schedule_stats["live_protection"] = {"skipped": "targeted scan"}
+
+        # The archive step, however, is not a decision - it is a record, and
+        # skipping it entirely was losing records this trigger already held.
+        #
+        # A targeted run has no protection, no probe and no authority of its
+        # own, so it cannot decide that a fixture has ended, and it must not:
+        # `_is_today_fresh` drops a card on age and on any end_time it can
+        # find, INCLUDING an assumed one, and FINAL_1 রায় ১০ is explicit that
+        # an assumed end never retires a card. So absence and staleness are
+        # filtered out here, exactly as they are on the full-scan path.
+        #
+        # What is left is a card carrying terminal evidence that some earlier
+        # full scan established - an authority verdict, a feed's FT, the
+        # fixture's own provider-stated end time, a post-match grace that has
+        # run out. That retirement has already been decided by a scan that
+        # did look, and this is the last moment anything can record it:
+        # the next full scan reads today-match.json, where the row is gone.
+        carry = []
+        for card in targeted_dropped + today_authority_finished:
+            provenance = terminal_provenance(
+                card, now=now,
+                post_match_grace_minutes=lifecycle_timings[
+                    "post_match_grace_minutes"],
+            )
+            if provenance:
+                carry.append(dict(card, _terminal_provenance=provenance))
+        archive_stats = archive_retired(
+            carry, now=now,
+            post_match_grace_minutes=lifecycle_timings[
+                "post_match_grace_minutes"],
+        )
+        archive_stats["from"] = "targeted carry of already-decided ends"
+        archive_stats["absence_only_refused"] = (
+            len(targeted_dropped) + len(today_authority_finished) - len(carry)
+        )
+        schedule_stats["event_archive"] = archive_stats
     else:
         previous_today = _load_optional_json(Path("data") / "today-match.json")
         previous_today_items = [
@@ -2391,18 +2446,76 @@ def process_events(
             str(event_id) for event_id in
             (protection_stats.get("released_ended_ids") or [])
         }
-        retired = [
-            card for card in previous_today_items
-            if str(card.get("id") or "") not in surviving
-            and (
-                str(card.get("id") or "") in released_ended
+        # The retirements this scan DECIDED, read from the verdicts rather
+        # than from the rows they removed.
+        #
+        # This is the correction. `ARCHIVED_LIFECYCLE_STATES` is {ENDED,
+        # PURGED}, and an ENDED verdict has `publish=False` - so an ENDED row
+        # never appears in today-match.json and that condition can never
+        # match a card read back out of it. Archiving therefore rested on
+        # `released_ended_ids`, which protection appends only for an
+        # authority verdict, a feed's FT, or a grace already stamped on the
+        # card. Measured across 84 full scans: 39 fixtures reached an ENDED
+        # verdict, 27 were archived, and the 12 that got there by the
+        # multi-signal path - estimated end passed, every link probed dead,
+        # three consecutive confirming scans - were retired and forgotten.
+        # `retired_terminal` carries all 39, each with the signal it was
+        # decided on.
+        decided = {
+            str(row.get("id") or ""): str(row.get("provenance") or "")
+            for row in (protection_stats.get("retired_terminal") or [])
+            if isinstance(row, dict) and str(row.get("id") or "")
+        }
+        retired = []
+        absence_only = 0
+        refused_names = []
+        for card in previous_today_items:
+            event_id = str(card.get("id") or "")
+            if event_id in surviving:
+                continue
+            stop = archive_refusal(card)
+            if stop:
+                # POSTPONED and SUSPENDED reach here as strong end signals
+                # and are not ends. Refused by name so the report says so.
+                refused_names.append("%s (%s)" % (card.get("name") or event_id,
+                                                  stop))
+                continue
+            provenance = decided.get(event_id) or ""
+            if not provenance and (
+                event_id in released_ended
                 or str(card.get("lifecycle_state") or "").upper()
                 in ARCHIVED_LIFECYCLE_STATES
                 or has_strong_end_signal(card)
                 or is_authoritatively_ended(card)
-            )
-        ]
-        schedule_stats["event_archive"] = archive_retired(retired, now=now)
+            ):
+                # Left for a reason protection never saw - refused admission,
+                # or dropped by the merge - but still saying it is over.
+                provenance = terminal_provenance(
+                    card, now=now,
+                    post_match_grace_minutes=lifecycle_timings[
+                        "post_match_grace_minutes"],
+                )
+            if not provenance:
+                # Nothing said this fixture was over. It stopped being
+                # listed, which is not the same fact and never becomes it.
+                absence_only += 1
+                continue
+            retired.append(dict(card, _terminal_provenance=provenance))
+        for card in today_authority_finished:
+            retired.append(dict(card, _terminal_provenance=(
+                terminal_provenance(
+                    card, now=now,
+                    post_match_grace_minutes=lifecycle_timings[
+                        "post_match_grace_minutes"]) or "authority_finished")))
+        archive_stats = archive_retired(
+            retired, now=now,
+            post_match_grace_minutes=lifecycle_timings[
+                "post_match_grace_minutes"],
+        )
+        archive_stats["absence_only_refused"] = absence_only
+        archive_stats["never_archived_statuses"] = refused_names[:20]
+        archive_stats["decided_this_scan"] = len(decided)
+        schedule_stats["event_archive"] = archive_stats
 
     # The Upcoming half of the same question, and the half that had no answer.
     #

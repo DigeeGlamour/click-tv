@@ -170,6 +170,13 @@ class ARealFutureFixtureIsNeverBlocked(unittest.TestCase):
 
 
 class TheEntryStaysThinAndCompatible(unittest.TestCase):
+    """Nine fields became eighteen when the row learned to record its own
+    provenance - the identity the authorities use, the feeds that carried the
+    fixture, the participants as the dedupe layer canonicalizes them, and the
+    terminal status and signal the retirement was decided on. Every one of
+    them is identity or lifecycle evidence. None of them is card content, and
+    the assertions below name what is still refused."""
+
     def test_the_entry_carries_identity_evidence_and_nothing_else(self):
         fat = _card("Brighton vs Leeds",
                     channels=[{"id": "c1", "name": "Sky"}],
@@ -179,9 +186,19 @@ class TheEntryStaysThinAndCompatible(unittest.TestCase):
         archive = _archive_with(fat)
         entry = next(iter(archive["fixtures"].values()))
         self.assertEqual(
-            {"id", "fixture_id", "name", "competition", "sport_type",
-             "start_time", "ended_seen_at", "lifecycle_state", "archived_at"},
+            {"id", "fixture_id", "previous_event_id", "name", "participants",
+             "gender", "competition", "sport_type", "start_time",
+             "provider_source_ids", "authority_event_ids", "terminal_status",
+             "terminal_provenance", "terminal_authorities", "ended_seen_at",
+             "authority_finished_seen_at", "lifecycle_state", "archived_at"},
             set(entry))
+        # What "thin" actually forbids, said out loud rather than left to be
+        # inferred from a key count. The row grew when it learned to record
+        # WHY a fixture is remembered as retired; it must never grow toward
+        # holding the card.
+        for forbidden in ("channels", "backups", "url", "logo", "playback_id",
+                          "source_provenance", "streams", "poster"):
+            self.assertNotIn(forbidden, entry)
 
     def test_an_entry_written_before_this_change_still_blocks(self):
         """Backward compatible: the old seven-field row has no competition, and

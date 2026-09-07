@@ -267,7 +267,7 @@ class ARetiredFixtureStaysRetired(unittest.TestCase):
 
     def test_the_entry_is_thin(self):
         """Identity and lifecycle evidence. No channels, no streams, no
-        artwork - a card is around forty fields and this is nine.
+        artwork - a card is around forty fields and this is eighteen.
 
         `competition` and `sport_type` joined it with the P50 correction:
         FINAL_2's identity rule is normalized teams + competition + kickoff,
@@ -284,10 +284,20 @@ class ARetiredFixtureStaysRetired(unittest.TestCase):
         ea.archive_retired([fat], now=T0, archive=archive)
         entry = next(iter(archive["fixtures"].values()))
         self.assertEqual(
-            {"id", "fixture_id", "name", "competition", "sport_type",
-             "start_time", "ended_seen_at", "lifecycle_state", "archived_at"},
+            {"id", "fixture_id", "previous_event_id", "name", "participants",
+             "gender", "competition", "sport_type", "start_time",
+             "provider_source_ids", "authority_event_ids", "terminal_status",
+             "terminal_provenance", "terminal_authorities", "ended_seen_at",
+             "authority_finished_seen_at", "lifecycle_state", "archived_at"},
             set(entry),
         )
+        # What "thin" actually forbids, said out loud rather than left to be
+        # inferred from a key count. The row grew when it learned to record
+        # WHY a fixture is remembered as retired; it must never grow toward
+        # holding the card.
+        for forbidden in ("channels", "backups", "url", "logo", "playback_id",
+                          "source_provenance", "streams", "poster"):
+            self.assertNotIn(forbidden, entry)
 
     def test_a_retirement_does_not_expire_on_a_timer(self):
         """FINAL_2 names no retention duration, so the archive invents none.
@@ -357,10 +367,33 @@ class ARetiredFixtureStaysRetired(unittest.TestCase):
 
 class OnlyRealRetirementsAreRemembered(unittest.TestCase):
     def test_the_publish_path_archives_only_ended_states(self):
+        """The second tier is still there and still reads the card.
+
+        The call itself now passes the grace, so the string this used to pin
+        has changed - but what it was guarding has not: a departure only
+        reaches the archive through one of these tests.
+        """
         source = (ROOT / "scanner" / "events.py").read_text(encoding="utf-8")
         self.assertIn("ARCHIVED_LIFECYCLE_STATES", source)
         self.assertIn("has_strong_end_signal(card)", source)
-        self.assertIn("archive_retired(retired, now=now)", source)
+        self.assertIn("archive_retired(\n            retired, now=now,",
+                      source)
+
+    def test_the_first_tier_is_the_verdict_not_the_published_row(self):
+        """The correction, pinned. An ENDED verdict never appears in
+        today-match.json, so a published row can never carry it and the
+        retirement has to be read from `retired_terminal`."""
+        source = (ROOT / "scanner" / "events.py").read_text(encoding="utf-8")
+        self.assertIn('protection_stats.get("retired_terminal")', source)
+        self.assertIn("_terminal_provenance", source)
+        protection = (ROOT / "scanner" / "live_protection.py").read_text(
+            encoding="utf-8")
+        self.assertIn('stats["retired_terminal"].append', protection)
+
+    def test_absence_alone_is_refused_and_counted(self):
+        source = (ROOT / "scanner" / "events.py").read_text(encoding="utf-8")
+        self.assertIn("absence_only", source)
+        self.assertIn("archive_refusal(card)", source)
 
     def test_both_tabs_are_filtered(self):
         source = (ROOT / "scanner" / "events.py").read_text(encoding="utf-8")

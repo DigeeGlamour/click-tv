@@ -39,6 +39,7 @@ try:
         estimated_end,
         has_strong_end_signal,
         parse_time,
+        verified_end_passed,
     )
 except ImportError:  # pragma: no cover - direct module execution
     from event_lifecycle import (  # type: ignore
@@ -53,6 +54,7 @@ except ImportError:  # pragma: no cover - direct module execution
         estimated_end,
         has_strong_end_signal,
         parse_time,
+        verified_end_passed,
     )
 
 STATE_FILE = Path("state/live-event-protection.json")
@@ -952,6 +954,16 @@ def protect_live_events(
         # publish path archives exactly these, rather than guessing
         # from fields the published card may never have carried.
         "released_ended_ids": [],
+        # Every retirement this scan decided, with the reason the VERDICT
+        # gave for it. `released_ended_ids` above answers a narrower
+        # question - which retirements came from an authority - and it was
+        # being used as though it answered this one, so the twelve
+        # retirements that reached ENDED by the multi-signal path were
+        # dropped from Today Match and never remembered anywhere. A fixture
+        # forgotten this way returns on the next scan as a brand new card
+        # with a kickoff in the past, which is the exact fault
+        # scanner/event_archive.py exists to prevent.
+        "retired_terminal": [],
         "released_dead_link": 0,
         "released_stale": 0,
         # Retired by the no-schedule fallback below rather than by a real end
@@ -1109,6 +1121,36 @@ def protect_live_events(
 
         if decision.state == ENDED:
             misses.pop(event_id, None)
+            # Named from the signals the verdict was reached on, in the
+            # order `decide()` reads them, because after this branch the
+            # card is gone and nothing downstream can ask again.
+            # This scan's authority map, not the derived verdict. The
+            # fallback below reads `authority_says_live(previous)`, which
+            # reads the card's own status fields - the very fields
+            # `strong_end` reads - so calling that "authority_finished"
+            # would credit a feed's FT to an authority that never spoke.
+            if authority.get(event_id) is False:
+                provenance = "authority_finished"
+            elif strong_end:
+                provenance = "feed_strong_end"
+            elif signals.authority_live is False:
+                provenance = "authority_finished"
+            elif verified_end_passed(previous, reference):
+                provenance = "provider_end_time"
+            elif str(previous.get("ended_seen_at") or "").strip():
+                provenance = "post_match_grace_expired"
+            elif unscheduled_expired:
+                provenance = "unscheduled_carry_expired"
+            elif signals.estimate_passed:
+                provenance = "multi_signal_confirmed"
+            else:
+                provenance = "dead_link_confirmed"
+            stats["retired_terminal"].append({
+                "id": event_id,
+                "name": str(previous.get("name") or ""),
+                "provenance": provenance,
+                "reason": decision.reason,
+            })
             if (strong_end or signals.authority_live is False
                     or str(previous.get("ended_seen_at") or "").strip()):
                 # Finished for certain: the feed said so, the authority

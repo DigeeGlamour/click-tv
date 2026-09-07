@@ -254,6 +254,18 @@ def stamp(
     card["authority_end_families"] = evidence.families
     card["authority_end_evidence"] = evidence.describe()
     card["authority_independent_count"] = len(evidence.families)
+    # The authorities' own ids for this fixture, as a field rather than as
+    # prose inside `authority_end_evidence`. It is the one identity a stream
+    # feed cannot supply: every feed here names a match by spelling its two
+    # teams, and eleven spelling classes of that are already open. When such
+    # a fixture is retired, scanner/event_archive.py keeps these on the
+    # archive row, so a later scan can recognise the retirement even if the
+    # feed that lists it renames both sides.
+    card["authority_event_ids"] = {
+        str(name): str((entry or {}).get("event_id") or "")
+        for name, entry in sorted(evidence.authorities.items())
+        if str((entry or {}).get("event_id") or "").strip()
+    }
 
     if evidence.is_live:
         # An authority confirming play is worth as much as one confirming an
