@@ -366,6 +366,18 @@ def read_surface(data_dir: Path, name: str) -> Dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
+def catalogue_exists(data_dir: Path) -> bool:
+    """Whether this tree HAS a playback catalogue, whatever is in it.
+
+    An empty shard is an answer - that shard holds nothing. No shard files and
+    no legacy file is not an answer at all.
+    """
+    shard_dir = data_dir / "playback"
+    if shard_dir.is_dir() and any(shard_dir.glob("*.json")):
+        return True
+    return (data_dir / "playback-sources.json").is_file()
+
+
 def settle_catalogue_in_tree(data_dir: Path, theirs_ref: str) -> List[str]:
     """Make the tree able to play every event card that is in it.
 
@@ -374,6 +386,16 @@ def settle_catalogue_in_tree(data_dir: Path, theirs_ref: str) -> List[str]:
     that never scanned events still ends up publishing the lists it took from
     main, beside a playback catalogue that is its own.
     """
+    # No catalogue on disk at all is not evidence that anything is dangling -
+    # it is a tree that cannot answer the question. Dropping every card with a
+    # playback id because nothing is there to confirm it is the same mistake as
+    # reading an inconclusive probe as "confirmed dead", and it turned a
+    # 21-card replay into a 5-card one the moment this pass began running
+    # unconditionally.
+    if not catalogue_exists(data_dir):
+        print("  no playback catalogue in this tree; nothing to settle against")
+        return []
+
     written: List[str] = []
     for name in SURFACES:
         items = items_of(read_surface(data_dir, name))
@@ -418,14 +440,9 @@ def write_surface(data_dir: Path, name: str, payload: Dict[str, Any],
     return written
 
 
-def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--base", required=True, help="the commit this run branched from")
-    parser.add_argument("--ours", required=True, help="the commit this run produced")
-    parser.add_argument("--theirs", required=True, help="what was on main")
-    parser.add_argument("--data-dir", default="data")
-    args = parser.parse_args()
-
+def merge_lists(args) -> int:
+    """The merge itself. Never the last word: main() settles the catalogue
+    afterwards whichever way this returns."""
     # A run that never scanned events holds a stale copy of both lists. Merging
     # that with the live one would offer back every fixture the live one has
     # retired since - the resurrection this file exists to prevent, arriving by
@@ -441,8 +458,7 @@ def main() -> int:
         # event cards and kept its own catalogue, and every scan for the next
         # hour failed on `playback_id catalogue-এ নেই: Warriors vs Nevis
         # Patriots`. Whatever event cards end up in the tree, the tree has to
-        # be able to play them.
-        settle_catalogue_in_tree(data_dir, args.theirs)
+        # be able to play them - main() does that below, on every path.
         return 0
 
     now = datetime.now(timezone.utc)
@@ -516,6 +532,13 @@ def main() -> int:
 
     if not changed_any:
         print("  nothing to merge; this run's lists already carry both sides")
+        # Still settle. Having nothing to merge says nothing about the
+        # catalogue: the restore a few lines earlier in the push step puts THIS
+        # run's playback shards back over main's, and a record main had and
+        # this run did not is gone from the tree whether any list moved or not.
+        # Measured on the publishes at 23:09, 23:14 and 23:29 - every one of
+        # them green, every one of them carrying a card whose id had just left
+        # the catalogue.
         return 0
 
     # An archived fixture never comes back, whichever side offered it.
@@ -549,13 +572,31 @@ def main() -> int:
     for path in written + carried:
         print("    %s" % path)
 
-    # And then the same question of the finished tree. The check above only saw
-    # the cards the merge ADDED, and a card whose own copy came from the other
-    # side - `theirs rescanned`, 24 of them on the first real run - carries the
-    # other side's playback ids while sitting under a key we already had. It is
-    # cheap and it is the only pass that sees everything that will publish.
-    settle_catalogue_in_tree(data_dir, args.theirs)
     return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--base", required=True, help="the commit this run branched from")
+    parser.add_argument("--ours", required=True, help="the commit this run produced")
+    parser.add_argument("--theirs", required=True, help="what was on main")
+    parser.add_argument("--data-dir", default="data")
+    args = parser.parse_args()
+
+    status = merge_lists(args)
+
+    # ALWAYS, whatever the merge decided and whether it decided anything.
+    #
+    # This lived at the end of the merge and was skipped by every early return
+    # in it - including the commonest one, "nothing to merge". Having nothing
+    # to merge says nothing about the catalogue: the restore in the push step
+    # puts THIS run's playback shards back over main's, and a record main had
+    # and this run did not is gone from the tree whether any list moved or not.
+    # The publishes at 23:09, 23:14 and 23:29 were all green and all carried a
+    # card whose id had just left the catalogue. Structure, not discipline: a
+    # new path through the merge cannot forget this one.
+    settle_catalogue_in_tree(ROOT / args.data_dir, args.theirs)
+    return status
 
 
 if __name__ == "__main__":

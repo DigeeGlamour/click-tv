@@ -381,6 +381,48 @@ class ACardAndTheRecordThatPlaysItMoveTogether(unittest.TestCase):
         self.surface("upcoming", [])
         self.assertEqual(merge.settle_catalogue_in_tree(self.data_path, "theirs"), [])
 
+    def test_a_tree_with_no_catalogue_at_all_loses_nothing(self):
+        """Cannot check is not confirmed dead.
+
+        The moment this pass began running unconditionally it turned the
+        21-card historical replay into a 5-card one, because that repository
+        has no catalogue and every card with a playback id looked dangling.
+        """
+        import shutil
+        shutil.rmtree(os.path.join(self.data, "playback"))
+        self.assertFalse(merge.catalogue_exists(self.data_path))
+        self.surface("today-match", [card("a-vs-b", playback_id=self.ID_A)])
+        self.surface("upcoming", [])
+        self.assertEqual(merge.settle_catalogue_in_tree(self.data_path, "theirs"), [])
+        left = merge.items_of(merge.read_surface(self.data_path, "today-match"))
+        self.assertEqual([item["id"] for item in left], ["a-vs-b"])
+
+    def test_an_empty_shard_is_an_answer_and_a_missing_one_is_not(self):
+        self.assertTrue(merge.catalogue_exists(self.data_path))
+        import shutil
+        shutil.rmtree(os.path.join(self.data, "playback"))
+        self.assertFalse(merge.catalogue_exists(self.data_path))
+
+    def test_the_settle_is_structural_not_remembered(self):
+        """It lived at the end of the merge and every early return skipped it -
+        including the commonest, "nothing to merge". Three green publishes at
+        23:09, 23:14 and 23:29 each carried a card whose playback id had just
+        left the catalogue. It runs from main() now, after the merge returns,
+        so a new path through the merge cannot forget it."""
+        import inspect
+        body = inspect.getsource(merge.main)
+        self.assertIn("settle_catalogue_in_tree", body)
+        merged = inspect.getsource(merge.merge_lists)
+        self.assertNotIn("settle_catalogue_in_tree", merged,
+                         "the merge must not be the thing that remembers")
+
+    def test_the_merge_returns_through_main_whatever_it_decides(self):
+        import inspect
+        body = inspect.getsource(merge.main)
+        called = body.index("merge_lists(args)")
+        settled = body.index("settle_catalogue_in_tree")
+        self.assertLess(called, settled)
+
     def test_an_unplayable_card_is_removed_from_the_file_on_disk(self):
         self.their_catalogue({})
         self.surface("today-match", [card("a-vs-b", playback_id=self.ID_A),
