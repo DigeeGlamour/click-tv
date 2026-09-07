@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-09-07T21:19:12.524392+00:00",
+  "updated_at": "2026-09-07T21:28:15.058061+00:00",
   "count": 17,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -118,7 +118,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-09-07T19:09:13.347751+00:00"
     },
@@ -369,7 +369,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-09-07T21:08:49.400695+00:00"
     },
@@ -491,18 +491,24 @@
         "espn-header": "401888303"
       },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_a81a04cc58b3904954b49f149eee5f0f",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 5,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-09-07T20:09:03.125671+00:00",
-      "authority_status": "LIVE",
-      "authority_finished_confirmations": 2
+      "authority_status": "FINISHED",
+      "authority_finished_confirmations": 3,
+      "authority_finished_seen_at": "2026-09-07T21:27:39.184343+00:00",
+      "authority_remove_after": "2026-09-07T21:47:39.184343+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-07T21:28:06.279493+00:00"
     },
     {
       "id": "orebro-sk-vs-ostersunds-fk",
@@ -618,8 +624,8 @@
       },
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 7,
-      "carried_forward_misses": 7,
+      "end_pending_confirmations": 8,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-09-07T19:09:13.347751+00:00"
     },
@@ -844,7 +850,7 @@
       "end_pending": true,
       "end_pending_confirmations": 0,
       "ended_seen_at": "2026-09-07T21:08:49.400695+00:00",
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-09-07T21:08:49.400695+00:00"
     },
@@ -892,10 +898,29 @@
           "host": "dash2.antik.sk",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_06711be1ca21f9aa9492217441498a9f"
+          "playback_id": "ctv_05932dc5fa65962266131620b401897d"
         },
         {
           "name": "Backup-2",
+          "url": "https://tmaxapp.site/pt658svs/sporttv2.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "direct_first",
+          "stream_type": "hls",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "tmaxapp.site",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_2662eb132c857705cf84cad280da84c9"
+        },
+        {
+          "name": "Backup-3",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -915,35 +940,6 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_e3c91619d0b217a9eda8d5b6e3d180e1",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_d3678092693a1546e3867467a6206c5c",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -983,9 +979,8 @@
         },
         {
           "name": "Backup-5",
-          "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/q4u5nwaogz/out/v1/18de6d3e65934f3a8de4358e69eab86c/cenc.mpd",
-          "header_profile": "android_chrome",
-          "proxy_mode": "direct_first",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
           "inherit_manifest_query": false,
@@ -994,11 +989,22 @@
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_efaf6b32a87a3c8a84c26c9875e95a38"
+          "playback_id": "ctv_d3678092693a1546e3867467a6206c5c",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
         }
       ],
       "channels": [
@@ -1089,11 +1095,11 @@
               "id": "udinese-vs-lazio--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_e5eb256a925b376d6368a5b0",
+              "variant_key": "sv_fa29eb90742ca0eabf30e8ac",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_d3678092693a1546e3867467a6206c5c",
+              "playback_id": "ctv_be8fe2b9c73bc491bad8f43bd3108b0d",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1102,11 +1108,11 @@
               "id": "udinese-vs-lazio--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_fa29eb90742ca0eabf30e8ac",
+              "variant_key": "sv_e5eb256a925b376d6368a5b0",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_be8fe2b9c73bc491bad8f43bd3108b0d",
+              "playback_id": "ctv_d3678092693a1546e3867467a6206c5c",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1186,6 +1192,42 @@
           ]
         },
         {
+          "id": "udinese-vs-lazio--sports2-tv",
+          "name": "SPORTS2 TV",
+          "normalized_name": "sports2-tv",
+          "logo": "https://img.sofascore.com/api/v1/team/2695/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "udinese-vs-lazio--sports2-tv--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "udinese-vs-lazio--sports2-tv--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_f6456637d3da7ba24f64f631",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_2662eb132c857705cf84cad280da84c9",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "hls"
+            }
+          ]
+        },
+        {
           "id": "udinese-vs-lazio--fubo-sports",
           "name": "FUBO SPORTS",
           "normalized_name": "fubo-sports",
@@ -1222,21 +1264,43 @@
           ]
         }
       ],
-      "channel_count": 5,
+      "channel_count": 6,
       "default_channel_id": "udinese-vs-lazio--cbs-sports",
       "channel_stats": {
-        "streams_in": 8,
+        "streams_in": 9,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 5,
-        "variants": 8,
+        "channels": 6,
+        "variants": 9,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
-      "standby_link_count": 2,
+      "standby_link_count": 3,
       "standby": [
         {
           "name": "Standby-1",
+          "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/q4u5nwaogz/out/v1/18de6d3e65934f3a8de4358e69eab86c/cenc.mpd",
+          "drm": {},
+          "header_profile": "android_chrome",
+          "proxy_mode": "direct_first",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "sm-sports-data",
+          "source_provenance": [
+            {
+              "source_id": "sm-sports-data",
+              "source_name": "SM Live and Upcoming Sports Data",
+              "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+            }
+          ],
+          "host": "otte.cache.aiv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_f0029ac67aeed469d8714102509d1f0c"
+        },
+        {
+          "name": "Standby-2",
           "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/3b7qwiqzk3/out/v1/9f14895badca43e6a716db021dcd0c31/cenc.mpd",
           "drm": {},
           "header_profile": "android_chrome",
@@ -1255,10 +1319,10 @@
           "host": "otte.cache.aiv-cdn.net",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_312039c39780cee48479dfb5addbffa9"
+          "playback_id": "ctv_afdade891b61989ca40bef9fec97bed3"
         },
         {
-          "name": "Standby-2",
+          "name": "Standby-3",
           "drm": {
             "type": "clearkey",
             "protected": true
@@ -1303,7 +1367,7 @@
       "resolution_height": 1080,
       "start_time": "2026-09-07T18:45:00+00:00",
       "start_at": "2026-09-07T18:45:00+00:00",
-      "end_time": "2026-09-07T22:08:06+00:00",
+      "end_time": "2026-09-07T22:27:39+00:00",
       "end_time_source": "assumed",
       "competition": "Italian Serie A",
       "fixture_id": "provider:udinese-vs-lazio|serie a|2026-09-07",
@@ -1325,25 +1389,14 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401874962)",
+        "ESPN espn-header=89' (STATUS_SECOND_HALF, event 401874962)",
         "LiveScore livescore=FT (6, event 1785350)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401874962); LiveScore livescore=FT (6, event 1785350)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=89' (STATUS_SECOND_HALF, event 401874962); LiveScore livescore=FT (6, event 1785350)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "provider_enriched": "streamed",
-      "provider_event_id": "udinese-vs-lazio-2482159",
-      "artwork_candidates": [
-        "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8aEHxAhZwWJBDcNIEsZAoQiCCCsxcBYEgp9hs+ijAqUXD+XpZZXky0YB5iohBAA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpgAmYPmDXxoObiAj6QRozBArjeiYRjAmfFFzBlt9eaIdNaYJ2NEQgA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpixg+YbmBRgAJghDcQEIyFOmYIHZZAWQBCkz4ouYMvCLzRzprTCuxohBAA.webp"
-      ],
-      "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8aEHxAhZwWJBDcNIEsZAoQiCCCsxcBYEgp9hs+ijAqUXD+XpZZXky0YB5iohBAA.webp",
-      "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpgAmYPmDXxoObiAj6QRozBArjeiYRjAmfFFzBlt9eaIdNaYJ2NEQgA.webp",
-      "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpixg+YbmBRgAJghDcQEIyFOmYIHZZAWQBCkz4ouYMvCLzRzprTCuxohBAA.webp",
-      "provider_routing_hint": "live",
       "competition_from_source": "Serie A",
-      "playback_id": "ctv_b56e530017e94c72bf16b8e0a48a52c4"
+      "playback_id": "ctv_66453616c5d3ba70dfb1801e9d502ff9"
     },
     {
       "id": "nantes-vs-nancy",
@@ -1475,7 +1528,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=48' (STATUS_SECOND_HALF, event 401876758)",
+        "ESPN espn-header=90'+4' (STATUS_SECOND_HALF, event 401876758)",
         "LiveScore livescore=FT (6, event 1794981)"
       ],
       "authority_independent_count": 1,
@@ -1486,11 +1539,11 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-09-07T19:09:13.347751+00:00",
       "authority_status": "LIVE",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=48' (STATUS_SECOND_HALF, event 401876758); LiveScore livescore=FT (6, event 1794981)"
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90'+4' (STATUS_SECOND_HALF, event 401876758); LiveScore livescore=FT (6, event 1794981)"
     },
     {
       "id": "halifax-wanderers-fc-vs-cavalry-fc",
@@ -1735,13 +1788,13 @@
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_1b5f3b24bcf449d2f93b98b59846ce6c",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "LiveScore livescore=NS (1, event 1735778)"
+        "LiveScore livescore=FT (6, event 1735778)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1753,9 +1806,10 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-07T19:09:13.347751+00:00"
+      "carried_forward_first_missed_at": "2026-09-07T19:09:13.347751+00:00",
+      "authority_finished_confirmations": 1
     },
     {
       "id": "bromley-vs-afc-wimbledon",
@@ -1801,7 +1855,7 @@
           "host": "tmaxapp.site",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_07ec848e801cf016394c40a6265b0c9d"
+          "playback_id": "ctv_1080d27384ae750e86f4517a8064bb69"
         }
       ],
       "channels": [
@@ -1903,7 +1957,7 @@
       "resolution_height": 1080,
       "start_time": "2026-09-07T19:00:00+00:00",
       "start_at": "2026-09-07T19:00:00+00:00",
-      "end_time": "2026-09-07T22:08:06+00:00",
+      "end_time": "2026-09-07T22:27:39+00:00",
       "end_time_source": "assumed",
       "competition": "League One",
       "fixture_id": "provider:bromley-vs-afc-wimbledon|league one|2026-09-07",
@@ -1925,24 +1979,13 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=45'+4' (STATUS_FIRST_HALF, event 401880872)",
+        "ESPN espn-header=75' (STATUS_SECOND_HALF, event 401880872)",
         "LiveScore livescore=FT (6, event 1802921)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=45'+4' (STATUS_FIRST_HALF, event 401880872); LiveScore livescore=FT (6, event 1802921)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=75' (STATUS_SECOND_HALF, event 401880872); LiveScore livescore=FT (6, event 1802921)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "provider_enriched": "streamed",
-      "provider_event_id": "bromley-vs-afc-wimbledon-2500756",
-      "artwork_candidates": [
-        "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8aEDKQgBVFHRDdtIYzggaQJI4ZAFgSCn2Gz6KMCr1s35elll6mtGBuYqIQQA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpm5huIAQAYwSHSHUATEEfUoQJEDFwaQIAhSZ8UXMGXhF5o501phXY0QggA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAksLogBKMNzAgQ3EABMdICLtwgUBy3wIUm1rmDLwi80SmBNaYR2NEQgA.webp"
-      ],
-      "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8aEDKQgBVFHRDdtIYzggaQJI4ZAFgSCn2Gz6KMCr1s35elll6mtGBuYqIQQA.webp",
-      "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpm5huIAQAYwSHSHUATEEfUoQJEDFwaQIAhSZ8UXMGXhF5o501phXY0QggA.webp",
-      "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAksLogBKMNzAgQ3EABMdICLtwgUBy3wIUm1rmDLwi80SmBNaYR2NEQgA.webp",
-      "provider_routing_hint": "live",
-      "playback_id": "ctv_a0a12310fded0506b89059391f913d94"
+      "playback_id": "ctv_8a86e37685ea4a6ee9ccd37a76c210ff"
     },
     {
       "id": "renate-vs-novara",
@@ -2063,7 +2106,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-09-07T19:37:18.366551+00:00",
       "authority_end_status": "FINISHED",
@@ -2078,7 +2121,7 @@
       "authority_event_ids": {
         "livescore": "1855267"
       },
-      "authority_finished_confirmations": 1,
+      "authority_finished_confirmations": 2,
       "end_pending": true,
       "end_pending_confirmations": 0,
       "ended_seen_at": "2026-09-07T21:08:49.400695+00:00"
@@ -2141,8 +2184,8 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_31664f56b5bb886ad7dafc7940f8ee82",
-              "resolution": "FHD",
-              "resolution_height": 1080,
+              "resolution": "4K",
+              "resolution_height": 2160,
               "stream_type": "hls"
             }
           ]
@@ -2169,11 +2212,11 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
+      "resolution": "4K",
+      "resolution_height": 2160,
       "start_time": "2026-09-07T19:15:00+00:00",
       "start_at": "2026-09-07T19:15:00+00:00",
-      "end_time": "2026-09-07T21:48:06+00:00",
+      "end_time": "2026-09-07T22:27:39+00:00",
       "end_time_source": "assumed",
       "competition": "Liga Portugal Betclic",
       "fixture_id": "provider:estoril-praia-vs-fc-arouca|liga portugal betclic|2026-09-07",
@@ -2188,42 +2231,20 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=32' (STATUS_FIRST_HALF, event 401885454)"
+        "ESPN espn-header=59' (STATUS_SECOND_HALF, event 401885454)",
+        "LiveScore livescore=FT (6, event 1816408)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401885454"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=59' (STATUS_SECOND_HALF, event 401885454); LiveScore livescore=FT (6, event 1816408)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "provider_enriched": "streamed",
-      "provider_event_id": "estoril-praia-vs-arouca-2513975",
-      "artwork_candidates": [
-        "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8Ver1YoQKOSG4g+IY1MP7jOkCR0FgSCn2Gz6KMCt1s35ellm6mtGBuYqIQQA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhzBhuIFKBAg2IdQBNc24yRAQQMEKYmEYwJn01swZeEXmjNTWqtFS6QA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpgAm-BmCTAkYbiD0rcIY8ZIhExxPAIUmfFFzBl4ReaIdNaYJ2NEQgA.webp"
-      ],
-      "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8Ver1YoQKOSG4g+IY1MP7jOkCR0FgSCn2Gz6KMCt1s35ellm6mtGBuYqIQQA.webp",
-      "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhzBhuIFKBAg2IdQBNc24yRAQQMEKYmEYwJn01swZeEXmjNTWqtFS6QA.webp",
-      "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpgAm-BmCTAkYbiD0rcIY8ZIhExxPAIUmfFFzBl4ReaIdNaYJ2NEQgA.webp",
-      "provider_routing_hint": "live",
-      "playback_id": "ctv_7466f0dea82b45c4aa8ae14da53a272d",
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
-      "lifecycle_protections": [
-        "authority_live",
-        "primary_playable",
-        "backup_playable"
-      ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-07T21:08:49.400695+00:00"
+      "playback_id": "ctv_31664f56b5bb886ad7dafc7940f8ee82"
     },
     {
       "id": "elche-vs-real-sociedad",
@@ -2269,7 +2290,7 @@
           "host": "otte.cache.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_6796bdc522daebd47d8812fe1960a38c"
+          "playback_id": "ctv_05260eba591b9d342e17e18281639828"
         }
       ],
       "channels": [
@@ -2371,7 +2392,7 @@
       "resolution_height": 720,
       "start_time": "2026-09-07T19:30:00+00:00",
       "start_at": "2026-09-07T19:30:00+00:00",
-      "end_time": "2026-09-07T22:08:06+00:00",
+      "end_time": "2026-09-07T22:27:39+00:00",
       "end_time_source": "assumed",
       "competition": "LaLiga",
       "fixture_id": "provider:elche-vs-real-sociedad|laliga|2026-09-07",
@@ -2386,19 +2407,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=18' (STATUS_FIRST_HALF, event 401882893)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401882893)",
+        "LiveScore livescore=FT (6, event 1810676)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401882893"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401882893); LiveScore livescore=FT (6, event 1810676)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2412,7 +2431,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxIgoAEx5g+IVdxDrdR1SjUhEiRhSZ8UXMGXhF5ou01pgHY0RCA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpgAmsaGrg5uICCD4hEJEDFwgUISyoIUmfFFzBl4ReaIdNaYJ2NEQgA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_50f2988d7383d427de6eb8b28a3e06fe"
+      "playback_id": "ctv_aa2524f8b412505dedc9eae9676ba1a3"
     },
     {
       "id": "corinthians-vs-cruzeiro",
@@ -2523,7 +2542,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vvuvps1473538042.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/upsvvu1473538059.png",
-      "playback_id": "ctv_da75acf2796ec4d9f4aaa0cbf9c9a5e1"
+      "playback_id": "ctv_ac9e67a1f339936d1053446726309bb9"
     },
     {
       "id": "portland-timbers-ii-vs-vancouver-whitecaps-ii",
@@ -2641,7 +2660,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-09-07T20:35:13.820570+00:00"
     },
@@ -2744,13 +2763,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401844103)"
+        "ESPN espn-header=30' (STATUS_FIRST_HALF, event 401844103)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2775,7 +2794,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-09-07T20:35:13.820570+00:00",
       "authority_status": "LIVE"
@@ -2861,11 +2880,11 @@
       "routing_changed_from": "upcoming",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/9rrdrn1740851540.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/o7p43b1766507803.png",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
       "end_pending": true,
-      "end_pending_confirmations": 1,
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending_confirmations": 2,
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
       "carried_forward_first_missed_at": "2026-09-07T21:08:49.400695+00:00"
     },
     {
@@ -2946,9 +2965,15 @@
         "livescore": "1876547"
       },
       "event_type": "today_match",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "END_PENDING",
       "allow_without_stream": true,
-      "routing_changed_from": "upcoming"
+      "routing_changed_from": "upcoming",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-09-07T21:28:06.279493+00:00"
     }
   ]
 }
