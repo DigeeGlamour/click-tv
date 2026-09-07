@@ -1,30 +1,34 @@
 {
-  "generated_at": "2026-09-07T18:58:59.037116+00:00",
+  "generated_at": "2026-09-07T19:04:14.586077+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
-    "fixtures": 80,
+    "fixtures": 82,
     "published_fixtures": 79,
-    "fixtures_with_verified_stream": 3,
-    "fixtures_with_zero_verified": 77,
-    "published_without_stream": 60,
+    "fixtures_with_verified_stream": 7,
+    "fixtures_with_zero_verified": 75,
+    "published_without_stream": 59,
     "fallback_available": 10,
     "targeted_fixtures": 24,
-    "targeted_attempts": 76,
-    "fixtures_with_a_first_link_time": 18,
-    "candidate_routes": 5,
-    "verified_routes": 4,
-    "failed_routes": 1,
-    "fixtures_touched_by_a_route_failure": 1,
-    "fixtures_left_with_nothing": 0,
-    "distinct_failure_codes": 1,
-    "unrecognised_candidate_groups": 1,
-    "unrecognised_failed_routes": 1
+    "targeted_attempts": 80,
+    "fixtures_with_a_first_link_time": 19,
+    "candidate_routes": 41,
+    "verified_routes": 12,
+    "failed_routes": 29,
+    "fixtures_touched_by_a_route_failure": 9,
+    "fixtures_left_with_nothing": 1,
+    "distinct_failure_codes": 3,
+    "unrecognised_candidate_groups": 3,
+    "unrecognised_failed_routes": 7
   },
   "failure_codes": {
-    "http_403": 2
+    "http_403": 29,
+    "browser_unreachable": 5,
+    "http_404": 2
   },
   "failure_code_fixtures": {
-    "http_403": 1
+    "http_403": 6,
+    "browser_unreachable": 4,
+    "http_404": 1
   },
   "fixtures": [
     {
@@ -35,13 +39,15 @@
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data",
+        "srhady-bingstream",
         "drmlive-fancode-mirror"
       ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 2,
-      "failed_stream_count": 1,
+      "candidate_stream_count": 15,
+      "verified_stream_count": 5,
+      "failed_stream_count": 10,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "browser_unreachable",
         "http_403"
       ],
       "fallback_available": true,
@@ -54,6 +60,59 @@
       "targeted": true
     },
     {
+      "fixture_id": "estoril-vs-arouca",
+      "fixture_key": "estoril-vs-arouca",
+      "fixture_name": "Estoril vs Arouca",
+      "recognised_fixture": true,
+      "source_id": "srhady-crichd-footy-live",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live",
+        "srhady-crichd-footy-live"
+      ],
+      "candidate_stream_count": 6,
+      "verified_stream_count": 0,
+      "failed_stream_count": 6,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403",
+        "http_404"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": true,
+      "target_attempt_count": 3,
+      "last_attempt_bucket": "2026-09-07T19:00Z",
+      "first_link_at": "",
+      "targeted": true
+    },
+    {
+      "fixture_id": "club-guarani-vs-deportivo-recoleta",
+      "fixture_key": "club-guarani-vs-deportivo-recoleta",
+      "fixture_name": "Club Guarani vs Deportivo Recoleta",
+      "recognised_fixture": true,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "candidate_stream_count": 6,
+      "verified_stream_count": 2,
+      "failed_stream_count": 4,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": true,
+      "target_attempt_count": 6,
+      "last_attempt_bucket": "2026-09-07T19:00Z",
+      "first_link_at": "",
+      "targeted": true
+    },
+    {
       "fixture_id": "detroit-tigers-vs-minnesota-twins",
       "fixture_key": "detroit-tigers-vs-minnesota-twins",
       "fixture_name": "Detroit Tigers Vs Minnesota Twins",
@@ -62,9 +121,35 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 1,
+      "candidate_stream_count": 3,
       "verified_stream_count": 0,
-      "failed_stream_count": 1,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "alcione-vs-treviso",
+      "fixture_key": "alcione-vs-treviso",
+      "fixture_name": "Alcione vs Treviso",
+      "recognised_fixture": false,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 1,
+      "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_403"
@@ -77,6 +162,181 @@
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
+    },
+    {
+      "fixture_id": "hfx-wanderers-fc-vs-cavalry-fc",
+      "fixture_key": "hfx-wanderers-fc-vs-cavalry-fc",
+      "fixture_name": "HFX Wanderers FC vs Cavalry FC",
+      "recognised_fixture": true,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 1,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "pro-vercelli-vs-folgore-caratese",
+      "fixture_key": "pro-vercelli-vs-folgore-caratese",
+      "fixture_name": "PRO Vercelli vs Folgore Caratese",
+      "recognised_fixture": true,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 1,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": true,
+      "target_attempt_count": 6,
+      "last_attempt_bucket": "2026-09-07T19:00Z",
+      "first_link_at": "",
+      "targeted": true
+    },
+    {
+      "fixture_id": "renate-vs-novara",
+      "fixture_key": "renate-vs-novara",
+      "fixture_name": "Renate vs Novara",
+      "recognised_fixture": true,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 1,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 6,
+      "last_attempt_bucket": "2026-09-07T19:00Z",
+      "first_link_at": "2026-09-07T19:03:50.319938+00:00",
+      "targeted": true
+    },
+    {
+      "fixture_id": "trento-vs-lecco",
+      "fixture_key": "trento-vs-lecco",
+      "fixture_name": "Trento vs Lecco",
+      "recognised_fixture": false,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 1,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "estoril-praia-vs-fc-arouca",
+      "fixture_key": "estoril-praia-vs-fc-arouca",
+      "fixture_name": "Estoril Praia Vs FC Arouca",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 1,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "guaran-vs-recoleta-fc",
+      "fixture_key": "guaran-vs-recoleta-fc",
+      "fixture_name": "Guaraní Vs Recoleta FC",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 1,
+      "verified_stream_count": 0,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "halifax-wanderers-fc-vs-cavalry-fc",
+      "fixture_key": "halifax-wanderers-fc-vs-cavalry-fc",
+      "fixture_name": "Halifax Wanderers FC Vs Cavalry FC",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 1,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 1,
+      "last_attempt_bucket": "2026-09-07T18:35Z",
+      "first_link_at": "2026-09-07T18:38:42.825795+00:00",
+      "targeted": true
     },
     {
       "fixture_id": "provider:aek-athens-u19-vs-lask-u19|uefa youth league|2026-09-08",
@@ -703,29 +963,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "provider:club-guarani-vs-deportivo-recoleta|division profesional clausura|2026-09-07",
-      "fixture_key": "club-guarani-vs-deportivo-recoleta",
-      "fixture_name": "Club Guarani vs Deportivo Recoleta",
-      "recognised_fixture": true,
-      "source_id": "srhady-bingstream",
-      "source_ids": [
-        "srhady-bingstream"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": true,
-      "target_attempt_count": 5,
-      "last_attempt_bucket": "2026-09-07T18:55Z",
-      "first_link_at": "",
-      "targeted": true
-    },
-    {
       "fixture_id": "provider:corinthians-vs-cruzeiro|brasileir o s rie a1 feminino|2026-09-07",
       "fixture_key": "corinthians-vs-cruzeiro",
       "fixture_name": "Corinthians Vs Cruzeiro",
@@ -992,54 +1229,6 @@
       "targeted": true
     },
     {
-      "fixture_id": "estoril-praia-vs-fc-arouca",
-      "fixture_key": "estoril-praia-vs-fc-arouca",
-      "fixture_name": "Estoril Praia Vs FC Arouca",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 1,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "provider:estoril-vs-arouca|primeira liga|2026-09-07",
-      "fixture_key": "estoril-vs-arouca",
-      "fixture_name": "Estoril vs Arouca",
-      "recognised_fixture": true,
-      "source_id": "srhady-bingstream",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live",
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": true,
-      "target_attempt_count": 2,
-      "last_attempt_bucket": "2026-09-07T18:55Z",
-      "first_link_at": "",
-      "targeted": true
-    },
-    {
       "fixture_id": "provider:fc-isloch-minsk-r-vs-arsenal|premier league|2026-09-07",
       "fixture_key": "fc-isloch-minsk-r-vs-arsenal",
       "fixture_name": "FC Isloch Minsk R vs Arsenal",
@@ -1232,29 +1421,6 @@
       "target_attempt_count": 1,
       "last_attempt_bucket": "2026-09-07T16:35Z",
       "first_link_at": "2026-09-07T16:37:53.348083+00:00",
-      "targeted": true
-    },
-    {
-      "fixture_id": "halifax-wanderers-fc-vs-cavalry-fc",
-      "fixture_key": "halifax-wanderers-fc-vs-cavalry-fc",
-      "fixture_name": "Halifax Wanderers FC Vs Cavalry FC",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 1,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 1,
-      "last_attempt_bucket": "2026-09-07T18:35Z",
-      "first_link_at": "2026-09-07T18:38:42.825795+00:00",
       "targeted": true
     },
     {
@@ -1620,29 +1786,6 @@
       "targeted": true
     },
     {
-      "fixture_id": "provider:pro-vercelli-vs-folgore-caratese|serie c girone a|2026-09-07",
-      "fixture_key": "pro-vercelli-vs-folgore-caratese",
-      "fixture_name": "PRO Vercelli vs Folgore Caratese",
-      "recognised_fixture": true,
-      "source_id": "srhady-bingstream",
-      "source_ids": [
-        "srhady-bingstream"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": true,
-      "target_attempt_count": 5,
-      "last_attempt_bucket": "2026-09-07T18:55Z",
-      "first_link_at": "",
-      "targeted": true
-    },
-    {
       "fixture_id": "provider:pakistan-vs-hong-kong-c-women|women asia cup|2026-09-07",
       "fixture_key": "pakistan-women-vs-hong-kong-c",
       "fixture_name": "Pakistan Women Vs Hong Kong C",
@@ -1756,29 +1899,6 @@
       "published_without_stream": true,
       "target_attempt_count": 7,
       "last_attempt_bucket": "2026-09-07T18:50Z",
-      "first_link_at": "",
-      "targeted": true
-    },
-    {
-      "fixture_id": "provider:renate-vs-novara|serie c girone a|2026-09-07",
-      "fixture_key": "renate-vs-novara",
-      "fixture_name": "Renate vs Novara",
-      "recognised_fixture": true,
-      "source_id": "srhady-bingstream",
-      "source_ids": [
-        "srhady-bingstream"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": true,
-      "target_attempt_count": 5,
-      "last_attempt_bucket": "2026-09-07T18:55Z",
       "first_link_at": "",
       "targeted": true
     },
