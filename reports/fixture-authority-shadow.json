@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-07T22:47:40.461658+00:00",
+  "generated_at": "2026-09-07T23:07:40.092589+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,10 +12,13 @@
       "requests_ok": 6,
       "fixtures": 1120,
       "unknown_statuses": [
-        "10|HT",
-        "2|45+2'",
+        "2|1'",
+        "2|6'",
+        "2|7'",
         "3|46'",
-        "3|55'",
+        "3|48'",
+        "3|50'",
+        "3|78'",
         "44|ToFi"
       ],
       "attempts": [
@@ -109,48 +112,51 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 10,
-    "upcoming": 106,
-    "fixtures": 116,
+    "upcoming": 108,
+    "fixtures": 118,
     "verdicts": {
+      "CONFLICT": 8,
       "UNVERIFIED": 46,
-      "CONFLICT": 7,
-      "VERIFIED": 63
+      "VERIFIED": 64
     },
-    "verified": 63,
+    "verified": 64,
     "partial_authority": 0,
     "unverified": 46,
-    "conflict": 7,
+    "conflict": 8,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 61,
-        "matched": 55
+        "matched": 56,
+        "unmatched": 62
       },
       "livescore": {
-        "unmatched": 54,
-        "matched": 62
+        "unmatched": 55,
+        "matched": 63
       }
     },
     "matched_by_two_independent_authorities": 47,
-    "authority_agreements": 47,
+    "authority_agreements": 45,
     "authority_disagreements": 0,
-    "card_status_conflicts": 6,
+    "card_status_conflicts": 7,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 2,
+      "card says LIVE, authority says UPCOMING": 3,
       "card says LIVE, authority says FINISHED": 4,
       "kickoff": 1
     },
-    "identity_near_misses": 15,
+    "identity_near_misses": 17,
     "independent_authority_count_distribution": {
       "0": 46,
-      "1": 23,
+      "1": 25,
       "2": 47
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
-        "2|45+2'",
+        "2|1'",
+        "2|6'",
+        "2|7'",
         "3|46'",
-        "3|55'",
+        "3|48'",
+        "3|50'",
+        "3|78'",
         "44|ToFi"
       ],
       "espn-header": []
@@ -230,6 +236,14 @@
       "theirs": "platense"
     },
     {
+      "fixture": "Fluminense vs Platense",
+      "authority": "livescore",
+      "authority_name": "Fluminense vs Club Atletico Platense",
+      "agreed_side": "fluminense",
+      "ours": "platense",
+      "theirs": "atletico platense"
+    },
+    {
       "fixture": "Guyana Amazon Warriors vs Antigua And Barbuda Falcons",
       "authority": "livescore",
       "authority_name": "Guyana Amazon Warriors vs Antigua & Barbuda Falcons",
@@ -276,44 +290,17 @@
       "agreed_side": "south liverpool",
       "ours": "prestwich heys",
       "theirs": "prestwich keys"
+    },
+    {
+      "fixture": "Santa Fe vs Vasco DA Gama",
+      "authority": "espn-header",
+      "authority_name": "Independiente Santa Fe vs Vasco da Gama",
+      "agreed_side": "vasco da gama",
+      "ours": "santa fe",
+      "theirs": "independiente santa fe"
     }
   ],
   "fixtures": [
-    {
-      "fixture_id": "provider:corinthians-vs-cruzeiro|brasileir o s rie a1 feminino|2026-09-07",
-      "card_id": "corinthians-vs-cruzeiro",
-      "name": "Corinthians Vs Cruzeiro",
-      "competition": "Brasileirão Série A1, Feminino",
-      "kickoff": "2026-09-07T20:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
     {
       "fixture_id": "provider:llaneros-fc-vs-deportes-tolima|primera a|2026-09-07",
       "card_id": "llaneros-fc-vs-deportes-tolima",
@@ -451,9 +438,9 @@
           "competition_id": "155",
           "kickoff": "2026-09-07T23:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "6'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "26",
           "format": "",
@@ -468,173 +455,9 @@
       "conflict_reasons": [
         "card says LIVE, authority says UPCOMING"
       ],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": true,
       "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:pakistan-vs-hong-kong-china-11-match|2026-09-07",
-      "card_id": "cricket-highlights-womens-t20-asia-cup-2026-pakistan-vs-hong-kong-china-11th-match",
-      "name": "Cricket Highlights Women's T20 Asia Cup 2026 Pakistan vs Hong Kong, China 11th Match",
-      "competition": "",
-      "kickoff": "2026-09-07T20:48:06+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:elche-vs-real-sociedad|laliga|2026-09-07",
-      "card_id": "elche-vs-real-sociedad",
-      "name": "Elche Vs Real Sociedad",
-      "competition": "LaLiga",
-      "kickoff": "2026-09-07T19:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "401882893",
-          "upstream_family": "ESPN",
-          "name": "Elche vs Real Sociedad",
-          "home": "Elche",
-          "away": "Real Sociedad",
-          "home_team_id": "3751",
-          "away_team_id": "89",
-          "competition": "Spanish LALIGA",
-          "competition_id": "740",
-          "kickoff": "2026-09-07T19:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:740~e:401882893~c:401882893"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "1810676",
-          "upstream_family": "LiveScore",
-          "name": "Elche vs Real Sociedad",
-          "home": "Elche",
-          "away": "Real Sociedad",
-          "home_team_id": "3622",
-          "away_team_id": "4169",
-          "competition": "LaLiga",
-          "competition_id": "75",
-          "kickoff": "2026-09-07T19:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "4",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:pakistan-vs-hong-kong-c-women|women asia cup|2026-09-07",
-      "card_id": "pakistan-women-vs-hong-kong-c",
-      "name": "Pakistan Women Vs Hong Kong C",
-      "competition": "Womens Asia Cup",
-      "kickoff": "2026-09-07T14:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Pakistan W vs Hong Kong W",
-              "event_id": "1861450",
-              "agreed_side": "pakistan",
-              "ours": "hong kong c",
-              "theirs": "hong kong"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -643,9 +466,9 @@
       "name": "Deportes Limache vs Cobresal",
       "competition": "Chilean Primera Division",
       "kickoff": "2026-09-07T23:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
@@ -700,9 +523,9 @@
           "competition_id": "1024",
           "kickoff": "2026-09-07T23:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "7'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "22",
           "format": "",
@@ -714,10 +537,126 @@
         "LiveScore"
       ],
       "independent_authority_count": 2,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:pakistan-vs-hong-kong-china-11-match|2026-09-07",
+      "card_id": "cricket-highlights-womens-t20-asia-cup-2026-pakistan-vs-hong-kong-china-11th-match",
+      "name": "Cricket Highlights Women's T20 Asia Cup 2026 Pakistan vs Hong Kong, China 11th Match",
+      "competition": "",
+      "kickoff": "2026-09-07T20:48:06+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "upstream_families": [
+        "PrimeVideo"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:pakistan-vs-hong-kong-c-women|women asia cup|2026-09-07",
+      "card_id": "pakistan-women-vs-hong-kong-c",
+      "name": "Pakistan Women Vs Hong Kong C",
+      "competition": "Womens Asia Cup",
+      "kickoff": "2026-09-07T14:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Pakistan W vs Hong Kong W",
+              "event_id": "1861450",
+              "agreed_side": "pakistan",
+              "ours": "hong kong c",
+              "theirs": "hong kong"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:corinthians-vs-cruzeiro|brasileir o s rie a1 feminino|2026-09-07",
+      "card_id": "corinthians-vs-cruzeiro",
+      "name": "Corinthians Vs Cruzeiro",
+      "competition": "Brasileirão Série A1, Feminino",
+      "kickoff": "2026-09-07T20:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -788,6 +727,91 @@
           "status": "FINISHED",
           "sport": "football",
           "round": "Regular Season",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:elche-vs-real-sociedad|laliga|2026-09-07",
+      "card_id": "elche-vs-real-sociedad",
+      "name": "Elche Vs Real Sociedad",
+      "competition": "LaLiga",
+      "kickoff": "2026-09-07T19:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "event_id": "401882893",
+          "upstream_family": "ESPN",
+          "name": "Elche vs Real Sociedad",
+          "home": "Elche",
+          "away": "Real Sociedad",
+          "home_team_id": "3751",
+          "away_team_id": "89",
+          "competition": "Spanish LALIGA",
+          "competition_id": "740",
+          "kickoff": "2026-09-07T19:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:740~e:401882893~c:401882893"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "event_id": "1810676",
+          "upstream_family": "LiveScore",
+          "name": "Elche vs Real Sociedad",
+          "home": "Elche",
+          "away": "Real Sociedad",
+          "home_team_id": "3622",
+          "away_team_id": "4169",
+          "competition": "LaLiga",
+          "competition_id": "75",
+          "kickoff": "2026-09-07T19:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "4",
           "format": "",
           "gender": ""
         }
@@ -1361,11 +1385,11 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "srhady-bingstream",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1509,11 +1533,11 @@
         "sportlive-fancode-backup",
         "srhady-tapmad-bd",
         "srhady-bingstream",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1794,11 +1818,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1889,11 +1913,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1930,11 +1954,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3115,11 +3139,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3919,13 +3943,14 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4183,12 +4208,15 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
+        "AXS-Bing",
         "SM-Aggregate"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "unmatched",
@@ -4227,6 +4255,79 @@
       },
       "authority_upstreams": [
         "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:fluminense-vs-platense|conmebol libertadores|2026-09-08",
+      "card_id": "fluminense-vs-platense",
+      "name": "Fluminense vs Platense",
+      "competition": "CONMEBOL Libertadores",
+      "kickoff": "2026-09-08T22:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "event_id": "401912518",
+          "upstream_family": "ESPN",
+          "name": "Fluminense vs Platense",
+          "home": "Fluminense",
+          "away": "Platense",
+          "home_team_id": "3445",
+          "away_team_id": "7764",
+          "competition": "CONMEBOL Libertadores",
+          "competition_id": "783",
+          "kickoff": "2026-09-08T22:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Tue, September 8th at 6:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:783~e:401912518~c:401912518"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Fluminense vs Club Atletico Platense",
+              "event_id": "1869522",
+              "agreed_side": "fluminense",
+              "ours": "platense",
+              "theirs": "atletico platense"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
       ],
       "independent_authority_count": 1,
       "conflict_reasons": [],
@@ -4333,21 +4434,24 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "srhady-axsports-live",
         "sm-fancode",
         "sportlive-fancode-backup",
         "srhady-tapmad-bd",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
+        "srhady-bingstream",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
+        "AXS-Bing",
         "FanCode",
         "Tapmad",
         "Willow"
       ],
-      "independent_witness_count": 3,
+      "independent_witness_count": 4,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -4452,11 +4556,11 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4963,11 +5067,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5175,11 +5279,11 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "srhady-bingstream",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -5516,11 +5620,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5557,11 +5661,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5768,11 +5872,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5809,11 +5913,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5850,11 +5954,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6058,11 +6162,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6549,11 +6653,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6620,11 +6724,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6644,6 +6748,72 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:santa-fe-vs-vasco-da-gama|conmebol sudamericana|2026-09-08",
+      "card_id": "santa-fe-vs-vasco-da-gama",
+      "name": "Santa Fe vs Vasco DA Gama",
+      "competition": "CONMEBOL Sudamericana",
+      "kickoff": "2026-09-08T22:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Independiente Santa Fe vs Vasco da Gama",
+              "event_id": "401913960",
+              "agreed_side": "vasco da gama",
+              "ours": "santa fe",
+              "theirs": "independiente santa fe"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "event_id": "1880919",
+          "upstream_family": "LiveScore",
+          "name": "Santa Fe vs Vasco da Gama",
+          "home": "Santa Fe",
+          "away": "Vasco da Gama",
+          "home_team_id": "8330",
+          "away_team_id": "4780",
+          "competition": "Quarter-Finals",
+          "competition_id": "25416",
+          "kickoff": "2026-09-08T22:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "Quarter Finals",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -6913,11 +7083,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6988,9 +7158,10 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -7920,19 +8091,20 @@
       "verdict": "VERIFIED"
     },
     {
-      "fixture_id": "provider:orebro-sk-vs-ostersunds-fk|superettan|2026-09-07",
-      "card_id": "orebro-sk-vs-ostersunds-fk",
-      "name": "Orebro SK vs Ostersunds FK",
-      "competition": "Superettan",
-      "kickoff": "2026-09-07T17:05:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
+      "fixture_id": "provider:warriors-vs-falcons|cpl|2026-09-08",
+      "card_id": "warriors-vs-falcons",
+      "name": "Warriors vs Falcons",
+      "competition": "CPL",
+      "kickoff": "2026-09-08T23:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing"
@@ -7943,16 +8115,7 @@
           "result": "unmatched"
         },
         "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Orebro SK vs Oestersunds FK",
-              "event_id": "1718361",
-              "agreed_side": "orebro",
-              "ours": "ostersunds",
-              "theirs": "oestersunds"
-            }
-          ]
+          "result": "unmatched"
         }
       },
       "authority_upstreams": [],
