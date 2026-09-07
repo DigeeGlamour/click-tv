@@ -408,12 +408,22 @@ class RealIncidentReplay(unittest.TestCase):
                          "Racing Club Vs Atlético Tucumán"):
             self.assertNotIn(spelling.encode().decode("unicode_escape"), held)
 
-    def test_the_fold_finds_nothing_left_to_do(self):
-        """Which is the point: no duplicate is created and then cleaned up."""
+    def test_the_fold_finds_only_what_the_hold_cannot_ask_about(self):
+        """The hold asks `same_fixture`, which is pairwise; the fold's
+        short-form rule has to count its candidates across the whole list and
+        so cannot be asked one pair at a time.
+
+        On this data that is exactly one pair - `Baltika vs Lokomotiv` beside
+        `Baltika Kaliningrad Vs Lokomotiv Moscow`, which this replay recorded as
+        an open finding when it was written and which the fold now settles.
+        Everything else the hold already declined to add.
+        """
         kept, _ = self.replay()
         folded, rows = fixture_dedupe.fold(kept, lambda home, away, date: "")
-        self.assertEqual(rows, [])
-        self.assertEqual(len(folded), 139)
+        self.assertEqual([row["rule"] for row in rows],
+                         ["both clubs named more briefly, one candidate"])
+        self.assertEqual(rows[0]["folded"], "Baltika vs Lokomotiv")
+        self.assertEqual(len(folded), 138)
 
     def test_no_source_id_and_no_stream_url_is_lost_by_holding(self):
         kept, _ = self.replay()

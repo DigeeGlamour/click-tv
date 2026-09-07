@@ -546,6 +546,86 @@ def _absorb_timeless(kept: List[Dict[str, Any]]) -> List[Dict[str, str]]:
     return report
 
 
+def _shorter_side(short: str, long_: str) -> bool:
+    """Whether `short` names the same club as `long_`, more briefly.
+
+    A STRICT subset of the tokens, so "Tridents" is a shorter way of writing
+    "Barbados Tridents" and "Nevis Patriots" of "St Kitts and Nevis Patriots" -
+    and "United" is not a shorter way of writing "City", because neither
+    contains the other.
+    """
+    left, right = set(short.split()), set(long_.split())
+    return bool(left) and left < right
+
+
+def _absorb_short_forms(kept: List[Dict[str, Any]]) -> List[Dict[str, str]]:
+    """Fold a card that names BOTH clubs more briefly into the one it can only be.
+
+    `same_fixture` needs one side to agree exactly before it will accept the
+    other as a spelling - the anchor that keeps `Manchester United vs Arsenal`
+    away from `Manchester City vs Arsenal`, where the anchor is Arsenal and
+    "united" is not a spelling of "city". That leaves a gap, and on 2026-09-06
+    it was six real pairs wide:
+
+        Tridents vs Kings                  / Barbados Tridents vs Saint Lucia Kings
+        Warriors vs Nevis Patriots         / Guyana Amazon Warriors Vs St Kitts...
+        Baltika vs Lokomotiv               / Baltika Kaliningrad Vs Lokomotiv Moscow
+        Oviedo vs Burgos                   / Real Oviedo Vs Burgos Club de Futbol
+        Birmingham City Vs Wolverhampton   / Birmingham City F C vs Wolverhampton...
+        (and one more copy of the Warriors pair at another kickoff)
+
+    Both sides shorter, never one - one side shorter is the anchor rule's own
+    business and it already answers it. The tokens must be a strict SUBSET,
+    which "united" and "city" are not of each other, and the kickoffs must
+    match on the ordinary rule.
+
+    And exactly one candidate, for the reason `_absorb_timeless` gives: with
+    two long cards to choose from, "Warriors vs Kings" is a question about
+    which of them the broadcaster meant, and a question stays two cards.
+
+    Audited over 57 publishes and 8152 published cards: six pairs related,
+    every one of them the same match, and nothing else.
+    """
+    report: List[Dict[str, str]] = []
+    for item in list(kept):
+        short = sides(item)
+        if not short:
+            continue
+        matches = []
+        for other in kept:
+            if other is item:
+                continue
+            long_ = sides(other)
+            if not long_ or not kickoff_matches(item, other):
+                continue
+            module = _identity_module()
+            if module is not None:
+                try:
+                    if not module.genders_compatible(item, other):
+                        continue
+                except Exception:  # noqa: BLE001
+                    pass
+            straight = (_shorter_side(short[0], long_[0])
+                        and _shorter_side(short[1], long_[1]))
+            crossed = (_shorter_side(short[0], long_[1])
+                       and _shorter_side(short[1], long_[0]))
+            if straight or crossed:
+                matches.append(other)
+        if len(matches) != 1:
+            continue
+        keeper = matches[0]
+        _absorb(keeper, item)
+        kept.remove(item)
+        report.append({
+            "kept": str(keeper.get("name") or "")[:70],
+            "folded": str(item.get("name") or "")[:70],
+            "kickoff": _kickoff(keeper),
+            "home_away_corrected": "",
+            "rule": "both clubs named more briefly, one candidate",
+        })
+    return report
+
+
 def fold(items: List[Dict[str, Any]],
          home_lookup: Optional[Any] = None
          ) -> Tuple[List[Dict[str, Any]], List[Dict[str, str]]]:
@@ -564,6 +644,10 @@ def fold(items: List[Dict[str, Any]],
     # may live only on the card that was absorbed. Read before, not after.
     working = [item for item in items if isinstance(item, dict)]
     report.extend(_absorb_timeless(working))
+    # Then the short-form pass, for the same reason and in the same shape: it
+    # needs to count its candidates across the whole list, which a pairwise
+    # predicate cannot do. `same_fixture` stays the narrow rule it was.
+    report.extend(_absorb_short_forms(working))
 
     for item in working:
         if not isinstance(item, dict):

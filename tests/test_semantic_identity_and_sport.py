@@ -441,6 +441,87 @@ class AnApostropheJoinsAWordItDoesNotSeparateOne(unittest.TestCase):
                          "bayer 04 leverkusen")
 
 
+class BothClubsNamedMoreBriefly(unittest.TestCase):
+    """`Tridents vs Kings` is `Barbados Tridents vs Saint Lucia Kings`.
+
+    `same_fixture` needs one side to agree EXACTLY before it accepts the other
+    as a spelling - the anchor that keeps `Manchester United vs Arsenal` away
+    from `Manchester City vs Arsenal`. Where a feed shortens BOTH clubs there is
+    no anchor, and on 2026-09-06 that gap was six real pairs wide, two of them
+    live on Today Match at the same moment.
+
+    A strict token subset, both sides, the ordinary kickoff rule, and exactly
+    one candidate - because with two long cards to choose from, `Warriors vs
+    Kings` is a question about which the broadcaster meant.
+    """
+
+    def card(self, name, kickoff="2026-09-06T22:30:00+00:00"):
+        return {"id": name, "name": name, "start_time": kickoff,
+                "competition": "Test League"}
+
+    def fold(self, *names):
+        cards = [self.card(n) if isinstance(n, str) else self.card(*n)
+                 for n in names]
+        kept, rows = fixture_dedupe.fold(cards, lambda home, away, date: "")
+        return kept, rows
+
+    def test_the_pair_that_was_live_on_the_site(self):
+        kept, rows = self.fold(("Tridents vs Kings", "2026-09-06T23:00:00+00:00"),
+                               "Barbados Tridents vs Saint Lucia Kings")
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(rows[0]["rule"],
+                         "both clubs named more briefly, one candidate")
+
+    def test_a_middle_word_dropped_counts_too(self):
+        kept, _ = self.fold(
+            ("Warriors vs Nevis Patriots", "2026-09-06T19:00:00+00:00"),
+            ("Guyana Amazon Warriors Vs St Kitts and Nevis Patriots",
+             "2026-09-06T19:00:00+00:00"))
+        self.assertEqual(len(kept), 1)
+
+    def test_the_city_that_is_not_a_spelling_of_united(self):
+        kept, _ = self.fold("Manchester United vs Arsenal",
+                            "Manchester City vs Arsenal")
+        self.assertEqual(len(kept), 2)
+
+    def test_two_candidates_is_a_question_and_stays_two_cards(self):
+        kept, _ = self.fold("Warriors vs Kings",
+                            "Guyana Amazon Warriors vs Saint Lucia Kings",
+                            "Barbados Warriors vs Jamaica Kings")
+        self.assertEqual(len(kept), 3)
+
+    def test_a_different_kickoff_is_a_different_fixture(self):
+        kept, _ = self.fold(("Tridents vs Kings", "2026-09-07T10:00:00+00:00"),
+                            "Barbados Tridents vs Saint Lucia Kings")
+        self.assertEqual(len(kept), 2)
+
+    def test_one_side_shorter_is_left_to_the_anchor_rule(self):
+        """Not this rule's business, and already answered: `Sevilla FC` and
+        `Sevilla` anchor on the exact side and the club-form list does the
+        rest."""
+        self.assertFalse(fixture_dedupe._shorter_side("kings", "kings"))
+        self.assertTrue(fixture_dedupe._shorter_side("kings", "saint lucia kings"))
+        self.assertFalse(fixture_dedupe._shorter_side("saint lucia kings", "kings"))
+
+    def test_a_men_and_a_women_fixture_are_still_two(self):
+        kept, _ = self.fold("Thorns vs Spirit",
+                            "Portland Thorns W vs Washington Spirit W")
+        self.assertEqual(len(kept), 2, "gender was crossed by the short form")
+
+    def test_folding_costs_no_source_and_no_stream(self):
+        short = self.card("Tridents vs Kings")
+        short.update(source_ids=["a"],
+                     channels=[{"name": "A", "url": "http://a.test/1.m3u8"}])
+        long_ = self.card("Barbados Tridents vs Saint Lucia Kings")
+        long_.update(source_ids=["b"],
+                     channels=[{"name": "B", "url": "http://b.test/2.m3u8"}])
+        kept, _ = fixture_dedupe.fold([short, long_], lambda h, a, d: "")
+        self.assertEqual(len(kept), 1)
+        self.assertEqual(set(kept[0]["source_ids"]), {"a", "b"})
+        urls = {c.get("url") for c in kept[0]["channels"]}
+        self.assertEqual(urls, {"http://a.test/1.m3u8", "http://b.test/2.m3u8"})
+
+
 class TheClubFormListGrewOnEvidence(unittest.TestCase):
     """Three abbreviations, each found by the same dataset-wide sweep.
 
