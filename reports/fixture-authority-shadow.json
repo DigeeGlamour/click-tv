@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-07T12:54:49.838959+00:00",
+  "generated_at": "2026-09-07T13:06:42.392368+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,6 +12,8 @@
       "requests_ok": 6,
       "fixtures": 1115,
       "unknown_statuses": [
+        "2|5'",
+        "2|6'",
         "44|ToFi"
       ],
       "attempts": [
@@ -104,50 +106,60 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 1,
-    "upcoming": 90,
-    "fixtures": 91,
+    "today_match": 2,
+    "upcoming": 91,
+    "fixtures": 93,
     "verdicts": {
-      "CONFLICT": 2,
+      "PARTIAL_AUTHORITY": 1,
       "UNVERIFIED": 42,
-      "VERIFIED": 47
+      "CONFLICT": 2,
+      "VERIFIED": 48
     },
-    "verified": 47,
-    "partial_authority": 0,
+    "verified": 48,
+    "partial_authority": 1,
     "unverified": 42,
     "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 61,
-        "matched": 30
+        "unmatched": 62,
+        "matched": 31
       },
       "livescore": {
-        "matched": 46,
-        "unmatched": 45
+        "matched": 47,
+        "unmatched": 46
       }
     },
     "matched_by_two_independent_authorities": 27,
     "authority_agreements": 27,
     "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1,
-      "kickoff": 1
+      "kickoff": 2
     },
-    "identity_near_misses": 16,
+    "identity_near_misses": 18,
     "independent_authority_count_distribution": {
       "0": 42,
-      "1": 22,
+      "1": 24,
       "2": 27
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "2|5'",
+        "2|6'",
         "44|ToFi"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Pakistan Women Vs Hong Kong C",
+      "authority": "livescore",
+      "authority_name": "Pakistan W vs Hong Kong W",
+      "agreed_side": "pakistan",
+      "ours": "hong kong c",
+      "theirs": "hong kong"
+    },
     {
       "fixture": "Wieczysta Kraków Vs Zagłębie Lubin",
       "authority": "livescore",
@@ -275,6 +287,14 @@
       "agreed_side": "ruch chorzow",
       "ours": "unia skierniewice",
       "theirs": "skierniewice"
+    },
+    {
+      "fixture": "Çaykur Rizespor Vs Alanyaspor",
+      "authority": "livescore",
+      "authority_name": "Rizespor vs Alanyaspor",
+      "agreed_side": "alanyaspor",
+      "ours": "caykur rizespor",
+      "theirs": "rizespor"
     }
   ],
   "fixtures": [
@@ -315,9 +335,9 @@
           "competition_id": "1176",
           "kickoff": "2026-09-07T13:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "6'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "1",
           "format": "",
@@ -328,13 +348,96 @@
         "LiveScore"
       ],
       "independent_authority_count": 1,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:fazilka-falcons-vs-amritsar-soormas|sher e punjab t20 2026|2026-09-07",
+      "card_id": "fazilka-falcons-vs-amritsar-soormas",
+      "name": "Fazilka Falcons vs Amritsar Soormas",
+      "competition": "Sher-E-Punjab T20, 2026",
+      "kickoff": "2026-09-07T13:30:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:pakistan-vs-hong-kong-c-women|women asia cup|2026-09-07",
+      "card_id": "pakistan-women-vs-hong-kong-c",
+      "name": "Pakistan Women Vs Hong Kong C",
+      "competition": "Womens Asia Cup",
+      "kickoff": "2026-09-07T14:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Pakistan W vs Hong Kong W",
+              "event_id": "1861450",
+              "agreed_side": "pakistan",
+              "ours": "hong kong c",
+              "theirs": "hong kong"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
     },
     {
       "fixture_id": "provider:wieczysta-kraków-vs-zagłębie-lubin|ekstraklasa|2026-09-07",
@@ -378,6 +481,65 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:aek-athens-u19-vs-lask-u19|uefa youth league|2026-09-08",
+      "card_id": "aek-athens-u19-vs-lask-u19",
+      "name": "AEK Athens U19 vs LASK U19",
+      "competition": "UEFA Youth League",
+      "kickoff": "2026-09-08T09:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "kickoff_lifted",
+          "event_id": "1886554",
+          "upstream_family": "LiveScore",
+          "name": "AEK Athens U19 vs LASK U19",
+          "home": "AEK Athens U19",
+          "away": "LASK U19",
+          "home_team_id": "82089",
+          "away_team_id": "414047",
+          "competition": "Champions League Path",
+          "competition_id": "109",
+          "kickoff": "2026-09-08T13:00:00+00:00",
+          "kickoff_delta_minutes": 240.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "conflict_reasons": [
+        "kickoff: ours 2026-09-08T09:00, livescore 2026-09-08T13:00 (+240.0 min)"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT",
       "tab": "upcoming"
     },
     {
@@ -430,10 +592,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -591,62 +753,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:al-ittihad-alexandria-vs-asyut-petroleum|egyptian premier league|2026-09-07",
-      "card_id": "al-ittihad-alexandria-vs-asyut-petroleum",
-      "name": "Al Ittihad Alexandria Vs Asyut Petroleum",
-      "competition": "Egyptian Premier League",
-      "kickoff": "2026-09-07T14:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "1857503",
-          "upstream_family": "LiveScore",
-          "name": "Al-Ittihad Alexandria vs Asyut Petroleum",
-          "home": "Al-Ittihad Alexandria",
-          "away": "Asyut Petroleum",
-          "home_team_id": "4165",
-          "away_team_id": "237796",
-          "competition": "Premier League",
-          "competition_id": "94",
-          "kickoff": "2026-09-07T14:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "4",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:al-khaleej-vs-al-riyadh|saudi pro league|2026-09-07",
       "card_id": "al-khaleej-vs-al-riyadh",
       "name": "Al Khaleej Vs Al Riyadh",
@@ -660,8 +766,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -747,10 +853,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -788,10 +894,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -877,55 +983,16 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
       ],
       "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:asteras-aktor-vs-pot-iraklis|stoiximan super league|2026-09-07",
-      "card_id": "asteras-aktor-vs-pot-iraklis",
-      "name": "Asteras Aktor Vs POT Iraklis",
-      "competition": "Stoiximan Super League",
-      "kickoff": "2026-09-07T15:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-tapmad-bd",
-        "srhady-bingstream"
-      ],
-      "upstream_families": [
-        "AXS-Bing",
-        "SM-Aggregate",
-        "Tapmad"
-      ],
-      "independent_witness_count": 3,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -1427,13 +1494,13 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "srhady-tapmad-bd",
+        "sportlive-fancode-backup",
         "srhady-crichd-footy-live",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -1502,6 +1569,62 @@
       "independent_authority_count": 2,
       "conflict_reasons": [],
       "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:brazil-u20-vs-canada-u20|u 20 women world championship|2026-09-08",
+      "card_id": "brazil-u20-vs-canada-u20",
+      "name": "Brazil U20 Vs Canada U20",
+      "competition": "U-20 Women's World Championship",
+      "kickoff": "2026-09-08T13:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "event_id": "1808826",
+          "upstream_family": "LiveScore",
+          "name": "Brazil W U20 vs Canada W U20",
+          "home": "Brazil W U20",
+          "away": "Canada W U20",
+          "home_team_id": "406714",
+          "away_team_id": "406715",
+          "competition": "Group B",
+          "competition_id": "1176",
+          "kickoff": "2026-09-08T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "2",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1770,10 +1893,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -1810,8 +1933,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2006,10 +2129,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -2308,25 +2431,12 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data",
-        "srhady-axsports-live",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "srhady-crichd-footy-live",
-        "srhady-bingstream",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "AXS-Bing",
-        "CricHD",
-        "FanCode",
         "SM-Aggregate"
       ],
-      "independent_witness_count": 4,
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -2434,8 +2544,8 @@
       "name": "Esenler Erokspor vs Kayserispor",
       "competition": "1. Lig",
       "kickoff": "2026-09-07T14:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
@@ -2485,21 +2595,21 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:estoril-praia-vs-fc-arouca|liga portugal betclic|2026-09-07",
-      "card_id": "estoril-praia-vs-fc-arouca",
-      "name": "Estoril Praia Vs FC Arouca",
-      "competition": "Liga Portugal Betclic",
+      "fixture_id": "provider:estoril-vs-arouca|primeira liga|2026-09-07",
+      "card_id": "estoril-vs-arouca",
+      "name": "Estoril vs Arouca",
+      "competition": "Primeira Liga",
       "kickoff": "2026-09-07T19:15:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data",
+        "srhady-bingstream",
         "srhady-axsports-live",
-        "srhady-bingstream"
+        "sm-sports-data"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2571,54 +2681,13 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:fazilka-falcons-vs-bathinda-royals|sher e punjab t20 2026|2026-09-08",
-      "card_id": "fazilka-falcons-vs-bathinda-royals",
-      "name": "Fazilka Falcons vs Bathinda Royals",
-      "competition": "Sher-E-Punjab T20, 2026",
-      "kickoff": "2026-09-08T13:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:fc-isloch-minsk-r-vs-arsenal|premier league|2026-09-07",
       "card_id": "fc-isloch-minsk-r-vs-arsenal",
       "name": "FC Isloch Minsk R vs Arsenal",
       "competition": "Belarusian Premier League",
       "kickoff": "2026-09-07T14:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
@@ -2648,16 +2717,16 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:fc-voluntari-vs-fc-argeș-pitești|superliga rom niei|2026-09-07",
+      "fixture_id": "provider:fc-voluntari-vs-arges-pitesti|liga i|2026-09-07",
       "card_id": "fc-voluntari-vs-arges-pitesti",
       "name": "FC Voluntari vs Arges Pitesti",
-      "competition": "SuperLiga României",
+      "competition": "Liga I",
       "kickoff": "2026-09-07T14:30:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
       "source_ids": [
         "srhady-bingstream"
@@ -2873,12 +2942,12 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -3010,23 +3079,22 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:göztepe-vs-gaziantep-fk|s per lig|2026-09-07",
+      "fixture_id": "provider:göztepe-vs-gaziantep-fk|trendyol s per lig|2026-09-07",
       "card_id": "göztepe-vs-gaziantep-fk",
-      "name": "Göztepe vs Gaziantep FK",
-      "competition": "Süper Lig",
+      "name": "Göztepe Vs Gaziantep FK",
+      "competition": "Trendyol Süper Lig",
       "kickoff": "2026-09-07T17:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "AXS-Bing"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -3155,8 +3223,8 @@
       "name": "İstanbulspor vs Iğdır FK",
       "competition": "1. Lig",
       "kickoff": "2026-09-07T14:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
@@ -3248,47 +3316,6 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:jalandhar-warriors-vs-amritsar-soormas|sher e punjab t20 2026|2026-09-07",
-      "card_id": "jalandhar-warriors-vs-amritsar-soormas",
-      "name": "Jalandhar Warriors vs Amritsar Soormas",
-      "competition": "Sher-E-Punjab T20, 2026",
-      "kickoff": "2026-09-07T13:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -3437,14 +3464,15 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -3648,10 +3676,51 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:ludhiana-lions-vs-jalandhar-warriors|sher e punjab t20 2026|2026-09-08",
+      "card_id": "ludhiana-lions-vs-jalandhar-warriors",
+      "name": "Ludhiana Lions vs Jalandhar Warriors",
+      "competition": "Sher-E-Punjab T20, 2026",
+      "kickoff": "2026-09-08T13:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -3846,10 +3915,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -3887,10 +3956,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -3927,9 +3996,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "srhady-bingstream",
         "srhady-axsports-live",
-        "srhady-crichd-footy-live",
-        "srhady-bingstream"
+        "srhady-crichd-footy-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4016,10 +4085,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -4370,8 +4439,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4846,14 +4915,15 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -5079,7 +5149,7 @@
       "card_id": "tbc",
       "name": "Dehradun T20 League 2026",
       "competition": "Dehradun T20 League 2026",
-      "kickoff": "2026-09-08T09:00:00+00:00",
+      "kickoff": "2026-09-08T14:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
@@ -5089,10 +5159,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -5188,21 +5258,20 @@
     {
       "fixture_id": "provider:udinese-vs-lazio|serie a|2026-09-07",
       "card_id": "udinese-vs-lazio",
-      "name": "Udinese vs Lazio",
+      "name": "Udinese Vs Lazio",
       "competition": "Italian Serie A",
       "kickoff": "2026-09-07T18:45:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "AXS-Bing"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -5441,8 +5510,8 @@
     },
     {
       "fixture_id": "provider:vitória-vs-grêmio|brasileir o betano|2026-09-07",
-      "card_id": "vitoria-vs-gremio",
-      "name": "Vitoria vs Gremio",
+      "card_id": "vitória-vs-grêmio",
+      "name": "Vitória Vs Grêmio",
       "competition": "Brasileirão Betano",
       "kickoff": "2026-09-07T23:00:00+00:00",
       "schedule_status": "UPCOMING",
@@ -5452,11 +5521,10 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "AXS-Bing"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -5557,6 +5625,78 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:çaykur-rizespor-vs-alanyaspor|trendyol s per lig|2026-09-07",
+      "card_id": "çaykur-rizespor-vs-alanyaspor",
+      "name": "Çaykur Rizespor Vs Alanyaspor",
+      "competition": "Trendyol Süper Lig",
+      "kickoff": "2026-09-07T17:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "event_id": "401888303",
+          "upstream_family": "ESPN",
+          "name": "Caykur Rizespor vs Alanyaspor",
+          "home": "Caykur Rizespor",
+          "away": "Alanyaspor",
+          "home_team_id": "7656",
+          "away_team_id": "9078",
+          "competition": "Turkish Super Lig",
+          "competition_id": "3946",
+          "kickoff": "2026-09-07T17:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Mon, September 7th at 1:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3946~e:401888303~c:401888303"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Rizespor vs Alanyaspor",
+              "event_id": "1821302",
+              "agreed_side": "alanyaspor",
+              "ours": "caykur rizespor",
+              "theirs": "rizespor"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
     }
   ],
   "retired_or_unpublished": [
@@ -5570,45 +5710,10 @@
       "lifecycle_state": "",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
         "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:vikasnagar-dhamaka-vs-selaqui-strikers|dehradun t20 league 2026|2026-09-07",
-      "card_id": "vikasnagar-dhamaka-vs-selaqui-strikers",
-      "name": "Vikasnagar Dhamaka vs Selaqui Strikers",
-      "competition": "Dehradun T20 League 2026",
-      "kickoff": "2026-09-07T09:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode"
@@ -5795,23 +5900,22 @@
       "verdict": "VERIFIED"
     },
     {
-      "fixture_id": "provider:estoril-vs-arouca|primeira liga|2026-09-07",
-      "card_id": "estoril-vs-arouca",
-      "name": "Estoril vs Arouca",
-      "competition": "Primeira Liga",
+      "fixture_id": "provider:estoril-praia-vs-fc-arouca|liga portugal betclic|2026-09-07",
+      "card_id": "estoril-praia-vs-fc-arouca",
+      "name": "Estoril Praia Vs FC Arouca",
+      "competition": "Liga Portugal Betclic",
       "kickoff": "2026-09-07T19:15:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "AXS-Bing"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
