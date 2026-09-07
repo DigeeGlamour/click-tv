@@ -45,6 +45,11 @@ NOW = datetime(2026, 9, 7, 18, 0, tzinfo=timezone.utc)
 KICKOFF = "2026-09-07T15:30:00+00:00"
 GRACE = 20
 
+#: The `else` of `if skip_live_protection`, at statement indent. Anything
+#: shallower would also match the inner `if carry: ... else:` and cut the
+#: targeted branch in half.
+OUTER_ELSE = chr(10) + "    else:"
+
 
 def read(path):
     with open(path, encoding="utf-8") as handle:
@@ -504,7 +509,7 @@ class TheTargetedPath(unittest.TestCase):
     def test_the_targeted_branch_filters_before_it_archives(self):
         branch = self.SOURCE.split(
             'schedule_stats["live_protection"] = {"skipped": "targeted scan"}',
-            1)[1].split("    else:", 1)[0]
+            1)[1].split(OUTER_ELSE, 1)[0]
         self.assertIn("targeted_dropped", branch)
         self.assertIn("terminal_provenance(", branch)
         self.assertIn("absence_only_refused", branch)
@@ -512,10 +517,24 @@ class TheTargetedPath(unittest.TestCase):
                         branch.index("archive_retired("),
                         "evidence is asked for before anything is recorded")
 
+    def test_the_targeted_branch_leaves_the_file_alone_when_empty(self):
+        """`archive_retired` saves unconditionally, `updated_at` included. A
+        trigger that fires twelve times an hour must not put the archive in
+        its regenerated set for nothing: the workflow rebase restores each
+        regenerated file whole from this run's own pre-rebase commit, so two
+        runs in flight would resolve by one discarding the other's rows."""
+        branch = self.SOURCE.split(
+            'schedule_stats["live_protection"] = {"skipped": "targeted scan"}',
+            1)[1].split(OUTER_ELSE, 1)[0]
+        self.assertIn("if carry:", branch)
+        self.assertIn('"skipped": "nothing already-decided to record"', branch)
+        self.assertLess(branch.index("if carry:"),
+                        branch.index("archive_retired("))
+
     def test_the_targeted_branch_cannot_probe_or_decide(self):
         branch = self.SOURCE.split(
             'schedule_stats["live_protection"] = {"skipped": "targeted scan"}',
-            1)[1].split("    else:", 1)[0]
+            1)[1].split(OUTER_ELSE, 1)[0]
         for forbidden in ("protect_live_events", "probe_card_is_playable",
                           "lifecycle_decide", "fixture_authority.collect"):
             self.assertNotIn(forbidden, branch)

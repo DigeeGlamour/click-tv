@@ -2352,11 +2352,35 @@ def process_events(
             )
             if provenance:
                 carry.append(dict(card, _terminal_provenance=provenance))
-        archive_stats = archive_retired(
-            carry, now=now,
-            post_match_grace_minutes=lifecycle_timings[
-                "post_match_grace_minutes"],
-        )
+        # Written only when there is something to write.
+        #
+        # `archive_retired` saves unconditionally, `updated_at` included, so
+        # calling it every time would put state/event-archive.json in the
+        # regenerated set of a trigger that fires every five minutes. The
+        # rebase in .github/workflows/scan.yml restores each file THIS run
+        # regenerated whole from its own pre-rebase commit - the per-file
+        # rule that replaced `-X theirs` after 90edb2faf shipped a card
+        # twice - so two runs in flight would resolve by one of them
+        # discarding the other's rows. Not a false archive, but a lost
+        # retirement, which is the fault being fixed here.
+        #
+        # A full scan already rewrites this file on every run and there are
+        # three of those an hour; a targeted trigger fires twelve times an
+        # hour and almost never has a retirement to record. So it touches the
+        # file only when it does.
+        if carry:
+            archive_stats = archive_retired(
+                carry, now=now,
+                post_match_grace_minutes=lifecycle_timings[
+                    "post_match_grace_minutes"],
+            )
+        else:
+            archive_stats = {
+                "added": 0,
+                "total": len((load_archive().get("fixtures") or {})),
+                "refused": 0,
+                "skipped": "nothing already-decided to record",
+            }
         archive_stats["from"] = "targeted carry of already-decided ends"
         archive_stats["absence_only_refused"] = (
             len(targeted_dropped) + len(today_authority_finished) - len(carry)
