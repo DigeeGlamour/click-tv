@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-08T02:47:49.504111+00:00",
+  "generated_at": "2026-09-08T03:07:37.544168+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,8 +12,6 @@
       "requests_ok": 6,
       "fixtures": 531,
       "unknown_statuses": [
-        "3|76'",
-        "3|82'",
         "44|ToFi"
       ],
       "attempts": [
@@ -110,15 +108,14 @@
     "upcoming": 109,
     "fixtures": 115,
     "verdicts": {
-      "PARTIAL_AUTHORITY": 1,
+      "CONFLICT": 6,
       "UNVERIFIED": 38,
-      "CONFLICT": 5,
       "VERIFIED": 71
     },
     "verified": 71,
-    "partial_authority": 1,
+    "partial_authority": 0,
     "unverified": 38,
-    "conflict": 5,
+    "conflict": 6,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 57,
@@ -130,11 +127,11 @@
       }
     },
     "matched_by_two_independent_authorities": 51,
-    "authority_agreements": 50,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 0,
+    "authority_agreements": 51,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "authorities disagree": 1,
+      "card says LIVE, authority says FINISHED": 2,
       "kickoff": 6
     },
     "identity_near_misses": 18,
@@ -145,8 +142,6 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "3|76'",
-        "3|82'",
         "44|ToFi"
       ],
       "espn-header": []
@@ -337,9 +332,9 @@
           "competition_id": "25962",
           "kickoff": "2026-09-08T01:06:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "82'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "6",
           "format": "",
@@ -350,10 +345,12 @@
         "LiveScore"
       ],
       "independent_authority_count": 1,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -473,17 +470,17 @@
           "competition_id": "21342",
           "kickoff": "2026-09-08T01:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
+          "status_raw": "Live",
+          "status_code": "Live",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "19th Match, Group A",
           "format": "ODI",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-09-09T23:59:00Z",
           "authority_uid": "s:200~e:1549964~c:1549964"
@@ -516,12 +513,10 @@
         "LiveScore"
       ],
       "independent_authority_count": 2,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
-      ],
-      "authority_agreement": "DISAGREE",
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -593,18 +588,18 @@
           "competition_id": "650",
           "kickoff": "2026-09-07T23:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "90'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "90'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:650~e:401878038~c:401878038"
         },
@@ -625,10 +620,12 @@
         "ESPN"
       ],
       "independent_authority_count": 1,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -872,13 +869,13 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "srhady-axsports-live",
-        "srhady-bingstream",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "srhady-bingstream",
+        "srhady-axsports-live",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
         "sm-fancode"
       ],
       "upstream_families": [
@@ -1018,15 +1015,15 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "srhady-tapmad-bd",
-        "srhady-axsports-live",
-        "srhady-bingstream",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "srhady-bingstream",
+        "srhady-axsports-live",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
         "sm-fancode"
       ],
       "upstream_families": [
@@ -1114,8 +1111,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1308,11 +1305,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -1451,11 +1448,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -1492,11 +1489,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -2653,8 +2650,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2965,11 +2962,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -3997,11 +3994,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -4260,8 +4257,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4486,15 +4483,15 @@
       "source_ids": [
         "sm-sports-data",
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "srhady-tapmad-bd",
-        "srhady-axsports-live",
-        "srhady-bingstream",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "srhady-bingstream",
+        "srhady-axsports-live",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
         "sm-fancode"
       ],
       "upstream_families": [
@@ -4601,11 +4598,11 @@
       "source_ids": [
         "srhady-willow-event",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
         "sm-fancode"
       ],
       "upstream_families": [
@@ -5152,11 +5149,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -5389,13 +5386,13 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "srhady-axsports-live",
-        "srhady-bingstream",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "srhady-bingstream",
+        "srhady-axsports-live",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
         "sm-fancode"
       ],
       "upstream_families": [
@@ -5623,11 +5620,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -5834,11 +5831,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -5875,11 +5872,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -5916,11 +5913,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -5957,11 +5954,11 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
         "sm-fancode"
       ],
       "upstream_families": [
@@ -6661,11 +6658,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -6732,11 +6729,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -7091,11 +7088,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -7223,11 +7220,11 @@
       "source_ids": [
         "srhady-willow-event",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data",
         "sm-fancode"
       ],
       "upstream_families": [
@@ -8144,174 +8141,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:vitória-vs-grêmio|brasileir o betano|2026-09-07",
-      "card_id": "vitória-vs-grêmio",
-      "name": "Vitória Vs Grêmio",
-      "competition": "Brasileirão Betano",
-      "kickoff": "2026-09-07T23:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "401841222",
-          "upstream_family": "ESPN",
-          "name": "Vitória vs Grêmio",
-          "home": "Vitória",
-          "away": "Grêmio",
-          "home_team_id": "3457",
-          "away_team_id": "6273",
-          "competition": "Brazilian Serie A",
-          "competition_id": "630",
-          "kickoff": "2026-09-07T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "86'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "86'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:630~e:401841222~c:401841222"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "1708661",
-          "upstream_family": "LiveScore",
-          "name": "Vitoria vs Gremio",
-          "home": "Vitoria",
-          "away": "Gremio",
-          "home_team_id": "4509",
-          "away_team_id": "5001",
-          "competition": "Serie A",
-          "competition_id": "155",
-          "kickoff": "2026-09-07T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "26",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:deportes-limache-vs-cobresal|primera divisi n|2026-09-07",
-      "card_id": "deportes-limache-vs-cobresal",
-      "name": "Deportes Limache vs Cobresal",
-      "competition": "Chilean Primera Division",
-      "kickoff": "2026-09-07T23:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "401850645",
-          "upstream_family": "ESPN",
-          "name": "Deportes Limache vs Cobresal",
-          "home": "Deportes Limache",
-          "away": "Cobresal",
-          "home_team_id": "19195",
-          "away_team_id": "4133",
-          "competition": "Chilean Primera División",
-          "competition_id": "640",
-          "kickoff": "2026-09-07T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "88'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "88'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:640~e:401850645~c:401850645"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "1724122",
-          "upstream_family": "LiveScore",
-          "name": "Club Deportes Limache vs Cobresal",
-          "home": "Club Deportes Limache",
-          "away": "Cobresal",
-          "home_team_id": "174555",
-          "away_team_id": "7204",
-          "competition": "Primera División",
-          "competition_id": "1024",
-          "kickoff": "2026-09-07T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "22",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT"
     }
   ]
 }
