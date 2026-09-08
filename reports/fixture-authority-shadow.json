@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-08T04:07:39.682738+00:00",
+  "generated_at": "2026-09-08T04:27:39.817205+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -109,13 +109,13 @@
     "fixtures": 113,
     "verdicts": {
       "UNVERIFIED": 38,
-      "VERIFIED": 71,
-      "CONFLICT": 4
+      "CONFLICT": 5,
+      "VERIFIED": 70
     },
-    "verified": 71,
+    "verified": 70,
     "partial_authority": 0,
     "unverified": 38,
-    "conflict": 4,
+    "conflict": 5,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 56,
@@ -127,10 +127,11 @@
       }
     },
     "matched_by_two_independent_authorities": 51,
-    "authority_agreements": 51,
-    "authority_disagreements": 0,
+    "authority_agreements": 50,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
+      "authorities disagree": 1,
       "kickoff": 6
     },
     "identity_near_misses": 17,
@@ -402,17 +403,17 @@
           "competition_id": "21342",
           "kickoff": "2026-09-08T01:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
           "sport": "cricket",
           "round": "19th Match, Group A",
           "format": "ODI",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
           "espn_completed": null,
           "espn_end_date_raw": "2026-09-09T23:59:00Z",
           "authority_uid": "s:200~e:1549964~c:1549964"
@@ -445,10 +446,12 @@
         "LiveScore"
       ],
       "independent_authority_count": 2,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -485,89 +488,6 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:al-qadsiah-vs-al-ahli|saudi pro league|2026-09-08",
-      "card_id": "al-qadsiah-vs-al-ahli",
-      "name": "Al Qadsiah Vs Al Ahli",
-      "competition": "Saudi Pro League",
-      "kickoff": "2026-09-08T18:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "401900361",
-          "upstream_family": "ESPN",
-          "name": "Al Qadsiah vs Al Ahli",
-          "home": "Al Qadsiah",
-          "away": "Al Ahli",
-          "home_team_id": "22022",
-          "away_team_id": "8346",
-          "competition": "Saudi Pro League",
-          "competition_id": "21231",
-          "kickoff": "2026-09-08T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, September 8th at 2:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:21231~e:401900361~c:401900361"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "1845625",
-          "upstream_family": "LiveScore",
-          "name": "Al Qadsiah vs Al Ahli",
-          "home": "Al Qadsiah",
-          "away": "Al Ahli",
-          "home_team_id": "12006",
-          "away_team_id": "4379",
-          "competition": "Saudi Professional League",
-          "competition_id": "403",
-          "kickoff": "2026-09-08T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "6",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
     },
     {
       "fixture_id": "provider:real-madrid-u19-vs-internazionale-u19|uefa youth league|2026-09-08",
@@ -726,15 +646,15 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
+        "srhady-bingstream",
         "srhady-axsports-live",
+        "sportlive-fancode-backup",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
         "drmlive-fancode-mirror",
-        "srhady-bingstream"
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -873,16 +793,16 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "srhady-tapmad-bd",
-        "sportlive-fancode-backup",
+        "srhady-bingstream",
         "srhady-axsports-live",
+        "sportlive-fancode-backup",
+        "srhady-tapmad-bd",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
         "drmlive-fancode-mirror",
-        "srhady-bingstream"
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -969,8 +889,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1164,10 +1084,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1292,6 +1212,89 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:al-qadsiah-vs-al-ahli|saudi pro league|2026-09-08",
+      "card_id": "al-qadsiah-vs-al-ahli",
+      "name": "Al Qadsiah Vs Al Ahli",
+      "competition": "Saudi Pro League",
+      "kickoff": "2026-09-08T18:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "event_id": "401900361",
+          "upstream_family": "ESPN",
+          "name": "Al Qadsiah vs Al Ahli",
+          "home": "Al Qadsiah",
+          "away": "Al Ahli",
+          "home_team_id": "22022",
+          "away_team_id": "8346",
+          "competition": "Saudi Pro League",
+          "competition_id": "21231",
+          "kickoff": "2026-09-08T18:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Tue, September 8th at 2:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:21231~e:401900361~c:401900361"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "event_id": "1845625",
+          "upstream_family": "LiveScore",
+          "name": "Al Qadsiah vs Al Ahli",
+          "home": "Al Qadsiah",
+          "away": "Al Ahli",
+          "home_team_id": "12006",
+          "away_team_id": "4379",
+          "competition": "Saudi Professional League",
+          "competition_id": "403",
+          "kickoff": "2026-09-08T18:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "6",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:amritsar-soormas-vs-jalandhar-warriors|sher e punjab t20 2026|2026-09-10",
       "card_id": "amritsar-soormas-vs-jalandhar-warriors",
       "name": "Amritsar Soormas vs Jalandhar Warriors",
@@ -1307,10 +1310,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1348,10 +1351,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2508,8 +2511,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2821,10 +2824,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3853,10 +3856,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4115,8 +4118,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4341,16 +4344,16 @@
       "source_ids": [
         "sm-sports-data",
         "srhady-willow-event",
-        "sm-fancode",
-        "srhady-tapmad-bd",
-        "sportlive-fancode-backup",
+        "srhady-bingstream",
         "srhady-axsports-live",
+        "sportlive-fancode-backup",
+        "srhady-tapmad-bd",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
         "drmlive-fancode-mirror",
-        "srhady-bingstream"
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4458,10 +4461,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -5008,10 +5011,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5243,15 +5246,15 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
+        "srhady-bingstream",
         "srhady-axsports-live",
+        "sportlive-fancode-backup",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
         "drmlive-fancode-mirror",
-        "srhady-bingstream"
+        "iptvflixbd-fancode-data",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -5479,10 +5482,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5690,10 +5693,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5731,10 +5734,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5772,10 +5775,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5814,10 +5817,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -6517,10 +6520,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6588,10 +6591,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6947,10 +6950,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -7080,10 +7083,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -7999,137 +8002,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:llaneros-fc-vs-deportes-tolima|primera a|2026-09-07",
-      "card_id": "llaneros-fc-vs-deportes-tolima",
-      "name": "Llaneros FC Vs Deportes Tolima",
-      "competition": "Primera A",
-      "kickoff": "2026-09-07T23:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "401878038",
-          "upstream_family": "ESPN",
-          "name": "Llaneros FC vs Deportes Tolima",
-          "home": "Llaneros FC",
-          "away": "Deportes Tolima",
-          "home_team_id": "7915",
-          "away_team_id": "5489",
-          "competition": "Colombian Primera A",
-          "competition_id": "650",
-          "kickoff": "2026-09-07T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:650~e:401878038~c:401878038"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Llaneros FC vs Tolima",
-              "event_id": "1806267",
-              "agreed_side": "llaneros",
-              "ours": "deportes tolima",
-              "theirs": "tolima"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:león-w-vs-puebla-w|liga mx femenil|2026-09-08",
-      "card_id": "león-w-vs-puebla-w",
-      "name": "León W vs Puebla W",
-      "competition": "Liga MX Femenil",
-      "kickoff": "2026-09-08T01:06:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "event_id": "1849309",
-          "upstream_family": "LiveScore",
-          "name": "Club Leon W vs Puebla W",
-          "home": "Club Leon W",
-          "away": "Puebla W",
-          "home_team_id": "12746",
-          "away_team_id": "12753",
-          "competition": "Women's Liga MX: Apertura",
-          "competition_id": "25962",
-          "kickoff": "2026-09-08T01:06:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "6",
-          "format": "",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
     }
   ]
 }
