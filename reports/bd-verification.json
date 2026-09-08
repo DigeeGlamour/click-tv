@@ -1,23 +1,57 @@
 {
-  "timestamp": "2026-09-07T23:59:07.235042+00:00",
+  "timestamp": "2026-09-08T00:08:48.611061+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
   "total_input_pool": 14,
   "total_global_network_checked": 14,
-  "total_proxy_selected": 4,
-  "total_proxy_checked": 4,
+  "total_proxy_selected": 5,
+  "total_proxy_checked": 5,
   "total_processed": 14,
   "total_publishable": 8,
-  "strict_player_hidden": 2,
-  "browser_unreachable_hidden": 0,
+  "strict_player_hidden": 0,
+  "browser_unreachable_hidden": 1,
   "unproven_hidden": 0,
   "status_counts": {
+    "unreachable_from_browser": 1,
     "verified_global": 8,
-    "metadata_only": 2,
-    "failed": 4
+    "failed": 5
   },
   "groups": {
+    "unreachable_from_browser": [
+      {
+        "id": "club-atlético-unión-de-santa-fe-vs-instituto-de-córdoba",
+        "name": "Club Atlético Unión de Santa Fe Vs Instituto De Córdoba",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://162.251.160.53:8089/1568/index.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      }
+    ],
     "verified_global": [
+      {
+        "id": "san-francisco-giants-vs-st-louis-cardinals",
+        "name": "San Francisco Giants Vs St Louis Cardinals",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/rhf2dwosdt/out/v1/ee550d2a68d846c797e6ce4de2e8b76d/cenc.mpd",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      },
       {
         "id": "st-louis-cardinals-vs-san-francisco-giants",
         "name": "St Louis Cardinals vs San Francisco Giants",
@@ -40,22 +74,6 @@
         "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
         "url": "https://ubuntu.fromthyheart.site/dailymotion/live/playlist/6.m3u8",
-        "verification_status": "verified_global",
-        "verification_mode": "global",
-        "publish_allowed": true,
-        "http_status": 200,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "",
-        "permanent_fail_count": 0
-      },
-      {
-        "id": "san-francisco-giants-vs-st-louis-cardinals",
-        "name": "San Francisco Giants Vs St Louis Cardinals",
-        "source_id": "sm-sports-data",
-        "source_pipeline": "upcoming",
-        "url": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/rhf2dwosdt/out/v1/ee550d2a68d846c797e6ce4de2e8b76d/cenc.mpd",
         "verification_status": "verified_global",
         "verification_mode": "global",
         "publish_allowed": true,
@@ -147,41 +165,23 @@
         "permanent_fail_count": 0
       }
     ],
-    "metadata_only": [
-      {
-        "id": "club-atlético-unión-de-santa-fe-vs-instituto-de-córdoba",
-        "name": "Club Atlético Unión de Santa Fe Vs Instituto De Córdoba",
-        "source_id": "sm-sports-data",
-        "source_pipeline": "upcoming",
-        "url": "",
-        "verification_status": "metadata_only",
-        "verification_mode": "none",
-        "publish_allowed": false,
-        "http_status": 0,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
-        "permanent_fail_count": 0
-      },
+    "failed": [
       {
         "id": "san-francisco-giants-vs-st-louis-cardinals",
         "name": "San Francisco Giants Vs St Louis Cardinals",
         "source_id": "sm-sports-data",
-        "source_pipeline": "upcoming",
-        "url": "",
-        "verification_status": "metadata_only",
-        "verification_mode": "none",
+        "source_pipeline": "today_match",
+        "url": "https://edgestream3.pro/hls/jnzkdzjfanch23.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "global",
         "publish_allowed": false,
-        "http_status": 0,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "",
         "permanent_fail_count": 0
-      }
-    ],
-    "failed": [
+      },
       {
         "id": "st-louis-cardinals-vs-san-francisco-giants",
         "name": "St Louis Cardinals vs San Francisco Giants",
@@ -202,16 +202,16 @@
         "id": "san-francisco-giants-vs-st-louis-cardinals",
         "name": "San Francisco Giants Vs St Louis Cardinals",
         "source_id": "sm-sports-data",
-        "source_pipeline": "upcoming",
-        "url": "https://edgestream3.pro/hls/jnzkdzjfanch23.m3u8",
+        "source_pipeline": "today_match",
+        "url": "https://chatgpt.hereisman.net/playlist/56046/load-playlist",
         "verification_status": "failed",
-        "verification_mode": "global",
+        "verification_mode": "same_run_player_gate",
         "publish_allowed": false,
         "http_status": 403,
         "proxy_name": "default-cloudflare-worker",
         "proxy_http_status": 403,
         "verification_error": "HTTP 403: Forbidden",
-        "verification_note": "",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
         "permanent_fail_count": 0
       },
       {
@@ -235,15 +235,15 @@
         "name": "WWE RAW",
         "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
-        "url": "https://edgestream2.pro/hls/zeuryuegn48.m3u8",
+        "url": "https://chatgpt.hereisman.net/playlist/54800/load-playlist",
         "verification_status": "failed",
-        "verification_mode": "global",
+        "verification_mode": "same_run_player_gate",
         "publish_allowed": false,
         "http_status": 403,
         "proxy_name": "default-cloudflare-worker",
         "proxy_http_status": 403,
         "verification_error": "HTTP 403: Forbidden",
-        "verification_note": "",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
         "permanent_fail_count": 0
       }
     ]
