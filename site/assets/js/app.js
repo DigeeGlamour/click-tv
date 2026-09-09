@@ -1122,9 +1122,11 @@ async function selectFinalMainGroup(group) {
 
   if (group === 'movies') {
     document.body.classList.add('movies-active');
+    document.documentElement.classList.add('movies-active');
     if (window.MovieUI?.onActivateMovies) window.MovieUI.onActivateMovies();
   } else {
     document.body.classList.remove('movies-active');
+    document.documentElement.classList.remove('movies-active');
     if (window.MovieUI?.onDeactivateMovies) window.MovieUI.onDeactivateMovies();
   }
   qsa('.nav-capsule-item').forEach((btn) => {

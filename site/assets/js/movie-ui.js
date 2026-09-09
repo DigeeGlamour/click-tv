@@ -660,6 +660,7 @@
 
   function onActivateMovies() {
     document.body.classList.add('movies-active');
+    document.documentElement.classList.add('movies-active');
     renderMovieSidebar();
     initHeroBanner();
     initStatusStrip();
@@ -668,6 +669,7 @@
 
   function onDeactivateMovies() {
     document.body.classList.remove('movies-active');
+    document.documentElement.classList.remove('movies-active');
     closeMovieDetailPage();
     if (heroTimer) clearInterval(heroTimer);
   }

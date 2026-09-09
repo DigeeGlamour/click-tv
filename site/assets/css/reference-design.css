@@ -1567,11 +1567,19 @@ body.movies-active .app-shell {
   box-sizing: border-box !important;
 }
 
-/* Authentic demo radial dark gradient when movies active */
+/* Authentic demo radial dark gradient and smooth full-page scrolling when movies active */
 body.movies-active {
   background: radial-gradient(circle at 55% -15%, #162232 0%, #090e15 34%, #06090e 70%) !important;
   background-color: #06090e !important;
-  min-height: 100vh;
+  min-height: 100vh !important;
+  height: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+html:has(body.movies-active),
+html.movies-active {
+  overflow-y: auto !important;
+  height: auto !important;
 }
 
 /* Only show 2-column grid when Movies view is active */
