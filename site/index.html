@@ -85,28 +85,33 @@
   </div>
 
   <header class="app-header">
-    <div class="header-left brand" id="brandBtn" title="Click TV Home"><h1><span class="live-signal-dot brand-mark"></span>CLICK TV</h1></div>
-    <div class="header-center">
-      <nav class="header-nav-capsule" id="mainNavigation" aria-label="Main Navigation">
-        <button type="button" class="nav-capsule-item" id="navLiveSportsBtn" data-category="sports" title="Live Sports Streaming">Live Sports</button>
-        <button type="button" class="nav-capsule-item" id="navLiveTvBtn" data-category="live-tv" title="Live TV Channels">Live TV</button>
-        <button type="button" class="nav-capsule-item active" id="navMoviesBtn" data-category="movies" title="Click TV Movies & Series">Movies</button>
-      </nav>
-      <div class="desktop-main-navigation final-nav-shell" id="desktopMainNavigation" style="display:none;">
-        <button class="final-nav-arrow" id="desktopMainPrevBtn" type="button" aria-label="Previous main category"><i class="fas fa-chevron-left"></i></button>
-        <div class="final-main-nav" id="desktopMainNav"></div>
-        <button class="final-nav-arrow" id="desktopMainNextBtn" type="button" aria-label="Next main category"><i class="fas fa-chevron-right"></i></button>
-      </div>
+    <div class="brand-wrap" id="brandBtn" title="Click TV Home">
+      <div class="brand-mark"></div>
+      <h1 class="brand-title">CLICK TV</h1>
     </div>
-    <div class="header-right header-actions">
-      <div class="search-wrap desktop-search top-search-wrap">
+
+    <nav class="header-nav-capsule" id="mainNavigation" aria-label="Main Navigation">
+      <button type="button" class="nav-capsule-item" id="navLiveSportsBtn" data-category="sports" title="Live Sports Streaming">Live Sports</button>
+      <button type="button" class="nav-capsule-item" id="navLiveTvBtn" data-category="live-tv" title="Live TV Channels">Live TV</button>
+      <button type="button" class="nav-capsule-item active" id="navMoviesBtn" data-category="movies" title="Click TV Movies & Series">Movies</button>
+    </nav>
+
+    <div class="header-actions">
+      <div class="top-search-wrap desktop-search">
         <input type="text" id="searchInput" class="top-search-input" placeholder="Search live TV, movies or series..." aria-label="Search live TV, movies or series" />
-        <button class="search-btn top-search-btn" id="searchBtnSubmit" type="button" aria-label="Search"><i class="fas fa-search"></i></button>
+        <button class="top-search-btn" id="searchBtnSubmit" type="button" aria-label="Search"><i class="fas fa-search"></i></button>
       </div>
-      <button class="header-glow-btn" id="pwaInstallBtn" type="button"><i class="fas fa-mobile-alt"></i> Install</button>
       <button class="header-glow-btn btn-subscribe" id="subscribeBtn" type="button"><i class="fas fa-star"></i> Subscribe</button>
-      <button class="mobile-bottom-action" id="mobileBottomSearchBtn" type="button" aria-label="Search"><i class="fas fa-search"></i></button>
-      <button class="mobile-bottom-action" id="mobileBottomNoticeBtn" type="button" aria-label="Notifications"><i class="far fa-bell"></i><span class="mobile-notify-dot">1</span></button>
+      <button class="mobile-bottom-action" id="mobileBottomSearchBtn" type="button" aria-label="Search" style="display:none;"><i class="fas fa-search"></i></button>
+      <button class="mobile-bottom-action" id="mobileBottomNoticeBtn" type="button" aria-label="Notifications" style="display:none;"><i class="far fa-bell"></i><span class="mobile-notify-dot">1</span></button>
+      <button class="header-glow-btn" id="pwaInstallBtn" type="button" style="display:none !important;"><i class="fas fa-mobile-alt"></i> Install</button>
+    </div>
+
+    <!-- Hidden Container for Legacy Nav to prevent JS null reference -->
+    <div class="desktop-main-navigation final-nav-shell" id="desktopMainNavigation" style="display:none !important;" aria-hidden="true">
+      <button class="final-nav-arrow" id="desktopMainPrevBtn" type="button" style="display:none !important;"></button>
+      <div class="final-main-nav" id="desktopMainNav" style="display:none !important;"></div>
+      <button class="final-nav-arrow" id="desktopMainNextBtn" type="button" style="display:none !important;"></button>
     </div>
   </header>
 
