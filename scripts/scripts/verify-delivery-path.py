@@ -1,0 +1,528 @@
+#!/usr/bin/env python3
+"""Ask the real playback proxy for every published route, the way a viewer does.
+
+This is the piece that makes a broken card repair itself, and it needs nothing
+that does not already exist - no telemetry service, no KV, no new worker. The
+playback proxies are already deployed and already serving; this simply asks them
+the same question a browser asks.
+
+Why it is needed at all. The scanner verifies a route with Python's own socket,
+from a GitHub runner. The viewer reaches it through a Cloudflare Worker, from a
+browser, on an HTTPS page. A route can answer 200 to the first and be
+unreachable to the second - a bare IP, a host the proxy's allowlist does not
+carry, a host that refuses Cloudflare's egress, a host that needs headers the
+proxy does not send. Every one of those publishes a card that spins forever.
+
+What it does with a refusal: writes it to state/measured-playback-failures.json,
+which scanner/merger.py now ranks above every other signal. So the NEXT scan
+sees the dead route demoted below any alternate the sources already carry, and
+swaps it in on its own. That is the whole repair loop, and it runs inside the
+existing schedule.
+
+What it will not do is record an ambiguous answer. A timeout, a 429 or a 5xx is
+a bad minute, not a dead route - this project has already deleted working
+channels that way once. Only a refusal the proxy will give every time counts:
+
+    "Target host not allowed"  the proxy's own allowlist has no such host
+    error code: 1003           Cloudflare refuses a direct-IP fetch
+    404 / 410                  the upstream says this path does not exist
+
+A route that answers clears an earlier refusal THIS check recorded, so a host
+that comes back is picked up again rather than staying demoted forever. It never
+clears a browser measurement. The proxy returning a manifest means the bytes
+arrive, not that a viewer can watch - rgkkw.live serves a perfectly good
+playlist and produced 0.12 seconds of video across two 120-second Chrome
+sessions. On the first run of this script that distinction was missing and it
+put "Verified" back on thirteen channels a browser had measured dead.
+"""
+from __future__ import annotations
+
+import argparse
+import concurrent.futures
+import glob
+import json
+import os
+import ssl
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+from typing import Any, Dict, List, Tuple
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
+
+from scanner import playback_evidence  # noqa: E402
+from scanner.playback_profiles import SENSITIVE_TOKEN_RE  # noqa: E402
+
+#: Query parameter names that make a URL single-use. Kept beside the shared
+#: token pattern because these appear as bare parameter names too, without the
+#: long signed value the pattern looks for.
+SIGNED_PARAMETERS = (
+    "hdnea", "hdnts", "hdntl", "token", "sig", "signature", "policy",
+    "expires", "exp", "st", "wmsauthsign", "nimblesessionid",
+)
+
+
+def carries_a_token(url: str) -> bool:
+    """Is this URL single-use, so that a verdict about it cannot outlive it?
+
+    A signed URL is re-issued on every scan, so recording "this one is dead"
+    teaches the next scan nothing: it will produce a different URL, the ledger
+    is keyed on the exact URL, and the row will never match again. All it does
+    is grow the file.
+
+    Worse, it invites a wrong answer. `Movie Bangla` and `Asian TV` were both
+    about to be recorded on a 403 to their signed primary - and both played the
+    full sixty seconds in real Chrome, because the player had already fallen
+    through to another route. The verdict would have been noise attached to a
+    URL that no longer exists.
+
+    So the check reports these and records nothing. What it does record is a
+    stable URL, where "dead" stays true tomorrow - which is where the repair
+    actually comes from.
+    """
+    text = str(url or "").split("|", 1)[0]
+    if SENSITIVE_TOKEN_RE.search(text):
+        return True
+    query = urllib.parse.urlsplit(text).query
+    if not query:
+        return False
+    names = {key.lower() for key, _ in urllib.parse.parse_qsl(query, keep_blank_values=True)}
+    return bool(names & set(SIGNED_PARAMETERS))
+
+UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36")
+
+#: The proxy only serves a request that carries the site's own origin, so the
+#: check has to send it or every answer is a 403 about the origin instead of an
+#: answer about the route.
+SITE_ORIGIN = "https://clicktv.pages.dev"
+
+#: Stamped on every row this script writes. It is also what lets it clear one
+#: later: a row written by a browser measurement is never cleared from here.
+VANTAGE = "delivery_path_proxy"
+
+#: Bodies the proxy or the edge returns when the refusal is permanent.
+PERMANENT_BODIES = (
+    "target host not allowed",
+    "error code: 1003",
+)
+
+#: The proxy refusing THIS SCRIPT rather than the route. If one of these ever
+#: appears the check is misconfigured - it means the origin header did not
+#: arrive - and the honest answer is "no verdict", never "the route is dead".
+#: Without this, a mistake here would demote the entire catalogue in one run.
+PROXY_OWN_REFUSALS = (
+    "requires the click tv site origin",
+    "origin not allowed",
+)
+
+#: A refusal that reaches the viewer identically every time.
+#:
+#: 403 and 451 are here because of what the delivery path is. The scanner sees
+#: 403 from a GitHub runner and rightly treats it as vantage-shaped - the same
+#: host often answers 200 from Bangladesh. But every viewer reaches a route
+#: through the same Cloudflare edge, so a 403 THE PROXY receives is not one
+#: vantage's bad luck; it is the answer every viewer will get.
+#:
+#: Safe because the ledger is keyed on the exact URL. These hosts sign their
+#: URLs, so the next scan produces a different one and the recorded row simply
+#: stops applying - a refreshed token is picked up on its own.
+#:
+#: Measured on 2026-08-30: `Mumbai Sobo Stars vs Bangalore Blasters` had exactly
+#: one route, sonydaimenew.akamaized.net, and the player showed "লাইভ ম্যাচটি
+#: চালানো যায়নি" after trying every link. The proxy gets 403 from Akamai for it.
+PERMANENT_STATUSES = frozenset({403, 404, 410, 451})
+
+#: Statuses that prove nothing. A route is never demoted on one of these.
+AMBIGUOUS_STATUSES = frozenset({0, 408, 429, 500, 502, 503, 504, 520, 521, 522,
+                                523, 524, 525, 526, 527, 530, 567})
+
+
+def _context() -> ssl.SSLContext:
+    context = ssl.create_default_context()
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    return context
+
+
+def proxies() -> List[str]:
+    for name in ("site/runtime-config.json", "dist/runtime-config.json"):
+        path = os.path.join(ROOT, name)
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                found = json.load(handle).get("play_proxies")
+        except (OSError, ValueError):
+            continue
+        if isinstance(found, list) and found:
+            return [str(value) for value in found
+                    if str(value).lower().startswith("https://")]
+    return []
+
+
+def playback_catalogue() -> Dict[str, Any]:
+    found: Dict[str, Any] = {}
+    for path in glob.glob(os.path.join(ROOT, "data", "playback", "*.json")):
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                found.update(json.load(handle).get("records") or {})
+        except (OSError, ValueError):
+            continue
+    return found
+
+
+CATALOGUE = playback_catalogue()
+
+
+def url_of(stream: Any) -> str:
+    if not isinstance(stream, dict):
+        return str(stream or "").strip()
+    for key in ("url", "stream_url", "link"):
+        value = stream.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+    record = CATALOGUE.get(str(stream.get("playback_id") or "")) or {}
+    return str(record.get("url") or "").strip()
+
+
+#: The published files that carry event cards - Today Match and Upcoming.
+EVENT_FILES = ("today-match.json", "upcoming.json")
+
+#: What a scan is allowed to ask about.
+#:
+#: "all" is every published route and stays the default: today, upcoming,
+#: channels, movies and all keep the sweep they have always had.
+#:
+#: "events" exists for `upcoming-targeted` alone, and it is not a shortcut.
+#: Measured on 2026-09-06 over seven real targeted runs, this step was 138.4s
+#: of a 267s job - 51.9% - and 535 of its 865 routes were Live TV channels
+#: that a targeted run does not read, does not write and cannot change. The
+#: run was spending more than half its life on other people's routes while a
+#: five-minute cadence cancelled it at the finish line.
+#:
+#: Scoping loses no verification of the targeted run's OWN output: a targeted
+#: run publishes event routes, and under "events" it still checks every one of
+#: them. Channel routes keep their coverage from the today scan (three an
+#: hour) and from the channels and movies scans, which is where it came from
+#: before the targeted trigger existed.
+SCOPES = ("all", "events")
+
+
+def published_routes(scope: str = "all") -> List[Dict[str, str]]:
+    """Every route on every published card, primary and backup.
+
+    With scope="events", only the event files - the routes a targeted scan is
+    responsible for.
+    """
+    if scope not in SCOPES:
+        raise ValueError(f"unknown scope {scope!r}; expected one of {SCOPES}")
+    rows: List[Dict[str, str]] = []
+    seen: set = set()
+    files: List[str] = []
+    if scope == "all":
+        files.extend(sorted(glob.glob(os.path.join(ROOT, "data", "channels", "*.json"))))
+    for name in EVENT_FILES:
+        path = os.path.join(ROOT, "data", name)
+        if os.path.isfile(path):
+            files.append(path)
+    for path in files:
+        if os.path.basename(path) == "index.json":
+            continue
+        try:
+            with open(path, "r", encoding="utf-8") as handle:
+                payload = json.load(handle)
+        except (OSError, ValueError):
+            continue
+        key = next((k for k in ("channels", "events", "items")
+                    if isinstance(payload.get(k), list)), None)
+        if not key:
+            continue
+        for card in payload[key]:
+            if not isinstance(card, dict):
+                continue
+            streams = [("primary", card)]
+            streams += [(f"backup{i}", b)
+                        for i, b in enumerate(card.get("backups") or [], start=1)]
+            for label, stream in streams:
+                url = url_of(stream)
+                if not url or url in seen:
+                    continue
+                seen.add(url)
+                record = (CATALOGUE.get(str(stream.get("playback_id") or ""))
+                          if isinstance(stream, dict) else None) or {}
+                headers = {}
+                if isinstance(stream, dict):
+                    headers = dict(stream.get("headers") or {})
+                if not headers:
+                    headers = dict(record.get("headers") or {})
+                rows.append({
+                    "name": str(card.get("name") or ""),
+                    "where": label,
+                    "url": url,
+                    "type": str(stream.get("stream_type") or "") if isinstance(stream, dict) else "",
+                    "profile": (str(stream.get("header_profile") or "")
+                                or str(record.get("header_profile") or "")) if isinstance(stream, dict) else "",
+                    "headers": headers,
+                    "playback_id": (str(stream.get("playback_id") or "")
+                                    if isinstance(stream, dict) else ""),
+                    # Whether the player is even allowed to take the direct
+                    # path for this route. A signed URL is pinned to the proxy
+                    # on purpose - handing it to the page would publish the
+                    # credential - so for those the proxy's answer is final.
+                    "proxy_only": bool(
+                        str((stream.get("proxy_mode")
+                             or record.get("proxy_mode") or "")).strip().lower()
+                        in {"proxy_only", "direct_only"}
+                        or stream.get("protected_source") is True
+                        or record.get("protected_source") is True
+                        or stream.get("requires_credentials") is True
+                        or record.get("requires_credentials") is True
+                    ) if isinstance(stream, dict) else False,
+                })
+    return rows
+
+
+def ask_proxy(row: Dict[str, str], proxy: str, timeout: float) -> Tuple[str, str]:
+    """(verdict, detail). verdict is "pass", "dead" or "unknown"."""
+    # Exactly what buildProxyUrl in site/assets/js/app.js does: a playback_id
+    # wins, and only a route without one is passed by URL.
+    #
+    # This is not a detail. The id form makes the proxy load the route's stored
+    # headers server-side; `&profile=` alone does not carry what some of them
+    # need. Ananda TV's toffeelive backup answers 200 by id and 403 by
+    # url+profile - and asking the wrong way was about to record 102 working
+    # routes as dead, almost all of them backups of Bangla channels.
+    target = str(row["url"]).split("|", 1)[0]
+    if row.get("playback_id"):
+        endpoint = (proxy.rstrip("/") + "/hls?id="
+                    + urllib.parse.quote(str(row["playback_id"])))
+    else:
+        endpoint = (
+            proxy.rstrip("/") + "/hls?url=" + urllib.parse.quote(target, safe="")
+            + ("&type=" + urllib.parse.quote(row["type"]) if row["type"] else "")
+            + ("&profile=" + urllib.parse.quote(row["profile"]) if row["profile"] else "")
+        )
+    request = urllib.request.Request(endpoint, headers={
+        "User-Agent": UA,
+        "Origin": SITE_ORIGIN,
+        "Referer": SITE_ORIGIN + "/",
+        "Accept": "*/*",
+    })
+    try:
+        with urllib.request.urlopen(request, timeout=timeout, context=_context()) as response:
+            body = response.read(2048)
+            if response.status not in (200, 206):
+                return "unknown", f"HTTP {response.status}"
+            return "pass", f"HTTP {response.status}, {len(body)} bytes"
+    except urllib.error.HTTPError as failure:
+        body = ""
+        try:
+            body = (failure.read(400) or b"").decode("utf-8", "replace").strip()
+        except Exception:  # noqa: BLE001 - a body we cannot read is not evidence
+            body = ""
+        lowered = body.lower()
+        for marker in PROXY_OWN_REFUSALS:
+            if marker in lowered:
+                return "unknown", f"the proxy refused this check, not the route: {body[:90]}"
+        for marker in PERMANENT_BODIES:
+            if marker in lowered:
+                return "dead", f"the playback proxy refuses this route: {body[:120]}"
+        if failure.code in PERMANENT_STATUSES:
+            return "dead", (
+                f"the playback proxy gets HTTP {failure.code} for this route, "
+                "so no viewer can reach it"
+            )
+        if failure.code in AMBIGUOUS_STATUSES:
+            return "unknown", f"HTTP {failure.code}"
+        return "unknown", f"HTTP {failure.code}: {body[:120]}"
+    except Exception as failure:  # noqa: BLE001 - a timeout is not evidence
+        return "unknown", type(failure).__name__
+
+
+def ask_directly(row: Dict[str, str], timeout: float) -> str:
+    """"pass", "dead" or "unknown" for a plain fetch, no proxy in the way.
+
+    The proxy is not the only path. An https:// route is handed straight to the
+    video element - site/assets/js/app.js resolves those to `direct_first`, and
+    only an http:// one is forced through the proxy, because an HTTPS page
+    cannot load mixed content. So a proxy refusal alone does not prove an https
+    route is unreachable, and treating it that way would have demoted 105
+    routes in one run, most of them backups of Bangla channels whose primaries
+    play perfectly well.
+    """
+    target = str(row["url"]).split("|", 1)[0]
+    # The catalogue stores the headers a route needs, and several of the hosts
+    # here refuse without them - toffeelive answers 403 to a bare request and
+    # 200 to the same request carrying its profile. Fetching without them and
+    # calling the answer evidence is how a working route gets demoted.
+    headers = {"User-Agent": UA, "Accept": "*/*"}
+    headers.update({str(k): str(v) for k, v in (row.get("headers") or {}).items()})
+    try:
+        with urllib.request.urlopen(
+            urllib.request.Request(target, headers=headers),
+            timeout=timeout, context=_context(),
+        ) as response:
+            response.read(512)
+            return "pass" if response.status in (200, 206) else "unknown"
+    except urllib.error.HTTPError as failure:
+        return "dead" if failure.code in PERMANENT_STATUSES else "unknown"
+    except Exception:  # noqa: BLE001 - a timeout is not evidence
+        return "unknown"
+
+
+def main(argv: Any = None) -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--timeout", type=float, default=20.0)
+    parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--limit", type=int, default=0)
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument(
+        "--scope",
+        choices=SCOPES,
+        default="all",
+        help="all = every published route (the default, and what today, "
+             "channels, movies, upcoming and all use). events = only the "
+             "Today Match and Upcoming routes, for upcoming-targeted.",
+    )
+    parser.add_argument("--out", default="reports/delivery-path-check.json")
+    args = parser.parse_args(argv)
+
+    available = proxies()
+    if not available:
+        print("[Delivery Path] no https playback proxy configured; nothing to do")
+        return 0
+    rows = published_routes(args.scope)
+    if args.limit:
+        rows = rows[:args.limit]
+    print(f"[Delivery Path] {len(rows)} published route(s), "
+          f"scope={args.scope}, {len(available)} proxy/proxies")
+    if args.scope == "events":
+        print("   channel routes are NOT swept in this scope - the today, "
+              "channels and movies scans keep that coverage")
+
+    def check(index_and_row):
+        index, row = index_and_row
+        proxy = available[index % len(available)]
+        verdict, detail = ask_proxy(row, proxy, args.timeout)
+        # One retry on a different proxy before calling anything dead, so a
+        # single unhealthy worker cannot demote a working route.
+        if verdict == "dead" and len(available) > 1:
+            second = available[(index + 1) % len(available)]
+            again, detail2 = ask_proxy(row, second, args.timeout)
+            if again != "dead":
+                return dict(row, verdict="unknown",
+                            detail=f"refused by one proxy, {again} on another: {detail2}")
+        # An https route has a second path to the viewer that does not involve
+        # the proxy at all, so the proxy's answer is not the last word on it -
+        # unless the player is barred from taking that path.
+        #
+        # `Mumbai Sobo Stars vs Bangalore Blasters` is why this exception
+        # exists. Its Akamai URL carries a signed `hdnea` token, so the scanner
+        # pins it to the proxy: handing that URL to the page would publish a
+        # live credential. Akamai then refuses Cloudflare's egress while
+        # answering 200 to a plain Chrome request from Bangladesh - so a direct
+        # check "rescues" a route the player will never be allowed to fetch
+        # directly, and the card goes on claiming to work.
+        if (verdict == "dead" and not row.get("proxy_only")
+                and row["url"].lower().startswith("https://")):
+            direct = ask_directly(row, args.timeout)
+            if direct != "dead":
+                return dict(row, verdict="unknown",
+                            detail=("the proxy refuses it, but it is https and "
+                                    f"answers {direct} directly, which is the "
+                                    "path the player uses for it"))
+            return dict(row, verdict="dead",
+                        detail=detail + "; and it refuses a direct fetch too")
+        return dict(row, verdict=verdict, detail=detail)
+
+    results: List[Dict[str, Any]] = []
+    with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool:
+        for done, result in enumerate(pool.map(check, enumerate(rows)), start=1):
+            results.append(result)
+            if done % 100 == 0:
+                print(f"   {done}/{len(rows)}", flush=True)
+
+    dead = [r for r in results if r["verdict"] == "dead"]
+    ok = [r for r in results if r["verdict"] == "pass"]
+    unknown = [r for r in results if r["verdict"] == "unknown"]
+    print(f"\n   the proxy served      : {len(ok)}")
+    print(f"   the proxy refuses     : {len(dead)}   -> recorded, so the next "
+          f"scan prefers an alternate")
+    print(f"   no verdict either way : {len(unknown)}  -> left alone on purpose")
+
+    signed = [r for r in dead if carries_a_token(r["url"])]
+    stable = [r for r in dead if r not in signed]
+    if signed:
+        print(f"   of those, {len(signed)} carry a single-use token and are NOT "
+              f"recorded: the next scan re-signs them into a different URL, so "
+              f"the verdict could never match again")
+
+    written = 0
+    restored = 0
+    if not args.dry_run:
+        for row in stable:
+            if playback_evidence.record(
+                row["url"], row["detail"], sessions=1,
+                media_progress_seconds=[0], window_seconds=0.0,
+                evidence_report=args.out, vantage=VANTAGE,
+            ):
+                written += 1
+        # A host that comes back should be picked up again rather than staying
+        # demoted forever - but only if THIS check is what demoted it.
+        #
+        # The proxy returning a manifest means the bytes arrive. It does not
+        # mean a viewer can watch: rgkkw.live serves a perfectly good playlist
+        # and produced 0.12 seconds of video across two 120-second Chrome
+        # sessions. Letting one HTTP request supersede a real browser
+        # measurement would put "Verified" back on thirteen channels that were
+        # measured dead, and it did exactly that on the first run of this
+        # script - eighteen rows, every one of them browser evidence.
+        #
+        # So a row is only cleared when its own vantage says this script wrote
+        # it. Browser evidence is cleared by a browser, and by nothing else.
+        for row in ok:
+            if not playback_evidence.unproven_reason(row["url"]):
+                continue
+            if playback_evidence.vantage_of(row["url"]) != VANTAGE:
+                continue
+            if playback_evidence.record_proof(
+                row["url"], vantage=VANTAGE, sessions=1,
+                media_progress_seconds=[0], window_seconds=0.0,
+                evidence_report=args.out,
+            ):
+                restored += 1
+        print(f"\n   newly recorded as dead : {written}")
+        print(f"   cleared, host is back  : {restored}")
+
+    for row in stable[:25]:
+        print(f"      [{row['where']:8s}] {row['name'][:34]:36s} {row['detail'][:70]}")
+
+    if not args.dry_run:
+        out = args.out if os.path.isabs(args.out) else os.path.join(ROOT, args.out)
+        os.makedirs(os.path.dirname(out), exist_ok=True)
+        with open(out, "w", encoding="utf-8") as handle:
+            json.dump({
+                "mode": "delivery_path_check",
+                "note": ("Asked the live playback proxies for every published "
+                         "route, with the site origin, exactly as the player "
+                         "does. Only a permanent refusal is recorded; a "
+                         "timeout, 429 or 5xx is left alone."),
+                "checked": len(results),
+                "served": len(ok),
+                "refused": len(dead),
+                "refused_but_single_use": len(signed),
+                "no_verdict": len(unknown),
+                "recorded": written,
+                "cleared": restored,
+                "refusals": [
+                    {"name": r["name"], "where": r["where"], "detail": r["detail"]}
+                    for r in stable
+                ],
+            }, handle, ensure_ascii=False, indent=1)
+            handle.write("\n")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
