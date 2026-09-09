@@ -63,7 +63,7 @@
   <link rel="stylesheet" href="assets/css/app.css?v=20260806-user-list-final-v1">
   <link rel="stylesheet" href="assets/css/series.css?v=20260806-user-list-final-v1">
   <link rel="stylesheet" href="assets/css/final-design.css?v=20260806-user-list-final-v1">
-  <link rel="stylesheet" href="assets/css/reference-design.css?v=20260909-movie-portal-final-v6">
+  <link rel="stylesheet" href="assets/css/reference-design.css?v=20260816-movie-controls-notice-v4">
   <link rel="stylesheet" href="assets/css/event-cards.css?v=20260819-today-match-crimson-v4">
   <link rel="stylesheet" href="assets/css/event-channel-cards.css?v=20260819-today-match-crimson-v4">
   <link rel="stylesheet" href="assets/css/smart-filter.css?v=20260816-smart-filter-v1">
@@ -85,155 +85,25 @@
   </div>
 
   <header class="app-header">
-    <div class="brand-wrap" id="brandBtn" title="Click TV Home">
-      <div class="brand-mark"></div>
-      <h1 class="brand-title">CLICK TV</h1>
-    </div>
-
-    <nav class="header-nav-capsule" id="mainNavigation" aria-label="Main Navigation">
-      <button type="button" class="nav-capsule-item" id="navLiveSportsBtn" data-category="sports" title="Live Sports Streaming">Live Sports</button>
-      <button type="button" class="nav-capsule-item" id="navLiveTvBtn" data-category="live-tv" title="Live TV Channels">Live TV</button>
-      <button type="button" class="nav-capsule-item active" id="navMoviesBtn" data-category="movies" title="Click TV Movies & Series">Movies</button>
-    </nav>
-
-    <div class="header-actions">
-      <div class="top-search-wrap desktop-search">
-        <input type="text" id="searchInput" class="top-search-input" placeholder="Search live TV, movies or series..." aria-label="Search live TV, movies or series" />
-        <button class="top-search-btn" id="searchBtnSubmit" type="button" aria-label="Search"><i class="fas fa-search"></i></button>
+    <div class="header-left brand"><h1><span class="live-signal-dot brand-mark"></span>CLICK TV</h1></div>
+    <div class="header-center">
+      <div class="desktop-main-navigation final-nav-shell" id="desktopMainNavigation">
+        <button class="final-nav-arrow" id="desktopMainPrevBtn" type="button" aria-label="Previous main category"><i class="fas fa-chevron-left"></i></button>
+        <div class="final-main-nav" id="desktopMainNav"></div>
+        <button class="final-nav-arrow" id="desktopMainNextBtn" type="button" aria-label="Next main category"><i class="fas fa-chevron-right"></i></button>
       </div>
-      <button class="header-glow-btn btn-subscribe" id="subscribeBtn" type="button"><i class="fas fa-star"></i> Subscribe</button>
-      <button class="mobile-bottom-action" id="mobileBottomSearchBtn" type="button" aria-label="Search"><i class="fas fa-search"></i></button>
-      <button class="mobile-bottom-action" id="mobileBottomNoticeBtn" type="button" aria-label="Notifications" style="display:none;"><i class="far fa-bell"></i><span class="mobile-notify-dot">1</span></button>
-      <button class="header-glow-btn" id="pwaInstallBtn" type="button" style="display:none !important;"><i class="fas fa-mobile-alt"></i> Install</button>
     </div>
-
-    <!-- Hidden Container for Legacy Nav to prevent JS null reference -->
-    <div class="desktop-main-navigation final-nav-shell" id="desktopMainNavigation" style="display:none !important;" aria-hidden="true">
-      <button class="final-nav-arrow" id="desktopMainPrevBtn" type="button" style="display:none !important;"></button>
-      <div class="final-main-nav" id="desktopMainNav" style="display:none !important;"></div>
-      <button class="final-nav-arrow" id="desktopMainNextBtn" type="button" style="display:none !important;"></button>
+    <div class="header-right header-actions">
+      <div class="search-wrap desktop-search">
+        <input type="text" id="searchInput" placeholder="Search live TV, movies or series..." aria-label="Search live TV, movies or series" />
+        <button class="search-btn" id="searchBtnSubmit" type="button" aria-label="Search"><i class="fas fa-search"></i></button>
+      </div>
+      <button class="header-glow-btn" id="pwaInstallBtn" type="button"><i class="fas fa-mobile-alt"></i> Install</button>
+      <button class="header-glow-btn" id="subscribeBtn" type="button"><i class="fas fa-star"></i> Subscribe</button>
+      <button class="mobile-bottom-action" id="mobileBottomSearchBtn" type="button" aria-label="Search"><i class="fas fa-search"></i></button>
+      <button class="mobile-bottom-action" id="mobileBottomNoticeBtn" type="button" aria-label="Notifications"><i class="far fa-bell"></i><span class="mobile-notify-dot">1</span></button>
     </div>
   </header>
-
-  <!-- Global Mobile Search Drawer (Accessible across all tabs) -->
-  <div id="mobileSearchBox" class="mobile-search-bar-wrap final-mobile-search" style="display:none;">
-    <i class="fas fa-search search-icon"></i>
-    <input type="text" id="mobileSearchInput" placeholder="Search any channel, movie or series..." aria-label="Search channel, movie or series" />
-    <button class="clear-search-btn" id="mobileSearchClearBtn" type="button" aria-label="Clear search">&times;</button>
-  </div>
-
-  <!-- Movie Portal App Shell (Shown when Movies category is active) -->
-  <div class="app-shell movie-portal-shell" id="movieAppShell">
-    <!-- Left Category Sidebar with Authentic Demo Styling -->
-    <div class="sidebar-rail-wrapper" id="sidebarRailWrapper">
-      <aside class="sidebar-rail" id="sidebarRail">
-        <div id="sidebarCategoriesContainer"></div>
-        <!-- Pinned User Profile Card -->
-        <div class="sidebar-user-card" id="sidebarUserCard" title="User Profile & Subscription">
-          <div class="sidebar-user-avatar">C</div>
-          <div class="sidebar-user-info">
-            <div class="sidebar-user-name">Click TV User</div>
-            <div class="sidebar-user-plan">Premium Plan</div>
-          </div>
-        </div>
-      </aside>
-      <div class="sidebar-custom-track" id="sidebarCustomTrack">
-        <div class="sidebar-custom-thumb" id="sidebarCustomThumb" title="Scroll Categories"></div>
-      </div>
-    </div>
-
-    <!-- Movie Content Area -->
-    <main class="content-area movie-content-area" id="movieContentArea">
-      <!-- 2-Column Movie Detail Hero Page -->
-      <section class="detail-section" id="detailSection"></section>
-
-      <!-- Movie Catalogue View -->
-      <div id="movieHomeView">
-        <!-- Hero Showcase Banner -->
-        <section class="hero-showcase" id="heroShowcase">
-          <div class="hero-backdrop-layer" id="heroBackdrop" style="background-image: url('https://image.tmdb.org/t/p/w1280/yDHYTfA3R0jFYba16jBB1jv8v2C.jpg');"></div>
-          <div class="hero-inner">
-            <div class="hero-kicker">
-              <span class="red-bullet"></span> FEATURED ON CLICK TV
-            </div>
-            <h2 class="hero-title" id="heroTitle">Demon Slayer: Hashira Training Arc</h2>
-            <div class="hero-meta-row">
-              <span>2026</span>
-              <span class="meta-dot">•</span>
-              <span>Dubbed</span>
-              <span class="meta-dot">•</span>
-              <span class="badge-rating-pill" style="position:static;"><i class="fas fa-star" style="color:var(--amber-gold);"></i> 8.6</span>
-              <span class="meta-dot">•</span>
-              <span class="badge-res-tag" style="position:static;">Full HD</span>
-            </div>
-            <p class="hero-desc" id="heroDesc">তানজিরো ও হাশিরারা কিবুতসুজির বিরুদ্ধে চূড়ান্ত যুদ্ধের জন্য প্রস্তুতি গ্রহণ করছে। ফুল এইচডি বাংলা/হিন্দি ডাবড।</p>
-            <div class="hero-actions">
-              <button class="btn-hero-play" id="heroPlayBtn" type="button">
-                <i class="fas fa-play"></i> Watch Now
-              </button>
-              <button class="btn-hero-info" id="heroDetailsBtn" type="button">
-                <i class="fas fa-circle-info"></i> Movie Details
-              </button>
-            </div>
-          </div>
-          <div class="hero-control-pill">
-            <button class="hero-arrow-btn" id="heroPrevBtn" type="button"><i class="fas fa-chevron-left"></i></button>
-            <span class="hero-pill-dot active"></span>
-            <span class="hero-pill-dot"></span>
-            <span class="hero-pill-dot"></span>
-            <button class="hero-arrow-btn" id="heroNextBtn" type="button"><i class="fas fa-chevron-right"></i></button>
-          </div>
-        </section>
-
-        <!-- Status Mood Strip -->
-        <section class="status-strip" id="statusStrip">
-          <div class="status-card" data-movie-cat="trending">
-            <div class="status-top-row">
-              <div class="status-icon-wrap"><i class="fas fa-fire"></i></div>
-              <span class="status-badge">TOP PICKS</span>
-            </div>
-            <div class="status-info">
-              <h3>Trending</h3>
-              <p>সর্বাধিক হিট ও দর্শকনন্দিত কনটেন্ট</p>
-            </div>
-          </div>
-          <div class="status-card" data-movie-cat="recent">
-            <div class="status-top-row">
-              <div class="status-icon-wrap"><i class="fas fa-bolt"></i></div>
-              <span class="status-badge">FRESH</span>
-            </div>
-            <div class="status-info">
-              <h3>Just Added</h3>
-              <p>সদ্য যুক্ত হওয়া নতুন কনটেন্ট</p>
-            </div>
-          </div>
-          <div class="status-card" data-movie-cat="series">
-            <div class="status-top-row">
-              <div class="status-icon-wrap"><i class="fas fa-layer-group"></i></div>
-              <span class="status-badge">60+ SHOWS</span>
-            </div>
-            <div class="status-info">
-              <h3>Web Series</h3>
-              <p>মাল্টি-এপিসোড জনপ্রিয় সিরিজ</p>
-            </div>
-          </div>
-          <div class="status-card" data-movie-cat="mix">
-            <div class="status-top-row">
-              <div class="status-icon-wrap"><i class="fas fa-boxes-stacked" style="color:var(--cyan-blue);"></i></div>
-              <span class="status-badge">937+ FILMS</span>
-            </div>
-            <div class="status-info">
-              <h3>Cinema Vault</h3>
-              <p>বিশাল বৈচিত্র্যময় চলচ্চিত্র লাইব্রেরি</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Movie Catalog Grid -->
-        <div id="movieRowsContainer"></div>
-      </div>
-    </main>
-  </div>
 
   <div class="youtube-layout final-shell">
     <aside class="desktop-category-rail" aria-label="Subcategories">
@@ -431,7 +301,11 @@
         </div>
       </div>
 
-
+      <div id="mobileSearchBox" class="mobile-search-bar-wrap final-mobile-search" style="display:none;">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="mobileSearchInput" placeholder="Search any channel, movie or series..." aria-label="Search channel, movie or series" />
+        <button class="clear-search-btn" id="mobileSearchClearBtn" type="button" aria-label="Clear search">&times;</button>
+      </div>
 
       <div class="mobile-sub-navigation final-sub-shell" id="mobileSubNavigation">
         <button class="final-nav-arrow" id="mobileSubPrevBtn" type="button" aria-label="Previous subcategory"><i class="fas fa-chevron-left"></i></button>
@@ -471,7 +345,6 @@
   </div>
 
   <script defer src="assets/js/series.js?v=20260806-user-list-final-v1"></script>
-  <script defer src="assets/js/movie-ui.js?v=20260909-movie-portal-final-v6"></script>
-  <script defer src="assets/js/app.js?v=20260909-movie-portal-final-v6"></script>
+  <script defer src="assets/js/app.js?v=20260819-today-match-crimson-v4"></script>
 </body>
 </html>

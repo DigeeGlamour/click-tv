@@ -1120,20 +1120,6 @@ async function selectFinalMainGroup(group) {
   else state.activeFinalSub = '';
   renderFinalNavigation();
 
-  if (group === 'movies') {
-    document.body.classList.add('movies-active');
-    document.documentElement.classList.add('movies-active');
-    if (window.MovieUI?.onActivateMovies) window.MovieUI.onActivateMovies();
-  } else {
-    document.body.classList.remove('movies-active');
-    document.documentElement.classList.remove('movies-active');
-    if (window.MovieUI?.onDeactivateMovies) window.MovieUI.onDeactivateMovies();
-  }
-  qsa('.nav-capsule-item').forEach((btn) => {
-    const cat = btn.getAttribute('data-category');
-    btn.classList.toggle('active', cat === group);
-  });
-
   if (group === 'favorites') {
     await selectMainView('favorites', null, { chip: activateChipByView('favorite'), preserveFinalGroup: true });
     return;
@@ -1144,7 +1130,6 @@ async function selectFinalMainGroup(group) {
   }
   await selectFinalSubcategory(state.activeFinalSub);
 }
-window.selectFinalMainGroup = selectFinalMainGroup;
 
 async function selectFinalSubcategory(key) {
   state.activeFinalSub = key;
@@ -5624,7 +5609,6 @@ function selectWithoutPlaying(item) {
 }
 
 async function startPlayback(item, userInitiated = true) {
-  window.startPlayback = startPlayback;
   if (!item || !isPlayable(item)) return;
   seriesModule?.handlePlaybackSelection?.(item);
   // Requirement 7. From here the session belongs to the viewer: catalogue
@@ -10386,4 +10370,5 @@ if (['127.0.0.1', 'localhost'].includes(location.hostname)) {
 }
 
 bootstrap();
-window.startPlayback = startPlayback;
+
+
