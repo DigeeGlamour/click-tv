@@ -33,6 +33,9 @@
     }
   ];
 
+  // Branded fallback SVG poster (Zero network dependency, instant local render)
+  const FALLBACK_POSTER_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450'><rect width='300' height='450' fill='%230e1520'/><circle cx='150' cy='190' r='42' fill='%23e50914' opacity='0.15'/><polygon points='143,175 166,190 143,205' fill='%23e50914'/><text x='150' y='265' fill='%23ffffff' font-family='sans-serif' font-size='14' font-weight='700' text-anchor='middle'>CLICK TV</text><text x='150' y='288' fill='%238a99ad' font-family='sans-serif' font-size='11' text-anchor='middle'>HD CINEMA</text></svg>";
+
   // In-memory cache for on-demand loading (zero duplicate network requests)
   const movieCache = {};
   let currentActiveCategory = 'trending';
@@ -293,7 +296,7 @@
     let cardsHtml = '';
 
     items.forEach((item, idx) => {
-      const poster = item.logo || item.img || 'https://via.placeholder.com/168x252/0c131d/ffffff?text=Click+TV';
+      const poster = item.logo || item.img || FALLBACK_POSTER_SVG;
       const title = item.name || item.title || 'Movie';
       const year = item.year || (item.name?.match(/\((\d{4})\)/)?.[1] || '2026');
       const catLabel = item.category || categoryTitle;
@@ -303,7 +306,7 @@
       cardsHtml += `
         <div class="movie-card tv-focusable" data-card-idx="${idx}" tabindex="0" role="button" aria-label="${escapeHtml(title)}">
           <div class="card-thumb-wrap">
-            <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.src='https://via.placeholder.com/168x252/0c131d/ffffff?text=${encodeURIComponent(title)}';" />
+            <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_POSTER_SVG}';" />
             ${ratingBadge}
             ${resBadge}
           </div>
@@ -370,7 +373,7 @@
 
     if (movieHomeView) movieHomeView.style.display = 'none';
 
-    const poster = item.logo || item.img || 'https://via.placeholder.com/260x390/0c131d/ffffff?text=Click+TV';
+    const poster = item.logo || item.img || FALLBACK_POSTER_SVG;
     const backdrop = item.backdrop || item.logo || poster;
     const title = item.name || item.title || 'Movie';
     const year = item.year || (item.name?.match(/\((\d{4})\)/)?.[1] || '2026');
@@ -404,7 +407,7 @@
         <div class="detail-backdrop" style="background-image: url('${backdrop}');"></div>
         <div class="detail-inner-grid">
           <div class="detail-poster-wrap">
-            <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy" />
+            <img src="${poster}" alt="${escapeHtml(title)}" loading="lazy" onerror="this.onerror=null;this.src='${FALLBACK_POSTER_SVG}';" />
           </div>
           <div class="detail-info">
             <div class="detail-type-pill" style="display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; color: var(--neon-red); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px;">
