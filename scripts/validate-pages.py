@@ -720,7 +720,10 @@ def validate_stream_item(
         if not re.fullmatch(r"ctv_[a-f0-9]{32}", playback_id):
             add_error(f"{label} invalid playback_id: {name}")
         elif playback_id not in PLAYBACK_IDS:
-            add_error(f"{label} playback_id catalogue-এ নেই: {name}")
+            if primary_url:
+                add_warning(f"{label} playback_id catalogue-এ নেই (direct url আছে): {name}")
+            else:
+                add_error(f"{label} playback_id catalogue-এ নেই: {name}")
 
     if not primary_url and not playback_id and not (allow_metadata_only and metadata_only):
         add_error(f"{label} primary URL missing: {name}")
