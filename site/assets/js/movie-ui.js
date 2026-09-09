@@ -34,7 +34,7 @@
   ];
 
   // Branded fallback SVG poster (Zero network dependency, instant local render)
-  const FALLBACK_POSTER_SVG = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='450' viewBox='0 0 300 450'><rect width='300' height='450' fill='%230e1520'/><circle cx='150' cy='190' r='42' fill='%23e50914' opacity='0.15'/><polygon points='143,175 166,190 143,205' fill='%23e50914'/><text x='150' y='265' fill='%23ffffff' font-family='sans-serif' font-size='14' font-weight='700' text-anchor='middle'>CLICK TV</text><text x='150' y='288' fill='%238a99ad' font-family='sans-serif' font-size='11' text-anchor='middle'>HD CINEMA</text></svg>";
+  const FALLBACK_POSTER_SVG = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iNDUwIiB2aWV3Qm94PSIwIDAgMzAwIDQ1MCI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSI0NTAiIGZpbGw9IiMwZTE1MjAiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSIxOTAiIHI9IjQyIiBmaWxsPSIjZTUwOTE0IiBvcGFjaXR5PSIwLjE1Ii8+PHBvbHlnb24gcG9pbnRzPSIxNDMsMTc1IDE2NiwxOTAgMTQzLDIwNSIgZmlsbD0iI2U1MDkxNCIvPjx0ZXh0IHg9IjE1MCIgeT0iMjY1IiBmaWxsPSIjZmZmZmZmIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q0xJQ0sgVFY8L3RleHQ+PHRleHQgeD0iMTUwIiB5PSIyODgiIGZpbGw9IiM4YTk5YWQiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjExIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5IRCBDSU5FTUE8L3RleHQ+PC9zdmc+";
 
   // In-memory cache for on-demand loading (zero duplicate network requests)
   const movieCache = {};
@@ -661,12 +661,35 @@
     });
   }
 
+  function initMovieSearch() {
+    const handleSearch = (e) => {
+      if (!document.body.classList.contains('movies-active')) return;
+      const query = (e.target.value || '').trim().toLowerCase();
+      if (!query) {
+        selectCategory(currentActiveCategory);
+        return;
+      }
+      const currentList = movieCache[currentActiveCategory] || [];
+      const filtered = currentList.filter(item => {
+        const title = (item.name || item.title || '').toLowerCase();
+        return title.includes(query);
+      });
+      renderMovieCatalog('search', filtered);
+    };
+
+    const deskSearch = document.getElementById('searchInput');
+    const mobSearch = document.getElementById('mobileSearchInput');
+    if (deskSearch) deskSearch.addEventListener('input', handleSearch);
+    if (mobSearch) mobSearch.addEventListener('input', handleSearch);
+  }
+
   function onActivateMovies() {
     document.body.classList.add('movies-active');
     document.documentElement.classList.add('movies-active');
     renderMovieSidebar();
     initHeroBanner();
     initStatusStrip();
+    initMovieSearch();
     selectCategory(currentActiveCategory);
   }
 
