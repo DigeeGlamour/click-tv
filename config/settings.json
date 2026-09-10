@@ -629,5 +629,12 @@
     "source_outage_hold_minutes": 180,
     "source_outage_memory_hours": 6,
     "source_outage_record_max_age_minutes": 45
+  },
+  "direct_channel": {
+    "allowed_sports": [
+      "cricket",
+      "football"
+    ],
+    "note": "Today Match publishes cricket and football, so those are the only sports a direct channel may reach it under. Every other group is still parsed and still counted - see excluded_by_direct_channel_sport_policy in the source report - and nothing is removed from ingestion. Measured on the Tapmad direct feed 2026-09-10: 2 rows, both Cricket, 0 excluded. The audit that opened the question measured 113 rows across six groups, so the policy is applied to what arrives rather than to a remembered mix."
   }
 }

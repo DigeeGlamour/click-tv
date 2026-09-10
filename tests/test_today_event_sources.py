@@ -57,11 +57,19 @@ class TodayEventSourceTests(unittest.TestCase):
             {"today_match", "upcoming"},
         )
 
-    def test_today_collection_reads_both_event_source_groups(self):
+    def test_today_collection_reads_every_event_source_group(self):
+        """PROMPT 14 added a third group, and it rides with the event modes.
+
+        Direct channels publish on the Today surface but are not fixture
+        sources, so they have a registry of their own - every id in
+        today-match.json is declared a fixture authority, and a direct channel
+        may not be one. A today scan therefore collects three groups.
+        """
         settings = {"source_workers": 1, "source_cache": {"enabled": False}}
         sources = {
             "today_match": [{"id": "today-source", "enabled": True}],
             "upcoming": [{"id": "upcoming-source", "enabled": True}],
+            "direct_channel": [{"id": "direct-source", "enabled": True}],
             "manual": {},
         }
 
@@ -94,8 +102,9 @@ class TodayEventSourceTests(unittest.TestCase):
         ):
             payload = source_loader.collect_candidates("today")
 
-        self.assertEqual(payload["active_pipelines"], ["today_match", "upcoming"])
-        self.assertEqual(payload["source_count"], 2)
+        self.assertEqual(payload["active_pipelines"],
+                         ["today_match", "upcoming", "direct_channel"])
+        self.assertEqual(payload["source_count"], 3)
 
     def test_today_collection_submits_every_distinct_playlist_once(self):
         """Guide 30.2/30.3: one physical playlist is fetched once.
@@ -113,7 +122,7 @@ class TodayEventSourceTests(unittest.TestCase):
         # distinct URL happens regardless of the enabled flag.
         configured = [
             source
-            for pipeline in ("today_match", "upcoming")
+            for pipeline in ("today_match", "upcoming", "direct_channel")
             for source in sources[pipeline]
         ]
         expected_urls = {source["url"] for source in configured}

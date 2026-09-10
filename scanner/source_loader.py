@@ -104,6 +104,15 @@ SOURCE_PIPELINE_FILES = {
     "today_match": "today-match.json",
     "upcoming": "upcoming.json",
     "manual": "manual.json",
+    # Direct channels have a registry of their own, and the reason is a rule
+    # rather than tidiness: every id in today-match.json is declared in
+    # settings.events.fixture_authority_sources - two tests pin that the two
+    # lists are equal - and an id in that list may bring a fixture into
+    # existence. A direct channel may not. Registering it there would have
+    # made it a fixture authority, and would also have broken it: a row with
+    # no status is refused by the provider-fixture path and would never reach
+    # the channel fallback that publishes it.
+    "direct_channel": "direct-channels.json",
 }
 
 
@@ -1246,6 +1255,14 @@ def collect_candidates(mode: str = "all") -> Dict[str, Any]:
         "upcoming-targeted", "upcoming_targeted",
     }:
         active_pipelines.append("upcoming")
+    # Direct channels ride along with the event modes because they publish on
+    # the Today surface, and they are collected separately from the fixture
+    # sources because they are not fixture sources.
+    if mode_clean in {
+        "all", "full-audit", "events", "today", "today_match", "upcoming",
+        "upcoming-targeted", "upcoming_targeted",
+    }:
+        active_pipelines.append("direct_channel")
 
     # Movie discovery also reads mixed TV sources, but the content router keeps
     # only VOD items for the movie planner. This repairs movie files that public

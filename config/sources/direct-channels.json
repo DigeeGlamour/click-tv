@@ -1,0 +1,19 @@
+{
+  "note": "Direct channels: a playable stream with a name, a logo and a sport, and no clock at all. Deliberately NOT config/sources/today-match.json, which is the fixture-authority registry - every id in that file is declared in settings.events.fixture_authority_sources and may bring a fixture into existence. A direct channel may not, so it is registered here instead. Rows publish on the Today surface as CHANNEL_LIVE through scanner/schedule_resolver._today_source_channel_fallback, which strips the clock fields and refuses to call it a match. The sport policy lives in config/settings.json -> direct_channel.allowed_sports.",
+  "sources": [
+    {
+      "id": "sm-tapmad-channels",
+      "name": "Tapmad Direct Channels",
+      "url": "https://raw.githubusercontent.com/sm-monirulislam/Tapmad_Auto_Update_Playlist/refs/heads/main/Tapmad_sm.json",
+      "format": "json",
+      "adapter": "tapmad_direct",
+      "enabled": true,
+      "priority": 120,
+      "allow_without_stream": false,
+      "preserve_source_headers": true,
+      "broadcaster": "Tapmad",
+      "entry_type": "direct_channel",
+      "note": "Same upstream as srhady-tapmad-bd - scanner/upstream_family.py has mapped this id to Tapmad since before it was configured, so it can never become a second independent witness. allow_without_stream is false because a channel with no URL is nothing; the adapter skips such a row and reports it. Routes need the akamaized.net header rule: both URLs answered 200 with it on 2026-09-10 and 403 without."
+    }
+  ]
+}

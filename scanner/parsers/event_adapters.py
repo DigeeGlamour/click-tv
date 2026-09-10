@@ -45,6 +45,11 @@ import json
 import re
 from datetime import datetime, timedelta, timezone
 from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+try:  # `scanner.direct_channel` holds the policy, not this reader.
+    from scanner import direct_channel
+except ImportError:  # pragma: no cover - run from inside scanner/
+    import direct_channel  # type: ignore
+
 
 #: Per-source parse accounting, read by the scan report. Reset per run.
 ADAPTER_STATS: Dict[str, Dict[str, Any]] = {}
@@ -106,6 +111,21 @@ ADAPTER_BY_SOURCE: Dict[str, str] = {
 
 def reset_adapter_stats() -> None:
     ADAPTER_STATS.clear()
+
+
+def _settings() -> Dict[str, Any]:
+    """config/settings.json, or an empty dict.
+
+    Read here rather than threaded through every adapter signature:
+    one reader needs it, and an unreadable file must fall back to the
+    policy default rather than to no policy at all.
+    """
+    try:
+        with open("config/settings.json", encoding="utf-8") as handle:
+            loaded = json.load(handle)
+    except (OSError, ValueError):
+        return {}
+    return loaded if isinstance(loaded, dict) else {}
 
 
 def _stats(source_id: str) -> Dict[str, Any]:
@@ -536,6 +556,12 @@ def _record(
     end_time_stated: bool = False,
     source_says_ended: Optional[bool] = None,
     identity: str = "",
+    # What this row IS, when it is not a fixture. Empty for every adapter that
+    # reads a fixture feed, which is all of them but one: a row with no
+    # kickoff and no status is a channel somebody is carrying, and saying so
+    # in the data is better than leaving it to be inferred from an absence.
+    entry_type: str = "",
+    channel_identity: str = "",
 ) -> Dict[str, Any]:
     kept = [entry for entry in channels if entry and entry["servers"]]
     logo = _first_text(*logos)
@@ -558,6 +584,8 @@ def _record(
         "logo": logo,
         "logo_candidates": [str(x or "").strip() for x in logos if str(x or "").strip()],
         "identity": str(identity or "").strip(),
+        "entry_type": str(entry_type or "").strip(),
+        "channel_identity": str(channel_identity or "").strip(),
         "channels": kept,
         "metadata_only": not kept,
     }
@@ -1427,10 +1455,80 @@ def adapt_sportlive_sonyliv(payload: Dict[str, Any], source_id: str) -> List[Dic
     return records
 
 
+def adapt_tapmad_direct(
+    payload: Dict[str, Any],
+    source_id: str,
+) -> List[Dict[str, Any]]:
+    """`response[]` of direct channels: id, name, logo, group, url. No clock.
+
+    A different file from `adapt_tapmad`'s, in the same upstream: that one
+    reads `Matches[]` with kickoffs and statuses, this one reads a list of
+    playable streams with none. Measured on 2026-09-10 the feed carried two
+    rows, both group "Cricket", every field present on both, and no field
+    resembling a time or a status anywhere in it.
+
+    So no fixture is emitted. `entry_type` says `direct_channel`, no
+    `start_time` or `end_time` is written, `status_raw` is left empty, and
+    `scanner/direct_channel` applies the sport policy and the grouping. What
+    reaches the pipeline is a playable channel with a name and a logo, which
+    `_today_source_channel_fallback` publishes as CHANNEL_LIVE.
+
+    The rows are NAMED like fixtures - "England vs Pakistan | Pakistan Tour of
+    England 2026". That is a title the feed chose. Two of its URLs on
+    2026-09-10 resolved to genuinely different live media - segment paths
+    `1789038884/stream0_05173.ts` against `1789028206/stream0_10512.ts` - so
+    they are two real streams; but one of those URLs also carries the path
+    `ZIMvsIND` while its title says Rotterdam against Glasgow, so the title is
+    not evidence about what is playing. A name is published as a name.
+    """
+    records: List[Dict[str, Any]] = []
+    rows = payload.get("response")
+    if not isinstance(rows, list):
+        # The audited shape had the rows at the top level. If the feed moves
+        # them again this returns nothing rather than guessing, and the source
+        # report says the count is zero.
+        return records
+    stats = _stats(source_id)
+    stats["total_records"] += len(rows)
+
+    entries, diagnostics = direct_channel.classify(
+        rows,
+        source_id=source_id,
+        allowed=direct_channel.allowed_sports(_settings()),
+    )
+    stats["direct_channel"] = diagnostics
+    for index, entry in enumerate(diagnostics.get("skipped") or ()):
+        _skip(source_id, index, str(entry.get("reason") or "unusable row"))
+
+    for entry in entries:
+        servers = [_server(entry["url"], label="Tapmad", quality="HD",
+                           headers=entry.get("headers") or None)]
+        servers += [
+            _server(url, label="Tapmad", quality="HD",
+                    headers=entry.get("headers") or None)
+            for url in entry.get("backups") or ()
+        ]
+        records.append(
+            _record(
+                source_id,
+                name=entry["name"],
+                status_raw="",
+                channels=[_channel("Tapmad", [s for s in servers if s])],
+                logos=(entry.get("logo"),),
+                sport=entry["sport"],
+                identity=entry["channel_identity"],
+                entry_type=direct_channel.ENTRY_TYPE,
+                channel_identity=entry["channel_identity"],
+            )
+        )
+    return records
+
+
 ADAPTERS: Dict[str, Callable[[Dict[str, Any], str], List[Dict[str, Any]]]] = {
     "sonyliv": adapt_sonyliv,
     "link_live": adapt_link_live,
     "tapmad": adapt_tapmad,
+    "tapmad_direct": adapt_tapmad_direct,
     "server_dict": adapt_server_dict,
     "named_streams": adapt_named_streams,
     "fancode": adapt_fancode,
@@ -1565,6 +1663,14 @@ def record_pipeline(record: Dict[str, Any], default: str = "today_match") -> str
     exactly the authority verdict that retires the card a previous scan
     published.
     """
+    # A direct channel is a stream on the live surface. It has no schedule to
+    # route on and no Upcoming state to be in, so it never depends on the
+    # vocabulary below - and it must not arrive labelled with the pipeline of
+    # the registry it was configured in, because
+    # `_today_source_channel_fallback` publishes a today_match row.
+    if str(record.get("entry_type") or "") == direct_channel.ENTRY_TYPE:
+        return "today_match"
+
     token = _status_token(record.get("status_raw"))
     if record.get("source_says_ended") is True or token in ENDED_STATUS_TOKENS:
         return default
@@ -1633,6 +1739,12 @@ def flatten_records(
             "name": record["name"],
             "logo": record["logo"],
             "group_title": record.get("sport") or "",
+            # A direct channel says so here, and carries its own identity.
+            # `common` is a whitelist, so a field the adapters invented would
+            # otherwise be dropped between the reader and the pipeline - which
+            # is exactly what "stated in the data" has to survive.
+            "entry_type": record.get("entry_type") or "",
+            "channel_identity": record.get("channel_identity") or "",
             "status": record["status_raw"],
             "original_status": record["status_raw"],
             "start_time": record.get("start_time") or "",
