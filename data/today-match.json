@@ -1,9 +1,9 @@
 {
   "type": "today_match",
-  "updated_at": "2026-09-10T04:49:54.764897+00:00",
-  "count": 7,
+  "updated_at": "2026-09-10T05:09:18.871566+00:00",
+  "count": 9,
   "filtered_stale": 1,
-  "filtered_unplayable": 1,
+  "filtered_unplayable": 0,
   "items": [
     {
       "id": "los-angeles-fc-vs-new-york-red-bulls",
@@ -175,7 +175,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "los-angeles-fc-vs-new-york-red-bulls-2407063",
       "artwork_candidates": [
@@ -209,16 +209,18 @@
       "authority_event_ids": {
         "livescore": "1696591"
       },
-      "authority_finished_confirmations": 1,
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "authority_finished_confirmations": 2,
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
       "lifecycle_protections": [
         "authority_live",
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-10T04:49:48.878227+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-09-10T04:49:48.878227+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 2
     },
     {
       "id": "portland-timbers-vs-st-louis-city",
@@ -389,14 +391,14 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 761796)",
+        "ESPN espn-header=66' (STATUS_IN_PROGRESS, event 761796)",
         "LiveScore livescore=FT (6, event 1696596)"
       ],
       "authority_independent_count": 2,
@@ -405,7 +407,7 @@
         "livescore": "1696596"
       },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "portland-timbers-vs-st--louis-city-sc-2407067",
       "artwork_candidates": [
@@ -431,15 +433,17 @@
       "authority_finished_seen_at": "2026-09-10T04:49:14.233957+00:00",
       "authority_status": "FINISHED",
       "authority_remove_after": "2026-09-10T05:09:14.233957+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
-      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
-      "contradicted_end_confirmations": 1,
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
-      "carried_forward_first_missed_at": "2026-09-10T04:49:48.878227+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-10T04:49:48.878227+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=66' (STATUS_IN_PROGRESS, event 761796); LiveScore livescore=FT (6, event 1696596)",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-10T05:09:13.696408+00:00"
     },
     {
       "id": "san-diego-vs-san-jose-earthquakes",
@@ -669,14 +673,14 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 761797)",
+        "ESPN espn-header=63' (STATUS_SECOND_HALF, event 761797)",
         "LiveScore livescore=FT (6, event 1696602)"
       ],
       "authority_independent_count": 2,
@@ -711,14 +715,14 @@
       "authority_finished_seen_at": "2026-09-10T04:49:14.233957+00:00",
       "authority_status": "FINISHED",
       "authority_remove_after": "2026-09-10T05:09:14.233957+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
       "lifecycle_reason": "finished, holding for the post-match grace",
       "end_pending": true,
       "end_pending_confirmations": 0,
       "ended_seen_at": "2026-09-10T04:49:48.878227+00:00",
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-09-10T04:49:48.878227+00:00"
+      "carried_forward_first_missed_at": "2026-09-10T04:49:48.878227+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=63' (STATUS_SECOND_HALF, event 761797); LiveScore livescore=FT (6, event 1696602)"
     },
     {
       "id": "vancouver-whitecaps-vs-los-angeles-galaxy",
@@ -949,7 +953,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_33022b72ae731ca5e6b0105f11f8b704",
       "protected_source": true,
       "requires_credentials": true,
@@ -960,14 +964,16 @@
         ],
         "drm": false
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-10T04:49:48.878227+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-09-10T04:49:48.878227+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 2
     },
     {
       "id": "cd-motagua-vs-alianza",
@@ -1134,13 +1140,15 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=85' (STATUS_SECOND_HALF, event 401914487)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401914487)",
+        "LiveScore livescore=FT (6, event 1884001)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1158,7 +1166,15 @@
           "token"
         ],
         "drm": false
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401914487); LiveScore livescore=FT (6, event 1884001)",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-09-10T05:09:13.696408+00:00"
     },
     {
       "id": "acc-mens-premier-cup-2026",
@@ -1281,9 +1297,9 @@
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-09-10T04:49:14+00:00",
-      "start_at": "2026-09-10T04:49:14+00:00",
-      "end_time": "2026-09-10T08:49:14+00:00",
+      "start_time": "2026-09-10T05:08:57+00:00",
+      "start_at": "2026-09-10T05:08:57+00:00",
+      "end_time": "2026-09-10T09:08:57+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:acc-men-s-premier-cup-2026|2026-09-10",
       "status": "LIVE_NOW",
@@ -1300,9 +1316,241 @@
       "playback_id": "ctv_063ab17efcd777e2f2375fd7adbd1162"
     },
     {
+      "id": "mls-el-resumen",
+      "name": "MLS El Resumen⁩",
+      "primary_stream_key": "5f12ecbf77dee6eb2d7170b831805efbd638d1aa230b546856a818d67a9c60d3",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T2/images/S/le-target-images-prod/amzn1.dv.gti.8bdb6e3c-bd0f-4eaa-bc56-908887b99bda/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "mls-el-resumen--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T2/images/S/le-target-images-prod/amzn1.dv.gti.8bdb6e3c-bd0f-4eaa-bc56-908887b99bda/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "mls-el-resumen--prime-video--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "mls-el-resumen--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_58ae8b9d1ea282ad7828969a",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_c377f9fae38288cda057c49a1e9fde74",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "mls-el-resumen--prime-video",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-09-10T05:08:57+00:00",
+      "start_at": "2026-09-10T05:08:57+00:00",
+      "end_time": "2026-09-10T07:38:57+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:mls-el-resumen|2026-09-10",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_c377f9fae38288cda057c49a1e9fde74",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "mls-wrap-up",
+      "name": "MLS Wrap Up⁩",
+      "primary_stream_key": "82a51395975bba07c23df9b34967550b993aaefc916af4c0225b11c86f424dc3",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T2/images/S/le-target-images-prod/amzn1.dv.gti.71fa4e8e-b87e-454d-9cc9-1acf0872ea39/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "mls-wrap-up--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T2/images/S/le-target-images-prod/amzn1.dv.gti.71fa4e8e-b87e-454d-9cc9-1acf0872ea39/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "mls-wrap-up--prime-video--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "mls-wrap-up--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_2d3d6e2b0d441aaf26f3d872",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_fae83fe1fcc9bdcdc642b57652576c5e",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "mls-wrap-up--prime-video",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-09-10T05:08:57+00:00",
+      "start_at": "2026-09-10T05:08:57+00:00",
+      "end_time": "2026-09-10T07:38:57+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:mls-wrap-up|2026-09-10",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_fae83fe1fcc9bdcdc642b57652576c5e",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
       "id": "motagua-vs-alianza-fc",
       "name": "Motagua vs Alianza FC",
-      "primary_stream_key": "99fce3a348ae3c8199624a218047c8dc3315a59ac920dae15206ce1ae74d2e72",
+      "primary_stream_key": "2378f87b47c1a3e10af1ae6459f418022cf30673af524ac85342d124e21826b3",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T2/images/S/le-target-images-prod/amzn1.dv.gti.2f805a10-80aa-4b1d-b0bd-5020d431e926/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpg",
@@ -1327,35 +1575,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1384,7 +1603,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1404,6 +1623,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1439,19 +1687,6 @@
               "id": "motagua-vs-alianza-fc--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "motagua-vs-alianza-fc--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_0e638de706138f746f0f4bb0",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -1462,7 +1697,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "motagua-vs-alianza-fc--prime-video--3",
+              "id": "motagua-vs-alianza-fc--prime-video--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_b9a4754dd8779c45821c460d",
@@ -1475,7 +1710,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "motagua-vs-alianza-fc--prime-video--4",
+              "id": "motagua-vs-alianza-fc--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_5458cc437e60a57ab38df02d",
@@ -1483,6 +1718,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "motagua-vs-alianza-fc--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1517,9 +1765,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-09-10T04:49:14+00:00",
-      "start_at": "2026-09-10T04:49:14+00:00",
-      "end_time": "2026-09-10T07:19:14+00:00",
+      "start_time": "2026-09-10T05:08:57+00:00",
+      "start_at": "2026-09-10T05:08:57+00:00",
+      "end_time": "2026-09-10T07:38:57+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:motagua-vs-alianza-fc|2026-09-10",
       "status": "LIVE_NOW",
@@ -1531,22 +1779,20 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=85' (STATUS_SECOND_HALF, event 401914487)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401914487)",
+        "LiveScore livescore=FT (6, event 1884001)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401914487"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401914487); LiveScore livescore=FT (6, event 1884001)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+      "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
