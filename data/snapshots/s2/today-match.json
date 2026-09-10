@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-09-10T15:11:55.365517+00:00",
+  "updated_at": "2026-09-10T15:22:30.216725+00:00",
   "count": 12,
   "filtered_stale": 1,
   "filtered_unplayable": 0,
@@ -525,18 +525,18 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1547890)",
+        "ESPN espn-header=Result (Result, event 1547890)",
         "LiveScore livescore=FT (6, event 1849992)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_a18b903731b8ba85de623c0ddd7cfe51",
       "protected_source": true,
       "requires_credentials": true,
@@ -545,15 +545,27 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
       "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-09-10T14:49:39.481271+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Live (Live, event 1547890); LiveScore livescore=FT (6, event 1849992)"
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1547890",
+        "livescore": "1849992"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-10T15:22:01.424915+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-10T15:42:01.424915+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-10T15:22:25.404338+00:00"
     },
     {
       "id": "england-vs-pakistan",
@@ -655,7 +667,7 @@
           "host": "livecdn-tc-iptv.rumsport10.live",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_6ef960df8aa5918ad53d69868e609c81",
+          "playback_id": "ctv_9b63774e64eb72055dbe9b78a62d7892",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -668,7 +680,7 @@
         },
         {
           "name": "Backup-5",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -679,14 +691,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_dc17b8376f7603ad3b4702588ebd780e",
+          "playback_id": "ctv_d2eae87ff5a9c47521e2b3c78d00e29d",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -723,32 +735,6 @@
               "id": "england-vs-pakistan--willow--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_f5814238ab6f18ac59762a69",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_619bc71562d50aa10e98a74e87ddf794",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "england-vs-pakistan--willow--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_26aab3fa5ba00ab72b5d9777",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_d8e05e3ef9f0714de802c13dc0ec55a3",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "england-vs-pakistan--willow--3",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_e50b2d9d512970add392a93a",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
@@ -759,20 +745,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "england-vs-pakistan--willow--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_7b68b3353cb757d05e06ae6d",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_e406ea3c697b3c24965f60894a9a8882",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "england-vs-pakistan--willow--5",
+              "id": "england-vs-pakistan--willow--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_782904f4691dea41e484a656",
@@ -785,7 +758,20 @@
               "stream_type": "dash"
             },
             {
-              "id": "england-vs-pakistan--willow--6",
+              "id": "england-vs-pakistan--willow--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_26aab3fa5ba00ab72b5d9777",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_d8e05e3ef9f0714de802c13dc0ec55a3",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "england-vs-pakistan--willow--4",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_8f0d85d173e3133b5fdee0fe",
@@ -793,6 +779,32 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_6e44719b0739f4437f3bb7e858ef951d",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "england-vs-pakistan--willow--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_7b68b3353cb757d05e06ae6d",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_e406ea3c697b3c24965f60894a9a8882",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "england-vs-pakistan--willow--6",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_f5814238ab6f18ac59762a69",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_619bc71562d50aa10e98a74e87ddf794",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -825,19 +837,6 @@
               "id": "england-vs-pakistan--willow-2--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_eda046e86153d794dabfdd49",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_dc17b8376f7603ad3b4702588ebd780e",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "england-vs-pakistan--willow-2--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_b189228ecf2a87a30b7f1cbb",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
@@ -848,7 +847,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "england-vs-pakistan--willow-2--3",
+              "id": "england-vs-pakistan--willow-2--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_6400d5ca479d891b3968aa6a",
@@ -856,6 +855,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_d2eae87ff5a9c47521e2b3c78d00e29d",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "england-vs-pakistan--willow-2--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_830d7beb65cebc96be0dac46",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_c80fe8a325254ea902bfa9ca3e684d0a",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -877,11 +889,11 @@
               "id": "england-vs-pakistan--willow-2--5",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_830d7beb65cebc96be0dac46",
+              "variant_key": "sv_eda046e86153d794dabfdd49",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_c80fe8a325254ea902bfa9ca3e684d0a",
+              "playback_id": "ctv_dc17b8376f7603ad3b4702588ebd780e",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -985,11 +997,11 @@
               "id": "england-vs-pakistan--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_3d1576a77d5add7814c31add",
+              "variant_key": "sv_b59cacac8dde6d6e0e8f4990",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_6ef960df8aa5918ad53d69868e609c81",
+              "playback_id": "ctv_9b63774e64eb72055dbe9b78a62d7892",
               "resolution": "HD",
               "resolution_height": 720,
               "stream_type": "hls"
@@ -1156,7 +1168,7 @@
           "host": "otte.cache.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_218e57e8c33ded516cd1749aafe52d10",
+          "playback_id": "ctv_1a38e8c904e2f2380fb3dede02e999b3",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1171,7 +1183,7 @@
             "type": "clearkey",
             "protected": true
           },
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "requires_headers": false,
           "verification_status": "verified_global",
@@ -1184,10 +1196,10 @@
               "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
             }
           ],
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "otte.cache.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_651fd06bcea03a0b3bcc64e8c3192a52",
+          "playback_id": "ctv_218e57e8c33ded516cd1749aafe52d10",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1442,7 +1454,7 @@
       ],
       "carried_forward_misses": 1,
       "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-09-10T15:11:35.129036+00:00"
+      "carried_forward_first_missed_at": "2026-09-10T15:22:25.404338+00:00"
     },
     {
       "id": "fazilka-falcons-vs-bathinda-royals",
@@ -1521,12 +1533,12 @@
       ],
       "carried_forward_misses": 1,
       "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-09-10T15:11:35.129036+00:00"
+      "carried_forward_first_missed_at": "2026-09-10T15:22:25.404338+00:00"
     },
     {
       "id": "belfast-wolves-vs-amsterdam-flames",
       "name": "Belfast Wolves vs Amsterdam Flames",
-      "primary_stream_key": "ac5df0fefb2353d58017ecd3d599b74b9ae70f7d542dd82c285ac3d0d20e5a04",
+      "primary_stream_key": "049913378995018cc16c32cc024191f328158b0a22292d756992158bb2ac6816",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.ae9acd49-8d06-4832-ae68-e37383acc6f0/4/BOXART-16X9/en-US._UR1920,1080_.jpeg",
@@ -1558,20 +1570,18 @@
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
-          "verification_badge": "Playback Unproven",
+          "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "playback_unproven": true,
-          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4e69dad246c259ead0062b4da05fe3e8",
+          "playback_id": "ctv_4856db19b0a166d1e4c5550ae98ecd76",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1582,37 +1592,6 @@
         },
         {
           "name": "Backup-2",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Playback Unproven",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-willow-event",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "playback_unproven": true,
-          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_74f678f16decaf4f7ccb2d9b08fc4475",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1641,7 +1620,7 @@
           }
         },
         {
-          "name": "Backup-4",
+          "name": "Backup-3",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1653,14 +1632,45 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "a96aivottlinear-a.akamaihd.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_2f3063828661a81d1bd78cba059ad128",
+          "playback_id": "ctv_3309640424ebbe6d6e983e61f73f8b10",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Playback Unproven",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-willow-event",
+          "host": "a96aivottlinear-a.akamaihd.net",
+          "playback_unproven": true,
+          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_6c29dd28c7d4d1299b6f0d2729650b56",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1678,18 +1688,20 @@
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
-          "verification_badge": "Verified",
+          "verification_badge": "Playback Unproven",
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "playback_unproven": true,
+          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4856db19b0a166d1e4c5550ae98ecd76",
+          "playback_id": "ctv_4e69dad246c259ead0062b4da05fe3e8",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1700,94 +1712,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "belfast-wolves-vs-amsterdam-flames--willow-2",
-          "name": "Willow 2",
-          "normalized_name": "willow-2",
-          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.ae9acd49-8d06-4832-ae68-e37383acc6f0/4/BOXART-16X9/en-US._UR1920,1080_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-willow-event",
-          "source_ids": [
-            "srhady-willow-event"
-          ],
-          "primary_stream_id": "belfast-wolves-vs-amsterdam-flames--willow-2--1",
-          "stream_count": 5,
-          "backup_count": 4,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "belfast-wolves-vs-amsterdam-flames--willow-2--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_941950c3e5f4b9c503ce5312",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_0ceb1a822913548a9b5d2a2b04aeee5d",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "belfast-wolves-vs-amsterdam-flames--willow-2--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_40ad353445fb16d30dafb044",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4e69dad246c259ead0062b4da05fe3e8",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "belfast-wolves-vs-amsterdam-flames--willow-2--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_a41226575941f20f08b95a20",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_74f678f16decaf4f7ccb2d9b08fc4475",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "belfast-wolves-vs-amsterdam-flames--willow-2--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_6fb64fb460a9b9a8ec20130e",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_d2ed23500fd800be8cb86ff59db42540",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "belfast-wolves-vs-amsterdam-flames--willow-2--5",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_b28f0616a5ac667a3ff98dbe",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_2f3063828661a81d1bd78cba059ad128",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "belfast-wolves-vs-amsterdam-flames--willow",
           "name": "Willow",
@@ -1813,19 +1737,6 @@
               "id": "belfast-wolves-vs-amsterdam-flames--willow--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_05513b6daa08b441003e4788",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4856db19b0a166d1e4c5550ae98ecd76",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "belfast-wolves-vs-amsterdam-flames--willow--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_244b1aa5725ef1a36b66458a",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
@@ -1836,20 +1747,20 @@
               "stream_type": "dash"
             },
             {
-              "id": "belfast-wolves-vs-amsterdam-flames--willow--3",
+              "id": "belfast-wolves-vs-amsterdam-flames--willow--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_5f508fedbcbb29d7c766a054",
+              "variant_key": "sv_05513b6daa08b441003e4788",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_bc270c508b5365f28e9bfe87b6a7de1f",
+              "playback_id": "ctv_4856db19b0a166d1e4c5550ae98ecd76",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
             },
             {
-              "id": "belfast-wolves-vs-amsterdam-flames--willow--4",
+              "id": "belfast-wolves-vs-amsterdam-flames--willow--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_bbeb71fd8bfa758f4ac3da65",
@@ -1862,7 +1773,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "belfast-wolves-vs-amsterdam-flames--willow--5",
+              "id": "belfast-wolves-vs-amsterdam-flames--willow--4",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_74e8c0cc810c7e7fe7702a26",
@@ -1873,12 +1784,113 @@
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
+            },
+            {
+              "id": "belfast-wolves-vs-amsterdam-flames--willow--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_5f508fedbcbb29d7c766a054",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_bc270c508b5365f28e9bfe87b6a7de1f",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "belfast-wolves-vs-amsterdam-flames--willow-2",
+          "name": "Willow 2",
+          "normalized_name": "willow-2",
+          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.ae9acd49-8d06-4832-ae68-e37383acc6f0/4/BOXART-16X9/en-US._UR1920,1080_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-willow-event",
+          "source_ids": [
+            "srhady-willow-event"
+          ],
+          "primary_stream_id": "belfast-wolves-vs-amsterdam-flames--willow-2--1",
+          "stream_count": 5,
+          "backup_count": 4,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "belfast-wolves-vs-amsterdam-flames--willow-2--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_40ad353445fb16d30dafb044",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4e69dad246c259ead0062b4da05fe3e8",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "belfast-wolves-vs-amsterdam-flames--willow-2--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_6fb64fb460a9b9a8ec20130e",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_d2ed23500fd800be8cb86ff59db42540",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "belfast-wolves-vs-amsterdam-flames--willow-2--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b28f0616a5ac667a3ff98dbe",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_2f3063828661a81d1bd78cba059ad128",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "belfast-wolves-vs-amsterdam-flames--willow-2--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_a41226575941f20f08b95a20",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_74f678f16decaf4f7ccb2d9b08fc4475",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "belfast-wolves-vs-amsterdam-flames--willow-2--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_941950c3e5f4b9c503ce5312",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_0ceb1a822913548a9b5d2a2b04aeee5d",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
             }
           ]
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "belfast-wolves-vs-amsterdam-flames--willow-2",
+      "default_channel_id": "belfast-wolves-vs-amsterdam-flames--willow",
       "channel_stats": {
         "streams_in": 10,
         "unresolved_channel_streams": 0,
@@ -1940,10 +1952,10 @@
               "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
             }
           ],
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "host": "otte.cache.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_de6bbf4fbc739b1ba666c4113a87462d",
+          "playback_id": "ctv_3e1e1e72380179cd3af180f3284d0e13",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1974,7 +1986,7 @@
           "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_44c24f161a33f9f9ff367d9b1fbf1950",
+          "playback_id": "ctv_bc6a5cb4689e095cc4d30b1f74ded2c1",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2005,7 +2017,7 @@
           "host": "a96aivottlinear-a.akamaihd.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_e1a232f119d8e265332051eda2d429c3",
+          "playback_id": "ctv_fae0cc8eaee12a6952932d079fbb1716",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2047,20 +2059,25 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1547891)",
+        "ESPN espn-header=Live (Live, event 1547891)",
         "LiveScore livescore=Play in progress (33, event 1849991)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1547891); LiveScore livescore=Play in progress (33, event 1849991)",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1547891",
+        "livescore": "1849991"
+      },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_0ceb1a822913548a9b5d2a2b04aeee5d",
+      "playback_id": "ctv_b80f6b9fe758086ca5a7dd3a4da8772a",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -2109,14 +2126,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_b07f5cbbfac54d9ffdee6c1745cbfba8",
+          "playback_id": "ctv_151923a55d6a3324761060842003cdcb",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2127,35 +2144,6 @@
         },
         {
           "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-willow-event",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_498d896c367b8b4606bfbd2053829f35",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -2184,7 +2172,7 @@
           }
         },
         {
-          "name": "Backup-4",
+          "name": "Backup-3",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -2203,7 +2191,36 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_7aa7ebe84367bd81d384cd348e981e85",
+          "playback_id": "ctv_04d23d2eefc4568e8024107fa4e00742",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-willow-event",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_b07f5cbbfac54d9ffdee6c1745cbfba8",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2276,94 +2293,6 @@
               "resolution": "HD",
               "resolution_height": 720,
               "stream_type": "hls"
-            }
-          ]
-        },
-        {
-          "id": "india-women-vs-bangladesh-women--willow",
-          "name": "Willow",
-          "normalized_name": "willow",
-          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.482e7911-824a-4758-90b7-0afc4cad60e4/4/BOXART-16X9/en-US._UR1920,1080_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-willow-event",
-          "source_ids": [
-            "srhady-willow-event"
-          ],
-          "primary_stream_id": "india-women-vs-bangladesh-women--willow--1",
-          "stream_count": 5,
-          "backup_count": 4,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "india-women-vs-bangladesh-women--willow--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_17689846db3878eb36233a10",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_b07f5cbbfac54d9ffdee6c1745cbfba8",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "india-women-vs-bangladesh-women--willow--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_4fc6eec7bcdbfbd14d24b00a",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_498d896c367b8b4606bfbd2053829f35",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "india-women-vs-bangladesh-women--willow--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_a3b60bafcd465017dc60e43c",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_7aa7ebe84367bd81d384cd348e981e85",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "india-women-vs-bangladesh-women--willow--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_915841a4e5acd92b4f829e2a",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_f2745eb0ee97d4c403c2df8514b82465",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "india-women-vs-bangladesh-women--willow--5",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_b6fc6fe6a9a0c9d589249025",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_8ea2f2944cac8a551c9b304337f29a63",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
             }
           ]
         },
@@ -2454,6 +2383,94 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "india-women-vs-bangladesh-women--willow",
+          "name": "Willow",
+          "normalized_name": "willow",
+          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.482e7911-824a-4758-90b7-0afc4cad60e4/4/BOXART-16X9/en-US._UR1920,1080_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-willow-event",
+          "source_ids": [
+            "srhady-willow-event"
+          ],
+          "primary_stream_id": "india-women-vs-bangladesh-women--willow--1",
+          "stream_count": 5,
+          "backup_count": 4,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "india-women-vs-bangladesh-women--willow--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_915841a4e5acd92b4f829e2a",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f2745eb0ee97d4c403c2df8514b82465",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "india-women-vs-bangladesh-women--willow--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_4fc6eec7bcdbfbd14d24b00a",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_498d896c367b8b4606bfbd2053829f35",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "india-women-vs-bangladesh-women--willow--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_a3b60bafcd465017dc60e43c",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_7aa7ebe84367bd81d384cd348e981e85",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "india-women-vs-bangladesh-women--willow--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_17689846db3878eb36233a10",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_b07f5cbbfac54d9ffdee6c1745cbfba8",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "india-women-vs-bangladesh-women--willow--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b6fc6fe6a9a0c9d589249025",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_8ea2f2944cac8a551c9b304337f29a63",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
       "channel_count": 3,
@@ -2491,7 +2508,7 @@
           "host": "ss-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_783f02f25304644e27cf3c65e9f8b288",
+          "playback_id": "ctv_e2c393bfe0d58952e80ea41278907801",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2522,7 +2539,7 @@
           "host": "otte.live.fly.ww.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_f67308e3fd09118cc0a07d2bc00f811e",
+          "playback_id": "ctv_006278c4c2deeff101fdc20763f8289b",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2817,7 +2834,7 @@
       "resolution_height": 1080,
       "start_time": "2026-09-10T13:00:00+00:00",
       "start_at": "2026-09-10T13:00:00+00:00",
-      "end_time": "2026-09-10T16:10:44+00:00",
+      "end_time": "2026-09-10T16:22:01+00:00",
       "end_time_source": "assumed",
       "competition": "U-20 Women's World Championship",
       "fixture_id": "provider:spain-u20-vs-new-caledonia-u20|u 20 women world championship|2026-09-10",
@@ -2995,7 +3012,7 @@
       "resolution_height": 720,
       "start_time": "2026-09-10T13:00:00+00:00",
       "start_at": "2026-09-10T13:00:00+00:00",
-      "end_time": "2026-09-10T16:10:44+00:00",
+      "end_time": "2026-09-10T16:22:01+00:00",
       "end_time_source": "assumed",
       "competition": "UEFA Youth League",
       "fixture_id": "provider:manchester-united-u19-vs-sabah-u19|uefa youth league|2026-09-10",
@@ -3030,7 +3047,7 @@
     {
       "id": "al-jazira-vs-al-nasr",
       "name": "Al Jazira vs Al Nasr",
-      "primary_stream_key": "69ef8c820a598964e4069dfd8068f3ac69e388c52e95c04883718e0720eaba50",
+      "primary_stream_key": "9264d81c0ec34b1ed839e43feaf668947209556f274288aacc1f12b43eddbd9a",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://rs.maycdn.com/fixture/teams/af/2871.png",
@@ -3067,7 +3084,7 @@
           "publish_allowed": true,
           "source_id": "srhady-bingstream",
           "host": "livecdn-tc-livestream.rumsport10.live",
-          "playback_id": "ctv_7684a850db2580220bca5a83b244f66d",
+          "playback_id": "ctv_2946349a7414048e1b3f5a3ae46c78a7",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -3126,7 +3143,7 @@
           "resolution_height": 1080,
           "start_time": "2026-09-10T13:40:00+00:00",
           "start_at": "2026-09-10T13:40:00+00:00",
-          "end_time": "2026-09-10T16:10:44+00:00",
+          "end_time": "2026-09-10T16:22:01+00:00",
           "end_time_source": "assumed",
           "competition": "UAE Pro League",
           "fixture_id": "provider:al-jazira-vs-al-nasr-dubai|uae pro league|2026-09-10",
@@ -3172,11 +3189,11 @@
               "id": "al-jazira-vs-al-nasr--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_2f686b97d26993fc5f7c3353",
+              "variant_key": "sv_c4a7d31d2ed7250ed51a5d07",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_925711984f52766871f45e1c0033d78f",
+              "playback_id": "ctv_99909faee9c8f6d64ef725736d395bff",
               "stream_type": "hls"
             }
           ]
@@ -3206,11 +3223,11 @@
               "id": "al-jazira-vs-al-nasr--server-2--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_ec81248460f56b3b3b8b2a50",
+              "variant_key": "sv_1461b42812f9fbb2a30f956c",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_7684a850db2580220bca5a83b244f66d",
+              "playback_id": "ctv_2946349a7414048e1b3f5a3ae46c78a7",
               "stream_type": "hls"
             }
           ]
@@ -3300,7 +3317,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/uknsoq1642708421.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/oy1zwv1753982526.png",
-      "playback_id": "ctv_925711984f52766871f45e1c0033d78f",
+      "playback_id": "ctv_99909faee9c8f6d64ef725736d395bff",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -3314,7 +3331,7 @@
     {
       "id": "dubai-united-vs-shabab-al-ahli-dubai",
       "name": "Dubai United vs Shabab Al Ahli Dubai",
-      "primary_stream_key": "8c9090edf5441aac7bd973249394ad023c80197e87af68e9d7d6ad06fe9304f8",
+      "primary_stream_key": "7919760831e8d2ce1cb9e57373a8aa3a8a1d62f8763b7ab3d3527d79d9db255b",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://rs.maycdn.com/fixture/teams/af/22321.png",
@@ -3363,11 +3380,11 @@
               "id": "dubai-united-vs-shabab-al-ahli-dubai--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_384d60d47791a5708a7f2ce0",
+              "variant_key": "sv_b8ba2385e74b4f75cefd46da",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_acfb74e05ee8c2e0479cab9088c3071d",
+              "playback_id": "ctv_bf33540bcb9ec7538717d95f27b33131",
               "stream_type": "hls"
             }
           ]
@@ -3402,7 +3419,7 @@
       ],
       "start_time": "2026-09-10T13:40:00+00:00",
       "start_at": "2026-09-10T13:40:00+00:00",
-      "end_time": "2026-09-10T16:10:44+00:00",
+      "end_time": "2026-09-10T16:22:01+00:00",
       "end_time_source": "assumed",
       "competition": "Pro League",
       "fixture_id": "provider:dubai-united-vs-shabab-al-ahli-dubai|pro league|2026-09-10",
@@ -3418,7 +3435,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_acfb74e05ee8c2e0479cab9088c3071d",
+      "playback_id": "ctv_bf33540bcb9ec7538717d95f27b33131",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -3432,7 +3449,7 @@
     {
       "id": "bayern-münchen-u19-vs-bodø-glimt-u19",
       "name": "Bayern München U19 vs Bodø Glimt U19",
-      "primary_stream_key": "e33cc8adedce001466a05f151a04c0aaee2902ba8993d0cc8132ab1c88226554",
+      "primary_stream_key": "fc49107ff46021a9c07719544afca364329c8c6fd4f29a8a392053aff483d308",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://rs.maycdn.com/fixture/teams/af/7887.png",
@@ -3469,7 +3486,7 @@
           "publish_allowed": true,
           "source_id": "srhady-bingstream",
           "host": "livecdn-tc-livestream.rumsport10.live",
-          "playback_id": "ctv_0b21f9e23596f1974ead89189d6f0336",
+          "playback_id": "ctv_d98face60eaf934ba1fcc066946a8796",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -3507,11 +3524,11 @@
               "id": "bayern-m-nchen-u19-vs-bod-glimt-u19--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_7165a2dfbd949d722d01f867",
+              "variant_key": "sv_78d7cafa4ec41018c9798c5d",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_e077c5c6a2a9c92903d6576259d5ac03",
+              "playback_id": "ctv_ca86ad166d70bcef7b4887935fee487f",
               "stream_type": "hls"
             }
           ]
@@ -3541,11 +3558,11 @@
               "id": "bayern-m-nchen-u19-vs-bod-glimt-u19--server-2--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_5dbf7bb237c25f46c7d3e2d9",
+              "variant_key": "sv_c1888fa0786ff1fe3338350f",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_0b21f9e23596f1974ead89189d6f0336",
+              "playback_id": "ctv_d98face60eaf934ba1fcc066946a8796",
               "stream_type": "hls"
             }
           ]
@@ -3596,7 +3613,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_e077c5c6a2a9c92903d6576259d5ac03",
+      "playback_id": "ctv_ca86ad166d70bcef7b4887935fee487f",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
