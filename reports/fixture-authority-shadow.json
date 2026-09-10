@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T11:29:01.950783+00:00",
+  "generated_at": "2026-09-10T11:37:55.897753+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,10 +10,11 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 623,
+      "fixtures": 624,
       "unknown_statuses": [
         "132|Stumps - day 1",
-        "2|26'"
+        "172|Lunch - day 3",
+        "2|35'"
       ],
       "attempts": [
         {
@@ -50,7 +51,7 @@
           "sport": "football",
           "date": "2026-09-11",
           "result": "ok",
-          "fixtures": 274
+          "fixtures": 275
         }
       ]
     },
@@ -106,26 +107,26 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 5,
-    "upcoming": 56,
-    "fixtures": 61,
+    "upcoming": 54,
+    "fixtures": 59,
     "verdicts": {
-      "UNVERIFIED": 31,
+      "UNVERIFIED": 30,
+      "PARTIAL_AUTHORITY": 1,
       "CONFLICT": 1,
-      "VERIFIED": 28,
-      "PARTIAL_AUTHORITY": 1
+      "VERIFIED": 27
     },
-    "verified": 28,
+    "verified": 27,
     "partial_authority": 1,
-    "unverified": 31,
+    "unverified": 30,
     "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "matched": 25,
-        "unmatched": 36
+        "unmatched": 34
       },
       "livescore": {
-        "matched": 25,
-        "unmatched": 36
+        "matched": 24,
+        "unmatched": 35
       }
     },
     "matched_by_two_independent_authorities": 18,
@@ -136,16 +137,17 @@
       "kickoff": 4,
       "authorities disagree": 1
     },
-    "identity_near_misses": 10,
+    "identity_near_misses": 9,
     "independent_authority_count_distribution": {
-      "0": 31,
-      "1": 12,
+      "0": 30,
+      "1": 11,
       "2": 18
     },
     "unknown_authority_statuses": {
       "livescore": [
         "132|Stumps - day 1",
-        "2|26'"
+        "172|Lunch - day 3",
+        "2|35'"
       ],
       "espn-header": []
     }
@@ -206,14 +208,6 @@
       "agreed_side": "shabab al ahli dubai",
       "ours": "dubai united",
       "theirs": "united"
-    },
-    {
-      "fixture": "PSV U19 vs Shakhtar Donetsk U19",
-      "authority": "livescore",
-      "authority_name": "PSV Eindhoven U19 vs Shakhtar Donetsk U19",
-      "agreed_side": "shakhtar donetsk u19",
-      "ours": "psv u19",
-      "theirs": "psv eindhoven u19"
     },
     {
       "fixture": "Rennes vs Olympique Marseille",
@@ -324,6 +318,66 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:fenerbahce-u19-vs-roma-u19|uefa youth league|2026-09-10",
+      "card_id": "fenerbahce-u19-vs-roma-u19",
+      "name": "Fenerbahce U19 vs Roma U19",
+      "competition": "UEFA Youth League",
+      "kickoff": "2026-09-10T11:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1886551",
+          "upstream_family": "LiveScore",
+          "name": "Fenerbahce U19 vs Roma U19",
+          "home": "Fenerbahce U19",
+          "away": "Roma U19",
+          "home_team_id": "414046",
+          "away_team_id": "12580",
+          "competition": "Champions League Path",
+          "competition_id": "109",
+          "kickoff": "2026-09-10T11:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "35'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:rotterdam-dockers-vs-glasgow-cosmics|european t20 premier league 2026 19th|2026-09-10",
       "card_id": "rotterdam-dockers-vs-glasgow-cosmics",
       "name": "Rotterdam Dockers vs Glasgow Cosmics",
@@ -429,10 +483,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -520,66 +573,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:fenerbahce-u19-vs-roma-u19|uefa youth league|2026-09-10",
-      "card_id": "fenerbahce-u19-vs-roma-u19",
-      "name": "Fenerbahce U19 vs Roma U19",
-      "competition": "UEFA Youth League",
-      "kickoff": "2026-09-10T11:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1886551",
-          "upstream_family": "LiveScore",
-          "name": "Fenerbahce U19 vs Roma U19",
-          "home": "Fenerbahce U19",
-          "away": "Roma U19",
-          "home_team_id": "414046",
-          "away_team_id": "12580",
-          "competition": "Champions League Path",
-          "competition_id": "109",
-          "kickoff": "2026-09-10T11:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "26'",
-          "status_code": "2",
-          "status": "UNKNOWN",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -721,11 +714,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -922,11 +915,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -983,11 +976,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -1212,16 +1205,16 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "srhady-axsports-live",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "srhady-tapmad-bd",
-        "dartv-fancode-mirror",
-        "srhady-bingstream",
-        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "srhady-bingstream",
+        "srhady-axsports-live",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1499,13 +1492,13 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "srhady-tapmad-bd",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
+        "srhady-tapmad-bd",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode",
@@ -2103,11 +2096,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -2308,14 +2301,14 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "srhady-tapmad-bd",
-        "dartv-fancode-mirror",
-        "sm-fancode",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode",
@@ -2405,13 +2398,13 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "sm-fancode",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode",
@@ -2567,11 +2560,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -2727,11 +2720,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -3042,11 +3035,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -3159,53 +3152,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:psv-u19-vs-shakhtar-donetsk-u19|uefa youth league|2026-09-10",
-      "card_id": "psv-u19-vs-shakhtar-donetsk-u19",
-      "name": "PSV U19 vs Shakhtar Donetsk U19",
-      "competition": "UEFA Youth League",
-      "kickoff": "2026-09-10T12:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "PSV Eindhoven U19 vs Shakhtar Donetsk U19",
-              "event_id": "1886552",
-              "agreed_side": "shakhtar donetsk u19",
-              "ours": "psv u19",
-              "theirs": "psv eindhoven u19"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:racing-club-de-santander-vs-deportivo-alaves|laliga 2026 27|2026-09-12",
       "card_id": "racing-club-de-santander-vs-deportivo-alaves",
       "name": "Racing Club de Santander vs Deportivo Alaves",
@@ -3220,11 +3166,12 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "srhady-crichd-footy-live",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "CricHD",
@@ -3293,66 +3240,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:slavia-praha-u19-vs-lens-u19|uefa youth league|2026-09-10",
-      "card_id": "slavia-praha-u19-vs-lens-u19",
-      "name": "Slavia Praha U19 vs Lens U19",
-      "competition": "UEFA Youth League",
-      "kickoff": "2026-09-10T12:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1886559",
-          "upstream_family": "LiveScore",
-          "name": "Slavia Prague U19 vs Lens U19",
-          "home": "Slavia Prague U19",
-          "away": "Lens U19",
-          "home_team_id": "7144",
-          "away_team_id": "271177",
-          "competition": "Champions League Path",
-          "competition_id": "109",
-          "kickoff": "2026-09-10T12:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -3721,11 +3608,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -3972,42 +3859,6 @@
   ],
   "retired_or_unpublished": [
     {
-      "fixture_id": "provider:amritsar-soormas-vs-jalandhar-warriors|sher e punjab t20 2026|2026-09-10",
-      "card_id": "amritsar-soormas-vs-jalandhar-warriors",
-      "name": "Amritsar Soormas vs Jalandhar Warriors",
-      "competition": "Sher-E-Punjab T20, 2026",
-      "kickoff": "2026-09-10T07:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/IPTVFlixBD/Fancode-BD/refs/heads/main/data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "iptvflixbd-fancode-data"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
       "fixture_id": "provider:evento|mlb evento|2026-09-04",
       "card_id": "live-evento",
       "name": "LIVE EVENTO",
@@ -4111,9 +3962,8 @@
       "provider_identity": "",
       "source_ids": [
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
