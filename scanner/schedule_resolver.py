@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+from scanner import direct_channel
 from scanner import sport_filter
 from scanner.event_lifecycle import (
     CRICKET_FORMAT_MINUTES,
@@ -1140,6 +1141,29 @@ _MULTI_DAY_FIXTURE = re.compile(
 )
 
 
+def _reuse_identity(entry: Dict[str, Any]) -> str:
+    """The identity a published card id is remembered under.
+
+    A fixture is remembered by its name, because that is what survives a
+    promotion from Upcoming to Today Match. A direct channel is remembered
+    by its channel, because its name does not survive the afternoon: on
+    2026-09-10 `tapmad-16707` was titled "Rotterdam Dockers vs Glasgow
+    Cosmic" and then "Belfast Wolves vs Amsterdam Flames" for one
+    unchanged URL.
+
+    Keyed on the name alone the two domains collide:
+    `_event_identity_name` answers `belfast-wolves-vs-amsterdam-flames`
+    for the channel's title as readily as for the fixture's, so the
+    channel would be handed the fixture's published card id - a fixture
+    identity crossing domains, and two cards answering to one id.
+    """
+    if direct_channel.is_direct_channel(entry):
+        identity = direct_channel.identity_key(entry)
+        return ("%s:%s" % (direct_channel.DIRECT_DOMAIN, identity)
+                if identity else "")
+    return _event_identity_name(entry.get("name"))
+
+
 def reuse_published_event_ids(
     items: List[Dict[str, Any]],
     data_root: str | Path = "data",
@@ -1165,7 +1189,7 @@ def reuse_published_event_ids(
         for entry in payload.get("items") or []:
             if not isinstance(entry, dict):
                 continue
-            key = _event_identity_name(entry.get("name"))
+            key = _reuse_identity(entry)
             existing = str(entry.get("id") or "").strip()
             if key and existing:
                 published.setdefault(key, existing)
@@ -1183,11 +1207,13 @@ def reuse_published_event_ids(
     for item in items:
         event_id = str(item.get("id") or "").strip()
         if event_id:
-            claimed.setdefault(event_id, _event_identity_name(item.get("name")))
+            claimed.setdefault(event_id, _reuse_identity(item))
 
     reused = 0
     for item in items:
-        key = _event_identity_name(item.get("name"))
+        key = _reuse_identity(item)
+        if not key:
+            continue
         previous = published.get(key)
         if not previous:
             continue
@@ -1586,12 +1612,41 @@ def enrich_event_candidates(
         "provider_rejected_fixtures": [],
         "ambiguous_suppressed": 0,
         "unverified_suppressed": 0,
+        # The direct-channel domain, counted separately because nothing
+        # about a fixture is decided for it here.
+        "direct_channel_kept": 0,
+        "direct_channel_unusable": 0,
     }
     matched_fixture_ids: set[str] = set()
 
     for original in candidates:
         item = copy.deepcopy(original)
         name = str(item.get("name") or "")
+
+        # A direct channel never enters fixture matching. Its title is the
+        # only thing about it that looks like a fixture, and a title is not
+        # evidence: `_is_exact_event` is true of "Belfast Wolves vs
+        # Amsterdam Flames | European T20 Premier League 2026", so
+        # `_best_fixture` answers with a catalogue fixture and
+        # `_apply_fixture` then stamps this row with that fixture's id, its
+        # kickoff and `schedule_verified: True`. Replayed on 2026-09-10
+        # against the real feed that is exactly what came back: a channel
+        # row carrying `etpl-2026:belfast-wolves-vs-amsterdam-flames` and a
+        # start time it had never stated. The feed had also just rewritten
+        # that row's title, under an unchanged id and an unchanged URL.
+        #
+        # So it goes straight to the channel handling it always ended up in
+        # anyway - and never to the attachment pool, for the same reason a
+        # fallback card is excluded from it below: this row is its own card
+        # or nothing, never another fixture's broadcaster.
+        if direct_channel.is_direct_channel(item):
+            fallback = _today_source_channel_fallback(item)
+            if fallback is None:
+                stats["direct_channel_unusable"] += 1
+                continue
+            stats["direct_channel_kept"] += 1
+            output.append(fallback)
+            continue
         # The feed's own zone, not the site's. See SOURCE_CLOCK_ZONES.
         item_zone = source_clock_zone(item.get("source_id"), source_zone)
         source_time = _parse_source_time(item.get("start_time"), item_zone, now_utc)

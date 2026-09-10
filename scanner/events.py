@@ -27,6 +27,7 @@ try:
     from scanner import sport_filter
     from scanner import fixture_dedupe, fixture_titles
     from scanner import competition_labels
+    from scanner import direct_channel
     from scanner.event_lifecycle import (
         DEFAULT_ESTIMATE_GRACE_MINUTES,
         DEFAULT_TODAY_ROUTING_MINUTES,
@@ -101,6 +102,7 @@ except ImportError:
     import fixture_dedupe
     import fixture_titles
     import competition_labels
+    import direct_channel  # type: ignore
     from event_lifecycle import (
         DEFAULT_ESTIMATE_GRACE_MINUTES,
         DEFAULT_TODAY_ROUTING_MINUTES,
@@ -1296,6 +1298,8 @@ def _apply_streamed_enrichment(
     # anything is attached.
     by_fold: Dict[str, List[Dict[str, Any]]] = {}
     for candidate in provider_candidates:
+        if direct_channel.is_direct_channel(candidate):
+            continue
         key = normalize_event_key(candidate.get("name", ""))
         if key:
             by_key.setdefault(key, candidate)
@@ -1304,6 +1308,15 @@ def _apply_streamed_enrichment(
             by_fold.setdefault(fold, []).append(candidate)
 
     def provider_for(card: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+        # A direct channel is not the fixture its title names, so a
+        # provider fixture's artwork, embed backups and
+        # `provider_event_id` are not its either. Both matchers here read
+        # the name - the exact key and the participants fold key - and
+        # `normalize_event_key` answers the same thing for "Belfast Wolves
+        # vs Amsterdam Flames" and for that title with a competition
+        # appended, which is what a direct row carries.
+        if direct_channel.is_direct_channel(card):
+            return None
         exact = by_key.get(normalize_event_key(card.get("name", "")))
         if exact is not None:
             return exact
@@ -1660,6 +1673,11 @@ def _authority_states(
     for candidate in candidates:
         if not isinstance(candidate, dict):
             continue
+        # A direct channel is not a witness about any fixture. Its title
+        # is the key this map is built on, so a channel that ever carried
+        # an end would be answering for the match of that name.
+        if direct_channel.is_direct_channel(candidate):
+            continue
         # Four of the feeds registered in 2026-08 stated the end themselves -
         # axsports and
         # bingstream with has_ended, sm-sportsdata with status FINISHED,
@@ -1689,6 +1707,13 @@ def _authority_states(
             continue
         if event_id in by_id:
             states[event_id] = by_id[event_id]
+            continue
+        # The by-name fallback exists so a card whose id was reminted
+        # still finds its own verdict. A direct channel has no fixture to
+        # have a verdict about, and its title is another card's name, so
+        # reading one there would let an authority retire a channel that
+        # is still playing - decided about a match it is not carrying.
+        if direct_channel.is_direct_channel(previous):
             continue
         key = normalize_event_key(previous.get("name", ""))
         if key and key in by_name:

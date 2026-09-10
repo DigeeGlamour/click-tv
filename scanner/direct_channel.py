@@ -69,6 +69,15 @@ _SPORT_BY_GROUP = {
     "soccer": "football",
 }
 
+#: The two identity domains, named so that a comparison between them can be
+#: refused rather than merely avoided. A fixture is a scheduled match with
+#: participants, a kickoff, an authority and a lifecycle; a direct channel is
+#: a stream somebody is carrying, with a name and a logo and nothing else.
+#: Both can arrive from the same upstream carrying the same URL, and that is
+#: exactly the case this vocabulary exists for.
+FIXTURE_DOMAIN = "fixture"
+DIRECT_DOMAIN = ENTRY_TYPE
+
 _SLUG = re.compile(r"[^a-z0-9]+")
 
 
@@ -242,3 +251,38 @@ def _counted(values: Iterable[str]) -> Dict[str, int]:
         key = _text(value) or "(none)"
         counts[key] = counts.get(key, 0) + 1
     return counts
+
+
+def is_direct_channel(item: Optional[Dict[str, Any]]) -> bool:
+    """Whether this row or card belongs to the direct-channel domain.
+
+    Read from `entry_type`, which the source registry declares and the adapter
+    writes - never from a source id, a host or a title. Any feed of playable
+    channels answers this the same way, and a feed of fixtures never does.
+    """
+    if not isinstance(item, dict):
+        return False
+    return _text(item.get("entry_type")).lower() == ENTRY_TYPE
+
+
+def identity_domain(item: Optional[Dict[str, Any]]) -> str:
+    """Which identity domain a row belongs to. Everything else is a fixture."""
+    return DIRECT_DOMAIN if is_direct_channel(item) else FIXTURE_DOMAIN
+
+
+def identity_key(item: Optional[Dict[str, Any]]) -> str:
+    """The direct-channel domain's own key for a row or card.
+
+    The channel's identity, never its title. Measured on 2026-09-10 this feed
+    published `tapmad-16707` under two different titles inside one afternoon -
+    "Rotterdam Dockers vs Glasgow Cosmic" and then "Belfast Wolves vs
+    Amsterdam Flames" - for one unchanged URL. A name that changes under a
+    stable id is display metadata; the id is the channel.
+    """
+    if not isinstance(item, dict):
+        return ""
+    for field in ("channel_identity", "identity"):
+        value = _text(item.get(field))
+        if value:
+            return value
+    return channel_identity(item)

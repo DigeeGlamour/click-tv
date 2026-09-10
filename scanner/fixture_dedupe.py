@@ -161,6 +161,26 @@ def fixture_gender(item: Dict[str, Any]) -> str:
         return ""
 
 
+def _direct_channel_module():
+    """`scanner.direct_channel`, or None. Imported as _identity_module is."""
+    try:
+        from scanner import direct_channel as module
+    except ImportError:  # pragma: no cover - direct-module import path
+        try:
+            import direct_channel as module  # type: ignore
+        except ImportError:
+            return None
+    return module
+
+
+def is_direct_channel(item: Dict[str, Any]) -> bool:
+    """Whether this card is a direct channel rather than a fixture."""
+    module = _direct_channel_module()
+    if module is None:  # pragma: no cover - the module ships with this one
+        return str((item or {}).get("entry_type") or "").strip().lower() == "direct_channel"
+    return module.is_direct_channel(item)
+
+
 def sides(item: Dict[str, Any]) -> Optional[Tuple[str, str]]:
     """The two teams, cleaned and canonical, or None when the title is not
     a fixture.
@@ -169,6 +189,14 @@ def sides(item: Dict[str, Any]) -> Optional[Tuple[str, str]]:
     which is the feed's own spelling, so a canonical name is never what a
     viewer reads.
     """
+    # A direct channel names no participants, whatever its title says. Every
+    # fold in this module asks this question first - `same_fixture`, the
+    # timeless pass and the short-form pass all return early without sides -
+    # so refusing here is the whole refusal, in one place. `_absorb` moves
+    # routes and `source_ids` between the cards it folds, which is how a
+    # channel's provenance would otherwise end up inside a fixture's.
+    if is_direct_channel(item):
+        return None
     name = str(item.get("name") or item.get("match_name") or "")
     gender = fixture_gender(item)
     parts = [_canonical(_clean(part), gender) for part in _SPLIT.split(name)]

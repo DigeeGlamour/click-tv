@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import hashlib
 from scanner import channel_alias
+from scanner import direct_channel
 import json
 import os
 import re
@@ -186,6 +187,21 @@ def _exact_stream_key(item: Dict[str, Any]) -> str:
         # The same playback configuration may intentionally appear in Today
         # and Upcoming. Output pipeline is therefore part of exact identity.
         "pipeline": str(item.get("source_pipeline") or "tv").strip().lower(),
+        # And the identity DOMAIN, for the same reason one step further out.
+        # A fixture and a direct channel can carry the same physical URL: on
+        # 2026-09-10 `saseries.akamaized.net/.../ZIMvsIND-3827e1/master.m3u8`
+        # arrived both as srhady-tapmad-bd's fixture "Belfast Wolves vs
+        # Amsterdam Flames" and as sm-tapmad-channels' direct channel
+        # `tapmad-16707`, whose title that afternoon said "Rotterdam Dockers
+        # vs Glasgow Cosmic". Folded on the URL alone the two became one
+        # candidate, and the survivor carried the other's provenance: the
+        # published fixture-stream-health rows for that scan name
+        # `sm-tapmad-channels` inside a fixture it supplied no fixture
+        # evidence for, and the direct row was gone from the plan entirely.
+        #
+        # A URL identifies a ROUTE. It does not identify what is playing,
+        # and it can never identify a fixture. Dedupe stays inside a domain.
+        "identity_domain": direct_channel.identity_domain(item),
         "url": str(item.get("url") or "").strip(),
         "headers": item.get("headers") if isinstance(item.get("headers"), dict) else {},
         "drm": item.get("drm") if isinstance(item.get("drm"), dict) else {},
@@ -247,11 +263,22 @@ def _group_key(item: Dict[str, Any]) -> str:
     pipeline = str(item.get("source_pipeline") or "tv").strip().lower()
 
     if pipeline in {"today_match", "upcoming"}:
-        identity = (
-            _event_key(item.get("name"))
-            or _slug(item.get("id"))
-            or _slug(item.get("tvg_id"))
-        )
+        # A direct channel is keyed on the channel, in its own namespace.
+        # Its title is a name the feed chose and may rewrite between scans,
+        # so keying on it would put a channel in a fixture's verification
+        # group - and `fixture_stream_health` reads that group as the
+        # fixture a route belongs to.
+        if direct_channel.is_direct_channel(item):
+            identity = "%s:%s" % (
+                direct_channel.DIRECT_DOMAIN,
+                direct_channel.identity_key(item) or _slug(item.get("id")),
+            )
+        else:
+            identity = (
+                _event_key(item.get("name"))
+                or _slug(item.get("id"))
+                or _slug(item.get("tvg_id"))
+            )
     else:
         # Channel identity comes from the NAME first for live TV, not from the
         # id. Ids are per-playlist slugs, so "Zee Bangla" and "Zee Bangla HD"

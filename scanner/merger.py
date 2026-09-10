@@ -14,6 +14,7 @@ from __future__ import annotations
 import json
 import hashlib
 import re
+from scanner import direct_channel
 from scanner import playback_evidence
 from scanner import route_preference
 from scanner.lifecycle_config import lifecycle_settings
@@ -1949,7 +1950,16 @@ def _reconcile_event_groups(
     aliases: Optional[Dict[str, str]] = None,
 ) -> Dict[str, List[Dict[str, Any]]]:
     """Fold event groups whose canonical identities are compatible."""
-    event_keys = [key for key in grouped if key.split(":", 1)[0] in _EVENT_PIPELINES]
+    event_keys = [
+        key for key in grouped
+        if key.split(":", 1)[0] in _EVENT_PIPELINES
+        # A direct-channel group is reconciled with nothing. Reconciliation
+        # compares canonical identities and participant fold keys, both read
+        # off the NAME, so a channel titled "A vs B" would be folded into
+        # that name's fixture on the strength of its title alone.
+        and not any(direct_channel.is_direct_channel(member)
+                    for member in grouped[key])
+    ]
     if len(event_keys) < 2:
         return grouped
 
@@ -2011,6 +2021,23 @@ def _reconcile_event_groups(
     return grouped
 
 
+def _primary_memory_key(item: Dict[str, Any]) -> str:
+    """What a remembered primary is filed under.
+
+    The event name for a fixture; the channel for a direct channel, whose
+    title can be rewritten between scans while the channel stays the same.
+    A channel titled "A vs B" would otherwise share a fixture's entry and
+    the two would hand each other a fingerprint belonging to the other
+    card's routes.
+    """
+    if direct_channel.is_direct_channel(item):
+        identity = direct_channel.identity_key(item)
+        if identity:
+            return "%s:%s" % (direct_channel.DIRECT_DOMAIN, identity)
+        return ""
+    return normalize_event_key(item.get("name", ""))
+
+
 def load_previous_primary_keys(data_root: str | Path = "data") -> Dict[str, str]:
     """Requirement 16. Map each published event to the fingerprint of the
     primary it is already serving, so the next scan can keep it."""
@@ -2022,7 +2049,7 @@ def load_previous_primary_keys(data_root: str | Path = "data") -> Dict[str, str]
             if not isinstance(item, dict):
                 continue
             fingerprint = str(item.get("primary_stream_key") or "").strip()
-            event_key = normalize_event_key(item.get("name", ""))
+            event_key = _primary_memory_key(item)
             if fingerprint and event_key:
                 keys[event_key] = fingerprint
     return keys
@@ -2335,7 +2362,26 @@ def merge_candidates(
             # Section 5. The broadcaster is stripped out first, so the same match
             # on Willow, Sony Ten and T Sports is one fixture with three channels
             # rather than three main cards.
-            evt_key = fixture_identity_key(c, grouping_aliases)
+            #
+            # The domain is asked FIRST, because `fixture_identity_key`
+            # answers from the name and a direct channel's name is a title
+            # the feed chose. `_is_channel_only_event` below is already true
+            # of such a row - the resolver marked it `today_source_channel` -
+            # but it is consulted only when the name yielded nothing, and
+            # "Belfast Wolves vs Amsterdam Flames | European T20 Premier
+            # League 2026" yields a fixture key. Replayed with the real
+            # 2026-09-10 rows, the direct channel and the fixture of that
+            # name merged into ONE card: the channel's route became the
+            # fixture's backup and `entry_type` disappeared. That is a
+            # fixture claiming a stream on the evidence of a title, which is
+            # the one thing this feed's titles are not.
+            if direct_channel.is_direct_channel(c):
+                evt_key = "%s:%s" % (
+                    direct_channel.DIRECT_DOMAIN,
+                    direct_channel.identity_key(c) or raw_id,
+                )
+            else:
+                evt_key = fixture_identity_key(c, grouping_aliases)
             # A Today Match source also carries reusable sports channels, whose
             # titles are a broadcaster and not "A vs B" - so fixture_identity_key
             # has nothing to key on and returns "". The fallback below is
@@ -2345,7 +2391,8 @@ def merge_candidates(
             # A channel is grouped by its channel identity, exactly as the TV
             # pipeline already does a few lines below; different channels stay
             # different cards because the key is the channel name.
-            if not evt_key and _is_channel_only_event(c):
+            if (not evt_key and not direct_channel.is_direct_channel(c)
+                    and _is_channel_only_event(c)):
                 evt_key = f"channel:{_channel_identity_key(c)}"
             fallback_key = (
                 raw_id
@@ -2419,7 +2466,7 @@ def merge_candidates(
         remembered_primary = ""
         if previous_primary_keys and group_pipeline in _EVENT_PIPELINES:
             remembered_primary = previous_primary_keys.get(
-                normalize_event_key(base_item.get("name", "")), ""
+                _primary_memory_key(base_item), ""
             )
 
         primary, backups = rank_and_select_streams(
@@ -2590,6 +2637,16 @@ def merge_candidates(
                 standby.append(entry)
             merged_card["standby_link_count"] = len(standby)
             merged_card["standby"] = standby
+
+        # The domain travels with the card. Without it every stage after the
+        # merge sees a fixture-shaped title and nothing saying otherwise -
+        # `fixture_dedupe` folds on participants, the tabs count it as a
+        # fixture, and a report attributes its source to a match.
+        if direct_channel.is_direct_channel(base_item):
+            merged_card["entry_type"] = direct_channel.ENTRY_TYPE
+            identity = direct_channel.identity_key(base_item)
+            if identity:
+                merged_card["channel_identity"] = identity
 
         provenance = _source_provenance(primary)
         if provenance:
