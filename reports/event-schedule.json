@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T17:11:17.647008+00:00",
+  "generated_at": "2026-09-10T17:28:56.694457+00:00",
   "today_match_count": 16,
   "upcoming_count": 59,
   "today_missing_logo": [],
@@ -10,7 +10,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 469,
+  "provider_fixture": 476,
   "provider_rejected": 86,
   "provider_rejected_reasons": {
     "provider_dead_status": 75,
@@ -463,7 +463,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 471,
+    "total": 478,
     "discarded": 149,
     "examples": [
       {
@@ -764,7 +764,7 @@
       },
       {
         "name": "Huddersfield Giants Vs Castleford Tigers",
-        "source": "sm-sports-data, srhady-crichd-footy-live, srhady-willow-even",
+        "source": "sm-sports-data, srhady-willow-event, srhady-crichd-footy-liv",
         "competition": "Super League",
         "sport_type": "",
         "reason": "rugby gazetteer",
@@ -952,26 +952,36 @@
   "authority_status": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 2,
+    "live": 1,
     "recorded": 34,
-    "conflict": 1,
+    "conflict": 2,
     "unmatched": 37,
     "start_window": 0,
     "start_window_fixtures": [],
     "by_status": {
       "UPCOMING": 34,
-      "LIVE": 2
+      "LIVE": 1
     },
     "by_confidence": {
       "LOW": 13,
-      "HIGH": 23,
-      "CONFLICT": 1
+      "HIGH": 22,
+      "CONFLICT": 2
     },
     "applied_fixtures": [],
     "conflicts": [
       {
+        "name": "Belfast Wolves vs Amsterdam Flames",
+        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1547891); LiveScore livescore=FT (6, event 1849991)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
         "name": "Trinbago Knight Riders Women vs Jamaica Empress Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Innings break (Innings break, event 1540215); LiveScore livescore=FT (6, event 1786626)",
+        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1540215); LiveScore livescore=FT (6, event 1786626)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -982,25 +992,41 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 2,
-    "pending_confirmation": 1,
-    "live": 2,
+    "applied": 3,
+    "pending_confirmation": 0,
+    "live": 1,
     "recorded": 2,
-    "conflict": 1,
+    "conflict": 2,
     "unmatched": 8,
     "start_window": 0,
     "start_window_fixtures": [],
     "by_status": {
       "FINISHED": 3,
-      "LIVE": 2,
+      "LIVE": 1,
       "UPCOMING": 2
     },
     "by_confidence": {
       "LOW": 5,
-      "CONFLICT": 1,
-      "HIGH": 2
+      "CONFLICT": 2,
+      "HIGH": 1
     },
     "applied_fixtures": [
+      {
+        "name": "Rwanda vs Sierra Leone",
+        "fixture_id": "provider:rwanda-vs-sierra-leone|ilt20 africa continent cup 2026|2026-09-10",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
+          "ESPN"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1552911)"
+        ],
+        "authority_finished_seen_at": "2026-09-10T17:28:32.770150+00:00",
+        "remove_after": "2026-09-10T17:48:32.770150+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": "LIVE"
+      },
       {
         "name": "Al Jazira vs Al Nasr",
         "fixture_id": "provider:al-jazira-vs-al-nasr|pro league|2026-09-10",
@@ -1015,7 +1041,7 @@
         "authority_finished_seen_at": "2026-09-10T17:10:19.734399+00:00",
         "remove_after": "2026-09-10T17:30:19.734399+00:00",
         "was_playable": true,
-        "lifecycle_state_before": "LIVE"
+        "lifecycle_state_before": "END_PENDING"
       },
       {
         "name": "FC Bayern München U19 Vs Bodo Glimt U19",
@@ -1037,7 +1063,17 @@
     "conflicts": [
       {
         "name": "Trinbago Knight Riders Women vs Jamaica Empress Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Innings break (Innings break, event 1540215); LiveScore livescore=FT (6, event 1786626)",
+        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1540215); LiveScore livescore=FT (6, event 1786626)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Belfast Wolves vs Amsterdam Flames",
+        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1547891); LiveScore livescore=FT (6, event 1849991)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1066,11 +1102,11 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 3,
+    "asked": 2,
     "finished": 1,
     "unplayable": 0,
-    "cache_hits": 0,
-    "no_verdict": 2
+    "cache_hits": 1,
+    "no_verdict": 3
   },
   "live_protection": {
     "carried_forward": 6,
@@ -1083,14 +1119,14 @@
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
     "probe_alive": 0,
-    "probe_dead": 4,
+    "probe_dead": 3,
     "probe_inconclusive": 0,
-    "end_pending": 3,
+    "end_pending": 4,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 3,
-      "END_PENDING": 3
+      "END_PENDING": 4,
+      "LIVE": 2
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -1117,7 +1153,7 @@
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 485,
+    "unresolved": 483,
     "names": {
       "USA": 1,
       "Fox": 1,
@@ -1131,9 +1167,9 @@
     "calls": 15,
     "cache_hits": 0,
     "errors": 0,
-    "fixtures_ingested": 299,
+    "fixtures_ingested": 300,
     "embed_streams": 14,
-    "artwork_supplied": 222
+    "artwork_supplied": 223
   },
   "streamed_enrichment": {
     "matched": 17,
@@ -1151,12 +1187,12 @@
     "cache_hits": 21,
     "cached_entries": 513,
     "provider": {
-      "requests": 12,
-      "hits": 10,
+      "requests": 2,
+      "hits": 0,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 42,
+      "skipped_rate_limited": 52,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1299,13 +1335,13 @@
           "rejected": 4,
           "published": 13
         },
-        "sayanpal-fancode-mirror": {
-          "total": 15,
+        "vk1817-fancode-mirror": {
+          "total": 17,
           "cricket": 7,
-          "football": 5,
+          "football": 6,
           "quarantined": 0,
-          "rejected": 3,
-          "published": 12
+          "rejected": 4,
+          "published": 13
         },
         "iptvflixbd-fancode-data": {
           "total": 16,
@@ -1315,7 +1351,7 @@
           "rejected": 3,
           "published": 13
         },
-        "dartv-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 17,
           "cricket": 7,
           "football": 6,
@@ -1323,7 +1359,7 @@
           "rejected": 4,
           "published": 13
         },
-        "vk1817-fancode-mirror": {
+        "dartv-fancode-mirror": {
           "total": 17,
           "cricket": 7,
           "football": 6,
@@ -1383,7 +1419,7 @@
         },
         {
           "name": "Sprint Race vs Madrid, Spain (2026)",
-          "source": "sm-fancode, drmlive-fancode-mirror, dartv-fancode-mirror, vk",
+          "source": "sm-fancode, drmlive-fancode-mirror, vk1817-fancode-mirror, s",
           "competition": "F3 MADRID 2026",
           "sport_type": "motorsport",
           "reason": "source sport field",
@@ -1630,13 +1666,13 @@
           "rejected": 0,
           "published": 13
         },
-        "sayanpal-fancode-mirror": {
-          "total": 12,
+        "vk1817-fancode-mirror": {
+          "total": 13,
           "cricket": 7,
-          "football": 5,
+          "football": 6,
           "quarantined": 0,
           "rejected": 0,
-          "published": 12
+          "published": 13
         },
         "iptvflixbd-fancode-data": {
           "total": 13,
@@ -1646,7 +1682,7 @@
           "rejected": 0,
           "published": 13
         },
-        "dartv-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 13,
           "cricket": 7,
           "football": 6,
@@ -1654,7 +1690,7 @@
           "rejected": 0,
           "published": 13
         },
-        "vk1817-fancode-mirror": {
+        "dartv-fancode-mirror": {
           "total": 13,
           "cricket": 7,
           "football": 6,
@@ -1692,7 +1728,7 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 850,
+    "raw_events": 857,
     "cricket_kept": 27,
     "football_kept": 47,
     "other_discarded": 156,
@@ -1725,26 +1761,26 @@
     "stale_or_aged": 1,
     "unplayable": 0,
     "published_retiring_by_basis": {
-      "provider_or_authority": 3,
+      "provider_or_authority": 4,
       "estimate": 0,
-      "none": 13
+      "none": 12
     }
   },
   "fixture_stream_health": {
-    "fixtures": 104,
+    "fixtures": 105,
     "published_fixtures": 75,
     "fixtures_with_verified_stream": 28,
-    "fixtures_with_zero_verified": 76,
+    "fixtures_with_zero_verified": 77,
     "published_without_stream": 61,
     "fallback_available": 11,
     "targeted_fixtures": 15,
-    "targeted_attempts": 61,
-    "fixtures_with_a_first_link_time": 8,
-    "candidate_routes": 259,
+    "targeted_attempts": 63,
+    "fixtures_with_a_first_link_time": 10,
+    "candidate_routes": 266,
     "verified_routes": 102,
-    "failed_routes": 157,
+    "failed_routes": 164,
     "fixtures_touched_by_a_route_failure": 44,
-    "fixtures_left_with_nothing": 22,
+    "fixtures_left_with_nothing": 23,
     "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 50,
     "unrecognised_failed_routes": 92
@@ -1757,8 +1793,8 @@
     "unverified": 36,
     "conflict": 6,
     "matched_by_two_independent_authorities": 23,
-    "authority_agreements": 20,
-    "authority_disagreements": 1,
+    "authority_agreements": 19,
+    "authority_disagreements": 2,
     "card_status_conflicts": 4,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
