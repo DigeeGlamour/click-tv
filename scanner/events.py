@@ -551,6 +551,31 @@ TODAY_NO_LINK_GRACE_MINUTES = 30
 _RETIRING_STATES = frozenset({"END_PENDING", "ENDED", "PURGED"})
 
 
+def _strip_every_route(item: Dict[str, Any]) -> int:
+    """Take away every route on a card, and say how many went.
+
+    For the card whose routes all failed: what is left has to carry no URL at
+    all, because a card that keeps a dead primary is a card that offers a
+    viewer a stream that does nothing. `source_ids`, `channels` identity,
+    `fixture_id` and the schedule are untouched - they are how the next scan
+    finds its way back to this same card with a working route.
+
+    `playback_id` goes too. It points at a catalogue record for a route that
+    does not work, and leaving it would publish a dangling reference.
+    """
+    removed = 0
+    for field in ("url", "stream_url", "link", "final_url", "playback_id"):
+        if str(item.get(field) or "").strip():
+            removed += 1
+        item.pop(field, None)
+    for field in ("backups", "standby"):
+        value = item.get(field)
+        if isinstance(value, list):
+            removed += len(value)
+        item.pop(field, None)
+    return removed
+
+
 def _has_any_route(item: Dict[str, Any]) -> bool:
     if str(item.get("playback_id") or "").strip():
         return True
@@ -559,6 +584,59 @@ def _has_any_route(item: Dict[str, Any]) -> bool:
     channels = item.get("channels")
     return bool(isinstance(channels, list) and channels)
 
+
+
+def _is_a_scheduled_fixture(item: Dict[str, Any]) -> bool:
+    """Is this a real fixture, as the existing model already decides it?
+
+    Nothing new is asked. A fixture reaching here has already been through the
+    sport filter, so the non-ball broadcasts are gone: measured over 68,567
+    fixture rows in the stream-health history, 9,687 unpublished sightings on
+    316 distinct rows were "not recognised as a fixture at all" - `Horse
+    Racing`, `TENNIS | EVENTO`, `Cycling`, `GOLF EVENTO`, `DARTS PDC` - and
+    those are discarded before admission and must stay discarded.
+
+    What is left to exclude is the channel row: a reusable sports channel a
+    Today playlist also exposes, which `today_source_channel` marks and which
+    has no kickoff of its own to be inside. A channel is not a fixture, so a
+    dead channel is not a fixture whose stream failed.
+    """
+    if item.get("today_source_channel"):
+        return False
+    if item.get("schedule_verified") is not True:
+        return False
+    return bool(str(item.get("fixture_id") or "").strip())
+
+
+def _fixture_inside_its_own_window(
+    item: Dict[str, Any],
+    now: datetime,
+    routing_minutes: int = DEFAULT_TODAY_ROUTING_MINUTES,
+) -> bool:
+    """Is a real fixture between its own kickoff window and its own end?
+
+    From `routing_minutes` before kickoff - the same threshold that put it on
+    Today - to its own `end_time`. Both come from the card, and the end is
+    whatever the existing resolution decided it is, provider-stated or
+    estimated; this asks no new question about either.
+
+    The end being the boundary is the point. `no_link_today_grace_minutes` is
+    25 and it answers "how long may a card that never found a link sit here",
+    which is the right question for a fixture that has not started and the
+    wrong one for a football match 60 minutes in whose stream has died. Past
+    the end, the existing rules take over untouched: `_is_today_fresh`, the
+    estimate bound, `verified_end_passed`, and any authority verdict.
+    """
+    if not _is_a_scheduled_fixture(item):
+        return False
+    timezone_hint = item.get("_source_timezone", timezone.utc)
+    start = _parse_datetime(item.get("start_time"), timezone_hint)
+    end = _parse_datetime(item.get("end_time"), timezone_hint)
+    if start is None or end is None:
+        return False
+    if now > end:
+        return False
+    return now >= start - timedelta(minutes=max(0, int(routing_minutes)))
 
 
 def _routed_early_without_a_link(
@@ -718,8 +796,21 @@ def _is_today_fresh(
     # while that is still plausible, which is `no_link_grace_minutes` past
     # kickoff. A card that HAS a link is never dropped by this rule; only the
     # end-of-match rules retire that one.
+    #
+    # `route_failed_while_live` is the other case, and it is not this one. That
+    # card DID have a link; every one of its routes failed verification, and
+    # `_admit_to_today` stripped them so nothing dead is offered as playback.
+    # "No link yet, 25 minutes past kickoff" is the wrong question to ask a
+    # football match an hour in whose stream has died - the right bound is the
+    # fixture's own end, which `_fixture_inside_its_own_window` checks on the
+    # way in and the end-of-match rules above enforce here.
+    #
+    # Without this the preservation was accidental rather than decided: it
+    # survived only for a card that happened to carry a `channels` list, which
+    # `_has_any_route` counts and `_strip_every_route` deliberately keeps.
     if (
         not _has_any_route(item)
+        and item.get("route_failed_while_live") is not True
         and start_time
         < now - timedelta(minutes=max(0, int(no_link_grace_minutes)))
     ):
@@ -1890,6 +1981,50 @@ def _admit_to_today(
         card["allow_without_stream"] = True
         card.setdefault("verification_status", "metadata_only")
         card["publish_allowed"] = True
+    elif not _is_playable(card) and _fixture_inside_its_own_window(
+        card, now, routing_minutes
+    ):
+        # A real fixture whose every route failed verification. It existed a
+        # moment ago and it exists now: a 404 is a fact about a URL.
+        #
+        # The Upcoming path has always known this - `schedule_resolver` drops
+        # the dead link and keeps the card as `metadata_only` when a
+        # not-yet-started fixture's stream is unusable - and there was no
+        # equivalent for one that had started, so the same fixture existed on
+        # one tab and vanished from the other for the same reason. Measured
+        # over the stream-health history: 198 distinct recognised fixtures
+        # reached neither tab with only failed routes, and 220 cards were
+        # dropped here as unplayable across 492 publishes, while 48,429 of
+        # 54,388 published sightings carried no working stream at all. A card
+        # with nothing to play is the ordinary case; deleting the fixture was
+        # the exception.
+        #
+        # The dead routes go, so nothing is offered as playback that cannot
+        # play, and the card says what it is: LINK_UPDATING, the state the
+        # resolver already writes for a fixture whose link has not arrived.
+        # A later scan or a targeted retry re-fetches the source and attaches
+        # a route to this same card - same `fixture_id`, same `source_ids`.
+        _strip_every_route(card)
+        card["metadata_only"] = True
+        card["allow_without_stream"] = True
+        card["verification_status"] = "metadata_only"
+        card["publish_allowed"] = True
+        card["route_failed_while_live"] = True
+        # Only a card that is not already leaving. A retirement decided above
+        # - an authority's FT, or an estimate that has run out - owns this
+        # card's status and its grace, and writing LINK_UPDATING over it would
+        # erase the end and publish a finished match as though its link were
+        # on the way. Measured while writing this: an authority FINISHED card
+        # with a dead route came back as `LINK_UPDATING` and lost the FT.
+        #
+        # Such a card is still kept rather than dropped, which is the other
+        # half of the same fault: it holds its post-match grace with nothing
+        # to play, exactly as it would have with a working route, and
+        # `_is_today_fresh` takes it off when the grace expires.
+        if not authority_state and str(
+                card.get("lifecycle_state") or "").upper() not in _RETIRING_STATES:
+            card["schedule_status"] = "LINK_UPDATING"
+            card["status"] = "LINK_UPDATING"
     elif not _is_playable(card):
         return None, "unplayable", dropped
     # The grace is passed here too. It used to default to 0 on this path
