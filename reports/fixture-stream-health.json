@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T23:29:24.142146+00:00",
+  "generated_at": "2026-09-10T23:49:11.430487+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
     "fixtures": 84,
@@ -12,26 +12,30 @@
     "targeted_attempts": 5,
     "fixtures_with_a_first_link_time": 5,
     "candidate_routes": 151,
-    "verified_routes": 52,
+    "verified_routes": 51,
     "failed_routes": 99,
     "fixtures_touched_by_a_route_failure": 38,
     "fixtures_left_with_nothing": 11,
-    "distinct_failure_codes": 3,
-    "unrecognised_candidate_groups": 65,
-    "unrecognised_failed_routes": 117
+    "distinct_failure_codes": 4,
+    "unrecognised_candidate_groups": 64,
+    "unrecognised_failed_routes": 119
   },
   "failure_codes": {
-    "http_403": 143,
+    "http_403": 137,
     "browser_unreachable": 32,
     "http_404": 18,
     "timeout": 11,
-    "verification_failed": 7,
-    "dns": 5
+    "http_567": 8,
+    "dns": 5,
+    "verification_failed": 5,
+    "http_407": 1,
+    "http_503": 1
   },
   "failure_code_fixtures": {
     "http_403": 35,
     "http_404": 6,
-    "verification_failed": 2
+    "http_567": 2,
+    "verification_failed": 1
   },
   "fixtures": [
     {
@@ -73,11 +77,12 @@
         "sm-sports-data"
       ],
       "candidate_stream_count": 14,
-      "verified_stream_count": 5,
-      "failed_stream_count": 9,
+      "verified_stream_count": 4,
+      "failed_stream_count": 10,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_403",
+        "http_407",
         "http_404",
         "dns",
         "browser_unreachable"
@@ -186,8 +191,7 @@
       "failed_stream_count": 5,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_403",
-        "verification_failed"
+        "http_403"
       ],
       "fallback_available": false,
       "published": true,
@@ -668,6 +672,32 @@
       "targeted": false
     },
     {
+      "fixture_id": "cincinnati-reds-vs-milwaukee-brewers",
+      "fixture_key": "cincinnati-reds-vs-milwaukee-brewers",
+      "fixture_name": "Cincinnati Reds vs Milwaukee Brewers",
+      "recognised_fixture": false,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "colorado-rockies-vs-detroit-tigers",
       "fixture_key": "colorado-rockies-vs-detroit-tigers",
       "fixture_name": "Colorado Rockies vs Detroit Tigers",
@@ -988,9 +1018,9 @@
         "sm-sports-data"
       ],
       "candidate_stream_count": 4,
-      "verified_stream_count": 2,
+      "verified_stream_count": 1,
       "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
+      "unchecked_stream_count": 1,
       "failure_codes": [
         "verification_failed"
       ],
@@ -1200,6 +1230,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1226,6 +1257,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1278,6 +1310,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1330,6 +1363,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1356,6 +1390,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1483,6 +1518,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1502,38 +1538,12 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 2,
       "verified_stream_count": 0,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "texas-rangers-vs-seattle-mariners",
-      "fixture_key": "texas-rangers-vs-seattle-mariners",
-      "fixture_name": "Texas Rangers vs Seattle Mariners",
-      "recognised_fixture": false,
-      "source_id": "srhady-bingstream",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 1,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -1665,6 +1675,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1691,6 +1702,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2181,6 +2193,31 @@
       "targeted": false
     },
     {
+      "fixture_id": "tennis",
+      "fixture_key": "tennis",
+      "fixture_name": "TENNIS | EVENTO",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 10,
+      "verified_stream_count": 9,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_503"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "usa-vs-hungary",
       "fixture_key": "usa-vs-hungary",
       "fixture_name": "USA Vs Hungary",
@@ -2384,11 +2421,11 @@
         "sm-fancode",
         "srhady-tapmad-bd",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2413,11 +2450,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2583,11 +2620,11 @@
         "sm-fancode",
         "srhady-tapmad-bd",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2842,15 +2879,15 @@
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "sm-fancode",
+        "srhady-axsports-live",
+        "srhady-bingstream",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
         "vk1817-fancode-mirror",
-        "srhady-bingstream"
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2960,29 +2997,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "gannon-golden-knights-at-wheeling-cardinals",
-      "fixture_key": "gannon-golden-knights-at-wheeling-cardinals",
-      "fixture_name": "Gannon Golden Knights at Wheeling Cardinals",
-      "recognised_fixture": false,
-      "source_id": "srhady-primevideo-sports",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 4,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "provider:glasgow-cosmics-vs-amsterdam-flames|european t20 premier league 2026 28th|2026-09-16",
       "fixture_key": "glasgow-cosmics-vs-amsterdam-flames",
       "fixture_name": "Glasgow Cosmics vs Amsterdam Flames",
@@ -3036,16 +3050,16 @@
       "source_id": "srhady-willow-event",
       "source_ids": [
         "srhady-willow-event",
-        "srhady-axsports-live",
-        "srhady-tapmad-bd",
         "sm-fancode",
+        "srhady-tapmad-bd",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "srhady-axsports-live",
+        "srhady-bingstream",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
         "vk1817-fancode-mirror",
-        "srhady-bingstream"
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3092,13 +3106,13 @@
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "sm-fancode",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3171,11 +3185,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3292,11 +3306,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3390,11 +3404,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3464,13 +3478,13 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "srhady-crichd-footy-live",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "srhady-crichd-footy-live",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3564,11 +3578,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3677,29 +3691,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "tennis",
-      "fixture_key": "tennis",
-      "fixture_name": "TENNIS | EVENTO",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 10,
-      "verified_stream_count": 10,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "trinbago-knight-riders-vs-jamaica-empress-women",
       "fixture_key": "trinbago-knight-riders-vs-jamaica-empress-women",
       "fixture_name": "Trinbago Knight Riders Women Vs Jamaica Empress Women",
@@ -3777,11 +3768,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
