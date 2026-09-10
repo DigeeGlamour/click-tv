@@ -1,18 +1,19 @@
 {
   "category": "Cartoon",
-  "updated_at": "2026-09-08T05:56:29.197722+00:00",
-  "count": 30,
+  "updated_at": "2026-09-10T06:45:14.410835+00:00",
+  "count": 33,
   "channels": [
     {
       "id": "duronto-tv",
       "name": "Duronto TV",
-      "primary_stream_key": "5c120908bfc90b8efeead435dae2535c86f03361787cd20bacc0cb72bf6872ab",
+      "primary_stream_key": "0be0f72a39638bdad8b485ae40f01cd78c44a70414c2ae85f9039c665cf3e105",
       "sport_type": "",
       "sport_type_derived": false,
       "logo": "https://s3.aynaott.com/storage/51f1530c076c027e431bf18a49613f0b",
       "category": "Cartoon",
+      "url": "https://tvsen6.aynaott.com/6xyZ3N4oHv2KBJdB6W4p/index.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
+      "proxy_mode": "direct_first",
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
@@ -31,9 +32,8 @@
       "backups": [
         {
           "name": "Backup-1",
-          "url": "https://tvsen6.aynaott.com/6xyZ3N4oHv2KBJdB6W4p/index.m3u8",
           "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
+          "proxy_mode": "proxy_only",
           "stream_type": "hls",
           "requires_headers": false,
           "inherit_manifest_query": false,
@@ -43,14 +43,23 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "abusaeeidx-mrgify-bdix",
-          "host": "tvsen6.aynaott.com",
+          "host": "tvsen5.aynaott.com",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_72d3fcef7126b63458dfe95530202ecf"
+          "playback_id": "ctv_f860308ef467b2454ccd1edcca989267",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [
+              "token"
+            ],
+            "drm": false
+          }
         },
         {
           "name": "Backup-2",
-          "url": "https://cache.devm3u.top/hls/duranta.m3u8",
+          "url": "https://cdn.devm3u.top/server1/duranta.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
           "stream_type": "hls",
@@ -62,10 +71,10 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "smartplaytv-worker-stream",
-          "host": "cache.devm3u.top",
+          "host": "cdn.devm3u.top",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_105988ee9eb50884e9e57a6a94dce583"
+          "playback_id": "ctv_303e677154e5f511cb2e4b3cc7c76989"
         }
       ],
       "source_provenance": [
@@ -73,23 +82,26 @@
           "source_id": "abusaeeidx-mrgify-bdix",
           "source_name": "Mrgify BDIX IPTV",
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
+        },
+        {
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-iptv-cartoon",
+          "source_name": "SM IPTV Cartoon",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Cartoon.m3u"
         }
       ],
       "source_ids": [
-        "abusaeeidx-mrgify-bdix"
+        "abusaeeidx-mrgify-bdix",
+        "sm-iptv-combined",
+        "sm-iptv-cartoon"
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_f860308ef467b2454ccd1edcca989267",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [
-          "token"
-        ],
-        "drm": false
-      }
+      "playback_id": "ctv_72d3fcef7126b63458dfe95530202ecf"
     },
     {
       "id": "sony-yay",
@@ -347,7 +359,7 @@
     },
     {
       "id": "cartoon-network-english",
-      "name": "Cartoon Network English",
+      "name": "Cartoon Network",
       "primary_stream_key": "74a33d7f491be72c583da23d5523a93b7e0e1ef4fecf31d0af6a48f20a937970",
       "sport_type": "",
       "sport_type_derived": false,
@@ -370,8 +382,28 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "manual-playlist-1",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "https://vodzong.mjunoon.tv:8087/streamtest/cartoon-network-87/playlist.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "smartplaytv-worker-stream",
+          "host": "vodzong.mjunoon.tv",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_779e757718ced40a2b5302069afef8f2"
+        }
+      ],
       "source_provenance": [
         {
           "source_id": "manual-playlist-1",
@@ -435,8 +467,8 @@
       "source_ids": [
         "sm-iptv-jiotv"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "playback_id": "ctv_564c94732a0349e6f4db038f79557a6e"
     },
     {
@@ -476,8 +508,8 @@
       "source_ids": [
         "sm-iptv-jiotv"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "playback_id": "ctv_17651065b72561206eca4b34b77229eb"
     },
     {
@@ -517,8 +549,8 @@
       "source_ids": [
         "sm-iptv-jiotv"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "playback_id": "ctv_3a65800c515cca6d5dd48005acb45f7d"
     },
     {
@@ -558,8 +590,8 @@
       "source_ids": [
         "sm-iptv-jiotv"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "playback_id": "ctv_80e02cdd07663296f384ca5d1a4a3baf"
     },
     {
@@ -609,7 +641,7 @@
       "primary_stream_key": "1f30153aa7d766325ac35353d578cc193e10889d4f281aa7cab38633f46c9219",
       "sport_type": "",
       "sport_type_derived": false,
-      "logo": "https://assets-prod.services.toffeelive.com/f_png,w_300,q_85/1i6e-JQBv9knK3AHHTXR/posters/325887a7-84ea-4cf9-a6fd-6111ddc25671.webp",
+      "logo": "https://assets-prod.services.toffeelive.com/1i6e-JQBv9knK3AHHTXR/posters/325887a7-84ea-4cf9-a6fd-6111ddc25671.webp",
       "category": "Cartoon",
       "url": "https://stream.ottplus.live/live/discovery_kids_abr/index.m3u8",
       "header_profile": "android_tv",
@@ -628,8 +660,28 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "manual-playlist-1",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "https://stream.ottplus.live/live/discovery_kids_abr/index.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "smartplaytv-worker-stream",
+          "host": "stream.ottplus.live",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_eb20c373f0c03a03a0d86c8b397c5511"
+        }
+      ],
       "source_provenance": [
         {
           "source_id": "manual-playlist-1",
@@ -915,20 +967,20 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-iptv-cartoon",
-          "source_name": "SM IPTV Cartoon",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Cartoon.m3u"
-        },
-        {
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-iptv-cartoon",
+          "source_name": "SM IPTV Cartoon",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Cartoon.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-iptv-cartoon",
-        "sm-iptv-combined"
+        "sm-iptv-combined",
+        "sm-iptv-cartoon"
       ],
       "resolution": "HD",
       "resolution_height": 720,
@@ -1038,8 +1090,8 @@
       "source_ids": [
         "sm-iptv-jiotv"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "playback_id": "ctv_be95f0b27fa629ff92f34fe6d6507857"
     },
     {
@@ -1376,10 +1428,10 @@
       "backups": [
         {
           "name": "Backup-1",
-          "url": "https://server.zillarbarta.com/zbcatun/video.m3u8",
+          "url": "https://hey-lookme.shop/live.php?id=3321",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
-          "stream_type": "hls",
+          "stream_type": "media",
           "requires_headers": true,
           "inherit_manifest_query": false,
           "verification_mode": "global",
@@ -1387,11 +1439,11 @@
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "smartplaytv-worker-stream",
-          "host": "server.zillarbarta.com",
+          "source_id": "sm-iptv-jiotv",
+          "host": "hey-lookme.shop",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4510b293539b07becedd45ae6af0d3e5"
+          "playback_id": "ctv_1c07fa7dc1643d255643bb5da910a972"
         }
       ],
       "source_provenance": [
@@ -1466,6 +1518,135 @@
       "resolution": "FHD",
       "resolution_height": 1080,
       "playback_id": "ctv_710d061542eefbc0a714d4a9387ab5d2"
+    },
+    {
+      "id": "disney-international",
+      "name": "Disney International",
+      "primary_stream_key": "02dace773907e78b0af5167b7ba060173088bfc881799363ea77ca2d020f2af0",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Disney_International_HD.png",
+      "category": "Cartoon",
+      "url": "https://hey-lookme.shop/live.php?id=1375",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "media",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "sm-iptv-jiotv",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-jiotv",
+          "source_name": "SM IPTV JioTV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-jiotv"
+      ],
+      "resolution": "HD",
+      "resolution_height": 720,
+      "playback_id": "ctv_f406c2434a94eec0406745986f36dd93"
+    },
+    {
+      "id": "green-gold-tv",
+      "name": "Green Gold TV",
+      "primary_stream_key": "ed16b38f55c2fc455fa0ebe003fada0e85de2aa26c41111390662a34525b5ebd",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/greengold.png",
+      "category": "Cartoon",
+      "url": "https://hey-lookme.shop/live.php?id=3467",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "media",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "sm-iptv-jiotv",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-jiotv",
+          "source_name": "SM IPTV JioTV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-jiotv"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_8e0e6bbc1ddecbf1f6742b03eccd0ddd"
+    },
+    {
+      "id": "nick-junior",
+      "name": "Nick Junior",
+      "primary_stream_key": "3be27585a85a079473a5878d688f6f74a59d78206d4e08154d6f2ee06e34f55a",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Nick_Junior.png",
+      "category": "Cartoon",
+      "url": "https://hey-lookme.shop/live.php?id=544",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "media",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "sm-iptv-jiotv",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-jiotv",
+          "source_name": "SM IPTV JioTV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-jiotv"
+      ],
+      "resolution": "HD",
+      "resolution_height": 720,
+      "playback_id": "ctv_694d1943d936461eae8795c91fc1e26f"
     }
-  ]
+  ],
+  "drop_protection_expired": {
+    "preserved_count": 30,
+    "preserved_age_hours": 48.81,
+    "maximum_preserved_age_hours": 24,
+    "reason": "Sudden-drop protection released: the preserved payload was older than the configured limit, so a stale catalogue is no longer served in place of a fresh scan."
+  }
 }
