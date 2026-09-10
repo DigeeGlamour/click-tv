@@ -285,7 +285,7 @@ class AWorkingStreamIsNotAMatch(unittest.TestCase):
         result. Asserted on the source, because passing one by accident is
         how the bound would be undone."""
         source = read(os.path.join(str(ROOT), "scanner", "events.py"))
-        branch = source.split("elif (verified_end_passed(", 1)[1].split(
+        branch = source.split("elif has_own_end_time(card) and (", 1)[1].split(
             "if _routed_early_without_a_link(", 1)[0]
         self.assertNotIn("primary_playable", branch)
         self.assertNotIn("backup_playable", branch)
@@ -636,3 +636,54 @@ class TheReportCanBeChecked(unittest.TestCase):
             "def _stamp_channel_names(", 1)[0]
         self.assertNotIn("end_decisions", payload)
         self.assertNotIn("lifecycle_end_basis", payload)
+
+
+class ABroadcastIsNotAFixture(unittest.TestCase):
+    """`estimated_end` falls back to `start + SPORT_DURATION_MINUTES` when a
+    card has no end time of its own. That is right for a supporting signal and
+    wrong for a bound: it would put an end on a row that is not a dated fixture
+    at all. A channel card is the case - a broadcast with a start and nothing
+    to finish - and `today_max_age_hours` has always governed those.
+
+    No channel-sourced Today card existed in the measured window, so this is a
+    guard against a case the data did not contain rather than one it did.
+    """
+
+    def test_a_card_with_no_end_time_of_its_own_is_not_bounded_by_an_estimate(self):
+        broadcast = card(source="sport")
+        for field in ("end_time", "end_at", "estimated_end_time",
+                      "end_time_source"):
+            broadcast.pop(field, None)
+        self.assertFalse(el.has_own_end_time(broadcast))
+        # The sport fallback would have expired hours ago.
+        self.assertTrue(el.estimate_passed(
+            broadcast, KICKOFF + timedelta(minutes=400), ESTIMATE_GRACE))
+        admitted, reason, _ = admit(
+            broadcast, KICKOFF + timedelta(minutes=400))
+        self.assertIsNotNone(admitted)
+        self.assertEqual("LIVE", admitted["lifecycle_state"])
+        self.assertNotIn("lifecycle_end_basis", admitted)
+
+    def test_the_age_guard_still_governs_such_a_card(self):
+        """Bounded, just not by an estimate it never had."""
+        broadcast = card(source="sport")
+        for field in ("end_time", "end_at", "estimated_end_time",
+                      "end_time_source"):
+            broadcast.pop(field, None)
+        self.assertFalse(fresh(broadcast, KICKOFF + timedelta(
+            hours=MAX_AGE + 1)))
+
+    def test_a_real_fixture_always_carries_one(self):
+        """Every fixture the schedule resolver produces has an `end_time` -
+        stated, computed from the sport, or assumed - so the guard narrows the
+        bound to dated fixtures without exempting any of them."""
+        for source in ("provider", "sport", "assumed"):
+            with self.subTest(source=source):
+                self.assertTrue(el.has_own_end_time(card(source=source)))
+
+    def test_the_guard_asks_for_a_real_end_and_not_a_good_one(self):
+        """How much the end is worth is `end_time_provenance`'s answer, not
+        this function's."""
+        self.assertTrue(el.has_own_end_time(card(source="assumed")))
+        self.assertEqual("assumed", el.end_time_provenance(
+            card(source="assumed")))

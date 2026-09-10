@@ -41,6 +41,7 @@ try:
         estimate_passed,
         event_destination,
         fixture_authority_says_live,
+        has_own_end_time,
         has_strong_end_signal,
         minutes_to_kickoff,
         retirement_grace_expired,
@@ -114,6 +115,7 @@ except ImportError:
         estimate_passed,
         event_destination,
         fixture_authority_says_live,
+        has_own_end_time,
         has_strong_end_signal,
         minutes_to_kickoff,
         retirement_grace_expired,
@@ -1840,8 +1842,10 @@ def _admit_to_today(
             return None, "authority_finished", dropped
         card = apply_lifecycle_verdict(card, verdict)
         authority_state = verdict.state
-    elif (verified_end_passed(card, now, PROVIDER_END_GRACE_MINUTES)
-            or estimate_passed(card, now, estimate_grace_minutes)):
+    elif has_own_end_time(card) and (
+        verified_end_passed(card, now, PROVIDER_END_GRACE_MINUTES)
+        or estimate_passed(card, now, estimate_grace_minutes)
+    ):
         # The bound that `_is_today_fresh` used to improvise, asked of the
         # layer that owns it.
         #

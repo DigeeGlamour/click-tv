@@ -326,6 +326,26 @@ def estimated_end(card: Dict[str, Any]) -> Optional[datetime]:
     return start + timedelta(minutes=minutes)
 
 
+def has_own_end_time(card: Dict[str, Any]) -> bool:
+    """Does the card carry an end time of its own?
+
+    `estimated_end` above falls back to `start + SPORT_DURATION_MINUTES` when
+    a card has none, which is the right thing for a supporting signal and the
+    wrong thing for a bound: it would put an end on a row that is not a dated
+    fixture at all. A channel card is the case - a broadcast rather than a
+    match, with a start and nothing to finish - and `today_max_age_hours` has
+    always been what governs those.
+
+    Every fixture the schedule resolver produces has an `end_time`, stated by
+    the provider or computed from the sport or assumed from
+    `provider_event_hours`, and `end_time_source` records which. So this asks
+    for a real end time and not for a good one; how much it is worth is
+    `end_time_provenance`'s answer, not this function's.
+    """
+    return any(parse_time(card.get(field)) is not None
+               for field in ("end_time", "end_at", "estimated_end_time"))
+
+
 def estimate_passed(
     card: Dict[str, Any],
     now: datetime,

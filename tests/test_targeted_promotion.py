@@ -29,7 +29,10 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from scanner import events  # noqa: E402
-from scanner.event_lifecycle import event_destination  # noqa: E402
+from scanner.event_lifecycle import (  # noqa: E402
+    event_destination,
+    has_own_end_time,
+)
 from scanner.lifecycle_config import lifecycle_settings  # noqa: E402
 from scanner.targeted_scan import (  # noqa: E402
     fixture_key,
@@ -133,19 +136,39 @@ class TheAdmissionRuleIsSharedNotCopied(unittest.TestCase):
         self.assertIsNone(admitted)
         self.assertEqual("unplayable", reason)
 
-    def test_a_stale_card_is_refused_and_says_which_clock_refused_it(self):
-        """Twenty hours past kickoff, so both refusals apply and the more
-        specific one answers first.
-
-        It used to come back "stale", which is what `_is_today_fresh` says
-        about anything it drops - a fixture 20 hours old and a fixture whose
-        estimated end passed 90 minutes ago were the same word. The estimate
-        is now decided by `decide()`, which is why the reason changed:
-        "estimate_expired" is our own guess at the sport's length running out,
-        and it is deliberately not "authority_finished".
-        """
+    def test_a_card_with_no_end_time_of_its_own_is_still_refused_as_stale(self):
+        """`playable_card` carries no `end_time`, so it is not a dated fixture
+        and no estimate of its own can expire - `estimated_end` would have to
+        invent one from the sport, and a bound may not rest on that. The age
+        guard refuses it, as it always did."""
+        subject = playable_card(-60 * 20)
+        self.assertFalse(has_own_end_time(subject))
         admitted, reason, _ = events._admit_to_today(
-            playable_card(-60 * 20),
+            subject,
+            NOW,
+            routing_minutes=ROUTING,
+            no_link_grace_minutes=GRACE,
+            today_max_age_hours=12,
+        )
+        self.assertIsNone(admitted)
+        self.assertEqual("stale", reason)
+
+    def test_a_dated_fixture_says_which_clock_refused_it(self):
+        """The same card with the end time a real resolver gives it. Both
+        refusals apply and the more specific one answers first.
+
+        It used to come back "stale" either way, which is what
+        `_is_today_fresh` says about anything it drops - a fixture 20 hours
+        old and a fixture whose estimated end passed 90 minutes ago were the
+        same word. "estimate_expired" is our own guess at the sport's length
+        running out, and it is deliberately not "authority_finished".
+        """
+        subject = playable_card(-60 * 20)
+        subject["end_time"] = "2026-09-04T20:00:00+00:00"
+        subject["end_time_source"] = "sport"
+        self.assertTrue(has_own_end_time(subject))
+        admitted, reason, _ = events._admit_to_today(
+            subject,
             NOW,
             routing_minutes=ROUTING,
             no_link_grace_minutes=GRACE,
@@ -153,21 +176,6 @@ class TheAdmissionRuleIsSharedNotCopied(unittest.TestCase):
         )
         self.assertIsNone(admitted)
         self.assertEqual("estimate_expired", reason)
-
-    def test_a_card_too_old_for_the_age_guard_is_still_stale(self):
-        """The age guard is untouched, and reachable: no end time at all, so
-        no estimate can expire and only `today_max_age_hours` refuses it."""
-        old = playable_card(-60 * 20)
-        old.pop("end_time", None)
-        old.pop("end_time_source", None)
-        old["sport_type"] = ""
-        old["competition"] = ""
-        admitted, reason, _ = events._admit_to_today(
-            old, NOW, routing_minutes=ROUTING, no_link_grace_minutes=GRACE,
-            today_max_age_hours=12,
-        )
-        self.assertIsNone(admitted)
-        self.assertIn(reason, ("stale", "estimate_expired"))
 
 
 class TheLadderKeepsHoldOfAPromotedFixture(unittest.TestCase):
