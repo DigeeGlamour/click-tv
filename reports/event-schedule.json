@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T14:09:16.417818+00:00",
+  "generated_at": "2026-09-10T14:30:37.344687+00:00",
   "today_match_count": 14,
   "upcoming_count": 59,
   "today_missing_logo": [],
@@ -11,7 +11,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 453,
+  "provider_fixture": 449,
   "provider_rejected": 70,
   "provider_rejected_reasons": {
     "provider_dead_status": 59,
@@ -390,7 +390,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 453,
+    "total": 449,
     "discarded": 154,
     "examples": [
       {
@@ -587,7 +587,7 @@
       },
       {
         "name": "Chicago White Sox Vs Pittsburgh Pirates",
-        "source": "sm-sports-data, srhady-axsports-live, srhady-bingstream",
+        "source": "sm-sports-data, srhady-bingstream, srhady-axsports-live",
         "competition": "MLB",
         "sport_type": "",
         "reason": "league map: baseball",
@@ -755,7 +755,7 @@
       },
       {
         "name": "New York Yankees Vs Colorado Rockies",
-        "source": "sm-sports-data, srhady-axsports-live, srhady-bingstream",
+        "source": "sm-sports-data, srhady-bingstream, srhady-axsports-live",
         "competition": "MLB",
         "sport_type": "",
         "reason": "league map: baseball",
@@ -803,7 +803,7 @@
       },
       {
         "name": "Philadelphia Phillies Vs Houston Astros",
-        "source": "sm-sports-data, srhady-axsports-live, srhady-bingstream",
+        "source": "sm-sports-data, srhady-bingstream, srhady-axsports-live",
         "competition": "MLB",
         "sport_type": "",
         "reason": "league map: baseball",
@@ -851,7 +851,7 @@
       },
       {
         "name": "Seattle Mariners Vs Texas Rangers",
-        "source": "sm-sports-data, srhady-axsports-live, srhady-bingstream",
+        "source": "sm-sports-data, srhady-bingstream, srhady-axsports-live",
         "competition": "MLB",
         "sport_type": "",
         "reason": "league map: baseball",
@@ -880,22 +880,44 @@
     "applied": 0,
     "pending_confirmation": 0,
     "live": 1,
-    "recorded": 35,
-    "conflict": 2,
+    "recorded": 33,
+    "conflict": 3,
     "unmatched": 40,
-    "start_window": 0,
-    "start_window_fixtures": [],
+    "start_window": 1,
+    "start_window_fixtures": [
+      {
+        "id": "india-women-vs-bangladesh-women",
+        "name": "India Women Vs Bangladesh Women",
+        "claimed": "LIVE_NOW",
+        "now_says": "STARTING_SOON",
+        "conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 0 minute(s) away",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ],
     "by_status": {
-      "UPCOMING": 35,
+      "UPCOMING": 34,
       "LIVE": 1
     },
     "by_confidence": {
-      "HIGH": 24,
-      "CONFLICT": 2,
+      "HIGH": 23,
+      "CONFLICT": 3,
       "LOW": 12
     },
     "applied_fixtures": [],
     "conflicts": [
+      {
+        "name": "Belfast Wolves vs Amsterdam Flames",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1547891); LiveScore livescore=Play in progress (33, event 1849991)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
       {
         "name": "Trinbago Knight Riders Women vs Jamaica Empress Women",
         "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1540215); LiveScore livescore=Play in progress (33, event 1786626)",
@@ -919,22 +941,42 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 0,
-    "pending_confirmation": 1,
-    "live": 0,
-    "recorded": 0,
+    "applied": 1,
+    "pending_confirmation": 0,
+    "live": 1,
+    "recorded": 1,
     "conflict": 1,
-    "unmatched": 6,
+    "unmatched": 8,
     "start_window": 0,
     "start_window_fixtures": [],
     "by_status": {
+      "LIVE": 1,
+      "UPCOMING": 1,
       "FINISHED": 1
     },
     "by_confidence": {
       "CONFLICT": 1,
-      "LOW": 1
+      "LOW": 2,
+      "HIGH": 1
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "Fenerbahce U19 vs Roma U19",
+        "fixture_id": "provider:fenerbahce-u19-vs-roma-u19|uefa youth league|2026-09-10",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
+          "LiveScore"
+        ],
+        "evidence": [
+          "LiveScore livescore=FT (6, event 1886551)"
+        ],
+        "authority_finished_seen_at": "2026-09-10T14:29:45.367875+00:00",
+        "remove_after": "2026-09-10T14:49:45.367875+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
+      }
+    ],
     "conflicts": [
       {
         "name": "Rotterdam Dockers vs Glasgow Cosmics",
@@ -943,6 +985,15 @@
         "confidence": "CONFLICT",
         "upstream_families": [
           "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Fenerbahce U19 vs Roma U19",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
           "LiveScore"
         ]
       }
@@ -966,7 +1017,7 @@
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
     "probe_alive": 0,
-    "probe_dead": 1,
+    "probe_dead": 0,
     "probe_inconclusive": 0,
     "end_pending": 1,
     "released_confirmed": 0,
@@ -995,15 +1046,13 @@
     ],
     "held": 0,
     "held_names": [],
-    "considered": 1,
-    "refused": {
-      "authority productive this scan": 1
-    },
+    "considered": 0,
+    "refused": {},
     "hold_expired": 0
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 469,
+    "unresolved": 465,
     "names": {
       "USA": 1,
       "Fox": 1,
@@ -1326,7 +1375,7 @@
           "source": "srhady-bingstream, srhady-axsports-live",
           "competition": "AFL Premiership",
           "sport_type": "other",
-          "reason": "fixture lookup: only one provider knows this (football)"
+          "reason": "fixture lookup: no provider answered"
         },
         {
           "name": "GIF Sundsvall vs Orebro SK",
@@ -1354,21 +1403,21 @@
           "source": "sm-sports-data",
           "competition": "AFL, Women",
           "sport_type": "other",
-          "reason": "fixture lookup: no provider answered"
+          "reason": "fixture lookup: only one provider knows this (australian rules)"
         },
         {
           "name": "North Melbourne Vs Carlton Blues",
           "source": "sm-sports-data",
           "competition": "AFL, Women",
           "sport_type": "other",
-          "reason": "fixture lookup: no provider answered"
+          "reason": "fixture lookup: only one provider knows this (australian rules)"
         },
         {
           "name": "Ostersunds FK vs IK brage",
           "source": "srhady-bingstream",
           "competition": "Superettan",
           "sport_type": "other",
-          "reason": "fixture lookup: only one provider knows this (football)"
+          "reason": "fixture lookup: no provider answered"
         },
         {
           "name": "Richmond Tigers Vs St Kilda Saints",
@@ -1530,7 +1579,7 @@
           "rejected": 0,
           "published": 13
         },
-        "iptvflixbd-fancode-data": {
+        "dartv-fancode-mirror": {
           "total": 13,
           "cricket": 8,
           "football": 5,
@@ -1538,7 +1587,7 @@
           "rejected": 0,
           "published": 13
         },
-        "dartv-fancode-mirror": {
+        "iptvflixbd-fancode-data": {
           "total": 13,
           "cricket": 8,
           "football": 5,
@@ -1592,7 +1641,7 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 818,
+    "raw_events": 814,
     "cricket_kept": 29,
     "football_kept": 49,
     "other_discarded": 160,
@@ -1631,23 +1680,23 @@
     }
   },
   "fixture_stream_health": {
-    "fixtures": 102,
+    "fixtures": 101,
     "published_fixtures": 73,
     "fixtures_with_verified_stream": 30,
-    "fixtures_with_zero_verified": 72,
+    "fixtures_with_zero_verified": 71,
     "published_without_stream": 61,
     "fallback_available": 9,
-    "targeted_fixtures": 11,
-    "targeted_attempts": 54,
-    "fixtures_with_a_first_link_time": 3,
-    "candidate_routes": 238,
+    "targeted_fixtures": 12,
+    "targeted_attempts": 57,
+    "fixtures_with_a_first_link_time": 5,
+    "candidate_routes": 234,
     "verified_routes": 102,
-    "failed_routes": 136,
+    "failed_routes": 132,
     "fixtures_touched_by_a_route_failure": 42,
-    "fixtures_left_with_nothing": 21,
+    "fixtures_left_with_nothing": 20,
     "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 46,
-    "unrecognised_failed_routes": 88
+    "unrecognised_failed_routes": 87
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
@@ -1657,9 +1706,9 @@
     "unverified": 33,
     "conflict": 4,
     "matched_by_two_independent_authorities": 23,
-    "authority_agreements": 21,
-    "authority_disagreements": 2,
-    "card_status_conflicts": 2,
+    "authority_agreements": 20,
+    "authority_disagreements": 3,
+    "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 6
