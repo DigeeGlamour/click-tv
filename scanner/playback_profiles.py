@@ -342,11 +342,22 @@ def _atomic_write(path: Path, payload: Dict[str, Any]) -> None:
     os.replace(temporary, path)
 
 
-def load_public_catalog_records(data_root: str | Path) -> Dict[str, Any]:
+def load_public_catalog_records(
+    data_root: str | Path,
+    unreadable: Optional[List[str]] = None,
+) -> Dict[str, Any]:
     """Read every playback record, from shards or the pre-shard single file.
 
     The single-file layout is still understood so a repository mid-migration,
     and any tooling that has not been redeployed yet, keeps working.
+
+    `unreadable`, when given, collects the shards this call could not parse.
+    A caller that is about to REWRITE the catalogue has to know: the rewrite
+    below is "everything I could read, plus what I collected", so a shard that
+    failed to parse would be silently dropped from the file it is rewritten
+    into - and the records in it would be gone for good. A membership test can
+    ignore the distinction; a rewrite cannot. Absence of a reading is not a
+    reading of absence.
     """
     root = Path(data_root)
     records: Dict[str, Any] = {}
@@ -357,6 +368,8 @@ def load_public_catalog_records(data_root: str | Path) -> Dict[str, Any]:
             try:
                 payload = json.loads(shard_file.read_text(encoding="utf-8"))
             except (OSError, UnicodeError, json.JSONDecodeError):
+                if unreadable is not None:
+                    unreadable.append(str(shard_file))
                 continue
             shard_records = payload.get("records") if isinstance(payload, dict) else None
             if isinstance(shard_records, dict):
@@ -376,6 +389,20 @@ def load_public_catalog_records(data_root: str | Path) -> Dict[str, Any]:
                 records.setdefault(key, value)
 
     return records
+
+
+def _shard_records_on_disk(path: Path) -> Optional[Dict[str, Any]]:
+    """What that shard file already holds, or None if it holds nothing usable.
+
+    None rather than {} deliberately: an absent or unparsable shard is not an
+    empty one, and must not compare equal to a shard that really is empty.
+    """
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError):
+        return None
+    records = payload.get("records") if isinstance(payload, dict) else None
+    return records if isinstance(records, dict) else None
 
 
 def merge_public_catalog(
@@ -399,7 +426,19 @@ def merge_public_catalog(
     root = Path(data_root)
     root.mkdir(parents=True, exist_ok=True)
 
-    records = load_public_catalog_records(root)
+    # Every shard is rewritten from `records` below, so a shard this call
+    # could not read would be rewritten as though it had never held anything.
+    # There are ~45,000 playback records in 256 shards and a card whose record
+    # is gone is a card that opens and plays nothing, so an unreadable shard
+    # stops the scan instead: a failed run is recoverable and a deleted
+    # catalogue is not.
+    unreadable: List[str] = []
+    records = load_public_catalog_records(root, unreadable)
+    if unreadable:
+        raise RuntimeError(
+            "%d playback shard(s) could not be read, and rewriting the "
+            "catalogue would delete every record in them: %s"
+            % (len(unreadable), ", ".join(sorted(unreadable)[:5])))
     records.update(collector.records)
 
     grouped: Dict[str, Dict[str, Any]] = {}
@@ -409,6 +448,20 @@ def merge_public_catalog(
     shard_dir = root / CATALOG_SHARD_DIRECTORY
     shard_dir.mkdir(parents=True, exist_ok=True)
     for shard, shard_records in sorted(grouped.items()):
+        # A shard whose records are unchanged is left exactly as it is.
+        #
+        # Every call used to rewrite all 256, because `generated_at` moves
+        # whether anything else does or not. Repairing 13 records touched 256
+        # files, 244 of them for a timestamp - and a rewritten file is a file
+        # this run claims to own, which the push step then restores whole over
+        # whatever another run put in it. That is how a movies run's series
+        # records left the catalogue three minutes after they arrived.
+        #
+        # The Worker reads `records` and nothing else from a shard
+        # (workers/playback-proxy/src/index.js), so the stamp is for people,
+        # and a shard that did not change did not change at that moment.
+        if _shard_records_on_disk(shard_dir / f"{shard}.json") == shard_records:
+            continue
         shard_payload = {
             "schema_version": 1,
             "shard": shard,

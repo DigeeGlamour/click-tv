@@ -413,6 +413,139 @@ def settle_catalogue_in_tree(data_dir: Path, theirs_ref: str) -> List[str]:
     return written
 
 
+def settle_content_catalogue_in_tree(data_dir: Path, theirs_ref: str) -> List[str]:
+    """The same settlement, for the surfaces that are not event lists.
+
+    `settle_catalogue_in_tree` above walks SURFACES, which is the two event
+    tabs, and that is all it ever walked. The tree holds two more kinds that
+    carry a playback id on exactly the same shared catalogue: 328 episode ids
+    across 75 season files, and 1,667 movie ids across 21 pages. Nothing
+    settled those, and the loss they suffer is not theirs to cause.
+
+    Measured on the repository, 2026-09-08:
+
+        10:26:13  movies             wrote the season file AND its 3 records
+                                     into data/playback/bb.json and bc.json
+        10:29:27  upcoming-targeted  the records are gone
+        10:31:18  today              still gone, and gone ever since
+
+    The event run did not touch series. It regenerated the shards it shares
+    with everyone, from the copy it checked out before the movies run pushed,
+    and the push step restored its own copy of those files whole - because
+    scripts/select-restorable-files.py asks who owns a generated FILE, and a
+    playback shard has no single owner. Sixty scans then failed on 13
+    published episodes that could not be played, and Today Match froze at
+    2026-09-08 10:31 for a day and a half over a fault in a series file.
+
+    Repair, strongest evidence first:
+
+      1. the card's own configuration. `stable_playback_id` is a pure function
+         of url, headers, drm, header profile, stream type and manifest-query
+         inheritance, and all of those survive into the published item - so a
+         card whose id recomputes proves its own record, out of this tree
+         alone. All 13 recompute.
+      2. the other side's tree, for a card whose id does NOT recompute: the
+         record existed somewhere, and `records_from` carries it across.
+      3. neither. The reference is dangling and must not publish - but a
+         legitimate episode is not deleted to make a check pass. With a direct
+         url the id is cleared and the item keeps playing; without one the item
+         is left exactly as it is and reported, and the validator refuses the
+         build. An unplayable card must not ship, and quietly removing content
+         is the worse of the two failures.
+    """
+    if not catalogue_exists(data_dir):
+        print("  no playback catalogue in this tree; nothing to settle for "
+              "episodes or movies")
+        return []
+
+    missing = _content_catalogue().missing_profiles(data_dir)
+    if not missing:
+        return []
+    print("  %d published episode/movie card(s) cannot be played by this tree"
+          % len(missing))
+
+    written: List[str] = []
+
+    # 1. Whatever the cards can prove on their own.
+    report = _content_catalogue().reconcile(data_dir)
+    if report.get("registered"):
+        print("  rebuilt %d profile(s) from the card's own configuration"
+              % report["registered"])
+        written.append(shown(data_dir / "playback"))
+
+    # 2. Whatever is left, from the other side.
+    still = _content_catalogue().missing_profiles(data_dir)
+    if still:
+        fetched = records_from(theirs_ref, [row["playback_id"] for row in still])
+        if fetched:
+            written.extend(add_records(data_dir, fetched))
+            print("  carried %d playback record(s) across from the newer "
+                  "publish" % len(fetched))
+
+    # 3. Whatever neither could explain.
+    unresolved = _content_catalogue().missing_profiles(data_dir)
+    if not unresolved:
+        print("  every published episode and movie in this tree can be played")
+        return written
+
+    cleared = _clear_dangling_ids(data_dir, unresolved)
+    written.extend(cleared)
+    left = _content_catalogue().missing_profiles(data_dir)
+    if left:
+        print("  %d card(s) still reference a playback id this tree cannot "
+              "serve and have no direct url; left in place for the validator "
+              "to refuse rather than deleted:" % len(left))
+        for row in left[:8]:
+            print("    %s / %s (%s)"
+                  % (row.get("series"), row.get("episode") or row.get("kind"),
+                     row.get("playback_id")))
+    return written
+
+
+def _content_catalogue():
+    """Imported here so this script still runs with an older scanner tree."""
+    from scanner import series_catalogue
+
+    return series_catalogue
+
+
+def _clear_dangling_ids(data_dir: Path,
+                        rows: List[Dict[str, Any]]) -> List[str]:
+    """Drop the unplayable id from a card that has a real url anyway.
+
+    The item stays. Only the reference that cannot be served goes, which is
+    the same repair `keep_the_catalogue_honest` makes for an event card.
+    """
+    by_path: Dict[str, List[Dict[str, Any]]] = {}
+    for row in rows:
+        if has_direct_url(row.get("episode_item") or {}):
+            by_path.setdefault(str(row["path"]), []).append(row)
+    written: List[str] = []
+    for path_text, group in sorted(by_path.items()):
+        path = Path(path_text)
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        wanted = {row["playback_id"] for row in group}
+        changed = 0
+        for item in payload.get("items") or []:
+            if not isinstance(item, dict):
+                continue
+            if str(item.get("playback_id") or "").strip() in wanted:
+                item["playback_id"] = ""
+                changed += 1
+        if not changed:
+            continue
+        path.write_text(
+            json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8", newline="\n")
+        written.append(shown(path))
+        print("  cleared %d unplayable playback id(s) in %s - the cards keep "
+              "their direct url" % (changed, shown(path)))
+    return written
+
+
 def write_surface(data_dir: Path, name: str, payload: Dict[str, Any],
                   items: List[Dict[str, Any]]) -> List[str]:
     """The flat mirror and the slot the manifest names, kept identical."""
@@ -596,6 +729,11 @@ def main() -> int:
     # card whose id had just left the catalogue. Structure, not discipline: a
     # new path through the merge cannot forget this one.
     settle_catalogue_in_tree(ROOT / args.data_dir, args.theirs)
+    # The same guarantee for episodes and movies. Separate call rather than a
+    # widened SURFACES list, because the event settlement carries rules that
+    # only apply to a tab - a card may be dropped there, and an episode may
+    # not.
+    settle_content_catalogue_in_tree(ROOT / args.data_dir, args.theirs)
     return status
 
 
