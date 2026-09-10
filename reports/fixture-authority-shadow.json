@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T22:28:56.313038+00:00",
+  "generated_at": "2026-09-10T22:48:41.924226+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,12 +12,14 @@
       "requests_ok": 6,
       "fixtures": 625,
       "unknown_statuses": [
+        "10|HT",
+        "12|Int.",
         "132|Stumps - day 1",
         "133|Stumps - day 2",
         "134|Stumps - day 3",
-        "2|28'",
-        "2|29'",
-        "3|66'"
+        "25|Delay",
+        "2|18'",
+        "3|85'"
       ],
       "attempts": [
         {
@@ -110,53 +112,65 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 8,
-    "upcoming": 57,
-    "fixtures": 65,
+    "upcoming": 56,
+    "fixtures": 64,
     "verdicts": {
-      "CONFLICT": 3,
-      "UNVERIFIED": 35,
+      "CONFLICT": 4,
+      "UNVERIFIED": 33,
       "VERIFIED": 27
     },
     "verified": 27,
     "partial_authority": 0,
-    "unverified": 35,
-    "conflict": 3,
+    "unverified": 33,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 24,
-        "unmatched": 41
+        "matched": 25,
+        "unmatched": 39
       },
       "livescore": {
         "matched": 25,
-        "unmatched": 40
+        "unmatched": 39
       }
     },
     "matched_by_two_independent_authorities": 19,
-    "authority_agreements": 19,
+    "authority_agreements": 18,
     "authority_disagreements": 0,
-    "card_status_conflicts": 3,
+    "card_status_conflicts": 4,
     "conflict_reason_counts": {
-      "card says LIVE, authority says FINISHED": 3
+      "card says LIVE, authority says FINISHED": 2,
+      "kickoff": 1,
+      "card says LIVE, authority says UPCOMING": 2
     },
     "identity_near_misses": 12,
     "independent_authority_count_distribution": {
-      "0": 35,
-      "1": 11,
+      "0": 33,
+      "1": 12,
       "2": 19
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
+        "12|Int.",
         "132|Stumps - day 1",
         "133|Stumps - day 2",
         "134|Stumps - day 3",
-        "2|28'",
-        "2|29'",
-        "3|66'"
+        "25|Delay",
+        "2|18'",
+        "3|85'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Barbados Tridents vs St Kitts And Nevis Patriots",
+      "authority": "livescore",
+      "authority_name": "Barbados Royals vs St Kitts and Nevis Patriots",
+      "agreed_side": "st kitts and nevis patriots",
+      "ours": "barbados tridents",
+      "theirs": "barbados royals"
+    },
     {
       "fixture": "Bayern München vs Bodo Glimt",
       "authority": "livescore",
@@ -188,14 +202,6 @@
       "agreed_side": "bayern munchen",
       "ours": "bodø glimt",
       "theirs": "bodoe glimt"
-    },
-    {
-      "fixture": "Falkenbergs FF vs Osters IF",
-      "authority": "livescore",
-      "authority_name": "Falkenbergs FF vs Oesters IF",
-      "agreed_side": "falkenbergs ff",
-      "ours": "osters if",
-      "theirs": "oesters if"
     },
     {
       "fixture": "1 FC Nürnberg vs Hannover 96",
@@ -340,6 +346,176 @@
         "card says LIVE, authority says FINISHED"
       ],
       "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:barbados-tridents-vs-st-kitts-and-nevis-patriots|caribbean premier league 2026 32nd|2026-09-10",
+      "card_id": "barbados-tridents-vs-st-kitts-and-nevis-patriots",
+      "name": "Barbados Tridents vs St Kitts And Nevis Patriots",
+      "competition": "Caribbean Premier League 2026 - 32nd Match",
+      "kickoff": "2026-09-10T22:15:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-willow-event",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing",
+        "Willow"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1534210",
+          "upstream_family": "ESPN",
+          "name": "Barbados Tridents vs St Kitts and Nevis Patriots",
+          "home": "Barbados Tridents",
+          "away": "St Kitts and Nevis Patriots",
+          "home_team_id": "642411",
+          "away_team_id": "857687",
+          "competition": "Caribbean Premier League",
+          "competition_id": "8623",
+          "kickoff": "2026-09-10T23:00:00+00:00",
+          "kickoff_delta_minutes": 45.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "32nd Match (D/N)",
+          "format": "T20",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-09-12T23:59:00Z",
+          "authority_uid": "s:200~e:1534210~c:1534210"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Barbados Royals vs St Kitts and Nevis Patriots",
+              "event_id": "1772641",
+              "agreed_side": "st kitts and nevis patriots",
+              "ours": "barbados tridents",
+              "theirs": "barbados royals"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "kickoff: ours 2026-09-10T22:15, espn-header 2026-09-10T23:00 (+45.0 min)",
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:vila-nova-vs-goias|serie b|2026-09-10",
+      "card_id": "vila-nova-vs-goias",
+      "name": "Vila Nova vs Goias",
+      "competition": "Serie B",
+      "kickoff": "2026-09-10T22:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401860326",
+          "upstream_family": "ESPN",
+          "name": "Vila Nova vs Goiás",
+          "home": "Vila Nova",
+          "away": "Goiás",
+          "home_team_id": "9973",
+          "away_team_id": "3395",
+          "competition": "Brazilian Serie B",
+          "competition_id": "4007",
+          "kickoff": "2026-09-10T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, September 10th at 6:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:4007~e:401860326~c:401860326"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1741331",
+          "upstream_family": "LiveScore",
+          "name": "Vila Nova vs Goias",
+          "home": "Vila Nova",
+          "away": "Goias",
+          "home_team_id": "4984",
+          "away_team_id": "5025",
+          "competition": "Serie B",
+          "competition_id": "630",
+          "kickoff": "2026-09-10T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "18'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "27",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
       "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
@@ -506,95 +682,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:como-vs-rb-leipzig|uefa champions league|2026-09-10",
-      "card_id": "como-vs-rb-leipzig",
-      "name": "Como Vs RB Leipzig",
-      "competition": "UEFA Champions League",
-      "kickoff": "2026-09-10T19:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401915441",
-          "upstream_family": "ESPN",
-          "name": "Como vs RB Leipzig",
-          "home": "Como",
-          "away": "RB Leipzig",
-          "home_team_id": "2572",
-          "away_team_id": "11420",
-          "competition": "UEFA Champions League",
-          "competition_id": "775",
-          "kickoff": "2026-09-10T19:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:775~e:401915441~c:401915441"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1882861",
-          "upstream_family": "LiveScore",
-          "name": "Como 1907 vs RB Leipzig",
-          "home": "Como 1907",
-          "away": "RB Leipzig",
-          "home_team_id": "4227",
-          "away_team_id": "4707",
-          "competition": "League Stage",
-          "competition_id": "60",
-          "kickoff": "2026-09-10T19:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:fc-bayern-münchen-vs-bodø-glimt|uefa champions league|2026-09-10",
       "card_id": "fc-bayern-münchen-vs-bodø-glimt",
       "name": "FC Bayern München Vs Bodø Glimt",
@@ -674,52 +761,6 @@
         },
         "livescore": {
           "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:falkenbergs-ff-vs-osters-if|superettan|2026-09-10",
-      "card_id": "falkenbergs-ff-vs-osters-if",
-      "name": "Falkenbergs FF vs Osters IF",
-      "competition": "Superettan",
-      "kickoff": "2026-09-10T17:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Falkenbergs FF vs Oesters IF",
-              "event_id": "1718349",
-              "agreed_side": "falkenbergs ff",
-              "ours": "osters if",
-              "theirs": "oesters if"
-            }
-          ]
         }
       },
       "authority_upstreams": [],
@@ -1121,11 +1162,11 @@
       "source_ids": [
         "sm-fancode",
         "srhady-tapmad-bd",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -1183,11 +1224,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -1627,11 +1668,11 @@
       "source_ids": [
         "sm-fancode",
         "srhady-tapmad-bd",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -2072,8 +2113,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2150,14 +2191,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "sportlive-fancode-backup",
         "srhady-bingstream",
         "sm-fancode",
+        "srhady-axsports-live",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -2204,46 +2245,6 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:england-vs-pakistan|3rd test|2026-09-11",
-      "card_id": "england-vs-pakistan",
-      "name": "England vs Pakistan",
-      "competition": "3rd Test",
-      "kickoff": "2026-09-11T10:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live",
-        "srhady-tapmad-bd"
-      ],
-      "upstream_families": [
-        "AXS-Bing",
-        "Tapmad"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2615,13 +2616,13 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "srhady-tapmad-bd",
         "sm-fancode",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -2712,12 +2713,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -2873,11 +2874,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -3120,11 +3121,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -3250,11 +3251,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -3563,13 +3564,13 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "srhady-crichd-footy-live",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
+        "iptvflixbd-fancode-data",
+        "srhady-crichd-footy-live"
       ],
       "upstream_families": [
         "CricHD",
@@ -3770,53 +3771,15 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:tridents-vs-nevis-patriots|cpl|2026-09-10",
-      "card_id": "tridents-vs-nevis-patriots",
-      "name": "Tridents vs Nevis Patriots",
-      "competition": "CPL",
-      "kickoff": "2026-09-10T23:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -4081,17 +4044,57 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
       ],
       "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:england-vs-pakistan|3rd test|2026-09-11",
+      "card_id": "england-vs-pakistan",
+      "name": "England vs Pakistan",
+      "competition": "3rd Test",
+      "kickoff": "2026-09-11T10:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-tapmad-bd",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing",
+        "Tapmad"
+      ],
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -4149,46 +4152,74 @@
       "verdict": "UNVERIFIED"
     },
     {
-      "fixture_id": "provider:panathinaikos-fc-vs-ae-kifisia|stoiximan super league|2026-09-10",
-      "card_id": "panathinaikos-fc-vs-ae-kifisia",
-      "name": "Panathinaikos FC Vs AE Kifisia",
-      "competition": "Stoiximan Super League",
-      "kickoff": "2026-09-10T18:15:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "fixture_id": "provider:tridents-vs-nevis-patriots|cpl|2026-09-10",
+      "card_id": "tridents-vs-nevis-patriots",
+      "name": "Tridents vs Nevis Patriots",
+      "competition": "CPL",
+      "kickoff": "2026-09-10T23:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "AXS-Bing"
       ],
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Panathinaikos vs Kifisia",
-              "event_id": "401896777",
-              "agreed_side": "panathinaikos",
-              "ours": "ae kifisia",
-              "theirs": "kifisia"
-            }
-          ]
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED"
+    },
+    {
+      "fixture_id": "provider:falkenbergs-ff-vs-osters-if|superettan|2026-09-10",
+      "card_id": "falkenbergs-ff-vs-osters-if",
+      "name": "Falkenbergs FF vs Osters IF",
+      "competition": "Superettan",
+      "kickoff": "2026-09-10T17:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
         },
         "livescore": {
           "result": "unmatched",
           "near_misses": [
             {
-              "authority_name": "Panathinaikos vs Kifisia FC",
-              "event_id": "1836540",
-              "agreed_side": "panathinaikos",
-              "ours": "ae kifisia",
-              "theirs": "kifisia"
+              "authority_name": "Falkenbergs FF vs Oesters IF",
+              "event_id": "1718349",
+              "agreed_side": "falkenbergs ff",
+              "ours": "osters if",
+              "theirs": "oesters if"
             }
           ]
         }
@@ -4203,194 +4234,13 @@
       "verdict": "UNVERIFIED"
     },
     {
-      "fixture_id": "provider:stevenage-vs-luton|league one|2026-09-10",
-      "card_id": "stevenage-vs-luton",
-      "name": "Stevenage vs Luton",
-      "competition": "League One",
-      "kickoff": "2026-09-10T19:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "AXS-Bing",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401880856",
-          "upstream_family": "ESPN",
-          "name": "Stevenage vs Luton Town",
-          "home": "Stevenage",
-          "away": "Luton Town",
-          "home_team_id": "285",
-          "away_team_id": "301",
-          "competition": "English League One",
-          "competition_id": "3915",
-          "kickoff": "2026-09-10T19:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3915~e:401880856~c:401880856"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1802955",
-          "upstream_family": "LiveScore",
-          "name": "Stevenage vs Luton Town",
-          "home": "Stevenage",
-          "away": "Luton Town",
-          "home_team_id": "2741",
-          "away_team_id": "2857",
-          "competition": "League 1",
-          "competition_id": "71",
-          "kickoff": "2026-09-10T19:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Regular Season",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:manchester-united-vs-sabah-fa|uefa champions league|2026-09-10",
-      "card_id": "manchester-united-vs-sabah-fa",
-      "name": "Manchester United vs Sabah FA",
+      "fixture_id": "provider:como-vs-rb-leipzig|uefa champions league|2026-09-10",
+      "card_id": "como-vs-rb-leipzig",
+      "name": "Como Vs RB Leipzig",
       "competition": "UEFA Champions League",
       "kickoff": "2026-09-10T19:00:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live",
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "AXS-Bing",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401915442",
-          "upstream_family": "ESPN",
-          "name": "Manchester United vs Sabah FK",
-          "home": "Manchester United",
-          "away": "Sabah FK",
-          "home_team_id": "360",
-          "away_team_id": "21922",
-          "competition": "UEFA Champions League",
-          "competition_id": "775",
-          "kickoff": "2026-09-10T19:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:775~e:401915442~c:401915442"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1882794",
-          "upstream_family": "LiveScore",
-          "name": "Manchester United vs Sabah FK",
-          "home": "Manchester United",
-          "away": "Sabah FK",
-          "home_team_id": "2810",
-          "away_team_id": "6181",
-          "competition": "League Stage",
-          "competition_id": "60",
-          "kickoff": "2026-09-10T19:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:sk-slavia-praha-vs-rc-lens|uefa champions league|2026-09-10",
-      "card_id": "sk-slavia-praha-vs-rc-lens",
-      "name": "SK Slavia Praha Vs RC Lens",
-      "competition": "UEFA Champions League",
-      "kickoff": "2026-09-10T19:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -4407,13 +4257,13 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "401915440",
+          "event_id": "401915441",
           "upstream_family": "ESPN",
-          "name": "Slavia Prague vs Lens",
-          "home": "Slavia Prague",
-          "away": "Lens",
-          "home_team_id": "494",
-          "away_team_id": "175",
+          "name": "Como vs RB Leipzig",
+          "home": "Como",
+          "away": "RB Leipzig",
+          "home_team_id": "2572",
+          "away_team_id": "11420",
           "competition": "UEFA Champions League",
           "competition_id": "775",
           "kickoff": "2026-09-10T19:00:00+00:00",
@@ -4431,19 +4281,19 @@
           "espn_status_description": "Full Time",
           "espn_completed": true,
           "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:775~e:401915440~c:401915440"
+          "authority_uid": "s:600~l:775~e:401915441~c:401915441"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1882869",
+          "event_id": "1882861",
           "upstream_family": "LiveScore",
-          "name": "Slavia Prague vs Lens",
-          "home": "Slavia Prague",
-          "away": "Lens",
-          "home_team_id": "6145",
-          "away_team_id": "4715",
+          "name": "Como 1907 vs RB Leipzig",
+          "home": "Como 1907",
+          "away": "RB Leipzig",
+          "home_team_id": "4227",
+          "away_team_id": "4707",
           "competition": "League Stage",
           "competition_id": "60",
           "kickoff": "2026-09-10T19:00:00+00:00",
