@@ -679,12 +679,27 @@ class Section21EndDetection(unittest.TestCase):
         card.update(extra)
         return card
 
-    def test_scheduled_end_passed_but_stream_playable_is_preserved(self):
+    def test_scheduled_end_passed_and_stream_playable_is_preserved_at_first(self):
+        """PROMPT 10 narrowed this by the confirmation count, not by the
+        protection: one or two missed scans with a route that answers still
+        preserve the card, exactly as before."""
         verdict = decide(self._card(), LifecycleSignals(
-            estimate_passed=True, primary_playable=True, consecutive_non_live_scans=9,
+            estimate_passed=True, primary_playable=True, consecutive_non_live_scans=1,
         ), now=NOW)
         self.assertEqual(verdict.state, LIVE)
         self.assertTrue(verdict.publish)
+
+    def test_but_not_for_nine_scans_running(self):
+        """A route proves the LINK, not the match. This assertion used to read
+        LIVE, and 301 cards were carried past 24 hours on it - Sri Lanka vs
+        India 1st Test for 262 hours, "still live: primary_playable" every
+        time. What changes here is the CARD; `estimated_only` says the fixture
+        is not being declared over."""
+        verdict = decide(self._card(), LifecycleSignals(
+            estimate_passed=True, primary_playable=True, consecutive_non_live_scans=9,
+        ), now=NOW)
+        self.assertEqual(verdict.state, ENDED)
+        self.assertTrue(verdict.estimated_only)
 
     def test_scheduled_end_passed_but_authority_still_live_is_preserved(self):
         verdict = decide(self._card(), LifecycleSignals(
@@ -694,11 +709,23 @@ class Section21EndDetection(unittest.TestCase):
         self.assertEqual(verdict.state, LIVE)
 
     def test_a_playable_backup_alone_preserves_it(self):
+        """Still true where it was always about the backup: a card whose
+        primary is dead and whose backup answers is not a dead card."""
+        verdict = decide(self._card(), LifecycleSignals(
+            estimate_passed=True, primary_playable=False, backup_playable=True,
+            consecutive_non_live_scans=1,
+        ), now=NOW)
+        self.assertEqual(verdict.state, LIVE)
+
+    def test_a_playable_backup_does_not_preserve_it_for_ever_either(self):
+        """PROMPT 10. The backup is a route too, and a route proves the
+        link."""
         verdict = decide(self._card(), LifecycleSignals(
             estimate_passed=True, primary_playable=False, backup_playable=True,
             consecutive_non_live_scans=9,
         ), now=NOW)
-        self.assertEqual(verdict.state, LIVE)
+        self.assertEqual(verdict.state, ENDED)
+        self.assertTrue(verdict.estimated_only)
 
     def test_an_authoritative_finish_ends_it(self):
         for status in ("FT", "FINISHED", "ENDED", "FINAL", "AET", "PEN"):
@@ -728,12 +755,28 @@ class Section21EndDetection(unittest.TestCase):
         self.assertEqual(verdict.state, END_PENDING)
         self.assertTrue(verdict.publish, "END_PENDING still publishes the card")
 
-    def test_an_inconclusive_probe_never_reaches_ended(self):
+    def test_an_inconclusive_probe_never_reaches_ended_on_its_own(self):
+        """Cannot tell is still not dead: the multi-signal path requires
+        links PROVEN dead, and this card has none proven anything."""
+        verdict = decide(self._card(), LifecycleSignals(
+            authority_live=None, primary_playable=None, backup_playable=None,
+            estimate_passed=True, consecutive_non_live_scans=2,
+        ), now=NOW)
+        self.assertEqual(verdict.state, END_PENDING)
+        self.assertFalse(verdict.estimated_only)
+
+    def test_but_an_unreadable_probe_is_not_a_reason_to_hold_for_ever(self):
+        """PROMPT 10. This assertion used to read END_PENDING at 99 scans,
+        and South Delhi Superstarz Women vs Central Delhi Queens sat on Today
+        Match for 231 hours on "holding, not retiring". The estimate answers
+        instead - the probe is not consulted at all - and it retires the CARD
+        only, which is what `estimated_only` records."""
         verdict = decide(self._card(), LifecycleSignals(
             authority_live=None, primary_playable=None, backup_playable=None,
             estimate_passed=True, consecutive_non_live_scans=99,
         ), now=NOW)
-        self.assertEqual(verdict.state, END_PENDING)
+        self.assertEqual(verdict.state, ENDED)
+        self.assertTrue(verdict.estimated_only)
 
     def test_a_currently_playing_event_is_never_removed(self):
         verdict = decide(self._card(), LifecycleSignals(

@@ -623,6 +623,79 @@ def decide(
             estimated_only=True,
         )
 
+    # 2d. The LISTING has expired, for a card no feed lists any more.
+    #
+    #     2c above is this same bound for a card a feed is still publishing,
+    #     and it is gated on `seen_in_this_scan` because absence may be an
+    #     outage. That gate protects the right thing and bounded nothing: an
+    #     ABSENT card met no clock here at all, and the only thing that ever
+    #     removed one was `events._is_today_fresh` on the targeted path - a
+    #     tab filter, on the one scan mode that publishes NOTHING when it has
+    #     no fixture to chase, which was 312 of 341 targeted runs.
+    #
+    #     Measured on the published history of data/today-match.json, per
+    #     appearance rather than per card so a return never counts as carry:
+    #     before that filter existed `Sri Lanka vs India 1st Test` was carried
+    #     262 hours past its own stamp and 301 cards were carried past 24
+    #     hours, with `still live: primary_playable, backup_playable` the
+    #     reason on almost every one. A route proves the LINK, not the match -
+    #     a channel that broadcasts all day answers a probe for ever - and
+    #     path 3 below keeps such a card "whatever the clock says".
+    #
+    #     So absence gets the same estimate bound, with the absence itself
+    #     bounded: `confirmations_required` consecutive scans of it. That is
+    #     the existing standard for acting on absence and the same number the
+    #     multi-signal path below uses, so one missed fetch can never trigger
+    #     this. What is dropped relative to that path is only its "every link
+    #     dead" requirement, which is the whole point.
+    #
+    #     A fixture authority calling the match live still vetoes it, and a
+    #     viewer watching still holds it, exactly as in 2c.
+    #
+    #     Links proven DEAD are left to the multi-signal path below, which
+    #     already answers that case and answers it harder - dead routes AND
+    #     the same confirmations - and retires without a grace, because a
+    #     card with nothing playable is not being taken from under anybody.
+    #     This is for the case that path cannot reach: routes that answer, or
+    #     routes nothing could check.
+    #
+    #     It retires the CARD and says nothing about the FIXTURE:
+    #     `estimated_only` travels with the verdict, so `apply_verdict` writes
+    #     `lifecycle_end_basis = "estimate"` and no later stage may read the
+    #     retirement as a finish. Day two of a Test comes back when a source
+    #     lists it again.
+    if (
+        not signals.seen_in_this_scan
+        and signals.estimate_passed
+        and signals.authority_live is not True
+        and not signals.currently_playing
+        and signals.any_link_playable is not False
+        and int(signals.consecutive_non_live_scans)
+        >= max(1, int(confirmations_required))
+    ):
+        confirmations = int(signals.consecutive_non_live_scans)
+        seen = _ended_seen_at(card, reference)
+        if _post_match_grace_remains(seen, reference, post_match_grace_minutes):
+            return LifecycleVerdict(
+                END_PENDING, True,
+                "no source lists this any more and its estimated end long "
+                "passed - holding for the post-match grace",
+                confirmations=confirmations,
+                ended_seen_at=seen,
+                estimated_only=True,
+            )
+        return LifecycleVerdict(
+            ENDED, False,
+            (
+                "the listing expired: no source has listed this for "
+                f"{confirmations} consecutive scans and its estimated end "
+                "long passed - an estimate, never recorded as a finish"
+            ),
+            confirmations=confirmations,
+            ended_seen_at=seen,
+            estimated_only=True,
+        )
+
     protections: List[str] = []
     if signals.authority_live is True:
         protections.append("authority_live")

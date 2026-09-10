@@ -175,8 +175,22 @@ def terminal_provenance(
     """
     if archive_refusal(card):
         return ""
+    # Our own retirement stamp - but only when it rests on somebody else's
+    # evidence. `lifecycle_state = ENDED` with `lifecycle_end_basis =
+    # "estimate"` says "our clock ran out", and reading that back as terminal
+    # evidence would archive a fixture nothing had declared finished. The
+    # check further down was written for exactly that and could never be
+    # reached, because this branch answered first: an estimate-only
+    # retirement went into the archive as `lifecycle_ended` and would have
+    # barred day two of a Test. It never fired in production - path 2c has
+    # retired nothing yet, `published_retiring_by_basis.estimate` is 0 across
+    # every publish - so nothing has to be repaired, only prevented.
+    #
+    # `apply_verdict` CLEARS the basis whenever the verdict is not
+    # estimate-only, so a real end arriving later restores this branch.
     state = _text(card.get("lifecycle_state")).upper()
-    if state in ARCHIVED_STATES:
+    estimated = _text(card.get("lifecycle_end_basis")).lower() == ESTIMATE_END_BASIS
+    if state in ARCHIVED_STATES and not estimated:
         return "lifecycle_%s" % state.lower()
     authority = _text(card.get("authority_status")).upper().replace(" ", "_")
     if authority in TERMINAL_AUTHORITY_STATUSES:

@@ -964,6 +964,11 @@ def protect_live_events(
         # with a kickoff in the past, which is the exact fault
         # scanner/event_archive.py exists to prevent.
         "retired_terminal": [],
+        # A card removed because no source lists it any more and its own
+        # ESTIMATED end long passed. Counted apart from every other departure
+        # because it is the one kind that asserts nothing about the fixture -
+        # a report reading `released_ended` must not find it there.
+        "released_listing_expired": 0,
         "released_dead_link": 0,
         "released_stale": 0,
         # Retired by the no-schedule fallback below rather than by a real end
@@ -1129,6 +1134,22 @@ def protect_live_events(
             # reads the card's own status fields - the very fields
             # `strong_end` reads - so calling that "authority_finished"
             # would credit a feed's FT to an authority that never spoke.
+            # Our own clock running out is not evidence, and this is the
+            # path that had to be told so. `terminal_provenance` guards the
+            # targeted trigger, which reads the card; the full scan reads
+            # `retired_terminal` from here and never asks that function - so
+            # an estimate-only retirement would have been recorded as
+            # `post_match_grace_expired`, on the stamp the estimate itself
+            # wrote, and day two of a Test would have been barred by day one.
+            #
+            # Nothing is appended, so nothing downstream can remember it. The
+            # counters below still count the departure; only the claim that
+            # somebody declared the fixture over is withheld.
+            if decision.estimated_only:
+                stats["released_listing_expired"] += 1
+                stats["released_stale"] += 1
+                stats["released_confirmed"] += 1
+                continue
             if authority.get(event_id) is False:
                 provenance = "authority_finished"
             elif strong_end:

@@ -174,8 +174,26 @@ class UnscheduledCarryExpiryTests(unittest.TestCase):
         self.assertEqual(len(items), 1)
         self.assertEqual(stats["released_unscheduled_expired"], 0)
 
-    def test_a_playable_unscheduled_card_is_kept_however_old(self):
-        """The fallback is a clock, not a verdict. Still-live protection wins."""
+    def test_a_playable_unscheduled_card_is_kept_while_the_absence_is_young(self):
+        """Still-live protection wins where it should: a route that answers
+        and an absence of one scan keep the card."""
+        card = unscheduled_card("Shanghai Shenhua vs Beijing Guoan", "ssbg")
+        items, stats = self._run([card], {}, dead=False)
+        self.assertEqual(len(items), 1)
+        self.assertEqual(stats["released_unscheduled_expired"], 0)
+        self.assertEqual(stats["probe_alive"], 1)
+
+    def test_but_not_however_old(self):
+        """PROMPT 10. This test read "kept however old", and that was the
+        fault: 157 consecutive misses since 2026-08-18 is this exact card, and
+        the published history has it carried for 262 hours with
+        "still live: primary_playable" as the reason. A route proves the LINK.
+
+        The departure is not counted as an unscheduled expiry and not as a
+        finish: it is a listing that expired, counted on its own, and the list
+        of terminal retirements is left empty so the fixture can be listed
+        again.
+        """
         card = unscheduled_card("Shanghai Shenhua vs Beijing Guoan", "ssbg")
         misses = {
             "ssbg": {
@@ -187,9 +205,10 @@ class UnscheduledCarryExpiryTests(unittest.TestCase):
             }
         }
         items, stats = self._run([card], misses, dead=False)
-        self.assertEqual(len(items), 1)
-        self.assertEqual(stats["released_unscheduled_expired"], 0)
-        self.assertEqual(stats["probe_alive"], 1)
+        self.assertEqual(items, [])
+        self.assertEqual(stats["released_listing_expired"], 1)
+        self.assertEqual(stats["released_ended"], 0)
+        self.assertEqual(stats["retired_terminal"], [])
 
     def test_a_viewer_watching_it_keeps_it_however_old(self):
         card = unscheduled_card("Batman Petrolspor vs Boluspor 1 Lig", "bp-vs-b")
