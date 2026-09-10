@@ -202,9 +202,19 @@ class EveryTriggerLandsInTheRightQueue(unittest.TestCase):
             self.assertEqual(EVENTS_GROUP, group)
 
     # ---- PROMPT 45: cancel-in-progress
-    def test_only_the_targeted_run_cancels_its_predecessor(self):
-        self.assertEqual("true", self.cancels(schedule=TARGETED_CRON))
+    def test_only_the_dispatched_targeted_run_cancels_its_predecessor(self):
+        """PROMPT 9 narrowed this from "targeted" to "dispatched targeted".
+
+        When PROMPT 45 wrote it, the cron was the only thing triggering this
+        workflow, so "the targeted run cancels its predecessor" named one
+        trigger. It names two now - the Cloudflare dispatcher is the primary
+        five-minute trigger and the cron is the backup - and with cancel on
+        both sides the backup preempted the primary. The assertion below is
+        the same intention, applied to the trigger that still owns the
+        cadence.
+        """
         self.assertEqual("true", self.cancels(mode="upcoming-targeted"))
+        self.assertEqual("false", self.cancels(schedule=TARGETED_CRON))
 
     def test_today_and_upcoming_still_never_cancel(self):
         self.assertEqual("false", self.cancels(schedule=TODAY_CRON))
@@ -231,6 +241,95 @@ class EveryTriggerLandsInTheRightQueue(unittest.TestCase):
         for schedule, mode in cancelling:
             self.assertEqual(TARGETED_GROUP,
                              self.group(schedule=schedule, mode=mode))
+
+
+class TheBackupNeverPreemptsThePrimary(unittest.TestCase):
+    """PROMPT 9 - the intended architecture, asserted rather than assumed.
+
+    PRIMARY    the Cloudflare dispatcher, `workflow_dispatch` mode
+               upcoming-targeted, every five minutes
+    BACKUP     `on.schedule` cron `1-59/5 * * * *`, delivered by GitHub when
+               GitHub feels like it
+
+    GitHub delivered 1,235 scheduled runs of this workflow inside its
+    retention window, so the cron is configured correctly and is being
+    delivered - just far below the rate it asks for (12-25 a day against ~360
+    requested, and none at all on 2026-09-09). That part is GitHub's, not
+    something this file can fix, and `scripts/select-scan-mode.py` already
+    exists to make a surviving run carry the work a skipped one owed.
+
+    What this file CAN get wrong, and did: a backup that cancels the primary.
+    Both triggers share `targeted-v1` - deliberately, two targeted scans must
+    never run at once - and cancel-in-progress used to be true for both, so
+    each native arrival killed the primary run in flight and was then killed
+    by the next dispatch. Net effect of the backup firing: one missed tick.
+    """
+
+    def setUp(self):
+        self.concurrency = _load()["concurrency"]
+
+    def group(self, **kwargs):
+        return _render(self.concurrency["group"], **kwargs)
+
+    def cancels(self, **kwargs):
+        return _render(str(self.concurrency["cancel-in-progress"]), **kwargs)
+
+    def test_the_scheduled_backup_does_not_cancel_anything(self):
+        self.assertEqual("false", self.cancels(schedule=TARGETED_CRON))
+
+    def test_the_dispatched_primary_still_cancels_its_predecessor(self):
+        """The five-minute cadence depends on this and must not be lost while
+        fixing the backup."""
+        self.assertEqual("true", self.cancels(mode="upcoming-targeted"))
+
+    def test_only_a_dispatch_can_ever_cancel(self):
+        """Whatever combination of contexts arrives, a cancelling run is a
+        dispatched targeted run. This is the invariant; the two assertions
+        above are the two cases anyone reads."""
+        for schedule in ("", TARGETED_CRON, TODAY_CRON, CHANNELS_CRON, MOVIES_CRON):
+            for mode in ("", "today", "upcoming", "upcoming-targeted",
+                         "channels", "movies", "all"):
+                if self.cancels(schedule=schedule, mode=mode) == "true":
+                    self.assertEqual("upcoming-targeted", mode,
+                                     "cron %r cancels" % schedule)
+
+    def test_primary_and_backup_still_share_one_queue(self):
+        """Yielding must not become overlapping. If the backup had a queue of
+        its own it would scan while the primary scans, and two runs writing
+        upcoming.json at once is the publish race this repository has already
+        paid for twice."""
+        self.assertEqual(self.group(mode="upcoming-targeted"),
+                         self.group(schedule=TARGETED_CRON))
+
+    def test_the_backup_is_not_disabled_to_make_it_harmless(self):
+        """The cheap way to stop a backup preempting the primary is to delete
+        the cron. FINAL_2 keeps GitHub as the backup, so the cron stays and
+        only its cancel behaviour changes."""
+        workflow = _load()
+        triggers = workflow.get("on") or workflow.get(True)
+        declared = {entry["cron"] for entry in triggers["schedule"]}
+        self.assertIn(TARGETED_CRON, declared)
+        self.assertIn(TODAY_CRON, declared)
+        self.assertEqual(5, len(declared))
+
+    def test_every_declared_cron_still_selects_a_mode(self):
+        """A cron that reaches the selector's final `schedule` branch fails the
+        run on purpose. Delivery is scarce enough already; none of it may be
+        spent on a run that cannot name its own mode."""
+        workflow = _load()
+        triggers = workflow.get("on") or workflow.get(True)
+        step = next(s for s in workflow["jobs"]["scan"]["steps"]
+                    if str(s.get("name") or "").startswith("Select scan mode"))
+        body = step["run"]
+        for entry in triggers["schedule"]:
+            self.assertIn("== \"%s\"" % entry["cron"], body, entry["cron"])
+
+    def test_today_keeps_its_own_queue_and_never_cancels(self):
+        """The twenty-minute today scan writes whole trees. Nothing in this
+        change may let anything interrupt one."""
+        self.assertEqual(EVENTS_GROUP, self.group(schedule=TODAY_CRON))
+        self.assertEqual("false", self.cancels(schedule=TODAY_CRON))
+        self.assertEqual("false", self.cancels(mode="today"))
 
 
 class TheWorkflowItselfIsStillSound(unittest.TestCase):

@@ -153,15 +153,36 @@ concurrency:
            || inputs.mode == 'all')
           && 'catalogue-v4' || 'events-v4')
     }}
-  # Only the targeted run cancels its predecessor. A five-minute hunt that is
-  # still going when the next one starts is working on a staler view of the
-  # same fixtures, and the newer run re-reads the ledger from disk, so nothing
-  # it was going to record is lost: the attempt it had not yet written was not
-  # an attempt. today, upcoming, channels and movies keep `false` - they write
-  # whole trees and a half-finished one must not be interrupted.
+  # Only the DISPATCHED targeted run cancels its predecessor. A five-minute hunt
+  # that is still going when the next one starts is working on a staler view of
+  # the same fixtures, and the newer run re-reads the ledger from disk, so
+  # nothing it was going to record is lost: the attempt it had not yet written
+  # was not an attempt. today, upcoming, channels and movies keep `false` - they
+  # write whole trees and a half-finished one must not be interrupted.
+  #
+  # The `1-59/5 * * * *` cron used to cancel too, and that was right when the
+  # cron was the only thing triggering this workflow. It is not any more: the
+  # Cloudflare dispatcher is the PRIMARY five-minute trigger and this cron is
+  # the BACKUP. Both land in `targeted-v1`, which is correct - two targeted
+  # scans must never run at once - but with cancel on both sides the backup
+  # preempted the primary. Measured on 2026-09-10:
+  #
+  #   05:52:03  workflow_dispatch  CANCELLED   <- killed by the line below
+  #   05:53:28  schedule           CANCELLED   <- killed by the next dispatch
+  #   05:57:03  workflow_dispatch  success
+  #
+  # A native arrival cost one primary run and then died itself, so the net
+  # effect of the backup firing was a MISSED tick, not a redundant one. In the
+  # dispatcher era native cancellations went from ~2% of scheduled runs to
+  # 11-28% a day, and every one of them took a primary run with it.
+  #
+  # A backup must yield to the primary, never preempt it. With `false` here a
+  # native run waits as pending instead, the primary finishes, and the next
+  # dispatch supersedes the native run - which is exactly what a backup is for.
+  # Nothing about the dispatcher changes, and nothing else's cancel behaviour
+  # moves: the group expression above still routes the cron to `targeted-v1`.
   cancel-in-progress: >-
-    ${{ github.event.schedule == '1-59/5 * * * *'
-        || inputs.mode == 'upcoming-targeted' }}
+    ${{ inputs.mode == 'upcoming-targeted' }}
 
 jobs:
   scan:
