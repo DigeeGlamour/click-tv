@@ -75,6 +75,31 @@ TERMINAL_STATES = (FINISHED, ABANDONED, CANCELLED, NO_RESULT)
 #: and the task is explicit that neither is an ordinary finish.
 RECORD_ONLY_STATES = (POSTPONED, SUSPENDED)
 
+#: The only kind of match whose kickoff may be acted on.
+#:
+#: Measured over 9,844 matched authority readings in the shadow history:
+#:
+#:     same_fixture      9548 readings, kickoff delta median 0, max 30 min
+#:     kickoff_lifted     270 readings, delta min 60, median 1440, max 1440
+#:     ambiguous_*         26 readings, mostly 1440
+#:
+#: A whole day apart is not a corrected kickoff, it is two different meetings
+#: of the same two clubs - which is what lifting the kickoff constraint to get
+#: a match means. `same_fixture` agrees with our clock by construction, so it
+#: is the one kind that can be trusted to speak about the same kickoff.
+TRUSTED_MATCH = "same_fixture"
+
+#: What a card claims when a source calls it live before anybody's kickoff.
+#:
+#: An existing state, not a new one: `schedule_resolver._classify` already
+#: writes it for a fixture inside the hour before kickoff, `ROUTE_UPCOMING_STATUSES`
+#: already keeps such a card on Today Match once it is inside
+#: `move_to_today_minutes`, and the site already has a label for it. The play
+#: button is not affected - the frontend decides that from the card's routes
+#: through `isPlayable`, never from this field - so the correction changes what
+#: the card SAYS and not what a viewer can do with it.
+START_WINDOW_STATUS = "STARTING_SOON"
+
 #: The word written into `authority_status` for each terminal state. Every one
 #: of these is already in `event_lifecycle.STRONG_END_STATUSES`, which is the
 #: whole reason this mapping can be a lookup rather than a new rule.
@@ -211,6 +236,98 @@ def _card_is_playable(card: Dict[str, Any]) -> bool:
     return bool(_text(card.get("playback_id")))
 
 
+def trusted_kickoff(evidence: Evidence) -> Optional[_dt.datetime]:
+    """The authorities' kickoff, when it is one we may act on.
+
+    Every matched authority has to have matched by `same_fixture` - see
+    TRUSTED_MATCH - and they have to agree with each other to the minute. The
+    earliest is returned when they do, so a fixture is never treated as
+    not-started for longer than any authority claims.
+
+    None when nothing matched, when any match lifted the kickoff constraint,
+    or when no authority stated a kickoff at all. None means "no trusted
+    kickoff exists", which leaves every existing rule exactly as it was.
+    """
+    if not evidence.matched:
+        return None
+    kickoffs = []
+    for entry in (evidence.authorities or {}).values():
+        if not isinstance(entry, dict):
+            return None
+        if _text(entry.get("matched_by")) != TRUSTED_MATCH:
+            return None
+        moment = _parse(entry.get("kickoff"))
+        if moment is None:
+            return None
+        kickoffs.append(moment)
+    if not kickoffs:
+        return None
+    return min(kickoffs)
+
+
+def start_window(
+    card: Dict[str, Any],
+    evidence: Evidence,
+    *,
+    now: _dt.datetime,
+) -> str:
+    """Stop a source's LIVE from claiming a kickoff has happened.
+
+    A playlist calling an entry LIVE_NOW is a statement about a LISTING. It is
+    the only status many feeds have, several of them carry it all day, and it
+    is not a statement about whether a fixture has kicked off. So it may put a
+    card on Today Match - `move_to_today_minutes` owns that, and this function
+    does not touch the tab - but it may not say the match has started while
+    both clocks say it has not.
+
+    Four conditions, and all four have to hold:
+
+      the card CLAIMS live      only a claim can be corrected. A card already
+                                saying STARTING_SOON or LINK_UPDATING is left
+                                alone.
+      our own kickoff is future a match that has started is never downgraded,
+                                whatever an authority says. This is also what
+                                makes a STALE authority UPCOMING powerless:
+                                measured over the shadow history, 49 of the 49
+                                "card says LIVE, authority says UPCOMING"
+                                sightings were a median of 45 minutes AFTER
+                                the authority's own kickoff, and not one of
+                                them can reach this branch.
+      a trusted kickoff exists  `same_fixture` only. Without one, nothing is
+                                known about the kickoff that our own clock did
+                                not already say, and the existing behaviour
+                                stands.
+      that kickoff is future    the authorities agree the match has not
+                                started. An authority saying LIVE never gets
+                                here - `stamp` returns before this - and one
+                                saying FINISHED does not either.
+
+    Returns the status now claimed, or "" when nothing was corrected. Mutates
+    only `schedule_status`, `status` and two fields that record what happened.
+    Routes, ids, channels, `source_ids` and `fixture_id` are not touched: the
+    fixture is the same fixture and the stream is the same stream.
+    """
+    claimed = _text(card.get("schedule_status") or card.get("status")).upper()
+    if claimed not in event_lifecycle.ROUTE_LIVE_STATUSES:
+        return ""
+    ours = _parse(card.get("start_time") or card.get("start_at"))
+    if ours is None or now >= ours:
+        return ""
+    theirs = trusted_kickoff(evidence)
+    if theirs is None or now >= theirs:
+        return ""
+
+    card["schedule_status"] = START_WINDOW_STATUS
+    card["status"] = START_WINDOW_STATUS
+    card["start_window_claimed"] = claimed
+    card["authority_start_conflict"] = (
+        "a source called this %s while %s and our own schedule both put "
+        "kickoff %d minute(s) away"
+        % (claimed, "/".join(evidence.families) or "the authority",
+           int((max(ours, theirs) - now).total_seconds() // 60)))
+    return START_WINDOW_STATUS
+
+
 def stamp(
     card: Dict[str, Any],
     evidence: Evidence,
@@ -290,12 +407,15 @@ def stamp(
 
     if not evidence.is_terminal:
         # UPCOMING, and anything else that is neither live nor terminal. It may
-        # not promote a card and it may not end one; a future kickoff against a
-        # source calling it live is a conflict for the report, and the bounded
-        # start-window rules already own that decision.
+        # not promote a card and it may not end one. What it MAY do is refuse a
+        # source's claim that the match has started while both clocks say it
+        # has not - which is the bounded start-window rule, and it lives in
+        # `start_window` above rather than here.
         card.pop("authority_finished_seen_at", None)
         card.pop("authority_finished_confirmations", None)
         card.pop("authority_remove_after", None)
+        if start_window(card, evidence, now=now):
+            return "start_window"
         return "recorded"
 
     # A fixture whose kickoff has not arrived cannot have finished. An
@@ -370,6 +490,11 @@ def apply(
         "recorded": 0,
         "conflict": 0,
         "unmatched": 0,
+        # A source called a fixture live before anybody's kickoff, and the
+        # claim was corrected to STARTING_SOON. Counted apart from
+        # `recorded`, which is the state that changes nothing.
+        "start_window": 0,
+        "start_window_fixtures": [],
         "by_status": {},
         "by_confidence": {},
         "applied_fixtures": [],
@@ -388,6 +513,15 @@ def apply(
         if not action:
             stats["unmatched"] += 1
             continue
+        if action == "start_window":
+            stats["start_window_fixtures"].append({
+                "id": str(card.get("id") or ""),
+                "name": str(card.get("name") or ""),
+                "claimed": str(card.get("start_window_claimed") or ""),
+                "now_says": str(card.get("schedule_status") or ""),
+                "conflict": str(card.get("authority_start_conflict") or ""),
+                "upstream_families": list(evidence.families),
+            })
         stats[action] = int(stats.get(action, 0)) + 1
         if evidence.status:
             stats["by_status"][evidence.status] = int(
