@@ -188,15 +188,31 @@ class OnlyAKickoffWeCanTrust(unittest.TestCase):
                                   kickoff_minutes=1440)}), now=NOW))
         self.assertEqual("LIVE_NOW", card["schedule_status"])
 
-    def test_one_lifted_match_spoils_a_mixed_pair(self):
-        """Two authorities, one of them talking about another meeting. There
-        is no trusted kickoff here, only an unresolved question."""
+    def test_a_lifted_match_beside_a_verified_one_neither_helps_nor_hurts(self):
+        """PROMPT 12 settled what a lifted reading is worth: nothing.
+
+        This test read "one lifted match spoils the pair" and asserted no
+        trusted kickoff at all. That threw away a verified identification
+        because a second source was confused - and a near miss does not vote,
+        in either direction. The verified reading now stands alone: it is the
+        trusted kickoff, and it is one witness rather than two.
+        """
         evidence = _evidence(**{
             "espn-header": _entry(family="ESPN"),
             "livescore": _entry(family="LiveScore",
                                 matched_by="kickoff_lifted",
                                 kickoff_minutes=1440),
         })
+        self.assertEqual(NOW + timedelta(minutes=40),
+                         trusted_kickoff(evidence))
+        self.assertEqual(["ESPN"], evidence.families)
+        self.assertEqual(1, len(evidence.near_misses))
+
+    def test_a_lifted_match_on_its_own_is_no_kickoff_at_all(self):
+        evidence = _evidence(**{
+            "livescore": _entry(family="LiveScore",
+                                matched_by="kickoff_lifted",
+                                kickoff_minutes=1440)})
         self.assertIsNone(trusted_kickoff(evidence))
 
     def test_an_unmatched_authority_is_not_a_kickoff(self):

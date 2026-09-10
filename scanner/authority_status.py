@@ -87,7 +87,10 @@ RECORD_ONLY_STATES = (POSTPONED, SUSPENDED)
 #: of the same two clubs - which is what lifting the kickoff constraint to get
 #: a match means. `same_fixture` agrees with our clock by construction, so it
 #: is the one kind that can be trusted to speak about the same kickoff.
-TRUSTED_MATCH = "same_fixture"
+#:
+#: One name for it, in `authority_shadow`, where the matcher that produces it
+#: lives. Two copies of this string is one copy too many.
+TRUSTED_MATCH = authority_shadow.VERIFIED_MATCH
 
 #: What a card claims when a source calls it live before anybody's kickoff.
 #:
@@ -133,13 +136,14 @@ class Evidence:
     """What the authorities said about one card, and how much it is worth."""
 
     __slots__ = ("status", "families", "authorities", "confidence", "verdict",
-                 "conflict_reasons", "matched", "raw")
+                 "conflict_reasons", "matched", "raw", "near_misses")
 
     def __init__(self, status: str = "", families: Optional[List[str]] = None,
                  authorities: Optional[Dict[str, Dict[str, Any]]] = None,
                  confidence: str = NONE, verdict: str = "",
                  conflict_reasons: Optional[List[str]] = None,
-                 matched: bool = False, raw: Optional[Dict[str, Any]] = None):
+                 matched: bool = False, raw: Optional[Dict[str, Any]] = None,
+                 near_misses: Optional[List[Dict[str, Any]]] = None):
         self.status = status
         self.families = families or []
         self.authorities = authorities or {}
@@ -148,6 +152,9 @@ class Evidence:
         self.conflict_reasons = conflict_reasons or []
         self.matched = matched
         self.raw = raw or {}
+        #: Candidates found without agreeing on the clock, or one of several.
+        #: Carried so a card can record them; never evidence.
+        self.near_misses = near_misses or []
 
     @property
     def is_terminal(self) -> bool:
@@ -180,10 +187,36 @@ def read(row: Dict[str, Any]) -> Evidence:
     cannot drift apart.
     """
     matched: Dict[str, Dict[str, Any]] = {}
+    near_misses: List[Dict[str, Any]] = []
     for name, entry in (row.get("authorities") or {}).items():
         if not isinstance(entry, dict) or entry.get("result") != "matched":
             continue
         status = _text(entry.get("status"))
+        # A candidate found by setting the clock aside, or one of several
+        # candidates, has not identified the fixture. It is kept - the alias
+        # and identity work these readings feed needs them - but as a
+        # question, on its own list, where nothing votes with it.
+        #
+        # Older shadow rows have no `verified` field. `matched_by` is the same
+        # answer and every row has carried it since the matcher was written,
+        # so it is the fallback rather than a default of True: a reading whose
+        # worth cannot be established is not treated as established.
+        verified = entry.get("verified")
+        if verified is None:
+            verified = _text(entry.get("matched_by")) == TRUSTED_MATCH
+        if not verified:
+            near_misses.append({
+                "authority": str(name),
+                "matched_by": _text(entry.get("matched_by")),
+                "event_id": _text(entry.get("event_id")),
+                "upstream_family": _text(entry.get("upstream_family")),
+                "name": _text(entry.get("name")),
+                "competition": _text(entry.get("competition")),
+                "kickoff": _text(entry.get("kickoff")),
+                "kickoff_delta_minutes": entry.get("kickoff_delta_minutes"),
+                "status": status,
+            })
+            continue
         if not status or status == UNKNOWN:
             continue
         matched[name] = entry
@@ -191,6 +224,7 @@ def read(row: Dict[str, Any]) -> Evidence:
     if not matched:
         return Evidence(verdict=_text(row.get("verdict")),
                         conflict_reasons=list(row.get("conflict_reasons") or []),
+                        near_misses=near_misses,
                         raw=row)
 
     families = sorted({_text(entry.get("upstream_family"))
@@ -203,16 +237,19 @@ def read(row: Dict[str, Any]) -> Evidence:
             status="", families=families, authorities=matched,
             confidence=CONFLICT, verdict=_text(row.get("verdict")),
             conflict_reasons=list(row.get("conflict_reasons") or []),
-            matched=True, raw=row)
+            matched=True, near_misses=near_misses, raw=row)
 
     status = statuses.pop()
     # Independent upstreams, not feeds. Two mirrors of one upstream saying the
-    # same thing twice is one witness saying it once.
+    # same thing twice is one witness saying it once - and a near miss is not
+    # a witness at all, so `families` above is built from verified readings
+    # only. Two lifted readings used to reach HIGH between them, which is the
+    # one confidence that applies a terminal state with no repetition.
     confidence = HIGH if len(families) >= 2 else LOW
     return Evidence(status=status, families=families, authorities=matched,
                     confidence=confidence, verdict=_text(row.get("verdict")),
                     conflict_reasons=list(row.get("conflict_reasons") or []),
-                    matched=True, raw=row)
+                    matched=True, near_misses=near_misses, raw=row)
 
 
 def _card_is_playable(card: Dict[str, Any]) -> bool:
@@ -349,6 +386,14 @@ def stamp(
     """
     required = max(1, int(confirmations_required))
     card.pop("authority_end_conflict", None)
+
+    # Recorded first, and recorded whatever else happens below - including on
+    # a card no authority identified at all, which is exactly the card whose
+    # near misses are worth reading later. It is data for the alias work and
+    # for nothing else: no branch below consults it.
+    card.pop("authority_near_misses", None)
+    if evidence.near_misses:
+        card["authority_near_misses"] = evidence.near_misses
 
     if evidence.confidence == CONFLICT:
         card["authority_end_status"] = ""

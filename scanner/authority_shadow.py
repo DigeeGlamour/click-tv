@@ -124,6 +124,27 @@ def _as_fixture_shape(row: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+#: The one way of finding an authority fixture that counts as identifying it.
+#:
+#: `match_one` below returns four kinds. Only this one asked the clock. The
+#: others found a candidate by setting the clock aside, or found more than one,
+#: and neither is an identification - measured over 10,230 shadow rows:
+#:
+#:     same_fixture               9725 readings, kickoff delta median 0, max 30 min
+#:     kickoff_lifted              270 readings, delta 1 hour to 25 hours
+#:     ambiguous_kickoff_lifted     26 readings
+#:     ambiguous                     8 readings
+#:
+#: The lifted readings resolve to 12 distinct (card, authority fixture) pairs,
+#: and every one of them is plausibly the SAME fixture with a disagreeing
+#: clock - a Test whose authority record is dated from day one, an FA Cup tie
+#: our feed dates a day early, one of our own duplicate cards. None is a
+#: proven different meeting. That is the point: a lifted match may be right,
+#: and being right by luck is not evidence. Two of them reached HIGH
+#: confidence, and a HIGH terminal state applies with no confirmation at all.
+VERIFIED_MATCH = "same_fixture"
+
+
 def match_one(
     card: Dict[str, Any],
     rows: Iterable[Dict[str, Any]],
@@ -257,6 +278,11 @@ def compare(
         "authorities": {},
         "authority_upstreams": [],
         "independent_authority_count": 0,
+        #: Upstream families that found a candidate without agreeing on the
+        #: clock, or found more than one. Reported so the identity work has
+        #: the readings; never counted as authority.
+        "near_miss_upstreams": [],
+        "near_miss_count": 0,
         "conflict_reasons": [],
     }
 
@@ -279,6 +305,10 @@ def compare(
         entry = {
             "result": "matched",
             "matched_by": how,
+            # What this reading is worth, stated rather than inferred from
+            # `matched_by` by every reader in turn. `result` stays "matched"
+            # so the report keeps its shape and its history stays comparable.
+            "verified": how == VERIFIED_MATCH,
             "event_id": _text(found.get("authority_event_id")),
             "upstream_family": _text(found.get("upstream_family")),
             "name": _text(found.get("name")),
@@ -306,14 +336,23 @@ def compare(
         row["authorities"][authority_id] = entry
 
         family = entry["upstream_family"] or upstream_family.family_for(authority_id)
-        if family and family not in row["authority_upstreams"]:
-            row["authority_upstreams"].append(family)
+        if family:
+            if entry["verified"]:
+                if family not in row["authority_upstreams"]:
+                    row["authority_upstreams"].append(family)
+            elif family not in row["near_miss_upstreams"]:
+                # Counted, and counted separately. A near miss that fed
+                # `authority_upstreams` was a second witness that had not
+                # identified the fixture, and two of those reached HIGH.
+                row["near_miss_upstreams"].append(family)
 
-        if how != "same_fixture":
+        if not entry["verified"]:
             partial = True
         if entry["status"] == UNKNOWN:
             partial = True
-        else:
+        elif entry["verified"]:
+            # A near miss does not vote on what the authorities say, so it can
+            # neither create an agreement nor manufacture a disagreement.
             matched_statuses[authority_id] = entry["status"]
 
         if delta is not None and abs(delta) > KICKOFF_CONFLICT_MINUTES:
@@ -329,6 +368,8 @@ def compare(
 
     row["authority_upstreams"].sort()
     row["independent_authority_count"] = len(row["authority_upstreams"])
+    row["near_miss_upstreams"].sort()
+    row["near_miss_count"] = len(row["near_miss_upstreams"])
 
     distinct = sorted(set(matched_statuses.values()))
     if len(distinct) > 1:

@@ -816,13 +816,26 @@ class ShadowVerdictTests(unittest.TestCase):
         self.assertEqual(row["verdict"], fixture_authority.PARTIAL_AUTHORITY)
 
     def test_a_kickoff_lifted_match_is_reported_as_a_kickoff_conflict(self):
+        """PROMPT 12 moved the VERDICT and not the report.
+
+        This read CONFLICT, which said an authority disagreed with us. It had
+        not: it had found a candidate by setting the clock aside, which is a
+        question about identity and not a statement about the fixture. So the
+        verdict is now UNVERIFIED - our evidence is insufficient, which is
+        exactly what a lifted match leaves us with - while the kickoff reason
+        is still reported, unchanged, because nothing may be hidden.
+        """
         row = authority_shadow.compare(
             card(schedule_status="ENDED"),
             {"livescore": [authority_row(kickoff="2026-09-07T03:00:00+00:00")]},
             HEALTHY)
-        self.assertEqual(row["verdict"], fixture_authority.CONFLICT)
+        self.assertEqual(row["verdict"], fixture_authority.UNVERIFIED)
         self.assertTrue(any(reason.startswith("kickoff")
                             for reason in row["conflict_reasons"]))
+        self.assertEqual(row["independent_authority_count"], 0)
+        self.assertEqual(row["near_miss_upstreams"], ["LiveScore"])
+        self.assertEqual(row["authorities"]["livescore"]["result"], "matched")
+        self.assertFalse(row["authorities"]["livescore"]["verified"])
 
     def test_no_authority_match_is_unverified(self):
         row = authority_shadow.compare(
