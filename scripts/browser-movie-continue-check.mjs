@@ -238,6 +238,109 @@ async function run(label, viewport, navSelector, subNavSelector) {
   const onSports = await readRow(page);
   check(onSports.hidden, `[${label}] Live Sports does not show Continue Watching`);
 
+  // --- resuming a series goes to the exact episode -------------------------
+  // Built from a real published series, so the thing being resumed is a real
+  // episode of a real season, not a fixture that only looks like one.
+  const realEpisode = await page.evaluate(async () => {
+    const manifest = await (await fetch('data/series/manifest.json')).json();
+    for (const entry of Object.values(manifest.categories || {})) {
+      if (!entry?.index || !entry.count) continue;
+      const index = await (await fetch(entry.index)).json();
+      for (const series of index.items || []) {
+        if (!series.series_manifest) continue;
+        const detail = await (await fetch(series.series_manifest)).json();
+        const season = (detail.seasons || []).find((row) => row.path && row.count > 1);
+        if (!season) continue;
+        const payload = await (await fetch(season.path)).json();
+        const episode = (payload.items || [])[1];
+        if (!episode?.url && !episode?.playback_id) continue;
+        return {
+          series_id: series.id, series_name: series.name,
+          series_manifest: series.series_manifest,
+          season_number: season.number,
+          episode_number: episode.episode_number,
+          episode_title: episode.episode_title || episode.title || '',
+          category: series.category,
+          url: episode.url || ''
+        };
+      }
+    }
+    return null;
+  });
+
+  check(Boolean(realEpisode), `[${label}] a real multi-episode season was found to resume into`);
+
+  if (realEpisode) {
+    // Resuming a series plays the PUBLISHED episode, not the snapshot - which
+    // is the point. Its bytes are H.264 and undecodable here, so that one URL
+    // is answered with the same WAV; the episode record, the handoff and the
+    // seek are all still the production path.
+    if (realEpisode.url) {
+      await context.route((url) => url.href === realEpisode.url, (route) => route.fulfill({
+        status: 200,
+        headers: {
+          'Content-Type': 'audio/wav',
+          'Accept-Ranges': 'bytes',
+          'Content-Length': String(FIXTURE_MEDIA.length)
+        },
+        body: FIXTURE_MEDIA
+      }));
+    }
+
+    const episodeEntry = {
+      key: `episode:${realEpisode.series_id}:s${realEpisode.season_number}:e${realEpisode.episode_number}`,
+      content_type: 'episode', item_id: `${realEpisode.series_id}-resume`,
+      name: realEpisode.series_name, logo: '', category: realEpisode.category,
+      series_id: realEpisode.series_id, series_name: realEpisode.series_name,
+      season_number: realEpisode.season_number, episode_number: realEpisode.episode_number,
+      episode_title: realEpisode.episode_title,
+      position_seconds: 120, duration_seconds: 1800, progress_percent: 6.6,
+      last_played_at: Date.now(), completed: false,
+      snapshot: {
+        id: `${realEpisode.series_id}-resume`, name: realEpisode.series_name,
+        content_kind: 'episode', series_id: realEpisode.series_id,
+        series_name: realEpisode.series_name, series_manifest: realEpisode.series_manifest,
+        season_number: realEpisode.season_number, episode_number: realEpisode.episode_number,
+        episode_title: realEpisode.episode_title,
+        url: `${baseUrl}/${MEDIA_PATH}`, backups: [],
+        proxy_mode: 'direct_first', stream_type: 'media', _sourceKind: 'movie'
+      }
+    };
+
+    await page.evaluate(async (entry) => { await window.resumeContinueWatching(entry); }, episodeEntry);
+
+    let landedOn = { season: '', highlighted: [], playing: '' };
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      await page.waitForTimeout(700);
+      landedOn = await page.evaluate(() => ({
+        season: document.querySelector('.series-season-button.active')?.textContent?.trim() || '',
+        highlighted: [...document.querySelectorAll('.series-episode-card.active')]
+          .map((row) => row.querySelector('.series-episode-copy strong')?.textContent?.trim() || ''),
+        playing: document.querySelector('#metaWatchingCount')?.textContent?.trim() || ''
+      }));
+      if (landedOn.highlighted.length) break;
+    }
+
+    const seasonNumber = Number((landedOn.season.match(/\d+/) || [])[0]);
+    check(seasonNumber === Number(realEpisode.season_number),
+      `[${label}] resuming a series opens that season, not the first one`,
+      JSON.stringify({ wanted: realEpisode.season_number, opened: landedOn.season }));
+    check(landedOn.highlighted.length === 1
+      && landedOn.highlighted[0] === realEpisode.episode_title,
+      `[${label}] resuming a series plays that exact episode, not episode one`,
+      JSON.stringify({ wanted: realEpisode.episode_title, highlighted: landedOn.highlighted }));
+
+    let seeked = 0;
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      await page.waitForTimeout(700);
+      seeked = await page.evaluate(() => Number(document.querySelector('video')?.currentTime) || 0);
+      if (seeked >= 115) break;
+    }
+    check(seeked >= 115 && seeked <= 130,
+      `[${label}] the episode resumes at its own saved position`,
+      JSON.stringify({ wanted: 120, landed: seeked }));
+  }
+
   // --- the 30-second rule and the resume, through the real player ----------
   //
   // The catalogue is H.264/MKV and this browser is the Playwright build of
