@@ -39,19 +39,15 @@ from __future__ import annotations
 
 import datetime as _dt
 import difflib
-import json
 import os
 import re
-import urllib.error
 import urllib.parse
-import urllib.request
 from typing import Any, Dict, List, Optional
 
-REQUEST_TIMEOUT_SECONDS = 8  # bounded, per PART 03's requirement
-_USER_AGENT = (
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-)
+try:
+    from scanner import provider_health
+except ImportError:  # pragma: no cover - direct-module import path
+    import provider_health  # type: ignore
 
 TMDB_SEARCH_MOVIE_URL = "https://api.themoviedb.org/3/search/movie"
 TMDB_MOVIE_DETAIL_URL = "https://api.themoviedb.org/3/movie/{id}"
@@ -74,58 +70,27 @@ ANILIST_URL = "https://graphql.anilist.co"
 
 
 # --------------------------------------------------------------------------
-# Small local HTTP helpers (mirrors scanner/poster_providers.py's style;
-# kept local/duplicated rather than imported so this module has no
-# dependency on the poster-resolution module it must stay decoupled from).
+# HTTP goes through scanner/provider_health.py (PART 04), which owns the
+# pacing, the 429/Retry-After handling, the bounded 2s/5s/15s/30s ladder,
+# the no-retry rule for 401/403, and the per-provider counters. These two
+# helpers only name the provider the request belongs to.
 # --------------------------------------------------------------------------
 
 
-def _get_json(url: str, *, headers: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
-    request_headers = {"Accept": "application/json", "User-Agent": _USER_AGENT}
-    request_headers.update(headers or {})
-    request = urllib.request.Request(url, headers=request_headers)
-    try:
-        with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
-            raw = response.read(2_000_000)
-        payload = json.loads(raw.decode("utf-8", errors="replace"))
-        return payload if isinstance(payload, dict) else {}
-    except (
-        urllib.error.HTTPError,
-        urllib.error.URLError,
-        TimeoutError,
-        OSError,
-        UnicodeError,
-        json.JSONDecodeError,
-        ValueError,
-    ):
-        return {}
+def _get_json(
+    provider: str, url: str, *, headers: Optional[Dict[str, str]] = None
+) -> Dict[str, Any]:
+    return provider_health.request_json(provider, url, headers=headers)
 
 
-def _post_json(url: str, body: Dict[str, Any], *, headers: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
-    request_headers = {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": _USER_AGENT,
-    }
-    request_headers.update(headers or {})
-    request = urllib.request.Request(
-        url, data=json.dumps(body).encode("utf-8"), headers=request_headers, method="POST"
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
-            raw = response.read(2_000_000)
-        payload = json.loads(raw.decode("utf-8", errors="replace"))
-        return payload if isinstance(payload, dict) else {}
-    except (
-        urllib.error.HTTPError,
-        urllib.error.URLError,
-        TimeoutError,
-        OSError,
-        UnicodeError,
-        json.JSONDecodeError,
-        ValueError,
-    ):
-        return {}
+def _post_json(
+    provider: str,
+    url: str,
+    body: Dict[str, Any],
+    *,
+    headers: Optional[Dict[str, str]] = None,
+) -> Dict[str, Any]:
+    return provider_health.request_json(provider, url, headers=headers, body=body)
 
 
 def _title_similarity(a: str, b: str) -> float:
@@ -181,7 +146,9 @@ def tmdb_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any]]:
     if headers is None:
         return None
 
-    search = _get_json(TMDB_SEARCH_MOVIE_URL + "?" + urllib.parse.urlencode(params), headers=headers)
+    search = _get_json(
+        "tmdb", TMDB_SEARCH_MOVIE_URL + "?" + urllib.parse.urlencode(params), headers=headers
+    )
     results = search.get("results") if isinstance(search.get("results"), list) else []
     if not results:
         return None
@@ -206,6 +173,7 @@ def tmdb_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any]]:
     detail_params: Dict[str, str] = {"language": "en-US"}
     detail_headers = _tmdb_auth_params_and_headers(detail_params) or {}
     detail = _get_json(
+        "tmdb",
         TMDB_MOVIE_DETAIL_URL.format(id=tmdb_id) + "?" + urllib.parse.urlencode(detail_params),
         headers=detail_headers,
     )
@@ -261,7 +229,7 @@ def omdb_metadata(title: str, year: int = 0, imdb_id: Optional[str] = None) -> O
     else:
         return None
 
-    payload = _get_json(OMDB_URL + "?" + urllib.parse.urlencode(params))
+    payload = _get_json("omdb", OMDB_URL + "?" + urllib.parse.urlencode(params))
     if str(payload.get("Response") or "").casefold() == "false" or not payload.get("imdbID"):
         return None
 
@@ -297,7 +265,9 @@ def cinemeta_metadata(imdb_id: Any, kind: str = "movie") -> Optional[Dict[str, A
     if not imdb_id_text.startswith("tt"):
         return None
     normalized_kind = "series" if str(kind or "").casefold() in {"series", "tv", "show"} else "movie"
-    payload = _get_json(CINEMETA_URL.format(kind=normalized_kind, imdb_id=imdb_id_text))
+    payload = _get_json(
+        "cinemeta", CINEMETA_URL.format(kind=normalized_kind, imdb_id=imdb_id_text)
+    )
     meta = payload.get("meta") if isinstance(payload.get("meta"), dict) else {}
     if not meta:
         return None
@@ -338,7 +308,7 @@ def fanart_metadata(tmdb_id: Any) -> Optional[Dict[str, Any]]:
     if not api_key or not tmdb_id_text.isdigit():
         return None
     url = FANART_MOVIE_URL.format(id=tmdb_id_text) + "?" + urllib.parse.urlencode({"api_key": api_key})
-    payload = _get_json(url)
+    payload = _get_json("fanart", url)
     backgrounds = payload.get("moviebackground")
     if not isinstance(backgrounds, list) or not backgrounds:
         return None
@@ -395,7 +365,7 @@ def moviesdatabase_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any
         + "?"
         + urllib.parse.urlencode({"exact": "false", "titleType": "movie"})
     )
-    search = _get_json(search_url, headers=headers)
+    search = _get_json("moviesdatabase", search_url, headers=headers)
     results = search.get("results") if isinstance(search.get("results"), list) else []
     if not results:
         return None
@@ -432,6 +402,7 @@ def moviesdatabase_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any
 
     genres: List[str] = []
     genres_payload = _get_json(
+        "moviesdatabase",
         MOVIESDATABASE_GENRES_URL.format(host=host, id=imdb_id) + "?" + urllib.parse.urlencode({"info": "genres"}),
         headers=headers,
     )
@@ -442,7 +413,7 @@ def moviesdatabase_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any
     rating = None
     rating_votes = None
     ratings_payload = _get_json(
-        MOVIESDATABASE_RATINGS_URL.format(host=host, id=imdb_id), headers=headers
+        "moviesdatabase", MOVIESDATABASE_RATINGS_URL.format(host=host, id=imdb_id), headers=headers
     )
     ratings_result = ratings_payload.get("results") if isinstance(ratings_payload.get("results"), dict) else {}
     if isinstance(ratings_result.get("averageRating"), (int, float)):
@@ -473,7 +444,9 @@ def tvmaze_metadata(title: str) -> Optional[Dict[str, Any]]:
     title = str(title or "").strip()
     if not title:
         return None
-    payload = _get_json(TVMAZE_SEARCH_URL + "?" + urllib.parse.urlencode({"q": title}))
+    payload = _get_json(
+        "tvmaze", TVMAZE_SEARCH_URL + "?" + urllib.parse.urlencode({"q": title})
+    )
     if not payload:
         return None
 
@@ -514,7 +487,9 @@ def anilist_metadata(title: str) -> Optional[Dict[str, Any]]:
         "genres startDate { year month day } averageScore bannerImage "
         "coverImage { extraLarge large } } }"
     )
-    payload = _post_json(ANILIST_URL, {"query": query, "variables": {"search": title}})
+    payload = _post_json(
+        "anilist", ANILIST_URL, {"query": query, "variables": {"search": title}}
+    )
     data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
     media = data.get("Media") if isinstance(data.get("Media"), dict) else {}
     if not media:

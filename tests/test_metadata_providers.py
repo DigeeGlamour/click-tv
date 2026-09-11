@@ -63,7 +63,7 @@ class TmdbMetadataTests(unittest.TestCase):
             "backdrop_path": "/detailbackdrop.jpg",
         }
 
-        def fake_get_json(url, headers=None):
+        def fake_get_json(provider, url, headers=None):
             return detail_payload if "/movie/27205" in url else search_payload
 
         with _env(TMDB_API_KEY="key"), patch.object(mp, "_get_json", side_effect=fake_get_json):
@@ -188,7 +188,7 @@ class MoviesDatabaseMetadataTests(unittest.TestCase):
         genres_payload = {"results": {"genres": {"genres": [{"text": "Action"}, {"text": "Sci-Fi"}]}}}
         ratings_payload = {"results": {"averageRating": 8.8, "numVotes": 2811614}}
 
-        def fake_get_json(url, headers=None):
+        def fake_get_json(provider, url, headers=None):
             if "/ratings" in url:
                 return ratings_payload
             if "info=genres" in url:

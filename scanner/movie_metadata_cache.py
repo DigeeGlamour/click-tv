@@ -65,6 +65,18 @@ DEFAULT_LOOKUP_BUDGET = int(os.environ.get("MOVIE_METADATA_LOOKUP_BUDGET", "40")
 #: so a handful of unmatchable titles cannot eat the whole budget every run.
 RETRY_AFTER_FAILURE_DAYS = 7
 
+#: Cache-first refresh policy (PART 04). An already-resolved movie is only
+#: looked up again once its record is older than the TTL for its kind, and
+#: only ever with budget left over after every not-yet-resolved movie has
+#: had its turn. A film from 2011 is not going to change its genres; a film
+#: released this year is still accumulating votes and can correct its
+#: release date, so it is re-read sooner.
+REFRESH_TTL_DAYS_STABLE = 90
+REFRESH_TTL_DAYS_RECENT = 14
+
+#: How recent a release_date has to be to count as "still moving".
+RECENT_RELEASE_DAYS = 365
+
 
 def _now(now: Optional[_dt.datetime] = None) -> _dt.datetime:
     return now or _dt.datetime.now(_dt.timezone.utc)
@@ -155,6 +167,21 @@ def _should_skip_after_failure(record: Dict[str, Any], now: _dt.datetime) -> boo
     return (now - attempted) <= _dt.timedelta(days=RETRY_AFTER_FAILURE_DAYS)
 
 
+def _refresh_ttl_days(record: Dict[str, Any], now: _dt.datetime) -> int:
+    """Long TTL for settled metadata, shorter for a recent release."""
+    released = _parse_stamp(record.get("release_date"))
+    if released is not None and (now - released) <= _dt.timedelta(days=RECENT_RELEASE_DAYS):
+        return REFRESH_TTL_DAYS_RECENT
+    return REFRESH_TTL_DAYS_STABLE
+
+
+def _is_due_for_refresh(record: Dict[str, Any], now: _dt.datetime) -> bool:
+    updated = _parse_stamp(record.get("metadata_updated_at"))
+    if updated is None:
+        return False
+    return (now - updated) > _dt.timedelta(days=_refresh_ttl_days(record, now))
+
+
 def upsert(
     store: Dict[str, Any],
     identity: str,
@@ -203,6 +230,7 @@ def enrich(
     persist: bool = True,
     lookup: Optional[Callable[[Dict[str, Any]], Optional[Dict[str, Any]]]] = None,
     budget: Optional[int] = None,
+    availability: Optional[Callable[[], bool]] = None,
 ) -> Dict[str, int]:
     """Apply cached metadata onto every movie; optionally resolve new ones.
 
@@ -211,6 +239,12 @@ def enrich(
     this only ever reads the cache; no network call is made. PART 03 passes
     a real lookup, and callers gate that to the true publish path only so
     unit tests / ad-hoc calls never make a network call.
+
+    `availability` (PART 04) is an optional predicate answering "is any
+    provider still worth asking right now". When it says no, the remaining
+    lookups are abandoned for this run rather than recorded as failures -
+    an outage must not leave a seven-day cooldown on movies that were never
+    actually tried.
     """
     reference = _now(now)
     remaining_budget = DEFAULT_LOOKUP_BUDGET if budget is None else budget
@@ -219,9 +253,17 @@ def enrich(
 
     cached_hits = 0
     fetched = 0
+    refreshed = 0
     failed = 0
     skipped_budget = 0
     skipped_cooldown = 0
+    skipped_unavailable = 0
+
+    # Pass one: apply what the cache already knows, and sort the rest into
+    # "never resolved" and "resolved but past its TTL". Cache-first, so a
+    # movie with usable metadata costs no request at all.
+    never_resolved: List[Dict[str, Any]] = []
+    due_for_refresh: List[Dict[str, Any]] = []
 
     for movie in movies or ():
         if not isinstance(movie, dict):
@@ -237,6 +279,8 @@ def enrich(
         if has_data:
             _apply_fill_only(movie, record)
             cached_hits += 1
+            if lookup is not None and _is_due_for_refresh(record, reference):
+                due_for_refresh.append(movie)
             continue
 
         if lookup is None:
@@ -244,22 +288,40 @@ def enrich(
         if isinstance(record, dict) and _should_skip_after_failure(record, reference):
             skipped_cooldown += 1
             continue
-        if remaining_budget <= 0:
-            skipped_budget += 1
-            continue
+        never_resolved.append(movie)
 
-        remaining_budget -= 1
-        try:
-            resolved = lookup(movie)
-        except Exception:  # noqa: BLE001 - a provider bug must not fail a scan
-            resolved = None
+    # Pass two: spend the run's budget. Movies with no metadata at all come
+    # first - a catalogue entry with nothing is worth more than a refresh of
+    # one that already reads correctly.
+    for is_refresh, queue in ((False, never_resolved), (True, due_for_refresh)):
+        for movie in queue:
+            if remaining_budget <= 0:
+                skipped_budget += 1
+                continue
+            if availability is not None and not availability():
+                # Every provider is cooling down or key-broken. Stop asking:
+                # recording these as failed attempts would put a
+                # seven-day cooldown on movies that were never actually
+                # tried, and the cached data must be left exactly as it is.
+                skipped_unavailable += 1
+                continue
 
-        record = upsert(store, identity, resolved, now=reference)
-        if resolved:
-            _apply_fill_only(movie, record)
-            fetched += 1
-        else:
-            failed += 1
+            identity = canonical_identity(movie)
+            remaining_budget -= 1
+            try:
+                resolved = lookup(movie)
+            except Exception:  # noqa: BLE001 - a provider bug must not fail a scan
+                resolved = None
+
+            record = upsert(store, identity, resolved, now=reference)
+            if resolved:
+                _apply_fill_only(movie, record)
+                if is_refresh:
+                    refreshed += 1
+                else:
+                    fetched += 1
+            else:
+                failed += 1
 
     if persist:
         save(store, path)
@@ -267,7 +329,9 @@ def enrich(
     return {
         "cached_hits": cached_hits,
         "fetched": fetched,
+        "refreshed": refreshed,
         "failed": failed,
         "skipped_budget": skipped_budget,
         "skipped_cooldown": skipped_cooldown,
+        "skipped_unavailable": skipped_unavailable,
     }

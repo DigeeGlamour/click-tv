@@ -603,11 +603,31 @@ def _annotate_metadata(
         from scanner import movie_metadata_cache
 
         lookup = None
+        availability = None
         if allow_lookup:
             from scanner import metadata_providers
+            from scanner import provider_health
 
             lookup = metadata_providers.resolve_metadata
-        return movie_metadata_cache.enrich(movies, lookup=lookup)
+            availability = provider_health.any_metadata_provider_available
+
+        summary = movie_metadata_cache.enrich(
+            movies, lookup=lookup, availability=availability
+        )
+
+        if allow_lookup:
+            # PART 04 metrics: cache hits, request counts, 429s and retries
+            # are the numbers that say whether the request policy is
+            # working, so they are persisted next to the provider health
+            # they belong to rather than only printed.
+            from scanner import provider_health
+
+            provider_health.record_cache_stats(summary)
+            provider_health.save()
+            line = provider_health.summary_line()
+            if line:
+                print(f"   movie metadata: {line}")
+        return summary
     except Exception as error:  # noqa: BLE001 - metadata must not fail a scan
         print(f"   movie metadata annotation skipped: {error}")
         return {}
