@@ -2227,6 +2227,310 @@ function showMovieSearchEmpty(query) {
 }
 
 // ===========================================================================
+// DEEP LINKS + DOCUMENT METADATA (PART 21). Movies only.
+//
+// This app had no routing at all before this block, so everything here is
+// additive and scoped: only ?movie= and ?series= are read, only the movie
+// detail writes them, and every other view behaves exactly as it did.
+//
+// Canonical shapes:
+//     ?movie={id}
+//     ?series={id}
+//     ?series={id}&season=2&episode=4
+//
+// Opening a deep link opens a DETAIL. It never starts the player: a link
+// someone was sent should not begin playing at them, and Play is one click
+// away through the same handoff every other card uses.
+//
+// SEO reality, stated rather than implied: the title, description, canonical
+// and JSON-LD below are written by JavaScript after load. Browsers and some
+// crawlers read them; several social scrapers do not execute JS and will
+// keep seeing the static tags in index.html. Making shared links render
+// per-title previews needs pre-rendered HTML or an edge function - that is
+// Tier 2 and is deliberately NOT claimed here. See
+// docs/movie-system-final-validation-v2.md.
+// ===========================================================================
+
+const MOVIE_ROUTE_KEYS = Object.freeze(['movie', 'series']);
+let movieRouteSuppressed = false;
+let movieDocumentMetadataSaved = null;
+// Captured once, before anything runs. The app selects an initial view during
+// bootstrap, and that closes the (empty) movie detail, which clears the route
+// - so by the time the catalogue is ready to resolve a link, the link is gone
+// from the address bar. Reading it first is the whole fix.
+let movieOpeningRoute = null;
+
+function movieRouteFromLocation() {
+  let params;
+  try {
+    params = new URLSearchParams(window.location.search);
+  } catch (_) {
+    return null;
+  }
+  const movie = String(params.get('movie') || '').trim();
+  if (movie) return { kind: 'movie', id: movie };
+  const series = String(params.get('series') || '').trim();
+  if (!series) return null;
+  const season = Number(params.get('season'));
+  const episode = Number(params.get('episode'));
+  return {
+    kind: 'series',
+    id: series,
+    season: Number.isFinite(season) && season > 0 ? season : 0,
+    episode: Number.isFinite(episode) && episode > 0 ? episode : 0
+  };
+}
+
+function movieRouteHref(item) {
+  const url = new URL(window.location.href);
+  MOVIE_ROUTE_KEYS.forEach((key) => url.searchParams.delete(key));
+  url.searchParams.delete('season');
+  url.searchParams.delete('episode');
+  const id = String(item?.id || '').trim();
+  if (!id) return url.toString();
+  if (seriesModule?.isEpisodeItem?.(item)) {
+    url.searchParams.set('series', String(item.series_id || ''));
+    if (item.season_number) url.searchParams.set('season', String(item.season_number));
+    if (item.episode_number) url.searchParams.set('episode', String(item.episode_number));
+  } else if (seriesModule?.isSeriesItem?.(item)) {
+    url.searchParams.set('series', id);
+  } else {
+    url.searchParams.set('movie', id);
+  }
+  return url.toString();
+}
+
+/** Write the route without reloading. Silently a no-op where history is blocked. */
+function pushMovieRoute(item, replace) {
+  if (movieRouteSuppressed) return;
+  try {
+    const href = movieRouteHref(item);
+    if (href === window.location.href) return;
+    if (replace) window.history.replaceState({ movieRoute: true }, '', href);
+    else window.history.pushState({ movieRoute: true }, '', href);
+  } catch (_) {}
+}
+
+function clearMovieRoute() {
+  if (movieRouteSuppressed) return;
+  try {
+    const url = new URL(window.location.href);
+    const had = MOVIE_ROUTE_KEYS.some((key) => url.searchParams.has(key));
+    if (!had) return;
+    MOVIE_ROUTE_KEYS.forEach((key) => url.searchParams.delete(key));
+    url.searchParams.delete('season');
+    url.searchParams.delete('episode');
+    window.history.pushState({ movieRoute: false }, '', url.toString());
+  } catch (_) {}
+}
+
+// --- document metadata -----------------------------------------------------
+
+function movieMetaTag(selector, create) {
+  let tag = document.head.querySelector(selector);
+  if (!tag && create) {
+    tag = create();
+    document.head.appendChild(tag);
+  }
+  return tag;
+}
+
+function setMovieMetaContent(selector, attribute, value, content) {
+  const tag = movieMetaTag(selector, () => {
+    const node = document.createElement('meta');
+    node.setAttribute(attribute, value);
+    return node;
+  });
+  if (tag) tag.setAttribute('content', content);
+}
+
+function movieDescriptionFor(item) {
+  const plot = String(item.plot || item.description || item.overview || '').trim();
+  if (plot) return plot.slice(0, 300);
+  // No invented blurb: say only what the record actually carries.
+  const facts = movieDetailRows(item)
+    .filter(([label]) => ['Year', 'Category', 'Genres', 'Rating'].includes(label))
+    .map(([label, value]) => `${label}: ${value}`);
+  return facts.length ? `${item.name} - ${facts.join(' · ')}` : String(item.name || '');
+}
+
+/**
+ * Structured data built ONLY from fields the record carries.
+ *
+ * No ratingCount, no review, no cast, no release date is ever synthesised -
+ * an invented aggregateRating is a lie told to a search engine in a format
+ * designed to be trusted.
+ */
+function movieJsonLd(item) {
+  const isSeries = Boolean(seriesModule?.isSeriesItem?.(item) || seriesModule?.isEpisodeItem?.(item));
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': isSeries ? 'TVSeries' : 'Movie',
+    name: String(item.name || '').trim()
+  };
+  const genres = movieGenresOf(item);
+  if (genres.length) data.genre = genres;
+  const released = String(item.release_date || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(released)) data.datePublished = released;
+  const poster = String(item.logo || item.poster || '').trim();
+  if (poster) data.image = poster;
+  const plot = String(item.plot || item.description || '').trim();
+  if (plot) data.description = plot;
+  const rating = Number(item.rating);
+  const ratingSource = String(item.rating_source || '').trim();
+  if (Number.isFinite(rating) && rating > 0 && ratingSource) {
+    // ratingValue and the body that issued it, and nothing else. ratingCount
+    // is omitted because we do not have one.
+    data.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: rating,
+      bestRating: 10,
+      author: { '@type': 'Organization', name: ratingSource }
+    };
+  }
+  return data;
+}
+
+function applyMovieDocumentMetadata(item) {
+  if (!movieDocumentMetadataSaved) {
+    movieDocumentMetadataSaved = {
+      title: document.title,
+      description: document.head.querySelector('meta[name="description"]')?.getAttribute('content') || '',
+      ogTitle: document.head.querySelector('meta[property="og:title"]')?.getAttribute('content') || '',
+      ogDescription: document.head.querySelector('meta[property="og:description"]')?.getAttribute('content') || ''
+    };
+  }
+  const name = String(item.name || '').trim() || 'Movie';
+  const title = `${name} — Click TV`;
+  const description = movieDescriptionFor(item);
+  document.title = title;
+  setMovieMetaContent('meta[name="description"]', 'name', 'description', description);
+  setMovieMetaContent('meta[property="og:title"]', 'property', 'og:title', title);
+  setMovieMetaContent('meta[property="og:description"]', 'property', 'og:description', description);
+
+  const canonical = movieMetaTag('link[rel="canonical"]', () => {
+    const node = document.createElement('link');
+    node.setAttribute('rel', 'canonical');
+    return node;
+  });
+  if (canonical) canonical.setAttribute('href', movieRouteHref(item));
+
+  let script = document.getElementById('movieJsonLd');
+  if (!script) {
+    script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'movieJsonLd';
+    document.head.appendChild(script);
+  }
+  script.textContent = JSON.stringify(movieJsonLd(item));
+}
+
+function restoreMovieDocumentMetadata() {
+  const saved = movieDocumentMetadataSaved;
+  document.getElementById('movieJsonLd')?.remove();
+  document.head.querySelector('link[rel="canonical"]')?.remove();
+  if (!saved) return;
+  document.title = saved.title;
+  setMovieMetaContent('meta[name="description"]', 'name', 'description', saved.description);
+  setMovieMetaContent('meta[property="og:title"]', 'property', 'og:title', saved.ogTitle);
+  setMovieMetaContent('meta[property="og:description"]', 'property', 'og:description', saved.ogDescription);
+}
+
+// --- resolving a route to something real ------------------------------------
+
+async function findMovieSummaryById(id) {
+  const index = await loadMovieBrowseIndex();
+  const wanted = String(id || '').trim();
+  if (!wanted) return null;
+  return (index || []).find((row) => String(row?.id || '').trim() === wanted) || null;
+}
+
+async function findSeriesSummaryById(id) {
+  if (!seriesModule) return null;
+  const wanted = String(id || '').trim();
+  if (!wanted) return null;
+  for (const [, slug] of MOVIE_ORDER) {
+    try {
+      const items = await seriesModule.loadCategory(slug);
+      const found = (items || []).find((row) => String(row?.id || '').trim() === wanted);
+      if (found) return found;
+    } catch (_) {
+      // One category's series data missing must not end the search.
+    }
+  }
+  return null;
+}
+
+/**
+ * Open whatever the URL asks for.
+ *
+ * Four outcomes, all of them explicit: a real movie opens its detail, a real
+ * series opens its season list, something that is no longer in the catalogue
+ * gets the unavailable state, and a parameter that matches nothing lands on
+ * Movie Home with a message rather than a blank screen.
+ */
+async function applyMovieRoute(route) {
+  if (!route) return false;
+  movieRouteSuppressed = true;
+  try {
+    await selectMovieNavItem('home');
+    if (route.kind === 'series') {
+      const series = await findSeriesSummaryById(route.id);
+      if (!series) {
+        showMovieDetailUnavailable(route.id);
+        return true;
+      }
+      if (route.episode) {
+        await seriesModule.openEpisodeContext({
+          content_kind: 'episode',
+          series_id: series.id,
+          series_name: series.name,
+          series_manifest: series.series_manifest,
+          season_number: route.season || 0,
+          episode_number: route.episode
+        });
+      } else {
+        await seriesModule.openSeries(series, { season: route.season || 0 });
+      }
+      return true;
+    }
+    const summary = await findMovieSummaryById(route.id);
+    if (!summary) {
+      // Withdrawn content never reaches the browse index (PART 18), so a id
+      // that used to work and no longer resolves lands here - which is the
+      // right answer for it, and for a typo too.
+      showMovieDetailUnavailable(route.id);
+      return true;
+    }
+    const [item] = movieSummariesToItems([summary]);
+    if (item) await openMovieDetail(item);
+    return true;
+  } catch (error) {
+    showMovieDetailUnavailable(route.id);
+    return true;
+  } finally {
+    movieRouteSuppressed = false;
+  }
+}
+
+/** Back and forward move between the detail and the list, not out of the app. */
+function setupMovieRouting() {
+  movieOpeningRoute = movieRouteFromLocation();
+  window.addEventListener('popstate', () => {
+    const route = movieRouteFromLocation();
+    if (route) {
+      void applyMovieRoute(route);
+      return;
+    }
+    if (state.movieDetailItem || !movieDetailPanel?.hidden) {
+      movieRouteSuppressed = true;
+      closeMovieDetail();
+      movieRouteSuppressed = false;
+    }
+  });
+}
+
+// ===========================================================================
 // LOADING / EMPTY / ERROR / OFFLINE (PART 20). Movie browse surfaces only.
 //
 // Three rules shape all of it. A failure is bounded - a fixed, small number
@@ -2882,6 +3186,8 @@ function showMovieDetailUnavailable(title) {
 
 function closeMovieDetail() {
   if (!movieDetailPanel) return;
+  clearMovieRoute();
+  restoreMovieDocumentMetadata();
   movieDetailPanel.hidden = true;
   movieDetailPanel.replaceChildren();
   state.movieDetailItem = null;
@@ -2923,6 +3229,8 @@ async function openMovieDetail(item) {
             '<i class="fas fa-play" aria-hidden="true"></i> Play</button>' +
           '<button type="button" class="movie-detail-watchlist tv-focusable">' +
             '<i class="fas fa-star" aria-hidden="true"></i> Watchlist</button>' +
+          '<button type="button" class="movie-detail-share tv-focusable">' +
+            '<i class="fas fa-link" aria-hidden="true"></i> Copy Link</button>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -2930,6 +3238,10 @@ async function openMovieDetail(item) {
   movieDetailPanel.replaceChildren(wrap);
   movieDetailPanel.hidden = false;
   if (sidebarList) sidebarList.hidden = true;
+  // PART 21: the URL now names what is on screen, so it can be copied,
+  // shared and reloaded. It never starts playback by itself.
+  pushMovieRoute(resolved);
+  applyMovieDocumentMetadata(resolved);
 
   qs('.movie-detail-close', wrap)?.addEventListener('click', closeMovieDetail);
   qs('.movie-detail-play', wrap)?.addEventListener('click', () => {
@@ -2941,6 +3253,17 @@ async function openMovieDetail(item) {
   qs('.movie-detail-watchlist', wrap)?.addEventListener('click', (event) => {
     // The existing watchlist store, not a second favourites list.
     toggleFavorite(resolved._uid, event);
+  });
+  qs('.movie-detail-share', wrap)?.addEventListener('click', async () => {
+    const href = movieRouteHref(resolved);
+    try {
+      await navigator.clipboard.writeText(href);
+      showToast('Link copied');
+    } catch (_) {
+      // Clipboard access is not always granted. Showing the link is a
+      // worse experience than copying it, but it is not a dead end.
+      showToast(href);
+    }
   });
   qs('.movie-detail-close', wrap)?.focus?.();
 
@@ -11767,6 +12090,7 @@ function setupReturnToTabRefresh() {
 }
 
 async function bootstrap() {
+  setupMovieRouting();
   // Read once, after the safe-read helpers exist. A corrupt store yields an
   // empty one rather than an exception on the first frame.
   state.continueWatching = readContinueWatching();
@@ -11800,6 +12124,14 @@ async function bootstrap() {
   try {
     await loadRuntimeAndManifest();
     void initializePlaybackTelemetry();
+    // PART 21. Last, and only when the URL actually asks for something: a
+    // normal visit is left exactly as it was, and a shared link opens the
+    // detail it names once the catalogue is there to resolve it against.
+    if (movieOpeningRoute) {
+      const route = movieOpeningRoute;
+      movieOpeningRoute = null;
+      void applyMovieRoute(route);
+    }
   } catch (error) {
     console.error(error);
     showPlayerMessage('Data manifest load হয়নি। Refresh করে আবার চেষ্টা করুন।', false);
