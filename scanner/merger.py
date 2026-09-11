@@ -205,6 +205,18 @@ def _movie_identity_key(item: Dict[str, Any]) -> str:
     )
 
 
+def movie_identity_key(item: Dict[str, Any]) -> str:
+    """Public alias of :func:`_movie_identity_key` for other modules.
+
+    The merge/dedup identity (imdb_id -> tmdb_id -> normalized title:year)
+    is the canonical identity other movie subsystems (e.g. the metadata
+    cache) should key on too, so it lives here once rather than being
+    reimplemented. Behaviour is identical to the private function used by
+    this module's own merge/category-precedence logic.
+    """
+    return _movie_identity_key(item)
+
+
 def _verification_badge(stream: Dict[str, Any]) -> str:
     status = str(stream.get("verification_status") or "").strip().casefold()
     if status in {"verified_global", "verified_proxy", "verified_bd", "verified"}:

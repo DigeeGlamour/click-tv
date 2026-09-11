@@ -587,6 +587,32 @@ def _annotate_recency(movies: List[Dict[str, Any]]) -> Dict[str, int]:
         return {}
 
 
+def _annotate_metadata(
+    movies: List[Dict[str, Any]], *, allow_lookup: bool
+) -> Dict[str, int]:
+    """Add real metadata fields (tmdb_id, genres, rating, ...) - PART 02/03.
+
+    Adds only - never hides or removes an existing field. `allow_lookup`
+    gates whether new provider network calls may happen at all: only the
+    real publish path (retain_recent_dropouts=True) sets this true, so
+    tests/ad-hoc calls to paginate_movie_list only ever apply the existing
+    cache and never reach the network. Wrapped so a provider/cache bug can
+    never take a scan down.
+    """
+    try:
+        from scanner import movie_metadata_cache
+
+        lookup = None
+        if allow_lookup:
+            from scanner import metadata_providers
+
+            lookup = metadata_providers.resolve_metadata
+        return movie_metadata_cache.enrich(movies, lookup=lookup)
+    except Exception as error:  # noqa: BLE001 - metadata must not fail a scan
+        print(f"   movie metadata annotation skipped: {error}")
+        return {}
+
+
 def _first_seen_day(movie: Dict[str, Any]) -> int:
     """first_seen_at as a day ordinal, 0 when unknown.
 
@@ -3209,6 +3235,11 @@ def paginate_movie_list(
     # fields that are not there yet, which is the bug this fixes rather than a
     # detail of it.
     _annotate_recency(prepared)
+    # PART 02: cache-only for now (allow_lookup=False - no provider module
+    # exists yet). PART 03 flips this to allow_lookup=retain_recent_dropouts
+    # once scanner/metadata_providers.py lands, so real network lookups still
+    # only ever happen on the true publish path.
+    _annotate_metadata(prepared, allow_lookup=False)
     ordered_movies = sorted(prepared, key=_movie_sort_key)
 
     total_count = len(ordered_movies)
