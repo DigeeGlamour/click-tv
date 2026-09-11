@@ -62,8 +62,31 @@ def _atomic_write(path: Path, payload: Dict[str, Any]) -> None:
     os.replace(handle.name, path)
 
 
+def _fold(value):
+    """The accent-folded, punctuation-free form, from one definition.
+
+    `[^a-z0-9]+ -> -` treats an accented letter as a separator, so `Leon`
+    slugged to "leon" and `Le\u00f3n` to "le-n" - two keys for one club, and the
+    same for `Bayern Munchen` against `Bayern M\u00fcnchen` ("bayern-munchen" and
+    "bayern-m-nchen"). The card layer never noticed because the merge folds
+    accents through `team_identity`; the keys built here did not, so one
+    fixture could hold two rows depending on which feed spelled it.
+
+    `normalize_team` is that same folding, and it is imported rather than
+    repeated so the two cannot drift.
+    """
+    try:
+        from scanner.team_identity import normalize_team
+    except ImportError:  # pragma: no cover - flat layout
+        try:
+            from team_identity import normalize_team  # type: ignore
+        except ImportError:
+            return str(value or "").casefold()
+    return normalize_team(value)
+
+
 def _slug(value: Any) -> str:
-    text = _text(value).casefold()
+    text = _fold(_text(value))
     return "-".join(part for part in re.split(r"[^a-z0-9]+", text) if part)
 
 

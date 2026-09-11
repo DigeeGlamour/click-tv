@@ -36,6 +36,11 @@ REPORT_FILE = Path("reports/today-source-coverage.json")
 #: read, which is the only list that can say whether one is missing.
 COVERAGE_PIPELINE = "today_match"
 
+#: The other registry an event scan collects. Direct channels publish on the
+#: Today surface and are configured in their own file, so the report has to
+#: know them - as their own kind, never as fixture sources.
+DIRECT_PIPELINE = "direct_channel"
+
 HEALTH_FILE = Path("state") / "source-health.json"
 
 #: state/source-health.json says `failed`; the report says `error`. Same fact,
@@ -138,8 +143,30 @@ def load_configured_sources(
         if not source_id or source_id in seen:
             continue
         seen.add(source_id)
-        enabled.append({"id": source_id, "name": str(entry.get("name") or "")})
+        enabled.append({"id": source_id,
+                        "name": str(entry.get("name") or ""),
+                        "pipeline": str(pipeline)})
     return enabled
+
+
+def load_configured_direct_sources(
+    config_dir: str | Path = "config",
+) -> List[Dict[str, Any]]:
+    """The enabled sources of config/sources/direct-channels.json.
+
+    A separate call rather than a widened `load_configured_sources`, because
+    the two registries are not the same kind of thing and must not become
+    one: an id in the today-match registry may bring a FIXTURE into
+    existence, and a direct-channel id may never. `load_configured_sources`
+    is what several tests read to assert that registry is untouched.
+
+    What was wrong was only the accounting. `sm-tapmad-channels` is
+    configured - it has a registry entry, the loader collects it on every
+    event mode, and it fetched successfully on every scan - and the coverage
+    report filed it under `unconfigured_sources`, beside feeds that are in
+    no config file at all.
+    """
+    return load_configured_sources(config_dir, pipeline=DIRECT_PIPELINE)
 
 
 def load_source_health(path: Path | str = HEALTH_FILE) -> Dict[str, Dict[str, Any]]:
@@ -494,8 +521,21 @@ def build_source_coverage(
     # no readable configuration there is nothing to be faithful to, so the
     # observed sources are reported rather than an empty file - and the rows
     # say `configured: false`, so the difference is never invisible.
+    pipelines = {
+        str(entry.get("id") or entry.get("source_id") or "").strip():
+            str(entry.get("pipeline") or "")
+        for entry in configured_sources
+        if isinstance(entry, dict)
+    }
     rows = [row(source_id, configured=bool(configured_ids))
             for source_id in (configured_ids or observed)]
+    # Which registry each configured row came from. Present on every row so
+    # the two roles stay legible in the report even though both are counted
+    # as configured, which is what they are.
+    for entry in rows:
+        pipeline_name = pipelines.get(str(entry.get("source_id") or ""))
+        if pipeline_name:
+            entry["registry"] = pipeline_name
 
     # Everything that contributed without being in the configuration:
     # `streamed-fixtures` fetches hundreds of records per scan and is in no

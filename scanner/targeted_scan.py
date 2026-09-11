@@ -133,7 +133,7 @@ def fixture_key(item: Dict[str, Any]) -> str:
         if value:
             return value
 
-    name = str(item.get("name") or item.get("event_name") or "").strip().casefold()
+    name = _fold(str(item.get("name") or item.get("event_name") or ""))
     name = re.sub(r"[^a-z0-9]+", "-", name).strip("-")
     if not name:
         return ""
@@ -142,8 +142,31 @@ def fixture_key(item: Dict[str, Any]) -> str:
     return f"{name}@{stamp}"
 
 
+def _fold(value):
+    """The accent-folded, punctuation-free form, from one definition.
+
+    `[^a-z0-9]+ -> -` treats an accented letter as a separator, so `Leon`
+    slugged to "leon" and `Le\u00f3n` to "le-n" - two keys for one club, and the
+    same for `Bayern Munchen` against `Bayern M\u00fcnchen` ("bayern-munchen" and
+    "bayern-m-nchen"). The card layer never noticed because the merge folds
+    accents through `team_identity`; the keys built here did not, so one
+    fixture could hold two rows depending on which feed spelled it.
+
+    `normalize_team` is that same folding, and it is imported rather than
+    repeated so the two cannot drift.
+    """
+    try:
+        from scanner.team_identity import normalize_team
+    except ImportError:  # pragma: no cover - flat layout
+        try:
+            from team_identity import normalize_team  # type: ignore
+        except ImportError:
+            return str(value or "").casefold()
+    return normalize_team(value)
+
+
 def _slug(value: Any) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", str(value or "").casefold()).strip("-")
+    return re.sub(r"[^a-z0-9]+", "-", _fold(value)).strip("-")
 
 
 def _name_normalizers() -> List[Any]:

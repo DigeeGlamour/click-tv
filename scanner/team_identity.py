@@ -55,9 +55,29 @@ _CACHE: Dict[str, Tuple[Dict[str, str], Dict[Tuple[str, str], str]]] = {}
 GENDER_FIELDS = ("name", "match_name", "competition")
 
 
+#: Letters NFKD cannot take apart, because the mark is not a combining
+#: character but part of the letter itself. `Bodø Glimt` came out of
+#: normalisation as "bodø glimt" and ESPN's "Bodo/Glimt" as "bodo glimt",
+#: so one Champions League fixture went unmatched 40 times; the same for
+#: Iğdır against Igdir, Wisła Płock against Wisla Plock and Zagłębie
+#: Lubin against Zaglebie Lubin.
+#:
+#: This is accent folding and nothing more. A stroke through a letter is
+#: still that letter, so this can relate two clubs no more than é -> e can;
+#: the spelling differences that are NOT letters - Bodoe, Oestersunds,
+#: Norrkoeping - stay in the alias table where each one is evidenced.
+_LETTERS = {
+    "ø": "o", "Ø": "O", "ł": "l", "Ł": "L", "ı": "i", "İ": "I",
+    "đ": "d", "Đ": "D", "ð": "d", "Ð": "D", "ħ": "h", "Ħ": "H",
+    "ŧ": "t", "Ŧ": "T", "þ": "th", "Þ": "Th", "ß": "ss",
+    "æ": "ae", "Æ": "Ae", "œ": "oe", "Œ": "Oe",
+}
+
+
 def _fold_accents(text: str) -> str:
+    folded = "".join(_LETTERS.get(char, char) for char in str(text or ""))
     return "".join(
-        char for char in unicodedata.normalize("NFKD", str(text or ""))
+        char for char in unicodedata.normalize("NFKD", folded)
         if not unicodedata.combining(char)
     )
 

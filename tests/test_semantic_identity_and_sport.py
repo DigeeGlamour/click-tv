@@ -325,12 +325,37 @@ class ACardWithNoKickoffIsIdentifiedByItsRound(unittest.TestCase):
         ])
         self.assertEqual(len(kept), 2)
 
-    def test_no_round_evidence_means_no_match(self):
+    def test_no_round_evidence_and_two_candidates_means_no_match(self):
+        """The round stopped being an entry requirement on 2026-09-11.
+
+        Requiring one made this rule unreachable in practice - over 500
+        published snapshots and 22,393 cards it never fired once - and it left
+        one CONCACAF Central American Cup fixture on Today Match as two cards
+        for six hours, `CD Motagua vs Alianza` at 03:06 beside
+        `Motagua vs Alianza FC` at the minute the scan ran. Neither title
+        states a round.
+
+        So uniqueness on the day is what carries the identification, which is
+        what it always was in substance: a round the STAMPED card states is
+        still evidence a candidate must answer, and with two candidates and no
+        round there is still nothing to choose between them.
+        """
         kept, _ = fixture_dedupe.fold([
+            timed("England W vs Ireland W", "ODI Series"),
+            timed("England Women Vs Ireland Women", "ICC Championship",
+                  start="2026-09-06T14:00:00+00:00"),
+            timeless("England vs Ireland"),
+        ])
+        self.assertEqual(len(kept), 3)
+
+    def test_no_round_and_one_candidate_is_now_an_identification(self):
+        """The Motagua case, in the shape this class already tests."""
+        kept, report = fixture_dedupe.fold([
             timed("England W vs Ireland W", "ODI Series"),
             timeless("England vs Ireland"),
         ])
-        self.assertEqual(len(kept), 2)
+        self.assertEqual(len(kept), 1)
+        self.assertIn("one candidate", report[0]["rule"])
 
     def test_a_different_day_is_a_different_match(self):
         kept, _ = fixture_dedupe.fold([

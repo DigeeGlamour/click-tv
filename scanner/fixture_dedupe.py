@@ -181,6 +181,32 @@ def is_direct_channel(item: Dict[str, Any]) -> bool:
     return module.is_direct_channel(item)
 
 
+def raw_sides(item: Dict[str, Any]) -> Optional[Tuple[str, str]]:
+    """The two teams as the FEED spelled them, cleaned but not canonical.
+
+    `sides` answers with the canonical name, which is what every identity
+    comparison wants and what the short-form rule cannot use on its own: a
+    canonical name may share no word with the spelling it replaced. The
+    alias table now carries `barbados tridents -> barbados royals`, a real
+    2021 rename, and it silently cost `Tridents vs Kings` its fold into
+    `Barbados Tridents vs Saint Lucia Kings` - "tridents" is a subset of
+    "barbados tridents" and of nothing in "barbados royals".
+
+    So the subset test is asked of both forms. Neither is loosened: a
+    strict subset of the feed's own words is the same evidence it always
+    was, and a rename is not a reason to stop recognising the name the
+    feed is still printing.
+    """
+    if is_direct_channel(item):
+        return None
+    name = str(item.get("name") or item.get("match_name") or "")
+    parts = [_clean(part) for part in _SPLIT.split(name)]
+    parts = [part for part in parts if len(part) > 2]
+    if len(parts) != 2:
+        return None
+    return parts[0], parts[1]
+
+
 def sides(item: Dict[str, Any]) -> Optional[Tuple[str, str]]:
     """The two teams, cleaned and canonical, or None when the title is not
     a fixture.
@@ -520,26 +546,59 @@ def has_feed_kickoff(item: Dict[str, Any]) -> bool:
 
 
 def _timeless_identity(item: Dict[str, Any]) -> Optional[Tuple[str, str, str]]:
-    """(side, side, round) for a card whose time came from the scan."""
+    """(side, side, round) for a card whose time came from the scan.
+
+    The round is carried when the card states one and empty when it does
+    not. It used to be REQUIRED, and requiring it is what published one
+    CONCACAF Central American Cup fixture as two cards for six hours on
+    2026-09-10:
+
+        cd-motagua-vs-alianza   03:06:00   source_start_time 03:06:00
+        motagua-vs-alianza-fc   05:29:49   no source_start_time
+
+    Every other test already agreed they are one match - `sides()` gives
+    ("motagua", "alianza") for both, `same_side` is true on both sides and
+    `participant_fold_key` is identical - and `has_feed_kickoff` already
+    knew the second time was the minute the scan ran rather than a
+    kickoff. Neither title states a round, so the one rule written for
+    exactly this card refused to look at it, and the 45-minute kickoff
+    bucket in `same_fixture` could not bridge 2h23m.
+
+    So the round stops being an entry requirement and becomes what it
+    always was in substance: a discriminator, used when both cards state
+    one. What still has to do the identifying is below - the day, the
+    gender, the competition, and EXACTLY ONE candidate.
+    """
     if has_feed_kickoff(item):
         return None
     both = sides(item)
-    round_token = round_of(item)
-    if not both or not round_token:
+    if not both:
         return None
-    return (_bare(both[0]), _bare(both[1]), round_token)
+    return (_bare(both[0]), _bare(both[1]), round_of(item))
 
 
 def _absorb_timeless(kept: List[Dict[str, Any]]) -> List[Dict[str, str]]:
     """Fold a timeless card into the fixture it can only be.
 
     The general rule, and the whole of it: a card the feed gave no kickoff for
-    is the same match as another card when the participants agree, the round
-    agrees, the day agrees - and there is EXACTLY ONE such card. One candidate
-    is an identification; two is a question, and a question is left as two
+    is the same match as another card when the participants agree, the day
+    agrees, any round BOTH state agrees - and there is EXACTLY ONE such
+    card. One candidate is
+    an identification; two is a question, and a question is left as two
     cards. That is what keeps a genderless "3rd ODI England vs Ireland" off a
     women's fixture on a day when the men play the same round, without
     needing to know which of them the broadcaster meant.
+
+    The round was an entry requirement until 2026-09-11 and is now a
+    discriminator - see `_timeless_identity`. Uniqueness is what carries
+    the identification and always did: a gendered card and a neutral one
+    are told apart by their SIDES, which carry the W or the "Women", and
+    a men's and a women's fixture on the same day are two candidates and
+    therefore a question. Nothing here compares the gender or the
+    competition fields - a neutral title has no gender to compare, which
+    is the whole situation this rule exists for, and feeds write the
+    ROUND into the competition field ("3rd ODI"), so two readings of one
+    fixture legitimately state different competitions.
     """
     report: List[Dict[str, str]] = []
     for item in list(kept):
@@ -552,7 +611,18 @@ def _absorb_timeless(kept: List[Dict[str, Any]]) -> List[Dict[str, str]]:
             if other is item or _timeless_identity(other) is not None:
                 continue
             both = sides(other)
-            if not both or round_of(other) != identity[2]:
+            if not both:
+                continue
+            # A round the STAMPED card states is evidence it is offering, so a
+            # candidate has to answer it - that is the old behaviour exactly,
+            # and treating a silent candidate as compatible turned one
+            # identification into two: "England Women Vs Ireland Women"
+            # states no round and "England W vs Ireland W" states the 3rd
+            # ODI, so a stamped "3rd ODI England vs Ireland" found both and
+            # folded into neither. When the stamped card states NO round it
+            # has none to offer, and uniqueness on the day is what carries
+            # the identification - which is the Motagua case.
+            if identity[2] and round_of(other) != identity[2]:
                 continue
             if _kickoff(other)[:10] != day:
                 continue
@@ -569,7 +639,8 @@ def _absorb_timeless(kept: List[Dict[str, Any]]) -> List[Dict[str, str]]:
             "folded": str(item.get("name") or "")[:70],
             "kickoff": _kickoff(keeper),
             "home_away_corrected": "",
-            "rule": "timeless card, one candidate for %s" % identity[2],
+            "rule": ("timeless card, one candidate%s"
+                     % (" for %s" % identity[2] if identity[2] else "")),
         })
     return report
 
@@ -584,6 +655,23 @@ def _shorter_side(short: str, long_: str) -> bool:
     """
     left, right = set(short.split()), set(long_.split())
     return bool(left) and left < right
+
+
+def _shorter_pair(item: Dict[str, Any], other: Dict[str, Any]) -> bool:
+    """Whether `item` names both clubs more briefly than `other` does.
+
+    Asked of the canonical names and of the feed's own, because a rename
+    can leave the two with no word in common - see `raw_sides`. One form
+    answering is enough; both are strict subsets of the same kind.
+    """
+    for reader in (sides, raw_sides):
+        short, long_ = reader(item), reader(other)
+        if not short or not long_:
+            continue
+        if (_shorter_side(short[0], long_[0])
+                and _shorter_side(short[1], long_[1])):
+            return True
+    return False
 
 
 def _absorb_short_forms(kept: List[Dict[str, Any]]) -> List[Dict[str, str]]:
@@ -633,11 +721,12 @@ def _absorb_short_forms(kept: List[Dict[str, Any]]) -> List[Dict[str, str]]:
                         continue
                 except Exception:  # noqa: BLE001
                     pass
-            straight = (_shorter_side(short[0], long_[0])
-                        and _shorter_side(short[1], long_[1]))
-            crossed = (_shorter_side(short[0], long_[1])
-                       and _shorter_side(short[1], long_[0]))
-            if straight or crossed:
+            # Both orders, and both forms of the name - a rename can leave
+            # the canonical sharing no word with the spelling the feed still
+            # prints. See `_shorter_pair`.
+            if _shorter_pair(item, other) or (
+                    _shorter_side(short[0], long_[1])
+                    and _shorter_side(short[1], long_[0])):
                 matches.append(other)
         if len(matches) != 1:
             continue

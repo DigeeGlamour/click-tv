@@ -58,6 +58,7 @@ try:
     from scanner.source_coverage import (
         build_source_coverage,
         check_invariants,
+        load_configured_direct_sources,
         load_configured_sources,
         load_source_health,
         write_source_coverage,
@@ -135,6 +136,7 @@ except ImportError:
     from source_coverage import (  # type: ignore
         build_source_coverage,
         check_invariants,
+        load_configured_direct_sources,
         load_configured_sources,
         load_source_health,
         write_source_coverage,
@@ -1890,6 +1892,44 @@ def _stream_health(
     }
 
 
+ADMISSION_DROP_REPORT_LIMIT = 40
+
+
+def _record_admission_drop(
+    dropped: List[Dict[str, Any]],
+    card: Dict[str, Any],
+    reason: str,
+) -> None:
+    """Name one fixture the admission gate refused.
+
+    `filtered_unplayable: 6` was the whole of what a scan said about six
+    fixtures that did not reach a viewer, and 220 such drops over 492
+    publishes could not be attributed to a single name - which is why the
+    dead-link class had to be reconstructed from `fixture-stream-health`
+    revisions instead of simply being read.
+
+    Instrumentation only: nothing here decides anything, and the gate above
+    behaves exactly as it did. Bounded at %d rows and to the few fields that
+    identify a card, because a report that carries the cards is a second copy
+    of the payload rather than a report about it.
+    """ % ADMISSION_DROP_REPORT_LIMIT
+    if len(dropped) >= ADMISSION_DROP_REPORT_LIMIT:
+        return
+    dropped.append({
+        "id": str(card.get("id") or "")[:80],
+        "fixture_id": str(card.get("fixture_id") or "")[:120],
+        "name": str(card.get("name") or "")[:70],
+        "reason": str(reason or ""),
+        "source_ids": [str(value)[:40]
+                       for value in (card.get("source_ids") or [])][:6],
+        "schedule_status": str(card.get("schedule_status")
+                               or card.get("status") or "")[:24],
+        "lifecycle_state": str(card.get("lifecycle_state") or "")[:24],
+        "start_time": str(card.get("start_time") or "")[:32],
+        "verification_status": str(card.get("verification_status") or "")[:24],
+    })
+
+
 def _admit_to_today(
     card: Dict[str, Any],
     now: datetime,
@@ -2006,6 +2046,24 @@ def _admit_to_today(
         card["allow_without_stream"] = True
         card.setdefault("verification_status", "metadata_only")
         card["publish_allowed"] = True
+        # And say which of the two states it is in. Before kickoff a card
+        # routed here early is UPCOMING or STARTING_SOON and the badge is
+        # right. After kickoff, with no route, it is the state the resolver
+        # already has a name for - LINK_UPDATING, published 217 times - and
+        # leaving it as UPCOMING said the match had not started while it was
+        # sitting on Today Match: `Fenerbahce U19 vs Roma U19`, kickoff
+        # 11:00, still badged UPCOMING at 11:32 across ten publishes on
+        # 2026-09-10.
+        #
+        # No new state and no new field: the same rewrite the branch below
+        # makes, under the same guard, so a card a retirement has already
+        # decided keeps the status that decision gave it.
+        kickoff = _parse_datetime(card.get("start_time") or card.get("start_at"))
+        if (kickoff is not None and now >= kickoff and not authority_state
+                and str(card.get("lifecycle_state") or "").upper()
+                not in _RETIRING_STATES):
+            card["schedule_status"] = "LINK_UPDATING"
+            card["status"] = "LINK_UPDATING"
     elif not _is_playable(card) and _fixture_inside_its_own_window(
         card, now, routing_minutes
     ):
@@ -2301,6 +2359,9 @@ def process_events(
     # were being added to `today_stale`, so a scan report could not tell them
     # apart - and the report is where a policy about ends has to be checkable.
     today_estimate_expired = 0
+    # WHICH fixtures the gate refused, not only how many. Bounded; see
+    # _record_admission_drop.
+    today_drop_report: List[Dict[str, Any]] = []
     # Cards a targeted trigger dropped for age. Absence and staleness are not
     # retirements, so this list is not archived as it stands - it is filtered
     # for terminal evidence the card already carries, below.
@@ -2399,6 +2460,7 @@ def process_events(
             )
             undeliverable_dropped += dropped
             if admitted is None:
+                _record_admission_drop(today_drop_report, card_copy, reason)
                 if reason == "unplayable":
                     today_unplayable += 1
                 else:
@@ -2503,6 +2565,7 @@ def process_events(
                 )
                 undeliverable_dropped += dropped
                 if admitted is None:
+                    _record_admission_drop(today_drop_report, candidate, reason)
                     if reason == "unplayable":
                         today_unplayable += 1
                     else:
@@ -3195,6 +3258,12 @@ def process_events(
             0, today_stale - today_estimate_expired
             - len(today_authority_finished)),
         "unplayable": today_unplayable,
+        # WHICH fixtures those counts are about. A number alone could not
+        # be attributed to a name: 220 admission drops over 492 publishes
+        # had to be reconstructed from fixture-stream-health revisions
+        # instead of read. Bounded - see _record_admission_drop.
+        "dropped_fixtures": today_drop_report,
+        "dropped_fixtures_limit": ADMISSION_DROP_REPORT_LIMIT,
         # What the cards that ARE published are holding on.
         "published_retiring_by_basis": basis,
     }
@@ -3220,7 +3289,10 @@ def process_events(
     # Requirement 3. One row per configured source, with the exact stage a
     # contribution was lost at and why.
     try:
-        configured = load_configured_sources()
+        # Both registries an event scan collects. Separate calls, one list:
+        # a direct-channel source IS configured, and filing it under
+        # `unconfigured_sources` said the opposite.
+        configured = load_configured_sources() + load_configured_direct_sources()
         coverage = build_source_coverage(
             # From the configuration, not from what happened to survive.
             # Reading the surviving candidates made a source that returned

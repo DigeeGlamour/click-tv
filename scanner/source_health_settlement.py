@@ -426,15 +426,31 @@ def settle_payload(
         return None, {"skipped": "nothing to settle"}
 
     payload = dict(ours_payload)
-    if isinstance(theirs_payload, dict):
-        # Keep whatever the newer publish recorded about itself when it is the
-        # newer publish; these two fields describe the file, not a source.
-        newer_is_theirs = _later(
-            theirs_payload.get("updated_at"),
-            ours_payload.get("updated_at")) == theirs_payload.get("updated_at")
-        if newer_is_theirs and _text(theirs_payload.get("updated_at")):
-            payload["updated_at"] = theirs_payload.get("updated_at")
-            payload["last_mode"] = theirs_payload.get("last_mode")
+    # `last_mode` and `updated_at` describe the FILE, and after a settlement
+    # the file holds two runs' readings. They are set from whichever side
+    # contributed the newest observation in it - not copied from whichever
+    # side happened to have the later `updated_at`, which is the same "the
+    # commit order is not the observation order" mistake this module exists
+    # to settle. So `last_mode` means: the scan mode of the newest source
+    # reading this file carries, which is the only reading of it that is
+    # true of every row at once.
+    newest = ""
+    owner = ours_payload
+    for source_id, record in settled.items():
+        stamp = _text(record.get(OBSERVATION))
+        if not stamp or (newest and _later(newest, stamp) == newest):
+            continue
+        newest = stamp
+        their_row = sources_of(theirs_payload).get(source_id) or {}
+        owner = (theirs_payload
+                 if _text(their_row.get(OBSERVATION)) == stamp
+                 and isinstance(theirs_payload, dict)
+                 else ours_payload)
+    if isinstance(owner, dict):
+        if _text(owner.get("updated_at")):
+            payload["updated_at"] = owner.get("updated_at")
+        if _text(owner.get("last_mode")):
+            payload["last_mode"] = owner.get("last_mode")
     if updated_at:
         payload["updated_at"] = updated_at
     if last_mode:

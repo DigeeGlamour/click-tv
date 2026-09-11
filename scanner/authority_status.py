@@ -302,6 +302,95 @@ def trusted_kickoff(evidence: Evidence) -> Optional[_dt.datetime]:
     return min(kickoffs)
 
 
+#: How far a verified kickoff may be corrected. `same_fixture` already refuses
+#: a wider gap - fixture_dedupe.KICKOFF_TOLERANCE_MINUTES is 45 - so this is
+#: not what does the refusing; it is what keeps the refusal true if that bucket
+#: is ever widened. A fixture must never be moved by a day on this path: the
+#: two FA Cup cards that ARE a day out (`Bishop Auckland vs AFC Emley` and
+#: `Exmouth vs Banbury United`, both matched by ESPN and LiveScore at
+#: 2026-09-09 18:45 against our 09-08) matched by `kickoff_lifted`, which
+#: PROMPT 12 settled is diagnostic and never truth. They cannot reach here.
+KICKOFF_CORRECTION_LIMIT_MINUTES = 45
+
+
+def correct_kickoff(
+    card: Dict[str, Any],
+    evidence: Evidence,
+    *,
+    now: _dt.datetime,
+) -> str:
+    """Move a verified fixture's kickoff to the one the authorities state.
+
+    Identity and schedule are two different things, and this only touches the
+    schedule. `fixture_id`, `id`, `source_ids`, `channels`, `backups` and
+    `playback_id` are not read here and not written, so the card a viewer has
+    open stays the card they have open.
+
+    Every condition, and all of them:
+
+      a trusted kickoff exists   `trusted_kickoff` - every matched authority
+                                 matched by `same_fixture` and they agree to
+                                 the minute. A lifted or ambiguous match is
+                                 diagnostic and never gets here.
+      two upstream families      one upstream repeating itself is one witness.
+                                 Measured over the shadow history, 257 of the
+                                 273 fixtures with a stated authority kickoff
+                                 agreed with ours exactly; this exists for the
+                                 remainder, and a single reading is not enough
+                                 to move a clock the tabs route on.
+      our kickoff is future      a match in play is never rescheduled. Every
+                                 lifecycle rule downstream keeps reading the
+                                 clock it already had.
+      inside the limit           and therefore never a different day.
+      the same UTC date          `fixture_id` carries the kickoff date -
+                                 `provider:...|competition|2026-09-10` - so a
+                                 correction across midnight would be an
+                                 identity change wearing a schedule's clothes.
+                                 It is refused rather than applied.
+
+    Returns the ISO kickoff now stated, or "" when nothing was corrected.
+    """
+    theirs = trusted_kickoff(evidence)
+    if theirs is None:
+        return ""
+    families = {
+        _text(entry.get("upstream_family"))
+        for entry in (evidence.authorities or {}).values()
+        if isinstance(entry, dict) and _text(entry.get("upstream_family"))
+    }
+    if len(families) < 2:
+        return ""
+    ours = _parse(card.get("start_time") or card.get("start_at"))
+    if ours is None or now >= ours:
+        return ""
+    delta = (theirs - ours).total_seconds() / 60.0
+    if delta == 0:
+        return ""
+    if abs(delta) > KICKOFF_CORRECTION_LIMIT_MINUTES:
+        return ""
+    if theirs.astimezone(_dt.timezone.utc).date() != ours.astimezone(
+            _dt.timezone.utc).date():
+        return ""
+
+    corrected = theirs.isoformat()
+    card["kickoff_before_correction"] = card.get("start_time") or card.get("start_at")
+    card["kickoff_corrected_minutes"] = round(delta, 1)
+    card["kickoff_corrected_by"] = sorted(families)
+    if card.get("start_time"):
+        card["start_time"] = corrected
+    if card.get("start_at"):
+        card["start_at"] = corrected
+    # The end moves with the start only when WE estimated it. A provider that
+    # stated an end stated it about the match, not about our clock.
+    end = _parse(card.get("end_time") or card.get("end_at"))
+    if end is not None and not event_lifecycle.end_time_is_provider_stated(card):
+        moved = (end + (theirs - ours)).isoformat()
+        if card.get("end_time"):
+            card["end_time"] = moved
+        if card.get("end_at"):
+            card["end_at"] = moved
+    return corrected
+
 def start_window(
     card: Dict[str, Any],
     evidence: Evidence,
@@ -459,8 +548,16 @@ def stamp(
         card.pop("authority_finished_seen_at", None)
         card.pop("authority_finished_confirmations", None)
         card.pop("authority_remove_after", None)
+        # The clock first, then what the clock means. Correcting the
+        # kickoff before the start window is read is what lets a card whose
+        # feed was half an hour early stop claiming LIVE at the right
+        # moment rather than at ours - and the correction is bounded so it
+        # can never be the thing that moves a fixture to another day.
+        corrected = correct_kickoff(card, evidence, now=now)
         if start_window(card, evidence, now=now):
             return "start_window"
+        if corrected:
+            return "kickoff_corrected"
         return "recorded"
 
     # A fixture whose kickoff has not arrived cannot have finished. An
@@ -540,6 +637,11 @@ def apply(
         # `recorded`, which is the state that changes nothing.
         "start_window": 0,
         "start_window_fixtures": [],
+        # A verified fixture whose kickoff the authorities corrected. The
+        # identity is untouched; only the clock moved, and by less than an
+        # hour, so the count says how often our feeds are early or late.
+        "kickoff_corrected": 0,
+        "kickoff_corrections": [],
         "by_status": {},
         "by_confidence": {},
         "applied_fixtures": [],
@@ -566,6 +668,16 @@ def apply(
                 "now_says": str(card.get("schedule_status") or ""),
                 "conflict": str(card.get("authority_start_conflict") or ""),
                 "upstream_families": list(evidence.families),
+            })
+        if card.get("kickoff_corrected_minutes") is not None and len(
+                stats["kickoff_corrections"]) < 20:
+            stats["kickoff_corrections"].append({
+                "id": str(card.get("id") or ""),
+                "name": str(card.get("name") or "")[:70],
+                "was": str(card.get("kickoff_before_correction") or ""),
+                "now": str(card.get("start_time") or ""),
+                "minutes": card.get("kickoff_corrected_minutes"),
+                "by": list(card.get("kickoff_corrected_by") or ()),
             })
         stats[action] = int(stats.get(action, 0)) + 1
         if evidence.status:

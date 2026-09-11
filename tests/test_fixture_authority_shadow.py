@@ -748,17 +748,36 @@ class ShadowMatchingTests(unittest.TestCase):
     def test_a_near_miss_names_the_side_that_differed(self):
         """How `Saint Lucia Kings` against ESPN's `St Lucia Kings` becomes a
         legible finding instead of a silent UNVERIFIED."""
-        cpl = card(name="Barbados Tridents vs Saint Lucia Kings",
-                   competition="Caribbean Premier League 2026",
-                   start_time="2026-09-06T22:30:00+00:00", sport_type="cricket")
-        row = authority_row(name="Barbados Tridents vs St Lucia Kings",
-                            home="Barbados Tridents", away="St Lucia Kings",
-                            competition="Caribbean Premier League",
-                            kickoff="2026-09-06T23:00:00+00:00", sport="cricket")
+        # The Saint/St pair this test was written on is no longer a near miss:
+        # `st lucia kings -> saint lucia kings` went into the alias table on
+        # 2026-09-11 with this very sighting as its evidence, so the two now
+        # MATCH. That is the outcome a near miss exists to produce. The rule is
+        # unchanged and is asserted here on a pair the table still refuses -
+        # Llaneros against Atletico Nacional, two different Colombian clubs the
+        # census pairs because both met Deportivo Cali at a matching hour.
+        cpl = card(name="Llaneros FC vs Deportivo Cali",
+                   competition="Categoria Primera A",
+                   start_time="2026-09-06T22:30:00+00:00", sport_type="football")
+        row = authority_row(name="Atletico Nacional vs Deportivo Cali",
+                            home="Atletico Nacional", away="Deportivo Cali",
+                            competition="Primera A",
+                            kickoff="2026-09-06T23:00:00+00:00", sport="football")
         misses = authority_shadow.near_misses(cpl, [row])
         self.assertEqual(len(misses), 1)
-        self.assertEqual(misses[0]["agreed_side"], "barbados tridents")
-        self.assertIn("lucia", misses[0]["ours"])
+        self.assertEqual(misses[0]["agreed_side"], "deportivo cali")
+        self.assertIn("llaneros", misses[0]["ours"])
+
+        # And the resolved pair is resolved, not merely unreported.
+        resolved = card(name="Barbados Tridents vs Saint Lucia Kings",
+                        competition="Caribbean Premier League 2026",
+                        start_time="2026-09-06T22:30:00+00:00",
+                        sport_type="cricket")
+        resolved_row = authority_row(
+            name="Barbados Tridents vs St Lucia Kings",
+            home="Barbados Tridents", away="St Lucia Kings",
+            competition="Caribbean Premier League",
+            kickoff="2026-09-06T23:00:00+00:00", sport="cricket")
+        self.assertEqual(authority_shadow.near_misses(resolved, [resolved_row]), [])
 
 
 class ShadowVerdictTests(unittest.TestCase):

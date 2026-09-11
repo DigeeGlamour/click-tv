@@ -361,19 +361,35 @@ class RealIncidentReplay(unittest.TestCase):
                              source_outage.PRODUCTIVE, source_id)
 
     def test_every_fixture_the_scan_dropped_is_held_and_none_is_refused(self):
-        """26 cards left that publish; 10 of them were the same fixture the
-        scan republished under another feed's spelling, so 16 fixtures were
-        actually lost and 16 come back."""
+        """26 cards left that publish; 12 of them were the same fixture the
+        scan republished under another feed's spelling, so 14 fixtures were
+        actually lost and 14 come back.
+
+        It was 16 until 2026-09-11, when `stade rennais -> rennes` went into
+        the alias table. This very snapshot is why: `upcoming-before-outage`
+        holds BOTH `Angers vs Rennes` and `Angers Vs Stade Rennais` at
+        15:15:00, one Ligue 1 fixture published twice, and the scan
+        republished one of the two spellings. Recognising them as one match
+        means the hold no longer has to add the other back - the fixture is
+        already on the list, and nothing reaches the page any less.
+
+        Two fewer held cards is therefore two fewer duplicates, not two lost
+        fixtures; `test_no_source_id_and_no_stream_url_is_lost_by_holding`
+        below still proves nothing was dropped.
+        """
         kept, stats = self.replay()
-        self.assertEqual(stats["held"], 16)
-        self.assertEqual(stats["considered"], 16)
+        self.assertEqual(stats["held"], 14)
+        self.assertEqual(stats["considered"], 14)
         self.assertEqual(stats["refused"], {})
-        self.assertEqual(len(kept), 139)
+        self.assertEqual(len(kept), 137)
 
     def test_every_held_card_was_scheduled_by_the_silent_feed(self):
         kept, _ = self.replay()
         held = [item for item in kept if item.get("source_outage_hold_reason")]
-        self.assertEqual(len(held), 16)
+        # 14 since 2026-09-11, for the reason given above: two of the
+        # sixteen were `Angers vs Rennes` and `Angers Vs Stade Rennais`,
+        # one fixture the alias table now recognises as one.
+        self.assertEqual(len(held), 14)
         for item in held:
             self.assertEqual(item["source_outage_authority"], "sm-sports-data")
 
@@ -423,7 +439,10 @@ class RealIncidentReplay(unittest.TestCase):
         self.assertEqual([row["rule"] for row in rows],
                          ["both clubs named more briefly, one candidate"])
         self.assertEqual(rows[0]["folded"], "Baltika vs Lokomotiv")
-        self.assertEqual(len(folded), 138)
+        # 138 until the Rennes alias let the hold decline two duplicates
+        # it used to add. The fold still finds exactly the one pair the
+        # hold cannot ask about, which is what this test is about.
+        self.assertEqual(len(folded), 136)
 
     def test_no_source_id_and_no_stream_url_is_lost_by_holding(self):
         kept, _ = self.replay()
