@@ -193,6 +193,7 @@ const state = {
   continueWatching: {},
   continueSavedAt: 0,
   continueSavedKey: '',
+  movieRelatedToken: '',
   seriesProgressSavedAt: 0,
   pendingResumeSeconds: 0,
   movieBrowseIndex: null,
@@ -337,6 +338,7 @@ const movieSubcategoryBar = $('movieSubcategoryBar');
 const movieGenreBar = $('movieGenreBar');
 const movieDetailPanel = $('movieDetailPanel');
 const movieContinuePanel = $('movieContinuePanel');
+const movieRelatedPanel = $('movieRelatedPanel');
 const chipsContainer = $('chipsContainer');
 const videoContainer = $('videoContainer');
 const playerControls = $('playerControls');
@@ -1395,6 +1397,7 @@ async function selectMainView(view, category, options = {}) {
   // Hidden outright, not re-rendered: this runs before state.view changes, so
   // asking the renderer here would have it decide from the view being left.
   hideContinueWatchingRow();
+  hideMovieRelatedPanel();
   setSearchEnabled(true);
   if (!options.preserveFinalGroup) adoptFinalNavigationFromLegacy(view, category || '');
   else renderFinalNavigation();
@@ -2000,6 +2003,7 @@ async function selectMovieNavItem(key, options = {}) {
   renderFinalNavigation();
   closeMovieDetail();
   renderContinueWatchingRow();
+  void renderMovieRelatedPanel();
   setMovieGenreBarVisible(key !== 'watchlist');
   syncMovieGenreChips();
   setSearchEnabled(true);
@@ -2170,6 +2174,205 @@ function showMovieSearchEmpty(query) {
     });
     host.appendChild(all);
   }
+}
+
+// ===========================================================================
+// RELATED CONTENT (PART 17). Deterministic, from real metadata, and computed
+// from the browse index the movie system already loads - so no related file
+// duplicates the catalogue and no stream URL is copied anywhere.
+//
+// The weights are named rather than buried: shared genre is the strongest
+// signal, then language/category, then a nearby release year. A real rating
+// breaks ties and nothing else. `available_link_count` is never consulted:
+// how many servers happen to carry a file says nothing about whether a
+// viewer would like it, and treating it as popularity is the specific
+// mistake this scoring exists to avoid.
+//
+// There is no personalisation here and nothing claims otherwise.
+// ===========================================================================
+
+const MOVIE_RELATED_WEIGHTS = Object.freeze({
+  sharedGenre: 3,
+  sharedGenreCap: 9,
+  sameCategory: 2,
+  sameYear: 2,
+  nearYear: 1,
+  nearYearSpan: 3,
+  ratingTieBreakMax: 0.1,
+  minimumScore: 1
+});
+const MOVIE_RELATED_LIMIT = 12;
+
+/** The weights, readable rather than buried, so a test can assert their order. */
+function movieRelatedWeights() {
+  return { ...MOVIE_RELATED_WEIGHTS, limit: MOVIE_RELATED_LIMIT };
+}
+
+function movieRelatedYear(item) {
+  const year = Number(item?.year || String(item?.release_date || '').slice(0, 4));
+  return Number.isFinite(year) && year > 1800 ? year : 0;
+}
+
+function movieRelatedType(item) {
+  const kind = String(item?.type || item?.content_kind || '').toLowerCase();
+  if (kind === 'series' || kind === 'episode' || item?._isSeries) return 'series';
+  return 'movie';
+}
+
+/** Real rating only, and only ever as a tie-break. */
+function movieRelatedRating(item) {
+  const rating = Number(item?.rating);
+  if (!Number.isFinite(rating) || rating <= 0) return 0;
+  return Math.min(10, rating) / 10;
+}
+
+/**
+ * Score one candidate against the item being viewed, or -1 when it must not
+ * be offered at all.
+ */
+function movieRelatedScore(candidate, item) {
+  if (!candidate || !item) return -1;
+  const candidateId = String(candidate.id || '').trim();
+  if (!candidateId) return -1;
+  // The current item, and anything sharing its identity.
+  if (candidateId === String(item.id || '').trim()) return -1;
+  if (candidate.tmdb_id && item.tmdb_id && String(candidate.tmdb_id) === String(item.tmdb_id)) return -1;
+  if (candidate.imdb_id && item.imdb_id && String(candidate.imdb_id) === String(item.imdb_id)) return -1;
+  // Withdrawn content is never recommended. (PART 18 sets is_active; until it
+  // runs, a published entry carries no flag and is treated as active.)
+  if (candidate.is_active === false) return -1;
+  if (candidate.metadata_only === true) return -1;
+  // A film is never offered as a series, or the other way round.
+  if (movieRelatedType(candidate) !== movieRelatedType(item)) return -1;
+
+  let score = 0;
+  const wanted = new Set(movieGenresOf(item).map((genre) => String(genre).toLowerCase()));
+  if (wanted.size) {
+    const shared = movieGenresOf(candidate)
+      .filter((genre) => wanted.has(String(genre).toLowerCase())).length;
+    score += Math.min(shared * MOVIE_RELATED_WEIGHTS.sharedGenre, MOVIE_RELATED_WEIGHTS.sharedGenreCap);
+  }
+
+  const category = String(item.category || '').toLowerCase();
+  if (category && String(candidate.category || '').toLowerCase() === category) {
+    score += MOVIE_RELATED_WEIGHTS.sameCategory;
+  }
+
+  const year = movieRelatedYear(item);
+  const candidateYear = movieRelatedYear(candidate);
+  if (year && candidateYear) {
+    const gap = Math.abs(year - candidateYear);
+    if (gap === 0) score += MOVIE_RELATED_WEIGHTS.sameYear;
+    else if (gap <= MOVIE_RELATED_WEIGHTS.nearYearSpan) score += MOVIE_RELATED_WEIGHTS.nearYear;
+  }
+
+  if (score < MOVIE_RELATED_WEIGHTS.minimumScore) return -1;
+  return score + movieRelatedRating(candidate) * MOVIE_RELATED_WEIGHTS.ratingTieBreakMax;
+}
+
+/**
+ * The related list for one item. Fewer good matches is the right answer:
+ * nothing is padded to reach a fixed count.
+ */
+async function movieRelatedFor(item) {
+  if (!item) return [];
+  const index = await loadMovieBrowseIndex();
+  if (!Array.isArray(index) || !index.length) return [];
+
+  const seen = new Set([String(item.id || '').trim()]);
+  const scored = [];
+  for (const candidate of index) {
+    const id = String(candidate?.id || '').trim();
+    if (!id || seen.has(id)) continue;
+    const score = movieRelatedScore(candidate, item);
+    if (score < 0) continue;
+    seen.add(id);
+    scored.push({ candidate, score });
+  }
+
+  scored.sort((a, b) => (
+    b.score - a.score
+    || movieRelatedYear(b.candidate) - movieRelatedYear(a.candidate)
+    || String(a.candidate.id).localeCompare(String(b.candidate.id))
+  ));
+  return scored.slice(0, MOVIE_RELATED_LIMIT).map((entry) => entry.candidate);
+}
+
+function buildMovieRelatedGrid(rows) {
+  const grid = document.createElement('div');
+  grid.className = 'movie-related-grid';
+  for (const row of rows) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'movie-related-card tv-focusable';
+    card.dataset.relatedId = String(row.id || '');
+    const poster = String(row.poster || row.logo || '').trim();
+    const year = movieRelatedYear(row);
+    card.innerHTML =
+      (poster
+        ? `<img src="${escapeHtml(poster)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+        : '<span class="movie-related-poster placeholder"></span>') +
+      `<strong>${escapeHtml(row.name || 'Untitled')}</strong>` +
+      (year ? `<small>${escapeHtml(String(year))}</small>` : '');
+    card.addEventListener('click', () => {
+      // Opens its detail rather than playing it: a related card is a
+      // suggestion, and taking over the player on a stray tap is not.
+      const [summary] = movieSummariesToItems([row]);
+      if (summary) void openMovieDetail(summary);
+    });
+    grid.appendChild(card);
+  }
+  return grid;
+}
+
+function buildMovieRelatedSection(rows, heading = 'Related Movies') {
+  if (!rows.length) return null;
+  const section = document.createElement('section');
+  section.className = 'movie-related';
+  const title = document.createElement('h3');
+  title.className = 'movie-related-title';
+  title.textContent = heading;
+  section.append(title, buildMovieRelatedGrid(rows));
+  return section;
+}
+
+function hideMovieRelatedPanel() {
+  if (!movieRelatedPanel) return;
+  movieRelatedPanel.hidden = true;
+  movieRelatedPanel.replaceChildren();
+}
+
+/**
+ * Related beside the player, while a movie is playing.
+ *
+ * A series episode never reaches here: its own season list already occupies
+ * this area (PART 15) and related content must not displace episode
+ * navigation.
+ */
+async function renderMovieRelatedPanel() {
+  if (!movieRelatedPanel) return;
+  const item = state.currentItem;
+  const playingMovie = Boolean(item)
+    && state.view === VIEW.MOVIE
+    && !seriesModule?.isEpisodeItem?.(item)
+    && !seriesModule?.detailActive;
+  if (!playingMovie) {
+    hideMovieRelatedPanel();
+    return;
+  }
+
+  const token = `${item.id || item._uid}`;
+  state.movieRelatedToken = token;
+  const rows = await movieRelatedFor(item);
+  if (state.movieRelatedToken !== token) return;
+
+  const section = buildMovieRelatedSection(rows);
+  if (!section) {
+    hideMovieRelatedPanel();
+    return;
+  }
+  movieRelatedPanel.replaceChildren(section);
+  movieRelatedPanel.hidden = false;
 }
 
 // ===========================================================================
@@ -2513,6 +2716,14 @@ async function openMovieDetail(item) {
     toggleFavorite(resolved._uid, event);
   });
   qs('.movie-detail-close', wrap)?.focus?.();
+
+  // Related, appended once it has been worked out, so the detail itself never
+  // waits on it. Fewer quality matches is shown as fewer cards; when there is
+  // nothing worth offering, there is no section at all.
+  const related = await movieRelatedFor(resolved);
+  if (state.movieDetailItem !== resolved) return;
+  const section = buildMovieRelatedSection(related, 'You May Also Like');
+  if (section) wrap.appendChild(section);
 }
 
 function moviePagePath(pageEntry) {
@@ -11098,6 +11309,13 @@ video.addEventListener('loadedmetadata', () => {
   try { video.currentTime = target; } catch (_) {}
   hideResumeBadge();
 });
+
+// Related follows whatever is now playing. Listeners only - neither one
+// changes how a source is chosen. loadstart fires as soon as a source is
+// attached, so the panel is there from the moment a movie starts rather than
+// only once it has decoded.
+video.addEventListener('loadstart', () => { void renderMovieRelatedPanel(); });
+video.addEventListener('loadedmetadata', () => { void renderMovieRelatedPanel(); });
 
 video.addEventListener('pause', () => { saveContinueWatching(true); });
 video.addEventListener('ended', () => { saveContinueWatching(true); renderContinueWatchingRow(); });

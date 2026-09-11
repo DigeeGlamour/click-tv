@@ -2467,3 +2467,64 @@ html.fullscreen-4k-playback .video-container-wrap:-webkit-full-screen .fs-drawer
   .movie-continue-poster { width: 38px; height: 52px; }
   .movie-continue-copy strong { font-size: 10.5px; }
 }
+
+/* ==========================================================================
+   Related movies (PART 17). Additive only - no rule above is modified.
+   A two-column grid, matching the density of the existing card surfaces.
+   ========================================================================== */
+.movie-related-panel { padding: 6px 10px 2px; }
+.movie-related { margin-top: 10px; }
+.movie-related-title {
+  margin: 0 0 8px;
+  color: #dbe4f2;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.movie-related-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.movie-related-card {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 6px 7px;
+  border: 1px solid #24324a;
+  border-radius: 9px;
+  background: #111a26;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.movie-related-card:hover { background: #192739; border-color: #3b5373; }
+.movie-related-card img,
+.movie-related-card .movie-related-poster {
+  grid-row: span 2;
+  width: 38px;
+  height: 52px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #182436;
+}
+.movie-related-card strong {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+}
+.movie-related-card small {
+  display: block;
+  color: #94a0b4;
+  font-size: 8.5px;
+}
+
+@media (max-width: 640px) {
+  .movie-related-grid { grid-template-columns: minmax(0, 1fr); }
+}
