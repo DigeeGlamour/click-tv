@@ -2528,3 +2528,71 @@ html.fullscreen-4k-playback .video-container-wrap:-webkit-full-screen .fs-drawer
 @media (max-width: 640px) {
   .movie-related-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ==========================================================================
+   Loading / error states (PART 20). Additive only - no rule above is
+   modified. One shared shimmer across the whole skeleton rather than an
+   animation per card, and none at all when the viewer asked for less motion.
+   ========================================================================== */
+.movie-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+  padding: 10px;
+}
+.movie-skeleton-detail { grid-template-columns: minmax(0, 1fr); }
+.movie-skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.movie-skeleton-poster,
+.movie-skeleton-line {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #16202f 25%, #1d2a3d 37%, #16202f 63%);
+  background-size: 400% 100%;
+  animation: movie-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.movie-skeleton-poster { aspect-ratio: 2 / 3; width: 100%; }
+.movie-skeleton-line { height: 9px; }
+.movie-skeleton-line.short { width: 55%; }
+.movie-skeleton-detail .movie-skeleton-poster { aspect-ratio: 16 / 9; }
+
+@keyframes movie-skeleton-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.movie-retry-btn {
+  margin-top: 10px;
+  padding: 8px 18px;
+  border: 1px solid #ff2a4a;
+  border-radius: 999px;
+  background: rgba(255, 42, 74, 0.14);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.movie-retry-btn:hover { background: rgba(255, 42, 74, 0.24); }
+.movie-retry-btn:focus-visible { outline: 2px solid #ff5570; outline-offset: 2px; }
+
+.movie-detail-gone {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 28px 16px;
+  text-align: center;
+}
+.movie-detail-gone i { font-size: 26px; color: #ff5570; }
+.movie-detail-gone strong { color: #fff; font-size: 13px; font-weight: 900; }
+.movie-detail-gone p { margin: 0; color: #94a0b4; font-size: 10.5px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .movie-skeleton-poster,
+  .movie-skeleton-line {
+    animation: none;
+    background: #16202f;
+  }
+}
