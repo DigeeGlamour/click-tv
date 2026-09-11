@@ -45,9 +45,18 @@ import urllib.parse
 from typing import Any, Dict, List, Optional
 
 try:
+    from scanner import movie_genres
     from scanner import provider_health
 except ImportError:  # pragma: no cover - direct-module import path
+    import movie_genres  # type: ignore
     import provider_health  # type: ignore
+
+#: Honest rating labels (PART 05). The value and the label always travel
+#: together: a TMDB user score is never allowed to be presented as IMDb.
+RATING_SOURCE_IMDB = "IMDb"
+RATING_SOURCE_TMDB = "TMDB"
+RATING_SOURCE_TVMAZE = "TVMaze"
+RATING_SOURCE_ANILIST = "AniList"
 
 TMDB_SEARCH_MOVIE_URL = "https://api.themoviedb.org/3/search/movie"
 TMDB_MOVIE_DETAIL_URL = "https://api.themoviedb.org/3/movie/{id}"
@@ -106,14 +115,14 @@ def _coerce_year(value: Any) -> int:
 
 
 def _clean_genres(values: Any) -> List[str]:
+    """Provider genres -> canonical spellings (PART 05).
+
+    Five providers spell the same genre five ways; scanner/movie_genres.py
+    settles that once, here, before anything is cached or indexed.
+    """
     if not isinstance(values, (list, tuple)):
         return []
-    seen: Dict[str, None] = {}
-    for value in values:
-        text = str(value or "").strip()
-        if text and text not in seen:
-            seen[text] = None
-    return list(seen)
+    return movie_genres.canonical_genres(values)
 
 
 # --------------------------------------------------------------------------
@@ -191,7 +200,7 @@ def tmdb_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any]]:
         "genres": genres,
         "rating": detail.get("vote_average") or best.get("vote_average"),
         "rating_votes": detail.get("vote_count") or best.get("vote_count"),
-        "rating_source": "tmdb",
+        "rating_source": RATING_SOURCE_TMDB,
         "backdrop": (TMDB_IMAGE_BASE + backdrop_path) if backdrop_path else None,
         "metadata_source": "tmdb",
         "metadata_confidence": "high",
@@ -244,7 +253,7 @@ def omdb_metadata(title: str, year: int = 0, imdb_id: Optional[str] = None) -> O
         "genres": _clean_genres(str(payload.get("Genre") or "").split(",")),
         "rating": rating,
         "rating_votes": votes,
-        "rating_source": "imdb" if rating is not None else None,
+        "rating_source": RATING_SOURCE_IMDB if rating is not None else None,
         "metadata_source": "omdb",
         "metadata_confidence": "high" if payload.get("imdbID") else "low",
     }
@@ -288,7 +297,7 @@ def cinemeta_metadata(imdb_id: Any, kind: str = "movie") -> Optional[Dict[str, A
         "genres": _clean_genres(meta.get("genres")),
         "release_date": release_date,
         "rating": rating,
-        "rating_source": "imdb" if rating is not None else None,
+        "rating_source": RATING_SOURCE_IMDB if rating is not None else None,
         "backdrop": str(meta.get("background") or "").strip() or None,
         "metadata_source": "cinemeta",
         "metadata_confidence": "medium",
@@ -427,7 +436,7 @@ def moviesdatabase_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any
         "genres": genres,
         "rating": rating,
         "rating_votes": rating_votes,
-        "rating_source": "imdb" if rating is not None else None,
+        "rating_source": RATING_SOURCE_IMDB if rating is not None else None,
         "metadata_source": "moviesdatabase",
         "metadata_confidence": "medium",
     }
@@ -458,7 +467,7 @@ def tvmaze_metadata(title: str) -> Optional[Dict[str, Any]]:
         "genres": _clean_genres(payload.get("genres")),
         "release_date": premiered if _FULL_DATE_RE.match(premiered) else None,
         "rating": rating_block.get("average"),
-        "rating_source": "tvmaze" if rating_block.get("average") is not None else None,
+        "rating_source": RATING_SOURCE_TVMAZE if rating_block.get("average") is not None else None,
         "backdrop": str(image_block.get("original") or "").strip() or None,
         "metadata_source": "tvmaze",
         "metadata_confidence": "medium",
@@ -512,7 +521,7 @@ def anilist_metadata(title: str) -> Optional[Dict[str, Any]]:
         "genres": _clean_genres(media.get("genres")),
         "release_date": release_date,
         "rating": rating,
-        "rating_source": "anilist" if rating is not None else None,
+        "rating_source": RATING_SOURCE_ANILIST if rating is not None else None,
         "backdrop": str(media.get("bannerImage") or "").strip() or None,
         "metadata_source": "anilist",
         "metadata_confidence": "medium",
@@ -525,12 +534,18 @@ def anilist_metadata(title: str) -> Optional[Dict[str, Any]]:
 # --------------------------------------------------------------------------
 
 
-_REQUIRED_FOR_COMPLETE = ("genres", "rating", "release_date", "backdrop")
+_REQUIRED_FOR_COMPLETE = ("genres", "rating", "release_date")
 
 
-def _complete_enough(result: Dict[str, Any]) -> bool:
+def _complete_enough(result: Dict[str, Any], has_backdrop: bool = False) -> bool:
+    """Enough to stop asking further providers: an external id, the three
+    text fields, and artwork from somewhere."""
     has_identity = bool(result.get("tmdb_id") or result.get("imdb_id"))
-    return has_identity and all(result.get(field) for field in _REQUIRED_FOR_COMPLETE)
+    return (
+        has_identity
+        and has_backdrop
+        and all(result.get(field) for field in _REQUIRED_FOR_COMPLETE)
+    )
 
 
 def _safe_call(func, *args) -> Optional[Dict[str, Any]]:
@@ -538,6 +553,20 @@ def _safe_call(func, *args) -> Optional[Dict[str, Any]]:
         return func(*args)
     except Exception:  # noqa: BLE001 - a provider bug must never break a scan
         return None
+
+
+#: Backdrop priority (PART 05 section K). A previously cached backdrop
+#: outranks all of these and never reaches here - the cache layer's
+#: fill-only merge keeps it. The poster-derived last resort is applied on
+#: the movie only, never cached, so a real backdrop can still arrive later.
+BACKDROP_PRIORITY = ("tmdb", "fanart", "cinemeta", "tvmaze", "anilist", "moviesdatabase")
+
+
+def _pick_backdrop(candidates: Dict[str, str]) -> str:
+    for source in BACKDROP_PRIORITY:
+        if candidates.get(source):
+            return source
+    return ""
 
 
 def resolve_metadata(movie: Dict[str, Any], *, kind: Optional[str] = None) -> Optional[Dict[str, Any]]:
@@ -569,6 +598,11 @@ def resolve_metadata(movie: Dict[str, Any], *, kind: Optional[str] = None) -> Op
 
     result: Dict[str, Any] = {}
     sources: List[str] = []
+    # Backdrop is resolved by its own priority (PART 05 section K), not by
+    # whichever provider happened to answer first: TMDB, then Fanart.tv,
+    # then Cinemeta. So each provider's artwork is held aside as a
+    # candidate rather than merged into `backdrop` directly.
+    backdrop_candidates: Dict[str, str] = {}
 
     def merge(data: Optional[Dict[str, Any]], source: str) -> None:
         if not data:
@@ -578,6 +612,10 @@ def resolve_metadata(movie: Dict[str, Any], *, kind: Optional[str] = None) -> Op
             if key in ("metadata_source", "metadata_confidence"):
                 continue
             if value in (None, "", [], {}):
+                continue
+            if key == "backdrop":
+                backdrop_candidates.setdefault(source, str(value))
+                changed = True
                 continue
             if result.get(key) in (None, "", [], {}):
                 result[key] = value
@@ -594,34 +632,40 @@ def resolve_metadata(movie: Dict[str, Any], *, kind: Optional[str] = None) -> Op
         imdb_id = tmdb_data.get("imdb_id") or imdb_id
 
     # 2. OMDb - secondary metadata / imdb id+rating+release fallback.
-    if not _complete_enough(result):
+    if not _complete_enough(result, bool(backdrop_candidates)):
         omdb_data = _safe_call(omdb_metadata, title, year, imdb_id)
         merge(omdb_data, "omdb")
         if omdb_data:
             imdb_id = omdb_data.get("imdb_id") or imdb_id
 
     # 3. Cinemeta - needs an imdb_id to be useful.
-    if imdb_id and not _complete_enough(result):
+    if imdb_id and not _complete_enough(result, bool(backdrop_candidates)):
         merge(_safe_call(cinemeta_metadata, imdb_id, resolved_kind), "cinemeta")
 
     # 4. RapidAPI MoviesDatabase - secondary/candidate metadata source.
-    if not _complete_enough(result):
+    if not _complete_enough(result, bool(backdrop_candidates)):
         moviesdatabase_data = _safe_call(moviesdatabase_metadata, title, year)
         merge(moviesdatabase_data, "moviesdatabase")
         if moviesdatabase_data:
             imdb_id = moviesdatabase_data.get("imdb_id") or imdb_id
 
-    # 5. Fanart.tv - artwork fallback only, needs a tmdb_id.
-    if tmdb_id and not result.get("backdrop"):
+    # 5. Fanart.tv - artwork fallback only, needs a tmdb_id. Skipped when
+    #    TMDB already supplied artwork, since TMDB outranks it anyway.
+    if tmdb_id and not backdrop_candidates.get("tmdb"):
         merge(_safe_call(fanart_metadata, tmdb_id), "fanart")
 
     # 6. TVMaze - series/TV only.
-    if resolved_kind == "series" and not _complete_enough(result):
+    if resolved_kind == "series" and not _complete_enough(result, bool(backdrop_candidates)):
         merge(_safe_call(tvmaze_metadata, title), "tvmaze")
 
     # 7. AniList - anime only.
     if resolved_kind == "anime":
         merge(_safe_call(anilist_metadata, title), "anilist")
+
+    backdrop_source = _pick_backdrop(backdrop_candidates)
+    if backdrop_source:
+        result["backdrop"] = backdrop_candidates[backdrop_source]
+        result["backdrop_source"] = backdrop_source
 
     if not result:
         return None

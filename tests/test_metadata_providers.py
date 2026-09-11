@@ -74,7 +74,7 @@ class TmdbMetadataTests(unittest.TestCase):
         self.assertEqual(result["release_date"], "2010-07-16")
         self.assertEqual(sorted(result["genres"]), ["Action", "Sci-Fi"])
         self.assertEqual(result["rating"], 8.8)
-        self.assertEqual(result["rating_source"], "tmdb")
+        self.assertEqual(result["rating_source"], "TMDB")
         self.assertTrue(result["backdrop"].endswith("/detailbackdrop.jpg"))
         self.assertEqual(result["metadata_source"], "tmdb")
 
@@ -114,7 +114,7 @@ class OmdbMetadataTests(unittest.TestCase):
         self.assertEqual(result["genres"], ["Action", "Adventure", "Sci-Fi"])
         self.assertEqual(result["rating"], 8.8)
         self.assertEqual(result["rating_votes"], 2811614)
-        self.assertEqual(result["rating_source"], "imdb")
+        self.assertEqual(result["rating_source"], "IMDb")
         self.assertEqual(result["metadata_source"], "omdb")
 
     def test_na_rating_is_not_fabricated_as_zero(self):
@@ -233,7 +233,7 @@ class AnilistMetadataTests(unittest.TestCase):
         with patch.object(mp, "_post_json", return_value=payload):
             result = mp.anilist_metadata("Naruto")
         self.assertEqual(result["rating"], 8.8)
-        self.assertEqual(result["rating_source"], "anilist")
+        self.assertEqual(result["rating_source"], "AniList")
 
 
 class ResolveMetadataOrchestratorTests(unittest.TestCase):

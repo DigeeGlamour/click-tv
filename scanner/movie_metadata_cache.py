@@ -49,17 +49,24 @@ METADATA_FIELDS: Tuple[str, ...] = (
     "rating_source",
     "rating_votes",
     "backdrop",
+    "backdrop_source",
     "metadata_source",
     "metadata_updated_at",
     "metadata_confidence",
 )
 
-#: How many fresh provider lookups one scan run may perform. The movie scan
-#: has a fixed time budget (config/settings.json time_budget_seconds.movies)
-#: and a cold cache spans 15k+ movies, so a full backfill happens
-#: incrementally across many scans rather than in one run. Tunable without a
-#: code change; the real rate-limit/retry policy is PART 04's scope.
-DEFAULT_LOOKUP_BUDGET = int(os.environ.get("MOVIE_METADATA_LOOKUP_BUDGET", "40") or 40)
+#: How many fresh provider lookups one scan run may perform, so a cold
+#: cache backfills across several runs instead of blowing the movie scan's
+#: time budget (config/settings.json time_budget_seconds.movies = 2400) in
+#: one go.
+#:
+#: 150 is measured rather than picked: the published catalogue is ~1,670
+#: movies, a matched title costs about four requests and an unmatched one
+#: about six, and the request policy paces at 5/s - so 150 lookups is
+#: roughly two to three minutes of a forty-minute budget, and the whole
+#: catalogue is enriched in under a fortnight of daily scans. Tunable
+#: without a code change.
+DEFAULT_LOOKUP_BUDGET = int(os.environ.get("MOVIE_METADATA_LOOKUP_BUDGET", "150") or 150)
 
 #: Skip re-attempting a movie that matched nothing last time for this long,
 #: so a handful of unmatchable titles cannot eat the whole budget every run.
@@ -158,6 +165,32 @@ def _apply_fill_only(movie: Dict[str, Any], record: Dict[str, Any]) -> None:
         existing = movie.get(field)
         if existing in (None, "", [], {}):
             movie[field] = value
+
+
+#: Poster fields the existing scanner already resolves, in the order
+#: scanner/movies.py itself prefers them. Only ever read here - the poster
+#: chain in movies.py is untouched.
+_POSTER_FIELDS = ("logo", "poster", "image")
+
+
+def _apply_poster_backdrop_fallback(movie: Dict[str, Any]) -> bool:
+    """Last-resort backdrop: the poster the movie already has (PART 05 K).
+
+    Deliberately applied to the movie only and never written to the cache.
+    Caching it would make a stretched poster permanent - fill-only merging
+    would then refuse the real TMDB/Fanart backdrop when it finally
+    arrives. `backdrop_source` says plainly where the image came from, so a
+    consumer that needs a true 16:9 backdrop can decline this one.
+    """
+    if movie.get("backdrop"):
+        return False
+    for field in _POSTER_FIELDS:
+        poster = str(movie.get(field) or "").strip()
+        if poster:
+            movie["backdrop"] = poster
+            movie["backdrop_source"] = "poster"
+            return True
+    return False
 
 
 def _should_skip_after_failure(record: Dict[str, Any], now: _dt.datetime) -> bool:
@@ -323,6 +356,14 @@ def enrich(
             else:
                 failed += 1
 
+    # Last: the poster-derived backdrop, for every movie still without one.
+    # Never cached, never overwrites a real backdrop, and never a reason to
+    # drop a movie - a title with no artwork at all simply keeps none.
+    poster_backdrops = 0
+    for movie in movies or ():
+        if isinstance(movie, dict) and _apply_poster_backdrop_fallback(movie):
+            poster_backdrops += 1
+
     if persist:
         save(store, path)
 
@@ -334,4 +375,5 @@ def enrich(
         "skipped_budget": skipped_budget,
         "skipped_cooldown": skipped_cooldown,
         "skipped_unavailable": skipped_unavailable,
+        "poster_backdrops": poster_backdrops,
     }

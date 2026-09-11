@@ -633,6 +633,45 @@ def _annotate_metadata(
         return {}
 
 
+def _generate_genre_indexes(paginated: Dict[str, Any]) -> Dict[str, Any]:
+    """Write data/movies/genres/*.json - PART 05. Never fails a scan."""
+    try:
+        from scanner import movie_genre_index
+
+        summary = movie_genre_index.generate(paginated)
+        indexed = summary.get("total_indexed", 0)
+        preserved = summary.get("preserved", 0)
+        print(
+            f"   movie genres: {indexed} genre entries across "
+            f"{summary.get('written', 0)} index file(s)"
+            + (f", {preserved} kept at last-good" if preserved else "")
+        )
+        return summary
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie genre index skipped: {error}")
+        return {}
+
+
+def _generate_trending(paginated: Dict[str, Any]) -> Dict[str, Any]:
+    """Write data/movies/discovery/trending.json - PART 06. Never fails a scan."""
+    try:
+        from scanner import movie_trending
+
+        summary = movie_trending.generate(paginated)
+        if summary.get("skipped"):
+            print(f"   movie trending: {summary['skipped']}")
+        else:
+            print(
+                f"   movie trending: {summary.get('matched', 0)} of "
+                f"{summary.get('external_items', 0)} external titles playable here"
+                f" ({summary.get('freshness', 'unknown')})"
+            )
+        return summary
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie trending skipped: {error}")
+        return {}
+
+
 def _first_seen_day(movie: Dict[str, Any]) -> int:
     """first_seen_at as a day ordinal, 0 when unknown.
 
@@ -3537,7 +3576,7 @@ def process_movies(
     ]
     _validate_and_report_manual_integrity(integrity_manual_movies, grouped_movies)
 
-    return {
+    paginated = {
         category: paginate_movie_list(
             movies=grouped_movies[category],
             category_name=category,
@@ -3550,3 +3589,12 @@ def process_movies(
         )
         for category in VALID_MOVIE_CATEGORIES
     }
+
+    # Discovery outputs are built from the paginated catalogue above, so
+    # they can only ever reference movies this scan actually publishes.
+    # Both are wrapped: a discovery-side failure must never cost the
+    # catalogue, which is the part people actually watch.
+    _generate_genre_indexes(paginated)
+    _generate_trending(paginated)
+
+    return paginated
