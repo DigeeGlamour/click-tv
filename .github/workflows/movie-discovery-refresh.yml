@@ -1,0 +1,157 @@
+name: Movie Discovery Refresh
+
+# Refreshing "what is trending internationally" costs two HTTP requests.
+# The full movie scan in scan.yml costs forty minutes, thousands of link
+# probes and the private source repository, and runs once a day at "37 4 * * *".
+# Tying the first to the second means trending is a day stale by design.
+#
+# So this is a separate, deliberately small job. It reads the catalogue the
+# last real scan already published, refreshes the TMDB weekly trending
+# snapshot, and rebuilds the derived discovery files. It never verifies a
+# link, never touches a stream URL and never writes under
+# data/movies/<category>/.
+#
+# THE MOVIE SCAN CADENCE IN scan.yml IS NOT CHANGED BY THIS FILE.
+
+on:
+  # UTC, like every cron on this platform. Twice a day, deliberately off the
+  # round minutes (the platform's busiest, where scheduled runs get dropped)
+  # and well clear of the 04:37 movie scan so the two never contend.
+  #
+  #   "41 9 * * *"   15:41 Dhaka
+  #   "41 21 * * *"  03:41 Dhaka
+  schedule:
+    - cron: "41 9 * * *"
+    - cron: "41 21 * * *"
+  workflow_dispatch:
+    inputs:
+      skip_trending:
+        description: "Rebuild derived files only, make no external request"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  # Its own queue. This job must never sit behind - or in front of - a
+  # 77-minute scan; they write different files and have nothing to wait for
+  # in each other. Not cancel-in-progress: a half-written refresh is worse
+  # than a late one.
+  group: movie-discovery-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Mask provider secrets in all following logs
+        shell: bash
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
+          FANART_API_KEY: ${{ secrets.FANART_API_KEY }}
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+        run: |
+          for VALUE in \
+            "$TMDB_API_KEY" \
+            "$TMDB_API_TOKEN" \
+            "$OMDB_API_KEY" \
+            "$FANART_API_KEY" \
+            "$RAPIDAPI_KEY"; do
+            if [[ -n "$VALUE" ]]; then
+              echo "::add-mask::$VALUE"
+            fi
+          done
+
+      - name: Refresh discovery outputs
+        id: refresh
+        shell: bash
+        env:
+          PYTHONUNBUFFERED: "1"
+          # Private credentials come from GitHub Secrets and nowhere else.
+          # TVMaze, Cinemeta and AniList are public and need no key.
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+          TMDB_API_TOKEN: ${{ secrets.TMDB_API_TOKEN }}
+          OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
+          FANART_API_KEY: ${{ secrets.FANART_API_KEY }}
+          RAPIDAPI_KEY: ${{ secrets.RAPIDAPI_KEY }}
+          RAPIDAPI_MOVIES_HOST: ${{ secrets.RAPIDAPI_MOVIES_HOST }}
+        run: |
+          set -euo pipefail
+          ARGS=""
+          if [[ "${{ inputs.skip_trending }}" == "true" ]]; then
+            ARGS="--skip-trending"
+          fi
+          python -u scripts/refresh-movie-discovery.py $ARGS
+
+      - name: Commit refreshed discovery files
+        # Only on a successful refresh. A failed run commits nothing, so the
+        # discovery JSON already on main stays exactly as it is - which is
+        # the whole last-good guarantee, enforced here as well as inside the
+        # writers themselves.
+        if: steps.refresh.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "Live Signal Scanner"
+          git config user.email "scanner@users.noreply.github.com"
+
+          # Movie discovery outputs ONLY. Every path here is written by this
+          # job; nothing under data/movies/<category>/, data/channels/,
+          # data/playback/, today-match.json or upcoming.json can be picked
+          # up by an explicit add list, so a refresh can never carry a
+          # sports or live-TV change along with it.
+          git add -- \
+            data/movies/discovery \
+            data/movies/genres \
+            state/movie-trending-cache.json \
+            state/provider-health.json \
+            state/movie-metadata-cache.json \
+            state/movie-identity-aliases.json \
+            2>/dev/null || true
+
+          if git diff --cached --quiet; then
+            echo "No discovery changes to commit."
+            exit 0
+          fi
+
+          echo "Staged for commit:"
+          git diff --cached --name-only
+
+          git commit -m "Movie discovery refresh [$(date -u '+%Y-%m-%d %H:%M:%S UTC')]"
+
+          for ATTEMPT in 1 2 3; do
+            if git push origin HEAD:main; then
+              exit 0
+            fi
+            if [[ "$ATTEMPT" == "3" ]]; then
+              echo "Push failed after 3 attempts."
+              exit 1
+            fi
+            echo "Push attempt $ATTEMPT failed; rebasing on latest main and retrying."
+            git fetch origin main
+            # Ours wins only for the files this job owns; everything else on
+            # main is taken as-is, so a concurrent scan's sports/live-TV
+            # commits are never overwritten.
+            git rebase origin/main -X ours || {
+              git rebase --abort || true
+              echo "Rebase failed; leaving main untouched."
+              exit 1
+            }
+            sleep 5
+          done

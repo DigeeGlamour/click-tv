@@ -208,7 +208,20 @@ def _provider_record(provider: str, path: Optional[str] = None) -> Dict[str, Any
         record.setdefault(field, 0)
     record.setdefault("sleep_seconds", 0.0)
     record.setdefault("status", STATUS_HEALTHY)
+    record.setdefault("ok", record["status"] == STATUS_HEALTHY)
+    record.setdefault("last_error", None)
     return record
+
+
+def _note_error(record: Dict[str, Any], description: str) -> None:
+    """Record what went wrong, in words that can never carry a secret.
+
+    Only a status class and a short phrase - never a URL, a header or a
+    key, because this file is committed to the repository.
+    """
+    record["ok"] = False
+    record["last_error"] = description
+    record["last_error_at"] = _iso()
 
 
 def _bump(record: Dict[str, Any], field: str, amount: int = 1) -> None:
@@ -233,6 +246,7 @@ def is_available(provider: str, *, path: Optional[str] = None) -> bool:
     next_retry = _parse_stamp(record.get("next_retry_at"))
     if next_retry is None or _now() >= next_retry:
         record["status"] = STATUS_HEALTHY
+        record["ok"] = True
         record.pop("next_retry_at", None)
         return True
     return False
@@ -240,6 +254,7 @@ def is_available(provider: str, *, path: Optional[str] = None) -> bool:
 
 def _mark_unavailable(record: Dict[str, Any], status: str, cooldown_seconds: float) -> None:
     record["status"] = status
+    record["ok"] = False
     record["next_retry_at"] = _iso(_now() + _dt.timedelta(seconds=cooldown_seconds))
 
 
@@ -357,6 +372,8 @@ def request_json(
             _bump(record, "successes")
             record["last_success"] = _iso()
             record["status"] = STATUS_HEALTHY
+            record["ok"] = True
+            record["last_error"] = None
             record.pop("next_retry_at", None)
             return payload
 
@@ -366,6 +383,7 @@ def request_json(
             # suspended. The other providers carry on without this one.
             _bump(record, "auth_failures")
             record["last_auth_failure"] = _iso()
+            _note_error(record, f"HTTP {status} - credential rejected")
             _mark_unavailable(record, STATUS_UNHEALTHY_AUTH, AUTH_FAILURE_COOLDOWN_SECONDS)
             print(
                 f"   metadata provider {provider}: HTTP {status} - credential "
@@ -383,10 +401,13 @@ def request_json(
         if status == 429:
             _bump(record, "rate_limited")
             record["last_429"] = _iso()
+            _note_error(record, "HTTP 429 - rate limited")
         elif status == 0:
             _bump(record, "transport_errors")
+            _note_error(record, "transport failure - no HTTP response")
         else:
             _bump(record, "server_errors")
+            _note_error(record, f"HTTP {status} - provider server error")
 
         if attempt >= len(BACKOFF_LADDER_SECONDS):
             break
