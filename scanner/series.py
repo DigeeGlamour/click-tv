@@ -95,6 +95,69 @@ def _slug(value: Any, fallback: str = "item") -> str:
     return result or fallback
 
 
+# The number a source published for an episode, in the two spellings the
+# staging catalogue actually uses: a single episode ("04", "Episode 04") and a
+# batch link covering a run of them ("01-07").
+_EPISODE_NUMBER_RE = re.compile(r"(?<!\d)(\d{1,4})(?:\s*[-–]\s*(\d{1,4}))?(?!\d)")
+
+
+def episode_number_range(*candidates: Any) -> Tuple[int | None, int | None]:
+    """The episode number(s) a source published, or ``(None, None)``.
+
+    Only text the source actually wrote is read. An episode the source never
+    numbered keeps no number: inventing one would place it somewhere in the
+    list for ever and a viewer could not tell the invented number from a real
+    one. The first candidate that carries a number wins, so the explicit
+    ``episode_key`` outranks a free-text title.
+    """
+    for candidate in candidates:
+        text = _text(candidate)
+        if not text:
+            continue
+        match = _EPISODE_NUMBER_RE.search(text)
+        if not match:
+            continue
+        start = int(match.group(1))
+        end = int(match.group(2)) if match.group(2) else start
+        return (start, end) if end >= start else (end, start)
+    return None, None
+
+
+def order_season_episodes(episodes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Order one season's episodes numerically ascending, in place.
+
+    ``S01E02`` comes before ``S01E10``; a source that appends a late upload to
+    the end of its block does not get to decide what a viewer sees first.
+    A batch link leads the episodes it covers: "Episode 01-07" sits at the head
+    of the run, ahead of the single "Episode 01", because it is the entry that
+    opens that stretch of the season. Source order survives in exactly two
+    places, both of them honest: as the tie-break between episodes whose
+    published numbers are identical, and as the whole rule for episodes the
+    source never numbered - those keep their relative order and sort last
+    rather than being handed a number.
+
+    ``episode_number`` is then the position in this ordering, which is what the
+    frontend's ``series_id + season_number + episode_number`` identity is built
+    from; the published ``episode_key``/``episode_label`` stay untouched, so the
+    real number is still there to display.
+    """
+    ordered = sorted(
+        enumerate(episodes),
+        key=lambda pair: (
+            pair[1].get("episode_start_number") is None,
+            pair[1].get("episode_start_number") or 0,
+            -(pair[1].get("episode_end_number") or 0),
+            pair[0],
+        ),
+    )
+    episodes[:] = [episode for _, episode in ordered]
+    for position, episode in enumerate(episodes, start=1):
+        episode["episode_number"] = position
+        episode["number"] = position
+        episode["manual_position"] = position
+    return episodes
+
+
 def _canonical_category(value: Any) -> str:
     key = re.sub(r"[^a-z0-9]+", "", _text(value).casefold())
     return _CATEGORY_ALIASES.get(key, "Mix")
@@ -223,7 +286,13 @@ def _normalize_episode(
     season_number: int,
     ordinal: int,
 ) -> Dict[str, Any]:
-    label = _text(raw.get("episode_label") or raw.get("episode_title") or raw.get("title"), f"Episode {ordinal:02d}")
+    # Read the number from what the source published, never from the fallback
+    # label below: that fallback is built out of the source's position, so
+    # parsing it back would turn our own placeholder into an "episode number".
+    published_label = _text(raw.get("episode_label") or raw.get("episode_title") or raw.get("title"))
+    start_number, end_number = episode_number_range(raw.get("episode_key"), published_label)
+
+    label = published_label or f"Episode {ordinal:02d}"
     episode_key = _slug(raw.get("episode_key") or label, f"episode-{ordinal:03d}")
     primary, backups = _normalize_sources(raw)
     episode_id = _slug(raw.get("id"), f"{series_id}-s{season_number:02d}-{episode_key}")
@@ -262,6 +331,9 @@ def _normalize_episode(
         "resolution": primary.get("resolution", ""),
         "resolution_height": primary.get("resolution_height", 0),
     }
+    if start_number is not None:
+        episode["episode_start_number"] = start_number
+        episode["episode_end_number"] = end_number
     for key in ("codec", "edition", "language", "provider", "headers", "audio_url", "audio_codec"):
         if primary.get(key) not in (None, "", {}):
             episode[key] = primary[key]
@@ -343,6 +415,9 @@ def _normalize_series(raw: Mapping[str, Any], position: int) -> Dict[str, Any]:
             )
 
     for number, episodes in episode_payloads.items():
+        # Source order got the episodes collected; it does not get to decide
+        # what a viewer sees. Numeric ascending from here.
+        order_season_episodes(episodes)
         seasons.append({
             "number": number,
             "title": season_titles.get(number, f"Season {number}"),
@@ -415,10 +490,19 @@ def _merge_duplicate_series(items: Iterable[Mapping[str, Any]]) -> List[Dict[str
                 else:
                     current_episodes.append(episode)
                     seen.add(key)
+            # Episodes folded in from a duplicate record arrive at the end of
+            # the list; re-order so a late-merged "Episode 02" does not sit
+            # behind "Episode 10".
+            order_season_episodes(current_episodes)
             by_number[number] = {"number": number, "title": season["title"], "count": len(current_episodes)}
         existing["seasons"] = sorted(by_number.values(), key=lambda season: season["number"])
         existing["total_seasons"] = len([season for season in existing["seasons"] if season["number"] > 0])
         existing["total_episodes"] = sum(len(value) for value in existing["episode_payloads"].values())
+        latest_episodes = existing["episode_payloads"].get(existing["seasons"][-1]["number"]) if existing["seasons"] else None
+        if latest_episodes:
+            existing["latest_episode"] = _text(
+                latest_episodes[-1].get("episode_label"), _text(existing.get("latest_episode"))
+            )
         if not existing.get("logo") and normalized.get("logo"):
             existing["logo"] = normalized["logo"]
     return list(merged.values())
@@ -694,6 +778,8 @@ def publish_manual_series(
 __all__ = [
     "CATEGORY_SLUGS",
     "VALID_SERIES_CATEGORIES",
+    "episode_number_range",
+    "order_season_episodes",
     "prepare_manual_series",
     "publish_prepared_series",
     "publish_manual_series",

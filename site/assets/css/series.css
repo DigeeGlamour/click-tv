@@ -675,3 +675,56 @@ html.lite-performance .series-episode-card {
   .fs-series-episode-copy strong{font-size:10.5px!important}
   .fs-series-state{font-size:7.5px!important;padding:4px 6px!important}
 }
+
+/* PART 15. Additive only - no rule above is modified.
+   A batch link covers a run of episodes ("E01-07"), so its badge carries more
+   characters than the single-number badge these columns were sized for. */
+.series-episode-number.range,
+.fs-series-episode-number.range {
+  font-size: 12px;
+  letter-spacing: -0.2px;
+}
+
+/* An episode with nothing to play is shown, dimmed, rather than offered and
+   then failing. It is not hidden: a gap in a season list is its own confusion. */
+.series-episode-card.unavailable,
+.fs-series-episode.unavailable {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.series-episode-card.unavailable:hover,
+.fs-series-episode.unavailable:hover {
+  background: inherit;
+  border-color: inherit;
+}
+.series-episode-state.unavailable,
+.fs-series-state.unavailable,
+.series-drawer-state.unavailable { color: #8b97ab; }
+
+/* Series facts: only the fields the catalogue actually carries. */
+.series-detail-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin: 6px 0 0;
+}
+.series-detail-fact {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  min-width: 0;
+}
+.series-detail-fact dt {
+  color: #7f8ca2;
+  font-size: 8.5px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+.series-detail-fact dd {
+  margin: 0;
+  color: #dbe4f2;
+  font-size: 10px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
