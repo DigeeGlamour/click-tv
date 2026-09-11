@@ -992,7 +992,17 @@ jobs:
             # lists are merged by fixture identity - the merge git would
             # do if it could read the file.
             "$PYTHON_BIN" scripts/merge-published-events.py --base "$MERGE_BASE" --ours "$PRE" --theirs "$THEIRS"
+            # state/source-health.json too: the same script settles it per
+            # source, and `git add -A data` would leave the settlement on
+            # disk and out of the commit. Named rather than `-A state`, so
+            # nothing else in state/ is swept in after the rebase.
             git add -A data
+            # Guarded: the step runs under `set -euo pipefail` and
+            # `git add` on a path that is not there exits 1, which would
+            # take the whole push down on any run the settlement skipped.
+            for SETTLED in state/source-health.json reports/source-health-settlement.json; do
+              if [[ -f "$SETTLED" ]]; then git add -- "$SETTLED"; fi
+            done
 
             if ! git diff --cached --quiet; then
               echo "Reconciled this run's own output with the rebase merge:"

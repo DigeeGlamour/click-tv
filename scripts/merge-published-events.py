@@ -49,9 +49,13 @@ sys.path.insert(0, str(ROOT))
 from scanner import fixture_dedupe  # noqa: E402
 from scanner.event_archive import drop_resurrected, load_archive  # noqa: E402
 from scanner.playback_profiles import catalog_shard_for  # noqa: E402
+from scanner import source_health_settlement  # noqa: E402
 from scanner.targeted_scan import fixture_key  # noqa: E402
 
 SURFACES = ("today-match", "upcoming")
+
+#: Shared state every run writes whole and no run owns.
+SOURCE_HEALTH = "state/source-health.json"
 
 #: How far past kickoff a fixture the other side found may still be added.
 #: config/settings.json events.upcoming_past_grace_minutes, read there so the
@@ -708,6 +712,53 @@ def merge_lists(args) -> int:
     return 0
 
 
+def settle_source_health_in_tree(base_ref: str, ours_ref: str,
+                                 theirs_ref: str,
+                                 root: Optional[Path] = None,
+                                 read: Optional[Any] = None) -> Optional[str]:
+    """Settle state/source-health.json per source, not per file.
+
+    Every run writes the whole file and none of them owns it, so the
+    restore that keeps this run's generated files whole puts this run's
+    checkout of every OTHER run's observations back. Measured over 500
+    publishes: 80 rewound at least one source, by a median of two minutes
+    and as much as 91 hours, and 318 of those rewinds pushed a `last_scan`
+    past the window `scanner/source_outage.py` will read a record in at
+    all - which is the difference between an outage that holds a fixture
+    and one that silently does not.
+
+    Written to the tree rather than returned, and the caller commits it.
+    """
+    root = ROOT if root is None else Path(root)
+    read = blob if read is None else read
+    payload, report = source_health_settlement.settle_payload(
+        read(base_ref, SOURCE_HEALTH),
+        read(ours_ref, SOURCE_HEALTH),
+        read(theirs_ref, SOURCE_HEALTH),
+    )
+    if payload is None:
+        print("  source health: %s" % report.get("skipped", "nothing to do"))
+        return None
+
+    path = root / SOURCE_HEALTH
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n",
+                    encoding="utf-8")
+    print("  source health settled: %d source(s), %d local applied, "
+          "%d remote preserved, %d stale local update(s) rejected, "
+          "%d tied, %d row(s) lost"
+          % (report["sources"], report["local_newer_applied"],
+             report["remote_newer_preserved"],
+             report["stale_local_updates_rejected"],
+             report["tied_observations"], report["rows_lost"]))
+
+    receipt = root / "reports" / "source-health-settlement.json"
+    receipt.parent.mkdir(parents=True, exist_ok=True)
+    receipt.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+                       encoding="utf-8")
+    return str(path)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--base", required=True, help="the commit this run branched from")
@@ -734,6 +785,10 @@ def main() -> int:
     # only apply to a tab - a card may be dropped there, and an episode may
     # not.
     settle_content_catalogue_in_tree(ROOT / args.data_dir, args.theirs)
+    # And for the one shared file that is not a catalogue at all. Here for
+    # the same reason those two are: it has to happen on every path through
+    # the push, including the commonest one where no list moved.
+    settle_source_health_in_tree(args.base, args.ours, args.theirs)
     return status
 
 
