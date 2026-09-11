@@ -719,6 +719,21 @@ def _generate_discovery(paginated: Dict[str, Any]) -> Dict[str, Any]:
         )
     except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
         print(f"   movie just-added skipped: {error}")
+
+    try:
+        from scanner import movie_discovery
+
+        latest = movie_discovery.generate_latest(paginated)
+        summary["latest"] = latest
+        excluded = latest.get("excluded", {})
+        print(
+            f"   movie latest: {latest['count']} of {latest['eligible']} film(s) "
+            f"with a real release date "
+            f"({excluded.get('no_exact_release_date', 0)} without one, "
+            f"{excluded.get('future_release', 0)} not released yet)"
+        )
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie latest skipped: {error}")
     return summary
 
 

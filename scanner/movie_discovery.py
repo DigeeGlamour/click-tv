@@ -32,6 +32,7 @@ from typing import Any, Dict, Iterable, List, Optional
 
 DISCOVERY_ROOT = os.path.join("data", "movies", "discovery")
 JUST_ADDED_PATH = os.path.join(DISCOVERY_ROOT, "just-added.json")
+LATEST_PATH = os.path.join(DISCOVERY_ROOT, "latest.json")
 
 #: Rolling window for "Just Added", per the plan's suggested default.
 JUST_ADDED_WINDOW_DAYS = 14
@@ -39,6 +40,7 @@ JUST_ADDED_WINDOW_DAYS = 14
 #: Rows are a shelf, not a catalogue. The category pages remain the place
 #: to browse everything.
 JUST_ADDED_LIMIT = 40
+LATEST_LIMIT = 40
 
 #: Everything a discovery card needs to render, and nothing that belongs to
 #: playback. `poster` is sourced from the catalogue's existing `logo`.
@@ -229,3 +231,113 @@ def generate_just_added(
     document = build_just_added(paginated, now=now)
     atomic_write_json(output_path or JUST_ADDED_PATH, document)
     return {"count": document["count"], "window_days": document["window_days"]}
+
+
+# --------------------------------------------------------------------------
+# PART 08 - Latest
+# --------------------------------------------------------------------------
+
+#: What happens to a film whose exact release date is unknown. Stated in
+#: the output itself, not just here, because "why is this film missing from
+#: Latest" is a question the data should be able to answer for itself.
+MISSING_DATE_POLICY = "excluded"
+
+
+def normalize_release_date(value: Any) -> str:
+    """A real calendar date as YYYY-MM-DD, or "" - never a guess.
+
+    A bare year is deliberately NOT accepted. "2010" is not a release date,
+    and turning it into 2010-01-01 would invent a day and a month the
+    provider never gave, which is precisely the fabrication the plan
+    forbids. Such films are handled by the missing-date policy instead.
+    """
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    candidate = text[:10]
+    if len(candidate) != 10 or candidate[4] != "-" or candidate[7] != "-":
+        return ""
+    try:
+        parsed = _dt.date.fromisoformat(candidate)
+    except ValueError:
+        return ""
+    return parsed.isoformat()
+
+
+def build_latest(
+    paginated: Dict[str, Any],
+    *,
+    now: Optional[_dt.datetime] = None,
+    limit: int = LATEST_LIMIT,
+) -> Dict[str, Any]:
+    """The catalogue by actual release date, newest first.
+
+    The ONLY ranking signal is release_date. first_seen_at,
+    available_link_count, trend rank and source order are all deliberately
+    absent: a film released in 2015 and added here yesterday is Just Added
+    and is not Latest, and conflating the two is the mistake this row
+    exists to avoid.
+    """
+    reference = _now(now)
+    today = reference.date()
+
+    dated: List[Any] = []
+    seen_ids = set()
+    no_exact_date = 0
+    future_release = 0
+
+    for movie in iter_published_movies(paginated):
+        movie_id = str(movie.get("id") or "").strip()
+        if not movie_id or movie_id in seen_ids:
+            continue
+        seen_ids.add(movie_id)
+
+        released = normalize_release_date(movie.get("release_date"))
+        if not released:
+            no_exact_date += 1
+            continue
+        if _dt.date.fromisoformat(released) > today:
+            # Announced but not out yet. A release date in the future is
+            # real data, it just does not belong in "Latest releases".
+            future_release += 1
+            continue
+        dated.append((released, movie_id, movie))
+
+    # Sorted on the release date alone. The id is only a deterministic
+    # tie-break between two films released the same day - neutral by
+    # design, so nothing about popularity or servers can creep in.
+    dated.sort(key=lambda row: (row[0], row[1]), reverse=True)
+
+    items = [
+        card_summary(movie, {"release_date": released})
+        for released, _, movie in dated[:limit]
+    ]
+
+    return {
+        "version": 1,
+        "updated_at": reference.isoformat(),
+        "signal": "release_date",
+        "missing_date_policy": MISSING_DATE_POLICY,
+        "count": len(items),
+        "eligible": len(dated),
+        "excluded": {
+            "no_exact_release_date": no_exact_date,
+            "future_release": future_release,
+        },
+        "items": items,
+    }
+
+
+def generate_latest(
+    paginated: Dict[str, Any],
+    *,
+    output_path: Optional[str] = None,
+    now: Optional[_dt.datetime] = None,
+) -> Dict[str, Any]:
+    document = build_latest(paginated, now=now)
+    atomic_write_json(output_path or LATEST_PATH, document)
+    return {
+        "count": document["count"],
+        "eligible": document["eligible"],
+        "excluded": document["excluded"],
+    }
