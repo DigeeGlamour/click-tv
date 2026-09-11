@@ -149,3 +149,59 @@ PART 06).
 Sports, Today/Upcoming Match, Live TV, Notice, `site/`, `dist/`, stream
 URLs or backup URLs. Verified programmatically (row 26) against the merge
 base on every run.
+
+---
+
+# Addendum — PARTs 12-14 (UI integration)
+
+Added after the PART 11 checkpoint. The checkpoint above covered the data
+system; these three brought it to the screen. PARTs 15-23 remain.
+
+## What now exists in the browser
+
+| PART | Delivered | Browser-verified |
+|---|---|---|
+| 12 | Movie navigation in the reference order, 8 genre chips + All Genres, canonical category/genre filter state, discovery rows, Web Series, Watchlist | 37/37 at 1280x800, 820x1180, 390x844 |
+| 13 | Local search over a 1,723-entry index (1,663 films + 60 series), normalised and punctuation-tolerant, scoped by category and genre | 22/22 at 1280x800 and 390x844 |
+| 14 | Detail panel showing only real fields, honest rating labels, evidence-based quality, Play via the existing handoff | 50/50 at 1280x800 and 390x844 |
+
+**109 browser checks, 0 failures.** The search suite watches the network and
+asserts that not one request to TMDB, OMDb, Fanart, RapidAPI, Cinemeta,
+TVMaze or AniList is made while the viewer types.
+
+## Protected surfaces, re-verified after touching app.js
+
+`site/assets/js/app.js` is the same file that holds the player engine, Live
+Sports and Live TV, so its diff was audited line by line:
+
+- **+749 / -28**. Every one of the 28 deleted lines is movie-specific (the
+  old movie sub-nav mapping, the `movie:bangla` default, the legacy movie
+  chip lookup, the movie branch of the search filter and the movie guard in
+  `renderCurrentList`).
+- No HLS, Shaka, mpegts, proxy, buffer, referer/origin, fullscreen, volume,
+  resolution or network-mode line is touched. The only playback reference
+  added anywhere is a *call* to the existing `startPlayback`.
+- `site/index.html` +9 lines (two new movie-only containers).
+  `site/assets/css/app.css` +176 lines, **purely additive** - no existing
+  rule is modified, so no existing style can regress.
+- `scripts/build-pages.sh` runs clean: "Validation successful", 478 files.
+
+## New frontend files and data
+
+- `data/movies/search-index.json` - ~500 KB, 1,723 entries, no url,
+  backups, headers, drm or playback_id. Fetched lazily, once, only when a
+  genre browse or a search needs to look past the loaded category.
+- `scripts/browser-movie-browse-check.mjs`,
+  `scripts/browser-movie-search-check.mjs`,
+  `scripts/browser-movie-detail-check.mjs` - the three smoke suites above.
+
+## Honest limitations at this point
+
+- Genre chips, ratings, release dates and the Latest row still read empty
+  because the metadata backfill has not run in production. The UI is wired
+  to real fields and shows nothing where there is nothing - it is not
+  filled with placeholders.
+- Featured remains empty and labelled `awaiting_featured_system`.
+- The detail panel is opened by an explicit Details control on each card;
+  the card body still plays on click, exactly as it did before, so no
+  existing viewer habit was changed.
