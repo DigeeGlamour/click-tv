@@ -340,6 +340,7 @@ const movieGenreBar = $('movieGenreBar');
 const movieDetailPanel = $('movieDetailPanel');
 const movieContinuePanel = $('movieContinuePanel');
 const movieRelatedPanel = $('movieRelatedPanel');
+const moviePopularPanel = $('moviePopularPanel');
 const chipsContainer = $('chipsContainer');
 const videoContainer = $('videoContainer');
 const playerControls = $('playerControls');
@@ -1399,6 +1400,7 @@ async function selectMainView(view, category, options = {}) {
   // asking the renderer here would have it decide from the view being left.
   hideContinueWatchingRow();
   hideMovieRelatedPanel();
+  hideMoviePopularRow();
   setSearchEnabled(true);
   if (!options.preserveFinalGroup) adoptFinalNavigationFromLegacy(view, category || '');
   else renderFinalNavigation();
@@ -2040,6 +2042,7 @@ async function selectMovieNavItem(key, options = {}) {
   closeMovieDetail();
   renderContinueWatchingRow();
   void renderMovieRelatedPanel();
+  void renderMoviePopularRow();
   setMovieGenreBarVisible(key !== 'watchlist');
   syncMovieGenreChips();
   setSearchEnabled(true);
@@ -2224,6 +2227,195 @@ function showMovieSearchEmpty(query) {
     });
     host.appendChild(all);
   }
+}
+
+// ===========================================================================
+// INTERNAL ANALYTICS + POPULAR ON CLICK TV (PART 22). Movies only.
+//
+// This is NOT Trending. Trending (PART 06) is an external signal about what
+// the world is watching; this row counts what happened on Click TV itself,
+// and it carries its own label so no view can rename it into something it
+// is not.
+//
+// What is sent is four facts: which title, which event, when (to the day at
+// aggregation), and a per-session id used only to deduplicate. No stream URL,
+// no backup, no header, no token, no profile - the payload is built from a
+// fixed field list rather than by copying an item, so a field cannot leak in
+// by being added to the catalogue later.
+//
+// It is entirely optional. With no telemetry endpoint configured, or with the
+// endpoint down, every function here is a no-op: nothing retries, nothing
+// blocks, nothing surfaces an error, and playback neither waits for it nor
+// knows it exists.
+// ===========================================================================
+
+const MOVIE_ANALYTICS_QUALIFY_SECONDS = 30;
+const MOVIE_ANALYTICS_COMPLETE_PERCENT = 90;
+const movieAnalyticsSent = new Set();
+
+function movieAnalyticsEndpoint() {
+  const base = telemetryEndpoint();
+  if (!base || !state.telemetryEnabled) return '';
+  try {
+    return new URL('/event', base).toString();
+  } catch (_) {
+    return '';
+  }
+}
+
+/**
+ * Report one usage event, at most once per session per title per event.
+ *
+ * Fire and forget: the return value is ignored, failures are swallowed, and
+ * nothing here is awaited by anything a viewer is waiting for.
+ */
+function sendMovieAnalyticsEvent(eventType, item) {
+  if (!eventType || !item) return false;
+  const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+  if (!isMovie) return false;
+
+  const endpoint = movieAnalyticsEndpoint();
+  if (!endpoint) return false;
+
+  const episode = Boolean(seriesModule?.isEpisodeItem?.(item));
+  const series = Boolean(seriesModule?.isSeriesItem?.(item));
+  const itemId = String(item.id || item._uid || '').trim();
+  if (!itemId) return false;
+
+  const key = `${eventType}:${itemId}`;
+  if (movieAnalyticsSent.has(key)) return false;
+  movieAnalyticsSent.add(key);
+
+  // Built field by field. Never a spread of the item: that is how a stream
+  // URL ends up in an analytics payload six months from now.
+  const payload = {
+    event_type: eventType,
+    item_id: itemId.slice(0, 160),
+    content_type: episode ? 'episode' : series ? 'series' : 'movie',
+    session_id: telemetrySessionId(),
+    ts: Date.now()
+  };
+  if (episode) {
+    payload.series_id = String(item.series_id || '').slice(0, 160);
+    payload.season_number = Number(item.season_number || 0);
+    payload.episode_number = Number(item.episode_number || 0);
+  }
+
+  try {
+    const body = JSON.stringify(payload);
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(endpoint, new Blob([body], { type: 'text/plain;charset=UTF-8' }));
+      return true;
+    }
+    void fetch(endpoint, {
+      method: 'POST', body, keepalive: true, mode: 'cors',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+    }).catch(() => {});
+  } catch (_) {
+    // An analytics failure is not a viewer's problem.
+  }
+  return true;
+}
+
+/**
+ * A qualified play, and only from real playback.
+ *
+ * play_start says someone pressed play - it is a measure of curiosity and of
+ * mis-taps. play_30s says they were still watching half a minute later, and
+ * that is the only event the published row counts.
+ */
+function reportMoviePlaybackProgress() {
+  const item = state.currentItem;
+  if (!item) return;
+  const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+  if (!isMovie) return;
+
+  const position = Number(video.currentTime);
+  const duration = Number(video.duration);
+  if (Number.isFinite(position) && position >= MOVIE_ANALYTICS_QUALIFY_SECONDS) {
+    sendMovieAnalyticsEvent('play_30s', item);
+  }
+  if (Number.isFinite(duration) && duration > 0
+    && (position / duration) * 100 >= MOVIE_ANALYTICS_COMPLETE_PERCENT) {
+    sendMovieAnalyticsEvent('play_complete', item);
+  }
+}
+
+// --- the published row ------------------------------------------------------
+
+const MOVIE_POPULAR_PATH = 'data/movies/discovery/popular-clicktv.json';
+
+function hideMoviePopularRow() {
+  if (!moviePopularPanel) return;
+  moviePopularPanel.hidden = true;
+  moviePopularPanel.replaceChildren();
+}
+
+/**
+ * Popular on Click TV, on Movie Home, only when there is something real.
+ *
+ * The heading comes from the file, which carries its own label and a note
+ * saying what the signal is. With no file, an empty file or a failed fetch
+ * the row simply is not there - an empty "Popular" shelf says something
+ * false about the catalogue, and filling it would say something worse.
+ */
+async function renderMoviePopularRow() {
+  if (!moviePopularPanel) return;
+  if (!(state.view === VIEW.MOVIE && state.currentCategory === 'home')) {
+    hideMoviePopularRow();
+    return;
+  }
+
+  let document_ = null;
+  try {
+    document_ = await fetchMovieJson(MOVIE_POPULAR_PATH, { cache: 'no-store' });
+  } catch (_) {
+    hideMoviePopularRow();
+    return;
+  }
+
+  const rows = Array.isArray(document_?.items) ? document_.items : [];
+  if (!rows.length) {
+    hideMoviePopularRow();
+    return;
+  }
+
+  const shell = document.createElement('div');
+  shell.className = 'movie-continue-inner';
+  const heading = document.createElement('h3');
+  heading.className = 'movie-continue-title';
+  // The label travels with the data. Nothing here invents a nicer name.
+  heading.textContent = String(document_.label || 'Popular on Click TV');
+  const strip = document.createElement('div');
+  strip.className = 'movie-related-grid';
+
+  for (const row of rows) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'movie-related-card tv-focusable';
+    card.dataset.popularId = String(row.id || '');
+    const poster = String(row.logo || row.poster || '').trim();
+    card.innerHTML =
+      (poster
+        ? `<img src="${escapeHtml(poster)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+        : '<span class="movie-related-poster placeholder"></span>') +
+      `<strong>${escapeHtml(row.name || row.id || 'Untitled')}</strong>` +
+      (row.year ? `<small>${escapeHtml(String(row.year))}</small>` : '');
+    card.addEventListener('click', async () => {
+      const summary = await findMovieSummaryById(row.id);
+      if (!summary) {
+        showMovieDetailUnavailable(row.name || row.id);
+        return;
+      }
+      const [item] = movieSummariesToItems([summary]);
+      if (item) void openMovieDetail(item);
+    });
+    strip.appendChild(card);
+  }
+
+  shell.append(heading, strip);
+  moviePopularPanel.replaceChildren(shell);
+  moviePopularPanel.hidden = false;
 }
 
 // ===========================================================================
@@ -3242,6 +3434,7 @@ async function openMovieDetail(item) {
   // shared and reloaded. It never starts playback by itself.
   pushMovieRoute(resolved);
   applyMovieDocumentMetadata(resolved);
+  sendMovieAnalyticsEvent('detail_open', resolved);
 
   qs('.movie-detail-close', wrap)?.addEventListener('click', closeMovieDetail);
   qs('.movie-detail-play', wrap)?.addEventListener('click', () => {
@@ -10772,6 +10965,7 @@ function updatePlaybackProgress() {
   // Continue Watching rides the same movie-only progress path; it has its own
   // threshold and interval and does not add a listener to the player.
   saveContinueWatching();
+  reportMoviePlaybackProgress();
 }
 
 function formatTime(seconds, referenceDuration = video.duration) {
@@ -11865,6 +12059,10 @@ video.addEventListener('loadedmetadata', () => {
 // attached, so the panel is there from the moment a movie starts rather than
 // only once it has decoded.
 video.addEventListener('loadstart', () => { void renderMovieRelatedPanel(); });
+// PART 22: a play started, and later a play that lasted. Listeners only -
+// nothing here is awaited by playback and nothing retries.
+video.addEventListener('playing', () => { sendMovieAnalyticsEvent('play_start', state.currentItem); });
+video.addEventListener('ended', () => { sendMovieAnalyticsEvent('play_complete', state.currentItem); });
 video.addEventListener('loadedmetadata', () => { void renderMovieRelatedPanel(); });
 
 video.addEventListener('pause', () => { saveContinueWatching(true); });
