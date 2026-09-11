@@ -671,6 +671,123 @@
       }
     }
 
+    /* ---- Movie detail panel (PART 14) --------------------------------
+       Movies-only: [hidden] everywhere else, and it replaces the grid
+       rather than overlaying the player, so nothing about the player's
+       size, position or controls is touched. */
+    .movie-detail-panel {
+      padding: 14px 4px 18px 4px;
+    }
+    .movie-detail-panel[hidden] { display: none !important; }
+    .movie-detail-inner {
+      position: relative;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .movie-detail-close {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: #cccccc;
+      font-size: 24px;
+      line-height: 1;
+      min-width: 34px;
+      min-height: 34px;
+      cursor: pointer;
+    }
+    .movie-detail-close:hover { color: #ffffff; }
+    .movie-detail-head { display: flex; gap: 16px; align-items: flex-start; }
+    .movie-detail-poster {
+      width: 132px;
+      max-width: 34vw;
+      border-radius: 10px;
+      flex: 0 0 auto;
+      object-fit: cover;
+    }
+    .movie-detail-main { flex: 1 1 auto; min-width: 0; }
+    .movie-detail-title {
+      margin: 0 30px 10px 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+    .movie-detail-facts {
+      margin: 0 0 10px 0;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 12px;
+      font-size: 12px;
+    }
+    .movie-detail-fact { display: contents; }
+    .movie-detail-fact dt { color: #8c93a1; font-weight: 700; }
+    .movie-detail-fact dd { margin: 0; color: #e6e6e6; }
+    .movie-detail-plot {
+      margin: 0 0 12px 0;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #c9c9c9;
+    }
+    .movie-detail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .movie-detail-play,
+    .movie-detail-watchlist {
+      border-radius: 18px;
+      padding: 9px 18px;
+      min-height: 38px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1px solid var(--border-glass);
+      background: rgba(255, 255, 255, 0.05);
+      color: #e8e8e8;
+      transition: all 0.2s;
+    }
+    .movie-detail-play {
+      background: var(--phosphor);
+      border-color: var(--phosphor);
+      color: #ffffff;
+    }
+    .movie-detail-play[disabled] { opacity: .5; cursor: not-allowed; }
+    .movie-detail-watchlist:hover { border-color: rgba(255, 42, 68, 0.45); color: #ffffff; }
+
+    /* The Details affordance on a movie card. Deliberately a separate
+       target from the card body, which still plays on click exactly as it
+       always has. */
+    .movie-card-info {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      z-index: 3;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(0, 0, 0, 0.55);
+      color: #ffffff;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.18s;
+    }
+    .movie-card:hover .movie-card-info,
+    .movie-card:focus-within .movie-card-info { opacity: 1; }
+    @media (hover: none) {
+      /* No hover on a touch screen, so the control is simply always there. */
+      .movie-card-info { opacity: 1; }
+    }
+
+    @media (max-width: 640px) {
+      .movie-detail-head { flex-direction: column; }
+      .movie-detail-poster { width: 118px; max-width: 45vw; }
+    }
+
     /* Movie Prompt Message Container (Points 4, 16, 21, 24) */
     .movie-prompt-msg {
       display: flex;

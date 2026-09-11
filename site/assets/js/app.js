@@ -176,6 +176,7 @@ const state = {
   // though it is not one of the seven category buckets. Without this the
   // "pick a category" prompt fires over a perfectly good shelf.
   movieBrowseMode: false,
+  movieDetailItem: null,
   movieBrowseIndex: null,
   movieBrowseIndexPromise: null,
   movieResolveCache: new Map(),
@@ -316,6 +317,7 @@ const movieSubcategoryBar = $('movieSubcategoryBar');
 // movieSubcategoryBar lives inside .final-hidden-control, so anything
 // rendered there is invisible by design.
 const movieGenreBar = $('movieGenreBar');
+const movieDetailPanel = $('movieDetailPanel');
 const chipsContainer = $('chipsContainer');
 const videoContainer = $('videoContainer');
 const playerControls = $('playerControls');
@@ -1370,6 +1372,7 @@ async function selectMainView(view, category, options = {}) {
   state.selectedMovieCategory = null;
   movieSubcategoryBar.style.display = 'none';
   setMovieGenreBarVisible(false);
+  closeMovieDetail();
   setSearchEnabled(true);
   if (!options.preserveFinalGroup) adoptFinalNavigationFromLegacy(view, category || '');
   else renderFinalNavigation();
@@ -1973,6 +1976,7 @@ async function selectMovieNavItem(key, options = {}) {
   state.activeMainGroup = 'movies';
   state.activeFinalSub = `movie:${key}`;
   renderFinalNavigation();
+  closeMovieDetail();
   setMovieGenreBarVisible(key !== 'watchlist');
   syncMovieGenreChips();
   setSearchEnabled(true);
@@ -2143,6 +2147,123 @@ function showMovieSearchEmpty(query) {
     });
     host.appendChild(all);
   }
+}
+
+// ===========================================================================
+// MOVIE DETAIL (PART 14). Every field shown here is one the data actually
+// carries. Nothing is inferred, nothing is filled in to make the panel look
+// complete, and a field with no value is simply absent - a row reading
+// "Runtime: -" is a worse answer than no row at all.
+//
+// Opening a detail NEVER starts playback. Play hands the resolved record to
+// the same startPlayback entry point every other card uses; there is no
+// second player and no duplicate playback path anywhere in this block.
+// ===========================================================================
+
+/** Quality comes from the item's own stream metadata, never from its title. */
+function movieDetailQuality(item) {
+  const height = Number(item.resolution_height || item.height || 0);
+  if (height >= 2160) return '4K UHD';
+  if (height >= 1080) return 'FHD 1080p';
+  if (height >= 720) return 'HD 720p';
+  if (height > 0) return height + 'p';
+  // No measured height: fall back to the label the source itself published,
+  // and to nothing at all if there is not one. A title containing "4K" is
+  // not evidence that the stream is 4K.
+  return String(item.resolution || item.label || '').trim();
+}
+
+function movieDetailRows(item) {
+  const rows = [];
+  const add = (label, value) => {
+    if (value === null || value === undefined) return;
+    const text = Array.isArray(value) ? value.filter(Boolean).join(', ') : String(value).trim();
+    if (text) rows.push([label, text]);
+  };
+
+  add('Year', item.year);
+  add('Release Date', item.release_date);
+  add('Category', item.category);
+  add('Genres', movieGenresOf(item));
+  // The rating and the source it came from always travel together: a TMDB
+  // score presented as IMDb is the one dishonesty this contract forbids.
+  if (item.rating !== undefined && item.rating !== null && String(item.rating).trim()) {
+    const source = String(item.rating_source || '').trim();
+    add('Rating', source ? item.rating + ' (' + source + ')' : String(item.rating));
+  }
+  add('Quality', movieDetailQuality(item));
+  add('Runtime', item.runtime_minutes ? item.runtime_minutes + ' min' : '');
+  add('Original Title', item.original_title);
+  add('Director', item.director);
+  add('Cast', item.cast_top);
+  add('Audio', item.audio_languages);
+  add('Subtitles', item.subtitle_languages);
+  return rows;
+}
+
+function closeMovieDetail() {
+  if (!movieDetailPanel) return;
+  movieDetailPanel.hidden = true;
+  movieDetailPanel.replaceChildren();
+  state.movieDetailItem = null;
+  if (sidebarList) sidebarList.hidden = false;
+}
+
+/**
+ * Open the detail for a card. A summary is resolved to its real published
+ * record first, so quality and playback come from the catalogue rather than
+ * from the shelf - and so Play has something real to hand over.
+ */
+async function openMovieDetail(item) {
+  if (!movieDetailPanel || !item) return;
+  const resolved = item._summaryOnly ? (await resolveMovieSummary(item)) || item : item;
+  state.movieDetailItem = resolved;
+
+  const rows = movieDetailRows(resolved);
+  const poster = String(resolved.logo || resolved.poster || '').trim();
+  const plot = String(resolved.plot || resolved.description || resolved.overview || '').trim();
+  const playable = isPlayable(resolved);
+
+  const factsHtml = rows.map(function (pair) {
+    return '<div class="movie-detail-fact"><dt>' + escapeHtml(pair[0]) +
+      '</dt><dd>' + escapeHtml(pair[1]) + '</dd></div>';
+  }).join('');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'movie-detail-inner';
+  wrap.innerHTML =
+    '<button type="button" class="movie-detail-close tv-focusable" aria-label="Close details">&times;</button>' +
+    '<div class="movie-detail-head">' +
+      (poster ? '<img class="movie-detail-poster" src="' + escapeHtml(poster) + '" alt="" loading="lazy">' : '') +
+      '<div class="movie-detail-main">' +
+        '<h2 class="movie-detail-title">' + escapeHtml(resolved.name || 'Untitled') + '</h2>' +
+        '<dl class="movie-detail-facts">' + factsHtml + '</dl>' +
+        (plot ? '<p class="movie-detail-plot">' + escapeHtml(plot) + '</p>' : '') +
+        '<div class="movie-detail-actions">' +
+          '<button type="button" class="movie-detail-play tv-focusable"' + (playable ? '' : ' disabled') + '>' +
+            '<i class="fas fa-play" aria-hidden="true"></i> Play</button>' +
+          '<button type="button" class="movie-detail-watchlist tv-focusable">' +
+            '<i class="fas fa-star" aria-hidden="true"></i> Watchlist</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  movieDetailPanel.replaceChildren(wrap);
+  movieDetailPanel.hidden = false;
+  if (sidebarList) sidebarList.hidden = true;
+
+  qs('.movie-detail-close', wrap)?.addEventListener('click', closeMovieDetail);
+  qs('.movie-detail-play', wrap)?.addEventListener('click', () => {
+    if (!isPlayable(resolved)) return;
+    closeMovieDetail();
+    // The existing entry point. Nothing about playback is reimplemented here.
+    startPlayback(resolved, true);
+  });
+  qs('.movie-detail-watchlist', wrap)?.addEventListener('click', (event) => {
+    // The existing watchlist store, not a second favourites list.
+    toggleFavorite(resolved._uid, event);
+  });
+  qs('.movie-detail-close', wrap)?.focus?.();
 }
 
 function moviePagePath(pageEntry) {
@@ -4824,6 +4945,7 @@ function createMovieCard(item, visualIndex) {
     ${rating}
     ${createImageHtml(item, 'movie-poster')}
     <div class="movie-hover-play"><i class="fas fa-play"></i></div>
+    <button type="button" class="movie-card-info tv-focusable" aria-label="Details"><i class="fas fa-circle-info" aria-hidden="true"></i></button>
     <div class="movie-card-overlay">
       <div class="movie-card-title">${escapeHtml(item.name)}</div>
       <div class="movie-card-year">${escapeHtml(year)}</div>
@@ -4945,9 +5067,17 @@ sidebarList.addEventListener('click', (event) => {
   // this the shell's data-uid would catch a click on the strip's padding and
   // restart playback on the default channel - the opposite of what the viewer
   // asked for by reaching into the selector.
+  const infoButton = event.target.closest('.movie-card-info');
   if (!card || event.target.closest('.card-fav-btn, .card-remind-btn, .event-channel-strip')) return;
   const item = state.currentItems.find((entry) => entry._uid === card.dataset.uid);
   if (!item) return;
+  if (infoButton) {
+    // Details never starts playback - that is the whole point of it being a
+    // separate affordance from the card body.
+    event.preventDefault();
+    openMovieDetail(item);
+    return;
+  }
   if (seriesModule?.handleCatalogClick(item)) return;
   if (item._summaryOnly) {
     // A discovery/browse card carries no stream by design. Resolve the real
