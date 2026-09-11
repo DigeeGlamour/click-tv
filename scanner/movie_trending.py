@@ -242,7 +242,22 @@ def identity_keys(item: Dict[str, Any]) -> Set[str]:
     return keys
 
 
+def _is_withdrawn(movie: Dict[str, Any]) -> bool:
+    """PART 18. A title the lifecycle has marked inactive is not offered.
+
+    Shares scanner.movie_discovery's predicate so the rule lives in one place;
+    falls back to reading the flag directly if that import is unavailable.
+    """
+    try:
+        from scanner.movie_discovery import is_withdrawn
+
+        return is_withdrawn(movie)
+    except ImportError:  # pragma: no cover - direct-module import path
+        return movie.get("is_active") is False
+
+
 def iter_published_movies(paginated: Dict[str, Any]) -> Iterable[Dict[str, Any]]:
+    """Published movies, minus anything the lifecycle has withdrawn."""
     if not isinstance(paginated, dict):
         return
     for category_payload in paginated.values():
@@ -258,7 +273,7 @@ def iter_published_movies(paginated: Dict[str, Any]) -> Iterable[Dict[str, Any]]
             items = page.get("items") or page.get("movies") or []
             if isinstance(items, list):
                 for item in items:
-                    if isinstance(item, dict):
+                    if isinstance(item, dict) and not _is_withdrawn(item):
                         yield item
 
 

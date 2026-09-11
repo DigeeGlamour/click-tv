@@ -138,8 +138,30 @@ def load_json(file_path: str) -> Dict[str, Any]:
     return payload if isinstance(payload, dict) else {}
 
 
+def is_withdrawn(movie: Dict[str, Any]) -> bool:
+    """Has the lifecycle decided this title is no longer part of the catalogue?
+
+    PART 18. Only an explicit `is_active: false` counts: a record nobody has
+    ever written a lifecycle entry for is not withdrawn, it is simply one
+    nothing has been decided about yet.
+
+    In practice the publish grace and the lifecycle threshold are the same
+    number, so a withdrawn title has already stopped being published and this
+    filter finds nothing. It is here for the case where they disagree - a
+    stale page file, a hand-edited catalogue, a future change to either
+    constant - because discovery reads what is on disk, and what is on disk
+    can outlive the decision that it should not be offered.
+    """
+    return movie.get("is_active") is False
+
+
 def iter_published_movies(paginated: Dict[str, Any]) -> Iterable[Dict[str, Any]]:
-    """Every movie record this scan is publishing, in published order."""
+    """Every movie record this scan is publishing, in published order.
+
+    Withdrawn titles never leave this function, so nothing downstream - Just
+    Added, Latest, Trending, Home, the genre indexes or the browse and search
+    index - has to remember to exclude them separately.
+    """
     if not isinstance(paginated, dict):
         return
     for category_payload in paginated.values():
@@ -155,7 +177,7 @@ def iter_published_movies(paginated: Dict[str, Any]) -> Iterable[Dict[str, Any]]
             items = page.get("items") or page.get("movies") or []
             if isinstance(items, list):
                 for item in items:
-                    if isinstance(item, dict):
+                    if isinstance(item, dict) and not is_withdrawn(item):
                         yield item
 
 
