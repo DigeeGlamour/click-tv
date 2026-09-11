@@ -1819,7 +1819,7 @@ function showMovieBrowseEmpty(message) {
   showListMessage(message, 'fa-film');
   setSidebarCount('0 Titles');
   if (canClearGenre) {
-    const host = qs('.list-message') || sidebarList;
+    const host = qs('.movie-prompt-msg', sidebarList) || sidebarList;
     if (host && !qs('.movie-clear-genre', host)) {
       const action = document.createElement('button');
       action.type = 'button';
@@ -2001,6 +2001,148 @@ async function selectMovieNavItem(key, options = {}) {
     return;
   }
   await loadMovieDiscoveryRow('home');
+}
+
+// ===========================================================================
+// MOVIE SEARCH (PART 13). Local only: every match is computed against data
+// this site already shipped. The browser never calls TMDB, OMDb, Fanart,
+// RapidAPI or any other provider to search - that work happened in the
+// scanner, hours earlier.
+// ===========================================================================
+
+/**
+ * Comparable form of a title: unicode-normalised, lowercased, punctuation
+ * flattened to single spaces. "Sultan Salahuddin Ayyubi", "sultan
+ * salahuddin-ayyubi" and "SULTAN  SALAHUDDIN (AYYUBI)" all reduce to the
+ * same string, which is what makes punctuation-tolerant matching possible
+ * without reaching for fuzzy scoring.
+ */
+function movieSearchNormalize(value) {
+  let text = String(value == null ? '' : value);
+  try { text = text.normalize('NFKD'); } catch (_) { /* older engines */ }
+  return text
+    .toLowerCase()
+    .replace(/[‘’“”]/g, "'")
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+}
+
+/** The text a movie/series can legitimately be found by. */
+function movieSearchHaystack(item) {
+  if (item._searchHaystack) return item._searchHaystack;
+  const aliases = Array.isArray(item.aliases) ? item.aliases : [];
+  const genres = movieGenresOf(item);
+  const parts = [
+    item.name, item.title, item.original_title, ...aliases,
+    item.year, item.release_date, item.category, ...genres,
+    item.type === 'series' ? 'series web series' : ''
+  ];
+  const haystack = movieSearchNormalize(parts.filter(Boolean).join(' '));
+  item._searchHaystack = haystack;
+  return haystack;
+}
+
+/**
+ * Deliberately conservative. Every term must appear, as a whole word or as
+ * the start of one - so "war" finds "War Room" and "Warrior" but not
+ * "Skyward", and a two-word query cannot be satisfied by two unrelated
+ * films. Over-eager fuzzy matching produces a page of things the viewer did
+ * not ask for, which reads as broken rather than clever.
+ */
+function movieMatchesQuery(item, terms) {
+  if (!terms.length) return true;
+  const haystack = movieSearchHaystack(item);
+  if (!haystack) return false;
+  return terms.every((term) => {
+    if (haystack.startsWith(`${term} `) || haystack === term) return true;
+    return haystack.includes(` ${term}`);
+  });
+}
+
+function movieSearchTerms(query) {
+  const normalized = movieSearchNormalize(query);
+  return normalized ? normalized.split(' ').filter(Boolean) : [];
+}
+
+/**
+ * Searching from a discovery shelf means searching the catalogue, not the
+ * fifteen cards the shelf happens to hold. Inside a category the scope
+ * stays that category, which is what the toolbar says it is.
+ */
+async function runMovieSearch() {
+  const query = state.searchQuery;
+  const browsing = MOVIE_DISCOVERY_KEYS.includes(state.currentCategory) ||
+    state.currentCategory === 'web-series';
+
+  if (!query) {
+    // Clearing search returns to the scope that was already chosen - the
+    // category and genre are never disturbed by searching.
+    if (MOVIE_DISCOVERY_KEYS.includes(state.currentCategory)) {
+      if (state.currentGenre !== MOVIE_GENRE_ALL) await loadMovieGenreBrowse();
+      else await loadMovieDiscoveryRow(state.currentCategory);
+      return;
+    }
+    renderCurrentList(true);
+    return;
+  }
+
+  if (browsing) {
+    const index = await loadMovieBrowseIndex();
+    const terms = movieSearchTerms(query);
+    const matches = index
+      .filter((row) => movieHasGenre(row, state.currentGenre))
+      .filter((row) => movieMatchesQuery(row, terms));
+    state.movieBrowseMode = true;
+    state.currentItems = movieSummariesToItems(matches);
+    renderCurrentList(true);
+  } else {
+    // A category is already loaded in full for search by
+    // preloadAllMoviePagesForSearch, so this filters what is in hand.
+    renderCurrentList(true);
+  }
+
+  if (!state.filteredItems.length) showMovieSearchEmpty(query);
+}
+
+/** No result is a dead end unless it fails to say what was searched. */
+function showMovieSearchEmpty(query) {
+  const scope = [];
+  if (!MOVIE_DISCOVERY_KEYS.includes(state.currentCategory)) {
+    scope.push(movieNavLabel(state.currentCategory));
+  }
+  if (state.currentGenre !== MOVIE_GENRE_ALL) scope.push(state.currentGenre);
+  const where = scope.length ? ` (${scope.join(' + ')})` : '';
+  showListMessage(`"${query}"${where} - কোনো ফলাফল পাওয়া যায়নি`, 'fa-magnifying-glass');
+  setSidebarCount('0 Titles');
+
+  // showListMessage renders into .movie-prompt-msg, so the recovery
+  // actions belong inside that block rather than loose in the grid.
+  const host = qs('.movie-prompt-msg', sidebarList) || sidebarList;
+  if (!host || qs('.movie-clear-genre', host)) return;
+  const clear = document.createElement('button');
+  clear.type = 'button';
+  clear.className = 'movie-clear-genre tv-focusable';
+  clear.textContent = 'Clear search';
+  clear.addEventListener('click', () => {
+    setSearchQuery('');
+    runMovieSearch();
+  });
+  host.appendChild(clear);
+
+  if (scope.length) {
+    const all = document.createElement('button');
+    all.type = 'button';
+    all.className = 'movie-clear-genre tv-focusable';
+    all.textContent = 'Search all Movies';
+    all.addEventListener('click', async () => {
+      state.currentGenre = MOVIE_GENRE_ALL;
+      state.currentCategory = 'home';
+      syncMovieGenreChips();
+      renderFinalNavigation();
+      await runMovieSearch();
+    });
+    host.appendChild(all);
+  }
 }
 
 function moviePagePath(pageEntry) {
@@ -2282,10 +2424,17 @@ function applyFilterAndSort() {
   }
 
   if (query) {
-    items = items.filter((item) => {
-      const haystack = `${item.name || ''} ${item.category || ''} ${item.competition || ''}`.toLowerCase();
-      return haystack.includes(query);
-    });
+    if (state.view === VIEW.MOVIE) {
+      // Movies get the normalised, punctuation-tolerant matcher; every
+      // other view keeps the substring behaviour it always had.
+      const terms = movieSearchTerms(state.searchQuery);
+      items = items.filter((item) => movieMatchesQuery(item, terms));
+    } else {
+      items = items.filter((item) => {
+        const haystack = `${item.name || ''} ${item.category || ''} ${item.competition || ''}`.toLowerCase();
+        return haystack.includes(query);
+      });
+    }
   }
 
   if (state.currentSortMode === 'az') {
@@ -4895,9 +5044,13 @@ function debounce(fn, wait) {
 }
 
 const handleSearch = debounce(async () => {
-  if (state.view === VIEW.MOVIE && !state.selectedMovieCategory) return;
-  if (state.view === VIEW.MOVIE && state.searchQuery) {
-    await preloadAllMoviePagesForSearch();
+  if (state.view === VIEW.MOVIE) {
+    // 220ms: inside the 150-300ms the plan asks for, so a phone keyboard
+    // does not re-render the grid on every keystroke.
+    if (!state.selectedMovieCategory && !state.movieBrowseMode) return;
+    if (state.searchQuery) await preloadAllMoviePagesForSearch();
+    await runMovieSearch();
+    return;
   }
   renderCurrentList(true);
 }, 220);

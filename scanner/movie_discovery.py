@@ -485,14 +485,58 @@ SEARCH_INDEX_FIELDS = (
 )
 
 
+SERIES_ROOT = os.path.join("data", "series")
+
+
+def _index_entry(record: Dict[str, Any], kind: str) -> Dict[str, Any]:
+    entry: Dict[str, Any] = {"type": kind}
+    for field in SEARCH_INDEX_FIELDS:
+        value = record.get("logo") if field == "poster" else record.get(field)
+        if value in (None, "", [], {}):
+            continue
+        entry[field] = value
+    # Only real alternate titles are indexed. Nothing is transliterated or
+    # invented here: an alias the source never gave is an alias that will
+    # match the wrong film.
+    for optional in ("original_title", "search_aliases"):
+        value = record.get(optional)
+        if value not in (None, "", [], {}):
+            entry["aliases" if optional == "search_aliases" else optional] = value
+    return entry
+
+
+def iter_published_series(root: str = SERIES_ROOT) -> Iterable[Dict[str, Any]]:
+    """Series cards from the published series indexes. Read-only."""
+    if not os.path.isdir(root):
+        return
+    for name in sorted(os.listdir(root)):
+        index_path = os.path.join(root, name, "index.json")
+        if not os.path.isfile(index_path):
+            continue
+        payload = load_json(index_path)
+        items = payload.get("items")
+        if not isinstance(items, list):
+            continue
+        for item in items:
+            if isinstance(item, dict):
+                yield item
+
+
 def build_search_index(
-    paginated: Dict[str, Any], *, now: Optional[_dt.datetime] = None
+    paginated: Dict[str, Any],
+    *,
+    now: Optional[_dt.datetime] = None,
+    series_root: str = SERIES_ROOT,
 ) -> Dict[str, Any]:
     """Every published title reduced to what browsing and search need.
 
     Deliberately NOT the catalogue: no url, no backups, no headers, no
     playback_id. Clicking a result resolves the real record from the
     category pages, which is where playback configuration stays.
+
+    Series are indexed alongside films and carry type "series", so a series
+    result can never be rendered as a film - the label is in the data, not
+    inferred by the UI.
     """
     reference = _now(now)
     items: List[Dict[str, Any]] = []
@@ -503,20 +547,23 @@ def build_search_index(
         if not movie_id or movie_id in seen_ids:
             continue
         seen_ids.add(movie_id)
+        items.append(_index_entry(movie, "movie"))
 
-        entry: Dict[str, Any] = {"type": "movie"}
-        for field in SEARCH_INDEX_FIELDS:
-            value = movie.get("logo") if field == "poster" else movie.get(field)
-            if value in (None, "", [], {}):
-                continue
-            entry[field] = value
-        if entry.get("id"):
-            items.append(entry)
+    series_count = 0
+    for series in iter_published_series(series_root):
+        series_id = str(series.get("id") or "").strip()
+        if not series_id or series_id in seen_ids:
+            continue
+        seen_ids.add(series_id)
+        items.append(_index_entry(series, "series"))
+        series_count += 1
 
     return {
         "version": 1,
         "updated_at": reference.isoformat(),
         "count": len(items),
+        "movies": len(items) - series_count,
+        "series": series_count,
         "items": items,
     }
 
