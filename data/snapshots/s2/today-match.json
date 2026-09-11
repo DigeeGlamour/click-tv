@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-09-11T14:10:23.133944+00:00",
+  "updated_at": "2026-09-11T14:45:18.458988+00:00",
   "count": 24,
-  "filtered_stale": 1,
+  "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -82,18 +82,21 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
-      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 9,
-      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_misses": 10,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-09-11T11:30:05.638164+00:00",
-      "authority_finished_confirmations": 4,
+      "authority_finished_confirmations": 5,
       "authority_finished_seen_at": "2026-09-11T13:49:25.616455+00:00",
       "authority_remove_after": "2026-09-11T14:09:25.616455+00:00",
-      "contradicted_end_confirmations": 2
+      "contradicted_end_confirmations": 3,
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-11T14:30:42.060283+00:00"
     },
     {
       "id": "namibia-vs-south-africa",
@@ -207,7 +210,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1549532)",
+        "ESPN espn-header=Innings break (Innings break, event 1549532)",
         "LiveScore livescore=Play in progress (33, event 1861894)"
       ],
       "authority_independent_count": 2,
@@ -218,7 +221,7 @@
       "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_333a6b37357dc610de39c65aaab10e77"
+      "playback_id": "ctv_d1ae4699999fb0ffb619cf64615fe470"
     },
     {
       "id": "england-vs-pakistan",
@@ -264,7 +267,7 @@
           "host": "abfjk4haaaaaaaamkitc5445rybm6.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_244aacbb3e11d49ff95fe5bb8e19c922"
+          "playback_id": "ctv_7c2264f2e911d34ea8f22d8d3dfbdf3d"
         },
         {
           "name": "Backup-2",
@@ -283,7 +286,7 @@
           "host": "bl.rutube.ru",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_bcdbdb304a3bc1a3f984ce4eb197606c"
+          "playback_id": "ctv_b33a4dbcf7c11877ddef7ef9685f87a2"
         },
         {
           "name": "Backup-3",
@@ -302,7 +305,7 @@
           "host": "criccoder.pages.dev",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_674c76202c9621343471a5a2cecc89bc"
+          "playback_id": "ctv_4f1788abd1e5403ff80469e2f2ca09fd"
         },
         {
           "name": "Backup-4",
@@ -320,7 +323,7 @@
           "host": "livecdn-tc-iptv.rumsport10.live",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_0ef1c333ea26598746c624cf5c0faaf9",
+          "playback_id": "ctv_bad36a9f12a62fd302f91efaca5933d7",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -333,7 +336,7 @@
         },
         {
           "name": "Backup-5",
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -344,14 +347,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "a96aivottlinear-a.akamaihd.net",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_7ca0c4e1058eb109780b32ae33ef6168",
+          "playback_id": "ctv_61f2113983da0605669f44b5fdbdc9b5",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -366,10 +369,10 @@
           "id": "england-vs-pakistan--willow",
           "name": "WILLOW",
           "normalized_name": "willow",
-          "logo": "https://img.sofascore.com/api/v1/team/187757/image",
+          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.e9b23088-fada-406a-85e6-7777582d9803/7/BOXART-16X9/en-US._UR1920,1080_.jpeg",
           "name_confidence": "explicit",
           "name_source": "channel_name",
-          "provider": "sm-sports-data",
+          "provider": "srhady-willow-event",
           "source_ids": [
             "sm-sports-data",
             "srhady-willow-event"
@@ -388,19 +391,6 @@
               "id": "england-vs-pakistan--willow--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_bcdce52ad2ee57cac314e381",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_f01345ff0c36391208b9753d7d6cbda0",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "england-vs-pakistan--willow--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_29137d7e51de3af01a207950",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
@@ -411,20 +401,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "england-vs-pakistan--willow--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_8e3f256abce532a5f6588393",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_7ca0c4e1058eb109780b32ae33ef6168",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "england-vs-pakistan--willow--4",
+              "id": "england-vs-pakistan--willow--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_b51a1b58ebc54094a2830d7d",
@@ -437,7 +414,20 @@
               "stream_type": "dash"
             },
             {
-              "id": "england-vs-pakistan--willow--5",
+              "id": "england-vs-pakistan--willow--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_fe6dc3bd32798386404bc8aa",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_6b28e8bfc9fd9aeb5269430636a137b5",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "england-vs-pakistan--willow--4",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_698b689f8763526a3196167a",
@@ -450,14 +440,27 @@
               "stream_type": "dash"
             },
             {
+              "id": "england-vs-pakistan--willow--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_bcdce52ad2ee57cac314e381",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f01345ff0c36391208b9753d7d6cbda0",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
               "id": "england-vs-pakistan--willow--6",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_fe6dc3bd32798386404bc8aa",
+              "variant_key": "sv_d8b4bba02bdd0dd06e14deb1",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_6b28e8bfc9fd9aeb5269430636a137b5",
+              "playback_id": "ctv_6b32d23b38cf52c43fcb9f77d140545d",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -490,19 +493,6 @@
               "id": "england-vs-pakistan--willow-2--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_ef3eced9d6e57279569c00e8",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_a99833987ca371b1be1e0b7598542566",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "england-vs-pakistan--willow-2--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_8d67c80097e5a588ad32ffc3",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
@@ -513,20 +503,20 @@
               "stream_type": "dash"
             },
             {
-              "id": "england-vs-pakistan--willow-2--3",
+              "id": "england-vs-pakistan--willow-2--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_0dfd3291c9432f6b8a3745b6",
+              "variant_key": "sv_57ac5913d774c7510f9a7b78",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_f38270e3733d59ab935795eb8d7746a5",
+              "playback_id": "ctv_927d2f1be7c9459aceb2b9be85f02fef",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
             },
             {
-              "id": "england-vs-pakistan--willow-2--4",
+              "id": "england-vs-pakistan--willow-2--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_7b22d4dfcfb761438cf4e3cc",
@@ -539,14 +529,27 @@
               "stream_type": "dash"
             },
             {
-              "id": "england-vs-pakistan--willow-2--5",
+              "id": "england-vs-pakistan--willow-2--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_57ac5913d774c7510f9a7b78",
+              "variant_key": "sv_0dfd3291c9432f6b8a3745b6",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_927d2f1be7c9459aceb2b9be85f02fef",
+              "playback_id": "ctv_f38270e3733d59ab935795eb8d7746a5",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "england-vs-pakistan--willow-2--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_ef3eced9d6e57279569c00e8",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_a99833987ca371b1be1e0b7598542566",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -650,11 +653,11 @@
               "id": "england-vs-pakistan--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_88102bc4e77ca6f85eafa22b",
+              "variant_key": "sv_1aebfb05880e73025b386b4d",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_0ef1c333ea26598746c624cf5c0faaf9",
+              "playback_id": "ctv_bad36a9f12a62fd302f91efaca5933d7",
               "resolution": "HD",
               "resolution_height": 720,
               "stream_type": "hls"
@@ -681,7 +684,7 @@
             "type": "clearkey",
             "protected": true
           },
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "requires_headers": false,
           "verification_status": "verified_global",
@@ -694,10 +697,10 @@
               "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
             }
           ],
-          "host": "ss-ott.bia-cf.live.pv-cdn.net",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_7f466f0eae56e17f036c2aa0d1b7ca23",
+          "playback_id": "ctv_483a2a7742b4da493c26afdf7654c564",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -728,7 +731,7 @@
           "host": "ss-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_c309be15908a9b13a3e423fdfbfd9132",
+          "playback_id": "ctv_7f466f0eae56e17f036c2aa0d1b7ca23",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -743,7 +746,7 @@
             "type": "clearkey",
             "protected": true
           },
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "requires_headers": false,
           "verification_status": "verified_global",
@@ -756,10 +759,10 @@
               "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
             }
           ],
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "host": "ss-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_ad4738c02b625c5b82845f0fb84e9728",
+          "playback_id": "ctv_c309be15908a9b13a3e423fdfbfd9132",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -790,7 +793,7 @@
           "host": "otte.live.fly.ww.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_483a2a7742b4da493c26afdf7654c564",
+          "playback_id": "ctv_ad4738c02b625c5b82845f0fb84e9728",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -836,7 +839,7 @@
             "type": "clearkey",
             "protected": true
           },
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "requires_headers": false,
           "verification_status": "verified_global",
@@ -849,10 +852,10 @@
               "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
             }
           ],
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_9275a98538c3abc6d490de6b229230d6",
+          "playback_id": "ctv_f5142b5b3e958095859a32375cb45ebd",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -883,7 +886,7 @@
           "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_f5142b5b3e958095859a32375cb45ebd",
+          "playback_id": "ctv_c5f14b5a0c3bd1926c8d02111b905edf",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -911,10 +914,10 @@
               "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
             }
           ],
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "a96aivottlinear-a.akamaihd.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_c5f14b5a0c3bd1926c8d02111b905edf",
+          "playback_id": "ctv_d47f5e41c4f8e737abda5896858c0711",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -945,7 +948,7 @@
           "host": "a96aivottlinear-a.akamaihd.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_d47f5e41c4f8e737abda5896858c0711",
+          "playback_id": "ctv_986053516111f63f688977b8e84cbc8a",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -997,7 +1000,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzuFgpsCwVgBDQhWYNMATkhQFZgrDh49g773hta1HiEwAAzdI-IsDCT0Y3BMnx0ICCERFV9cgwDGzST3hiq3Al1ZgwufFaA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzuFgpsCwVgBDQhWYNMATkhQFZgrDh49g773hta1gATChUiNiwMOPQjcRLAnQhsikImz1yDAMbNxPeCKrcCXVmDC58FoA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_f01345ff0c36391208b9753d7d6cbda0"
+      "playback_id": "ctv_93ef6533a6ac417c212a704cfec1457f"
     },
     {
       "id": "muscat-thunders-vs-royal-oman-stallions",
@@ -1068,14 +1071,14 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-09-11T14:09:59.598394+00:00"
     },
     {
       "id": "flanders-darts-trophy-day-1-afternoon-session",
       "name": "Flanders Darts Trophy | Day 1 Afternoon Session",
-      "primary_stream_key": "bce58a74fb67c2d84697f85da70cb0275dc816675d595544efa2b4e22a368f2b",
+      "primary_stream_key": "79f585cf8eca30068b6cdfc065bc6316cab181bf21df6bf91bbbefca0a6ae604",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "",
@@ -1124,11 +1127,11 @@
               "id": "flanders-darts-trophy-day-1-afternoon-session--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_a121e0494903db08d1d85f3d",
+              "variant_key": "sv_ea6746674ac2b4ca4bc12a42",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_2103582200acde57908289b63e917ac4",
+              "playback_id": "ctv_7a7c6124395d336bfb2f7d5c78dddbd9",
               "resolution": "HD",
               "resolution_height": 720,
               "stream_type": "hls"
@@ -1167,7 +1170,7 @@
       "resolution_height": 720,
       "start_time": "2026-09-11T11:00:00+00:00",
       "start_at": "2026-09-11T11:00:00+00:00",
-      "end_time": "2026-09-11T15:00:00+00:00",
+      "end_time": "2026-09-11T15:29:45+00:00",
       "end_time_source": "assumed",
       "competition": "European Tour",
       "fixture_id": "provider:flanders-darts-trophy|european tour",
@@ -1183,7 +1186,10 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_2103582200acde57908289b63e917ac4",
+      "provider_enriched": "streamed",
+      "provider_event_id": "flanders-darts-trophy-darts-1",
+      "provider_routing_hint": "live",
+      "playback_id": "ctv_7a7c6124395d336bfb2f7d5c78dddbd9",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1192,15 +1198,7 @@
           "token"
         ],
         "drm": false
-      },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
-      "lifecycle_protections": [
-        "primary_playable",
-        "backup_playable"
-      ],
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-11T13:09:44.315263+00:00"
+      }
     },
     {
       "id": "kenya-vs-botswana",
@@ -1292,7 +1290,7 @@
     {
       "id": "dublin-guardians-vs-edinburgh-castle-rockers",
       "name": "Dublin Guardians vs Edinburgh Castle Rockers",
-      "primary_stream_key": "b2b525e67c137b0e6f8905d8e2e2f3b35126edd7a5e7d593e4095c0230e9e299",
+      "primary_stream_key": "7ae0b932672b12572312fa7534a0dc6eda65de0ba57987092c4c27787411ad14",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.b0542c8c-66c7-45a6-a6cf-1a66bcdcbdb4/2/BOXART-16X9/en-US._UR1920,1080_.jpeg",
@@ -1317,35 +1315,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-willow-event",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_e3bce46409398d48aa6623934680b7f9",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1357,14 +1326,43 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "ss-ott.bia-cf.live.pv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_150f05c9a997890cb5ca3a01159604ba",
+          "playback_id": "ctv_10571928f225041aa7eb3b49aa80d201",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-willow-event",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_badf88d5c179d63c5c29b73ebf1435d2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1386,14 +1384,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "ss-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_10571928f225041aa7eb3b49aa80d201",
+          "playback_id": "ctv_150f05c9a997890cb5ca3a01159604ba",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1440,18 +1438,20 @@
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
-          "verification_badge": "Verified",
+          "verification_badge": "Playback Unproven",
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "host": "otte.cache.aiv-cdn.net",
+          "playback_unproven": true,
+          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_e13a602134a96b44c2736d029f748890",
+          "playback_id": "ctv_14ff273e35a0496fa1b4f17c20506d77",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1462,94 +1462,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2",
-          "name": "Willow 2",
-          "normalized_name": "willow-2",
-          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.b0542c8c-66c7-45a6-a6cf-1a66bcdcbdb4/2/BOXART-16X9/en-US._UR1920,1080_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-willow-event",
-          "source_ids": [
-            "srhady-willow-event"
-          ],
-          "primary_stream_id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--1",
-          "stream_count": 5,
-          "backup_count": 4,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_d563ad1c2392235d218e0ea5",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_badf88d5c179d63c5c29b73ebf1435d2",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_7c9774d061d0eceae4107292",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_150f05c9a997890cb5ca3a01159604ba",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_7da59f8af5f9663d8d96c713",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_14ff273e35a0496fa1b4f17c20506d77",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_f285ad5f0b8700410eaa057b",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_72362dfab3149aba39667346955d0a09",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--5",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_79e6aa2f20f2cee9c14f7bc2",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_39eca95e53ecb5886b6e1777917ace50",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow",
           "name": "Willow",
@@ -1575,19 +1487,6 @@
               "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_da9599869108f232a39015a2",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_e13a602134a96b44c2736d029f748890",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_2f518814692279bf923ec929",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
@@ -1598,7 +1497,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow--3",
+              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_60e9ecdefcebebb2298712f6",
@@ -1611,20 +1510,20 @@
               "stream_type": "dash"
             },
             {
-              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow--4",
+              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_e7e160614d232d22059ca3f8",
+              "variant_key": "sv_da9599869108f232a39015a2",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_f2a3f4b3c308985ca1bf0554aa6d88c8",
+              "playback_id": "ctv_e13a602134a96b44c2736d029f748890",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
             },
             {
-              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow--5",
+              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow--4",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_658bba94a24ce5f8bb712ee1",
@@ -1635,12 +1534,113 @@
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
+            },
+            {
+              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_e7e160614d232d22059ca3f8",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f2a3f4b3c308985ca1bf0554aa6d88c8",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2",
+          "name": "Willow 2",
+          "normalized_name": "willow-2",
+          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.b0542c8c-66c7-45a6-a6cf-1a66bcdcbdb4/2/BOXART-16X9/en-US._UR1920,1080_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-willow-event",
+          "source_ids": [
+            "srhady-willow-event"
+          ],
+          "primary_stream_id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--1",
+          "stream_count": 5,
+          "backup_count": 4,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_7da59f8af5f9663d8d96c713",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_14ff273e35a0496fa1b4f17c20506d77",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_f285ad5f0b8700410eaa057b",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_72362dfab3149aba39667346955d0a09",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_d563ad1c2392235d218e0ea5",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_badf88d5c179d63c5c29b73ebf1435d2",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_7c9774d061d0eceae4107292",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_150f05c9a997890cb5ca3a01159604ba",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_79e6aa2f20f2cee9c14f7bc2",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_39eca95e53ecb5886b6e1777917ace50",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
             }
           ]
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "dublin-guardians-vs-edinburgh-castle-rockers--willow-2",
+      "default_channel_id": "dublin-guardians-vs-edinburgh-castle-rockers--willow",
       "channel_stats": {
         "streams_in": 10,
         "unresolved_channel_streams": 0,
@@ -1702,10 +1702,10 @@
               "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
             }
           ],
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4d3bace6cfc6c4f3814450514592a313",
+          "playback_id": "ctv_70cb39bb3b5506914dd6ab9c35625a53",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1822,7 +1822,7 @@
       "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1547892); LiveScore livescore=Play in progress (33, event 1849985)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_badf88d5c179d63c5c29b73ebf1435d2",
+      "playback_id": "ctv_e3bce46409398d48aa6623934680b7f9",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1872,20 +1872,20 @@
           "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
         },
         {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        },
-        {
           "source_id": "sayanpal-fancode-mirror",
           "source_name": "FanCode Auto Updated (sayanpal)",
           "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
+        },
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "start_time": "2026-09-11T13:30:00+00:00",
       "start_at": "2026-09-11T13:30:00+00:00",
@@ -1938,7 +1938,7 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -1949,14 +1949,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_dfc2723d2d5076971823481267752501",
+          "playback_id": "ctv_2c6be2d8f9ea98af25a654e6d862dc8b",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1985,7 +1985,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_c5dcdc8704d45963e8801c4d2a875d77",
+          "playback_id": "ctv_9f11d0dccd39eec9715aefa72d91f8ce",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1996,7 +1996,7 @@
         },
         {
           "name": "Backup-3",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -2007,14 +2007,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-willow-event",
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_f63980a971ca0a060b370ef7954d57e1",
+          "playback_id": "ctv_17dc0cd12846ab22074d99c9d912b918",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2043,7 +2043,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_9f579231c57708c8317321c4fc6e453b",
+          "playback_id": "ctv_589d8451158771e1ecc3984ffd40cc9e",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2072,7 +2072,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_8494cf4af76c023eebbd65fc85feba4a",
+          "playback_id": "ctv_d07e7f475ee1935f5f1a2b4133e1b412",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2120,94 +2120,6 @@
           ]
         },
         {
-          "id": "sri-lanka-women-vs-pakistan-women--willow-2",
-          "name": "Willow 2",
-          "normalized_name": "willow-2",
-          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.df23162d-6a17-4016-86c6-5844e90471a1/3/BOXART-16X9/en-US._UR1920,1080_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-willow-event",
-          "source_ids": [
-            "srhady-willow-event"
-          ],
-          "primary_stream_id": "sri-lanka-women-vs-pakistan-women--willow-2--1",
-          "stream_count": 5,
-          "backup_count": 4,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "sri-lanka-women-vs-pakistan-women--willow-2--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_108f535d009ebf9357775e5f",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_dfc2723d2d5076971823481267752501",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "sri-lanka-women-vs-pakistan-women--willow-2--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_9d92f09b18d7732d39d6e994",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_c5dcdc8704d45963e8801c4d2a875d77",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "sri-lanka-women-vs-pakistan-women--willow-2--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_bd5dc46a163dfaf6a6bcda03",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_f63980a971ca0a060b370ef7954d57e1",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "sri-lanka-women-vs-pakistan-women--willow-2--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_9e8105323f318b4f0db0974b",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_9f579231c57708c8317321c4fc6e453b",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "sri-lanka-women-vs-pakistan-women--willow-2--5",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_fc9e2d8f09d3ada88bba2bcd",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_d07e7f475ee1935f5f1a2b4133e1b412",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
           "id": "sri-lanka-women-vs-pakistan-women--willow",
           "name": "Willow",
           "normalized_name": "willow",
@@ -2232,6 +2144,19 @@
               "id": "sri-lanka-women-vs-pakistan-women--willow--1",
               "role": "primary",
               "playback_type": "native",
+              "variant_key": "sv_794ed31fe39234551063239a",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_2c6be2d8f9ea98af25a654e6d862dc8b",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "sri-lanka-women-vs-pakistan-women--willow--2",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_3549efc14098abb69a49a7e9",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
@@ -2242,7 +2167,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "sri-lanka-women-vs-pakistan-women--willow--2",
+              "id": "sri-lanka-women-vs-pakistan-women--willow--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_864f83d8acec5c48553951f9",
@@ -2250,19 +2175,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_17dc0cd12846ab22074d99c9d912b918",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "sri-lanka-women-vs-pakistan-women--willow--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_8ee59cf8d64be199016d5702",
-              "provider": "srhady-willow-event",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_8494cf4af76c023eebbd65fc85feba4a",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2284,11 +2196,99 @@
               "id": "sri-lanka-women-vs-pakistan-women--willow--5",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_794ed31fe39234551063239a",
+              "variant_key": "sv_8ee59cf8d64be199016d5702",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_2c6be2d8f9ea98af25a654e6d862dc8b",
+              "playback_id": "ctv_8494cf4af76c023eebbd65fc85feba4a",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "sri-lanka-women-vs-pakistan-women--willow-2",
+          "name": "Willow 2",
+          "normalized_name": "willow-2",
+          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.df23162d-6a17-4016-86c6-5844e90471a1/3/BOXART-16X9/en-US._UR1920,1080_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-willow-event",
+          "source_ids": [
+            "srhady-willow-event"
+          ],
+          "primary_stream_id": "sri-lanka-women-vs-pakistan-women--willow-2--1",
+          "stream_count": 5,
+          "backup_count": 4,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "sri-lanka-women-vs-pakistan-women--willow-2--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_bd5dc46a163dfaf6a6bcda03",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f63980a971ca0a060b370ef7954d57e1",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "sri-lanka-women-vs-pakistan-women--willow-2--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_108f535d009ebf9357775e5f",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_dfc2723d2d5076971823481267752501",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "sri-lanka-women-vs-pakistan-women--willow-2--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_9d92f09b18d7732d39d6e994",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_c5dcdc8704d45963e8801c4d2a875d77",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "sri-lanka-women-vs-pakistan-women--willow-2--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_fc9e2d8f09d3ada88bba2bcd",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_d07e7f475ee1935f5f1a2b4133e1b412",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "sri-lanka-women-vs-pakistan-women--willow-2--5",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_9e8105323f318b4f0db0974b",
+              "provider": "srhady-willow-event",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_9f579231c57708c8317321c4fc6e453b",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2331,7 +2331,7 @@
           "host": "ss-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_735abdef1b11a74e2417953bcc1fb205",
+          "playback_id": "ctv_c1f9d444b7a014f107061c867b0da751",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2362,7 +2362,7 @@
           "host": "otte.live.fly.ww.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_95a7c7cd679bafe997373a8a946f6057",
+          "playback_id": "ctv_3e88218d3e069510c8a8931fc92374b1",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2393,7 +2393,7 @@
           "host": "otte.cache.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_17b347ac9eaf15b0fc7a04c884d9318a",
+          "playback_id": "ctv_e76d88cfe47f58d62e3a59d75715dc33",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2424,7 +2424,7 @@
           "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_15df01baba95cc3197ddd93ec9cc0bd0",
+          "playback_id": "ctv_adadfcde190d9bdf7da169f93aba6727",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2455,7 +2455,7 @@
           "host": "a96aivottlinear-a.akamaihd.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_19d337ab8d8188a812bd923811741218",
+          "playback_id": "ctv_9661ea703c810416fb725a02d0dc6f7a",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2509,9 +2509,11 @@
         "espn-header": "1548904",
         "livescore": "1861442"
       },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 0 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_5e843184400492ca921d8a6724484856"
+      "playback_id": "ctv_a8ddfc40cb8d53a9fe2c14ac6e2bd3f5"
     },
     {
       "id": "lokomotiv-moskva-u19-vs-rostov-u19",
@@ -2690,16 +2692,16 @@
         ],
         "drm": false
       },
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-09-11T13:50:01.571803+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 2
+      "end_pending_confirmations": 3
     },
     {
       "id": "nizhny-novgorod-u19-vs-chertanovo-u20",
@@ -2823,11 +2825,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-09-11T13:30:38.814624+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 3
+      "end_pending_confirmations": 4
     },
     {
       "id": "rubin-kazan-u20-vs-ural-u20",
@@ -3006,143 +3008,16 @@
         ],
         "drm": false
       },
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-09-11T13:50:01.571803+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 2
-    },
-    {
-      "id": "ezra-vs-shan-united",
-      "name": "Ezra vs Shan United",
-      "primary_stream_key": "fd0799218a017272155613986a9a2a0106f41eedec64f624c998221953dd9769",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://rs.maycdn.com/fixture/leagues/af/1129.png",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
-      "stream_type": "hls",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-bingstream",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "ezra-vs-shan-united--server-1",
-          "name": "Server-1",
-          "normalized_name": "server-1",
-          "logo": "https://rs.maycdn.com/fixture/leagues/af/1129.png",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "srhady-bingstream",
-          "source_ids": [
-            "srhady-bingstream"
-          ],
-          "primary_stream_id": "ezra-vs-shan-united--server-1--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "ezra-vs-shan-united--server-1--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_54809eb4bd2b4773a7e565be",
-              "provider": "srhady-bingstream",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_77ffc3cab4d9e1d697f19f55d44a4687",
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "ezra-vs-shan-united--server-1",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 1,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 1
-      },
-      "source_provenance": [
-        {
-          "source_id": "srhady-bingstream",
-          "source_name": "Bingstream Live and Upcoming",
-          "source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json"
-        },
-        {
-          "source_id": "srhady-axsports-live",
-          "source_name": "AX Sports Live Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/axsports/refs/heads/main/live_sports.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "start_time": "2026-09-11T11:30:00+00:00",
-      "start_at": "2026-09-11T11:30:00+00:00",
-      "end_time": "2026-09-11T14:29:36+00:00",
-      "end_time_source": "assumed",
-      "competition": "ASEAN Club Championship",
-      "fixture_id": "provider:ezra-vs-shan-united|asean club championship|2026-09-11",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "source_start_time": "2026-09-11T11:30:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hoix321777224251.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/a09bqb1693031840.png",
-      "playback_id": "ctv_77ffc3cab4d9e1d697f19f55d44a4687",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [
-          "token"
-        ],
-        "drm": false
-      },
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-09-11T13:50:01.571803+00:00",
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-09-11T13:50:01.571803+00:00"
+      "end_pending_confirmations": 3
     },
     {
       "id": "tampines-rovers-vs-balestier-khalsa",
@@ -3335,472 +3210,21 @@
       "authority_event_ids": {
         "livescore": "1846930"
       },
-      "authority_finished_confirmations": 2,
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "authority_finished_confirmations": 3,
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
-      "carried_forward_first_missed_at": "2026-09-11T13:50:01.571803+00:00",
-      "end_pending": true,
-      "end_pending_confirmations": 2
-    },
-    {
-      "id": "port-fc-vs-lamphun-warrior",
-      "name": "Port FC vs Lamphun Warrior",
-      "primary_stream_key": "45555e3372185f1848e4ff59e389f632d0cd969ae7c725e746d10b0394be1781",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://rs.maycdn.com/fixture/leagues/af/296.png",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
-      "stream_type": "hls",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-bingstream",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "port-fc-vs-lamphun-warrior--server-1",
-          "name": "Server-1",
-          "normalized_name": "server-1",
-          "logo": "https://rs.maycdn.com/fixture/leagues/af/296.png",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "srhady-bingstream",
-          "source_ids": [
-            "srhady-bingstream"
-          ],
-          "primary_stream_id": "port-fc-vs-lamphun-warrior--server-1--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "port-fc-vs-lamphun-warrior--server-1--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_06b34034fa1ef1a476d1feb4",
-              "provider": "srhady-bingstream",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4e1b160c00591d533a5c5405b058640c",
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "port-fc-vs-lamphun-warrior--server-1",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 1,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 1
-      },
-      "source_provenance": [
-        {
-          "source_id": "srhady-bingstream",
-          "source_name": "Bingstream Live and Upcoming",
-          "source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json"
-        },
-        {
-          "source_id": "srhady-axsports-live",
-          "source_name": "AX Sports Live Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/axsports/refs/heads/main/live_sports.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "start_time": "2026-09-11T11:30:00+00:00",
-      "start_at": "2026-09-11T11:30:00+00:00",
-      "end_time": "2026-09-11T14:29:36+00:00",
-      "end_time_source": "assumed",
-      "competition": "Thai League 1",
-      "fixture_id": "provider:port-fc-vs-lamphun-warrior|thai league 1|2026-09-11",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "source_start_time": "2026-09-11T11:30:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "LiveScore livescore=FT (6, event 1847014)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "livescore": "1847014"
-      },
-      "authority_finished_confirmations": 3,
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/fmn4hj1582396491.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/7sj4f81629159125.png",
-      "playback_id": "ctv_4e1b160c00591d533a5c5405b058640c",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [
-          "token"
-        ],
-        "drm": false
-      },
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-09-11T13:50:01.571803+00:00",
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-09-11T13:50:01.571803+00:00",
-      "authority_finished_seen_at": "2026-09-11T14:09:18.216316+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "authority_finished_seen_at": "2026-09-11T14:29:45.008006+00:00",
       "authority_status": "FINISHED",
-      "authority_remove_after": "2026-09-11T14:29:18.216316+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
-    },
-    {
-      "id": "dewa-united-vs-bhayangkara-fc",
-      "name": "Dewa United vs Bhayangkara FC",
-      "primary_stream_key": "0bd4a5aa00985edbca14182d23a04b2875d9439cf8bdaa4274581cfaad3063f5",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://rs.maycdn.com/fixture/leagues/af/274.png",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
-      "stream_type": "hls",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-bingstream",
-      "metadata_only": false,
-      "available_link_count": 4,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "hls",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-bingstream",
-          "host": "livecdn-tc-livestream.rumsport10.live",
-          "playback_id": "ctv_cedf8ab8e6e117b63cd99bfc91b7c8b8",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [
-              "token"
-            ],
-            "drm": false
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "hls",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-axsports-live",
-          "host": "livecdn-tc-livestream.rumsport10.live",
-          "playback_id": "ctv_7caa2b8df323be1cdf92c4ddeea4567d",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [
-              "token"
-            ],
-            "drm": false
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "hls",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-axsports-live",
-          "host": "livecdn-tc-livestream.rumsport10.live",
-          "playback_id": "ctv_af406adbc9c0686f1a5b78ff7ad4958c",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [
-              "token"
-            ],
-            "drm": false
-          }
-        }
-      ],
-      "channels": [
-        {
-          "id": "dewa-united-vs-bhayangkara-fc--server-2",
-          "name": "Server-1",
-          "normalized_name": "server-1",
-          "logo": "https://rs.maycdn.com/fixture/leagues/af/274.png",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "srhady-bingstream",
-          "source_ids": [
-            "srhady-bingstream"
-          ],
-          "primary_stream_id": "dewa-united-vs-bhayangkara-fc--server-2--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "dewa-united-vs-bhayangkara-fc--server-2--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_69e66a9e394d9fb8096d48c4",
-              "provider": "srhady-bingstream",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_a1e556ea8ce93e99efa8728fdd295ae5",
-              "stream_type": "hls"
-            }
-          ]
-        },
-        {
-          "id": "dewa-united-vs-bhayangkara-fc--server-1",
-          "name": "Server-2",
-          "normalized_name": "server-2",
-          "logo": "https://rs.maycdn.com/fixture/leagues/af/274.png",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "srhady-axsports-live",
-          "source_ids": [
-            "srhady-axsports-live"
-          ],
-          "primary_stream_id": "dewa-united-vs-bhayangkara-fc--server-1--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "dewa-united-vs-bhayangkara-fc--server-1--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_33e51ec1fd666e21ac9945f6",
-              "provider": "srhady-axsports-live",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_7caa2b8df323be1cdf92c4ddeea4567d",
-              "stream_type": "hls"
-            }
-          ]
-        },
-        {
-          "id": "dewa-united-vs-bhayangkara-fc--server-3",
-          "name": "Server-3",
-          "normalized_name": "server-3",
-          "logo": "https://rs.maycdn.com/fixture/leagues/af/274.png",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "srhady-axsports-live",
-          "source_ids": [
-            "srhady-axsports-live"
-          ],
-          "primary_stream_id": "dewa-united-vs-bhayangkara-fc--server-3--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "dewa-united-vs-bhayangkara-fc--server-3--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_ef57c01a2cd9d00765bcb1e2",
-              "provider": "srhady-axsports-live",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_af406adbc9c0686f1a5b78ff7ad4958c",
-              "stream_type": "hls"
-            }
-          ]
-        },
-        {
-          "id": "dewa-united-vs-bhayangkara-fc--server-4",
-          "name": "Server-4",
-          "normalized_name": "server-4",
-          "logo": "https://rs.maycdn.com/fixture/leagues/af/274.png",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "srhady-bingstream",
-          "source_ids": [
-            "srhady-bingstream"
-          ],
-          "primary_stream_id": "dewa-united-vs-bhayangkara-fc--server-4--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "dewa-united-vs-bhayangkara-fc--server-4--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_4ff7047e5b99eeb61c27da2b",
-              "provider": "srhady-bingstream",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_cedf8ab8e6e117b63cd99bfc91b7c8b8",
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 4,
-      "default_channel_id": "dewa-united-vs-bhayangkara-fc--server-2",
-      "channel_stats": {
-        "streams_in": 4,
-        "unresolved_channel_streams": 4,
-        "exact_duplicates_removed": 0,
-        "channels": 4,
-        "variants": 4,
-        "embed_variants": 0,
-        "generic_server_channels": 4
-      },
-      "source_provenance": [
-        {
-          "source_id": "srhady-bingstream",
-          "source_name": "Bingstream Live and Upcoming",
-          "source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-bingstream"
-      ],
-      "start_time": "2026-09-11T12:00:00+00:00",
-      "start_at": "2026-09-11T12:00:00+00:00",
-      "end_time": "2026-09-11T14:49:25+00:00",
-      "end_time_source": "assumed",
-      "competition": "Liga 1",
-      "fixture_id": "provider:dewa-united-vs-bhayangkara-fc|liga 1|2026-09-11",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "source_start_time": "2026-09-11T12:00:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/39fq2c1657979473.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/v3kf1a1583008346.png",
-      "playback_id": "ctv_a1e556ea8ce93e99efa8728fdd295ae5",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [
-          "token"
-        ],
-        "drm": false
-      },
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "LiveScore livescore=FT (6, event 1866455)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "livescore": "1866455"
-      },
-      "authority_finished_confirmations": 1,
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-09-11T14:09:59.598394+00:00",
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-09-11T14:09:59.598394+00:00"
+      "authority_remove_after": "2026-09-11T14:49:45.008006+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "ended_seen_at": "2026-09-11T14:30:42.060283+00:00"
     },
     {
       "id": "ratchaburi-vs-bangkok-united",
@@ -3908,7 +3332,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ry5yrz1720546386.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/1jsiim1582396416.png",
       "playback_id": "ctv_679a0586d2b5dfcb78384981225a22c5",
@@ -3920,12 +3344,18 @@
           "token"
         ],
         "drm": false
-      }
+      },
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-09-11T14:30:42.060283+00:00"
     },
     {
       "id": "johor-darul-takzim-fc-vs-negeri-sembilan",
       "name": "Johor Darul Takzim FC vs Negeri Sembilan",
-      "primary_stream_key": "14930272394cbbe6f4ef4327eebfb2c41214aa76853b8b96a64189284935277c",
+      "primary_stream_key": "0b4c9cf50a3043f064cf8f6b239e498cb1067c3cc367515c7939f4c583d5a134",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://rs.maycdn.com/fixture/teams/af/2523.png",
@@ -3962,7 +3392,7 @@
           "publish_allowed": true,
           "source_id": "srhady-bingstream",
           "host": "livecdn-tc-livestream.rumsport10.live",
-          "playback_id": "ctv_f948c3a5aa08ed324b0b2b96c70167a0",
+          "playback_id": "ctv_911507cb447af1968aa83bc542387875",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -4000,11 +3430,11 @@
               "id": "johor-darul-takzim-fc-vs-negeri-sembilan--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_3ccb0700a55551e10cc5a93b",
+              "variant_key": "sv_e0c6d390b65abfe3e2484d32",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_259cbf3db37084369b417c9bab514935",
+              "playback_id": "ctv_c83ca73c71d36a8e6c7bfe3d4179d8b5",
               "stream_type": "hls"
             }
           ]
@@ -4034,11 +3464,11 @@
               "id": "johor-darul-takzim-fc-vs-negeri-sembilan--server-2--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_2cc3d61b3c31ff383a3786ef",
+              "variant_key": "sv_ec0d666bf04fce86792db7c9",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_f948c3a5aa08ed324b0b2b96c70167a0",
+              "playback_id": "ctv_911507cb447af1968aa83bc542387875",
               "stream_type": "hls"
             }
           ]
@@ -4083,7 +3513,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_259cbf3db37084369b417c9bab514935",
+      "playback_id": "ctv_c83ca73c71d36a8e6c7bfe3d4179d8b5",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -4138,7 +3568,7 @@
           "host": "otte.live.fly.ww.aiv-cdn.net",
           "resolution": "SD",
           "resolution_height": 576,
-          "playback_id": "ctv_31c5d0f760f42872eb784f7594d36764"
+          "playback_id": "ctv_057a25b95b375e0efd730df78f531296"
         }
       ],
       "channels": [
@@ -4257,7 +3687,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_403df281d796333c08b145e757f17c0c"
+      "playback_id": "ctv_423adea978280d4458fb12ae60dc414b"
     },
     {
       "id": "tanzania-u20-vs-canada-u20",
@@ -4366,7 +3796,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_74df188cfe079264d36483df7d12efc1"
+      "playback_id": "ctv_2fb65cfb38f1c907597bea089c300fd8"
     },
     {
       "id": "hatta-vs-al-dhafra",
@@ -4393,24 +3823,10 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 5,
+      "available_link_count": 3,
       "backups": [
         {
-          "stream_type": "hls",
-          "verification_status": "verified_global",
-          "verified": true,
-          "playback_id": "ctv_cc3eeba1dd363a382c4c577acc8aab40",
-          "name": "Backup-1"
-        },
-        {
-          "stream_type": "hls",
-          "verification_status": "verified_global",
-          "verified": true,
-          "playback_id": "ctv_4565b7c46e32d2873ede9a8c7732d99a",
-          "name": "Backup-2"
-        },
-        {
-          "name": "Backup-3",
+          "name": "Backup-1",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "hls",
@@ -4423,7 +3839,7 @@
           "publish_allowed": true,
           "source_id": "srhady-bingstream",
           "host": "livecdn-tc-livestream.rumsport10.live",
-          "playback_id": "ctv_8f776255efa381d4431ccf63e5f11711",
+          "playback_id": "ctv_f0fdb9160d2ec6a46a35ef459f698252",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -4435,7 +3851,7 @@
           }
         },
         {
-          "name": "Backup-4",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "hls",
@@ -4448,7 +3864,7 @@
           "publish_allowed": true,
           "source_id": "srhady-bingstream",
           "host": "livecdn-tc-livestream.rumsport10.live",
-          "playback_id": "ctv_9443f21d7db3c502f44ab32461684eef",
+          "playback_id": "ctv_bc7054fe621499948c1f22f84111ac3c",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -4522,11 +3938,11 @@
               "id": "hatta-vs-al-dhafra--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_64300d9f5816fd9aea3c2573",
+              "variant_key": "sv_a1f30036382a14c547948d1e",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_8f776255efa381d4431ccf63e5f11711",
+              "playback_id": "ctv_f0fdb9160d2ec6a46a35ef459f698252",
               "stream_type": "hls"
             }
           ]
@@ -4556,87 +3972,17 @@
               "id": "hatta-vs-al-dhafra--server-2--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_cad35e32fa5e941d6b1591a6",
+              "variant_key": "sv_006c38627fde05c305692313",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_9443f21d7db3c502f44ab32461684eef",
+              "playback_id": "ctv_bc7054fe621499948c1f22f84111ac3c",
               "stream_type": "hls"
             }
           ]
-        },
-        {
-          "id": "hatta-vs-al-dhafra--server-1-2",
-          "name": "Server-3",
-          "normalized_name": "server-3",
-          "logo": "https://rs.maycdn.com/fixture/teams/af/2869.png",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "srhady-bingstream",
-          "source_ids": [
-            "srhady-bingstream"
-          ],
-          "primary_stream_id": "hatta-vs-al-dhafra--server-1-2--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "hatta-vs-al-dhafra--server-1-2--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_47db9a026430de7cc6ca9a81",
-              "provider": "srhady-bingstream",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_cc3eeba1dd363a382c4c577acc8aab40",
-              "stream_type": "hls"
-            }
-          ],
-          "absorbed_from_event_id": "hatta-sc-vs-al-dhafra"
-        },
-        {
-          "id": "hatta-vs-al-dhafra--server-2-2",
-          "name": "Server-4",
-          "normalized_name": "server-4",
-          "logo": "https://rs.maycdn.com/fixture/teams/af/2869.png",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "srhady-bingstream",
-          "source_ids": [
-            "srhady-bingstream"
-          ],
-          "primary_stream_id": "hatta-vs-al-dhafra--server-2-2--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "hatta-vs-al-dhafra--server-2-2--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_560f5392d8cffc23adc924bb",
-              "provider": "srhady-bingstream",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4565b7c46e32d2873ede9a8c7732d99a",
-              "stream_type": "hls"
-            }
-          ],
-          "absorbed_from_event_id": "hatta-sc-vs-al-dhafra"
         }
       ],
-      "channel_count": 5,
+      "channel_count": 3,
       "default_channel_id": "hatta-vs-al-dhafra--ad-sports-2",
       "channel_stats": {
         "streams_in": 3,
@@ -4678,13 +4024,9 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "absorbed_event_ids": [
-        "hatta-sc-vs-al-dhafra"
-      ],
-      "reconciled_duplicate_count": 1,
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/lyeqae1613546070.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/613mvk1753982733.png",
-      "playback_id": "ctv_04a59b8e6a9cfe91045c833f41eaef42"
+      "playback_id": "ctv_ff0faee2090773eceea3d90be7ec3e9e"
     },
     {
       "id": "khor-fakkan-vs-baniyas",
@@ -4727,7 +4069,7 @@
           "publish_allowed": true,
           "source_id": "srhady-bingstream",
           "host": "livecdn-tc-livestream.rumsport10.live",
-          "playback_id": "ctv_31752d5ba1e42a26e5de95d32e019fda",
+          "playback_id": "ctv_3a6408e8ec603c03e94173edff2e12f4",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -4752,7 +4094,7 @@
           "publish_allowed": true,
           "source_id": "srhady-bingstream",
           "host": "livecdn-tc-livestream.rumsport10.live",
-          "playback_id": "ctv_e544a38ceb37d62750c932f5d2ab8a01",
+          "playback_id": "ctv_7e06c82b4babb16c8b167cdababf04f8",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -4826,11 +4168,11 @@
               "id": "khor-fakkan-vs-baniyas--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_179c1c1d07362ba22c4f9a69",
+              "variant_key": "sv_678289d91d60435dad8aca7a",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_31752d5ba1e42a26e5de95d32e019fda",
+              "playback_id": "ctv_3a6408e8ec603c03e94173edff2e12f4",
               "stream_type": "hls"
             }
           ]
@@ -4860,11 +4202,11 @@
               "id": "khor-fakkan-vs-baniyas--server-2--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_b1fa5210e2bc9f5636896bb1",
+              "variant_key": "sv_054cb3c54d587c5123c12c9c",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_e544a38ceb37d62750c932f5d2ab8a01",
+              "playback_id": "ctv_7e06c82b4babb16c8b167cdababf04f8",
               "stream_type": "hls"
             }
           ]
@@ -4912,120 +4254,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_0a8632128c847dd6de4fe052617b9b06"
-    },
-    {
-      "id": "the-solheim-cup-2026",
-      "name": "The Solheim Cup 2026",
-      "primary_stream_key": "cb6d4ebb122958c50279bfb88b1b688f3537b5c36ba20a6f6f5a40a5f7170141",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "",
-      "category": "today_match",
-      "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4249081/index.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-fancode",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "the-solheim-cup-2026--fancode",
-          "name": "FanCode",
-          "normalized_name": "fancode",
-          "logo": "",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-fancode",
-          "source_ids": [
-            "sm-fancode"
-          ],
-          "primary_stream_id": "the-solheim-cup-2026--fancode--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "the-solheim-cup-2026--fancode--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_8738e748682a0a70f44f9c16",
-              "provider": "sm-fancode",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_6eca3ca1aead3817a607aa12abd3456c",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "the-solheim-cup-2026--fancode",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-fancode"
-      ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-09-11T13:49:25+00:00",
-      "start_at": "2026-09-11T13:49:25+00:00",
-      "end_time": "2026-09-11T17:49:25+00:00",
-      "end_time_source": "assumed",
-      "fixture_id": "provider:the-solheim-cup-2026|2026-09-11",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_179572445cf85686ca432d34efe1cbbc",
-      "lifecycle_reason": "still live: authority_live",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-09-11T14:09:59.598394+00:00"
+      "playback_id": "ctv_eabe71f1e0153d9ce6b19fff5d3a4969"
     },
     {
       "id": "sobemap-fc-vs-enugu-rangers-international",
@@ -5152,9 +4381,373 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-09-11T14:09:59.598394+00:00"
+    },
+    {
+      "id": "the-solheim-cup-2026",
+      "name": "The Solheim Cup 2026",
+      "primary_stream_key": "cb6d4ebb122958c50279bfb88b1b688f3537b5c36ba20a6f6f5a40a5f7170141",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "",
+      "category": "today_match",
+      "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4249081/index.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-fancode",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "the-solheim-cup-2026--fancode",
+          "name": "FanCode",
+          "normalized_name": "fancode",
+          "logo": "",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-fancode",
+          "source_ids": [
+            "sm-fancode"
+          ],
+          "primary_stream_id": "the-solheim-cup-2026--fancode--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "the-solheim-cup-2026--fancode--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_8738e748682a0a70f44f9c16",
+              "provider": "sm-fancode",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_6eca3ca1aead3817a607aa12abd3456c",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "hls"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "the-solheim-cup-2026--fancode",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-fancode",
+          "source_name": "SM FanCode Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-fancode"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-09-11T14:29:45+00:00",
+      "start_at": "2026-09-11T14:29:45+00:00",
+      "end_time": "2026-09-11T18:29:45+00:00",
+      "end_time_source": "assumed",
+      "fixture_id": "provider:the-solheim-cup-2026|2026-09-11",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_179572445cf85686ca432d34efe1cbbc"
+    },
+    {
+      "id": "parma-u20-vs-genoa-u20",
+      "name": "Parma U20 vs Genoa U20",
+      "primary_stream_key": "",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://rs.maycdn.com/fixture/leagues/af/705.png",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "srhady-bingstream",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 2,
+        "unresolved_channel_streams": 2,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-bingstream",
+          "source_name": "Bingstream Live and Upcoming",
+          "source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json"
+        },
+        {
+          "source_id": "srhady-axsports-live",
+          "source_name": "AX Sports Live Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/axsports/refs/heads/main/live_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "start_time": "2026-09-11T15:00:00+00:00",
+      "start_at": "2026-09-11T15:00:00+00:00",
+      "end_time": "2026-09-11T17:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Campionato Primavera - 1",
+      "fixture_id": "provider:parma-u20-vs-genoa-u20|campionato primavera 1|2026-09-11",
+      "status": "STARTING_SOON",
+      "original_status": "NS",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "source_start_time": "2026-09-11T15:00:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "league map",
+      "sport_class_evidence": "Campionato Primavera",
+      "sport_type_from_source": "other",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "LiveScore livescore=NS (1, event 1875386)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "livescore": "1875386"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "STARTING",
+      "allow_without_stream": true,
+      "routing_changed_from": "upcoming"
+    },
+    {
+      "id": "fcv-farul-constanța-vs-uta-arad",
+      "name": "Farul Constanta vs Uta Arad",
+      "primary_stream_key": "",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://rs.maycdn.com/fixture/teams/af/2596.png",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "srhady-bingstream",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 4,
+        "unresolved_channel_streams": 4,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-bingstream",
+          "source_name": "Bingstream Live and Upcoming",
+          "source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-09-11T15:00:00+00:00",
+      "start_at": "2026-09-11T15:00:00+00:00",
+      "end_time": "2026-09-11T19:00:00+00:00",
+      "end_time_source": "assumed",
+      "competition": "Liga I",
+      "fixture_id": "provider:farul-constanta-vs-uta-arad|liga i|2026-09-11",
+      "status": "STARTING_SOON",
+      "original_status": "NS",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "source_start_time": "2026-09-11T15:00:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "previous_event_id": "farul-constanta-vs-uta-arad",
+      "promoted_card": true,
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "LiveScore livescore=NS (1, event 1807255)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "livescore": "1807255"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "STARTING",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/37r50u1638479392.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/m310bo1638479358.png",
+      "allow_without_stream": true,
+      "routing_changed_from": "upcoming"
+    },
+    {
+      "id": "krylia-sovetov-vs-rodina-moskva",
+      "name": "Krylia Sovetov vs Rodina Moskva",
+      "primary_stream_key": "",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://rs.maycdn.com/fixture/teams/af/1079.png",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "srhady-bingstream",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 5,
+        "unresolved_channel_streams": 5,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-bingstream",
+          "source_name": "Bingstream Live and Upcoming",
+          "source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json"
+        },
+        {
+          "source_id": "srhady-axsports-live",
+          "source_name": "AX Sports Live Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/axsports/refs/heads/main/live_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-09-11T15:00:00+00:00",
+      "start_at": "2026-09-11T15:00:00+00:00",
+      "end_time": "2026-09-11T17:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Premier League",
+      "fixture_id": "provider:krylia-sovetov-vs-rodina-moskva|premier league|2026-09-11",
+      "status": "STARTING_SOON",
+      "original_status": "NS",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "source_start_time": "2026-09-11T15:00:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "league map",
+      "sport_class_evidence": "Premier League",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401879861)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401879861"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "STARTING",
+      "allow_without_stream": true,
+      "routing_changed_from": "upcoming"
     }
   ]
 }
