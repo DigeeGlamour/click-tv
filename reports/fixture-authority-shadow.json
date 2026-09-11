@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T07:29:04.548706+00:00",
+  "generated_at": "2026-09-11T07:49:11.229734+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -106,37 +106,40 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 4,
-    "upcoming": 102,
-    "fixtures": 106,
+    "today_match": 3,
+    "upcoming": 104,
+    "fixtures": 107,
     "verdicts": {
       "UNVERIFIED": 27,
-      "VERIFIED": 79
+      "VERIFIED": 79,
+      "CONFLICT": 1
     },
     "verified": 79,
     "partial_authority": 0,
     "unverified": 27,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 47,
-        "matched": 59
+        "matched": 60
       },
       "livescore": {
         "unmatched": 32,
-        "matched": 74
+        "matched": 75
       }
     },
-    "matched_by_two_independent_authorities": 54,
+    "matched_by_two_independent_authorities": 55,
     "authority_agreements": 54,
-    "authority_disagreements": 0,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
-    "conflict_reason_counts": {},
+    "conflict_reason_counts": {
+      "authorities disagree": 1
+    },
     "identity_near_misses": 9,
     "independent_authority_count_distribution": {
       "0": 27,
       "1": 25,
-      "2": 54
+      "2": 55
     },
     "unknown_authority_statuses": {
       "livescore": [
@@ -149,28 +152,28 @@
   },
   "identity_near_misses": [
     {
-      "fixture": "U N A M Pumas vs Leon",
-      "authority": "espn-header",
-      "authority_name": "Pumas UNAM vs León",
-      "agreed_side": "leon",
-      "ours": "u n a pumas",
-      "theirs": "pumas"
-    },
-    {
-      "fixture": "U N A M Pumas vs Leon",
-      "authority": "livescore",
-      "authority_name": "Pumas vs Leon",
-      "agreed_side": "leon",
-      "ours": "u n a pumas",
-      "theirs": "pumas"
-    },
-    {
       "fixture": "1 FC Nürnberg vs Hannover 96",
       "authority": "livescore",
       "authority_name": "1. FC Nuremberg vs Hannover 96",
       "agreed_side": "hannover 96",
       "ours": "nurnberg",
       "theirs": "nuremberg"
+    },
+    {
+      "fixture": "Al Taawoun FC vs Al Hilal SFC",
+      "authority": "espn-header",
+      "authority_name": "Al Taawoun vs Al Hilal",
+      "agreed_side": "al hilal sfc",
+      "ours": "al taawoun",
+      "theirs": "al taawon"
+    },
+    {
+      "fixture": "Al Taawoun FC vs Al Hilal SFC",
+      "authority": "livescore",
+      "authority_name": "Al Taawoun vs Al Hilal",
+      "agreed_side": "al hilal sfc",
+      "ours": "al taawoun",
+      "theirs": "al taawon"
     },
     {
       "fixture": "Barbados Tridents Women vs Jamaica Empress Women",
@@ -227,7 +230,7 @@
       "card_id": "the-solheim-cup-2026",
       "name": "The Solheim Cup 2026",
       "competition": "",
-      "kickoff": "2026-09-11T07:29:04+00:00",
+      "kickoff": "2026-09-11T07:49:11+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -274,7 +277,6 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
         "iptvflixbd-fancode-data"
@@ -395,9 +397,9 @@
           "competition_id": "26066",
           "kickoff": "2026-09-11T07:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "2nd ODI",
           "format": "ODI",
@@ -411,66 +413,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:u-n-a-m-pumas-vs-leon|liga mx|2026-09-11",
-      "card_id": "u-n-a-m-pumas-vs-leon",
-      "name": "U N A M Pumas vs Leon",
-      "competition": "Liga MX",
-      "kickoff": "2026-09-11T03:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
       ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Pumas UNAM vs León",
-              "event_id": "401876984",
-              "agreed_side": "leon",
-              "ours": "u n a pumas",
-              "theirs": "pumas"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Pumas vs Leon",
-              "event_id": "1798996",
-              "agreed_side": "leon",
-              "ours": "u n a pumas",
-              "theirs": "pumas"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -1030,6 +978,61 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:al-taawoun-fc-vs-al-hilal-sfc|roshn saudi league 2026 2027|2026-09-12",
+      "card_id": "al-taawoun-fc-vs-al-hilal-sfc",
+      "name": "Al Taawoun FC vs Al Hilal SFC",
+      "competition": "Roshn Saudi League 2026-2027",
+      "kickoff": "2026-09-12T15:50:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "drmlive-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Al Taawoun vs Al Hilal",
+              "event_id": "401900917",
+              "agreed_side": "al hilal sfc",
+              "ours": "al taawoun",
+              "theirs": "al taawon"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Al Taawoun vs Al Hilal",
+              "event_id": "1845606",
+              "agreed_side": "al hilal sfc",
+              "ours": "al taawoun",
+              "theirs": "al taawon"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:al-wahda-fc-ii-vs-al-sharjah|uae pro league|2026-09-11",
       "card_id": "al-wahda-fc-ii-vs-al-sharjah",
       "name": "Al Wahda FC II Vs Al Sharjah",
@@ -1084,10 +1087,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -1929,12 +1932,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "srhady-tapmad-bd",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "srhady-tapmad-bd",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -2134,9 +2137,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "srhady-crichd-footy-live",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -3636,12 +3640,12 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "srhady-axsports-live",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "srhady-bingstream",
-        "dartv-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -4046,12 +4050,12 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "srhady-axsports-live",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "srhady-bingstream",
-        "dartv-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -4144,8 +4148,8 @@
       "name": "Garudayaksa vs Persik Kediri",
       "competition": "Liga 1",
       "kickoff": "2026-09-11T08:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
@@ -4360,15 +4364,15 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "srhady-bingstream",
+        "srhady-axsports-live",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "srhady-tapmad-bd",
-        "sm-fancode",
-        "srhady-axsports-live",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "srhady-bingstream",
-        "dartv-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -4696,12 +4700,12 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "srhady-axsports-live",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "srhady-bingstream",
-        "dartv-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -5408,10 +5412,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -5437,6 +5441,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:milan-vs-lazio|serie a|2026-09-12",
+      "card_id": "milan-vs-lazio",
+      "name": "Milan vs Lazio",
+      "competition": "Italian Serie A",
+      "kickoff": "2026-09-12T16:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/crichd-speical-live-event/refs/heads/main/Footy_Live.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-crichd-footy-live"
+      ],
+      "upstream_families": [
+        "CricHD"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401874941",
+          "upstream_family": "ESPN",
+          "name": "Lazio vs AC Milan",
+          "home": "Lazio",
+          "away": "AC Milan",
+          "home_team_id": "112",
+          "away_team_id": "103",
+          "competition": "Italian Serie A",
+          "competition_id": "730",
+          "kickoff": "2026-09-12T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, September 12th at 12:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:730~e:401874941~c:401874941"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1785354",
+          "upstream_family": "LiveScore",
+          "name": "Lazio vs AC Milan",
+          "home": "Lazio",
+          "away": "AC Milan",
+          "home_team_id": "3459",
+          "away_team_id": "2988",
+          "competition": "Serie A",
+          "competition_id": "77",
+          "kickoff": "2026-09-12T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "4",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:muscat-thunders-vs-royal-oman-stallions|oman d50 2026|2026-09-11",
       "card_id": "muscat-thunders-vs-royal-oman-stallions",
       "name": "Muscat Thunders vs Royal Oman Stallions",
@@ -5451,10 +5542,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -6170,10 +6261,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "srhady-crichd-footy-live",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -6322,6 +6413,7 @@
       "source_ids": [
         "sm-sports-data",
         "srhady-tapmad-bd",
+        "srhady-axsports-live",
         "srhady-bingstream"
       ],
       "upstream_families": [
@@ -7034,10 +7126,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -7477,10 +7569,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -7945,11 +8037,11 @@
       "verdict": "VERIFIED"
     },
     {
-      "fixture_id": "provider:firpo-vs-cd-olimpia|concacaf central american cup|2026-09-11",
-      "card_id": "firpo-vs-cd-olimpia",
-      "name": "Firpo vs CD Olimpia",
-      "competition": "CONCACAF Central American Cup",
-      "kickoff": "2026-09-11T03:06:00+00:00",
+      "fixture_id": "provider:u-n-a-m-pumas-vs-leon|liga mx|2026-09-11",
+      "card_id": "u-n-a-m-pumas-vs-leon",
+      "name": "U N A M Pumas vs Leon",
+      "competition": "Liga MX",
+      "kickoff": "2026-09-11T03:00:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
@@ -7969,11 +8061,11 @@
           "result": "unmatched",
           "near_misses": [
             {
-              "authority_name": "Luis Ángel Firpo vs Club Deportivo Olimpia",
-              "event_id": "401914486",
-              "agreed_side": "firpo",
-              "ours": "olimpia",
-              "theirs": "deportivo olimpia"
+              "authority_name": "Pumas UNAM vs León",
+              "event_id": "401876984",
+              "agreed_side": "leon",
+              "ours": "u n a pumas",
+              "theirs": "pumas"
             }
           ]
         },
@@ -7981,11 +8073,11 @@
           "result": "unmatched",
           "near_misses": [
             {
-              "authority_name": "CD Luis Angel Firpo vs CD Olimpia",
-              "event_id": "1884004",
-              "agreed_side": "olimpia",
-              "ours": "firpo",
-              "theirs": "luis angel firpo"
+              "authority_name": "Pumas vs Leon",
+              "event_id": "1798996",
+              "agreed_side": "leon",
+              "ours": "u n a pumas",
+              "theirs": "pumas"
             }
           ]
         }
