@@ -33,6 +33,12 @@ from typing import Any, Dict, Iterable, List, Optional
 DISCOVERY_ROOT = os.path.join("data", "movies", "discovery")
 JUST_ADDED_PATH = os.path.join(DISCOVERY_ROOT, "just-added.json")
 LATEST_PATH = os.path.join(DISCOVERY_ROOT, "latest.json")
+TRENDING_PATH = os.path.join(DISCOVERY_ROOT, "trending.json")
+HOME_PATH = os.path.join(DISCOVERY_ROOT, "home.json")
+
+#: Items per row on the home page. The plan asks for a sensible 10-15 cap:
+#: enough to fill a shelf, nowhere near enough to be a catalogue.
+HOME_ROW_LIMIT = 15
 
 #: Rolling window for "Just Added", per the plan's suggested default.
 JUST_ADDED_WINDOW_DAYS = 14
@@ -341,3 +347,135 @@ def generate_latest(
         "eligible": document["eligible"],
         "excluded": document["excluded"],
     }
+
+
+# --------------------------------------------------------------------------
+# PART 09 - Discovery home
+# --------------------------------------------------------------------------
+
+
+def _catalog_by_id(paginated: Dict[str, Any]) -> Dict[str, Dict[str, Any]]:
+    index: Dict[str, Dict[str, Any]] = {}
+    for movie in iter_published_movies(paginated):
+        movie_id = str(movie.get("id") or "").strip()
+        if movie_id:
+            index.setdefault(movie_id, movie)
+    return index
+
+
+def _trending_row(
+    trending_document: Dict[str, Any],
+    catalog: Dict[str, Dict[str, Any]],
+    limit: int,
+) -> List[Dict[str, Any]]:
+    """Trending ids, resolved to cards from the catalogue we just published.
+
+    trending.json itself stays ids-and-ranks; the poster and genres it does
+    not carry are looked up here rather than duplicated there.
+    """
+    row: List[Dict[str, Any]] = []
+    for entry in (trending_document.get("movies") or [])[:limit]:
+        if not isinstance(entry, dict):
+            continue
+        movie = catalog.get(str(entry.get("id") or "").strip())
+        if movie is None:
+            continue
+        row.append(
+            card_summary(
+                movie,
+                {
+                    "trending_rank": entry.get("trending_rank"),
+                    "trend_sources": entry.get("trend_sources"),
+                },
+            )
+        )
+    return row
+
+
+def _carried_featured(
+    existing_home: Dict[str, Any], catalog: Dict[str, Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    """Whatever a real Featured source last put here, if anything.
+
+    The Featured/Hero system is its own plan and is NOT implemented yet, so
+    nothing is invented to fill this row. Not the top trending title, not
+    the film with the most servers, not a random pick - each of those would
+    be a fabricated editorial choice presented as a real one.
+
+    What this does instead is keep the row last-good compatible: entries a
+    future Featured builder writes into home.json survive the next scan,
+    minus any whose film is no longer in the catalogue (a Featured slot
+    pointing at something unplayable is worse than an empty shelf).
+    """
+    featured = existing_home.get("featured")
+    if not isinstance(featured, list):
+        return []
+    carried: List[Dict[str, Any]] = []
+    for entry in featured:
+        if not isinstance(entry, dict):
+            continue
+        movie = catalog.get(str(entry.get("id") or "").strip())
+        if movie is None:
+            continue
+        carried.append(entry)
+    return carried
+
+
+def build_home(
+    paginated: Dict[str, Any],
+    *,
+    trending_document: Optional[Dict[str, Any]] = None,
+    existing_home: Optional[Dict[str, Any]] = None,
+    now: Optional[_dt.datetime] = None,
+    limit: int = HOME_ROW_LIMIT,
+) -> Dict[str, Any]:
+    """The whole movie home in one small file.
+
+    Card summaries only. Opening the home costs this file, not the
+    catalogue; a click resolves the real record from the existing category
+    pages and hands off to the existing player entry point unchanged.
+    """
+    reference = _now(now)
+    catalog = _catalog_by_id(paginated)
+
+    just_added = build_just_added(paginated, now=reference, limit=limit)
+    latest = build_latest(paginated, now=reference, limit=limit)
+    trending = _trending_row(trending_document or {}, catalog, limit)
+    featured = _carried_featured(existing_home or {}, catalog)
+
+    return {
+        "version": 1,
+        "updated_at": reference.isoformat(),
+        "row_limit": limit,
+        "featured": featured,
+        # Says plainly that an empty Featured row is a system that has not
+        # been built yet, not a system that failed.
+        "featured_status": "carried_last_good" if featured else "awaiting_featured_system",
+        "trending": trending,
+        "just_added": just_added["items"],
+        "latest": latest["items"],
+        "counts": {
+            "featured": len(featured),
+            "trending": len(trending),
+            "just_added": len(just_added["items"]),
+            "latest": len(latest["items"]),
+        },
+    }
+
+
+def generate_home(
+    paginated: Dict[str, Any],
+    *,
+    output_path: Optional[str] = None,
+    trending_path: Optional[str] = None,
+    now: Optional[_dt.datetime] = None,
+) -> Dict[str, Any]:
+    target = output_path or HOME_PATH
+    document = build_home(
+        paginated,
+        trending_document=load_json(trending_path or TRENDING_PATH),
+        existing_home=load_json(target),
+        now=now,
+    )
+    atomic_write_json(target, document)
+    return {"counts": document["counts"], "featured_status": document["featured_status"]}

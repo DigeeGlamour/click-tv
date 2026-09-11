@@ -734,6 +734,21 @@ def _generate_discovery(paginated: Dict[str, Any]) -> Dict[str, Any]:
         )
     except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
         print(f"   movie latest skipped: {error}")
+
+    try:
+        from scanner import movie_discovery
+
+        # Last, so it can draw on the trending file written just above.
+        home = movie_discovery.generate_home(paginated)
+        summary["home"] = home
+        counts = home.get("counts", {})
+        print(
+            f"   movie home: featured {counts.get('featured', 0)} "
+            f"({home.get('featured_status')}), trending {counts.get('trending', 0)}, "
+            f"just added {counts.get('just_added', 0)}, latest {counts.get('latest', 0)}"
+        )
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie home skipped: {error}")
     return summary
 
 

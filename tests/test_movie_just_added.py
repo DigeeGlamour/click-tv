@@ -347,8 +347,30 @@ class WiringTests(unittest.TestCase):
         with patch("scanner.movie_identity_alias.reconcile", side_effect=RuntimeError("boom")):
             self.assertEqual(M._reconcile_first_seen([{"id": "a"}]), {})
 
-    def test_a_discovery_failure_never_takes_a_scan_down(self):
-        with patch("scanner.movie_discovery.generate_just_added", side_effect=RuntimeError("boom")):
+    def test_one_discovery_row_failing_never_takes_a_scan_or_the_other_rows_down(self):
+        """Every generator is patched, so this test can never write into the
+        repository's real data/movies/discovery/ directory."""
+        with patch(
+            "scanner.movie_discovery.generate_just_added", side_effect=RuntimeError("boom")
+        ), patch(
+            "scanner.movie_discovery.generate_latest", return_value={"count": 0, "eligible": 0, "excluded": {}}
+        ), patch(
+            "scanner.movie_discovery.generate_home", return_value={"counts": {}, "featured_status": "x"}
+        ):
+            summary = M._generate_discovery(_catalog({"id": "a"}))
+
+        self.assertNotIn("just_added", summary, "the failing row is simply absent")
+        self.assertIn("latest", summary, "the other rows still ran")
+        self.assertIn("home", summary)
+
+    def test_every_discovery_row_failing_still_leaves_the_scan_standing(self):
+        with patch(
+            "scanner.movie_discovery.generate_just_added", side_effect=RuntimeError("boom")
+        ), patch(
+            "scanner.movie_discovery.generate_latest", side_effect=RuntimeError("boom")
+        ), patch(
+            "scanner.movie_discovery.generate_home", side_effect=RuntimeError("boom")
+        ):
             self.assertEqual(M._generate_discovery(_catalog({"id": "a"})), {})
 
 
