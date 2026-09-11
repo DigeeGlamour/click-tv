@@ -249,9 +249,26 @@
     "dubai united -> united": "\"United\" alone names dozens of clubs. A canonical name has to identify one.",
     "garudayaksa -> pskc kota cimahi": "two different Indonesian clubs, both of which played Persik Kediri.",
     "llaneros -> atletico nacional": "two different Colombian clubs. The census pairs them because both met Deportivo Cali at a matching hour - which is what a one-side rule cannot tell apart, and exactly why the table is not built from it mechanically.",
-    "nuremberg -> nurnberg": "one club and two spellings, each of them a single word, so neither can be a key without breaking the rule that a bare word never is one. The evidence is real - LiveScore prints 1. FC Nuremberg for our 1 FC Nurnberg - and the mechanism to express it safely does not exist here.",
-    "oestersunds -> ostersunds": "the same shape, and the same refusal. Note that oesters if / osters if IS expressible, and is in the table.",
+    "nuremberg -> nurnberg": "Still refused AS A GLOBAL ALIAS, for the reason it always was: each spelling is a single word and a bare word may never be a key. The pair is now expressed in \"contextual\" instead, where it applies only to a fixture whose other side is Hannover 96.",
+    "oestersunds -> ostersunds": "The same shape, the same global refusal, and the same contextual entry - restricted to a fixture whose other side is Orebro. Note that oesters if / osters if IS expressible globally, and is in the plain table.",
     "olimpia -> deportivo olimpia": "CD Olimpia of Honduras and Olimpia of Asuncion are both spelled Olimpia in these feeds. Relating the bare word would give two clubs one canonical name.",
     "platense -> atletico platense": "Club Atletico Platense of Argentina and Platense FC of Honduras. Same reason."
+  },
+  "contextual": {
+    "_note": "Contextual entity aliases. Each entry relates two spellings of ONE club only inside a fixture whose OTHER side is a name listed in \"with\", and it is consulted by fixture_dedupe.same_fixture after that other side has already been matched exactly and the kickoff bucket has already agreed. Nothing here is a key in \"aliases\": neither spelling is folded anywhere else, so the rule that a bare single word may never be a global key - and the guard test that enforces it - are untouched. This block exists for the two pairs where the club's two spellings are each a single word, which makes them inexpressible as a global alias and leaves a real match unmade. An entry is written only after the repository's own near-miss census shows the same fixture read both ways by an independent authority, with the counterpart side and the count recorded beside it.",
+    "nurnberg": {
+      "same_as": "nuremberg",
+      "with": [
+        "hannover 96"
+      ],
+      "evidence": "2026-09-10/11, 47 revisions of reports/fixture-authority-shadow.json: our card '1 FC Nurnberg vs Hannover 96' against livescore's 'Nuremberg vs Hannover 96', agreed side 'hannover 96', same kickoff bucket - a near miss every single time, never a match. 1. FC Nurnberg is the only club either spelling names, and no published card in the last 400 revisions of either tab carries 'nuremberg' at all, so this resolves an authority's spelling and folds no card. The fixture is already VERIFIED by espn-header; what this adds is the second independent authority FINAL_2 asks for."
+    },
+    "ostersunds": {
+      "same_as": "oestersunds",
+      "with": [
+        "orebro"
+      ],
+      "evidence": "2026-09-10/11, 47 revisions of the same report: our card 'Orebro SK vs Ostersunds FK' against livescore's 'Orebro vs Oestersunds FK', agreed side 'orebro', same kickoff bucket. This fixture is UNVERIFIED in all 47 - no authority matched it - so the near miss is the only reading of it either side has. 'oe' for 'o with umlaut' is the same transliteration already evidenced in the plain table for 'oesters if' -> 'osters if', which is expressible there because both spellings carry a second word."
+    }
   }
 }

@@ -383,9 +383,22 @@ def same_fixture(left: Dict[str, Any], right: Dict[str, Any]) -> bool:
     # Arsenal" and "Manchester City vs Arsenal" apart: their anchor is Arsenal,
     # and "united" is not a spelling of "city".
     for a, b in ((0, 1), (1, 0)):
-        if (_bare(left_sides[a]) == _bare(right_sides[a])
-                and same_side(left_sides[b], right_sides[b])):
+        if _bare(left_sides[a]) != _bare(right_sides[a]):
+            continue
+        if same_side(left_sides[b], right_sides[b]):
             return True
+        # The anchor is already the same club beyond doubt and the kickoff
+        # bucket already agrees. That is exactly the near-miss condition, and
+        # for two clubs the plain alias table cannot express - each of their
+        # two spellings is a single word, which may never be a global key - it
+        # is recorded in the contextual block against this very counterpart.
+        if module is not None:
+            try:
+                if module.contextual_same_side(
+                        left_sides[b], right_sides[b], left_sides[a]):
+                    return True
+            except Exception:  # noqa: BLE001
+                pass
 
     # The same two teams with home and away the other way round. One feed had
     # `Real Sociedad vs RC Celta` and another `Celta Vigo vs Real Sociedad`
@@ -396,6 +409,19 @@ def same_fixture(left: Dict[str, Any], right: Dict[str, Any]) -> bool:
                and _bare(left_sides[1]) == _bare(right_sides[0]))
     if crossed:
         return True
+    # And the contextual entry, asked the same way round. Which side a feed
+    # writes first is arbitrary, so a resolution that held only in one order
+    # would be a resolution of the ordering and not of the club.
+    if module is not None:
+        for a, b in ((0, 1), (1, 0)):
+            if _bare(left_sides[a]) != _bare(right_sides[b]):
+                continue
+            try:
+                if module.contextual_same_side(
+                        left_sides[b], right_sides[a], left_sides[a]):
+                    return True
+            except Exception:  # noqa: BLE001
+                pass
     return (same_side(left_sides[0], right_sides[1])
             and same_side(left_sides[1], right_sides[0]))
 

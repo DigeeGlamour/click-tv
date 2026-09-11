@@ -44,9 +44,13 @@ _PUNCT = re.compile(r"[^\w\s]+", re.UNICODE)
 
 #: Loaded once per process, keyed by the path it came from. A scan reads this
 #: for every comparison it makes, and the file does not change under it.
-#: Two tables: the plain one, and the one whose entries only apply to a
-#: fixture whose own gender evidence matches.
-_CACHE: Dict[str, Tuple[Dict[str, str], Dict[Tuple[str, str], str]]] = {}
+#: Three tables: the plain one, the one whose entries only apply to a
+#: fixture whose own gender evidence matches, and the contextual one - two
+#: spellings of one club that are related only inside a fixture whose other
+#: side is a named counterpart.
+_CACHE: Dict[str, Tuple[Dict[str, str],
+                        Dict[Tuple[str, str], str],
+                        Dict[Tuple[str, str], frozenset]]] = {}
 
 #: The fields a fixture's own gender evidence may come from. The title is
 #: read first because a feed that writes it there means it; the competition
@@ -93,7 +97,9 @@ def normalize_team(value: Any) -> str:
 
 
 def _load(path: Path | str = ALIAS_FILE
-          ) -> Tuple[Dict[str, str], Dict[Tuple[str, str], str]]:
+          ) -> Tuple[Dict[str, str],
+                     Dict[Tuple[str, str], str],
+                     Dict[Tuple[str, str], frozenset]]:
     key = str(path)
     cached = _CACHE.get(key)
     if cached is not None:
@@ -101,11 +107,12 @@ def _load(path: Path | str = ALIAS_FILE
 
     table: Dict[str, str] = {}
     scoped: Dict[Tuple[str, str], str] = {}
+    contextual: Dict[Tuple[str, str], frozenset] = {}
     try:
         payload = json.loads(Path(path).read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
-        _CACHE[key] = (table, scoped)
-        return table, scoped
+        _CACHE[key] = (table, scoped, contextual)
+        return table, scoped, contextual
 
     aliases = payload.get("aliases") if isinstance(payload, dict) else None
     if isinstance(aliases, dict):
@@ -126,8 +133,38 @@ def _load(path: Path | str = ALIAS_FILE
                 scoped[(gender, left)] = right
             else:
                 table[left] = right
-    _CACHE[key] = (table, scoped)
-    return table, scoped
+
+    # The contextual block. Stored against the unordered pair of spellings,
+    # because the only question it answers is "are these two the same club,
+    # given who they are playing" - and that question has no direction.
+    entries = payload.get("contextual") if isinstance(payload, dict) else None
+    if isinstance(entries, dict):
+        for spelling, entry in entries.items():
+            # Structure decides what is an entry, not the shape of its key:
+            # the block's own note is a string and is skipped by being one.
+            # Nothing in this module may test how a name begins - see
+            # tests/test_team_identity_aliases.py, which bans exactly that.
+            if not isinstance(entry, dict):
+                continue
+            left = normalize_team(spelling)
+            right = normalize_team(entry.get("same_as"))
+            counterparts = entry.get("with")
+            if isinstance(counterparts, str):
+                counterparts = [counterparts]
+            if not left or not right or left == right:
+                continue
+            named = frozenset(
+                filter(None, (normalize_team(one) for one in counterparts or ())))
+            # An entry with no counterpart would be a global bare-word alias
+            # wearing another name, which is the one thing this block may not
+            # become. It is dropped rather than widened.
+            if not named:
+                continue
+            pair = (left, right) if left <= right else (right, left)
+            contextual[pair] = contextual.get(pair, frozenset()) | named
+
+    _CACHE[key] = (table, scoped, contextual)
+    return table, scoped, contextual
 
 
 def load_aliases(path: Path | str = ALIAS_FILE) -> Dict[str, str]:
@@ -140,6 +177,37 @@ def load_scoped_aliases(
 ) -> Dict[Tuple[str, str], str]:
     """The gender-scoped table, (gender, spelling) -> canonical string."""
     return dict(_load(path)[1])
+
+
+def load_contextual_aliases(
+    path: Path | str = ALIAS_FILE
+) -> Dict[Tuple[str, str], frozenset]:
+    """The contextual table, {spelling pair} -> the counterparts it needs."""
+    return dict(_load(path)[2])
+
+
+def contextual_same_side(left: Any, right: Any, counterpart: Any,
+                         path: Path | str = ALIAS_FILE) -> bool:
+    """Are these two spellings one club, in a fixture against `counterpart`?
+
+    Exact lookup on all three names, the same as everything else in this
+    module: no scoring, no substring test, no token overlap. Both spellings
+    must be the two halves of one recorded entry AND the fixture's other side
+    must be one of the counterparts that entry names. A blank counterpart is
+    refused outright - without it this would be the global bare-word alias the
+    table forbids.
+
+    This exists for the two clubs whose two spellings are each a single word.
+    A single word cannot be a key in the plain table, so those matches went
+    unmade: `Nurnberg` against `Nuremberg` 47 times, `Ostersunds` against
+    `Oestersunds` 47 times, each with the other side already agreed.
+    """
+    one, two = normalize_team(left), normalize_team(right)
+    anchor = normalize_team(counterpart)
+    if not one or not two or not anchor or one == two:
+        return False
+    pair = (one, two) if one <= two else (two, one)
+    return anchor in _load(path)[2].get(pair, frozenset())
 
 
 def fixture_gender(item: Any) -> str:
@@ -210,7 +278,7 @@ def canonical_team(value: Any, gender: str = "",
     name = normalize_team(value)
     if not name:
         return ""
-    table, scoped = _load(path)
+    table, scoped, _contextual = _load(path)
     category = str(gender or "").strip().casefold()
     if category:
         found = scoped.get((category, name))
