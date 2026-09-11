@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T04:49:44.340248+00:00",
+  "generated_at": "2026-09-11T05:08:28.108677+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -14,9 +14,7 @@
       "unknown_statuses": [
         "132|Stumps - day 1",
         "133|Stumps - day 2",
-        "134|Stumps - day 3",
-        "3|84'",
-        "3|86'"
+        "134|Stumps - day 3"
       ],
       "attempts": [
         {
@@ -112,15 +110,14 @@
     "upcoming": 105,
     "fixtures": 111,
     "verdicts": {
-      "VERIFIED": 71,
-      "CONFLICT": 1,
+      "CONFLICT": 3,
       "UNVERIFIED": 38,
-      "PARTIAL_AUTHORITY": 1
+      "VERIFIED": 70
     },
-    "verified": 71,
-    "partial_authority": 1,
+    "verified": 70,
+    "partial_authority": 0,
     "unverified": 38,
-    "conflict": 1,
+    "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
         "matched": 51,
@@ -133,10 +130,11 @@
     },
     "matched_by_two_independent_authorities": 43,
     "authority_agreements": 42,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1
+      "card says LIVE, authority says FINISHED": 2,
+      "authorities disagree": 1
     },
     "identity_near_misses": 34,
     "independent_authority_count_distribution": {
@@ -148,9 +146,7 @@
       "livescore": [
         "132|Stumps - day 1",
         "133|Stumps - day 2",
-        "134|Stumps - day 3",
-        "3|84'",
-        "3|86'"
+        "134|Stumps - day 3"
       ],
       "espn-header": []
     }
@@ -163,14 +159,6 @@
       "agreed_side": "st kitts and nevis patriots",
       "ours": "barbados tridents",
       "theirs": "barbados royals"
-    },
-    {
-      "fixture": "Firpo vs CD Olimpia",
-      "authority": "livescore",
-      "authority_name": "CD Luis Angel Firpo vs CD Olimpia",
-      "agreed_side": "olimpia",
-      "ours": "firpo",
-      "theirs": "luis angel firpo"
     },
     {
       "fixture": "U N A M Pumas vs Leon",
@@ -195,6 +183,14 @@
       "agreed_side": "luis angel firpo",
       "ours": "olimpia",
       "theirs": "deportivo olimpia"
+    },
+    {
+      "fixture": "Firpo vs CD Olimpia",
+      "authority": "livescore",
+      "authority_name": "CD Luis Angel Firpo vs CD Olimpia",
+      "agreed_side": "olimpia",
+      "ours": "firpo",
+      "theirs": "luis angel firpo"
     },
     {
       "fixture": "1 FC Nürnberg vs Hannover 96",
@@ -465,17 +461,17 @@
           "competition_id": "8623",
           "kickoff": "2026-09-10T23:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
+          "status_raw": "Result",
+          "status_code": "Result",
+          "status": "FINISHED",
           "sport": "cricket",
           "round": "32nd Match (D/N)",
           "format": "T20",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "Final",
+          "espn_status_description": "Result",
           "espn_completed": null,
           "espn_end_date_raw": "2026-09-12T23:59:00Z",
           "authority_uid": "s:200~e:1534210~c:1534210"
@@ -499,10 +495,12 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -540,17 +538,17 @@
           "competition_id": "760",
           "kickoff": "2026-09-11T03:05:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "44'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, September 10th at 11:05 PM EDT",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "44'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:760~e:401876984~c:401876984"
@@ -570,11 +568,11 @@
           "competition_id": "759",
           "kickoff": "2026-09-11T03:05:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "84'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
-          "round": "Apertura",
+          "round": "7",
           "format": "",
           "gender": ""
         }
@@ -587,58 +585,11 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
       ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:firpo-vs-cd-olimpia|concacaf central american cup|2026-09-11",
-      "card_id": "firpo-vs-cd-olimpia",
-      "name": "Firpo vs CD Olimpia",
-      "competition": "CONCACAF Central American Cup",
-      "kickoff": "2026-09-11T03:06:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "CD Luis Angel Firpo vs CD Olimpia",
-              "event_id": "1884004",
-              "agreed_side": "olimpia",
-              "ours": "firpo",
-              "theirs": "luis angel firpo"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -744,9 +695,9 @@
           "competition_id": "26271",
           "kickoff": "2026-09-11T03:06:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "86'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "Quarter Finals",
           "format": "",
@@ -760,9 +711,9 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -801,18 +752,18 @@
           "competition_id": "3932",
           "kickoff": "2026-09-11T01:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "HT",
-          "status_code": "STATUS_HALFTIME",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "HT",
-          "espn_status_description": "Halftime",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3932~e:401886377~c:401886377"
         },
@@ -826,10 +777,59 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
       "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:firpo-vs-cd-olimpia|concacaf central american cup|2026-09-11",
+      "card_id": "firpo-vs-cd-olimpia",
+      "name": "Firpo vs CD Olimpia",
+      "competition": "CONCACAF Central American Cup",
+      "kickoff": "2026-09-11T03:06:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "CD Luis Angel Firpo vs CD Olimpia",
+              "event_id": "1884004",
+              "agreed_side": "olimpia",
+              "ours": "firpo",
+              "theirs": "luis angel firpo"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -1046,9 +1046,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
+        "srhady-bingstream",
         "srhady-crichd-footy-live",
-        "srhady-bingstream"
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1388,16 +1388,16 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "sm-fancode",
-        "srhady-tapmad-bd",
+        "srhady-bingstream",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "srhady-tapmad-bd",
+        "sm-fancode",
+        "srhady-axsports-live",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "srhady-bingstream"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1488,8 +1488,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1529,11 +1529,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "iptvflixbd-fancode-data",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1695,8 +1695,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2376,11 +2376,11 @@
         "sm-fancode",
         "srhady-tapmad-bd",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "iptvflixbd-fancode-data",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2578,8 +2578,8 @@
       "source_ids": [
         "sm-fancode",
         "srhady-crichd-footy-live",
-        "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "CricHD",
@@ -2843,8 +2843,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3165,15 +3165,15 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "sm-fancode",
+        "srhady-bingstream",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "srhady-axsports-live",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "srhady-bingstream"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3290,8 +3290,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3380,8 +3380,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3941,8 +3941,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4019,15 +4019,15 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "sm-fancode",
+        "srhady-bingstream",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "srhady-axsports-live",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "srhady-bingstream"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4341,15 +4341,15 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "sm-fancode",
+        "srhady-bingstream",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "srhady-axsports-live",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "srhady-bingstream"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4657,16 +4657,16 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "srhady-axsports-live",
-        "sm-fancode",
-        "srhady-tapmad-bd",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "srhady-bingstream",
+        "srhady-tapmad-bd",
+        "sm-fancode",
+        "srhady-axsports-live",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "srhady-bingstream"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4959,15 +4959,15 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "sm-fancode",
+        "srhady-bingstream",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "srhady-axsports-live",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data",
-        "srhady-bingstream"
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -5036,8 +5036,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -5315,8 +5315,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -5667,11 +5667,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "iptvflixbd-fancode-data",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5710,11 +5710,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "iptvflixbd-fancode-data",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6492,13 +6492,13 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
         "srhady-crichd-footy-live",
-        "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "iptvflixbd-fancode-data",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "CricHD",
@@ -6587,8 +6587,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -6645,8 +6645,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-tapmad-bd",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-tapmad-bd"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -6746,9 +6746,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
+        "srhady-bingstream",
         "srhady-crichd-footy-live",
-        "srhady-bingstream"
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -7134,8 +7134,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -7285,11 +7285,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "iptvflixbd-fancode-data",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -7327,8 +7327,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -7696,11 +7696,11 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "iptvflixbd-fancode-data",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -8149,66 +8149,6 @@
       "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED"
-    },
-    {
-      "fixture_id": "provider:cd-marathon-vs-ld-alajuelense|concacaf central american cup|2026-09-11",
-      "card_id": "cd-marathon-vs-ld-alajuelense",
-      "name": "CD Marathon Vs LD Alajuelense",
-      "competition": "CONCACAF Central American Cup",
-      "kickoff": "2026-09-11T01:06:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1884002",
-          "upstream_family": "LiveScore",
-          "name": "CD Marathon vs LD Alajuelense",
-          "home": "CD Marathon",
-          "away": "LD Alajuelense",
-          "home_team_id": "3503",
-          "away_team_id": "4268",
-          "competition": "Central American Cup: Knockout Stage",
-          "competition_id": "26271",
-          "kickoff": "2026-09-11T01:06:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Quarter Finals",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
     }
   ]
 }
