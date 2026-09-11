@@ -131,6 +131,12 @@ def main(argv=None) -> int:
         f"({excluded.get('no_exact_release_date', 0)} without one)"
     )
 
+    index = movie_discovery.generate_search_index(paginated)
+    print(
+        f"   browse index: {index['count']} title(s)"
+        + (" (kept at last-good)" if index.get("preserved") else "")
+    )
+
     home = movie_discovery.generate_home(paginated)
     print(f"   home: {home['counts']} ({home['featured_status']})")
 

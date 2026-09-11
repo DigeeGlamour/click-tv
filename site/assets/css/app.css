@@ -612,6 +612,65 @@
       box-shadow: 0 0 10px var(--phosphor-glow) !important;
     }
 
+    /* ---- Movie genre filter (PART 12) -------------------------------
+       Movies-only: the bar is [hidden] in every other view, so nothing
+       here can reach Live Sports, Live TV, Notice or the player.
+
+       One control serves all three breakpoints - rounded pills that wrap
+       on desktop and become a swipeable tray on a phone, which is what
+       keeps genre reachable once the desktop sidebar collapses. The row
+       scrolls inside itself, so the page body never gains a horizontal
+       scrollbar. */
+    .movie-genre-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      padding: 8px 2px 10px 2px;
+      border-bottom: 1px solid var(--border-glass);
+      margin-bottom: 8px;
+    }
+    .movie-genre-bar[hidden] { display: none !important; }
+    .movie-genre-chip {
+      /* pill shape, colours and active state inherited from .sub-chip */
+      min-height: 30px;
+      padding: 5px 13px;
+    }
+    .movie-clear-genre {
+      margin-top: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      color: #dddddd;
+      border-radius: 16px;
+      padding: 7px 16px;
+      min-height: 34px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .movie-clear-genre:hover {
+      color: #ffffff;
+      border-color: rgba(255, 42, 68, 0.45);
+    }
+
+    @media (max-width: 900px) {
+      .movie-genre-bar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .movie-genre-bar::-webkit-scrollbar { display: none; }
+      .movie-genre-chip {
+        flex: 0 0 auto;
+        min-height: 34px;
+        padding: 7px 14px;
+        font-size: 11px;
+      }
+    }
+
     /* Movie Prompt Message Container (Points 4, 16, 21, 24) */
     .movie-prompt-msg {
       display: flex;

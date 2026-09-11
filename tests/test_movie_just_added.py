@@ -355,6 +355,8 @@ class WiringTests(unittest.TestCase):
         ), patch(
             "scanner.movie_discovery.generate_latest", return_value={"count": 0, "eligible": 0, "excluded": {}}
         ), patch(
+            "scanner.movie_discovery.generate_search_index", return_value={"count": 0}
+        ), patch(
             "scanner.movie_discovery.generate_home", return_value={"counts": {}, "featured_status": "x"}
         ):
             summary = M._generate_discovery(_catalog({"id": "a"}))
@@ -368,6 +370,8 @@ class WiringTests(unittest.TestCase):
             "scanner.movie_discovery.generate_just_added", side_effect=RuntimeError("boom")
         ), patch(
             "scanner.movie_discovery.generate_latest", side_effect=RuntimeError("boom")
+        ), patch(
+            "scanner.movie_discovery.generate_search_index", side_effect=RuntimeError("boom")
         ), patch(
             "scanner.movie_discovery.generate_home", side_effect=RuntimeError("boom")
         ):

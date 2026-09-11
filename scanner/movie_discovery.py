@@ -35,6 +35,7 @@ JUST_ADDED_PATH = os.path.join(DISCOVERY_ROOT, "just-added.json")
 LATEST_PATH = os.path.join(DISCOVERY_ROOT, "latest.json")
 TRENDING_PATH = os.path.join(DISCOVERY_ROOT, "trending.json")
 HOME_PATH = os.path.join(DISCOVERY_ROOT, "home.json")
+SEARCH_INDEX_PATH = os.path.join("data", "movies", "search-index.json")
 
 #: Items per row on the home page. The plan asks for a sensible 10-15 cap:
 #: enough to fill a shelf, nowhere near enough to be a catalogue.
@@ -461,6 +462,84 @@ def build_home(
             "latest": len(latest["items"]),
         },
     }
+
+
+# --------------------------------------------------------------------------
+# PART 12/13 - browse + search index
+# --------------------------------------------------------------------------
+
+#: One small index covering the whole catalogue, so "every Action film" and
+#: "every film matching this text" are both answerable without loading a
+#: single category page. Card-shaped, id-keyed, and carrying no playback
+#: data whatsoever.
+SEARCH_INDEX_FIELDS = (
+    "id",
+    "name",
+    "category",
+    "year",
+    "poster",
+    "genres",
+    "rating",
+    "rating_source",
+    "first_seen_at",
+)
+
+
+def build_search_index(
+    paginated: Dict[str, Any], *, now: Optional[_dt.datetime] = None
+) -> Dict[str, Any]:
+    """Every published title reduced to what browsing and search need.
+
+    Deliberately NOT the catalogue: no url, no backups, no headers, no
+    playback_id. Clicking a result resolves the real record from the
+    category pages, which is where playback configuration stays.
+    """
+    reference = _now(now)
+    items: List[Dict[str, Any]] = []
+    seen_ids = set()
+
+    for movie in iter_published_movies(paginated):
+        movie_id = str(movie.get("id") or "").strip()
+        if not movie_id or movie_id in seen_ids:
+            continue
+        seen_ids.add(movie_id)
+
+        entry: Dict[str, Any] = {"type": "movie"}
+        for field in SEARCH_INDEX_FIELDS:
+            value = movie.get("logo") if field == "poster" else movie.get(field)
+            if value in (None, "", [], {}):
+                continue
+            entry[field] = value
+        if entry.get("id"):
+            items.append(entry)
+
+    return {
+        "version": 1,
+        "updated_at": reference.isoformat(),
+        "count": len(items),
+        "items": items,
+    }
+
+
+def generate_search_index(
+    paginated: Dict[str, Any],
+    *,
+    output_path: Optional[str] = None,
+    now: Optional[_dt.datetime] = None,
+) -> Dict[str, Any]:
+    target = output_path or SEARCH_INDEX_PATH
+    document = build_search_index(paginated, now=now)
+
+    if not document["items"]:
+        # An empty index would make every genre and every search look empty.
+        # If the catalogue really is empty that is the scan's problem to
+        # report, not this file's to record.
+        existing = load_json(target)
+        if existing.get("items"):
+            return {"count": 0, "preserved": True}
+
+    atomic_write_json(target, document)
+    return {"count": document["count"], "preserved": False}
 
 
 def generate_home(

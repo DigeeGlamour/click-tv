@@ -738,6 +738,18 @@ def _generate_discovery(paginated: Dict[str, Any]) -> Dict[str, Any]:
     try:
         from scanner import movie_discovery
 
+        index = movie_discovery.generate_search_index(paginated)
+        summary["search_index"] = index
+        print(
+            f"   movie browse index: {index['count']} title(s)"
+            + (" (kept at last-good)" if index.get("preserved") else "")
+        )
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie browse index skipped: {error}")
+
+    try:
+        from scanner import movie_discovery
+
         # Last, so it can draw on the trending file written just above.
         home = movie_discovery.generate_home(paginated)
         summary["home"] = home

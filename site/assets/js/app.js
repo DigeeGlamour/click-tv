@@ -54,6 +54,54 @@ const MOVIE_ORDER = Object.freeze([
   ['Mix', 'mix']
 ]);
 
+// --- Movie browse: navigation, genres and filter state (PART 12) ----------
+//
+// The movie section's own navigation, in the exact order the final
+// Category/Genre reference fixes: discovery rows, then the language
+// buckets, then the library. Premium and Mix are separate entries and both
+// stay visible - Mix is where the scanner puts anything it could not
+// confidently categorise, so hiding it would hide real films.
+const MOVIE_NAV_SECTIONS = Object.freeze([
+  Object.freeze(['DISCOVERY & PICKS', Object.freeze([
+    Object.freeze(['home', 'Home']),
+    Object.freeze(['trending', 'Trending']),
+    Object.freeze(['just-added', 'Just Added']),
+    Object.freeze(['latest', 'Latest']),
+    Object.freeze(['bangla', 'Bangla']),
+    Object.freeze(['hindi', 'Hindi']),
+    Object.freeze(['english', 'English']),
+    Object.freeze(['south-indian', 'South Indian']),
+    Object.freeze(['dubbed', 'Dubbed Movie']),
+    Object.freeze(['web-series', 'Web Series']),
+    Object.freeze(['premium', 'Premium']),
+    Object.freeze(['mix', 'Mix'])
+  ])]),
+  Object.freeze(['MY LIBRARY', Object.freeze([
+    Object.freeze(['watchlist', 'My Watchlist'])
+  ])])
+]);
+
+// Rows built from data/movies/discovery/*.json rather than from a
+// category's paginated pages.
+const MOVIE_DISCOVERY_KEYS = Object.freeze(['home', 'trending', 'just-added', 'latest']);
+
+// The eight genres the UI shows, exactly as the reference fixes them. The
+// backend stores every real genre a provider reports; these are the ones
+// with a chip.
+const MOVIE_GENRES = Object.freeze([
+  'Action', 'Comedy', 'Horror', 'Romance', 'Thriller', 'Animation', 'Sci-Fi', 'Crime'
+]);
+
+const MOVIE_DISCOVERY_PATHS = Object.freeze({
+  home: 'data/movies/discovery/home.json',
+  trending: 'data/movies/discovery/trending.json',
+  'just-added': 'data/movies/discovery/just-added.json',
+  latest: 'data/movies/discovery/latest.json'
+});
+
+const MOVIE_BROWSE_INDEX_PATH = 'data/movies/search-index.json';
+const MOVIE_GENRE_ALL = 'all';
+
 const CHANNEL_INITIAL_CHUNK = 30;
 const CHANNEL_NEXT_CHUNK = 20;
 const MOVIE_CHUNK_SIZE = 20;
@@ -118,6 +166,19 @@ const state = {
   // Requirement 7: the active playback session, pinned against catalogue churn.
   pinnedSession: null,
   movieIndex: null,
+  // Canonical movie filter state (PART 12). currentSearchQuery lives in
+  // state.currentQuery, currentSortOrder in state.currentSortMode and
+  // currentView in state.view - all three already existed, so they are
+  // reused rather than shadowed by a second copy that could drift.
+  currentCategory: 'home',
+  currentGenre: MOVIE_GENRE_ALL,
+  // A discovery row / genre browse / Web Series is a chosen scope even
+  // though it is not one of the seven category buckets. Without this the
+  // "pick a category" prompt fires over a perfectly good shelf.
+  movieBrowseMode: false,
+  movieBrowseIndex: null,
+  movieBrowseIndexPromise: null,
+  movieResolveCache: new Map(),
   moviePageCursor: 0,
   moviePageLoading: false,
   movieSearchLoading: false,
@@ -251,6 +312,10 @@ const playerMessage = $('playerMsg');
 const playerMessageText = $('playerMsgText');
 const errorCountdownBox = $('errorCountdownBox');
 const movieSubcategoryBar = $('movieSubcategoryBar');
+// Movie genre chips (PART 12). A visible element of its own: the legacy
+// movieSubcategoryBar lives inside .final-hidden-control, so anything
+// rendered there is invisible by design.
+const movieGenreBar = $('movieGenreBar');
 const chipsContainer = $('chipsContainer');
 const videoContainer = $('videoContainer');
 const playerControls = $('playerControls');
@@ -976,6 +1041,12 @@ function buildNavigation() {
 }
 
 function buildMovieSubcategories() {
+  // The category list moved into the movie sub-navigation (PART 12); this
+  // movie-only bar now carries the genre chips instead.
+  buildMovieGenreChips();
+}
+
+function buildLegacyMovieSubcategories() {
   movieSubcategoryBar.replaceChildren();
   MOVIE_ORDER.forEach(([label, slug]) => {
     const button = document.createElement('button');
@@ -1046,7 +1117,7 @@ function finalSubItems(group = state.activeMainGroup) {
   if (group === 'live-tv') {
     return FINAL_LIVE_TV_CATEGORIES.map(([key, label]) => [key, label]);
   }
-  if (group === 'movies') return MOVIE_ORDER.map(([label, slug]) => [`movie:${slug}`, label]);
+  if (group === 'movies') return movieNavItems().map(([key, label]) => [`movie:${key}`, label]);
   return [];
 }
 
@@ -1116,7 +1187,7 @@ async function selectFinalMainGroup(group) {
   state.activeMainGroup = group;
   if (group === 'sports') state.activeFinalSub = 'today-match';
   else if (group === 'live-tv') state.activeFinalSub = 'bangla';
-  else if (group === 'movies') state.activeFinalSub = 'movie:bangla';
+  else if (group === 'movies') state.activeFinalSub = `movie:${state.currentCategory || 'home'}`;
   else state.activeFinalSub = '';
   renderFinalNavigation();
 
@@ -1150,9 +1221,7 @@ async function selectFinalSubcategory(key) {
     return;
   }
   if (key.startsWith('movie:')) {
-    const slug = key.slice(6);
-    const legacy = qs(`.sub-chip[data-movie-cat="${cssEscape(slug)}"]`, movieSubcategoryBar);
-    await selectMovieSubcategory(slug, legacy, { preserveFinalGroup: true });
+    await selectMovieNavItem(key.slice(6));
     return;
   }
 
@@ -1299,8 +1368,8 @@ async function selectMainView(view, category, options = {}) {
   setSearchQuery('');
   state.currentQuery = '';
   state.selectedMovieCategory = null;
-  qsa('.sub-chip', movieSubcategoryBar).forEach((item) => item.classList.remove('active'));
   movieSubcategoryBar.style.display = 'none';
+  setMovieGenreBarVisible(false);
   setSearchEnabled(true);
   if (!options.preserveFinalGroup) adoptFinalNavigationFromLegacy(view, category || '');
   else renderFinalNavigation();
@@ -1404,21 +1473,13 @@ async function selectMainView(view, category, options = {}) {
 }
 
 async function openMovieParentMode(chip) {
+  // Opening Movies lands on the Home discovery shelf (PART 12) rather than
+  // jumping straight into one language bucket.
   state.activeMainGroup = 'movies';
-  state.activeFinalSub = 'movie:bangla';
-  renderFinalNavigation();
   state.currentSortMode = 'default';
   $('sortSelect').value = 'default';
   setActiveMainChip(chip || activateChipByView('movie'));
-  movieSubcategoryBar.style.display = 'flex';
-  const banglaButton = qs('.sub-chip[data-movie-cat="bangla"]', movieSubcategoryBar);
-  if (!banglaButton) {
-    showListMessage('Bangla movie বিভাগ পাওয়া যায়নি', 'fa-exclamation-triangle');
-    setSidebarCount('0 Movies');
-    return;
-  }
-  scrollSidebarToTop();
-  await selectMovieSubcategory('bangla', banglaButton);
+  await selectMovieNavItem(state.currentCategory || 'home');
 }
 
 async function loadMovieParentPreview() {
@@ -1527,10 +1588,12 @@ async function selectMovieSubcategory(slug, button, options = {}) {
   setSearchQuery('');
   state.currentQuery = '';
   setActiveMainChip(activateChipByView('movie'));
-  movieSubcategoryBar.style.display = 'flex';
-  qsa('.sub-chip', movieSubcategoryBar).forEach((item) => item.classList.toggle('active', item === button));
+  setMovieGenreBarVisible(true);
+  state.movieBrowseMode = false;
+  state.currentCategory = slug;
+  if (!options.fromNav) state.currentGenre = MOVIE_GENRE_ALL;
+  syncMovieGenreChips();
   scrollSidebarToTop();
-  button?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
   setSearchEnabled(true);
   showListMessage('মুভির তালিকা লোড হচ্ছে…', 'fa-spinner', true);
   setSidebarCount('Loading...');
@@ -1581,6 +1644,363 @@ async function selectMovieSubcategory(slug, button, options = {}) {
     showListMessage('মুভির তালিকা লোড করা যায়নি। আবার চেষ্টা করুন।', 'fa-exclamation-triangle');
     setSidebarCount('0 Movies');
   }
+}
+
+// ===========================================================================
+// MOVIE BROWSE: discovery rows, genre filter state, summary resolution
+// (PART 12). Movie-only. Nothing in this block is reachable from Live
+// Sports, Live TV, Notice or the player engine.
+// ===========================================================================
+
+function movieNavItems() {
+  return MOVIE_NAV_SECTIONS.flatMap(([, items]) => items.map(([key, label]) => [key, label]));
+}
+
+function movieNavLabel(key) {
+  return movieNavItems().find(([entryKey]) => entryKey === key)?.[1] || 'Movies';
+}
+
+function isMovieCategoryKey(key) {
+  return MOVIE_ORDER.some(([, slug]) => slug === key);
+}
+
+/** Genre chips live in the movie-only bar, so Live TV and Sports never see them. */
+function buildMovieGenreChips() {
+  if (!movieGenreBar) return;
+  movieGenreBar.replaceChildren();
+  const chips = [[MOVIE_GENRE_ALL, 'All Genres'], ...MOVIE_GENRES.map((name) => [name, name])];
+  chips.forEach(([value, label]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'sub-chip movie-genre-chip tv-focusable';
+    button.dataset.movieGenre = value;
+    button.textContent = label;
+    button.setAttribute('aria-pressed', String(state.currentGenre === value));
+    button.addEventListener('click', () => selectMovieGenre(value));
+    movieGenreBar.appendChild(button);
+  });
+  syncMovieGenreChips();
+}
+
+/** The genre row belongs to the movie view and nothing else. */
+function setMovieGenreBarVisible(visible) {
+  if (!movieGenreBar) return;
+  if (visible && !movieGenreBar.childElementCount) buildMovieGenreChips();
+  movieGenreBar.hidden = !visible;
+}
+
+/** One source of truth for the chip row, so sidebar and grid never disagree. */
+function syncMovieGenreChips() {
+  if (!movieGenreBar) return;
+  qsa('.movie-genre-chip', movieGenreBar).forEach((chip) => {
+    const active = chip.dataset.movieGenre === state.currentGenre;
+    chip.classList.toggle('active', active);
+    chip.setAttribute('aria-pressed', String(active));
+  });
+}
+
+function movieGenresOf(item) {
+  const genres = item?.genres;
+  if (Array.isArray(genres)) return genres;
+  if (typeof genres === 'string' && genres.trim()) return genres.split(',').map((part) => part.trim());
+  return [];
+}
+
+function movieHasGenre(item, genre) {
+  if (!genre || genre === MOVIE_GENRE_ALL) return true;
+  const wanted = String(genre).toLowerCase();
+  return movieGenresOf(item).some((value) => String(value).toLowerCase() === wanted);
+}
+
+/**
+ * The whole catalogue as card summaries - id, title, poster, genres - and
+ * nothing playable. Fetched once, lazily, only when a genre or a search
+ * actually needs to look beyond the loaded category, and kept in memory
+ * afterwards. This is what lets "every Action film" be answered without
+ * loading a single category page.
+ */
+async function loadMovieBrowseIndex() {
+  if (state.movieBrowseIndex) return state.movieBrowseIndex;
+  if (state.movieBrowseIndexPromise) return state.movieBrowseIndexPromise;
+
+  state.movieBrowseIndexPromise = (async () => {
+    try {
+      const data = await fetchJson(MOVIE_BROWSE_INDEX_PATH, { cache: 'no-store' });
+      state.movieBrowseIndex = Array.isArray(data?.items) ? data.items : [];
+    } catch (error) {
+      // The index is generated by the scanner, so a fresh checkout may not
+      // have one yet. That is an empty browse result, not a broken page.
+      state.movieBrowseIndex = [];
+    }
+    state.movieBrowseIndexPromise = null;
+    return state.movieBrowseIndex;
+  })();
+
+  return state.movieBrowseIndexPromise;
+}
+
+/**
+ * A discovery/browse summary has no stream on it by design. Clicking one
+ * resolves the real published record from its category pages and hands
+ * that to the existing player entry point - there is no second playback
+ * path anywhere in this file.
+ */
+async function resolveMovieSummary(summary) {
+  const id = String(summary?.id || '').trim();
+  if (!id) return null;
+  if (state.movieResolveCache.has(id)) return state.movieResolveCache.get(id);
+
+  const slugs = [];
+  const ownSlug = movieCategorySlug(summary?.category);
+  if (ownSlug) slugs.push(ownSlug);
+  MOVIE_ORDER.forEach(([, slug]) => { if (!slugs.includes(slug)) slugs.push(slug); });
+
+  for (const slug of slugs) {
+    const entry = manifestMovieEntry(slug);
+    if (!entry?.index) continue;
+    try {
+      const indexData = await fetchJson(entry.index, { cache: 'no-store' });
+      const pages = Array.isArray(indexData?.pages) ? indexData.pages : [];
+      for (const page of pages) {
+        const path = page.path || (page.file ? `data/movies/${indexData.slug || slug}/${page.file}` : '');
+        if (!path) continue;
+        const pageData = await fetchJson(path, { cache: 'no-store' });
+        const items = pageData?.items || pageData?.movies || [];
+        const found = Array.isArray(items) ? items.find((row) => String(row?.id || '') === id) : null;
+        if (found) {
+          const [resolved] = normalizeList([found], VIEW.MOVIE);
+          if (resolved) {
+            state.movieResolveCache.set(id, resolved);
+            return resolved;
+          }
+        }
+      }
+    } catch (error) {
+      // Try the next category rather than failing the click.
+    }
+  }
+  state.movieResolveCache.set(id, null);
+  return null;
+}
+
+function movieCategorySlug(label) {
+  if (!label) return '';
+  const found = MOVIE_ORDER.find(([name, slug]) =>
+    name.toLowerCase() === String(label).toLowerCase() || slug === String(label).toLowerCase());
+  return found ? found[1] : '';
+}
+
+/**
+ * Card summaries into the shape the grid already renders.
+ *
+ * Deliberately NOT normalizeList(): that gate ends in isPlayable(), which
+ * is exactly right for a category page - a movie card with no stream has
+ * no business being there - and exactly wrong here, because a discovery
+ * summary carries no stream by design and resolves one on click. Going
+ * through normalizeItem directly keeps the shared filter untouched for
+ * channels, events and category pages.
+ */
+function movieSummariesToItems(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows
+    .filter((row) => row && typeof row === 'object' && String(row.id || '').trim())
+    .map((row, index) => {
+      const item = normalizeItem(row, index, VIEW.MOVIE);
+      item._summaryOnly = true;
+      return item;
+    });
+}
+
+function showMovieBrowseEmpty(message) {
+  // Never a blank page: the viewer is told what was searched for and given
+  // a way back. Category is deliberately preserved - only the genre is
+  // offered up for clearing.
+  const canClearGenre = state.currentGenre !== MOVIE_GENRE_ALL;
+  showListMessage(message, 'fa-film');
+  setSidebarCount('0 Titles');
+  if (canClearGenre) {
+    const host = qs('.list-message') || sidebarList;
+    if (host && !qs('.movie-clear-genre', host)) {
+      const action = document.createElement('button');
+      action.type = 'button';
+      action.className = 'movie-clear-genre tv-focusable';
+      action.textContent = 'Clear Genre';
+      action.addEventListener('click', () => selectMovieGenre(MOVIE_GENRE_ALL));
+      host.appendChild(action);
+    }
+  }
+}
+
+/** Genre changes never lose the category - that rule lives here, once. */
+async function selectMovieGenre(genre) {
+  const next = genre && genre !== MOVIE_GENRE_ALL ? genre : MOVIE_GENRE_ALL;
+  state.currentGenre = next;
+  syncMovieGenreChips();
+
+  // From a discovery row, picking a genre means "show me everything in it",
+  // which is a browse over the whole catalogue rather than a filter over
+  // the fifteen cards a shelf happens to hold.
+  if (MOVIE_DISCOVERY_KEYS.includes(state.currentCategory) && next !== MOVIE_GENRE_ALL) {
+    await loadMovieGenreBrowse();
+    return;
+  }
+  if (MOVIE_DISCOVERY_KEYS.includes(state.currentCategory) && next === MOVIE_GENRE_ALL) {
+    await loadMovieDiscoveryRow(state.currentCategory);
+    return;
+  }
+  renderCurrentList(true);
+  if (!state.filteredItems.length) {
+    showMovieBrowseEmpty(`${movieNavLabel(state.currentCategory)} ${next} - কোনো টাইটেল পাওয়া যায়নি`);
+  }
+}
+
+/** Every playable title in the selected genre, from the browse index. */
+async function loadMovieGenreBrowse() {
+  cancelDataLoading();
+  clearCurrentListState();
+  state.view = VIEW.MOVIE;
+  state.selectedCategory = 'Movie';
+  state.moviePreviewMode = false;
+  state.movieBrowseMode = true;
+  state.movieIndex = null;
+  showListMessage('লোড হচ্ছে…', 'fa-spinner', true);
+  setSidebarCount('Loading...');
+
+  const index = await loadMovieBrowseIndex();
+  const matching = index.filter((row) => movieHasGenre(row, state.currentGenre));
+  state.currentItems = movieSummariesToItems(matching);
+  renderCurrentList(true);
+  if (!state.filteredItems.length) {
+    showMovieBrowseEmpty(`${state.currentGenre} - কোনো টাইটেল পাওয়া যায়নি`);
+  } else {
+    setSidebarCount(`${state.filteredItems.length} Titles`, state.currentGenre);
+  }
+}
+
+/** Home / Trending / Just Added / Latest, from the static discovery JSON. */
+async function loadMovieDiscoveryRow(key) {
+  cancelDataLoading();
+  clearCurrentListState();
+  state.view = VIEW.MOVIE;
+  state.selectedCategory = 'Movie';
+  state.moviePreviewMode = false;
+  state.movieBrowseMode = true;
+  state.movieIndex = null;
+  showListMessage('লোড হচ্ছে…', 'fa-spinner', true);
+  setSidebarCount('Loading...');
+
+  const path = MOVIE_DISCOVERY_PATHS[key];
+  let rows = [];
+  try {
+    const data = await fetchJson(path, { cache: 'no-store' });
+    if (key === 'home') {
+      // One file, four shelves. Until a real Featured source exists the
+      // featured row is empty by design and simply contributes nothing.
+      rows = [...(data?.featured || []), ...(data?.trending || []),
+              ...(data?.just_added || []), ...(data?.latest || [])];
+      const seen = new Set();
+      rows = rows.filter((row) => {
+        const id = String(row?.id || '');
+        if (!id || seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      });
+    } else if (key === 'trending') {
+      rows = data?.movies || [];
+    } else {
+      rows = data?.items || [];
+    }
+  } catch (error) {
+    // The discovery files are generated by the scanner. A checkout without
+    // them is an empty shelf, never a broken page.
+    rows = [];
+  }
+
+  state.currentItems = movieSummariesToItems(rows);
+  renderCurrentList(true);
+  if (!state.filteredItems.length) {
+    showMovieBrowseEmpty(`${movieNavLabel(key)} - এখনো কোনো টাইটেল নেই`);
+  } else {
+    setSidebarCount(`${state.filteredItems.length} Titles`, movieNavLabel(key));
+  }
+}
+
+/** Web Series: the series catalogue, across every category that has one. */
+async function loadMovieWebSeries() {
+  cancelDataLoading();
+  clearCurrentListState();
+  state.view = VIEW.MOVIE;
+  state.selectedCategory = 'Movie';
+  state.moviePreviewMode = false;
+  state.movieBrowseMode = true;
+  state.movieIndex = null;
+  showListMessage('Web Series লোড হচ্ছে…', 'fa-spinner', true);
+  setSidebarCount('Loading...');
+
+  if (!seriesModule) {
+    showMovieBrowseEmpty('Web Series এখনো যোগ করা হয়নি');
+    return;
+  }
+
+  state.currentItems = [];
+  for (const [, slug] of MOVIE_ORDER) {
+    try {
+      const seriesItems = await seriesModule.loadCategory(slug);
+      if (seriesItems?.length) seriesModule.mergeCategoryItems(seriesItems);
+    } catch (error) {
+      // One category's series data missing must not empty the whole tab.
+    }
+  }
+  renderCurrentList(true);
+  if (!state.filteredItems.length) {
+    showMovieBrowseEmpty('Web Series এখনো যোগ করা হয়নি');
+  } else {
+    setSidebarCount(`${state.filteredItems.length} Series`, 'Web Series');
+  }
+}
+
+/**
+ * The movie navigation router. Changing category resets the genre to All -
+ * a genre left applied behind a category switch is invisible state, and
+ * invisible state is what makes a grid look broken.
+ */
+async function selectMovieNavItem(key, options = {}) {
+  const previousCategory = state.currentCategory;
+  state.currentCategory = key;
+  if (key !== previousCategory && !options.preserveGenre) {
+    state.currentGenre = MOVIE_GENRE_ALL;
+  }
+  state.activeMainGroup = 'movies';
+  state.activeFinalSub = `movie:${key}`;
+  renderFinalNavigation();
+  setMovieGenreBarVisible(key !== 'watchlist');
+  syncMovieGenreChips();
+  setSearchEnabled(true);
+  scrollSidebarToTop();
+
+  if (key === 'watchlist') {
+    // The existing watchlist/favourites store, reused as-is. There is no
+    // second favourites list anywhere in this app.
+    setMovieGenreBarVisible(false);
+    await selectMainView('favorites', null, { chip: activateChipByView('favorite'), preserveFinalGroup: true });
+    state.activeMainGroup = 'movies';
+    state.activeFinalSub = 'movie:watchlist';
+    renderFinalNavigation();
+    return;
+  }
+  if (key === 'web-series') {
+    await loadMovieWebSeries();
+    return;
+  }
+  if (MOVIE_DISCOVERY_KEYS.includes(key)) {
+    await loadMovieDiscoveryRow(key);
+    return;
+  }
+  if (isMovieCategoryKey(key)) {
+    await selectMovieSubcategory(key, null, { preserveFinalGroup: true, fromNav: true });
+    return;
+  }
+  await loadMovieDiscoveryRow('home');
 }
 
 function moviePagePath(pageEntry) {
@@ -1854,6 +2274,13 @@ function applyFilterAndSort() {
     }
   }
 
+  // PART 12 filter chain, movie view only: playable catalog AND category
+  // scope (already applied by what was loaded) AND genre AND query, THEN
+  // sort. Guarded by the view so Live TV and Sports filtering is untouched.
+  if (state.view === VIEW.MOVIE && state.currentGenre && state.currentGenre !== MOVIE_GENRE_ALL) {
+    items = items.filter((item) => movieHasGenre(item, state.currentGenre));
+  }
+
   if (query) {
     items = items.filter((item) => {
       const haystack = `${item.name || ''} ${item.category || ''} ${item.competition || ''}`.toLowerCase();
@@ -2038,7 +2465,7 @@ function watchTodayCardForMasonry(card) {
 
 function renderCurrentList(reset = true, options = {}) {
   if (state.seriesDetailMode || seriesModule?.detailActive) return;
-  if (state.view === VIEW.MOVIE && !state.selectedMovieCategory && !state.moviePreviewMode) {
+  if (state.view === VIEW.MOVIE && !state.selectedMovieCategory && !state.moviePreviewMode && !state.movieBrowseMode) {
     showListMessage(MOVIE_PROMPT_TEXT, 'fa-film');
     setSidebarCount('0 Movies');
     return;
@@ -4373,6 +4800,17 @@ sidebarList.addEventListener('click', (event) => {
   const item = state.currentItems.find((entry) => entry._uid === card.dataset.uid);
   if (!item) return;
   if (seriesModule?.handleCatalogClick(item)) return;
+  if (item._summaryOnly) {
+    // A discovery/browse card carries no stream by design. Resolve the real
+    // published record, then hand it to the existing player entry point -
+    // there is no alternate playback path.
+    closeEventPreview();
+    resolveMovieSummary(item).then((resolved) => {
+      if (resolved) startPlayback(resolved, true);
+      else showToast('এই টাইটেলটি এখন আর পাওয়া যাচ্ছে না');
+    });
+    return;
+  }
   if (!isPlayable(item)) {
     // Guide 18 and 32. Level 3 detail belongs in the popup, so any event card
     // without a link opens it rather than firing a toast that says less.
