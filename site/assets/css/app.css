@@ -2362,3 +2362,108 @@ html.fullscreen-4k-playback .video-container-wrap:-webkit-full-screen .fs-drawer
 .movie-card,.sidebar-item,.series-episode-card{content-visibility:auto;contain-intrinsic-size:180px}
 .video-container-wrap:fullscreen .fs-drawer-toggle.hide,
 .video-container-wrap:-webkit-full-screen .fs-drawer-toggle.hide{opacity:0!important;pointer-events:none!important}
+
+/* ==========================================================================
+   Continue Watching (PART 16). Additive only - no rule above is modified.
+   Movies-only surface: it sits above the grid and is hidden entirely when
+   there is no real playback progress to show.
+   ========================================================================== */
+.movie-continue-panel {
+  padding: 8px 10px 4px;
+}
+.movie-continue-title {
+  margin: 0 0 8px;
+  color: #dbe4f2;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.movie-continue-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.movie-continue-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 8px;
+  border: 1px solid #24324a;
+  border-radius: 10px;
+  background: #111a26;
+}
+.movie-continue-card.unavailable { opacity: 0.55; }
+.movie-continue-poster {
+  width: 44px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #182436;
+}
+.movie-continue-poster.placeholder { display: block; }
+.movie-continue-copy { min-width: 0; }
+.movie-continue-copy strong {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+.movie-continue-copy small {
+  display: block;
+  margin-top: 3px;
+  color: #94a0b4;
+  font-size: 9px;
+}
+.movie-continue-track {
+  display: block;
+  height: 3px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: #22314a;
+  overflow: hidden;
+}
+.movie-continue-track i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #ff2a4a;
+}
+.movie-continue-resume {
+  padding: 6px 11px;
+  border: 1px solid #ff2a4a;
+  border-radius: 999px;
+  background: rgba(255, 42, 74, 0.14);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.movie-continue-gone {
+  color: #8b97ab;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+}
+.movie-continue-remove {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #2c3c56;
+  border-radius: 50%;
+  background: transparent;
+  color: #9aa7bd;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.movie-continue-remove:hover { color: #fff; border-color: #4a5f80; }
+
+@media (max-width: 640px) {
+  .movie-continue-card { grid-template-columns: 38px minmax(0, 1fr) auto auto; gap: 7px; }
+  .movie-continue-poster { width: 38px; height: 52px; }
+  .movie-continue-copy strong { font-size: 10.5px; }
+}

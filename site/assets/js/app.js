@@ -25,7 +25,13 @@ const STORAGE_KEYS = Object.freeze({
   maxHeight: 'clicktv_max_height',
   telemetrySession: 'clicktv_telemetry_session_v1',
   eventReminders: 'clicktv_event_reminders_v1',
-  eventRemindersFired: 'clicktv_event_reminders_fired_v1'
+  eventRemindersFired: 'clicktv_event_reminders_fired_v1',
+  // Movies only (PART 16). Separate from `positions`, which is keyed by the
+  // stream that happened to play and is trimmed by recency: this one is keyed
+  // by the thing that was watched, so a movie that changes server is still the
+  // same entry. Separate from `favorites` too - a watchlist is what someone
+  // meant to watch, continue watching is what they actually did.
+  continueWatching: 'clicktv_continue_watching_v2'
 });
 
 const VIEW = Object.freeze({
@@ -126,6 +132,12 @@ const DATA_FETCH_TIMEOUT_MS = 9000;
 const EVENT_CATALOG_REFRESH_MS = 60000;
 const POSITION_SAVE_INTERVAL_MS = 10000;
 const POSITION_HISTORY_LIMIT = 200;
+// Continue Watching (PART 16). Nothing is recorded until someone has actually
+// watched for half a minute, so a mis-tap and a change of mind leave no trace.
+const CONTINUE_MIN_SECONDS = 30;
+const CONTINUE_SAVE_INTERVAL_MS = 12000;
+const CONTINUE_COMPLETE_PERCENT = 90;
+const CONTINUE_HISTORY_LIMIT = 40;
 const MOVIE_PROMPT_TEXT = 'মুভি দেখতে একটি বিভাগ নির্বাচন করুন';
 const MOVIE_PREVIEW_LIMIT = 18;
 const MOBILE_SEARCH_AUTO_CLOSE_MS = 5000;
@@ -177,6 +189,12 @@ const state = {
   // "pick a category" prompt fires over a perfectly good shelf.
   movieBrowseMode: false,
   movieDetailItem: null,
+  // Continue Watching (PART 16), movies and episodes only.
+  continueWatching: {},
+  continueSavedAt: 0,
+  continueSavedKey: '',
+  seriesProgressSavedAt: 0,
+  pendingResumeSeconds: 0,
   movieBrowseIndex: null,
   movieBrowseIndexPromise: null,
   movieResolveCache: new Map(),
@@ -318,6 +336,7 @@ const movieSubcategoryBar = $('movieSubcategoryBar');
 // rendered there is invisible by design.
 const movieGenreBar = $('movieGenreBar');
 const movieDetailPanel = $('movieDetailPanel');
+const movieContinuePanel = $('movieContinuePanel');
 const chipsContainer = $('chipsContainer');
 const videoContainer = $('videoContainer');
 const playerControls = $('playerControls');
@@ -1373,6 +1392,9 @@ async function selectMainView(view, category, options = {}) {
   movieSubcategoryBar.style.display = 'none';
   setMovieGenreBarVisible(false);
   closeMovieDetail();
+  // Hidden outright, not re-rendered: this runs before state.view changes, so
+  // asking the renderer here would have it decide from the view being left.
+  hideContinueWatchingRow();
   setSearchEnabled(true);
   if (!options.preserveFinalGroup) adoptFinalNavigationFromLegacy(view, category || '');
   else renderFinalNavigation();
@@ -1977,6 +1999,7 @@ async function selectMovieNavItem(key, options = {}) {
   state.activeFinalSub = `movie:${key}`;
   renderFinalNavigation();
   closeMovieDetail();
+  renderContinueWatchingRow();
   setMovieGenreBarVisible(key !== 'watchlist');
   syncMovieGenreChips();
   setSearchEnabled(true);
@@ -2147,6 +2170,232 @@ function showMovieSearchEmpty(query) {
     });
     host.appendChild(all);
   }
+}
+
+// ===========================================================================
+// CONTINUE WATCHING (PART 16). Real playback progress only - there is no seed
+// data, no demo entry and no "recently viewed" masquerading as progress. An
+// entry appears once someone has genuinely watched CONTINUE_MIN_SECONDS, is
+// rewritten at most every CONTINUE_SAVE_INTERVAL_MS, and disappears from the
+// row once it is finished.
+//
+// It is deliberately a different thing from two stores that already exist:
+// `favorites` is the watchlist (what someone meant to watch) and `positions`
+// is keyed by the stream that played (so it forgets a movie whose server
+// changed). Neither is touched here.
+//
+// Live TV and Live Sports never reach this code: every entry point below is
+// inside the movie branch, which a live item never enters.
+// ===========================================================================
+
+/** Identity of the thing watched, not of the stream that happened to serve it. */
+function continueWatchingKey(item) {
+  if (!item) return '';
+  if (seriesModule?.isEpisodeItem?.(item)) {
+    const series = String(item.series_id || '').trim();
+    if (!series) return '';
+    return `episode:${series}:s${Number(item.season_number || 0)}:e${Number(item.episode_number || 0)}`;
+  }
+  const id = String(item.id || item.playback_id || item.url || '').trim();
+  return id ? `movie:${id}` : '';
+}
+
+function readContinueWatching() {
+  // A corrupt or hand-edited store must not take the site down with it, so
+  // anything that is not a well-formed entry is simply dropped.
+  const raw = readJsonStorage(STORAGE_KEYS.continueWatching, {});
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const clean = {};
+  for (const [key, entry] of Object.entries(raw)) {
+    if (!key || !entry || typeof entry !== 'object' || Array.isArray(entry)) continue;
+    const position = Number(entry.position_seconds);
+    const duration = Number(entry.duration_seconds);
+    if (!Number.isFinite(position) || position <= 0) continue;
+    clean[key] = {
+      ...entry,
+      position_seconds: position,
+      duration_seconds: Number.isFinite(duration) && duration > 0 ? duration : 0,
+      progress_percent: Number(entry.progress_percent) || 0,
+      last_played_at: Number(entry.last_played_at) || 0,
+      completed: entry.completed === true
+    };
+  }
+  return clean;
+}
+
+function writeContinueWatching() {
+  const entries = Object.entries(state.continueWatching)
+    .sort((a, b) => Number(b[1]?.last_played_at || 0) - Number(a[1]?.last_played_at || 0))
+    .slice(0, CONTINUE_HISTORY_LIMIT);
+  state.continueWatching = Object.fromEntries(entries);
+  writeJsonStorage(STORAGE_KEYS.continueWatching, state.continueWatching);
+}
+
+/**
+ * Record where the viewer got to. `force` is the best-effort path used by
+ * pause, ended and page-hide; the periodic path is throttled so a store write
+ * does not ride on every timeupdate event.
+ */
+function saveContinueWatching(force = false) {
+  const item = state.currentItem;
+  if (!item) return false;
+  const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+  if (!isMovie) return false;
+
+  const position = Number(video.currentTime);
+  const duration = Number(video.duration);
+  if (!Number.isFinite(position) || position < CONTINUE_MIN_SECONDS) return false;
+  if (!Number.isFinite(duration) || duration <= 0) return false;
+
+  const key = continueWatchingKey(item);
+  if (!key) return false;
+
+  const now = Date.now();
+  // The throttle is per title: switching to something else records that
+  // straight away rather than waiting out the previous title's interval.
+  const sameTitle = key === state.continueSavedKey;
+  if (!force && sameTitle && now - Number(state.continueSavedAt || 0) < CONTINUE_SAVE_INTERVAL_MS) return false;
+  state.continueSavedAt = now;
+  state.continueSavedKey = key;
+
+  const percent = Math.max(0, Math.min(100, (position / duration) * 100));
+  const episode = Boolean(seriesModule?.isEpisodeItem?.(item));
+  state.continueWatching[key] = {
+    key,
+    content_type: episode ? 'episode' : 'movie',
+    item_id: String(item.id || ''),
+    name: String(item.name || ''),
+    logo: String(item.logo || ''),
+    category: String(item.category || ''),
+    series_id: episode ? String(item.series_id || '') : '',
+    series_name: episode ? String(item.series_name || '') : '',
+    season_number: episode ? Number(item.season_number || 0) : 0,
+    episode_number: episode ? Number(item.episode_number || 0) : 0,
+    episode_title: episode ? String(item.episode_title || '') : '',
+    position_seconds: position,
+    duration_seconds: duration,
+    progress_percent: percent,
+    last_played_at: now,
+    completed: percent >= CONTINUE_COMPLETE_PERCENT,
+    // Enough of the record to resume without a catalogue round-trip. This is
+    // compactItem, the same shape the watchlist already stores, so no header,
+    // cookie or credential is written here either.
+    snapshot: episode
+      ? { ...compactItem(item), content_kind: 'episode', series_id: item.series_id,
+          series_name: item.series_name, series_manifest: item.series_manifest || '',
+          season_number: Number(item.season_number || 0),
+          episode_number: Number(item.episode_number || 0),
+          episode_title: item.episode_title || '' }
+      : compactItem(item)
+  };
+  writeContinueWatching();
+  return true;
+}
+
+/** Entries still worth offering: real progress, not finished, still playable. */
+function continueWatchingEntries() {
+  return Object.values(state.continueWatching)
+    .filter((entry) => !entry.completed
+      && entry.progress_percent > 0
+      && entry.progress_percent < CONTINUE_COMPLETE_PERCENT
+      && entry.position_seconds >= CONTINUE_MIN_SECONDS)
+    .sort((a, b) => Number(b.last_played_at || 0) - Number(a.last_played_at || 0));
+}
+
+function removeContinueWatching(key) {
+  if (!key || !state.continueWatching[key]) return false;
+  delete state.continueWatching[key];
+  writeContinueWatching();
+  // The watchlist is a different store and is deliberately left alone.
+  renderContinueWatchingRow();
+  return true;
+}
+
+function continueWatchingLabel(entry) {
+  if (entry.content_type !== 'episode') return String(entry.name || '');
+  const season = String(Math.max(0, Number(entry.season_number || 0))).padStart(2, '0');
+  const episode = String(Math.max(0, Number(entry.episode_number || 0))).padStart(2, '0');
+  return `${entry.series_name || entry.name} — S${season} E${episode}`;
+}
+
+function continueWatchingRemaining(entry) {
+  const left = Number(entry.duration_seconds || 0) - Number(entry.position_seconds || 0);
+  if (!Number.isFinite(left) || left <= 0) return '';
+  const minutes = Math.round(left / 60);
+  return minutes >= 1 ? `${minutes} min left` : 'Almost finished';
+}
+
+/**
+ * Resume the exact thing that was left unfinished. The seek itself is handed
+ * to the existing loadedmetadata path: nothing about source selection, proxy
+ * fallback or retry is altered to make a resume happen.
+ */
+async function resumeContinueWatching(entry) {
+  const snapshot = entry?.snapshot;
+  if (!snapshot || !isPlayable(snapshot)) return false;
+  state.pendingResumeSeconds = Number(entry.position_seconds || 0);
+
+  if (entry.content_type === 'episode' && seriesModule?.openEpisodeContext) {
+    // Opens the series, loads that season and plays that episode - the exact
+    // episode, never the series' first one.
+    const opened = await seriesModule.openEpisodeContext(snapshot);
+    if (opened) return true;
+  }
+  const item = normalizeItem(snapshot, 0, VIEW.MOVIE);
+  item._uid = snapshot._uid || item._uid;
+  await startPlayback(item, true);
+  return true;
+}
+
+function hideContinueWatchingRow() {
+  if (!movieContinuePanel) return;
+  movieContinuePanel.hidden = true;
+  movieContinuePanel.replaceChildren();
+}
+
+function renderContinueWatchingRow() {
+  if (!movieContinuePanel) return;
+  const show = state.view === VIEW.MOVIE && state.currentCategory === 'home';
+  const entries = show ? continueWatchingEntries() : [];
+  if (!entries.length) {
+    movieContinuePanel.hidden = true;
+    movieContinuePanel.replaceChildren();
+    return;
+  }
+
+  const shell = document.createElement('div');
+  shell.className = 'movie-continue-inner';
+  shell.innerHTML = '<h3 class="movie-continue-title">Continue Watching</h3>' +
+    '<div class="movie-continue-strip"></div>';
+  const strip = qs('.movie-continue-strip', shell);
+
+  for (const entry of entries) {
+    const playable = isPlayable(entry.snapshot);
+    const card = document.createElement('div');
+    card.className = `movie-continue-card${playable ? '' : ' unavailable'}`;
+    card.dataset.continueKey = entry.key;
+    const remaining = continueWatchingRemaining(entry);
+    card.innerHTML =
+      (entry.logo ? `<img class="movie-continue-poster" src="${escapeHtml(entry.logo)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '<div class="movie-continue-poster placeholder"></div>') +
+      '<div class="movie-continue-copy">' +
+        `<strong>${escapeHtml(continueWatchingLabel(entry))}</strong>` +
+        (remaining ? `<small>${escapeHtml(remaining)}</small>` : '') +
+        `<span class="movie-continue-track"><i style="width:${entry.progress_percent.toFixed(1)}%"></i></span>` +
+      '</div>' +
+      (playable
+        ? '<button type="button" class="movie-continue-resume tv-focusable">Resume</button>'
+        : '<span class="movie-continue-gone">Unavailable</span>') +
+      '<button type="button" class="movie-continue-remove tv-focusable" aria-label="Remove from Continue Watching">&times;</button>';
+
+    if (playable) {
+      qs('.movie-continue-resume', card)?.addEventListener('click', () => { void resumeContinueWatching(entry); });
+    }
+    qs('.movie-continue-remove', card)?.addEventListener('click', () => removeContinueWatching(entry.key));
+    strip.appendChild(card);
+  }
+
+  movieContinuePanel.replaceChildren(shell);
+  movieContinuePanel.hidden = false;
 }
 
 // ===========================================================================
@@ -9660,7 +9909,13 @@ video.addEventListener('timeupdate', () => {
   }
   updatePlaybackProgress();
   if (seriesModule?.isEpisodeItem(state.currentItem)) {
-    seriesModule.updateProgress(state.currentItem, video.currentTime, video.duration);
+    // Throttled (PART 16). This used to write localStorage on every
+    // timeupdate - four stringified maps a second while an episode played.
+    const now = Date.now();
+    if (now - Number(state.seriesProgressSavedAt || 0) >= CONTINUE_SAVE_INTERVAL_MS) {
+      state.seriesProgressSavedAt = now;
+      seriesModule.updateProgress(state.currentItem, video.currentTime, video.duration);
+    }
   }
 });
 
@@ -9753,6 +10008,9 @@ function updatePlaybackProgress() {
     }
     writeJsonStorage(STORAGE_KEYS.positions, state.playbackPositions);
   }
+  // Continue Watching rides the same movie-only progress path; it has its own
+  // threshold and interval and does not add a listener to the player.
+  saveContinueWatching();
 }
 
 function formatTime(seconds, referenceDuration = video.duration) {
@@ -10820,6 +11078,34 @@ $('resumeBadge').addEventListener('click', () => {
 
 video.addEventListener('loadedmetadata', maybeOfferResume);
 
+// --- Continue Watching integration (PART 16) -------------------------------
+// Listeners only. No source selection, proxy fallback, retry or buffering
+// decision is read or changed here; these observe playback, they do not steer
+// it. Every one is a no-op unless the current item is a movie or an episode.
+
+/**
+ * Apply a resume the viewer explicitly asked for, once the media is actually
+ * ready to be seeked. Anything earlier is thrown away by the element.
+ */
+video.addEventListener('loadedmetadata', () => {
+  const target = Number(state.pendingResumeSeconds || 0);
+  state.pendingResumeSeconds = 0;
+  if (!(target > 0)) return;
+  const duration = Number(video.duration);
+  // Never seek past the end, and never resume something that turned out to be
+  // a different length than when it was saved.
+  if (!Number.isFinite(duration) || duration <= 0 || target >= duration - 5) return;
+  try { video.currentTime = target; } catch (_) {}
+  hideResumeBadge();
+});
+
+video.addEventListener('pause', () => { saveContinueWatching(true); });
+video.addEventListener('ended', () => { saveContinueWatching(true); renderContinueWatchingRow(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') saveContinueWatching(true);
+});
+window.addEventListener('pagehide', () => { saveContinueWatching(true); });
+
 video.addEventListener('pause', () => {
   const isMovie = state.currentItem?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
   $('centerPlayBtn').style.display = isMovie && video.paused ? 'flex' : 'none';
@@ -11036,6 +11322,9 @@ function setupReturnToTabRefresh() {
 }
 
 async function bootstrap() {
+  // Read once, after the safe-read helpers exist. A corrupt store yields an
+  // empty one rather than an exception on the first frame.
+  state.continueWatching = readContinueWatching();
   setupReturnToTabRefresh();
   setupFinalNavigationControls();
   setupEventSportFilter();
