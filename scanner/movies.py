@@ -581,9 +581,38 @@ def _annotate_recency(movies: List[Dict[str, Any]]) -> Dict[str, int]:
     try:
         from scanner import movie_recency
 
-        return movie_recency.enrich(movies)
+        summary = movie_recency.enrich(movies)
+        _reconcile_first_seen(movies)
+        return summary
     except Exception as error:  # noqa: BLE001 - ordering must not fail a scan
         print(f"   movie recency annotation skipped: {error}")
+        return {}
+
+
+def _reconcile_first_seen(movies: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Give a film back its real arrival date when its id changed - PART 07.
+
+    Runs straight after the stamping above, so `is_new` is recomputed from
+    the corrected date rather than the freshly minted one. Wrapped
+    separately: reconciliation failing must leave the ordinary first-seen
+    behaviour exactly as it was.
+    """
+    try:
+        from scanner import movie_identity_alias
+        from scanner import movie_recency
+
+        summary = movie_identity_alias.reconcile(movies)
+        if summary.get("corrected"):
+            for movie in movies or ():
+                if isinstance(movie, dict):
+                    movie["is_new"] = movie_recency.is_new(movie)
+            print(
+                f"   movie first-seen: {summary['corrected']} film(s) kept "
+                f"their original arrival date through an id change"
+            )
+        return summary
+    except Exception as error:  # noqa: BLE001 - must not fail a scan
+        print(f"   movie first-seen reconciliation skipped: {error}")
         return {}
 
 
@@ -670,6 +699,27 @@ def _generate_trending(paginated: Dict[str, Any]) -> Dict[str, Any]:
     except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
         print(f"   movie trending skipped: {error}")
         return {}
+
+
+def _generate_discovery(paginated: Dict[str, Any]) -> Dict[str, Any]:
+    """Write just-added.json, latest.json and home.json - PARTs 07-09.
+
+    Never fails a scan: a discovery row missing for a day is a far smaller
+    problem than a catalogue that did not publish.
+    """
+    summary: Dict[str, Any] = {}
+    try:
+        from scanner import movie_discovery
+
+        just_added = movie_discovery.generate_just_added(paginated)
+        summary["just_added"] = just_added
+        print(
+            f"   movie just-added: {just_added['count']} film(s) added in the "
+            f"last {just_added['window_days']} days"
+        )
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie just-added skipped: {error}")
+    return summary
 
 
 def _first_seen_day(movie: Dict[str, Any]) -> int:
@@ -3596,5 +3646,6 @@ def process_movies(
     # catalogue, which is the part people actually watch.
     _generate_genre_indexes(paginated)
     _generate_trending(paginated)
+    _generate_discovery(paginated)
 
     return paginated
