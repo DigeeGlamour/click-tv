@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T09:29:16.508001+00:00",
+  "generated_at": "2026-09-11T09:42:28.616473+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,11 +10,11 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 1493,
+      "fixtures": 1494,
       "unknown_statuses": [
-        "10|HT",
         "133|Stumps - day 2",
-        "134|Stumps - day 3"
+        "171|Lunch - day 2",
+        "3|52'"
       ],
       "attempts": [
         {
@@ -51,7 +51,7 @@
           "sport": "football",
           "date": "2026-09-12",
           "result": "ok",
-          "fixtures": 1033
+          "fixtures": 1034
         }
       ]
     },
@@ -106,46 +106,47 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 5,
-    "upcoming": 103,
+    "today_match": 7,
+    "upcoming": 101,
     "fixtures": 108,
     "verdicts": {
-      "UNVERIFIED": 24,
-      "VERIFIED": 83,
-      "CONFLICT": 1
+      "UNVERIFIED": 25,
+      "CONFLICT": 2,
+      "VERIFIED": 81
     },
-    "verified": 83,
+    "verified": 81,
     "partial_authority": 0,
-    "unverified": 24,
-    "conflict": 1,
+    "unverified": 25,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 45,
-        "matched": 63
+        "unmatched": 47,
+        "matched": 61
       },
       "livescore": {
-        "unmatched": 27,
-        "matched": 81
+        "unmatched": 28,
+        "matched": 80
       }
     },
-    "matched_by_two_independent_authorities": 60,
-    "authority_agreements": 59,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 0,
+    "matched_by_two_independent_authorities": 58,
+    "authority_agreements": 58,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "authorities disagree": 1
+      "card says LIVE, authority says UPCOMING": 1,
+      "card says UPCOMING, authority says LIVE": 1
     },
-    "identity_near_misses": 1,
+    "identity_near_misses": 2,
     "independent_authority_count_distribution": {
-      "0": 24,
-      "1": 24,
-      "2": 60
+      "0": 25,
+      "1": 25,
+      "2": 58
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "133|Stumps - day 2",
-        "134|Stumps - day 3"
+        "171|Lunch - day 2",
+        "3|52'"
       ],
       "espn-header": []
     }
@@ -158,6 +159,14 @@
       "agreed_side": "persik kediri",
       "ours": "garudayaksa",
       "theirs": "pskc kota cimahi"
+    },
+    {
+      "fixture": "Melbourne Victory II vs Eltham Redbacks FC",
+      "authority": "livescore",
+      "authority_name": "Melbourne Victory Youth vs Eltham Redbacks",
+      "agreed_side": "eltham redbacks",
+      "ours": "melbourne victory ii",
+      "theirs": "melbourne victory youth"
     }
   ],
   "fixtures": [
@@ -166,7 +175,7 @@
       "card_id": "the-solheim-cup-2026",
       "name": "The Solheim Cup 2026",
       "competition": "",
-      "kickoff": "2026-09-11T09:29:16+00:00",
+      "kickoff": "2026-09-11T09:42:28+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -199,22 +208,23 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:england-vs-pakistan|pakistan tour of england 2026 3rd test|2026-09-11",
+      "fixture_id": "provider:england-vs-pakistan|3rd test|2026-09-11",
       "card_id": "england-vs-pakistan",
       "name": "England vs Pakistan",
-      "competition": "Pakistan tour of England 2026 - 3rd Test",
-      "kickoff": "2026-09-11T09:00:00+00:00",
+      "competition": "3rd Test",
+      "kickoff": "2026-09-11T10:00:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-willow-event"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
-        "Willow"
+        "AXS-Bing"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -283,22 +293,129 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:melbourne-victory-ii-vs-eltham-redbacks-fc|victoria npl 2|2026-09-11",
+      "card_id": "melbourne-victory-ii-vs-eltham-redbacks-fc",
+      "name": "Melbourne Victory II vs Eltham Redbacks FC",
+      "competition": "Victoria NPL 2",
+      "kickoff": "2026-09-11T09:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Melbourne Victory Youth vs Eltham Redbacks",
+              "event_id": "1887012",
+              "agreed_side": "eltham redbacks",
+              "ours": "melbourne victory ii",
+              "theirs": "melbourne victory youth"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:northcote-city-vs-bulleen-lions|victoria npl 2|2026-09-11",
+      "card_id": "northcote-city-vs-bulleen-lions",
+      "name": "Northcote City vs Bulleen Lions",
+      "competition": "Victoria NPL 2",
+      "kickoff": "2026-09-11T09:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1887011",
+          "upstream_family": "LiveScore",
+          "name": "Northcote City vs Bulleen Lions",
+          "home": "Northcote City",
+          "away": "Bulleen Lions",
+          "home_team_id": "10038",
+          "away_team_id": "10034",
+          "competition": "Victoria Premier League One: Playoff",
+          "competition_id": "26324",
+          "kickoff": "2026-09-11T09:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "Semi Finals",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:uganda-vs-rwanda|ilt20 africa continent cup 2026|2026-09-11",
       "card_id": "uganda-vs-rwanda",
       "name": "Uganda vs Rwanda",
       "competition": "ILT20 Africa Continent Cup 2026",
       "kickoff": "2026-09-11T07:30:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "iptvflixbd-fancode-data"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -320,17 +437,17 @@
           "competition_id": "21470",
           "kickoff": "2026-09-11T07:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
+          "status_raw": "Live",
+          "status_code": "Live",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "7th Match",
           "format": "T20",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-09-12T23:59:00Z",
           "authority_uid": "s:200~e:1552912~c:1552912"
@@ -386,17 +503,17 @@
           "competition_id": "24670",
           "kickoff": "2026-09-11T07:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
+          "status_raw": "Live",
+          "status_code": "Live",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "2nd ODI",
           "format": "ODI",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-09-12T23:59:00Z",
           "authority_uid": "s:200~e:1549532~c:1549532"
@@ -433,10 +550,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+        "card says UPCOMING, authority says LIVE"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -629,9 +746,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "srhady-crichd-footy-live",
         "srhady-axsports-live",
-        "srhady-bingstream",
-        "srhady-crichd-footy-live"
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1018,11 +1135,13 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -1151,10 +1270,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -1286,6 +1405,98 @@
           "status": "UPCOMING",
           "sport": "football",
           "round": "4",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:athletic-club-vs-elche-cf|laliga 2026 27|2026-09-12",
+      "card_id": "athletic-club-vs-elche-cf",
+      "name": "Athletic Club vs Elche CF",
+      "competition": "LALIGA 2026-27",
+      "kickoff": "2026-09-12T16:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "srhady-crichd-footy-live",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "iptvflixbd-fancode-data"
+      ],
+      "upstream_families": [
+        "CricHD",
+        "FanCode"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401882886",
+          "upstream_family": "ESPN",
+          "name": "Athletic Club vs Elche",
+          "home": "Athletic Club",
+          "away": "Elche",
+          "home_team_id": "93",
+          "away_team_id": "3751",
+          "competition": "Spanish LALIGA",
+          "competition_id": "740",
+          "kickoff": "2026-09-12T16:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, September 12th at 12:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:740~e:401882886~c:401882886"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1810699",
+          "upstream_family": "LiveScore",
+          "name": "Athletic Club vs Elche",
+          "home": "Athletic Club",
+          "away": "Elche",
+          "home_team_id": "3408",
+          "away_team_id": "3622",
+          "competition": "LaLiga",
+          "competition_id": "75",
+          "kickoff": "2026-09-12T16:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "5",
           "format": "",
           "gender": ""
         }
@@ -1657,13 +1868,16 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "srhady-tapmad-bd"
+        "srhady-tapmad-bd",
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
+        "AXS-Bing",
         "Tapmad",
         "Willow"
       ],
-      "independent_witness_count": 2,
+      "independent_witness_count": 3,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -2008,12 +2222,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "srhady-tapmad-bd",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
+        "srhady-tapmad-bd",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -2232,10 +2446,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "srhady-crichd-footy-live",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -3456,96 +3670,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:elche-vs-athletic-club|laliga|2026-09-12",
-      "card_id": "elche-vs-athletic-club",
-      "name": "Elche vs Athletic Club",
-      "competition": "LaLiga",
-      "kickoff": "2026-09-12T16:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/crichd-speical-live-event/refs/heads/main/Footy_Live.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-crichd-footy-live",
-        "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "CricHD",
-        "FanCode"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401882886",
-          "upstream_family": "ESPN",
-          "name": "Athletic Club vs Elche",
-          "home": "Athletic Club",
-          "away": "Elche",
-          "home_team_id": "93",
-          "away_team_id": "3751",
-          "competition": "Spanish LALIGA",
-          "competition_id": "740",
-          "kickoff": "2026-09-12T16:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Sat, September 12th at 12:30 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:740~e:401882886~c:401882886"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1810699",
-          "upstream_family": "LiveScore",
-          "name": "Athletic Club vs Elche",
-          "home": "Athletic Club",
-          "away": "Elche",
-          "home_team_id": "3408",
-          "away_team_id": "3622",
-          "competition": "LaLiga",
-          "competition_id": "75",
-          "kickoff": "2026-09-12T16:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "5",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:emmen-vs-de-graafschap|eerste divisie|2026-09-11",
       "card_id": "emmen-vs-de-graafschap",
       "name": "Emmen vs De Graafschap",
@@ -3736,14 +3860,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
         "sportlive-fancode-backup",
         "sm-fancode",
-        "srhady-bingstream",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "srhady-axsports-live",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "srhady-bingstream",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -4109,14 +4233,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
         "sportlive-fancode-backup",
         "sm-fancode",
-        "srhady-bingstream",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "srhady-axsports-live",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "srhady-bingstream",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -4379,14 +4503,14 @@
       "source_ids": [
         "srhady-willow-event",
         "sportlive-fancode-backup",
-        "srhady-tapmad-bd",
-        "srhady-axsports-live",
         "sm-fancode",
-        "srhady-bingstream",
-        "drmlive-fancode-mirror",
+        "srhady-tapmad-bd",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "srhady-axsports-live",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "srhady-bingstream",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -4712,14 +4836,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
         "sportlive-fancode-backup",
         "sm-fancode",
-        "srhady-bingstream",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "srhady-axsports-live",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "srhady-bingstream",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -5337,94 +5461,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:kyoto-sanga-vs-kashiwa-reysol|j1 league|2026-09-11",
-      "card_id": "kyoto-sanga-vs-kashiwa-reysol",
-      "name": "Kyoto Sanga vs Kashiwa Reysol",
-      "competition": "J1 League",
-      "kickoff": "2026-09-11T10:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401877647",
-          "upstream_family": "ESPN",
-          "name": "Kyoto Sanga vs Kashiwa Reysol",
-          "home": "Kyoto Sanga",
-          "away": "Kashiwa Reysol",
-          "home_team_id": "21361",
-          "away_team_id": "7476",
-          "competition": "Japanese J.League",
-          "competition_id": "750",
-          "kickoff": "2026-09-11T10:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, September 11th at 6:00 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:750~e:401877647~c:401877647"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1795754",
-          "upstream_family": "LiveScore",
-          "name": "Kyoto Sanga FC vs Kashiwa Reysol",
-          "home": "Kyoto Sanga FC",
-          "away": "Kashiwa Reysol",
-          "home_team_id": "8670",
-          "away_team_id": "8669",
-          "competition": "J1 League",
-          "competition_id": "25567",
-          "kickoff": "2026-09-11T10:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "7",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:majees-titans-vs-mustafa-fragrance-house-strikers|oman d50 2026|2026-09-12",
       "card_id": "majees-titans-vs-mustafa-fragrance-house-strikers",
       "name": "Majees Titans vs Mustafa Fragrance House Strikers",
@@ -5439,10 +5475,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -5560,8 +5596,8 @@
       "name": "Muscat Thunders vs Royal Oman Stallions",
       "competition": "Oman D50 2026",
       "kickoff": "2026-09-11T10:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -5569,10 +5605,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -6288,10 +6324,10 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "srhady-crichd-footy-live",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -6471,8 +6507,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
         "srhady-tapmad-bd",
+        "srhady-axsports-live",
         "srhady-bingstream"
       ],
       "upstream_families": [
@@ -6573,9 +6609,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "srhady-crichd-footy-live",
         "srhady-axsports-live",
-        "srhady-bingstream",
-        "srhady-crichd-footy-live"
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -7245,10 +7281,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -7439,94 +7475,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:vissel-kobe-vs-kashima|j1 league|2026-09-11",
-      "card_id": "vissel-kobe-vs-kashima",
-      "name": "Vissel Kobe vs Kashima",
-      "competition": "J1 League",
-      "kickoff": "2026-09-11T10:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401877638",
-          "upstream_family": "ESPN",
-          "name": "Vissel Kobe vs Kashima Antlers",
-          "home": "Vissel Kobe",
-          "away": "Kashima Antlers",
-          "home_team_id": "7477",
-          "away_team_id": "7115",
-          "competition": "Japanese J.League",
-          "competition_id": "750",
-          "kickoff": "2026-09-11T10:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, September 11th at 6:00 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:750~e:401877638~c:401877638"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1795761",
-          "upstream_family": "LiveScore",
-          "name": "Vissel Kobe vs Kashima Antlers",
-          "home": "Vissel Kobe",
-          "away": "Kashima Antlers",
-          "home_team_id": "4841",
-          "away_team_id": "4842",
-          "competition": "J1 League",
-          "competition_id": "25567",
-          "kickoff": "2026-09-11T10:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "7",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:vvv-venlo-vs-fc-oss|eerste divisie|2026-09-11",
       "card_id": "vvv-venlo-vs-fc-oss",
       "name": "VVV Venlo vs FC OSS",
@@ -7688,10 +7636,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
@@ -8154,6 +8102,42 @@
       "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED"
+    },
+    {
+      "fixture_id": "provider:england-vs-pakistan|pakistan tour of england 2026 3rd test|2026-09-11",
+      "card_id": "england-vs-pakistan",
+      "name": "England vs Pakistan",
+      "competition": "Pakistan tour of England 2026 - 3rd Test",
+      "kickoff": "2026-09-11T09:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "Willow"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED"
     }
   ]
 }
