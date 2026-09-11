@@ -421,6 +421,83 @@ class TheContextualAliasNeedsAFixture(unittest.TestCase):
                 self.assertIn("contextual", refused[key])
 
 
+class AnAliasHasToBeReachable(unittest.TestCase):
+    """A defect found while auditing this step's own near-miss census.
+
+    identity_form consulted the alias table on the raw normalized name only.
+    A feed that hands the club's name over wrapped in a legal-form word, or in
+    a women's fixture's title, therefore missed every entry in the table:
+    measured on 2026-09-11, 0 of the 57 aliases were reachable that way, and
+    that day's own census carried `AD Ceuta FC` against `Ceuta` and
+    `Al Taawoun FC` against `Al Taawon` as unresolved near misses with their
+    evidenced aliases present and unused. `Barbados Tridents Women` lost the
+    table altogether while the men's card resolved the same rename.
+
+    It cost real cards, not only authority matches. Replayed over 500 published
+    snapshots and 22,099 cards: 4 new folded pairs, 0 lost -
+    `Firpo vs CD Olimpia` against `CD Luis Angel Firpo Vs CD Olimpia` (26 fold
+    events) and `Pumas UNAM Vs Club Leon` against `U N A M Pumas vs Leon` (23),
+    both of which had been published as two cards for one match.
+
+    The second lookup is exact, like the first: it can only reach what the
+    table already records.
+    """
+
+    def test_every_alias_is_reachable_through_a_club_form_word(self):
+        table = team_identity.load_aliases()
+        self.assertTrue(table)
+        unreachable = [key for key, canonical in table.items()
+                       if team_identity.identity_form(key + " fc") != canonical]
+        # The two Racing Santander keys carry "club" inside the key itself, so
+        # their structure is not a key either; they are reached on the spelling
+        # feeds actually publish, which is the raw one.
+        self.assertEqual(sorted(unreachable),
+                         ["racing club de santander", "real racing club"])
+
+    def test_a_womens_fixture_still_reaches_the_table(self):
+        self.assertEqual(
+            team_identity.identity_form("barbados tridents women", "women"),
+            team_identity.load_aliases()["barbados tridents"])
+
+    def test_the_two_duplicate_pairs_this_found_now_fold(self):
+        kickoff = "2026-09-11T03:06:00+00:00"
+        for ours, theirs in (
+                ("Firpo vs CD Olimpia", "CD Luis Ángel Firpo Vs CD Olimpia"),
+                ("U N A M Pumas vs Leon", "Pumas UNAM Vs Club León")):
+            with self.subTest(pair=ours):
+                self.assertTrue(fixture_dedupe.same_fixture(
+                    {"name": ours, "start_time": kickoff},
+                    {"name": theirs, "start_time": kickoff}))
+
+    def test_the_second_lookup_invents_nothing(self):
+        """A name whose structure is not in the table comes back as its
+        structure, exactly as before. ("club" is itself a legal-form word, so
+        the example avoids one.)"""
+        self.assertEqual(team_identity.identity_form("some unknown side fc"),
+                         "some unknown side")
+
+    def test_the_gender_distinction_survives_the_second_lookup(self):
+        """structural_form strips the gender marker, so the table is now
+        reachable from a women's title. The categories must still not fold."""
+        kickoff = "2026-09-11T12:00:00+00:00"
+        self.assertFalse(fixture_dedupe.same_fixture(
+            {"name": "Barbados Tridents Women vs Jamaica Empress",
+             "start_time": kickoff},
+            {"name": "Barbados Royals vs Jamaica Empress", "start_time": kickoff}))
+
+    def test_a_reserve_side_is_still_not_its_senior_club(self):
+        kickoff = "2026-09-11T12:00:00+00:00"
+        self.assertFalse(fixture_dedupe.same_fixture(
+            {"name": "PSV U19 vs Shakhtar Donetsk U19", "start_time": kickoff},
+            {"name": "PSV Eindhoven vs Shakhtar Donetsk", "start_time": kickoff}))
+
+    def test_united_and_city_survive_it_too(self):
+        kickoff = "2026-09-11T12:00:00+00:00"
+        self.assertFalse(fixture_dedupe.same_fixture(
+            {"name": "Manchester United FC vs Arsenal", "start_time": kickoff},
+            {"name": "Manchester City FC vs Arsenal", "start_time": kickoff}))
+
+
 class TheFinalCompletionGateIsMeasurable(unittest.TestCase):
     """PART K: every invariant the gate names is asked of the published tree,
     from the files the scanner itself writes - not from a summary it could

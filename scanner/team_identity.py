@@ -373,12 +373,28 @@ def identity_form(value: Any, gender: str = "",
     "1 FSV Mainz 05" to "FSV Mainz 05" without relating anything else.
     """
     canonical = canonical_team(value, gender, path)
-    aliased = canonical != normalize_team(value)
-    if aliased:
+    if canonical != normalize_team(value):
         # A verified alias is the answer; structure is not applied on top of
         # it, so the table stays the single place a club is renamed.
         return canonical
-    return structural_form(canonical)
+
+    # The table is keyed on the club's own name, and a feed can hand that name
+    # over wrapped in a legal-form word, a leading ordinal or a gender marker.
+    # Looked up on the structure once more, and still exactly - so nothing new
+    # is related, only what the table already records is actually reachable.
+    #
+    # Measured on 2026-09-11: every one of the 57 entries was unreachable this
+    # way. `AD Ceuta FC` against `Ceuta` and `Al Taawoun FC` against
+    # `Al Taawon` were sitting in that day's own near-miss census with their
+    # aliases present and unused, and a women's fixture lost the table
+    # altogether - `Barbados Tridents Women` never reached the rename the
+    # men's card resolved.
+    structure = structural_form(canonical)
+    if structure != canonical:
+        stripped = canonical_team(structure, gender, path)
+        if stripped != structure:
+            return stripped
+    return structure
 
 
 def clear_cache() -> None:
