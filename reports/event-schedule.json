@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T04:11:33.543449+00:00",
+  "generated_at": "2026-09-11T04:30:13.095164+00:00",
   "today_match_count": 7,
   "upcoming_count": 105,
   "today_missing_logo": [],
@@ -46,15 +46,6 @@
       "status": "ENDED",
       "reason": "provider_dead_status",
       "start_time": "2026-09-11T00:30:00+00:00"
-    },
-    {
-      "name": "Llaneros FC Vs Deportes Tolima",
-      "competition": "Primera A",
-      "sport": "football",
-      "source_id": "sm-sports-data",
-      "status": "ENDED",
-      "reason": "provider_dead_status",
-      "start_time": "2026-09-07T23:00:00+00:00"
     },
     {
       "name": "Arsenal Vs Chelsea",
@@ -109,6 +100,15 @@
       "status": "ENDED",
       "reason": "provider_dead_status",
       "start_time": "2026-09-11T00:30:00+00:00"
+    },
+    {
+      "name": "Llaneros FC Vs Deportes Tolima",
+      "competition": "Primera A",
+      "sport": "football",
+      "source_id": "sm-sports-data",
+      "status": "ENDED",
+      "reason": "provider_dead_status",
+      "start_time": "2026-09-07T23:00:00+00:00"
     },
     {
       "name": "Mamelodi Sundowns Vs Siwelele FC",
@@ -740,7 +740,7 @@
       },
       {
         "name": "Huddersfield Giants Vs Castleford Tigers",
-        "source": "sm-sports-data, srhady-willow-event, sportlive-fancode-backu",
+        "source": "sm-sports-data, sm-fancode, srhady-tapmad-bd, sportlive-fanc",
         "competition": "Super League",
         "sport_type": "",
         "reason": "rugby gazetteer",
@@ -953,75 +953,80 @@
     "applied": 0,
     "pending_confirmation": 0,
     "live": 1,
-    "recorded": 72,
+    "recorded": 71,
     "conflict": 0,
     "unmatched": 40,
     "start_window": 0,
     "start_window_fixtures": [],
     "by_status": {
       "LIVE": 1,
-      "UPCOMING": 72
+      "UPCOMING": 71
     },
     "by_confidence": {
-      "LOW": 30,
+      "LOW": 29,
       "HIGH": 43
     },
     "applied_fixtures": [],
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 0,
-    "pending_confirmation": 1,
-    "live": 2,
-    "recorded": 1,
-    "conflict": 1,
+    "applied": 1,
+    "pending_confirmation": 2,
+    "live": 1,
+    "recorded": 0,
+    "conflict": 0,
     "unmatched": 3,
     "start_window": 0,
     "start_window_fixtures": [],
     "by_status": {
-      "LIVE": 2,
-      "FINISHED": 1,
-      "UPCOMING": 1
+      "FINISHED": 3,
+      "LIVE": 1
     },
     "by_confidence": {
-      "LOW": 4,
-      "CONFLICT": 1
+      "LOW": 4
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "CD Marathon Vs LD Alajuelense",
+        "fixture_id": "provider:cd-marathon-vs-ld-alajuelense|concacaf central american cup|2026-09-11",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
+          "LiveScore"
+        ],
+        "evidence": [
+          "LiveScore livescore=FT (6, event 1884002)"
+        ],
+        "authority_finished_seen_at": "2026-09-11T04:29:15.245601+00:00",
+        "remove_after": "2026-09-11T04:49:15.245601+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
     "conflicts": [
       {
-        "name": "Millonarios Vs Deportivo Cali",
-        "reason": "independent authorities disagree: ESPN espn-header=9' (STATUS_FIRST_HALF, event 401878013); LiveScore livescore=FT (6, event 1806269)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "name": "CD Marathon Vs LD Alajuelense",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "LOW",
         "upstream_families": [
-          "ESPN",
           "LiveScore"
         ]
       }
     ]
   },
   "fixture_status_api": {
-    "asked": 3,
-    "finished": 1,
+    "asked": 2,
+    "finished": 0,
     "unplayable": 0,
     "cache_hits": 0,
     "no_verdict": 2
   },
   "live_protection": {
-    "carried_forward": 3,
-    "released_ended": 1,
-    "released_ended_ids": [
-      "millonarios-vs-deportivo-cali"
-    ],
-    "retired_terminal": [
-      {
-        "id": "millonarios-vs-deportivo-cali",
-        "name": "Millonarios Vs Deportivo Cali",
-        "provenance": "authority_finished",
-        "reason": "authoritative finished status"
-      }
-    ],
+    "carried_forward": 4,
+    "released_ended": 0,
+    "released_ended_ids": [],
+    "retired_terminal": [],
     "released_listing_expired": 0,
     "released_dead_link": 0,
     "released_stale": 0,
@@ -1030,20 +1035,19 @@
     "probe_alive": 1,
     "probe_dead": 2,
     "probe_inconclusive": 0,
-    "end_pending": 1,
+    "end_pending": 2,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "END_PENDING": 1,
-      "ENDED": 1,
-      "LIVE": 2
+      "LIVE": 2,
+      "END_PENDING": 2
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 1,
+    "added": 0,
     "total": 95,
     "refused": 0,
     "refused_names": [],
@@ -1051,7 +1055,7 @@
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 1
+    "decided_this_scan": 0
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1090,19 +1094,19 @@
     "matched_by_participants": 11
   },
   "sports_poster_enrichment": {
-    "attempted": 88,
+    "attempted": 87,
     "poster_filled": 0,
-    "badge_filled": 44,
+    "badge_filled": 42,
     "badge_used_as_logo": 0,
-    "cache_hits": 24,
+    "cache_hits": 23,
     "cached_entries": 532,
     "provider": {
-      "requests": 31,
-      "hits": 29,
+      "requests": 2,
+      "hits": 0,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 46,
+      "skipped_rate_limited": 75,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1173,24 +1177,24 @@
   ],
   "sport_filter": {
     "at_merge": {
-      "total": 137,
-      "published": 113,
+      "total": 136,
+      "published": 112,
       "rejected": 9,
       "quarantined": 15,
       "states": {
-        "confirmed_cricket": 24,
         "confirmed_football": 89,
+        "confirmed_cricket": 23,
         "unknown": 15,
         "confirmed_other": 9
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 39,
-          "cricket": 4,
+          "total": 38,
+          "cricket": 3,
           "football": 24,
           "quarantined": 10,
           "rejected": 1,
-          "published": 28
+          "published": 27
         },
         "srhady-primevideo-sports": {
           "total": 1,
@@ -1232,6 +1236,14 @@
           "rejected": 0,
           "published": 14
         },
+        "sm-fancode": {
+          "total": 18,
+          "cricket": 6,
+          "football": 8,
+          "quarantined": 0,
+          "rejected": 4,
+          "published": 14
+        },
         "srhady-tapmad-bd": {
           "total": 10,
           "cricket": 4,
@@ -1248,14 +1260,6 @@
           "rejected": 4,
           "published": 13
         },
-        "sm-fancode": {
-          "total": 18,
-          "cricket": 6,
-          "football": 8,
-          "quarantined": 0,
-          "rejected": 4,
-          "published": 14
-        },
         "drmlive-fancode-mirror": {
           "total": 18,
           "cricket": 6,
@@ -1264,15 +1268,7 @@
           "rejected": 4,
           "published": 14
         },
-        "dartv-fancode-mirror": {
-          "total": 17,
-          "cricket": 6,
-          "football": 7,
-          "quarantined": 0,
-          "rejected": 4,
-          "published": 13
-        },
-        "iptvflixbd-fancode-data": {
+        "sayanpal-fancode-mirror": {
           "total": 17,
           "cricket": 6,
           "football": 7,
@@ -1288,13 +1284,21 @@
           "rejected": 4,
           "published": 13
         },
-        "sayanpal-fancode-mirror": {
+        "iptvflixbd-fancode-data": {
           "total": 17,
           "cricket": 6,
           "football": 7,
           "quarantined": 0,
           "rejected": 4,
           "published": 13
+        },
+        "dartv-fancode-mirror": {
+          "total": 18,
+          "cricket": 6,
+          "football": 8,
+          "quarantined": 0,
+          "rejected": 4,
+          "published": 14
         }
       },
       "rejected_examples": [
@@ -1486,8 +1490,8 @@
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_cricket": 1,
-        "confirmed_football": 6
+        "confirmed_football": 6,
+        "confirmed_cricket": 1
       },
       "by_source": {
         "sm-sports-data": {
@@ -1569,6 +1573,14 @@
           "rejected": 0,
           "published": 14
         },
+        "sm-fancode": {
+          "total": 14,
+          "cricket": 6,
+          "football": 8,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 14
+        },
         "srhady-tapmad-bd": {
           "total": 6,
           "cricket": 4,
@@ -1585,14 +1597,6 @@
           "rejected": 0,
           "published": 13
         },
-        "sm-fancode": {
-          "total": 14,
-          "cricket": 6,
-          "football": 8,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 14
-        },
         "drmlive-fancode-mirror": {
           "total": 14,
           "cricket": 6,
@@ -1601,15 +1605,7 @@
           "rejected": 0,
           "published": 14
         },
-        "dartv-fancode-mirror": {
-          "total": 13,
-          "cricket": 6,
-          "football": 7,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 13
-        },
-        "iptvflixbd-fancode-data": {
+        "sayanpal-fancode-mirror": {
           "total": 13,
           "cricket": 6,
           "football": 7,
@@ -1625,13 +1621,21 @@
           "rejected": 0,
           "published": 13
         },
-        "sayanpal-fancode-mirror": {
+        "iptvflixbd-fancode-data": {
           "total": 13,
           "cricket": 6,
           "football": 7,
           "quarantined": 0,
           "rejected": 0,
           "published": 13
+        },
+        "dartv-fancode-mirror": {
+          "total": 14,
+          "cricket": 6,
+          "football": 8,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 14
         }
       },
       "rejected_examples": [],
@@ -1648,15 +1652,15 @@
   },
   "sport_pipeline": {
     "raw_events": 958,
-    "cricket_kept": 24,
+    "cricket_kept": 23,
     "football_kept": 89,
     "other_discarded": 168,
     "unresolved": 15,
     "today_final": 7,
     "upcoming_final": 105,
     "published_states": {
-      "confirmed_cricket": 24,
-      "confirmed_football": 88
+      "confirmed_football": 88,
+      "confirmed_cricket": 24
     },
     "other_sport_leak": 0,
     "ball_sport_wrongly_refused": 0
@@ -1680,52 +1684,52 @@
     "stale_or_aged": 1,
     "unplayable": 0,
     "published_retiring_by_basis": {
-      "provider_or_authority": 1,
+      "provider_or_authority": 2,
       "estimate": 0,
-      "none": 6
+      "none": 5
     }
   },
   "fixture_stream_health": {
     "fixtures": 131,
     "published_fixtures": 112,
-    "fixtures_with_verified_stream": 12,
-    "fixtures_with_zero_verified": 119,
+    "fixtures_with_verified_stream": 11,
+    "fixtures_with_zero_verified": 120,
     "published_without_stream": 106,
     "fallback_available": 4,
     "targeted_fixtures": 5,
     "targeted_attempts": 19,
     "fixtures_with_a_first_link_time": 4,
     "candidate_routes": 243,
-    "verified_routes": 22,
-    "failed_routes": 221,
+    "verified_routes": 20,
+    "failed_routes": 223,
     "fixtures_touched_by_a_route_failure": 78,
     "fixtures_left_with_nothing": 14,
-    "distinct_failure_codes": 4,
+    "distinct_failure_codes": 5,
     "unrecognised_candidate_groups": 59,
-    "unrecognised_failed_routes": 130
+    "unrecognised_failed_routes": 134
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 112,
-    "verified": 71,
-    "partial_authority": 1,
+    "verified": 69,
+    "partial_authority": 2,
     "unverified": 38,
-    "conflict": 2,
+    "conflict": 3,
     "matched_by_two_independent_authorities": 43,
     "authority_agreements": 42,
     "authority_disagreements": 0,
-    "card_status_conflicts": 2,
+    "card_status_conflicts": 3,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 5
+    "not_published": 4
   },
   "stream_health": {
     "sources_in_outage": [],
     "published_fixtures": 112,
     "fixtures_with_stream": 5,
     "fixtures_playable_via_catalogue": 1,
-    "fixtures_with_fresh_stream": 4,
-    "fixtures_with_carried_stream": 1,
+    "fixtures_with_fresh_stream": 3,
+    "fixtures_with_carried_stream": 2,
     "today_with_stream": 5,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
