@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-11T00:09:11.979505+00:00",
+  "generated_at": "2026-09-11T00:28:52.057064+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -15,10 +15,10 @@
         "132|Stumps - day 1",
         "133|Stumps - day 2",
         "134|Stumps - day 3",
-        "2|19'",
-        "3|47'",
-        "3|71'",
-        "3|73'"
+        "2|37'",
+        "3|67'",
+        "3|90+1'",
+        "3|90+3'"
       ],
       "attempts": [
         {
@@ -114,29 +114,32 @@
     "upcoming": 54,
     "fixtures": 62,
     "verdicts": {
-      "VERIFIED": 37,
-      "UNVERIFIED": 24,
-      "PARTIAL_AUTHORITY": 1
+      "CONFLICT": 1,
+      "VERIFIED": 36,
+      "PARTIAL_AUTHORITY": 1,
+      "UNVERIFIED": 24
     },
-    "verified": 37,
+    "verified": 36,
     "partial_authority": 1,
     "unverified": 24,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "matched": 32,
         "unmatched": 30
       },
       "livescore": {
-        "matched": 31,
-        "unmatched": 31
+        "unmatched": 31,
+        "matched": 31
       }
     },
     "matched_by_two_independent_authorities": 24,
     "authority_agreements": 24,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
-    "conflict_reason_counts": {},
+    "card_status_conflicts": 1,
+    "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1
+    },
     "identity_near_misses": 12,
     "independent_authority_count_distribution": {
       "0": 24,
@@ -148,10 +151,10 @@
         "132|Stumps - day 1",
         "133|Stumps - day 2",
         "134|Stumps - day 3",
-        "2|19'",
-        "3|47'",
-        "3|71'",
-        "3|73'"
+        "2|37'",
+        "3|67'",
+        "3|90+1'",
+        "3|90+3'"
       ],
       "espn-header": []
     }
@@ -255,6 +258,86 @@
     }
   ],
   "fixtures": [
+    {
+      "fixture_id": "provider:barbados-tridents-vs-st-kitts-and-nevis-patriots|caribbean premier league|2026-09-10",
+      "card_id": "barbados-tridents-vs-st-kitts-and-nevis-patriots",
+      "name": "Barbados Tridents Vs St Kitts and Nevis Patriots",
+      "competition": "Caribbean Premier League",
+      "kickoff": "2026-09-10T23:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1534210",
+          "upstream_family": "ESPN",
+          "name": "Barbados Tridents vs St Kitts and Nevis Patriots",
+          "home": "Barbados Tridents",
+          "away": "St Kitts and Nevis Patriots",
+          "home_team_id": "642411",
+          "away_team_id": "857687",
+          "competition": "Caribbean Premier League",
+          "competition_id": "8623",
+          "kickoff": "2026-09-10T23:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "32nd Match (D/N)",
+          "format": "T20",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-09-12T23:59:00Z",
+          "authority_uid": "s:200~e:1534210~c:1534210"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Barbados Royals vs St Kitts and Nevis Patriots",
+              "event_id": "1772641",
+              "agreed_side": "st kitts and nevis patriots",
+              "ours": "barbados tridents",
+              "theirs": "barbados royals"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
     {
       "fixture_id": "provider:cienciano-vs-montevideo-city-torque|conmebol sudamericana|2026-09-11",
       "card_id": "cienciano-vs-montevideo-city-torque",
@@ -430,130 +513,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:barbados-tridents-vs-st-kitts-and-nevis-patriots|caribbean premier league|2026-09-10",
-      "card_id": "barbados-tridents-vs-st-kitts-and-nevis-patriots",
-      "name": "Barbados Tridents Vs St Kitts and Nevis Patriots",
-      "competition": "Caribbean Premier League",
-      "kickoff": "2026-09-10T23:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1534210",
-          "upstream_family": "ESPN",
-          "name": "Barbados Tridents vs St Kitts and Nevis Patriots",
-          "home": "Barbados Tridents",
-          "away": "St Kitts and Nevis Patriots",
-          "home_team_id": "642411",
-          "away_team_id": "857687",
-          "competition": "Caribbean Premier League",
-          "competition_id": "8623",
-          "kickoff": "2026-09-10T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "32nd Match (D/N)",
-          "format": "T20",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-09-12T23:59:00Z",
-          "authority_uid": "s:200~e:1534210~c:1534210"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Barbados Royals vs St Kitts and Nevis Patriots",
-              "event_id": "1772641",
-              "agreed_side": "st kitts and nevis patriots",
-              "ours": "barbados tridents",
-              "theirs": "barbados royals"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:cf-estrela-amadora-vs-sporting-braga|liga portugal betclic|2026-09-10",
-      "card_id": "cf-estrela-amadora-vs-sporting-braga",
-      "name": "CF Estrela Amadora Vs Sporting Braga",
-      "competition": "Liga Portugal Betclic",
-      "kickoff": "2026-09-10T19:15:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Estrela vs Braga",
-              "event_id": "401885474",
-              "agreed_side": "estrela amadora",
-              "ours": "sporting braga",
-              "theirs": "braga"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:vila-nova-vs-goias|serie b|2026-09-10",
       "card_id": "vila-nova-vs-goias",
       "name": "Vila Nova vs Goias",
@@ -588,7 +547,7 @@
           "competition_id": "4007",
           "kickoff": "2026-09-10T22:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "45'+5'",
+          "status_raw": "19'",
           "status_code": "STATUS_FIRST_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -597,7 +556,7 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "45'+5'",
+          "espn_status_detail": "19'",
           "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
@@ -618,7 +577,7 @@
           "competition_id": "630",
           "kickoff": "2026-09-10T22:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "73'",
+          "status_raw": "90+3'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -639,61 +598,6 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "PARTIAL_AUTHORITY",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:fc-bayern-münchen-vs-bodø-glimt|uefa champions league|2026-09-10",
-      "card_id": "fc-bayern-münchen-vs-bodø-glimt",
-      "name": "FC Bayern München Vs Bodø Glimt",
-      "competition": "UEFA Champions League",
-      "kickoff": "2026-09-10T19:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Bayern Munich vs Bodo/Glimt",
-              "event_id": "401915443",
-              "agreed_side": "bayern munchen",
-              "ours": "bodø glimt",
-              "theirs": "bodo glimt"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Bayern Munich vs Bodoe/Glimt",
-              "event_id": "1882740",
-              "agreed_side": "bayern munchen",
-              "ours": "bodø glimt",
-              "theirs": "bodoe glimt"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -769,6 +673,144 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:cf-estrela-amadora-vs-sporting-braga|liga portugal betclic|2026-09-10",
+      "card_id": "cf-estrela-amadora-vs-sporting-braga",
+      "name": "CF Estrela Amadora Vs Sporting Braga",
+      "competition": "Liga Portugal Betclic",
+      "kickoff": "2026-09-10T19:15:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Estrela vs Braga",
+              "event_id": "401885474",
+              "agreed_side": "estrela amadora",
+              "ours": "sporting braga",
+              "theirs": "braga"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:fc-bayern-münchen-vs-bodø-glimt|uefa champions league|2026-09-10",
+      "card_id": "fc-bayern-münchen-vs-bodø-glimt",
+      "name": "FC Bayern München Vs Bodø Glimt",
+      "competition": "UEFA Champions League",
+      "kickoff": "2026-09-10T19:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Bayern Munich vs Bodo/Glimt",
+              "event_id": "401915443",
+              "agreed_side": "bayern munchen",
+              "ours": "bodø glimt",
+              "theirs": "bodo glimt"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Bayern Munich vs Bodoe/Glimt",
+              "event_id": "1882740",
+              "agreed_side": "bayern munchen",
+              "ours": "bodø glimt",
+              "theirs": "bodoe glimt"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:england-vs-pakistan|icc world test championship|2026-09-11",
+      "card_id": "england-vs-pakistan",
+      "name": "England Vs Pakistan",
+      "competition": "ICC World Test Championship",
+      "kickoff": "2026-09-11T09:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
     },
     {
       "fixture_id": "provider:sri-lanka-vs-pakistan-women|women asia cup|2026-09-11",
@@ -1075,9 +1117,9 @@
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode",
@@ -1137,9 +1179,9 @@
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -1719,9 +1761,9 @@
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode",
@@ -2290,8 +2332,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2368,15 +2410,15 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "sportlive-fancode-backup",
-        "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
         "srhady-axsports-live",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "srhady-bingstream",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sm-fancode",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2422,43 +2464,6 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:england-vs-pakistan|icc world test championship|2026-09-11",
-      "card_id": "england-vs-pakistan",
-      "name": "England Vs Pakistan",
-      "competition": "ICC World Test Championship",
-      "kickoff": "2026-09-11T09:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2880,16 +2885,16 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "srhady-axsports-live",
         "srhady-tapmad-bd",
         "sportlive-fancode-backup",
-        "srhady-bingstream",
-        "sm-fancode",
         "drmlive-fancode-mirror",
+        "srhady-bingstream",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
-        "srhady-axsports-live",
+        "dartv-fancode-mirror",
+        "sm-fancode",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2980,13 +2985,13 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "dartv-fancode-mirror",
+        "sm-fancode",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode",
@@ -3054,8 +3059,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3147,9 +3152,9 @@
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -3394,9 +3399,9 @@
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -3437,9 +3442,9 @@
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -3751,9 +3756,9 @@
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "CricHD",
@@ -4007,9 +4012,9 @@
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -4280,9 +4285,9 @@
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "iptvflixbd-fancode-data",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "iptvflixbd-fancode-data"
       ],
       "upstream_families": [
         "FanCode"
@@ -4430,94 +4435,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:india-vs-bangladesh-women|women asia cup|2026-09-10",
-      "card_id": "india-women-vs-bangladesh-women",
-      "name": "India Women Vs Bangladesh Women",
-      "competition": "Womens Asia Cup",
-      "kickoff": "2026-09-10T14:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1548903",
-          "upstream_family": "ESPN",
-          "name": "Bangladesh Women vs India Women",
-          "home": "Bangladesh Women",
-          "away": "India Women",
-          "home_team_id": "299037",
-          "away_team_id": "1812",
-          "competition": "Women's Twenty20 Asia Cup",
-          "competition_id": "8659",
-          "kickoff": "2026-09-10T14:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "1st Semi-Final (D/N)",
-          "format": "T20",
-          "gender": "women",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-09-11T23:59:00Z",
-          "authority_uid": "s:200~e:1548903~c:1548903"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1861440",
-          "upstream_family": "LiveScore",
-          "name": "India W vs Bangladesh W",
-          "home": "India W",
-          "away": "Bangladesh W",
-          "home_team_id": "86118",
-          "away_team_id": "86198",
-          "competition": "Women's Twenty20 Asia Cup",
-          "competition_id": "26059",
-          "kickoff": "2026-09-10T14:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "Semi Final 1",
-          "format": "Womens Twenty20",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
     }
   ]
 }
