@@ -573,9 +573,10 @@ def generate_search_index(
     *,
     output_path: Optional[str] = None,
     now: Optional[_dt.datetime] = None,
+    series_root: str = SERIES_ROOT,
 ) -> Dict[str, Any]:
     target = output_path or SEARCH_INDEX_PATH
-    document = build_search_index(paginated, now=now)
+    document = build_search_index(paginated, now=now, series_root=series_root)
 
     if not document["items"]:
         # An empty index would make every genre and every search look empty.
