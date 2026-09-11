@@ -131,6 +131,7 @@ Master plan document (Section B) ধরে নিয়েছিল "বর্�
 - Movie-specific pre-step: private movie source repo checkout (`secrets.PRIVATE_MOVIE_SOURCE_TOKEN`, repo `0matbank/hopeful-research`)।
 - Scan step env-এ ইতিমধ্যে ইনজেক্টেড secret: `TMDB_API_KEY`, `TMDB_API_TOKEN`, `FANART_API_KEY`, `OMDB_API_KEY`, `PRIVATE_MOVIE_SOURCE_TOKEN` (+ অ-movie secrets একই shared step-এ)।
 - **RapidAPI (MoviesDatabase) secret এখনো নেই** — PART 03-এ যোগ করা হবে (`RAPIDAPI_KEY`, `RAPIDAPI_MOVIES_HOST`), শুধু GitHub Secrets-এ, কোথাও plaintext না।
+- **Correction (PART 03-এ verify করে পাওয়া):** উপরের secret list শুধু scan.yml-এ *reference* করা secret নাম, বাস্তবে `gh secret list` চালিয়ে দেখা গেছে repo-তে শুধু `TMDB_API_KEY` actually configured ছিল — `TMDB_API_TOKEN`, `FANART_API_KEY`, `OMDB_API_KEY` reference থাকলেও set ছিল না (খালি string resolve হতো, harmlessly skip হতো যেহেতু প্রতিটা adapter missing key handle করে)। PART 03-এ `OMDB_API_KEY`, `FANART_API_KEY`, `RAPIDAPI_KEY`, `RAPIDAPI_MOVIES_HOST` সরাসরি GitHub secret হিসেবে set করা হয়েছে — বিস্তারিত `docs/movie-metadata-providers.md`।
 - Commit step `git add data/ state/` (পুরো directory glob) — অর্থাৎ নতুন `state/movie-metadata-cache.json` automatically commit-এ ধরা পড়বে, workflow ফাইলে path পরিবর্তন লাগবে না।
 
 ## 12. Frontend movie flow (site/assets/js/app.js, ~10,486 লাইন, shared movies+live-tv+sports+player ফাইল)

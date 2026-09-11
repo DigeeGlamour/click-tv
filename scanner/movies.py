@@ -3235,11 +3235,12 @@ def paginate_movie_list(
     # fields that are not there yet, which is the bug this fixes rather than a
     # detail of it.
     _annotate_recency(prepared)
-    # PART 02: cache-only for now (allow_lookup=False - no provider module
-    # exists yet). PART 03 flips this to allow_lookup=retain_recent_dropouts
-    # once scanner/metadata_providers.py lands, so real network lookups still
-    # only ever happen on the true publish path.
-    _annotate_metadata(prepared, allow_lookup=False)
+    # PART 03: scanner/metadata_providers.py now exists, so real provider
+    # lookups are allowed - but only on the true publish path
+    # (retain_recent_dropouts=True), the same gate _retain_recent_dropouts
+    # uses above. Tests/ad-hoc calls to paginate_movie_list therefore still
+    # only ever apply the existing cache and never reach the network.
+    _annotate_metadata(prepared, allow_lookup=retain_recent_dropouts)
     ordered_movies = sorted(prepared, key=_movie_sort_key)
 
     total_count = len(ordered_movies)
