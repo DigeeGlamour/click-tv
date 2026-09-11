@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-11T22:09:35.381292+00:00",
+  "timestamp": "2026-09-11T22:14:35.953011+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
   "total_input_pool": 4,
@@ -7,13 +7,14 @@
   "total_proxy_selected": 2,
   "total_proxy_checked": 2,
   "total_processed": 4,
-  "total_publishable": 0,
+  "total_publishable": 1,
   "strict_player_hidden": 0,
   "browser_unreachable_hidden": 1,
   "unproven_hidden": 0,
   "status_counts": {
-    "failed": 3,
-    "unreachable_from_browser": 1
+    "failed": 2,
+    "unreachable_from_browser": 1,
+    "verified_global": 1
   },
   "groups": {
     "failed": [
@@ -30,22 +31,6 @@
         "proxy_name": "default-cloudflare-worker",
         "proxy_http_status": 403,
         "verification_error": "HTTP 403: Forbidden",
-        "verification_note": "",
-        "permanent_fail_count": 0
-      },
-      {
-        "id": "defensa-y-justicia-vs-gimnasia-m",
-        "name": "Defensa Y Justicia vs Gimnasia M",
-        "source_id": "srhady-bingstream",
-        "source_pipeline": "today_match",
-        "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6a871d8896e1cc910f0db00f/chunks.m3u8",
-        "verification_status": "failed",
-        "verification_mode": "global",
-        "publish_allowed": false,
-        "http_status": 404,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "HTTP 404: Not Found",
         "verification_note": "",
         "permanent_fail_count": 0
       },
@@ -81,6 +66,24 @@
         "proxy_http_status": 0,
         "verification_error": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
         "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      }
+    ],
+    "verified_global": [
+      {
+        "id": "defensa-y-justicia-vs-gimnasia-m",
+        "name": "Defensa Y Justicia vs Gimnasia M",
+        "source_id": "srhady-bingstream",
+        "source_pipeline": "today_match",
+        "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6a871d8896e1cc910f0db00f/chunks.m3u8",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
         "permanent_fail_count": 0
       }
     ]
