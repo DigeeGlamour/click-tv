@@ -196,6 +196,13 @@ def tmdb_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any]]:
     result: Dict[str, Any] = {
         "tmdb_id": tmdb_id,
         "imdb_id": str(detail.get("imdb_id") or "").strip() or None,
+        # PART 19: report WHICH candidate was matched, so the confidence
+        # policy can check the match instead of taking this adapter's word
+        # for it. A provider that names its candidate can be verified; one
+        # that does not can only be believed.
+        "match_title": str(detail.get("title") or best.get("title") or best.get("name") or "").strip() or None,
+        "match_year": _coerce_year((release_date or "")[:4]),
+        "content_kind": "movie",
         "release_date": release_date or None,
         "genres": genres,
         "rating": detail.get("vote_average") or best.get("vote_average"),
@@ -249,6 +256,12 @@ def omdb_metadata(title: str, year: int = 0, imdb_id: Optional[str] = None) -> O
 
     result: Dict[str, Any] = {
         "imdb_id": str(payload.get("imdbID") or "").strip() or None,
+        # PART 19: name the candidate so the match can be checked, and say
+        # what kind of thing it is - OMDb answers for series too, and a
+        # series record must never be applied to a film.
+        "match_title": str(payload.get("Title") or "").strip() or None,
+        "match_year": _coerce_year(str(payload.get("Year") or "")[:4]),
+        "content_kind": "series" if str(payload.get("Type") or "").casefold() in ("series", "episode") else "movie",
         "release_date": _parse_omdb_date(payload.get("Released")),
         "genres": _clean_genres(str(payload.get("Genre") or "").split(",")),
         "rating": rating,

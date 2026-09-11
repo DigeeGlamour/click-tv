@@ -656,6 +656,16 @@ def _annotate_metadata(
             line = provider_health.summary_line()
             if line:
                 print(f"   movie metadata: {line}")
+
+        # PART 19. Surfaced, never merged: two items on one external id means
+        # one of them is matched to the wrong film, and the streams of both
+        # are worth more than a tidy metadata table.
+        for conflict in summary.get("external_id_conflicts") or ():
+            print(
+                f"   metadata conflict: {conflict['field']}="
+                f"{conflict['external_id']} claimed by "
+                f"{', '.join(conflict['items'])} - {conflict['action']}"
+            )
         return summary
     except Exception as error:  # noqa: BLE001 - metadata must not fail a scan
         print(f"   movie metadata annotation skipped: {error}")

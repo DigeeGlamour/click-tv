@@ -215,12 +215,29 @@ def _is_due_for_refresh(record: Dict[str, Any], now: _dt.datetime) -> bool:
     return (now - updated) > _dt.timedelta(days=_refresh_ttl_days(record, now))
 
 
+def _load_manual(manual_path: Optional[str] = None) -> Dict[str, Any]:
+    """Admin-asserted metadata. A missing file is simply no overrides."""
+    try:
+        from scanner import movie_metadata_confidence as confidence_policy
+
+        return confidence_policy.load_manual(manual_path)
+    except Exception:  # noqa: BLE001 - overrides must never fail a scan
+        return {"version": 1, "movies": {}}
+
+
+def _manual_entry(manual_store: Dict[str, Any], identity: str) -> Dict[str, Any]:
+    entry = (manual_store.get("movies") or {}).get(identity)
+    return entry if isinstance(entry, dict) else {}
+
+
 def upsert(
     store: Dict[str, Any],
     identity: str,
     fields: Optional[Dict[str, Any]],
     *,
     now: Optional[_dt.datetime] = None,
+    local: Optional[Dict[str, Any]] = None,
+    manual: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Merge a (possibly partial) resolved-metadata dict into the cache.
 
@@ -228,6 +245,14 @@ def upsert(
     blank out a field an earlier one already resolved, and a failed
     lookup (`fields=None`) never erases a previously cached value - it only
     records the attempt so the retry-after-failure cooldown applies.
+
+    PART 19. When `local` is given, how much of the candidate is believed is
+    worked out from THIS match rather than taken from the provider's own
+    label: a trusted external id or an exact title-and-year is high, a year
+    off by one is medium, a conflicting year or a different title is low, and
+    a series or person result for a film is rejected outright. A low match
+    writes nothing and is recorded as unresolved. `manual` carries the
+    admin-asserted values and locks, which no level may overwrite.
     """
     movies = store.setdefault("movies", {})
     record = movies.get(identity)
@@ -238,7 +263,11 @@ def upsert(
     stamp = (now or _now()).isoformat()
     record["metadata_last_attempt_at"] = stamp
 
-    if fields:
+    if not fields:
+        return record
+
+    if local is None and not manual:
+        # Unchanged legacy path: fill-only, provider-labelled confidence.
         for field in METADATA_FIELDS:
             value = fields.get(field)
             if value in (None, "", [], {}):
@@ -252,6 +281,36 @@ def upsert(
         if fields.get("metadata_confidence"):
             record["metadata_confidence"] = fields["metadata_confidence"]
         record["metadata_updated_at"] = stamp
+        return record
+
+    from scanner import movie_metadata_confidence as confidence_policy
+
+    level, reason = (
+        confidence_policy.match_confidence(local, fields)
+        if local is not None
+        else (fields.get("metadata_confidence") or confidence_policy.CONFIDENCE_MEDIUM, "provider label")
+    )
+    plan = confidence_policy.plan_application(
+        record, fields, confidence=level, reason=reason, manual=manual or {}
+    )
+
+    for field, value in plan["apply"].items():
+        if field in METADATA_FIELDS or field in ("metadata_source", "metadata_sources"):
+            record[field] = value
+
+    # The admin's assertions are applied last and unconditionally: they are
+    # the one source no provider outranks.
+    for field, value in confidence_policy.manual_values(manual or {}).items():
+        if field in METADATA_FIELDS:
+            record[field] = value
+
+    record["metadata_confidence"] = level or confidence_policy.CONFIDENCE_LOW
+    record["metadata_match_state"] = plan["state"]
+    record["metadata_match_reason"] = reason
+    if plan["refused"]:
+        record["metadata_refused"] = plan["refused"]
+    if plan["state"] == "applied":
+        record["metadata_updated_at"] = stamp
     return record
 
 
@@ -264,6 +323,7 @@ def enrich(
     lookup: Optional[Callable[[Dict[str, Any]], Optional[Dict[str, Any]]]] = None,
     budget: Optional[int] = None,
     availability: Optional[Callable[[], bool]] = None,
+    manual_path: Optional[str] = None,
 ) -> Dict[str, int]:
     """Apply cached metadata onto every movie; optionally resolve new ones.
 
@@ -283,6 +343,7 @@ def enrich(
     remaining_budget = DEFAULT_LOOKUP_BUDGET if budget is None else budget
     store = load(path)
     movies_store = store.setdefault("movies", {})
+    manual_store = _load_manual(manual_path)
 
     cached_hits = 0
     fetched = 0
@@ -346,7 +407,10 @@ def enrich(
             except Exception:  # noqa: BLE001 - a provider bug must not fail a scan
                 resolved = None
 
-            record = upsert(store, identity, resolved, now=reference)
+            record = upsert(
+                store, identity, resolved, now=reference,
+                local=movie, manual=_manual_entry(manual_store, identity),
+            )
             if resolved:
                 _apply_fill_only(movie, record)
                 if is_refresh:
@@ -364,6 +428,17 @@ def enrich(
         if isinstance(movie, dict) and _apply_poster_backdrop_fallback(movie):
             poster_backdrops += 1
 
+    # PART 19. Two local items holding one external id means at least one of
+    # them is matched to the wrong film. It is reported and left alone: merging
+    # them would destroy a real stream to tidy up a metadata mistake.
+    conflicts: List[Dict[str, Any]] = []
+    try:
+        from scanner import movie_metadata_confidence as confidence_policy
+
+        conflicts = confidence_policy.external_id_conflicts(movies_store)
+    except Exception:  # noqa: BLE001 - reporting must never fail a scan
+        conflicts = []
+
     if persist:
         save(store, path)
 
@@ -376,4 +451,5 @@ def enrich(
         "skipped_cooldown": skipped_cooldown,
         "skipped_unavailable": skipped_unavailable,
         "poster_backdrops": poster_backdrops,
+        "external_id_conflicts": conflicts,
     }
