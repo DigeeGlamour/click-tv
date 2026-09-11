@@ -1,24 +1,61 @@
 {
-  "timestamp": "2026-09-11T17:34:44.723109+00:00",
+  "timestamp": "2026-09-11T17:40:51.405957+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 1,
-  "total_global_network_checked": 1,
+  "total_input_pool": 6,
+  "total_global_network_checked": 6,
   "total_proxy_selected": 0,
   "total_proxy_checked": 0,
-  "total_processed": 1,
-  "total_publishable": 0,
-  "strict_player_hidden": 0,
-  "browser_unreachable_hidden": 0,
+  "total_processed": 6,
+  "total_publishable": 2,
+  "strict_player_hidden": 1,
+  "browser_unreachable_hidden": 2,
   "unproven_hidden": 0,
   "status_counts": {
-    "failed": 1
+    "verified_global": 2,
+    "failed": 1,
+    "unreachable_from_browser": 2,
+    "metadata_only": 1
   },
   "groups": {
+    "verified_global": [
+      {
+        "id": "al-ahli-vs-al-hazem",
+        "name": "Al Ahli Vs Al Hazem",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/vkpoljjpkj/out/v1/502bcf68b3514cd28a220e6f0a43816f/cenc.mpd",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "al-ahli-vs-al-hazem",
+        "name": "Al Ahli Vs Al Hazem",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://tmaxapp.site/pt658svs/sporttv5.m3u8",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      }
+    ],
     "failed": [
       {
-        "id": "stellenbosch-vs-sekhukhune-united",
-        "name": "Stellenbosch Vs Sekhukhune United",
+        "id": "az-alkmaar-vs-willem-ii-tilburg",
+        "name": "AZ Alkmaar Vs Willem II Tilburg",
         "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
         "url": "",
@@ -30,6 +67,58 @@
         "proxy_http_status": 0,
         "verification_error": "Stream URL is empty",
         "verification_note": "",
+        "permanent_fail_count": 0
+      }
+    ],
+    "unreachable_from_browser": [
+      {
+        "id": "fk-csíkszereda-miercurea-ciuc-vs-fc-dinamo-bucurești",
+        "name": "FK Csíkszereda Miercurea Ciuc Vs FC Dinamo București",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://162.251.160.53:8089/1003/index.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "al-ahli-vs-al-hazem",
+        "name": "Al Ahli Vs Al Hazem",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://162.251.160.53:8089/2360/index.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      }
+    ],
+    "metadata_only": [
+      {
+        "id": "al-ahli-saudi-fc-vs-al-hazem-fc",
+        "name": "Al Ahli Saudi FC vs Al Hazem FC",
+        "source_id": "sm-fancode",
+        "source_pipeline": "upcoming",
+        "url": "",
+        "verification_status": "metadata_only",
+        "verification_mode": "none",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
         "permanent_fail_count": 0
       }
     ]
