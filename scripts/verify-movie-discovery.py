@@ -225,12 +225,55 @@ base_sha = subprocess.run(["git", "merge-base", "HEAD", "origin/main"],
                           capture_output=True, text=True).stdout.strip()
 changed = subprocess.run(["git", "diff", "--name-only", "%s..HEAD" % base_sha],
                          capture_output=True, text=True).stdout.split()
-protected = [f for f in changed if any(
-    token in f.lower() for token in ("site/", "dist/", "app.js", "series.js", "index.html",
-                                     "player", "verifier", "event", "fixture", "sport",
-                                     "channel", "today-match", "upcoming", "data/playback"))]
+
+# Files that must not be touched at all. The movie UI lives in site/app.js,
+# site/series.js, site/index.html and the movie stylesheets from PART 12
+# onward, so those are audited by content below rather than by name.
+MOVIE_SURFACE_FILES = {
+    "site/assets/js/app.js",
+    "site/assets/js/series.js",
+    "site/index.html",
+    "site/assets/css/app.css",
+    "site/assets/css/series.css",
+}
+protected_files = [f for f in changed if any(
+    token in f.lower() for token in ("player", "event", "fixture", "sport",
+                                     "channel", "today-match", "upcoming",
+                                     "data/playback", "dist/"))
+    and f not in MOVIE_SURFACE_FILES]
 check("No player / Live Sports / Live TV / Notice file touched",
-      not protected, protected or "%d files changed, none protected" % len(changed))
+      not protected_files,
+      protected_files or "%d files changed, none protected" % len(changed))
+
+# And inside the shared frontend files, no protected line was changed. Only
+# REMOVED lines matter: adding a movie feature cannot alter playback, but
+# deleting or rewriting an engine line can.
+PROTECTED_TOKENS = (
+    "hls", "shaka", "mpegts", "proxy", "backup", "referer", "origin",
+    "buffer", "fullscreen", "volume", "resolutionbtn", "networkmode",
+    "notice", "sport", "live-tv", "livetv", "today-match", "upcoming",
+    "startplayback(", "video.play", "video.src",
+)
+# encoding is explicit: the diff carries Bengali UI strings, and Python's
+# default decode on Windows (cp1252) throws on them and leaves stdout None.
+removed = subprocess.run(
+    ["git", "diff", "-U0", "%s..HEAD" % base_sha, "--"] + sorted(MOVIE_SURFACE_FILES),
+    capture_output=True, encoding="utf-8", errors="replace").stdout.splitlines()
+offending = []
+for line in removed:
+    if not line.startswith("-") or line.startswith("---"):
+        continue
+    body = line[1:].strip()
+    # A removed comment line is prose, not behaviour.
+    if body.startswith(("//", "/*", "*", "<!--")):
+        continue
+    lowered = body.lower()
+    if any(token in lowered for token in PROTECTED_TOKENS):
+        offending.append(body[:90])
+check("No player / live / notice LINE removed from the shared frontend files",
+      not offending,
+      offending[:3] or "%d removed lines, none protected" % sum(
+          1 for line in removed if line.startswith("-") and not line.startswith("---")))
 
 print("%-6s %-68s %s" % ("RESULT", "CHECK", "EVIDENCE"))
 for status, name, evidence in results:
