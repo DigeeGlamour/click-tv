@@ -95,7 +95,7 @@ async function runNoData(label, viewport, navSelector, subNavSelector) {
 
   const row = await readRow(page);
   const home = await page.evaluate(() =>
-    document.querySelectorAll('#sidebarList .movie-card, #sidebarList .series-card').length);
+    document.querySelectorAll('#sidebarList .movie-card, #sidebarList .series-card, #movieHomeSections .movie-card').length);
 
   check(row.hidden && row.cards === 0,
     `[${label}] with no data the row is absent, not an empty shelf`, JSON.stringify(row));
@@ -246,7 +246,7 @@ async function runPayload(label, viewport, navSelector, subNavSelector) {
   await clickNavButton(page, subNavSelector, '.final-sub-button', 'Hindi');
   await page.waitForTimeout(3500);
   const stillWorks = await page.evaluate(() => ({
-    cards: document.querySelectorAll('#sidebarList .movie-card, #sidebarList .series-card').length,
+    cards: document.querySelectorAll('#sidebarList .movie-card, #sidebarList .series-card, #movieHomeSections .movie-card').length,
     videos: document.querySelectorAll('video').length
   }));
   check(stillWorks.cards > 0,

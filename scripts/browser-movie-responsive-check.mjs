@@ -112,19 +112,30 @@ async function run(viewport) {
   await clickNavButton(page, nav.main, '.final-main-button', 'Movies');
   await page.waitForTimeout(2000);
 
+  // --- a real category ------------------------------------------------------
+  await clickNavButton(page, nav.sub, '.final-sub-button', 'Bangla');
+  await page.waitForTimeout(3500);
+
   // --- category and genre must both be reachable ---------------------------
+  //
+  // Probed on a grid, not on Movie Home: the approved design gives Movie Home
+  // the Hero and the rows, and puts FILTER BY GENRE on the grid views. Only
+  // chips that are actually on screen count - the rail and the grid header
+  // each render the full set, and at any one width one of them is not shown.
   const access = await page.evaluate((subSelector) => {
+    const onScreen = (n) => n.getBoundingClientRect().width > 0;
     const subs = [...document.querySelectorAll(`${subSelector} .final-sub-button`)];
-    const chips = [...document.querySelectorAll('.movie-genre-chip')];
-    const bar = document.querySelector('#movieGenreBar');
+    const chips = [...document.querySelectorAll('.movie-genre-chip')].filter(onScreen);
+    const bars = [...document.querySelectorAll('.movie-genre-bar')];
+    const bar = bars.find(onScreen) || null;
     const barRect = bar ? bar.getBoundingClientRect() : null;
     const style = bar ? getComputedStyle(bar) : null;
     return {
       categories: subs.length,
-      categoryVisible: subs.filter((n) => n.getBoundingClientRect().width > 0).length,
+      categoryVisible: subs.filter(onScreen).length,
       chips: chips.length,
       chipRows: new Set(chips.map((n) => Math.round(n.getBoundingClientRect().top))).size,
-      barHidden: bar ? bar.hidden : true,
+      barHidden: !bar,
       barOverflowX: style ? style.overflowX : '',
       barHeight: barRect ? Math.round(barRect.height) : 0,
       smallestChipHeight: chips.length
@@ -151,10 +162,6 @@ async function run(viewport) {
     check(access.smallestCategoryHeight >= 30,
       `[${label}] category buttons are tappable`, `${access.smallestCategoryHeight}px`);
   }
-
-  // --- a real category ------------------------------------------------------
-  await clickNavButton(page, nav.sub, '.final-sub-button', 'Bangla');
-  await page.waitForTimeout(3500);
 
   const grid = await page.evaluate((subSelector) => {
     const cards = [...document.querySelectorAll('#sidebarList .movie-card')];
@@ -183,9 +190,13 @@ async function run(viewport) {
     `${afterCategory.overflow}px — ${JSON.stringify(afterCategory.widest)}`);
 
   // --- the detail ------------------------------------------------------------
-  const info = page.locator('#sidebarList .movie-card-info').first();
-  if (await info.count()) {
-    await info.click({ force: true });
+  // In-page click, like clickNavButton above. The movie content scrolls in
+  // its own container now, so Playwright's actionability check reports the
+  // first card "outside of the viewport" even though a person can reach it
+  // by scrolling - which is what the rest of this file already works around.
+  const hasInfo = await page.$$eval('#sidebarList .movie-card-info', (n) => n.length);
+  if (hasInfo) {
+    await page.$$eval('#sidebarList .movie-card-info', (nodes) => nodes[0].click());
     await page.waitForTimeout(2500);
     const detail = await page.evaluate(() => {
       const panel = document.querySelector('#movieDetailPanel');
@@ -225,7 +236,7 @@ async function run(viewport) {
       `[${label}] no horizontal overflow with the detail open`,
       `${afterDetail.overflow}px — ${JSON.stringify(afterDetail.widest)}`);
 
-    await page.locator('.movie-detail-close').first().click({ force: true }).catch(() => {});
+    await page.$$eval('.movie-detail-close', (nodes) => nodes[0]?.click()).catch(() => {});
     await page.waitForTimeout(1200);
   }
 
@@ -252,11 +263,17 @@ async function run(viewport) {
       width: rect ? Math.round(rect.width) : 0,
       insideViewport: rect ? rect.right <= document.documentElement.clientWidth + 2 : false,
       controls: document.querySelectorAll('#playerControls').length,
-      notice: document.querySelectorAll('#sticky-header-notice').length
+      notice: document.querySelectorAll('#sticky-header-notice').length,
+      portal: document.body.classList.contains('movie-portal')
     };
   });
   check(player.videos === 1, `[${label}] exactly one player element`, String(player.videos));
-  check(player.width > 0 && player.insideViewport,
+  // Home / Grid / Detail / Player are separate views in the approved Movie
+  // architecture, so on a movie browse view the player is deliberately not on
+  // screen - the element is still there, unchanged, and comes back at its own
+  // size when Play is pressed (browser-movie-portal-check measures that).
+  // Everywhere else it must still fit.
+  check(player.portal ? player.width === 0 : (player.width > 0 && player.insideViewport),
     `[${label}] the player box fits the viewport`, JSON.stringify(player));
   check(player.controls === 1, `[${label}] the player control bar is present`);
   check(player.notice === 1, `[${label}] the Notice bar is present`);

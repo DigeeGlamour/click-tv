@@ -43,7 +43,7 @@ async function clickNavButton(page, containerSelector, buttonSelector, label) {
 
 async function readList(page) {
   return page.evaluate(() => ({
-    cards: document.querySelectorAll('#sidebarList .movie-card, #sidebarList .series-card').length,
+    cards: document.querySelectorAll('#sidebarList .movie-card, #sidebarList .series-card, #movieHomeSections .movie-card').length,
     skeletons: document.querySelectorAll('.movie-skeleton-card').length,
     message: document.querySelector('.movie-prompt-msg span')?.textContent?.trim() || '',
     retry: Boolean(document.querySelector('.movie-retry-btn')),
@@ -264,9 +264,11 @@ async function runUnavailableDetail(label, viewport, navSelector) {
   await page.waitForTimeout(2500);
   const back = await page.evaluate(() => ({
     panelHidden: Boolean(document.querySelector('#movieDetailPanel')?.hidden),
-    cards: document.querySelectorAll('#sidebarList .movie-card, #sidebarList .series-card').length
+    cards: document.querySelectorAll('#sidebarList .movie-card, #sidebarList .series-card, #movieHomeSections .movie-card').length
   }));
   check(back.panelHidden, `[${label}] Back closes the unavailable state`);
+  // Movie Home is rows now, not one flat grid, so real content can be in
+  // either place - what this holds is that Back lands on content at all.
   check(back.cards > 0, `[${label}] Back lands on real movie content`, String(back.cards));
   await context.close();
 }

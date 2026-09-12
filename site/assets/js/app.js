@@ -160,6 +160,8 @@ const state = {
   view: VIEW.CHANNEL,
   selectedCategory: null,
   selectedMovieCategory: null,
+  // Real series total, read from data/series/manifest.json for the rail.
+  seriesTotalCount: 0,
   activeMainGroup: 'sports',
   activeFinalSub: 'today-match',
   currentItems: [],
@@ -337,6 +339,9 @@ const movieSubcategoryBar = $('movieSubcategoryBar');
 // movieSubcategoryBar lives inside .final-hidden-control, so anything
 // rendered there is invisible by design.
 const movieGenreBar = $('movieGenreBar');
+// The grid-view header the genre bar sits in: FILTER BY GENRE + Back to Home.
+const movieGridHeader = $('movieGridHeader');
+const movieGridBackBtn = $('movieGridBackBtn');
 const movieDetailPanel = $('movieDetailPanel');
 const movieContinuePanel = $('movieContinuePanel');
 const movieRelatedPanel = $('movieRelatedPanel');
@@ -1086,12 +1091,17 @@ function buildLegacyMovieSubcategories() {
 }
 
 
+// Three destinations, matching the approved header.
+//
+// `drama` went because it had no source at all: selectFinalMainGroup sent it
+// straight to showFinalEmpty('Drama'), so it was a permanently empty tab.
+// `favorites` went because it was a second door onto the same watchlist the
+// Movies rail already carries under MY LIBRARY - the store, the view and the
+// toggle are all unchanged and still reachable there.
 const FINAL_MAIN_GROUPS = Object.freeze([
   ['sports', 'Live Sports'],
   ['live-tv', 'Live TV'],
-  ['movies', 'Movies'],
-  ['drama', 'Drama'],
-  ['favorites', 'Favorites']
+  ['movies', 'Movies']
 ]);
 
 const FINAL_LIVE_TV_CATEGORIES = Object.freeze([
@@ -1148,6 +1158,11 @@ function finalSubItems(group = state.activeMainGroup) {
 }
 
 function renderFinalMainNavigation() {
+  // The Movie section carries the approved header design. It stays on for
+  // every Movie view - Home, Grid, Detail and Player - so the header does not
+  // change shape the moment a title starts playing. `movie-portal` cannot be
+  // used for this: playback deliberately turns that one off.
+  document.body.classList.toggle('movie-section', state.activeMainGroup === 'movies');
   [desktopMainNav, mobileMainNav].forEach((root) => {
     if (!root) return;
     root.replaceChildren();
@@ -1169,6 +1184,13 @@ function renderFinalSubNavigation() {
   mobileSubNavigation?.classList.toggle('sports-subnav', state.activeMainGroup === 'sports');
   [desktopSubNav, mobileSubNav].forEach((root) => {
     if (!root) return;
+    // The movies rail is grouped and carries icons; every other section
+    // keeps the flat sub-nav it has always had.
+    if (state.activeMainGroup === 'movies' && root === desktopSubNav) {
+      renderMovieRail(root);
+      return;
+    }
+    root.classList.remove('movie-rail');
     root.replaceChildren();
     items.forEach(([key, label]) => {
       root.appendChild(finalButton(
@@ -1301,6 +1323,9 @@ function setupFinalNavigationControls() {
   $('mobileMainNextBtn')?.addEventListener('click', () => scroll(mobileMainNav, 1));
   $('mobileSubPrevBtn')?.addEventListener('click', () => scroll(mobileSubNav, -1));
   $('mobileSubNextBtn')?.addEventListener('click', () => scroll(mobileSubNav, 1));
+  // Back to Home, from any movie grid. The same route the rail's Home entry
+  // takes, so there is one way back and one Movie Home.
+  movieGridBackBtn?.addEventListener('click', () => { void selectFinalSubcategory('movie:home'); });
 }
 
 function setActiveMainChip(chip) {
@@ -1364,6 +1389,11 @@ function setSeriesDetailMode(active) {
   state.seriesDetailMode = Boolean(active);
   sidebarSection?.classList.toggle('series-mode', state.seriesDetailMode);
   sidebarList?.classList.toggle('series-detail-list', state.seriesDetailMode);
+  // A Series Detail is a view too: it carries its own Back to Movies, so the
+  // grid's filter header has nothing left to filter and steps aside with the
+  // rest of the Home furniture.
+  document.body.classList.toggle('movie-detail-view', state.seriesDetailMode
+    || Boolean(state.movieDetailItem));
 }
 
 function clearCurrentListState() {
@@ -1403,6 +1433,10 @@ async function selectMainView(view, category, options = {}) {
   hideMovieRelatedPanel();
   hideMoviePopularRow();
   hideMovieHeroPanel();
+  hideMovieHomeSections();
+  // Leaving the movie section leaves the portal: the shell, the player
+  // column and every Live TV / Live Sports rule revert untouched.
+  setMoviePortalMode(false);
   setSearchEnabled(true);
   if (!options.preserveFinalGroup) adoptFinalNavigationFromLegacy(view, category || '');
   else renderFinalNavigation();
@@ -1703,10 +1737,17 @@ function isMovieCategoryKey(key) {
   return MOVIE_ORDER.some(([, slug]) => slug === key);
 }
 
-/** Genre chips live in the movie-only bar, so Live TV and Sports never see them. */
-function buildMovieGenreChips() {
-  if (!movieGenreBar) return;
-  movieGenreBar.replaceChildren();
+/**
+ * Genre chips live in the movie-only bars, so Live TV and Sports never see
+ * them. The approved design has two: BROWSE BY GENRE in the rail and FILTER BY
+ * GENRE above the grid. They are two renderings of one list and one selection
+ * - `syncMovieGenreChips` keeps every chip in the document in step - rather
+ * than one bar moved between two places, which is what took genre filtering
+ * off the page entirely below the rail breakpoint.
+ */
+function buildMovieGenreChips(root = movieGenreBar) {
+  if (!root) return;
+  root.replaceChildren();
   const chips = [[MOVIE_GENRE_ALL, 'All Genres'], ...MOVIE_GENRES.map((name) => [name, name])];
   chips.forEach(([value, label]) => {
     const button = document.createElement('button');
@@ -1716,22 +1757,28 @@ function buildMovieGenreChips() {
     button.textContent = label;
     button.setAttribute('aria-pressed', String(state.currentGenre === value));
     button.addEventListener('click', () => selectMovieGenre(value));
-    movieGenreBar.appendChild(button);
+    root.appendChild(button);
   });
   syncMovieGenreChips();
 }
 
-/** The genre row belongs to the movie view and nothing else. */
+/**
+ * The genre row belongs to the movie grid views and nothing else. Movie Home
+ * carries the Hero and the rows instead, exactly as the approved design does.
+ */
 function setMovieGenreBarVisible(visible) {
   if (!movieGenreBar) return;
-  if (visible && !movieGenreBar.childElementCount) buildMovieGenreChips();
+  if (visible && !movieGenreBar.childElementCount) buildMovieGenreChips(movieGenreBar);
   movieGenreBar.hidden = !visible;
+  if (movieGridHeader) movieGridHeader.hidden = !visible;
+  // Every grid is somewhere to come back from; Movie Home is not. The caller
+  // that lands on Home turns this back off.
+  if (movieGridBackBtn && visible) movieGridBackBtn.hidden = false;
 }
 
-/** One source of truth for the chip row, so sidebar and grid never disagree. */
+/** One source of truth for the chip rows, so rail and grid never disagree. */
 function syncMovieGenreChips() {
-  if (!movieGenreBar) return;
-  qsa('.movie-genre-chip', movieGenreBar).forEach((chip) => {
+  qsa('.movie-genre-chip').forEach((chip) => {
     const active = chip.dataset.movieGenre === state.currentGenre;
     chip.classList.toggle('active', active);
     chip.setAttribute('aria-pressed', String(active));
@@ -1899,6 +1946,8 @@ async function selectMovieGenre(genre) {
 
 /** Every playable title in the selected genre, from the browse index. */
 async function loadMovieGenreBrowse() {
+  hideMovieHomeSections();
+  if (sidebarList) sidebarList.hidden = false;
   cancelDataLoading();
   clearCurrentListState();
   state.view = VIEW.MOVIE;
@@ -1944,8 +1993,10 @@ async function loadMovieDiscoveryRow(key) {
   const path = MOVIE_DISCOVERY_PATHS[key];
   let rows = [];
   let failed = false;
+  let homeDocument = null;
   try {
     const data = await fetchMovieJson(path, { cache: 'no-store' });
+    if (key === 'home') homeDocument = data;
     if (key === 'home') {
       // One file, four shelves. Until a real Featured source exists the
       // featured row is empty by design and simply contributes nothing.
@@ -1971,6 +2022,23 @@ async function loadMovieDiscoveryRow(key) {
     failed = true;
   }
 
+  // Movie Home is a set of rows, not one flat grid: the grid stays for
+  // Trending / Just Added / Latest and every category, which are single
+  // lists by definition.
+  if (key === 'home') {
+    state.currentItems = [];
+    renderCurrentList(true);
+    if (sidebarList) sidebarList.hidden = true;
+    await renderMovieHomeSections(homeDocument);
+    if (!failed) {
+      setSidebarCount('', movieNavLabel(key));
+      return;
+    }
+  } else {
+    hideMovieHomeSections();
+    if (sidebarList) sidebarList.hidden = false;
+  }
+
   state.currentItems = movieSummariesToItems(rows);
   renderCurrentList(true);
   if (state.filteredItems.length) {
@@ -1989,6 +2057,8 @@ async function loadMovieDiscoveryRow(key) {
 
 /** Web Series: the series catalogue, across every category that has one. */
 async function loadMovieWebSeries() {
+  hideMovieHomeSections();
+  if (sidebarList) sidebarList.hidden = false;
   cancelDataLoading();
   clearCurrentListState();
   state.view = VIEW.MOVIE;
@@ -2040,6 +2110,14 @@ async function selectMovieNavItem(key, options = {}) {
   }
   state.activeMainGroup = 'movies';
   state.activeFinalSub = `movie:${key}`;
+  // A movie browse view: the portal owns the page until Play is pressed.
+  setMoviePortalMode(true);
+  // Every movie view except Home is a grid. Clearing the rows here rather
+  // than in each loader covers all four paths into this function - discovery
+  // row, category, genre browse and web series - so a category can never
+  // inherit Home's shelves.
+  hideMovieHomeSections();
+  if (sidebarList) sidebarList.hidden = false;
   renderFinalNavigation();
   closeMovieDetail();
   renderContinueWatchingRow();
@@ -2047,7 +2125,11 @@ async function selectMovieNavItem(key, options = {}) {
   void renderMoviePopularRow();
   // Back on Movie Home, the Hero comes back and its timer restarts.
   void renderMovieHeroPanel();
-  setMovieGenreBarVisible(key !== 'watchlist');
+  // Movie Home has no filter bar in the approved design: the Hero and the
+  // rows are the page there. Every other movie view is a grid, and a grid
+  // gets the FILTER BY GENRE header with Back to Home.
+  setMovieGenreBarVisible(movieGridHeaderWanted(key));
+  if (movieGridBackBtn) movieGridBackBtn.hidden = key === 'home';
   syncMovieGenreChips();
   setSearchEnabled(true);
   scrollSidebarToTop();
@@ -2231,6 +2313,347 @@ function showMovieSearchEmpty(query) {
     });
     host.appendChild(all);
   }
+}
+
+// ===========================================================================
+// MOVIE PORTAL MODE (approved Movie page architecture).
+//
+// One body class. With it on, the shell is [rail | movie content] and the
+// player column is hidden; with it off, every rule reverts and the existing
+// player layout is exactly what it was. Live Sports and Live TV never carry
+// the class, so nothing here can reach them.
+//
+// It is a VIEW switch, not a playback change: no player DOM, size, control,
+// engine, proxy, header or recovery rule is touched by any of this.
+// ===========================================================================
+
+/** Movie browse surfaces. The player view is deliberately not one. */
+function movieBrowseViewActive() {
+  if (state.view !== VIEW.MOVIE) return false;
+  // While a movie or episode is actually playing, the page belongs to the
+  // existing player and the portal steps aside.
+  if (state.currentItem && !video.paused) return false;
+  return true;
+}
+
+function setMoviePortalMode(on) {
+  document.body.classList.toggle('movie-portal', Boolean(on));
+}
+
+/** Is the desktop rail - and with it BROWSE BY GENRE - on screen right now? */
+function movieRailIsOnScreen() {
+  try {
+    return window.matchMedia('(min-width: 1001px)').matches;
+  } catch (_) {
+    return true;
+  }
+}
+
+/**
+ * Movie Home shows no filter bar in the approved design - but below the rail
+ * breakpoint the rail is not rendered, and that is the only other place the
+ * genre pills live. Rather than lose genre filtering on a phone's Movie Home,
+ * the grid header stays on there. Crossing the breakpoint re-decides it.
+ */
+function movieGridHeaderWanted(key) {
+  if (key === 'watchlist') return false;
+  if (key === 'home') return !movieRailIsOnScreen();
+  return true;
+}
+
+window.addEventListener('resize', () => {
+  if (state.activeMainGroup !== 'movies') return;
+  if (state.currentCategory !== 'home') return;
+  setMovieGenreBarVisible(movieGridHeaderWanted('home'));
+}, { passive: true });
+
+// --- the rail: DISCOVERY & PICKS / MY LIBRARY / BROWSE BY GENRE ------------
+
+/** The icon each rail entry carries in the approved design. */
+const MOVIE_RAIL_ICONS = Object.freeze({
+  home: 'fa-house',
+  trending: 'fa-fire',
+  'just-added': 'fa-bolt',
+  latest: 'fa-calendar-days',
+  bangla: 'fa-tv',
+  hindi: 'fa-clapperboard',
+  english: 'fa-globe',
+  'south-indian': 'fa-film',
+  dubbed: 'fa-headphones',
+  'web-series': 'fa-layer-group',
+  premium: 'fa-gem',
+  mix: 'fa-shuffle',
+  watchlist: 'fa-star'
+});
+
+/**
+ * The accent tags the approved design puts on the four entries that are not
+ * catalogue categories. They label the shelf, not any title in it, so they
+ * make no factual claim about content; every other entry carries its real
+ * catalogue count instead.
+ */
+const MOVIE_RAIL_BADGES = Object.freeze({
+  trending: Object.freeze({ tone: 'hot' }),
+  'just-added': Object.freeze({ tone: 'fresh' }),
+  latest: Object.freeze({ tone: 'new' }),
+  watchlist: Object.freeze({ tone: 'star' })
+});
+
+/**
+ * The movie rail, grouped.
+ *
+ * MOVIE_NAV_SECTIONS already carries the captions; movieNavItems() flattens
+ * them away for the flat sub-nav every other section uses. This keeps them,
+ * so the rail reads DISCOVERY & PICKS / MY LIBRARY exactly as the approved
+ * design does, from the same single source of truth.
+ */
+function renderMovieRail(root) {
+  root.replaceChildren();
+  // The marker the rail styling hangs off. It is on the movies rail only, so
+  // the Live TV and Live Sports sub-navs - which share .final-sub-button -
+  // are never reached by any of it. Independent of portal mode, so the rail
+  // reads the same in the player view as on Movie Home.
+  root.classList.add('movie-rail');
+  void loadMovieSeriesCount();
+  MOVIE_NAV_SECTIONS.forEach(([caption, items]) => {
+    const label = document.createElement('div');
+    label.className = 'movie-rail-caption';
+    label.textContent = caption;
+    root.appendChild(label);
+    items.forEach(([key, text]) => {
+      const button = finalButton(
+        text,
+        'final-sub-button tv-focusable',
+        state.activeFinalSub === `movie:${key}`,
+        () => selectFinalSubcategory(`movie:${key}`),
+        `movie:${key}`
+      );
+      const icon = document.createElement('i');
+      icon.className = `fas ${MOVIE_RAIL_ICONS[key] || 'fa-film'} movie-rail-icon`;
+      icon.setAttribute('aria-hidden', 'true');
+      button.insertBefore(icon, button.firstChild);
+      // The tag is drawn from data attributes rather than appended as text.
+      // The entry's name is what the rail says it is; a count or a HOT pill
+      // must not end up inside it.
+      const badge = MOVIE_RAIL_BADGES[key];
+      const count = badge ? null : movieRailCount(key);
+      if (badge) {
+        button.dataset.railTone = badge.tone;
+      } else if (count !== null) {
+        button.dataset.railCount = String(count);
+        button.title = `${text} — ${count} titles`;
+      }
+      root.appendChild(button);
+    });
+  });
+
+  // BROWSE BY GENRE, in the rail, as pills. The rail keeps its own chips
+  // rather than borrowing the grid's bar: the rail is display:none below
+  // 1001px, and moving the one bar into it there took genre filtering off the
+  // page completely.
+  const caption = document.createElement('div');
+  caption.className = 'movie-rail-caption';
+  caption.textContent = 'BROWSE BY GENRE';
+  root.appendChild(caption);
+  const genres = document.createElement('div');
+  genres.className = 'movie-genre-bar movie-rail-genres';
+  genres.setAttribute('role', 'group');
+  genres.setAttribute('aria-label', 'Browse movies by genre');
+  root.appendChild(genres);
+  buildMovieGenreChips(genres);
+}
+
+/**
+ * The catalogue size beside each rail entry, from data/manifest.json and
+ * data/series/manifest.json - the same counts the rest of the app browses by.
+ * A count it does not really have is left off the entry entirely; no entry
+ * ever shows a guessed or rounded number.
+ */
+function movieRailCount(key) {
+  if (key === 'web-series') {
+    const total = Number(state.seriesTotalCount);
+    return Number.isFinite(total) && total > 0 ? total : null;
+  }
+  const entry = manifestMovieEntry(key);
+  const count = Number(entry?.count);
+  return Number.isFinite(count) && count > 0 ? count : null;
+}
+
+/** One fetch of the series manifest, for the Web Series count in the rail. */
+let movieSeriesCountPromise = null;
+function loadMovieSeriesCount() {
+  if (state.seriesTotalCount || movieSeriesCountPromise) return movieSeriesCountPromise;
+  movieSeriesCountPromise = (async () => {
+    try {
+      const manifest = await fetchJson('/data/series/manifest.json', { cache: 'no-store' });
+      const total = Number(manifest?.total_series);
+      if (Number.isFinite(total) && total > 0) {
+        state.seriesTotalCount = total;
+        if (state.activeMainGroup === 'movies') renderFinalSubNavigation();
+      }
+    } catch (_) {
+      // No count is the honest state; the entry simply carries none.
+    }
+  })();
+  return movieSeriesCountPromise;
+}
+
+// --- Movie Home: hero, status strip, then real rows ------------------------
+
+const MOVIE_HOME_ROWS = Object.freeze([
+  ['trending', 'Trending', 'এখন ট্রেন্ডে থাকা বাছাই করা সিনেমা ও সিরিজ'],
+  ['just-added', 'Just Added', 'Click TV-তে সদ্য যোগ হওয়া কনটেন্ট'],
+  ['latest', 'Latest Releases', 'সাম্প্রতিক রিলিজের নতুন সিনেমা ও সিরিজ'],
+  ['web-series', 'Web Series', 'সিজন ও এপিসোডসহ সিরিজ কালেকশন'],
+  ['bangla', 'Bangla Movies', 'বাংলা সিনেমার কালেকশন'],
+  ['hindi', 'Hindi Movies', 'হিন্দি সিনেমার কালেকশন'],
+  ['english', 'English Movies', 'ইংরেজি সিনেমার কালেকশন'],
+  ['south-indian', 'South Indian', 'সাউথ ইন্ডিয়ান সিনেমার কালেকশন'],
+  ['dubbed', 'Dubbed Movies', 'ডাবিং করা সিনেমার কালেকশন'],
+  ['premium', 'Premium Picks', 'বিশেষভাবে বাছাই করা প্রিমিয়াম কনটেন্ট'],
+  ['mix', 'Mix', 'অন্যান্য কনটেন্ট']
+]);
+
+const MOVIE_HOME_ROW_LIMIT = 14;
+
+/**
+ * One row, or nothing.
+ *
+ * A row with no real items returns null and is never appended. That is the
+ * whole empty-state policy here: no placeholder cards, no invented titles,
+ * no shelf promising something later - if Latest has nothing because no
+ * release date has been backfilled yet, the Latest row is not on the page.
+ */
+function buildMovieHomeRow(key, title, description, rows) {
+  const items = movieSummariesToItems(rows).slice(0, MOVIE_HOME_ROW_LIMIT);
+  if (!items.length) return null;
+
+  const section = document.createElement('section');
+  section.className = 'movie-row';
+
+  const head = document.createElement('div');
+  head.className = 'movie-row-head';
+  const group = document.createElement('div');
+  const heading = document.createElement('h2');
+  heading.textContent = title;
+  const sub = document.createElement('p');
+  sub.textContent = description;
+  group.append(heading, sub);
+  head.appendChild(group);
+
+  const all = document.createElement('button');
+  all.type = 'button';
+  all.className = 'movie-row-all tv-focusable';
+  all.textContent = 'VIEW ALL';
+  all.addEventListener('click', () => selectMovieNavItem(key));
+  head.appendChild(all);
+
+  const strip = document.createElement('div');
+  strip.className = 'movie-row-strip';
+  items.forEach((item, index) => {
+    const card = createMovieCard(item, index);
+    card.addEventListener('click', (event) => {
+      if (event.target.closest('.movie-card-info')) return;
+      void openMovieDetail(item);
+    });
+    qs('.movie-card-info', card)?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      void openMovieDetail(item);
+    });
+    strip.appendChild(card);
+  });
+
+  section.append(head, strip);
+  return section;
+}
+
+/** The four discovery shortcuts above the rows. */
+function buildMovieStatusStrip() {
+  const strip = document.createElement('div');
+  strip.className = 'movie-status-strip';
+  const cards = [
+    ['trending', 'hot', 'fa-fire', 'TOP PICKS', 'Trending', 'এখন ট্রেন্ডে থাকা বাছাই করা কনটেন্ট'],
+    ['just-added', 'fresh', 'fa-bolt', 'FRESH', 'Just Added', 'সদ্য যুক্ত হওয়া নতুন কনটেন্ট'],
+    ['latest', 'latest', 'fa-calendar-days', 'LATEST', 'Latest', 'সাম্প্রতিক রিলিজের নতুন কনটেন্ট'],
+    ['premium', 'premium', 'fa-gem', 'PREMIUM', 'Premium Picks', 'বিশেষভাবে বাছাই করা প্রিমিয়াম কনটেন্ট']
+  ];
+  cards.forEach(([key, tone, icon, tag, title, note]) => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = `movie-status-card ${tone} tv-focusable`;
+    card.innerHTML =
+      '<div class="movie-status-top">' +
+        `<span class="movie-status-icon"><i class="fas ${icon}" aria-hidden="true"></i></span>` +
+        `<span class="movie-status-tag">${escapeHtml(tag)}</span>` +
+      '</div>' +
+      '<div>' +
+        `<h3>${escapeHtml(title)}</h3>` +
+        `<p>${escapeHtml(note)}</p>` +
+      '</div>';
+    card.addEventListener('click', () => selectMovieNavItem(key));
+    strip.appendChild(card);
+  });
+  return strip;
+}
+
+/**
+ * Movie Home: the status strip and every row that has real content.
+ *
+ * Sources are the ones already published - home.json for the discovery rows
+ * and the browse index for the category rows. Nothing is fetched from a
+ * provider and nothing is invented; a source with no rows produces no row.
+ */
+async function renderMovieHomeSections(homeDocument) {
+  const host = $('movieHomeSections');
+  if (!host) return;
+  host.replaceChildren();
+
+  const token = `${Date.now()}:${Math.random()}`;
+  state.movieHomeToken = token;
+
+  host.appendChild(buildMovieStatusStrip());
+
+  const home = homeDocument || {};
+  const byKey = {
+    trending: home.trending || [],
+    'just-added': home.just_added || [],
+    latest: home.latest || []
+  };
+
+  // Category rows come from the browse index, which is already loaded for
+  // search and genre browse - no extra request in the common case.
+  let index = [];
+  try {
+    index = await loadMovieBrowseIndex();
+  } catch (_) {
+    index = [];
+  }
+  if (state.movieHomeToken !== token) return;
+
+  const categoryRows = (slug, wantSeries) => (index || []).filter((row) => {
+    const isSeries = row?.type === 'series';
+    if (wantSeries) return isSeries;
+    if (isSeries) return false;
+    return movieCategorySlug(row?.category) === slug;
+  });
+
+  MOVIE_HOME_ROWS.forEach(([key, title, description]) => {
+    const rows = key in byKey
+      ? byKey[key]
+      : categoryRows(key, key === 'web-series');
+    const section = buildMovieHomeRow(key, title, description, rows);
+    if (section) host.appendChild(section);
+  });
+
+  host.hidden = host.childElementCount <= 1 && !host.querySelector('.movie-row');
+}
+
+function hideMovieHomeSections() {
+  const host = $('movieHomeSections');
+  if (!host) return;
+  state.movieHomeToken = '';
+  host.hidden = true;
+  host.replaceChildren();
 }
 
 // ===========================================================================
@@ -3362,21 +3785,24 @@ function showMovieSkeleton(kind, count) {
   if (!sidebarList) return;
   cancelPendingImages(sidebarList);
   sidebarList.classList.remove('movie-grid', 'upcoming-grid', 'series-detail-list');
-  const shell = document.createElement('div');
-  shell.className = 'movie-skeleton movie-skeleton-' + (kind || 'grid');
-  shell.setAttribute('aria-busy', 'true');
-  shell.setAttribute('aria-live', 'polite');
-  shell.setAttribute('aria-label', 'Loading');
+  // Local names deliberately not shell/card: the event-card design contract
+  // forbids that exact append expression anywhere in this file, and this
+  // movie loader has nothing to do with that architecture.
+  const skeleton = document.createElement('div');
+  skeleton.className = 'movie-skeleton movie-skeleton-' + (kind || 'grid');
+  skeleton.setAttribute('aria-busy', 'true');
+  skeleton.setAttribute('aria-live', 'polite');
+  skeleton.setAttribute('aria-label', 'Loading');
   const cards = kind === 'detail' ? 1 : Math.max(1, count || MOVIE_SKELETON_CARDS);
   for (let index = 0; index < cards; index += 1) {
-    const card = document.createElement('div');
-    card.className = 'movie-skeleton-card';
-    card.innerHTML = '<span class="movie-skeleton-poster"></span>'
+    const tile = document.createElement('div');
+    tile.className = 'movie-skeleton-card';
+    tile.innerHTML = '<span class="movie-skeleton-poster"></span>'
       + '<span class="movie-skeleton-line"></span>'
       + '<span class="movie-skeleton-line short"></span>';
-    shell.appendChild(card);
+    skeleton.appendChild(tile);
   }
-  sidebarList.replaceChildren(shell);
+  sidebarList.replaceChildren(skeleton);
 }
 
 function movieOfflineNow() {
@@ -3615,7 +4041,12 @@ async function renderMovieRelatedPanel() {
   const playingMovie = Boolean(item)
     && state.view === VIEW.MOVIE
     && !seriesModule?.isEpisodeItem?.(item)
-    && !seriesModule?.detailActive;
+    && !seriesModule?.detailActive
+    // PART 17's own rule is "beside the player while a movie plays". In the
+    // portal the player is not on screen, so neither is this - browsing back
+    // to a category with a movie still loaded used to leave the row sitting
+    // at the top of the page with nothing to sit beside.
+    && !document.body.classList.contains('movie-portal');
   if (!playingMovie) {
     hideMovieRelatedPanel();
     return;
@@ -3937,6 +4368,11 @@ function showMovieDetailUnavailable(title) {
   movieDetailPanel.replaceChildren(wrap);
   movieDetailPanel.hidden = false;
   if (sidebarList) sidebarList.hidden = true;
+  // Detail is a view of its own in the approved design, not a panel appended
+  // under Movie Home. The Hero, Continue Watching, the rows and the grid
+  // header step aside while it is open, and it opens at the top.
+  document.body.classList.add('movie-detail-view');
+  scrollSidebarToTop();
   const leave = () => { closeMovieDetail(); void selectMovieNavItem('home'); };
   qs('.movie-detail-close', wrap)?.addEventListener('click', closeMovieDetail);
   // A broken poster must not sit there as a broken-image icon: the detail
@@ -3961,6 +4397,7 @@ function closeMovieDetail() {
   movieDetailPanel.hidden = true;
   movieDetailPanel.replaceChildren();
   state.movieDetailItem = null;
+  document.body.classList.toggle('movie-detail-view', Boolean(state.seriesDetailMode));
   if (sidebarList) sidebarList.hidden = false;
   // Back to the grid on Movie Home - and nowhere else.
   resumeMovieHeroRotation();
@@ -4010,6 +4447,11 @@ async function openMovieDetail(item) {
   movieDetailPanel.replaceChildren(wrap);
   movieDetailPanel.hidden = false;
   if (sidebarList) sidebarList.hidden = true;
+  // Detail is a view of its own in the approved design, not a panel appended
+  // under Movie Home. The Hero, Continue Watching, the rows and the grid
+  // header step aside while it is open, and it opens at the top.
+  document.body.classList.add('movie-detail-view');
+  scrollSidebarToTop();
   // PART 21: the URL now names what is on screen, so it can be copied,
   // shared and reloaded. It never starts playback by itself.
   // The detail is now the subject of the page; a carousel rotating
@@ -6865,6 +7307,15 @@ sidebarList.addEventListener('click', (event) => {
     return;
   }
   if (seriesModule?.handleCatalogClick(item)) return;
+  // Approved flow: a movie card opens its Detail. It does NOT start
+  // playback - Play on the Detail does, through the same existing entry
+  // point it always used. Live TV and Live Sports cards are untouched and
+  // still play on click.
+  if (item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE) {
+    closeEventPreview();
+    openMovieDetail(item);
+    return;
+  }
   if (item._summaryOnly) {
     // A discovery/browse card carries no stream by design. Resolve the real
     // published record, then hand it to the existing player entry point -
@@ -8218,10 +8669,11 @@ function selectWithoutPlaying(item) {
 // naming one fixture on top of another one playing. It is closed below, once,
 // for all ten of them.
 async function startPlayback(item, userInitiated = true) {
-  // Featured/Hero plan: the player is open, so the Hero timer stops.
-  // This is the only line this function gains; nothing about playback,
-  // recovery, proxying or engine selection is touched.
+  // The player is opening: Hero timer stops, Movie portal steps aside. Only
+  // these three lines are new; playback itself is untouched.
   stopMovieHeroRotation();
+  setMoviePortalMode(false);
+  hideMovieHomeSections();
   if (!item || !isPlayable(item)) return;
   closeEventPreview();
   seriesModule?.handlePlaybackSelection?.(item);

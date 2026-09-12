@@ -44,14 +44,18 @@ class FinalDesignContractTests(unittest.TestCase):
         ):
             self.assertIn(label, self.app)
 
+        # The owner's Movie design correction removed Drama and Favorites from
+        # the top navigation: the destinations are Live Sports, Live TV and
+        # Movies, with My Watchlist in the Movie rail's MY LIBRARY section.
+        # Pinned here so three cannot silently become four again.
         navigation_block = """const FINAL_MAIN_GROUPS = Object.freeze([
   ['sports', 'Live Sports'],
   ['live-tv', 'Live TV'],
-  ['movies', 'Movies'],
-  ['drama', 'Drama'],
-  ['favorites', 'Favorites']
+  ['movies', 'Movies']
 ]);"""
         self.assertIn(navigation_block, self.app)
+        self.assertNotIn("['drama', 'Drama']", self.app)
+        self.assertNotIn("['favorites', 'Favorites']", self.app)
         self.assertIn("final-design.css", self.index)
         self.assertIn("series.js", self.index)
 
@@ -101,7 +105,14 @@ class FinalDesignContractTests(unittest.TestCase):
         self.assertIn('.video-meta .meta-subtitle-row{display:none!important}', self.reference_css)
         self.assertIn('scrollbar-width:none!important', self.reference_css)
         self.assertIn(".series-episode-list{grid-template-columns:repeat(2,minmax(0,1fr))!important", self.reference_css)
-        self.assertLess(len(self.index.encode("utf-8")), 25_000)
+        # A ceiling on index.html, so the reference design cannot creep back
+        # inline. The 25,000 it started at was outgrown by real structural
+        # markup, not by inlined CSS - the page was already 26,668 bytes on
+        # main before the Movie design correction, which added the grid header
+        # and the Movie Home sections. What the ceiling is actually guarding is
+        # asserted directly: no <style> block, and the design in its own file.
+        self.assertNotIn("<style", self.index)
+        self.assertLess(len(self.index.encode("utf-8")), 30_000)
 
     def test_ruman26_mobile_navigation_and_scroll_contract(self) -> None:
         for icon_key in ("sports", "live-tv", "movies", "drama", "favorites"):

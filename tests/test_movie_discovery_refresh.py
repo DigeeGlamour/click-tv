@@ -286,8 +286,12 @@ class RefreshWorkflowTests(unittest.TestCase):
             for line in commit["run"].splitlines()
             if not line.strip().startswith("#")
         ]
-        add_start = next(i for i, line in enumerate(lines) if line.startswith("git add"))
-        add_end = next(i for i in range(add_start, len(lines)) if lines[i].endswith("|| true"))
+        # The paths are the body of a `for` loop now, one `git add` per path,
+        # because `git add A B C` stages NOTHING and exits 128 when any one of
+        # them is missing - which is exactly what happened, silently, and is
+        # why trending.json never reached production.
+        add_start = next(i for i, line in enumerate(lines) if line.startswith("for MOVIE_OUTPUT in"))
+        add_end = next(i for i in range(add_start, len(lines)) if lines[i].endswith("; do"))
         staged = " ".join(lines[add_start : add_end + 1])
 
         for owned in ("data/movies/discovery", "data/movies/genres", "state/movie-trending-cache.json"):
@@ -295,6 +299,27 @@ class RefreshWorkflowTests(unittest.TestCase):
         # Nothing that belongs to the sports/live-TV scanner may be staged.
         for foreign in ("data/channels", "data/playback", "today-match.json", "upcoming.json", "-A", " . "):
             self.assertNotIn(foreign, staged, f"refresh must never stage {foreign}")
+
+    def test_a_missing_output_cannot_silently_stage_nothing(self):
+        """The guard itself, not just the path list.
+
+        Every path is added on its own and only when it exists. Without that,
+        one absent file takes the whole staging down and the job still goes
+        green - the failure mode this test exists to prevent recurring.
+        """
+        steps = self.workflow["jobs"]["refresh"]["steps"]
+        commit = next(s for s in steps if "Commit" in s.get("name", ""))
+        # Code only. The comment above the loop quotes the old form to
+        # explain what went wrong, and searching the prose would answer a
+        # different question than the one being asked.
+        code = "\n".join(
+            line for line in commit["run"].splitlines()
+            if not line.strip().startswith("#")
+        )
+        self.assertIn('if [[ -e "$MOVIE_OUTPUT" ]]; then', code)
+        self.assertIn('git add -- "$MOVIE_OUTPUT"', code)
+        # The old form, which swallowed both the error and the exit code.
+        self.assertNotIn("2>/dev/null || true", code)
 
     def test_the_refresh_does_not_run_the_stream_scanner(self):
         text = WORKFLOW.read_text(encoding="utf-8")

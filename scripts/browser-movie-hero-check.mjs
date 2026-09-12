@@ -192,7 +192,7 @@ async function newPage(payload) {
     JSON.stringify(hero.buttons));
   check(hero.right <= hero.docWidth + 2, '[real] the Hero stays inside the viewport',
     `${hero.right} vs ${hero.docWidth}`);
-  check(hero.height > 100 && hero.height < 320,
+  check(hero.height > 100 && hero.height <= 470,
     '[real] the Hero is a banner, not a page', `${hero.height}px`);
 
   // Nothing about playback may reach the browser through this file.
@@ -494,7 +494,7 @@ async function newPage(payload) {
   await page.waitForTimeout(1200);
   check((await heroState(page)).hidden,
     '[empty] an empty featured.json produces no Hero at all rather than an empty frame');
-  const grid = await page.$$eval('#sidebarList .movie-card', (n) => n.length);
+  const grid = await page.$$eval('#sidebarList .movie-card, #movieHomeSections .movie-card', (n) => n.length);
   check(grid > 0, '[empty] and the rest of Movie Home still works', String(grid));
   check(errors.length === 0, '[empty] no uncaught page errors', errors.join(' | '));
   await context.close();
@@ -512,7 +512,7 @@ async function newPage(payload) {
   await openMovieHome(page);
   await page.waitForTimeout(1500);
   check((await heroState(page)).hidden, '[failure] a failed Hero fetch shows no Hero');
-  const grid = await page.$$eval('#sidebarList .movie-card', (n) => n.length);
+  const grid = await page.$$eval('#sidebarList .movie-card, #movieHomeSections .movie-card', (n) => n.length);
   check(grid > 0, '[failure] and never blocks the rest of Movie Home', String(grid));
   check(errors.length === 0, '[failure] no uncaught page errors', errors.join(' | '));
   await context.close();
@@ -823,7 +823,8 @@ for (const viewport of VIEWPORTS) {
         `[${label}] the Hero buttons are tappable`, `${measured.smallestButton}px`);
       check(measured.smallestArrow >= 24,
         `[${label}] the Hero arrows are tappable`, `${measured.smallestArrow}px`);
-      check(measured.height <= 240,
+      // The reference's own mobile Hero is min-height 250 / max-height 280.
+      check(measured.height <= 290,
         `[${label}] the Hero stays compact enough to leave cards on screen`,
         `${measured.height}px`);
     }

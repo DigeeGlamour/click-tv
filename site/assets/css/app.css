@@ -1,4 +1,4 @@
-    :root {
+﻿    :root {
       --bg-dark: #080c14; --panel-surface: #0f1522; --card-surface: rgba(255, 255, 255, 0.02); 
       --card-hover: rgba(255, 255, 255, 0.05); --border-glass: rgba(255, 255, 255, 0.08); 
       --phosphor: #ff2a44; --phosphor-glow: rgba(255, 42, 68, 0.25); --live-green: #10b981;
@@ -14,7 +14,7 @@
       min-height: 100vh; min-height: 100dvh; overflow-x: hidden; display: flex; flex-direction: column; 
       user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; 
     }
-    /* Text কপি করার সুযোগ পাঠ্য অংশে খোলা রাখা হয়েছে (accessibility) */
+    /* Text à¦•à¦ªà¦¿ à¦•à¦°à¦¾à¦° à¦¸à§à¦¯à§‹à¦— à¦ªà¦¾à¦ à§à¦¯ à¦…à¦‚à¦¶à§‡ à¦–à§‹à¦²à¦¾ à¦°à¦¾à¦–à¦¾ à¦¹à¦¯à¦¼à§‡à¦›à§‡ (accessibility) */
     h1, h2, p, input, textarea, .video-meta, .meta-category, .sidebar-name, .movie-card-title {
       user-select: text; -webkit-user-select: text;
     }
@@ -566,7 +566,7 @@
       box-shadow: 0 0 14px var(--phosphor-glow) !important; text-shadow: 0 0 6px rgba(255, 255, 255, 0.9) !important; 
     }
 
-    /* 📌 New Movie Subcategory Bar (Points 3, 14, 23) */
+    /* ðŸ“Œ New Movie Subcategory Bar (Points 3, 14, 23) */
     .movie-subcategory-bar {
       display: flex;
       flex: 0 0 auto;
@@ -1097,7 +1097,7 @@
     
       /*
        * Upcoming event cards
-       * Long title এবং event information card-এর বাইরে যেতে পারবে না।
+       * Long title à¦à¦¬à¦‚ event information card-à¦à¦° à¦¬à¦¾à¦‡à¦°à§‡ à¦¯à§‡à¦¤à§‡ à¦ªà¦¾à¦°à¦¬à§‡ à¦¨à¦¾à¥¤
        */
       .sidebar-list.upcoming-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -1186,7 +1186,7 @@
     
       /*
        * Mobile movie cards
-       * Desktop-এর 2:3 poster ratio শুধু mobile-এ compact করা হলো।
+       * Desktop-à¦à¦° 2:3 poster ratio à¦¶à§à¦§à§ mobile-à¦ compact à¦•à¦°à¦¾ à¦¹à¦²à§‹à¥¤
        */
       .sidebar-list.movie-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -2279,7 +2279,7 @@ html.fullscreen-4k-playback .video-container-wrap:-webkit-full-screen .fs-drawer
 
 
 
-/* 2026-08-05 live stability/UI correction — requested scope only. */
+/* 2026-08-05 live stability/UI correction â€” requested scope only. */
 
 /* Transparent buttons remain fill-free, with a small shadow so icons stay readable. */
 .ctrl-btn,
@@ -2936,3 +2936,925 @@ html.fullscreen-4k-playback .video-container-wrap:-webkit-full-screen .fs-drawer
     transform: none;
   }
 }
+
+/* ==========================================================================
+   MOVIE PORTAL (approved Movie page architecture).
+
+   Everything below is scoped to `body.movie-portal`, a class only the movie
+   browse views add. Live Sports, Live TV, Today/Upcoming Match and the
+   Notice never carry it, so their layout is untouched by every rule here -
+   that is the whole reason for a class rather than an edit to the shared
+   shell.
+
+   Specificity note: the shell grid is owned by reference-design.css with
+   !important (`.youtube-layout.final-shell`, 0-2-0). These rules prefix it
+   with `body.movie-portal` (0-3-1) and repeat !important, so they win among
+   important declarations without deleting or editing one existing rule.
+
+   The player is hidden while browsing and returns byte-identical the moment
+   the class comes off. No player DOM, size, control or engine rule is
+   modified anywhere in this block.
+   ========================================================================== */
+
+body.movie-portal .youtube-layout.final-shell:has(.sidebar-section.side-panel) {
+  grid-template-columns: 255px minmax(0, 1fr) !important;
+  grid-template-areas: "rail catalog" !important;
+  gap: 18px !important;
+  padding: 14px 20px 24px !important;
+  height: calc(100dvh - var(--ref-notice-h, 22px) - var(--ref-header-h, 54px)) !important;
+  overflow: hidden !important;
+  align-items: stretch !important;
+}
+
+/* The player column, while browsing.
+   On desktop the whole column goes: it holds nothing else the movie page
+   needs, and leaving it in place with an undefined grid area would open a
+   third implicit column.
+   On mobile it must STAY, because the mobile main nav, the mobile search
+   box and the mobile sub-nav are all children of it - hiding the column
+   there took the navigation with it. Only the player and NOW PLAYING are
+   hidden below that width. Neither case changes a single player rule. */
+@media (min-width: 1001px) {
+  body.movie-portal .video-section.left-column { display: none !important; }
+}
+@media (max-width: 1000px) {
+  body.movie-portal .video-section.left-column .video-container-wrap,
+  body.movie-portal .video-section.left-column .video-meta {
+    display: none !important;
+  }
+}
+
+/* The movie content area takes the whole right-hand track. */
+body.movie-portal .sidebar-section.side-panel {
+  grid-area: catalog !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+body.movie-portal .sidebar-scroll-area {
+  padding-right: 6px !important;
+  overflow-y: auto !important;
+}
+/* The list meta bar belongs to the channel list, not to a movie page. */
+body.movie-portal .sidebar-top-bar.card-list-meta { display: none !important; }
+
+/* --- the left rail: DISCOVERY & PICKS / MY LIBRARY / BROWSE BY GENRE ----- */
+body.movie-portal .desktop-category-rail {
+  grid-area: rail !important;
+  width: 255px !important;
+  padding: 12px 8px !important;
+  background: #0c131c !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 22px !important;
+  overflow-y: auto !important;
+  scrollbar-width: none !important;
+}
+body.movie-portal .desktop-category-rail::-webkit-scrollbar { display: none !important; }
+.desktop-category-rail:has(#desktopSubNav.movie-rail) .category-rail-title { display: none !important; }
+#desktopSubNav.movie-rail {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  padding: 0 !important;
+}
+/* A group caption, injected by the movie nav renderer. */
+.movie-rail .movie-rail-caption {
+  padding: 10px 12px 6px;
+  color: #718198;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+#desktopSubNav.movie-rail .final-sub-button {
+  width: 100% !important;
+  height: 42px !important;
+  padding: 0 12px 0 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  border: none !important;
+  border-left: 3px solid transparent !important;
+  border-radius: 0 8px 8px 0 !important;
+  background: transparent !important;
+  color: #e5eef8 !important;
+  font-size: 14.5px !important;
+  font-weight: 600 !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+#desktopSubNav.movie-rail .final-sub-button:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #fff !important;
+  transform: translateX(4px) !important;
+}
+#desktopSubNav.movie-rail .final-sub-button.active {
+  border-left-color: #ff2a4a !important;
+  background: linear-gradient(90deg, rgba(255, 49, 84, 0.16) 0%, rgba(255, 49, 84, 0.02) 100%) !important;
+  color: #fff !important;
+  font-weight: 750 !important;
+  transform: none !important;
+}
+#desktopSubNav.movie-rail .final-sub-button .movie-rail-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14.5px;
+  color: #9cb0c9;
+  flex-shrink: 0;
+}
+#desktopSubNav.movie-rail .final-sub-button.active .movie-rail-icon { color: #fff; }
+
+/* Genre pills, in the rail under BROWSE BY GENRE - not a full-width bar. */
+.desktop-category-rail .movie-genre-bar.movie-rail-genres {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 7px 6px !important;
+  margin-top: 2px;
+  padding: 2px 8px 10px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+}
+.desktop-category-rail .movie-rail-genres .movie-genre-chip {
+  min-height: 30px !important;
+  padding: 0 10px !important;
+  border-radius: 999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.11) !important;
+  background: rgba(16, 25, 38, 0.86) !important;
+  color: #aebed0 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+}
+.desktop-category-rail .movie-rail-genres .movie-genre-chip.active {
+  background: #ff2a4a !important;
+  border-color: #ff2a4a !important;
+  color: #fff !important;
+}
+
+/* --- the Hero, at the top of the content area ---------------------------- */
+body.movie-portal .movie-hero-panel { padding: 0 0 22px !important; }
+body.movie-portal .movie-hero {
+  min-height: 390px !important;
+  border-radius: 18px !important;
+}
+body.movie-portal .movie-hero-inner {
+  grid-template-columns: minmax(0, 1fr) !important;
+  /* The copy sits at the bottom of the stage with the buttons directly
+     under it, so text and actions read as one block the way the reference
+     has them - centring it in the full height opened a dead gap. */
+  align-items: end !important;
+  padding: 34px 36px 0 !important;
+  min-height: 296px !important;
+}
+body.movie-portal .movie-hero-art { display: none !important; }
+body.movie-portal .movie-hero-copy { max-width: 620px; }
+body.movie-portal .movie-hero-kicker { font-size: 11px !important; margin-bottom: 12px !important; }
+body.movie-portal .movie-hero-title {
+  font-size: 38px !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.6px !important;
+  margin-bottom: 10px !important;
+}
+body.movie-portal .movie-hero-meta { font-size: 13.5px !important; margin-bottom: 14px !important; }
+body.movie-portal .movie-hero-tag { font-size: 10.5px !important; padding: 2px 8px !important; }
+body.movie-portal .movie-hero-desc {
+  display: -webkit-box !important;
+  font-size: 13px !important;
+  line-height: 1.55 !important;
+  max-width: 540px;
+  margin-bottom: 22px !important;
+}
+body.movie-portal .movie-hero-foot { padding: 16px 36px 28px !important; margin-top: 0 !important; }
+body.movie-portal .movie-hero-play,
+body.movie-portal .movie-hero-details {
+  min-height: 40px !important;
+  padding: 0 22px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+}
+body.movie-portal .movie-hero-play { background: #fff !important; border-color: #fff !important; color: #060a10 !important; }
+body.movie-portal .movie-hero-play i { color: #060a10 !important; }
+body.movie-portal .movie-hero-details { background: #0d1522 !important; border-color: #1f2f44 !important; }
+
+/* --- discovery rows ------------------------------------------------------ */
+.movie-home-sections { display: block; }
+.movie-row { margin-bottom: 31px; }
+.movie-row-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 15px;
+  padding: 0 4px;
+}
+.movie-row-head h2 {
+  margin: 0;
+  color: #f7f9fc;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+}
+.movie-row-head p {
+  margin: 3px 0 0;
+  color: #94a0b4;
+  font-size: 11.5px;
+  font-weight: 500;
+}
+.movie-row-all {
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  background: transparent;
+  color: #c5d1e0;
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.movie-row-all:hover { color: #fff; border-color: rgba(255, 255, 255, 0.28); }
+.movie-row-strip {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 184px;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 6px 4px 8px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-snap-type: x mandatory;
+}
+.movie-row-strip::-webkit-scrollbar { display: none; width: 0; height: 0; }
+.movie-row-strip > .movie-card { scroll-snap-align: start; }
+
+/* --- the card, in the approved proportions ------------------------------- */
+body.movie-portal .sidebar-list.movie-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(184px, 1fr)) !important;
+  gap: 20px 14px !important;
+  align-content: start !important;
+  padding-bottom: 40px !important;
+}
+body.movie-portal .movie-card,
+.movie-row-strip .movie-card {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  aspect-ratio: auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 9px !important;
+  background: #0d1522 !important;
+  border: 1px solid #1a283c !important;
+  border-radius: 11px !important;
+  overflow: hidden !important;
+}
+body.movie-portal .movie-card:hover,
+.movie-row-strip .movie-card:hover {
+  background: #132034 !important;
+  border-color: rgba(255, 49, 84, 0.45) !important;
+  transform: translateY(-5px) !important;
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.85), 0 0 22px rgba(255, 49, 84, 0.26) !important;
+}
+/* The poster becomes a square box at the top instead of filling the card. */
+body.movie-portal .movie-card .movie-poster,
+.movie-row-strip .movie-card .movie-poster,
+body.movie-portal .movie-card .movie-poster-placeholder,
+.movie-row-strip .movie-card .movie-poster-placeholder {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  border-radius: 6px !important;
+  margin-bottom: 7px !important;
+  background: #070c14 !important;
+  flex: 0 0 auto !important;
+}
+body.movie-portal .movie-card .movie-poster-placeholder,
+.movie-row-strip .movie-card .movie-poster-placeholder {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+}
+/* The meta moves below the poster: no gradient, no overlay. */
+body.movie-portal .movie-card .movie-card-overlay,
+.movie-row-strip .movie-card .movie-card-overlay {
+  position: relative !important;
+  inset: auto !important;
+  background: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+body.movie-portal .movie-card .movie-card-title,
+.movie-row-strip .movie-card .movie-card-title {
+  order: 2;
+  color: #fff !important;
+  font-size: 14.5px !important;
+  font-weight: 850 !important;
+  line-height: 1.3 !important;
+  letter-spacing: -0.2px !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden !important;
+  white-space: normal !important;
+}
+body.movie-portal .movie-card .movie-card-year,
+.movie-row-strip .movie-card .movie-card-year {
+  order: 1;
+  color: #7b94b3 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  margin-bottom: 4px !important;
+}
+/* The gold rule under the title, as in the reference. */
+body.movie-portal .movie-card .movie-card-overlay::after,
+.movie-row-strip .movie-card .movie-card-overlay::after {
+  content: "";
+  order: 3;
+  width: 24px;
+  height: 2.5px;
+  margin: 5px 0 2px;
+  border-radius: 2px;
+  background: #e59819;
+}
+body.movie-portal .movie-card .source-route-badges,
+.movie-row-strip .movie-card .source-route-badges { display: none !important; }
+
+/* The grid card needs its own, higher-specificity pass.
+   reference-design.css styles the grid poster through
+   `.sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card>img.movie-poster`
+   - six classes and an element, (0,6,1) - which outranks the shared rule
+   above and kept the poster filling the card with the title overlaid on it.
+   These selectors add the portal class on top of the same chain, so the grid
+   card matches the row card and the reference design. */
+body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  aspect-ratio: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 9px !important;
+  background: #0d1522 !important;
+  border: 1px solid #1a283c !important;
+  border-radius: 11px !important;
+}
+body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card > img.movie-poster,
+body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card .movie-poster,
+body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card .movie-poster-placeholder {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  object-fit: cover !important;
+  border-radius: 6px !important;
+  margin-bottom: 7px !important;
+  flex: 0 0 auto !important;
+}
+body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card .movie-card-overlay {
+  position: relative !important;
+  inset: auto !important;
+  background: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+/* --- the status strip ---------------------------------------------------- */
+.movie-status-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 30px;
+}
+.movie-status-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: #0f1626;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.18s ease, transform 0.18s ease;
+}
+.movie-status-card:hover { border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+.movie-status-top { display: flex; align-items: center; justify-content: space-between; }
+.movie-status-icon {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border-radius: 10px;
+  background: rgba(255, 42, 74, 0.12);
+  color: #ff5570;
+  font-size: 13px;
+}
+.movie-status-card.fresh .movie-status-icon { background: rgba(25, 201, 135, 0.14); color: #19c987; }
+.movie-status-card.latest .movie-status-icon { background: rgba(74, 158, 238, 0.14); color: #4a9eee; }
+.movie-status-card.premium .movie-status-icon { background: rgba(255, 183, 3, 0.14); color: #ffb703; }
+.movie-status-tag { color: #6b7890; font-size: 9px; font-weight: 900; letter-spacing: 1.2px; }
+.movie-status-card h3 { margin: 0; color: #f7f9fc; font-size: 15px; font-weight: 900; }
+.movie-status-card p { margin: 3px 0 0; color: #94a0b4; font-size: 10.5px; }
+
+/* --- responsive ---------------------------------------------------------- */
+@media (max-width: 1180px) {
+  body.movie-portal .youtube-layout.final-shell:has(.sidebar-section.side-panel) {
+    grid-template-columns: 215px minmax(0, 1fr) !important;
+    gap: 14px !important;
+  }
+  body.movie-portal .desktop-category-rail { width: 215px !important; }
+  body.movie-portal .movie-hero { min-height: 330px !important; }
+  body.movie-portal .movie-hero-inner { min-height: 290px !important; padding: 26px 26px 10px !important; }
+  body.movie-portal .movie-hero-title { font-size: 32px !important; }
+  .movie-status-strip { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 1000px) {
+  /* The rail is the mobile sub-nav below this width; the portal becomes one
+     column and the existing mobile navigation keeps working unchanged. */
+  body.movie-portal .youtube-layout.final-shell:has(.sidebar-section.side-panel) {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-areas: none !important;
+    height: auto !important;
+    min-height: calc(100dvh - var(--ref-notice-h, 22px)) !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+  body.movie-portal .desktop-category-rail { display: none !important; }
+  body.movie-portal .sidebar-section.side-panel { padding: 0 10px !important; }
+  body.movie-portal .movie-hero-panel { padding: 8px 0 14px !important; }
+  body.movie-portal .movie-hero { min-height: 210px !important; }
+  body.movie-portal .movie-hero-inner {
+    grid-template-columns: minmax(0, 1fr) !important;
+    min-height: 190px !important;
+    padding: 16px 16px 8px !important;
+  }
+  body.movie-portal .movie-hero-title { font-size: 22px !important; }
+  body.movie-portal .movie-hero-desc { display: none !important; }
+  body.movie-portal .movie-hero-foot { padding: 0 16px 14px !important; }
+  body.movie-portal .sidebar-list.movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 14px 10px !important;
+  }
+  .movie-row-strip { grid-auto-columns: 150px; gap: 10px; }
+  .movie-row { margin-bottom: 22px; }
+  .movie-row-head h2 { font-size: 16px; }
+  .movie-status-strip { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
+}
+@media (max-width: 640px) {
+  body.movie-portal .sidebar-list.movie-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .movie-row-strip { grid-auto-columns: 132px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.movie-portal .movie-card,
+  .movie-row-strip .movie-card,
+  #desktopSubNav.movie-rail .final-sub-button,
+  .movie-status-card { transition: none !important; }
+  body.movie-portal .movie-card:hover,
+  .movie-row-strip .movie-card:hover,
+  .movie-status-card:hover { transform: none !important; }
+}
+
+/* =========================================================
+   MOVIE SECTION HEADER (approved demo header design).
+
+   `Movie demo design index.html` is the source of truth for this header:
+   64px tall, no separate header container (it shares the page background),
+   a floating segmented capsule for Live Sports / Live TV / Movies, and a
+   250px pill search next to a red Subscribe pill.
+
+   Scoped to `body.movie-section`, which the main-navigation renderer sets
+   whenever the Movies group is active - Home, Grid, Detail and Player alike.
+   Live Sports and Live TV keep the header they already had, untouched.
+
+   Desktop only. Below 981px reference-design.css docks `.app-header` as the
+   fixed bottom navigation bar for the whole site, and the demo hides its
+   capsule at that width anyway - so there is no capsule design to match, and
+   re-siting the bar for one section would move the primary navigation between
+   sections on a phone.
+   ========================================================= */
+@media (min-width: 981px) {
+  body.movie-section {
+    /* The shell height is calc(100dvh - notice - header), so the header
+       height has to move as one value, not two. */
+    --ref-header-h: 64px;
+  }
+
+  body.movie-section .app-header {
+    display: flex !important;
+    grid-template-columns: none !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 20px !important;
+    height: 64px !important;
+    min-height: 64px !important;
+    padding: 0 28px !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: 0 !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+  }
+
+  /* Brand */
+  body.movie-section .app-header .header-left.brand {
+    flex: 0 0 auto !important;
+    min-width: 0 !important;
+  }
+  body.movie-section .app-header .brand h1 {
+    gap: 10px !important;
+    font-family: 'Oswald', var(--font-sans), sans-serif !important;
+    font-size: 21px !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.4px !important;
+    line-height: 1 !important;
+    color: #ffffff !important;
+  }
+  body.movie-section .app-header .brand-mark {
+    position: relative !important;
+    width: 32px !important;
+    height: 32px !important;
+    flex: 0 0 32px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: linear-gradient(135deg, #ff2a4a 0%, #e0223e 100%) !important;
+    box-shadow: 0 0 14px rgba(255, 42, 74, 0.35) !important;
+  }
+  body.movie-section .app-header .brand-mark::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    margin: auto !important;
+    width: 0 !important;
+    height: 0 !important;
+    border-top: 5px solid transparent !important;
+    border-bottom: 5px solid transparent !important;
+    border-left: 9px solid #ffffff !important;
+    border-right: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    animation: none !important;
+    transform: translateX(1px) !important;
+  }
+
+  /* Floating segmented capsule: Live Sports | Live TV | Movies */
+  body.movie-section .app-header .header-center {
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+    align-self: center !important;
+    max-width: none !important;
+  }
+  body.movie-section .desktop-main-navigation.final-nav-shell {
+    width: auto !important;
+    height: auto !important;
+  }
+  body.movie-section .desktop-main-navigation .final-main-nav {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: auto !important;
+    gap: 4px !important;
+    padding: 4px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 999px !important;
+    background: rgba(14, 21, 32, 0.78) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
+  }
+  body.movie-section .desktop-main-navigation .final-main-button {
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 0 !important;
+    height: auto !important;
+    padding: 7px 18px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: transparent !important;
+    color: #94a3b8 !important;
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.2px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
+  }
+  body.movie-section .desktop-main-navigation .final-main-button:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+  }
+  body.movie-section .desktop-main-navigation .final-main-button.active {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    background: linear-gradient(135deg, #ff2a4a 0%, #e0223e 100%) !important;
+    box-shadow: 0 2px 14px rgba(255, 42, 84, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
+  }
+  /* The capsule carries the active state itself; the underline belongs to the
+     other sections' header. */
+  body.movie-section .desktop-main-navigation .final-main-button.active::after {
+    display: none !important;
+  }
+
+  /* Header tools: search pill + Subscribe */
+  body.movie-section .app-header .header-right.header-actions {
+    flex: 0 0 auto !important;
+    gap: 12px !important;
+    min-width: 0 !important;
+    justify-content: flex-end !important;
+  }
+  body.movie-section .app-header .search-wrap.desktop-search,
+  body.movie-section .app-header .search-wrap.desktop-search:focus-within {
+    width: 250px !important;
+    height: 38px !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 9999px !important;
+    background: rgba(14, 21, 32, 0.85) !important;
+    transition: border-color 0.2s ease, background 0.2s ease !important;
+  }
+  body.movie-section .app-header .search-wrap.desktop-search:focus-within {
+    border-color: rgba(255, 255, 255, 0.32) !important;
+    background: rgba(18, 28, 42, 0.95) !important;
+  }
+  body.movie-section .app-header .search-wrap.desktop-search input,
+  body.movie-section .app-header .search-wrap.desktop-search:focus-within input {
+    width: auto !important;
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    padding: 0 4px 0 16px !important;
+    opacity: 1 !important;
+    font-size: 13px !important;
+    color: #ffffff !important;
+  }
+  body.movie-section .app-header .search-wrap.desktop-search .search-btn {
+    width: 38px !important;
+    flex: 0 0 38px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    color: #94a3b8 !important;
+    font-size: 13px !important;
+  }
+  body.movie-section .app-header .search-wrap.desktop-search .search-btn:hover {
+    color: #ffffff !important;
+  }
+  body.movie-section .app-header .header-glow-btn {
+    height: 38px !important;
+    padding: 0 16px !important;
+    gap: 7px !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    border-radius: 9999px !important;
+    background: rgba(18, 26, 38, 0.85) !important;
+    color: #ffffff !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    box-shadow: none !important;
+  }
+  body.movie-section .app-header .header-glow-btn:hover {
+    background: rgba(28, 40, 58, 0.95) !important;
+    border-color: rgba(255, 255, 255, 0.32) !important;
+    transform: translateY(-1.5px) !important;
+  }
+  body.movie-section .app-header #subscribeBtn {
+    border: 0 !important;
+    font-weight: 800 !important;
+    background: linear-gradient(135deg, #ff2a4a 0%, #e0223e 100%) !important;
+    box-shadow: 0 0 16px rgba(255, 42, 84, 0.45) !important;
+  }
+  body.movie-section .app-header #subscribeBtn:hover {
+    background: linear-gradient(135deg, #ff2a4a 0%, #e0223e 100%) !important;
+    border: 0 !important;
+    box-shadow: 0 0 24px rgba(255, 42, 84, 0.75) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.movie-section .desktop-main-navigation .final-main-button,
+  body.movie-section .app-header .header-glow-btn { transition: none !important; }
+  body.movie-section .app-header .header-glow-btn:hover { transform: none !important; }
+}
+
+/* =========================================================
+   MOVIE RAIL TAGS + MOVIE GRID HEADER (approved demo design).
+
+   Two pieces the demo carries and the first pass did not:
+
+   - the rail entries end in a tag: HOT / a bolt / NEW on the four shelves,
+     and the real catalogue count on every category. The count comes from
+     data/manifest.json, so an entry with no real count shows none at all.
+   - a grid view opens under a FILTER BY GENRE shell with Back to Home on the
+     right. Movie Home has neither: the Hero and the rows are the page there.
+   ========================================================= */
+
+/* --- rail tags -----------------------------------------------------------
+   Drawn as a pseudo-element from a data attribute, never appended as text:
+   the entry's accessible name stays the entry's name, so "Hindi" is Hindi and
+   not "Hindi240". A count is only ever a real catalogue number. */
+#desktopSubNav.movie-rail .final-sub-button[data-rail-count]::after,
+#desktopSubNav.movie-rail .final-sub-button[data-rail-tone]::after {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+#desktopSubNav.movie-rail .final-sub-button[data-rail-count]::after {
+  content: attr(data-rail-count);
+  min-width: 30px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: #8b9cb3;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+#desktopSubNav.movie-rail .final-sub-button.active[data-rail-count]::after {
+  background: rgba(255, 255, 255, 0.12);
+  color: #e9f1fa;
+}
+#desktopSubNav.movie-rail .final-sub-button[data-rail-tone]::after {
+  min-width: 26px;
+  height: 19px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+}
+#desktopSubNav.movie-rail .final-sub-button[data-rail-tone="hot"]::after {
+  content: "HOT";
+  background: rgba(255, 42, 74, 0.18);
+  border: 1px solid rgba(255, 42, 74, 0.55);
+  color: #ff8298;
+}
+#desktopSubNav.movie-rail .final-sub-button[data-rail-tone="fresh"]::after {
+  content: "\f0e7";
+  font-family: "Font Awesome 6 Free";
+  font-size: 10px;
+  background: rgba(25, 201, 135, 0.16);
+  border: 1px solid rgba(25, 201, 135, 0.45);
+  color: #4ddcab;
+}
+#desktopSubNav.movie-rail .final-sub-button[data-rail-tone="new"]::after {
+  content: "NEW";
+  background: rgba(74, 158, 238, 0.16);
+  border: 1px solid rgba(74, 158, 238, 0.45);
+  color: #7fbcf5;
+}
+#desktopSubNav.movie-rail .final-sub-button[data-rail-tone="star"]::after {
+  content: "\f005";
+  font-family: "Font Awesome 6 Free";
+  font-size: 10px;
+  background: rgba(255, 183, 3, 0.14);
+  border: 1px solid rgba(255, 183, 3, 0.4);
+  color: #ffc94d;
+}
+
+/* --- grid header --------------------------------------------------------- */
+.movie-grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 0 18px;
+  min-width: 0;
+}
+.movie-grid-header[hidden] { display: none !important; }
+.movie-grid-filter-shell {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 13px;
+  background: linear-gradient(135deg, rgba(13, 21, 33, 0.92), rgba(9, 16, 25, 0.82));
+}
+.movie-grid-filter-label {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #8fa3ba;
+  font-size: 10.5px;
+  font-weight: 850;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.movie-grid-filter-label i { color: #ff2a4a; }
+.movie-grid-header .movie-genre-bar {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+}
+.movie-grid-header .movie-genre-chip {
+  min-height: 32px;
+  padding: 0 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: rgba(16, 25, 38, 0.86);
+  color: #aebed0;
+  font-size: 11.3px;
+  font-weight: 700;
+  line-height: 1;
+}
+.movie-grid-header .movie-genre-chip.active {
+  background: #ff2a4a;
+  border-color: #ff2a4a;
+  color: #ffffff;
+}
+.movie-grid-back {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 33px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid #20354e;
+  background: #0b1320;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.movie-grid-back i {
+  color: #38bdf8;
+  font-size: 11.5px;
+  transition: transform 0.2s ease;
+}
+.movie-grid-back:hover {
+  background: #111e30;
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+  transform: translateX(-2px);
+}
+.movie-grid-back:hover i { transform: translateX(-2px); }
+
+@media (max-width: 1000px) {
+  .movie-grid-header { gap: 10px; margin-bottom: 12px; }
+  .movie-grid-filter-shell { padding: 10px 11px; gap: 10px; }
+  .movie-grid-filter-label { display: none; }
+  .movie-grid-header .movie-genre-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .movie-grid-header .movie-genre-bar::-webkit-scrollbar { display: none; }
+  .movie-grid-header .movie-genre-chip { flex: 0 0 auto; }
+}
+@media (max-width: 640px) {
+  .movie-grid-back span { display: none; }
+  .movie-grid-back { padding: 0 11px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .movie-grid-back, .movie-grid-back i { transition: none !important; }
+  .movie-grid-back:hover, .movie-grid-back:hover i { transform: none !important; }
+}
+
+/* Movie Detail is a view, not a panel under Movie Home. While it is open the
+   Home furniture steps aside, so the detail is the page - as the approved
+   design has it. Related and Popular are left alone: they belong beside the
+   player, and the detail brings its own You May Also Like. */
+body.movie-detail-view #movieHeroPanel,
+body.movie-detail-view #movieContinuePanel,
+body.movie-detail-view #movieHomeSections,
+body.movie-detail-view #movieGridHeader {
+  display: none !important;
+}
+
+.movie-grid-back[hidden] { display: none !important; }

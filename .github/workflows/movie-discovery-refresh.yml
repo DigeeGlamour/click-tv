@@ -116,15 +116,33 @@ jobs:
           # data/playback/, today-match.json or upcoming.json can be picked
           # up by an explicit add list, so a refresh can never carry a
           # sports or live-TV change along with it.
-          git add -- \
+          #
+          # ONE PATH AT A TIME, AND ONLY IF IT EXISTS. `git add A B C`
+          # stages NOTHING and exits 128 when any single path is missing,
+          # and several of these are only written when a run actually does
+          # that work - a discovery refresh never produces the metadata
+          # cache or the identity aliases at all. With `2>/dev/null || true`
+          # swallowing both the message and the exit code, the job then
+          # reported "No discovery changes to commit" and went green having
+          # committed nothing. That is why trending.json never reached
+          # production.
+          #
+          # scan.yml already learned this on the sports side; same guard
+          # here. The path list itself is unchanged.
+          for MOVIE_OUTPUT in \
             data/movies/discovery \
             data/movies/genres \
             state/movie-trending-cache.json \
             state/provider-health.json \
             state/movie-metadata-cache.json \
             state/movie-identity-aliases.json \
-            state/movie-featured-history.json \
-            2>/dev/null || true
+            state/movie-featured-history.json; do
+            if [[ -e "$MOVIE_OUTPUT" ]]; then
+              git add -- "$MOVIE_OUTPUT"
+            else
+              echo "   not produced by this run, skipped: $MOVIE_OUTPUT"
+            fi
+          done
           # data/movies/discovery above already covers featured.json and
           # home.json. state/manual-featured.json is deliberately NOT staged:
           # it is operator input, never a job output, so a refresh can never

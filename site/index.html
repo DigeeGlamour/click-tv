@@ -339,11 +339,21 @@
             <option value="za">Z-A Name</option>
           </select>
         </div>
-        <!-- Movie genre filter (PART 12). Movies-only: hidden for Live
-             Sports, Live TV and every other view. It sits directly above
-             the grid so one control serves desktop, tablet and mobile -
-             genre access cannot be lost when the sidebar collapses. -->
-        <div class="movie-genre-bar" id="movieGenreBar" role="group" aria-label="Filter movies by genre" hidden></div>
+        <!-- Movie grid header (approved Movie page design). Grid views only -
+             Movie Home shows the Hero and the rows instead. It carries the
+             FILTER BY GENRE shell and Back to Home exactly as the approved
+             design does. The rail has its own BROWSE BY GENRE pills; this bar
+             is what keeps genre filtering on the page below the rail
+             breakpoint, where the rail is not rendered at all. -->
+        <div class="movie-grid-header" id="movieGridHeader" hidden>
+          <div class="movie-grid-filter-shell">
+            <span class="movie-grid-filter-label"><i class="fas fa-layer-group" aria-hidden="true"></i> Filter by Genre</span>
+            <!-- Movie genre filter (PART 12). Movies-only: hidden for Live
+                 Sports, Live TV and every other view. -->
+            <div class="movie-genre-bar" id="movieGenreBar" role="group" aria-label="Filter movies by genre"></div>
+          </div>
+          <button class="movie-grid-back" id="movieGridBackBtn" type="button"><i class="fas fa-arrow-left" aria-hidden="true"></i> <span>Back to Home</span></button>
+        </div>
         <!-- Featured Hero (Featured/Hero plan). Movies Home only, built from
              data/movies/discovery/featured.json. Hidden entirely when nothing
              real qualifies: an empty Hero frame says less than no Hero at
@@ -368,6 +378,11 @@
              never starts playback by itself - Play hands off to the same
              player entry point every other card uses. -->
         <div class="movie-detail-panel" id="movieDetailPanel" role="region" aria-label="Movie details" hidden></div>
+        <!-- Movie Home rows (approved Movie page architecture). Movies Home
+             only: the discovery shelves and category rows, each one omitted
+             entirely when it has no real content. Every other movie view -
+             Trending, a category, a genre, search - uses the grid below. -->
+        <div class="movie-home-sections" id="movieHomeSections" role="region" aria-label="Movie discovery rows" hidden></div>
         <div class="sidebar-list" id="sidebarList" tabindex="0"></div>
       </div>
     </div>

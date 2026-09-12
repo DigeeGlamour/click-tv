@@ -467,7 +467,7 @@ async function runCorruptStore(label, viewport, navSelector, subNavSelector) {
   await page.waitForTimeout(4000);
   await openMoviesHome(page, navSelector, subNavSelector);
   const row = await readRow(page);
-  const cards = await page.evaluate(() => document.querySelectorAll('#sidebarList .movie-card, #sidebarList .series-card').length);
+  const cards = await page.evaluate(() => document.querySelectorAll('#sidebarList .movie-card, #sidebarList .series-card, #movieHomeSections .movie-card').length);
 
   check(pageErrors.length === 0, `[${label}] a corrupt store raises no error`, pageErrors.join(' | '));
   check(row.hidden, `[${label}] a corrupt store shows no Continue Watching row`);

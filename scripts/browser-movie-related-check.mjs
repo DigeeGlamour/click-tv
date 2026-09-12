@@ -188,7 +188,20 @@ async function run(label, viewport, navSelector, subNavSelector) {
   await page.waitForTimeout(1200);
   const playCard = page.locator('#sidebarList .movie-card').first();
   if (await playCard.count()) {
+    // A movie card opens its Detail now - the approved flow - so playback is
+    // started the way a viewer starts it: Play on the Detail, which is the
+    // same existing player entry point the card used to call directly.
     await playCard.click({ force: true });
+    await page.waitForTimeout(2500);
+    const played = await page.evaluate(() => {
+      const play = document.querySelector('.movie-detail-play');
+      if (!play || play.disabled) return false;
+      play.click();
+      return true;
+    });
+    if (!played) {
+      await page.locator('.movie-detail-close').first().click({ force: true }).catch(() => {});
+    }
     let beside = { hidden: true, cards: 0, playing: '' };
     for (let attempt = 0; attempt < 15; attempt += 1) {
       await page.waitForTimeout(700);
