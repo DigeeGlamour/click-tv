@@ -118,7 +118,16 @@ home is a column beside the player, so this is a compact banner for that
 column — tall enough to be the top of the page, short enough that the first row
 of cards is still on screen.
 
-Purely additive: **772 inserted lines across three site files, zero deleted.**
+**No CSS rule and no HTML element was changed or removed.** The old
+stylesheet is an exact prefix of the new one, byte for byte once line endings
+are ignored. The diff shows 254 deleted CSS lines and that number is entirely
+line endings: the PART 16–22 blocks had been appended with a shell heredoc and
+carried bare LF in an otherwise CRLF file, and a Python round-trip in this run
+normalised them. Verified by comparing the two blobs directly, not by reading
+the diff.
+
+`app.js` has exactly **two** deleted lines — the two view-guard conditions
+replaced in section 7 below. `index.html` has none.
 
 | Behaviour | Implementation |
 |---|---|
@@ -195,6 +204,10 @@ holds at the job level as well as inside the writer.
 | `scripts/verify-movie-featured.py` | **46/46** acceptance rows |
 | `scripts/verify-movie-discovery.py` | **33/33** |
 | `scripts/verify-movie-system-v2.py` | **45/45** |
+
+Diff for this run: **19 files changed, +4,975 / −292**. Of the 292, 254 are the
+CSS line endings described above and 12 are a rewritten test docstring; the
+behavioural deletions are the two `app.js` guard lines.
 
 Generated from the live catalogue: **5 of 5 slots**, 0 manual + 5 auto, drawn
 from 1,346 eligible candidates of 1,736 considered. Diversity held at 2 per
