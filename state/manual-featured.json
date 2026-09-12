@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "note": "Manual Featured pins. Highest priority in the Hero: a pin is a human decision and no auto score outranks it. It is empty because nothing has been pinned - an example entry here would be a fabricated editorial choice sitting in production data. The schema is documented in _schema below and in scanner/movie_featured.py.",
+  "_schema": {
+    "id": "the catalogue id of a movie or series, exactly as data/movies/<category>/page-*.json or data/series/<category>/index.json spells it",
+    "enabled": "false switches the pin off without deleting it",
+    "priority": "higher wins; 100 is the conventional top. Equal priorities keep the order they are written in",
+    "start_at": "UTC ISO-8601, or null. Before it, the pin is pending and takes no slot",
+    "end_at": "UTC ISO-8601, or null. From it, the pin is expired and takes no slot",
+    "note": "why it was pinned, for whoever reads this next",
+    "custom_label": "OPTIONAL, UI only - a badge word such as EDITOR'S PICK",
+    "custom_kicker": "OPTIONAL, UI only - replaces the FEATURED ON CLICK TV line",
+    "_forbidden": "There is no way to set a title, year, rating, genre or release date here, deliberately. Every fact the Hero shows comes from the catalogue and the metadata cache; a pin chooses WHICH title is shown, never WHAT is said about it."
+  },
+  "items": []
+}

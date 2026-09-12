@@ -34,6 +34,7 @@ DISCOVERY_ROOT = os.path.join("data", "movies", "discovery")
 JUST_ADDED_PATH = os.path.join(DISCOVERY_ROOT, "just-added.json")
 LATEST_PATH = os.path.join(DISCOVERY_ROOT, "latest.json")
 TRENDING_PATH = os.path.join(DISCOVERY_ROOT, "trending.json")
+FEATURED_PATH = os.path.join(DISCOVERY_ROOT, "featured.json")
 HOME_PATH = os.path.join(DISCOVERY_ROOT, "home.json")
 SEARCH_INDEX_PATH = os.path.join("data", "movies", "search-index.json")
 
@@ -418,17 +419,16 @@ def _trending_row(
 def _carried_featured(
     existing_home: Dict[str, Any], catalog: Dict[str, Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
-    """Whatever a real Featured source last put here, if anything.
+    """Whatever the last good home.json had in this row.
 
-    The Featured/Hero system is its own plan and is NOT implemented yet, so
-    nothing is invented to fill this row. Not the top trending title, not
-    the film with the most servers, not a random pick - each of those would
-    be a fabricated editorial choice presented as a real one.
+    The fallback path, used when featured.json cannot be read. Nothing is
+    invented to fill the row - not the top trending title, not the film with
+    the most servers, not a random pick, each of which would be a fabricated
+    editorial choice presented as a real one.
 
-    What this does instead is keep the row last-good compatible: entries a
-    future Featured builder writes into home.json survive the next scan,
-    minus any whose film is no longer in the catalogue (a Featured slot
-    pointing at something unplayable is worse than an empty shelf).
+    Entries survive a scan, minus any whose film has left the catalogue: a
+    Featured slot pointing at something that no longer plays is worse than
+    an empty shelf.
     """
     featured = existing_home.get("featured")
     if not isinstance(featured, list):
@@ -444,11 +444,66 @@ def _carried_featured(
     return carried
 
 
+def _featured_row(
+    featured_document: Dict[str, Any], catalog: Dict[str, Dict[str, Any]]
+) -> List[Dict[str, Any]]:
+    """The Featured slots, as home-row cards.
+
+    featured.json is the Hero's own file and carries the Hero's own fields;
+    this row is the same titles reduced to the card shape every other shelf
+    on the home page uses, so a Featured film renders in the grid without
+    the grid knowing anything about the Hero.
+
+    A slot whose film is not in the catalogue we are publishing is dropped
+    here rather than rendered as a dead card. Series entries are carried
+    through from featured.json itself, since they live under data/series/
+    and are not in the movie catalogue index.
+    """
+    items = featured_document.get("items")
+    if not isinstance(items, list):
+        return []
+    row: List[Dict[str, Any]] = []
+    seen = set()
+    for entry in items:
+        if not isinstance(entry, dict):
+            continue
+        entry_id = str(entry.get("id") or "").strip()
+        if not entry_id or entry_id in seen:
+            continue
+        movie = catalog.get(entry_id)
+        if movie is not None:
+            seen.add(entry_id)
+            row.append(
+                card_summary(
+                    movie,
+                    {
+                        "featured_rank": entry.get("featured_rank"),
+                        "featured_source": entry.get("source"),
+                    },
+                )
+            )
+            continue
+        if entry.get("type") == "series":
+            seen.add(entry_id)
+            card = {
+                key: entry[key]
+                for key in ("id", "name", "category", "year", "poster", "genres",
+                            "rating", "rating_source")
+                if entry.get(key) not in (None, "", [], {})
+            }
+            card["type"] = "series"
+            card["featured_rank"] = entry.get("featured_rank")
+            card["featured_source"] = entry.get("source")
+            row.append(card)
+    return row
+
+
 def build_home(
     paginated: Dict[str, Any],
     *,
     trending_document: Optional[Dict[str, Any]] = None,
     existing_home: Optional[Dict[str, Any]] = None,
+    featured_document: Optional[Dict[str, Any]] = None,
     now: Optional[_dt.datetime] = None,
     limit: int = HOME_ROW_LIMIT,
 ) -> Dict[str, Any]:
@@ -464,16 +519,24 @@ def build_home(
     just_added = build_just_added(paginated, now=reference, limit=limit)
     latest = build_latest(paginated, now=reference, limit=limit)
     trending = _trending_row(trending_document or {}, catalog, limit)
-    featured = _carried_featured(existing_home or {}, catalog)
+
+    # Featured comes from featured.json, which the Featured/Hero builder
+    # writes just before this runs. If that file is missing or empty the row
+    # falls back to whatever the last good home.json held rather than being
+    # blanked - and the status field says which of the three happened, so an
+    # empty row is never ambiguous between "not built", "kept" and "failed".
+    featured = _featured_row(featured_document or {}, catalog)
+    featured_status = "built"
+    if not featured:
+        featured = _carried_featured(existing_home or {}, catalog)
+        featured_status = "carried_last_good" if featured else "no_eligible_featured"
 
     return {
         "version": 1,
         "updated_at": reference.isoformat(),
         "row_limit": limit,
         "featured": featured,
-        # Says plainly that an empty Featured row is a system that has not
-        # been built yet, not a system that failed.
-        "featured_status": "carried_last_good" if featured else "awaiting_featured_system",
+        "featured_status": featured_status,
         "trending": trending,
         "just_added": just_added["items"],
         "latest": latest["items"],
@@ -617,6 +680,7 @@ def generate_home(
     *,
     output_path: Optional[str] = None,
     trending_path: Optional[str] = None,
+    featured_path: Optional[str] = None,
     now: Optional[_dt.datetime] = None,
 ) -> Dict[str, Any]:
     target = output_path or HOME_PATH
@@ -624,6 +688,7 @@ def generate_home(
         paginated,
         trending_document=load_json(trending_path or TRENDING_PATH),
         existing_home=load_json(target),
+        featured_document=load_json(featured_path or FEATURED_PATH),
         now=now,
     )
     atomic_write_json(target, document)

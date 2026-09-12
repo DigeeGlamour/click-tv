@@ -6,12 +6,13 @@ rows are capped, the cards carry no playback configuration, and the whole
 thing is static - the browser never calls TMDB, OMDb, Fanart or RapidAPI,
 because the scanner already did.
 
-The Featured row deserves its own note. The Featured/Hero system is a
-separate plan that is NOT built yet, so nothing fills that row. Not the top
-trending title, not the film with the most servers, not a random pick -
-each of those is a fabricated editorial choice dressed up as a real one.
-The row stays empty, says why in `featured_status`, and carries forward
-whatever a real Featured builder writes there later.
+The Featured row deserves its own note. It is built by its own module
+(scanner/movie_featured.py, the Featured/Hero plan) and read from
+featured.json here; this file never invents it. Not the top trending title,
+not the film with the most servers, not a random pick - each of those is a
+fabricated editorial choice dressed up as a real one, and each has a test
+below refusing it. With no featured.json the row falls back to the last good
+one and `featured_status` says which of the three cases happened.
 """
 import datetime as dt
 import json
@@ -137,15 +138,58 @@ class TrendingRowTests(unittest.TestCase):
 
 
 class FeaturedTests(unittest.TestCase):
-    def test_featured_is_empty_and_says_why_when_no_featured_system_exists(self):
+    def test_featured_is_empty_and_says_why_when_nothing_qualified(self):
         document = md.build_home(
             _catalog(_movie("film-a", first_seen_at=_ago(1))), now=NOW
         )
         self.assertEqual(document["featured"], [])
-        self.assertEqual(document["featured_status"], "awaiting_featured_system")
+        self.assertEqual(document["featured_status"], "no_eligible_featured")
+
+    def test_the_featured_row_comes_from_featured_json(self):
+        featured = {"items": [{"id": "film-a", "featured_rank": 1, "source": "auto"}]}
+        document = md.build_home(
+            _catalog(_movie("film-a")), featured_document=featured, now=NOW
+        )
+        self.assertEqual([item["id"] for item in document["featured"]], ["film-a"])
+        self.assertEqual(document["featured_status"], "built")
+        self.assertEqual(document["featured"][0]["featured_rank"], 1)
+
+    def test_a_featured_slot_pointing_at_a_film_that_has_gone_is_dropped(self):
+        featured = {"items": [{"id": "removed-film", "featured_rank": 1}]}
+        document = md.build_home(
+            _catalog(_movie("film-a")), featured_document=featured, now=NOW
+        )
+        self.assertEqual(document["featured"], [])
+
+    def test_a_featured_series_is_carried_through_from_featured_json(self):
+        # Series live under data/series/ and are not in the movie catalogue
+        # index, so they are carried rather than resolved.
+        featured = {"items": [{"id": "show-a", "type": "series", "name": "Show A",
+                               "poster": "https://x.test/s.jpg", "featured_rank": 1}]}
+        document = md.build_home(
+            _catalog(_movie("film-a")), featured_document=featured, now=NOW
+        )
+        self.assertEqual([item["id"] for item in document["featured"]], ["show-a"])
+        self.assertEqual(document["featured"][0]["type"], "series")
+
+    def test_no_stream_data_reaches_the_featured_row(self):
+        featured = {"items": [{"id": "film-a", "featured_rank": 1}]}
+        document = md.build_home(
+            _catalog(_movie("film-a")), featured_document=featured, now=NOW
+        )
+        text = json.dumps(document["featured"])
+        for field in md.FORBIDDEN_CARD_FIELDS:
+            self.assertNotIn(f'"{field}"', text)
 
     def test_featured_is_never_filled_from_trending_or_server_count(self):
-        """The three tempting fakes, all refused."""
+        """The three tempting fakes, all refused.
+
+        With no featured.json, the Featured row stays empty. It is not
+        quietly seeded from the top trending title, from the film with the
+        most servers, or from anything else the home builder happens to have
+        in hand - that choice belongs to the Featured builder, which weighs
+        artwork, playback and metadata before making it.
+        """
         catalog = _catalog(
             _movie("most-servers", available_link_count=9, first_seen_at=_ago(1)),
             _movie("top-trending", first_seen_at=_ago(2)),
@@ -155,7 +199,7 @@ class FeaturedTests(unittest.TestCase):
         self.assertEqual(document["featured"], [])
         self.assertNotIn("most-servers", json.dumps(document["featured"]))
 
-    def test_a_real_featured_entry_written_by_a_future_system_is_carried_forward(self):
+    def test_a_real_featured_entry_is_carried_forward_when_featured_json_is_missing(self):
         existing = {"featured": [{"id": "film-a", "name": "Film film-a", "poster": "https://x.test/a.jpg"}]}
         document = md.build_home(
             _catalog(_movie("film-a")), existing_home=existing, now=NOW
@@ -180,6 +224,10 @@ class GenerateHomeTests(unittest.TestCase):
         self.addCleanup(self._tmp.cleanup)
         self.home_path = str(Path(self._tmp.name) / "discovery" / "home.json")
         self.trending_path = str(Path(self._tmp.name) / "discovery" / "trending.json")
+        # Every generate_home() call below passes this. Without it the
+        # builder falls back to the repository's real featured.json and a
+        # test starts asserting against production data.
+        self.featured_path = str(Path(self._tmp.name) / "discovery" / "featured.json")
 
     def test_generate_writes_atomically_and_reads_the_trending_file(self):
         Path(self.trending_path).parent.mkdir(parents=True, exist_ok=True)
@@ -190,6 +238,7 @@ class GenerateHomeTests(unittest.TestCase):
             _catalog(_movie("film-a", first_seen_at=_ago(1))),
             output_path=self.home_path,
             trending_path=self.trending_path,
+            featured_path=self.featured_path,
             now=NOW,
         )
         self.assertEqual(summary["counts"]["trending"], 1)
@@ -199,7 +248,7 @@ class GenerateHomeTests(unittest.TestCase):
 
     def test_featured_survives_a_rebuild(self):
         catalog = _catalog(_movie("film-a", first_seen_at=_ago(1)))
-        md.generate_home(catalog, output_path=self.home_path, trending_path=self.trending_path, now=NOW)
+        md.generate_home(catalog, output_path=self.home_path, trending_path=self.trending_path, featured_path=self.featured_path, now=NOW)
 
         # A future Featured builder writes into the file...
         document = json.loads(Path(self.home_path).read_text(encoding="utf-8"))
@@ -207,7 +256,7 @@ class GenerateHomeTests(unittest.TestCase):
         Path(self.home_path).write_text(json.dumps(document), encoding="utf-8")
 
         # ...and the next scan must not wipe it.
-        md.generate_home(catalog, output_path=self.home_path, trending_path=self.trending_path, now=NOW)
+        md.generate_home(catalog, output_path=self.home_path, trending_path=self.trending_path, featured_path=self.featured_path, now=NOW)
         rebuilt = json.loads(Path(self.home_path).read_text(encoding="utf-8"))
         self.assertEqual([item["id"] for item in rebuilt["featured"]], ["film-a"])
 
@@ -218,6 +267,7 @@ class GenerateHomeTests(unittest.TestCase):
             _catalog(_movie("film-a", first_seen_at=_ago(1))),
             output_path=self.home_path,
             trending_path=self.trending_path,
+            featured_path=self.featured_path,
             now=NOW,
         )
         self.assertEqual(summary["counts"]["just_added"], 1)

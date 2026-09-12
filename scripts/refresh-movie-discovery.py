@@ -39,6 +39,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT))
 
 from scanner import movie_discovery  # noqa: E402
+from scanner import movie_featured  # noqa: E402
 from scanner import movie_genre_index  # noqa: E402
 from scanner import movie_trending  # noqa: E402
 from scanner import provider_health  # noqa: E402
@@ -136,6 +137,21 @@ def main(argv=None) -> int:
         f"   browse index: {index['count']} title(s)"
         + (" (kept at last-good)" if index.get("preserved") else "")
     )
+
+    # Featured before home, because home.json's Featured row is read from
+    # featured.json. Twice a day is exactly the ~12h refresh the Featured
+    # plan asks for, which is why this job is extended rather than a third
+    # workflow being added beside it.
+    featured = movie_featured.generate(paginated)
+    document = featured.get("document") or {}
+    if featured.get("preserved"):
+        print(f"   featured: {featured['reason']} ({featured['count']} item(s) kept)")
+    else:
+        print(
+            f"   featured: {document.get('count', 0)} of {document.get('slots', 0)} slot(s) "
+            f"({document.get('manual_count', 0)} manual, {document.get('auto_count', 0)} auto)"
+            + (f" - {document['shortfall_reason']}" if document.get("shortfall_reason") else "")
+        )
 
     home = movie_discovery.generate_home(paginated)
     print(f"   home: {home['counts']} ({home['featured_status']})")

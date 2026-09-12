@@ -358,12 +358,17 @@ class WiringTests(unittest.TestCase):
             "scanner.movie_discovery.generate_search_index", return_value={"count": 0}
         ), patch(
             "scanner.movie_discovery.generate_home", return_value={"counts": {}, "featured_status": "x"}
+        ), patch(
+            "scanner.movie_featured.generate",
+            return_value={"written": True, "preserved": False, "count": 0, "reason": "",
+                          "document": {"count": 0, "slots": 5, "manual_count": 0, "auto_count": 0}},
         ):
             summary = M._generate_discovery(_catalog({"id": "a"}))
 
         self.assertNotIn("just_added", summary, "the failing row is simply absent")
         self.assertIn("latest", summary, "the other rows still ran")
         self.assertIn("home", summary)
+        self.assertIn("featured", summary)
 
     def test_every_discovery_row_failing_still_leaves_the_scan_standing(self):
         with patch(
@@ -374,6 +379,11 @@ class WiringTests(unittest.TestCase):
             "scanner.movie_discovery.generate_search_index", side_effect=RuntimeError("boom")
         ), patch(
             "scanner.movie_discovery.generate_home", side_effect=RuntimeError("boom")
+        ), patch(
+            # Featured is a discovery row like the others: it may not take a
+            # scan down, and it may not write into the repository's real
+            # data/movies/discovery/ while a test is running either.
+            "scanner.movie_featured.generate", side_effect=RuntimeError("boom")
         ):
             self.assertEqual(M._generate_discovery(_catalog({"id": "a"})), {})
 

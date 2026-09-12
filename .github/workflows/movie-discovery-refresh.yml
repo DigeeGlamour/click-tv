@@ -123,7 +123,12 @@ jobs:
             state/provider-health.json \
             state/movie-metadata-cache.json \
             state/movie-identity-aliases.json \
+            state/movie-featured-history.json \
             2>/dev/null || true
+          # data/movies/discovery above already covers featured.json and
+          # home.json. state/manual-featured.json is deliberately NOT staged:
+          # it is operator input, never a job output, so a refresh can never
+          # overwrite a pin somebody has just added.
 
           if git diff --cached --quiet; then
             echo "No discovery changes to commit."

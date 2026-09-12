@@ -758,9 +758,31 @@ def _generate_discovery(paginated: Dict[str, Any]) -> Dict[str, Any]:
         print(f"   movie browse index skipped: {error}")
 
     try:
+        from scanner import movie_featured
+
+        # Before home, which reads featured.json for its Featured row.
+        featured = movie_featured.generate(paginated)
+        summary["featured"] = {
+            key: featured[key] for key in ("written", "preserved", "count", "reason")
+        }
+        document = featured.get("document") or {}
+        if featured.get("preserved"):
+            print(f"   movie featured: {featured['reason']}")
+        else:
+            print(
+                f"   movie featured: {document.get('count', 0)} of "
+                f"{document.get('slots', 0)} slot(s) "
+                f"({document.get('manual_count', 0)} manual, "
+                f"{document.get('auto_count', 0)} auto)"
+                + (f" - {document['shortfall_reason']}" if document.get("shortfall_reason") else "")
+            )
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie featured skipped: {error}")
+
+    try:
         from scanner import movie_discovery
 
-        # Last, so it can draw on the trending file written just above.
+        # Last, so it can draw on the trending and featured files above.
         home = movie_discovery.generate_home(paginated)
         summary["home"] = home
         counts = home.get("counts", {})
