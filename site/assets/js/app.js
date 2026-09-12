@@ -341,6 +341,7 @@ const movieDetailPanel = $('movieDetailPanel');
 const movieContinuePanel = $('movieContinuePanel');
 const movieRelatedPanel = $('movieRelatedPanel');
 const moviePopularPanel = $('moviePopularPanel');
+const movieHeroPanel = $('movieHeroPanel');
 const chipsContainer = $('chipsContainer');
 const videoContainer = $('videoContainer');
 const playerControls = $('playerControls');
@@ -1401,6 +1402,7 @@ async function selectMainView(view, category, options = {}) {
   hideContinueWatchingRow();
   hideMovieRelatedPanel();
   hideMoviePopularRow();
+  hideMovieHeroPanel();
   setSearchEnabled(true);
   if (!options.preserveFinalGroup) adoptFinalNavigationFromLegacy(view, category || '');
   else renderFinalNavigation();
@@ -2043,6 +2045,8 @@ async function selectMovieNavItem(key, options = {}) {
   renderContinueWatchingRow();
   void renderMovieRelatedPanel();
   void renderMoviePopularRow();
+  // Back on Movie Home, the Hero comes back and its timer restarts.
+  void renderMovieHeroPanel();
   setMovieGenreBarVisible(key !== 'watchlist');
   syncMovieGenreChips();
   setSearchEnabled(true);
@@ -2230,6 +2234,559 @@ function showMovieSearchEmpty(query) {
 }
 
 // ===========================================================================
+// FEATURED HERO (Featured/Hero plan). Movies Home only.
+//
+// The Hero renders data/movies/discovery/featured.json and nothing else. It
+// makes no external metadata request - the scanner already did that, and a
+// browser calling TMDB would put a key in front of every visitor.
+//
+// It never invents a slot. With no file, an empty file or a failed fetch
+// there is no Hero at all: an empty Hero frame says less than no Hero, and
+// a filled one would have to make something up. Every fact on screen comes
+// from the file: the rating with the source that issued it or not at all,
+// the quality from our own measured stream height, the badges from real
+// state, the synopsis from the real overview.
+//
+// Playback is entirely someone else's job. Play resolves the catalogue
+// record and hands it to startPlayback() - the same entry point every card
+// uses - and a series hands off to the existing series detail flow. There
+// is no second player here and no playback code below.
+// ===========================================================================
+
+const MOVIE_FEATURED_PATH = 'data/movies/discovery/featured.json';
+const MOVIE_HERO_ROTATE_MS = 6500;
+const MOVIE_HERO_ROTATE_MIN_MS = 3000;
+const MOVIE_HERO_ROTATE_MAX_MS = 20000;
+const MOVIE_HERO_SWIPE_PX = 40;
+
+const movieHero = {
+  items: [],
+  index: 0,
+  timer: null,
+  rotateMs: MOVIE_HERO_ROTATE_MS,
+  // Two independent reasons the timer can be still, kept apart because they
+  // end at different times: `paused` is a hover or a hidden tab and undoes
+  // itself, `stopped` is the detail or the player and only the movie home
+  // undoes it.
+  paused: false,
+  stopped: true,
+  layer: 0,
+  document: null,
+  touchStartX: 0,
+  touchStartY: 0
+};
+
+/**
+ * Are we on Movie Home right now?
+ *
+ * Deliberately NOT `state.view === VIEW.MOVIE`: that is set by the loader,
+ * which runs after this is first asked. selectMovieNavItem sets both fields
+ * below synchronously on its first line, so this is already true when the
+ * row renderers are called - which is why the Hero appears on the first
+ * visit to Movies and not only on the second.
+ *
+ * Leaving Movies changes activeMainGroup, so Live TV, Live Sports and every
+ * other view answer false here without needing to know this exists.
+ */
+function onMovieHomeView() {
+  return state.activeMainGroup === 'movies' && state.currentCategory === 'home';
+}
+
+/**
+ * A read-only view of the rotation state.
+ *
+ * Declared as a function deliberately: `const movieHero` does not attach to
+ * `window`, so a browser test cannot see it - and a test that cannot tell
+ * whether the timer is running cannot check that the detail stopped it.
+ */
+function movieHeroTimerState() {
+  return {
+    running: Boolean(movieHero.timer),
+    stopped: movieHero.stopped,
+    paused: movieHero.paused,
+    index: movieHero.index,
+    count: movieHero.items.length,
+    rotateMs: movieHero.rotateMs
+  };
+}
+
+function movieHeroReducedMotion() {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch (_) {
+    return false;
+  }
+}
+
+function movieHeroCanHover() {
+  try {
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  } catch (_) {
+    return false;
+  }
+}
+
+/** Rotation is off entirely for one slide, and for reduced motion. */
+function movieHeroShouldRotate() {
+  if (movieHero.items.length < 2) return false;
+  if (movieHero.stopped || movieHero.paused) return false;
+  // The plan leaves this to the design. Stopping is the safer reading: the
+  // arrows and dots stay, so nothing becomes unreachable - the carousel
+  // simply waits to be asked.
+  if (movieHeroReducedMotion()) return false;
+  return true;
+}
+
+function stopMovieHeroTimer() {
+  if (movieHero.timer) {
+    clearInterval(movieHero.timer);
+    movieHero.timer = null;
+  }
+}
+
+function startMovieHeroTimer() {
+  stopMovieHeroTimer();
+  if (!movieHeroShouldRotate()) return;
+  movieHero.timer = setInterval(() => {
+    if (!movieHeroShouldRotate()) {
+      stopMovieHeroTimer();
+      return;
+    }
+    showMovieHeroSlide(movieHero.index + 1);
+  }, movieHero.rotateMs);
+}
+
+/** A manual move restarts the clock, so the next slide is a full interval. */
+function resetMovieHeroTimer() {
+  startMovieHeroTimer();
+}
+
+function pauseMovieHero() {
+  movieHero.paused = true;
+  stopMovieHeroTimer();
+}
+
+function resumeMovieHero() {
+  movieHero.paused = false;
+  startMovieHeroTimer();
+}
+
+/** The detail or the player opened. Only the movie home restarts this. */
+function stopMovieHeroRotation() {
+  movieHero.stopped = true;
+  stopMovieHeroTimer();
+}
+
+function resumeMovieHeroRotation() {
+  if (!movieHeroPanel || movieHeroPanel.hidden) return;
+  if (!onMovieHomeView()) return;
+  movieHero.stopped = false;
+  startMovieHeroTimer();
+}
+
+function hideMovieHeroPanel() {
+  stopMovieHeroRotation();
+  if (!movieHeroPanel) return;
+  movieHeroPanel.hidden = true;
+  movieHeroPanel.replaceChildren();
+  movieHero.items = [];
+  movieHero.index = 0;
+}
+
+// --- what one slot says -----------------------------------------------------
+
+function movieHeroMetaParts(entry) {
+  const parts = [];
+  if (entry.year) parts.push(String(entry.year));
+  if (entry.category) parts.push(String(entry.category));
+  parts.push(entry.type === 'series' ? 'Web Series' : 'Movie');
+  const genres = Array.isArray(entry.genres) ? entry.genres.slice(0, 2) : [];
+  if (genres.length) parts.push(genres.join(', '));
+  return parts;
+}
+
+/**
+ * A rating, or nothing at all.
+ *
+ * Always carrying the issuer: a TMDB score shown as "IMDb 8.1" is a
+ * different claim about a different thing. With no rating the element is
+ * not rendered, rather than rendered empty or with a placeholder.
+ */
+function movieHeroRatingText(entry) {
+  const value = Number(entry.rating);
+  if (!Number.isFinite(value) || value <= 0) return '';
+  const source = String(entry.rating_source || '').trim();
+  return source ? `${source} ${value}` : String(value);
+}
+
+/**
+ * The action buttons for one slot.
+ *
+ * Built separately from the copy because the two live in different places:
+ * the copy sits in the Hero's body, the actions in a footer row it shares
+ * with the carousel controls. Putting them in one block is what let the
+ * controls overlap the buttons at four of the eleven tested widths.
+ */
+function buildMovieHeroActions(entry) {
+  const actions = document.createElement('div');
+  actions.className = 'movie-hero-actions';
+  if (entry.type === 'series') {
+    // One button for a series. There is no "play this series" - a season
+    // and an episode have to be chosen first, and the series detail is
+    // where that happens.
+    const view = document.createElement('button');
+    view.type = 'button';
+    view.className = 'movie-hero-play tv-focusable';
+    view.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i> View Series';
+    view.addEventListener('click', () => { void openMovieHeroSeries(entry); });
+    actions.appendChild(view);
+    return actions;
+  }
+  const play = document.createElement('button');
+  play.type = 'button';
+  play.className = 'movie-hero-play tv-focusable';
+  play.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i> Play';
+  play.addEventListener('click', () => { void openMovieHeroPlayback(entry); });
+  const details = document.createElement('button');
+  details.type = 'button';
+  details.className = 'movie-hero-details tv-focusable';
+  details.innerHTML = '<i class="fas fa-circle-info" aria-hidden="true"></i> Details';
+  details.addEventListener('click', () => { void openMovieHeroDetail(entry); });
+  actions.append(play, details);
+  return actions;
+}
+
+function buildMovieHeroSlide(entry) {
+  const copy = document.createElement('div');
+  copy.className = 'movie-hero-copy';
+
+  const kicker = document.createElement('span');
+  kicker.className = 'movie-hero-kicker';
+  const dot = document.createElement('i');
+  const kickerText = document.createElement('span');
+  // The label travels with the data, so no view can rename this row into
+  // "Trending". A manual pin may replace the kicker - and only the kicker.
+  kickerText.textContent = String(
+    entry.custom_kicker || movieHero.document?.label || 'FEATURED ON CLICK TV'
+  );
+  kicker.append(dot, kickerText);
+
+  const title = document.createElement('h3');
+  title.className = 'movie-hero-title';
+  title.textContent = String(entry.name || 'Untitled');
+
+  const meta = document.createElement('div');
+  meta.className = 'movie-hero-meta';
+  movieHeroMetaParts(entry).forEach((part, index) => {
+    if (index) {
+      const sep = document.createElement('span');
+      sep.className = 'sep';
+      sep.textContent = '•';
+      meta.appendChild(sep);
+    }
+    const node = document.createElement('span');
+    node.textContent = part;
+    meta.appendChild(node);
+  });
+  const rating = movieHeroRatingText(entry);
+  if (rating) {
+    const node = document.createElement('span');
+    node.className = 'movie-hero-tag';
+    node.textContent = rating;
+    meta.appendChild(node);
+  }
+  if (entry.quality) {
+    const node = document.createElement('span');
+    node.className = 'movie-hero-tag';
+    node.textContent = String(entry.quality);
+    meta.appendChild(node);
+  }
+
+  copy.append(kicker, title, meta);
+
+  // Badges come from the file, which only emits them for real states.
+  const badges = Array.isArray(entry.badges) ? entry.badges : [];
+  const labels = entry.custom_label ? [String(entry.custom_label), ...badges] : badges;
+  if (labels.length) {
+    const wrap = document.createElement('div');
+    wrap.className = 'movie-hero-badges';
+    labels.slice(0, 3).forEach((label) => {
+      const node = document.createElement('span');
+      node.className = 'movie-hero-badge';
+      node.textContent = String(label);
+      wrap.appendChild(node);
+    });
+    copy.appendChild(wrap);
+  }
+
+  const plot = String(entry.plot || '').trim();
+  if (plot) {
+    const desc = document.createElement('p');
+    desc.className = 'movie-hero-desc';
+    // Clamped to two lines in CSS rather than truncated here, so the full
+    // overview stays available to a screen reader.
+    desc.textContent = plot;
+    copy.appendChild(desc);
+  }
+
+  return copy;
+}
+
+/**
+ * Move to a slide, crossfading the background.
+ *
+ * A real backdrop fills the frame sharp. A poster - which is what most
+ * titles have - becomes a blurred wash behind its own sharp thumbnail
+ * instead of being stretched across a 16:5 banner. Which of the two it is
+ * comes from artwork_kind in the file, not from guessing at the image.
+ */
+function showMovieHeroSlide(next, options = {}) {
+  const count = movieHero.items.length;
+  if (!movieHeroPanel || !count) return;
+  const index = ((next % count) + count) % count;
+  movieHero.index = index;
+  const entry = movieHero.items[index];
+
+  const art = qs('.movie-hero-art', movieHeroPanel);
+  if (art) {
+    const poster = String(entry.poster || entry.backdrop || '').trim();
+    if (poster) {
+      art.src = poster;
+      art.hidden = false;
+    } else {
+      art.removeAttribute('src');
+      art.hidden = true;
+    }
+  }
+
+  const layers = Array.from(movieHeroPanel.querySelectorAll('.movie-hero-bg'));
+  if (layers.length === 2) {
+    const incoming = layers[movieHero.layer === 0 ? 1 : 0];
+    const outgoing = layers[movieHero.layer];
+    const image = String(entry.backdrop || entry.poster || '').trim();
+    incoming.style.backgroundImage = image ? `url("${image}")` : '';
+    incoming.classList.toggle('poster-fallback', entry.artwork_kind !== 'backdrop');
+    incoming.classList.add('active');
+    outgoing.classList.remove('active');
+    // Only the two visible layers ever hold an image, so five slides cost
+    // two decoded backgrounds rather than five.
+    movieHero.layer = movieHero.layer === 0 ? 1 : 0;
+  }
+
+  const copyHost = qs('.movie-hero-inner', movieHeroPanel);
+  const existingCopy = qs('.movie-hero-copy', movieHeroPanel);
+  if (copyHost && existingCopy) copyHost.replaceChild(buildMovieHeroSlide(entry), existingCopy);
+
+  const footHost = qs('.movie-hero-foot', movieHeroPanel);
+  const existingActions = qs('.movie-hero-actions', movieHeroPanel);
+  if (footHost && existingActions) {
+    footHost.replaceChild(buildMovieHeroActions(entry), existingActions);
+  }
+
+  movieHeroPanel.querySelectorAll('.movie-hero-dot').forEach((node, position) => {
+    node.classList.toggle('active', position === index);
+    node.setAttribute('aria-current', position === index ? 'true' : 'false');
+  });
+
+  if (options.manual) resetMovieHeroTimer();
+}
+
+// --- the handoffs -----------------------------------------------------------
+
+/** Resolve a Hero slot to the real catalogue record, or say it is gone. */
+async function resolveMovieHeroItem(entry) {
+  const summary = await findMovieSummaryById(entry.id);
+  if (!summary) return null;
+  const [item] = movieSummariesToItems([summary]);
+  if (!item) return null;
+  return (await resolveMovieSummary(item)) || item;
+}
+
+async function openMovieHeroDetail(entry) {
+  const summary = await findMovieSummaryById(entry.id);
+  if (!summary) {
+    showMovieDetailUnavailable(entry.name || entry.id);
+    return;
+  }
+  const [item] = movieSummariesToItems([summary]);
+  // The detail stops the Hero timer through closeMovieDetail/openMovieDetail.
+  if (item) await openMovieDetail(item);
+}
+
+async function openMovieHeroPlayback(entry) {
+  const resolved = await resolveMovieHeroItem(entry);
+  if (!resolved || !isPlayable(resolved)) {
+    // A Featured slot should never be unplayable - the builder checks - but
+    // the catalogue can move under a page that has been open for hours.
+    showMovieDetailUnavailable(entry.name || entry.id);
+    return;
+  }
+  stopMovieHeroRotation();
+  // The existing entry point, unchanged. Nothing about playback lives here.
+  startPlayback(resolved, true);
+}
+
+async function openMovieHeroSeries(entry) {
+  if (!seriesModule) {
+    showMovieDetailUnavailable(entry.name || entry.id);
+    return;
+  }
+  const series = await findSeriesSummaryById(entry.id);
+  if (!series) {
+    showMovieDetailUnavailable(entry.name || entry.id);
+    return;
+  }
+  stopMovieHeroRotation();
+  // The existing series flow: series detail, then a season, then an episode,
+  // then the same player. No episode is chosen for the viewer here.
+  await seriesModule.openSeries(series, { season: Number(entry.default_season) || 0 });
+}
+
+// --- rendering --------------------------------------------------------------
+
+function buildMovieHeroShell() {
+  const hero = document.createElement('div');
+  hero.className = 'movie-hero';
+
+  const layerA = document.createElement('div');
+  layerA.className = 'movie-hero-bg';
+  const layerB = document.createElement('div');
+  layerB.className = 'movie-hero-bg';
+  const scrim = document.createElement('div');
+  scrim.className = 'movie-hero-scrim';
+
+  const inner = document.createElement('div');
+  inner.className = 'movie-hero-inner';
+  const art = document.createElement('img');
+  art.className = 'movie-hero-art';
+  art.alt = '';
+  art.loading = 'lazy';
+  art.referrerPolicy = 'no-referrer';
+  const copy = document.createElement('div');
+  copy.className = 'movie-hero-copy';
+  inner.append(art, copy);
+
+  // The footer is a real row, not an overlay: the action buttons and the
+  // carousel controls share one flex line, so neither can ever cover the
+  // other however wide the buttons get or however many dots there are.
+  const foot = document.createElement('div');
+  foot.className = 'movie-hero-foot';
+  foot.appendChild(document.createElement('div')).className = 'movie-hero-actions';
+
+  hero.append(layerA, layerB, scrim, inner, foot);
+
+  if (movieHero.items.length > 1) {
+    const controls = document.createElement('div');
+    controls.className = 'movie-hero-controls';
+    const prev = document.createElement('button');
+    prev.type = 'button';
+    prev.className = 'movie-hero-arrow tv-focusable';
+    prev.setAttribute('aria-label', 'Previous featured title');
+    prev.innerHTML = '<i class="fas fa-chevron-left" aria-hidden="true"></i>';
+    prev.addEventListener('click', () => showMovieHeroSlide(movieHero.index - 1, { manual: true }));
+    const dots = document.createElement('div');
+    dots.className = 'movie-hero-dots';
+    movieHero.items.forEach((entry, position) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'movie-hero-dot';
+      dot.setAttribute('aria-label', `Featured ${position + 1}: ${entry.name || ''}`.trim());
+      dot.addEventListener('click', () => showMovieHeroSlide(position, { manual: true }));
+      dots.appendChild(dot);
+    });
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'movie-hero-arrow tv-focusable';
+    next.setAttribute('aria-label', 'Next featured title');
+    next.innerHTML = '<i class="fas fa-chevron-right" aria-hidden="true"></i>';
+    next.addEventListener('click', () => showMovieHeroSlide(movieHero.index + 1, { manual: true }));
+    controls.append(prev, dots, next);
+    foot.appendChild(controls);
+
+    if (movieHeroCanHover()) {
+      // Optional in the plan, and only where a pointer can actually hover:
+      // on a touch screen a "hover" is a tap that never ends.
+      hero.addEventListener('mouseenter', pauseMovieHero);
+      hero.addEventListener('mouseleave', resumeMovieHero);
+    }
+    hero.addEventListener('touchstart', (event) => {
+      const touch = event.touches && event.touches[0];
+      movieHero.touchStartX = touch ? touch.clientX : 0;
+      movieHero.touchStartY = touch ? touch.clientY : 0;
+    }, { passive: true });
+    hero.addEventListener('touchend', (event) => {
+      const touch = event.changedTouches && event.changedTouches[0];
+      if (!touch || !movieHero.touchStartX) return;
+      const dx = touch.clientX - movieHero.touchStartX;
+      const dy = touch.clientY - movieHero.touchStartY;
+      movieHero.touchStartX = 0;
+      // Horizontal intent only, so scrolling the page never changes slide.
+      if (Math.abs(dx) < MOVIE_HERO_SWIPE_PX || Math.abs(dx) <= Math.abs(dy)) return;
+      showMovieHeroSlide(movieHero.index + (dx < 0 ? 1 : -1), { manual: true });
+    }, { passive: true });
+  }
+  return hero;
+}
+
+/**
+ * The Hero, on Movie Home, only when there is something real to show.
+ *
+ * Cached after one successful load: the file changes twice a day and the
+ * page outlives neither. A failed load is not cached, so the next visit to
+ * Movie Home tries again.
+ */
+async function renderMovieHeroPanel() {
+  if (!movieHeroPanel) return;
+  if (!onMovieHomeView()) {
+    hideMovieHeroPanel();
+    return;
+  }
+
+  let payload = movieHero.document;
+  if (!payload) {
+    try {
+      payload = await fetchMovieJson(MOVIE_FEATURED_PATH, { cache: 'no-store' });
+      movieHero.document = payload;
+    } catch (_) {
+      // No Hero rather than a broken one, and no error surfaced: the rest
+      // of Movie Home is unaffected and still works.
+      hideMovieHeroPanel();
+      return;
+    }
+  }
+
+  // Checked again: the fetch above can outlive the view it was started
+  // for, and a Hero appearing over Live TV would be a real bug.
+  if (!onMovieHomeView()) {
+    hideMovieHeroPanel();
+    return;
+  }
+
+  const items = Array.isArray(payload?.items)
+    ? payload.items.filter((entry) => entry && String(entry.id || '').trim())
+    : [];
+  if (!items.length) {
+    hideMovieHeroPanel();
+    return;
+  }
+
+  const seconds = Number(payload?.hero_rotate_seconds);
+  movieHero.rotateMs = Number.isFinite(seconds) && seconds > 0
+    ? Math.min(MOVIE_HERO_ROTATE_MAX_MS, Math.max(MOVIE_HERO_ROTATE_MIN_MS, seconds * 1000))
+    : MOVIE_HERO_ROTATE_MS;
+  movieHero.items = items;
+  movieHero.index = 0;
+  movieHero.layer = 0;
+  movieHero.paused = false;
+  movieHero.stopped = false;
+
+  movieHeroPanel.replaceChildren(buildMovieHeroShell());
+  movieHeroPanel.hidden = false;
+  showMovieHeroSlide(0);
+  startMovieHeroTimer();
+}
+
+// ===========================================================================
 // INTERNAL ANALYTICS + POPULAR ON CLICK TV (PART 22). Movies only.
 //
 // This is NOT Trending. Trending (PART 06) is an external signal about what
@@ -2361,7 +2918,7 @@ function hideMoviePopularRow() {
  */
 async function renderMoviePopularRow() {
   if (!moviePopularPanel) return;
-  if (!(state.view === VIEW.MOVIE && state.currentCategory === 'home')) {
+  if (!onMovieHomeView()) {
     hideMoviePopularRow();
     return;
   }
@@ -2375,7 +2932,7 @@ async function renderMoviePopularRow() {
   }
 
   const rows = Array.isArray(document_?.items) ? document_.items : [];
-  if (!rows.length) {
+  if (!rows.length || !onMovieHomeView()) {
     hideMoviePopularRow();
     return;
   }
@@ -3384,6 +3941,8 @@ function closeMovieDetail() {
   movieDetailPanel.replaceChildren();
   state.movieDetailItem = null;
   if (sidebarList) sidebarList.hidden = false;
+  // Back to the grid on Movie Home - and nowhere else.
+  resumeMovieHeroRotation();
 }
 
 /**
@@ -3432,6 +3991,9 @@ async function openMovieDetail(item) {
   if (sidebarList) sidebarList.hidden = true;
   // PART 21: the URL now names what is on screen, so it can be copied,
   // shared and reloaded. It never starts playback by itself.
+  // The detail is now the subject of the page; a carousel rotating
+  // behind it is movement nobody asked for.
+  stopMovieHeroRotation();
   pushMovieRoute(resolved);
   applyMovieDocumentMetadata(resolved);
   sendMovieAnalyticsEvent('detail_open', resolved);
@@ -7635,6 +8197,10 @@ function selectWithoutPlaying(item) {
 // naming one fixture on top of another one playing. It is closed below, once,
 // for all ten of them.
 async function startPlayback(item, userInitiated = true) {
+  // Featured/Hero plan: the player is open, so the Hero timer stops.
+  // This is the only line this function gains; nothing about playback,
+  // recovery, proxying or engine selection is touched.
+  stopMovieHeroRotation();
   if (!item || !isPlayable(item)) return;
   closeEventPreview();
   seriesModule?.handlePlaybackSelection?.(item);
@@ -12069,6 +12635,10 @@ video.addEventListener('pause', () => { saveContinueWatching(true); });
 video.addEventListener('ended', () => { saveContinueWatching(true); renderContinueWatchingRow(); });
 document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'hidden') saveContinueWatching(true);
+  // Featured/Hero plan: a carousel advancing in a tab nobody is looking
+  // at burns battery and arrives on an unexpected slide.
+  if (document.visibilityState === 'hidden') pauseMovieHero();
+  else resumeMovieHero();
 });
 window.addEventListener('pagehide', () => { saveContinueWatching(true); });
 

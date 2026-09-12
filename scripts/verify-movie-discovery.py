@@ -185,8 +185,43 @@ check("Discovery home is lightweight",
 check("No playback/secret field reaches discovery output",
       all('"%s"' % field not in serialised for field in md.FORBIDDEN_CARD_FIELDS),
       "url/backups/headers/drm/playback_id all absent")
-check("Featured empty and labelled (no fake Featured)",
-      home["featured"] == [] and home["featured_status"] == "awaiting_featured_system",
+# --- Featured / Hero --------------------------------------------------------
+#
+# Written at PART 09, this row asserted the Featured system did not exist
+# yet. It does now, so the rule it was standing in for - no fabricated
+# editorial choice reaches the Hero - is checked against the real output.
+featured_doc = md.load_json(md.FEATURED_PATH)
+featured_items = featured_doc.get("items") or []
+catalog_ids = {str(m.get("id") or "").strip()
+               for m in md.iter_published_movies(payload)}
+series_ids = {str(row.get("id") or "").strip()
+              for row in md.iter_published_series()}
+
+check("Every Featured slot is a title that really exists here",
+      all(str(e.get("id") or "").strip() in (catalog_ids | series_ids)
+          for e in featured_items),
+      "%d slot(s), all resolvable" % len(featured_items))
+check("No Featured slot is duplicated",
+      len({str(e.get("id") or "") for e in featured_items}) == len(featured_items),
+      "%d unique of %d" % (len({str(e.get("id") or "") for e in featured_items}),
+                           len(featured_items)))
+check("Every Featured slot has a real title and real artwork",
+      all(str(e.get("name") or "").strip()
+          and (str(e.get("poster") or "").strip() or str(e.get("backdrop") or "").strip())
+          for e in featured_items),
+      "no placeholder slot")
+check("No Featured rating without the source that issued it",
+      all(str(e.get("rating_source") or "").strip() for e in featured_items if e.get("rating")),
+      "%d rated slot(s)" % sum(1 for e in featured_items if e.get("rating")))
+featured_text = json.dumps(featured_doc)
+check("No playback/secret field reaches featured.json",
+      all('"%s"' % field not in featured_text for field in md.FORBIDDEN_CARD_FIELDS),
+      "url/backups/headers/drm/playback_id all absent")
+check("The Hero label never claims to be Trending",
+      "trending" not in str(featured_doc.get("label", "")).casefold(),
+      featured_doc.get("label") or "(absent)")
+check("Featured status is one of the three honest answers",
+      home["featured_status"] in ("built", "carried_last_good", "no_eligible_featured"),
       home["featured_status"])
 
 # --- Browser API-free -------------------------------------------------------
