@@ -450,6 +450,42 @@ async function newPage(payload) {
 }
 
 // ---------------------------------------------------------------------------
+// 5b. A stale file stops claiming TRENDING (plan section 30)
+// ---------------------------------------------------------------------------
+{
+  const fresh = [slot('t', { name: 'Trending Film', badges: ['NEW', 'TRENDING'] })];
+  const { context, page, errors } = await newPage(
+    featuredFile(fresh, { hero_rotate_seconds: 900 })
+  );
+  await openMovieHome(page);
+  await page.waitForTimeout(900);
+  check((await heroState(page)).badges.includes('TRENDING'),
+    '[stale] a fresh file may show TRENDING');
+  await context.close();
+}
+
+{
+  const old = new Date(Date.now() - 5 * 24 * 3600 * 1000).toISOString();
+  const { context, page, errors } = await newPage(featuredFile(
+    [slot('t', { name: 'Trending Film', badges: ['NEW', 'TRENDING'] })],
+    { hero_rotate_seconds: 900, updated_at: old }
+  ));
+  await openMovieHome(page);
+  await page.waitForTimeout(900);
+  const hero = await heroState(page);
+  check(!hero.badges.includes('TRENDING'),
+    '[stale] a five-day-old file no longer claims TRENDING', JSON.stringify(hero.badges));
+  check(hero.badges.includes('NEW'),
+    '[stale] but a badge that is still true survives', JSON.stringify(hero.badges));
+  check(!hero.hidden && Boolean(hero.title),
+    '[stale] and the slot itself stays - a good pick does not expire', hero.title);
+  check(/FEATURED ON CLICK TV/i.test(hero.kicker),
+    '[stale] the label is still the honest one', hero.kicker);
+  check(errors.length === 0, '[stale] no uncaught page errors', errors.join(' | '));
+  await context.close();
+}
+
+// ---------------------------------------------------------------------------
 // 6. Nothing real, nothing shown
 // ---------------------------------------------------------------------------
 {

@@ -2258,6 +2258,13 @@ const MOVIE_HERO_ROTATE_MS = 6500;
 const MOVIE_HERO_ROTATE_MIN_MS = 3000;
 const MOVIE_HERO_ROTATE_MAX_MS = 20000;
 const MOVIE_HERO_SWIPE_PX = 40;
+// Past this, a TRENDING badge is no longer a claim the file can support.
+// The badge is stamped at build time against a trending snapshot that was
+// fresh THEN; if the refresh job has not run for three days, "trending" has
+// stopped being true and the badge is dropped rather than left to age. The
+// slot itself stays - a good Featured pick does not expire - and so does
+// the FEATURED ON CLICK TV label, which is true whatever the source was.
+const MOVIE_HERO_TREND_CLAIM_MAX_HOURS = 72;
 
 const movieHero = {
   items: [],
@@ -2308,6 +2315,19 @@ function movieHeroTimerState() {
     count: movieHero.items.length,
     rotateMs: movieHero.rotateMs
   };
+}
+
+/**
+ * Is the file recent enough for its TRENDING badges to still mean anything?
+ *
+ * With no timestamp the answer is no: an undated file could be any age, and
+ * the safe reading of "unknown" is "do not make the stronger claim".
+ */
+function movieHeroTrendClaimStillHolds() {
+  const stamp = Date.parse(String(movieHero.document?.updated_at || ''));
+  if (!Number.isFinite(stamp)) return false;
+  const hours = (Date.now() - stamp) / 3600000;
+  return hours >= 0 && hours <= MOVIE_HERO_TREND_CLAIM_MAX_HOURS;
 }
 
 function movieHeroReducedMotion() {
@@ -2505,7 +2525,8 @@ function buildMovieHeroSlide(entry) {
   copy.append(kicker, title, meta);
 
   // Badges come from the file, which only emits them for real states.
-  const badges = Array.isArray(entry.badges) ? entry.badges : [];
+  const badges = (Array.isArray(entry.badges) ? entry.badges : [])
+    .filter((badge) => badge !== 'TRENDING' || movieHeroTrendClaimStillHolds());
   const labels = entry.custom_label ? [String(entry.custom_label), ...badges] : badges;
   if (labels.length) {
     const wrap = document.createElement('div');
