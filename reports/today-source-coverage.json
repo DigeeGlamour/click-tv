@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-09-12T07:35:35.193639+00:00",
+  "generated_at": "2026-09-12T07:40:44.933325+00:00",
   "configured_source_count": 22,
   "content_states": {
     "FRESH": 13,
-    "STALE": 4,
-    "EMPTY": 5,
+    "STALE": 5,
+    "EMPTY": 4,
     "UNREACHABLE": 0
   },
   "source_count": 22,
   "unconfigured_source_count": 1,
   "totals": {
-    "raw_items": 2383,
+    "raw_items": 2396,
     "parsed_events": 36,
     "sport_allowed_events": 35,
     "deduped_events": 21,
@@ -22,8 +22,8 @@
     "failed_streams": 23
   },
   "unconfigured_totals": {
-    "raw_items": 638,
-    "parsed_events": 638,
+    "raw_items": 632,
+    "parsed_events": 632,
     "sport_allowed_events": 0,
     "deduped_events": 0,
     "published_unique_fixtures": 0,
@@ -61,7 +61,7 @@
       "source_id": "srhady-axsports-live",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 597,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -84,7 +84,7 @@
       "source_id": "srhady-tapmad-bd",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 17,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -107,7 +107,7 @@
       "source_id": "srhady-primevideo-sports",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 9,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -177,7 +177,7 @@
       "source_id": "srhady-bingstream",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 868,
       "parsed_events": 30,
       "sport_allowed_events": 30,
@@ -242,7 +242,7 @@
       "source_id": "srhady-crichd-footy-live",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 18,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -265,7 +265,7 @@
       "source_id": "srhady-willow-event",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 18,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -335,7 +335,7 @@
       "source_id": "kajju-sonyliv-backup",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 304,
+      "http_status": 200,
       "raw_items": 15,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -358,9 +358,9 @@
     {
       "source_id": "drmlive-sonyliv-backup",
       "configured": true,
-      "fetch_status": "success_empty",
+      "fetch_status": "success",
       "http_status": 200,
-      "raw_items": 0,
+      "raw_items": 13,
       "parsed_events": 0,
       "sport_allowed_events": 0,
       "deduped_events": 0,
@@ -369,11 +369,12 @@
       "published_upcoming": 0,
       "dropped_count": 0,
       "drop_reasons": [
-        "nothing fetched from this source"
+        "fetched but no record reached the event pipeline",
+        "every fixture this source carries has already kicked off"
       ],
       "newest_fixture_start": "",
       "future_fixture_count": 0,
-      "content_state": "EMPTY",
+      "content_state": "STALE",
       "verified_streams": 0,
       "failed_streams": 0,
       "registry": "today_match"
@@ -406,7 +407,7 @@
       "source_id": "drmlive-fancode-mirror",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 40,
       "parsed_events": 3,
       "sport_allowed_events": 3,
@@ -545,8 +546,8 @@
       "configured": false,
       "fetch_status": "success",
       "http_status": 0,
-      "raw_items": 638,
-      "parsed_events": 638,
+      "raw_items": 632,
+      "parsed_events": 632,
       "sport_allowed_events": 0,
       "deduped_events": 0,
       "published_unique_fixtures": 0,
@@ -558,7 +559,7 @@
         "parsed, but no event survived enrichment - no reliable event or channel identity, or not cricket/football"
       ],
       "newest_fixture_start": "2026-09-19T23:30:00+00:00",
-      "future_fixture_count": 596,
+      "future_fixture_count": 597,
       "content_state": "FRESH",
       "verified_streams": 0,
       "failed_streams": 0,
@@ -567,13 +568,13 @@
         "artwork": 31,
         "embed_backups": 0,
         "embed_channels": 0,
-        "unmatched": 590,
+        "unmatched": 584,
         "matched_by_participants": 14
       }
     }
   ],
   "invariants": {
-    "checked_at": "2026-09-12T07:35:35.196345+00:00",
+    "checked_at": "2026-09-12T07:40:44.935878+00:00",
     "passed": 10,
     "failed": 0,
     "failures": [],
@@ -596,7 +597,7 @@
       {
         "name": "a fetched configured source has a row even at raw_items 0",
         "passed": true,
-        "detail": "5 row(s) at zero, 0 without a reason"
+        "detail": "4 row(s) at zero, 0 without a reason"
       },
       {
         "name": "a candidate that is not published has an explicit drop reason",
