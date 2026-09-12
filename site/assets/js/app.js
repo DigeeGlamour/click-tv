@@ -25,7 +25,13 @@ const STORAGE_KEYS = Object.freeze({
   maxHeight: 'clicktv_max_height',
   telemetrySession: 'clicktv_telemetry_session_v1',
   eventReminders: 'clicktv_event_reminders_v1',
-  eventRemindersFired: 'clicktv_event_reminders_fired_v1'
+  eventRemindersFired: 'clicktv_event_reminders_fired_v1',
+  // Movies only (PART 16). Separate from `positions`, which is keyed by the
+  // stream that happened to play and is trimmed by recency: this one is keyed
+  // by the thing that was watched, so a movie that changes server is still the
+  // same entry. Separate from `favorites` too - a watchlist is what someone
+  // meant to watch, continue watching is what they actually did.
+  continueWatching: 'clicktv_continue_watching_v2'
 });
 
 const VIEW = Object.freeze({
@@ -54,6 +60,54 @@ const MOVIE_ORDER = Object.freeze([
   ['Mix', 'mix']
 ]);
 
+// --- Movie browse: navigation, genres and filter state (PART 12) ----------
+//
+// The movie section's own navigation, in the exact order the final
+// Category/Genre reference fixes: discovery rows, then the language
+// buckets, then the library. Premium and Mix are separate entries and both
+// stay visible - Mix is where the scanner puts anything it could not
+// confidently categorise, so hiding it would hide real films.
+const MOVIE_NAV_SECTIONS = Object.freeze([
+  Object.freeze(['DISCOVERY & PICKS', Object.freeze([
+    Object.freeze(['home', 'Home']),
+    Object.freeze(['trending', 'Trending']),
+    Object.freeze(['just-added', 'Just Added']),
+    Object.freeze(['latest', 'Latest']),
+    Object.freeze(['bangla', 'Bangla']),
+    Object.freeze(['hindi', 'Hindi']),
+    Object.freeze(['english', 'English']),
+    Object.freeze(['south-indian', 'South Indian']),
+    Object.freeze(['dubbed', 'Dubbed Movie']),
+    Object.freeze(['web-series', 'Web Series']),
+    Object.freeze(['premium', 'Premium']),
+    Object.freeze(['mix', 'Mix'])
+  ])]),
+  Object.freeze(['MY LIBRARY', Object.freeze([
+    Object.freeze(['watchlist', 'My Watchlist'])
+  ])])
+]);
+
+// Rows built from data/movies/discovery/*.json rather than from a
+// category's paginated pages.
+const MOVIE_DISCOVERY_KEYS = Object.freeze(['home', 'trending', 'just-added', 'latest']);
+
+// The eight genres the UI shows, exactly as the reference fixes them. The
+// backend stores every real genre a provider reports; these are the ones
+// with a chip.
+const MOVIE_GENRES = Object.freeze([
+  'Action', 'Comedy', 'Horror', 'Romance', 'Thriller', 'Animation', 'Sci-Fi', 'Crime'
+]);
+
+const MOVIE_DISCOVERY_PATHS = Object.freeze({
+  home: 'data/movies/discovery/home.json',
+  trending: 'data/movies/discovery/trending.json',
+  'just-added': 'data/movies/discovery/just-added.json',
+  latest: 'data/movies/discovery/latest.json'
+});
+
+const MOVIE_BROWSE_INDEX_PATH = 'data/movies/search-index.json';
+const MOVIE_GENRE_ALL = 'all';
+
 const CHANNEL_INITIAL_CHUNK = 30;
 const CHANNEL_NEXT_CHUNK = 20;
 const MOVIE_CHUNK_SIZE = 20;
@@ -78,6 +132,12 @@ const DATA_FETCH_TIMEOUT_MS = 9000;
 const EVENT_CATALOG_REFRESH_MS = 60000;
 const POSITION_SAVE_INTERVAL_MS = 10000;
 const POSITION_HISTORY_LIMIT = 200;
+// Continue Watching (PART 16). Nothing is recorded until someone has actually
+// watched for half a minute, so a mis-tap and a change of mind leave no trace.
+const CONTINUE_MIN_SECONDS = 30;
+const CONTINUE_SAVE_INTERVAL_MS = 12000;
+const CONTINUE_COMPLETE_PERCENT = 90;
+const CONTINUE_HISTORY_LIMIT = 40;
 const MOVIE_PROMPT_TEXT = 'মুভি দেখতে একটি বিভাগ নির্বাচন করুন';
 const MOVIE_PREVIEW_LIMIT = 18;
 const MOBILE_SEARCH_AUTO_CLOSE_MS = 5000;
@@ -118,6 +178,28 @@ const state = {
   // Requirement 7: the active playback session, pinned against catalogue churn.
   pinnedSession: null,
   movieIndex: null,
+  // Canonical movie filter state (PART 12). currentSearchQuery lives in
+  // state.currentQuery, currentSortOrder in state.currentSortMode and
+  // currentView in state.view - all three already existed, so they are
+  // reused rather than shadowed by a second copy that could drift.
+  currentCategory: 'home',
+  currentGenre: MOVIE_GENRE_ALL,
+  // A discovery row / genre browse / Web Series is a chosen scope even
+  // though it is not one of the seven category buckets. Without this the
+  // "pick a category" prompt fires over a perfectly good shelf.
+  movieBrowseMode: false,
+  movieDetailItem: null,
+  // Continue Watching (PART 16), movies and episodes only.
+  continueWatching: {},
+  continueSavedAt: 0,
+  continueSavedKey: '',
+  movieRelatedToken: '',
+  movieBrowseIndexFailed: false,
+  seriesProgressSavedAt: 0,
+  pendingResumeSeconds: 0,
+  movieBrowseIndex: null,
+  movieBrowseIndexPromise: null,
+  movieResolveCache: new Map(),
   moviePageCursor: 0,
   moviePageLoading: false,
   movieSearchLoading: false,
@@ -251,6 +333,15 @@ const playerMessage = $('playerMsg');
 const playerMessageText = $('playerMsgText');
 const errorCountdownBox = $('errorCountdownBox');
 const movieSubcategoryBar = $('movieSubcategoryBar');
+// Movie genre chips (PART 12). A visible element of its own: the legacy
+// movieSubcategoryBar lives inside .final-hidden-control, so anything
+// rendered there is invisible by design.
+const movieGenreBar = $('movieGenreBar');
+const movieDetailPanel = $('movieDetailPanel');
+const movieContinuePanel = $('movieContinuePanel');
+const movieRelatedPanel = $('movieRelatedPanel');
+const moviePopularPanel = $('moviePopularPanel');
+const movieHeroPanel = $('movieHeroPanel');
 const chipsContainer = $('chipsContainer');
 const videoContainer = $('videoContainer');
 const playerControls = $('playerControls');
@@ -976,6 +1067,12 @@ function buildNavigation() {
 }
 
 function buildMovieSubcategories() {
+  // The category list moved into the movie sub-navigation (PART 12); this
+  // movie-only bar now carries the genre chips instead.
+  buildMovieGenreChips();
+}
+
+function buildLegacyMovieSubcategories() {
   movieSubcategoryBar.replaceChildren();
   MOVIE_ORDER.forEach(([label, slug]) => {
     const button = document.createElement('button');
@@ -1046,7 +1143,7 @@ function finalSubItems(group = state.activeMainGroup) {
   if (group === 'live-tv') {
     return FINAL_LIVE_TV_CATEGORIES.map(([key, label]) => [key, label]);
   }
-  if (group === 'movies') return MOVIE_ORDER.map(([label, slug]) => [`movie:${slug}`, label]);
+  if (group === 'movies') return movieNavItems().map(([key, label]) => [`movie:${key}`, label]);
   return [];
 }
 
@@ -1116,7 +1213,7 @@ async function selectFinalMainGroup(group) {
   state.activeMainGroup = group;
   if (group === 'sports') state.activeFinalSub = 'today-match';
   else if (group === 'live-tv') state.activeFinalSub = 'bangla';
-  else if (group === 'movies') state.activeFinalSub = 'movie:bangla';
+  else if (group === 'movies') state.activeFinalSub = `movie:${state.currentCategory || 'home'}`;
   else state.activeFinalSub = '';
   renderFinalNavigation();
 
@@ -1150,9 +1247,7 @@ async function selectFinalSubcategory(key) {
     return;
   }
   if (key.startsWith('movie:')) {
-    const slug = key.slice(6);
-    const legacy = qs(`.sub-chip[data-movie-cat="${cssEscape(slug)}"]`, movieSubcategoryBar);
-    await selectMovieSubcategory(slug, legacy, { preserveFinalGroup: true });
+    await selectMovieNavItem(key.slice(6));
     return;
   }
 
@@ -1299,8 +1394,15 @@ async function selectMainView(view, category, options = {}) {
   setSearchQuery('');
   state.currentQuery = '';
   state.selectedMovieCategory = null;
-  qsa('.sub-chip', movieSubcategoryBar).forEach((item) => item.classList.remove('active'));
   movieSubcategoryBar.style.display = 'none';
+  setMovieGenreBarVisible(false);
+  closeMovieDetail();
+  // Hidden outright, not re-rendered: this runs before state.view changes, so
+  // asking the renderer here would have it decide from the view being left.
+  hideContinueWatchingRow();
+  hideMovieRelatedPanel();
+  hideMoviePopularRow();
+  hideMovieHeroPanel();
   setSearchEnabled(true);
   if (!options.preserveFinalGroup) adoptFinalNavigationFromLegacy(view, category || '');
   else renderFinalNavigation();
@@ -1404,21 +1506,13 @@ async function selectMainView(view, category, options = {}) {
 }
 
 async function openMovieParentMode(chip) {
+  // Opening Movies lands on the Home discovery shelf (PART 12) rather than
+  // jumping straight into one language bucket.
   state.activeMainGroup = 'movies';
-  state.activeFinalSub = 'movie:bangla';
-  renderFinalNavigation();
   state.currentSortMode = 'default';
   $('sortSelect').value = 'default';
   setActiveMainChip(chip || activateChipByView('movie'));
-  movieSubcategoryBar.style.display = 'flex';
-  const banglaButton = qs('.sub-chip[data-movie-cat="bangla"]', movieSubcategoryBar);
-  if (!banglaButton) {
-    showListMessage('Bangla movie বিভাগ পাওয়া যায়নি', 'fa-exclamation-triangle');
-    setSidebarCount('0 Movies');
-    return;
-  }
-  scrollSidebarToTop();
-  await selectMovieSubcategory('bangla', banglaButton);
+  await selectMovieNavItem(state.currentCategory || 'home');
 }
 
 async function loadMovieParentPreview() {
@@ -1527,12 +1621,14 @@ async function selectMovieSubcategory(slug, button, options = {}) {
   setSearchQuery('');
   state.currentQuery = '';
   setActiveMainChip(activateChipByView('movie'));
-  movieSubcategoryBar.style.display = 'flex';
-  qsa('.sub-chip', movieSubcategoryBar).forEach((item) => item.classList.toggle('active', item === button));
+  setMovieGenreBarVisible(true);
+  state.movieBrowseMode = false;
+  state.currentCategory = slug;
+  if (!options.fromNav) state.currentGenre = MOVIE_GENRE_ALL;
+  syncMovieGenreChips();
   scrollSidebarToTop();
-  button?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'nearest' });
   setSearchEnabled(true);
-  showListMessage('মুভির তালিকা লোড হচ্ছে…', 'fa-spinner', true);
+  showMovieSkeleton('grid');
   setSidebarCount('Loading...');
 
   const movieEntry = manifestMovieEntry(slug);
@@ -1578,9 +1674,2382 @@ async function selectMovieSubcategory(slug, button, options = {}) {
   } catch (error) {
     if (error.name === 'AbortError' || sessionId !== state.movieCategorySessionId || dataSessionId !== state.dataSessionId) return;
     console.error(error);
-    showListMessage('মুভির তালিকা লোড করা যায়নি। আবার চেষ্টা করুন।', 'fa-exclamation-triangle');
-    setSidebarCount('0 Movies');
+    if (state.currentItems.length) {
+      // Something real is already on screen. A failed refresh must not
+      // take it away, so the list stays and the viewer is simply told.
+      noteMovieRefreshFailure(MOVIE_TEXT.movieList);
+      return;
+    }
+    showMovieErrorState(MOVIE_TEXT.listFailed,
+      () => selectMovieSubcategory(slug, button, options));
   }
+}
+
+// ===========================================================================
+// MOVIE BROWSE: discovery rows, genre filter state, summary resolution
+// (PART 12). Movie-only. Nothing in this block is reachable from Live
+// Sports, Live TV, Notice or the player engine.
+// ===========================================================================
+
+function movieNavItems() {
+  return MOVIE_NAV_SECTIONS.flatMap(([, items]) => items.map(([key, label]) => [key, label]));
+}
+
+function movieNavLabel(key) {
+  return movieNavItems().find(([entryKey]) => entryKey === key)?.[1] || 'Movies';
+}
+
+function isMovieCategoryKey(key) {
+  return MOVIE_ORDER.some(([, slug]) => slug === key);
+}
+
+/** Genre chips live in the movie-only bar, so Live TV and Sports never see them. */
+function buildMovieGenreChips() {
+  if (!movieGenreBar) return;
+  movieGenreBar.replaceChildren();
+  const chips = [[MOVIE_GENRE_ALL, 'All Genres'], ...MOVIE_GENRES.map((name) => [name, name])];
+  chips.forEach(([value, label]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'sub-chip movie-genre-chip tv-focusable';
+    button.dataset.movieGenre = value;
+    button.textContent = label;
+    button.setAttribute('aria-pressed', String(state.currentGenre === value));
+    button.addEventListener('click', () => selectMovieGenre(value));
+    movieGenreBar.appendChild(button);
+  });
+  syncMovieGenreChips();
+}
+
+/** The genre row belongs to the movie view and nothing else. */
+function setMovieGenreBarVisible(visible) {
+  if (!movieGenreBar) return;
+  if (visible && !movieGenreBar.childElementCount) buildMovieGenreChips();
+  movieGenreBar.hidden = !visible;
+}
+
+/** One source of truth for the chip row, so sidebar and grid never disagree. */
+function syncMovieGenreChips() {
+  if (!movieGenreBar) return;
+  qsa('.movie-genre-chip', movieGenreBar).forEach((chip) => {
+    const active = chip.dataset.movieGenre === state.currentGenre;
+    chip.classList.toggle('active', active);
+    chip.setAttribute('aria-pressed', String(active));
+  });
+}
+
+function movieGenresOf(item) {
+  const genres = item?.genres;
+  if (Array.isArray(genres)) return genres;
+  if (typeof genres === 'string' && genres.trim()) return genres.split(',').map((part) => part.trim());
+  return [];
+}
+
+function movieHasGenre(item, genre) {
+  if (!genre || genre === MOVIE_GENRE_ALL) return true;
+  const wanted = String(genre).toLowerCase();
+  return movieGenresOf(item).some((value) => String(value).toLowerCase() === wanted);
+}
+
+/**
+ * The whole catalogue as card summaries - id, title, poster, genres - and
+ * nothing playable. Fetched once, lazily, only when a genre or a search
+ * actually needs to look beyond the loaded category, and kept in memory
+ * afterwards. This is what lets "every Action film" be answered without
+ * loading a single category page.
+ */
+async function loadMovieBrowseIndex() {
+  if (state.movieBrowseIndex) return state.movieBrowseIndex;
+  if (state.movieBrowseIndexPromise) return state.movieBrowseIndexPromise;
+
+  state.movieBrowseIndexPromise = (async () => {
+    try {
+      const data = await fetchMovieJson(MOVIE_BROWSE_INDEX_PATH, { cache: 'no-store' });
+      state.movieBrowseIndex = Array.isArray(data?.items) ? data.items : [];
+      state.movieBrowseIndexFailed = false;
+    } catch (error) {
+      // The index is generated by the scanner, so a fresh checkout may not
+      // have one yet. That is an empty browse result, not a broken page -
+      // but a fetch that failed is remembered, so a caller can tell "no
+      // index yet" from "could not reach the index" and offer a Retry.
+      state.movieBrowseIndex = [];
+      state.movieBrowseIndexFailed = true;
+    }
+    state.movieBrowseIndexPromise = null;
+    return state.movieBrowseIndex;
+  })();
+
+  return state.movieBrowseIndexPromise;
+}
+
+/**
+ * A discovery/browse summary has no stream on it by design. Clicking one
+ * resolves the real published record from its category pages and hands
+ * that to the existing player entry point - there is no second playback
+ * path anywhere in this file.
+ */
+async function resolveMovieSummary(summary) {
+  const id = String(summary?.id || '').trim();
+  if (!id) return null;
+  if (state.movieResolveCache.has(id)) return state.movieResolveCache.get(id);
+
+  const slugs = [];
+  const ownSlug = movieCategorySlug(summary?.category);
+  if (ownSlug) slugs.push(ownSlug);
+  MOVIE_ORDER.forEach(([, slug]) => { if (!slugs.includes(slug)) slugs.push(slug); });
+
+  for (const slug of slugs) {
+    const entry = manifestMovieEntry(slug);
+    if (!entry?.index) continue;
+    try {
+      const indexData = await fetchJson(entry.index, { cache: 'no-store' });
+      const pages = Array.isArray(indexData?.pages) ? indexData.pages : [];
+      for (const page of pages) {
+        const path = page.path || (page.file ? `data/movies/${indexData.slug || slug}/${page.file}` : '');
+        if (!path) continue;
+        const pageData = await fetchJson(path, { cache: 'no-store' });
+        const items = pageData?.items || pageData?.movies || [];
+        const found = Array.isArray(items) ? items.find((row) => String(row?.id || '') === id) : null;
+        if (found) {
+          const [resolved] = normalizeList([found], VIEW.MOVIE);
+          if (resolved) {
+            state.movieResolveCache.set(id, resolved);
+            return resolved;
+          }
+        }
+      }
+    } catch (error) {
+      // Try the next category rather than failing the click.
+    }
+  }
+  state.movieResolveCache.set(id, null);
+  return null;
+}
+
+function movieCategorySlug(label) {
+  if (!label) return '';
+  const found = MOVIE_ORDER.find(([name, slug]) =>
+    name.toLowerCase() === String(label).toLowerCase() || slug === String(label).toLowerCase());
+  return found ? found[1] : '';
+}
+
+/**
+ * Card summaries into the shape the grid already renders.
+ *
+ * Deliberately NOT normalizeList(): that gate ends in isPlayable(), which
+ * is exactly right for a category page - a movie card with no stream has
+ * no business being there - and exactly wrong here, because a discovery
+ * summary carries no stream by design and resolves one on click. Going
+ * through normalizeItem directly keeps the shared filter untouched for
+ * channels, events and category pages.
+ */
+function movieSummariesToItems(rows) {
+  if (!Array.isArray(rows)) return [];
+  return rows
+    .filter((row) => row && typeof row === 'object' && String(row.id || '').trim())
+    .map((row, index) => {
+      const item = normalizeItem(row, index, VIEW.MOVIE);
+      item._summaryOnly = true;
+      return item;
+    });
+}
+
+function showMovieBrowseEmpty(message) {
+  // Never a blank page: the viewer is told what was searched for and given
+  // a way back. Category is deliberately preserved - only the genre is
+  // offered up for clearing.
+  const canClearGenre = state.currentGenre !== MOVIE_GENRE_ALL;
+  showListMessage(message, 'fa-film');
+  setSidebarCount('0 Titles');
+  if (canClearGenre) {
+    const host = qs('.movie-prompt-msg', sidebarList) || sidebarList;
+    if (host && !qs('.movie-clear-genre', host)) {
+      const action = document.createElement('button');
+      action.type = 'button';
+      action.className = 'movie-clear-genre tv-focusable';
+      action.textContent = 'Clear Genre';
+      action.addEventListener('click', () => selectMovieGenre(MOVIE_GENRE_ALL));
+      host.appendChild(action);
+    }
+  }
+}
+
+/** Genre changes never lose the category - that rule lives here, once. */
+async function selectMovieGenre(genre) {
+  const next = genre && genre !== MOVIE_GENRE_ALL ? genre : MOVIE_GENRE_ALL;
+  state.currentGenre = next;
+  syncMovieGenreChips();
+
+  // From a discovery row, picking a genre means "show me everything in it",
+  // which is a browse over the whole catalogue rather than a filter over
+  // the fifteen cards a shelf happens to hold.
+  if (MOVIE_DISCOVERY_KEYS.includes(state.currentCategory) && next !== MOVIE_GENRE_ALL) {
+    await loadMovieGenreBrowse();
+    return;
+  }
+  if (MOVIE_DISCOVERY_KEYS.includes(state.currentCategory) && next === MOVIE_GENRE_ALL) {
+    await loadMovieDiscoveryRow(state.currentCategory);
+    return;
+  }
+  renderCurrentList(true);
+  if (!state.filteredItems.length) {
+    showMovieBrowseEmpty(`${movieNavLabel(state.currentCategory)} ${next} - কোনো টাইটেল পাওয়া যায়নি`);
+  }
+}
+
+/** Every playable title in the selected genre, from the browse index. */
+async function loadMovieGenreBrowse() {
+  cancelDataLoading();
+  clearCurrentListState();
+  state.view = VIEW.MOVIE;
+  state.selectedCategory = 'Movie';
+  state.moviePreviewMode = false;
+  state.movieBrowseMode = true;
+  state.movieIndex = null;
+  showMovieSkeleton('grid');
+  setSidebarCount('Loading...');
+
+  const index = await loadMovieBrowseIndex();
+  const matching = index.filter((row) => movieHasGenre(row, state.currentGenre));
+  state.currentItems = movieSummariesToItems(matching);
+  renderCurrentList(true);
+  if (state.filteredItems.length) {
+    setSidebarCount(`${state.filteredItems.length} Titles`, state.currentGenre);
+    return;
+  }
+  if (state.movieBrowseIndexFailed) {
+    // Drop the failed index so Retry re-fetches rather than
+    // re-filtering the empty one it just cached.
+    state.movieBrowseIndex = null;
+    showMovieErrorState(MOVIE_TEXT.listFailed, () => loadMovieGenreBrowse());
+    return;
+  }
+  // A genre with nothing in it is a real answer, and the way out is to
+  // drop the genre - which showMovieBrowseEmpty already offers.
+  showMovieBrowseEmpty(`${state.currentGenre} - কোনো টাইটেল পাওয়া যায়নি`);
+}
+
+/** Home / Trending / Just Added / Latest, from the static discovery JSON. */
+async function loadMovieDiscoveryRow(key) {
+  cancelDataLoading();
+  clearCurrentListState();
+  state.view = VIEW.MOVIE;
+  state.selectedCategory = 'Movie';
+  state.moviePreviewMode = false;
+  state.movieBrowseMode = true;
+  state.movieIndex = null;
+  showMovieSkeleton('grid');
+  setSidebarCount('Loading...');
+
+  const path = MOVIE_DISCOVERY_PATHS[key];
+  let rows = [];
+  let failed = false;
+  try {
+    const data = await fetchMovieJson(path, { cache: 'no-store' });
+    if (key === 'home') {
+      // One file, four shelves. Until a real Featured source exists the
+      // featured row is empty by design and simply contributes nothing.
+      rows = [...(data?.featured || []), ...(data?.trending || []),
+              ...(data?.just_added || []), ...(data?.latest || [])];
+      const seen = new Set();
+      rows = rows.filter((row) => {
+        const id = String(row?.id || '');
+        if (!id || seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      });
+    } else if (key === 'trending') {
+      rows = data?.movies || [];
+    } else {
+      rows = data?.items || [];
+    }
+  } catch (error) {
+    // The discovery files are generated by the scanner, so a checkout
+    // without them is an empty shelf. A fetch that actually failed is a
+    // different thing and says so, with a Retry rather than a shrug.
+    rows = [];
+    failed = true;
+  }
+
+  state.currentItems = movieSummariesToItems(rows);
+  renderCurrentList(true);
+  if (state.filteredItems.length) {
+    setSidebarCount(`${state.filteredItems.length} Titles`, movieNavLabel(key));
+    return;
+  }
+  if (failed) {
+    showMovieErrorState(
+      `${movieNavLabel(key)} লোড করা যায়নি`,
+      () => loadMovieDiscoveryRow(key)
+    );
+    return;
+  }
+  showMovieBrowseEmpty(`${movieNavLabel(key)} - এখনো কোনো টাইটেল নেই`);
+}
+
+/** Web Series: the series catalogue, across every category that has one. */
+async function loadMovieWebSeries() {
+  cancelDataLoading();
+  clearCurrentListState();
+  state.view = VIEW.MOVIE;
+  state.selectedCategory = 'Movie';
+  state.moviePreviewMode = false;
+  state.movieBrowseMode = true;
+  state.movieIndex = null;
+  showMovieSkeleton('grid');
+  setSidebarCount('Loading...');
+
+  if (!seriesModule) {
+    showMovieBrowseEmpty('Web Series এখনো যোগ করা হয়নি');
+    return;
+  }
+
+  state.currentItems = [];
+  let failures = 0;
+  for (const [, slug] of MOVIE_ORDER) {
+    try {
+      const seriesItems = await seriesModule.loadCategory(slug);
+      if (seriesItems?.length) seriesModule.mergeCategoryItems(seriesItems);
+    } catch (error) {
+      // One category's series data missing must not empty the whole tab.
+      failures += 1;
+    }
+  }
+  renderCurrentList(true);
+  if (state.filteredItems.length) {
+    setSidebarCount(`${state.filteredItems.length} Series`, 'Web Series');
+    return;
+  }
+  if (failures) {
+    showMovieErrorState('Web Series লোড করা যায়নি', () => loadMovieWebSeries());
+    return;
+  }
+  showMovieBrowseEmpty('Web Series এখনো যোগ করা হয়নি');
+}
+
+/**
+ * The movie navigation router. Changing category resets the genre to All -
+ * a genre left applied behind a category switch is invisible state, and
+ * invisible state is what makes a grid look broken.
+ */
+async function selectMovieNavItem(key, options = {}) {
+  const previousCategory = state.currentCategory;
+  state.currentCategory = key;
+  if (key !== previousCategory && !options.preserveGenre) {
+    state.currentGenre = MOVIE_GENRE_ALL;
+  }
+  state.activeMainGroup = 'movies';
+  state.activeFinalSub = `movie:${key}`;
+  renderFinalNavigation();
+  closeMovieDetail();
+  renderContinueWatchingRow();
+  void renderMovieRelatedPanel();
+  void renderMoviePopularRow();
+  // Back on Movie Home, the Hero comes back and its timer restarts.
+  void renderMovieHeroPanel();
+  setMovieGenreBarVisible(key !== 'watchlist');
+  syncMovieGenreChips();
+  setSearchEnabled(true);
+  scrollSidebarToTop();
+
+  if (key === 'watchlist') {
+    // The existing watchlist/favourites store, reused as-is. There is no
+    // second favourites list anywhere in this app.
+    setMovieGenreBarVisible(false);
+    await selectMainView('favorites', null, { chip: activateChipByView('favorite'), preserveFinalGroup: true });
+    state.activeMainGroup = 'movies';
+    state.activeFinalSub = 'movie:watchlist';
+    renderFinalNavigation();
+    // An empty watchlist is a real state, and the way out of it is to go
+    // and find something. The shared favourites view renders its own
+    // message (it serves Live TV too); only this action is movie-only.
+    if (!state.filteredItems.length) {
+      const host = qs('.movie-prompt-msg', sidebarList);
+      if (host && !qs('.movie-clear-genre', host)) {
+        const browse = document.createElement('button');
+        browse.type = 'button';
+        browse.className = 'movie-clear-genre tv-focusable';
+        browse.textContent = 'Browse Movies';
+        browse.addEventListener('click', () => selectMovieNavItem('home'));
+        host.appendChild(browse);
+      }
+    }
+    return;
+  }
+  if (key === 'web-series') {
+    await loadMovieWebSeries();
+    return;
+  }
+  if (MOVIE_DISCOVERY_KEYS.includes(key)) {
+    await loadMovieDiscoveryRow(key);
+    return;
+  }
+  if (isMovieCategoryKey(key)) {
+    await selectMovieSubcategory(key, null, { preserveFinalGroup: true, fromNav: true });
+    return;
+  }
+  await loadMovieDiscoveryRow('home');
+}
+
+// ===========================================================================
+// MOVIE SEARCH (PART 13). Local only: every match is computed against data
+// this site already shipped. The browser never calls TMDB, OMDb, Fanart,
+// RapidAPI or any other provider to search - that work happened in the
+// scanner, hours earlier.
+// ===========================================================================
+
+/**
+ * Comparable form of a title: unicode-normalised, lowercased, punctuation
+ * flattened to single spaces. "Sultan Salahuddin Ayyubi", "sultan
+ * salahuddin-ayyubi" and "SULTAN  SALAHUDDIN (AYYUBI)" all reduce to the
+ * same string, which is what makes punctuation-tolerant matching possible
+ * without reaching for fuzzy scoring.
+ */
+function movieSearchNormalize(value) {
+  let text = String(value == null ? '' : value);
+  try { text = text.normalize('NFKD'); } catch (_) { /* older engines */ }
+  return text
+    .toLowerCase()
+    .replace(/[‘’“”]/g, "'")
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim();
+}
+
+/** The text a movie/series can legitimately be found by. */
+function movieSearchHaystack(item) {
+  if (item._searchHaystack) return item._searchHaystack;
+  const aliases = Array.isArray(item.aliases) ? item.aliases : [];
+  const genres = movieGenresOf(item);
+  const parts = [
+    item.name, item.title, item.original_title, ...aliases,
+    item.year, item.release_date, item.category, ...genres,
+    item.type === 'series' ? 'series web series' : ''
+  ];
+  const haystack = movieSearchNormalize(parts.filter(Boolean).join(' '));
+  item._searchHaystack = haystack;
+  return haystack;
+}
+
+/**
+ * Deliberately conservative. Every term must appear, as a whole word or as
+ * the start of one - so "war" finds "War Room" and "Warrior" but not
+ * "Skyward", and a two-word query cannot be satisfied by two unrelated
+ * films. Over-eager fuzzy matching produces a page of things the viewer did
+ * not ask for, which reads as broken rather than clever.
+ */
+function movieMatchesQuery(item, terms) {
+  if (!terms.length) return true;
+  const haystack = movieSearchHaystack(item);
+  if (!haystack) return false;
+  return terms.every((term) => {
+    if (haystack.startsWith(`${term} `) || haystack === term) return true;
+    return haystack.includes(` ${term}`);
+  });
+}
+
+function movieSearchTerms(query) {
+  const normalized = movieSearchNormalize(query);
+  return normalized ? normalized.split(' ').filter(Boolean) : [];
+}
+
+/**
+ * Searching from a discovery shelf means searching the catalogue, not the
+ * fifteen cards the shelf happens to hold. Inside a category the scope
+ * stays that category, which is what the toolbar says it is.
+ */
+async function runMovieSearch() {
+  const query = state.searchQuery;
+  const browsing = MOVIE_DISCOVERY_KEYS.includes(state.currentCategory) ||
+    state.currentCategory === 'web-series';
+
+  if (!query) {
+    // Clearing search returns to the scope that was already chosen - the
+    // category and genre are never disturbed by searching.
+    if (MOVIE_DISCOVERY_KEYS.includes(state.currentCategory)) {
+      if (state.currentGenre !== MOVIE_GENRE_ALL) await loadMovieGenreBrowse();
+      else await loadMovieDiscoveryRow(state.currentCategory);
+      return;
+    }
+    renderCurrentList(true);
+    return;
+  }
+
+  if (browsing) {
+    const index = await loadMovieBrowseIndex();
+    const terms = movieSearchTerms(query);
+    const matches = index
+      .filter((row) => movieHasGenre(row, state.currentGenre))
+      .filter((row) => movieMatchesQuery(row, terms));
+    state.movieBrowseMode = true;
+    state.currentItems = movieSummariesToItems(matches);
+    renderCurrentList(true);
+  } else {
+    // A category is already loaded in full for search by
+    // preloadAllMoviePagesForSearch, so this filters what is in hand.
+    renderCurrentList(true);
+  }
+
+  if (!state.filteredItems.length) showMovieSearchEmpty(query);
+}
+
+/** No result is a dead end unless it fails to say what was searched. */
+function showMovieSearchEmpty(query) {
+  const scope = [];
+  if (!MOVIE_DISCOVERY_KEYS.includes(state.currentCategory)) {
+    scope.push(movieNavLabel(state.currentCategory));
+  }
+  if (state.currentGenre !== MOVIE_GENRE_ALL) scope.push(state.currentGenre);
+  const where = scope.length ? ` (${scope.join(' + ')})` : '';
+  showListMessage(`"${query}"${where} - কোনো ফলাফল পাওয়া যায়নি`, 'fa-magnifying-glass');
+  setSidebarCount('0 Titles');
+
+  // showListMessage renders into .movie-prompt-msg, so the recovery
+  // actions belong inside that block rather than loose in the grid.
+  const host = qs('.movie-prompt-msg', sidebarList) || sidebarList;
+  if (!host || qs('.movie-clear-genre', host)) return;
+  const clear = document.createElement('button');
+  clear.type = 'button';
+  clear.className = 'movie-clear-genre tv-focusable';
+  clear.textContent = 'Clear search';
+  clear.addEventListener('click', () => {
+    setSearchQuery('');
+    runMovieSearch();
+  });
+  host.appendChild(clear);
+
+  if (scope.length) {
+    const all = document.createElement('button');
+    all.type = 'button';
+    all.className = 'movie-clear-genre tv-focusable';
+    all.textContent = 'Search all Movies';
+    all.addEventListener('click', async () => {
+      state.currentGenre = MOVIE_GENRE_ALL;
+      state.currentCategory = 'home';
+      syncMovieGenreChips();
+      renderFinalNavigation();
+      await runMovieSearch();
+    });
+    host.appendChild(all);
+  }
+}
+
+// ===========================================================================
+// FEATURED HERO (Featured/Hero plan). Movies Home only.
+//
+// The Hero renders data/movies/discovery/featured.json and nothing else. It
+// makes no external metadata request - the scanner already did that, and a
+// browser calling TMDB would put a key in front of every visitor.
+//
+// It never invents a slot. With no file, an empty file or a failed fetch
+// there is no Hero at all: an empty Hero frame says less than no Hero, and
+// a filled one would have to make something up. Every fact on screen comes
+// from the file: the rating with the source that issued it or not at all,
+// the quality from our own measured stream height, the badges from real
+// state, the synopsis from the real overview.
+//
+// Playback is entirely someone else's job. Play resolves the catalogue
+// record and hands it to startPlayback() - the same entry point every card
+// uses - and a series hands off to the existing series detail flow. There
+// is no second player here and no playback code below.
+// ===========================================================================
+
+const MOVIE_FEATURED_PATH = 'data/movies/discovery/featured.json';
+const MOVIE_HERO_ROTATE_MS = 6500;
+const MOVIE_HERO_ROTATE_MIN_MS = 3000;
+const MOVIE_HERO_ROTATE_MAX_MS = 20000;
+const MOVIE_HERO_SWIPE_PX = 40;
+// Past this, a TRENDING badge is no longer a claim the file can support.
+// The badge is stamped at build time against a trending snapshot that was
+// fresh THEN; if the refresh job has not run for three days, "trending" has
+// stopped being true and the badge is dropped rather than left to age. The
+// slot itself stays - a good Featured pick does not expire - and so does
+// the FEATURED ON CLICK TV label, which is true whatever the source was.
+const MOVIE_HERO_TREND_CLAIM_MAX_HOURS = 72;
+
+const movieHero = {
+  items: [],
+  index: 0,
+  timer: null,
+  rotateMs: MOVIE_HERO_ROTATE_MS,
+  // Two independent reasons the timer can be still, kept apart because they
+  // end at different times: `paused` is a hover or a hidden tab and undoes
+  // itself, `stopped` is the detail or the player and only the movie home
+  // undoes it.
+  paused: false,
+  stopped: true,
+  layer: 0,
+  document: null,
+  touchStartX: 0,
+  touchStartY: 0
+};
+
+/**
+ * Are we on Movie Home right now?
+ *
+ * Deliberately NOT `state.view === VIEW.MOVIE`: that is set by the loader,
+ * which runs after this is first asked. selectMovieNavItem sets both fields
+ * below synchronously on its first line, so this is already true when the
+ * row renderers are called - which is why the Hero appears on the first
+ * visit to Movies and not only on the second.
+ *
+ * Leaving Movies changes activeMainGroup, so Live TV, Live Sports and every
+ * other view answer false here without needing to know this exists.
+ */
+function onMovieHomeView() {
+  return state.activeMainGroup === 'movies' && state.currentCategory === 'home';
+}
+
+/**
+ * A read-only view of the rotation state.
+ *
+ * Declared as a function deliberately: `const movieHero` does not attach to
+ * `window`, so a browser test cannot see it - and a test that cannot tell
+ * whether the timer is running cannot check that the detail stopped it.
+ */
+function movieHeroTimerState() {
+  return {
+    running: Boolean(movieHero.timer),
+    stopped: movieHero.stopped,
+    paused: movieHero.paused,
+    index: movieHero.index,
+    count: movieHero.items.length,
+    rotateMs: movieHero.rotateMs
+  };
+}
+
+/**
+ * Is the file recent enough for its TRENDING badges to still mean anything?
+ *
+ * With no timestamp the answer is no: an undated file could be any age, and
+ * the safe reading of "unknown" is "do not make the stronger claim".
+ */
+function movieHeroTrendClaimStillHolds() {
+  const stamp = Date.parse(String(movieHero.document?.updated_at || ''));
+  if (!Number.isFinite(stamp)) return false;
+  const hours = (Date.now() - stamp) / 3600000;
+  return hours >= 0 && hours <= MOVIE_HERO_TREND_CLAIM_MAX_HOURS;
+}
+
+function movieHeroReducedMotion() {
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  } catch (_) {
+    return false;
+  }
+}
+
+function movieHeroCanHover() {
+  try {
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  } catch (_) {
+    return false;
+  }
+}
+
+/** Rotation is off entirely for one slide, and for reduced motion. */
+function movieHeroShouldRotate() {
+  if (movieHero.items.length < 2) return false;
+  if (movieHero.stopped || movieHero.paused) return false;
+  // The plan leaves this to the design. Stopping is the safer reading: the
+  // arrows and dots stay, so nothing becomes unreachable - the carousel
+  // simply waits to be asked.
+  if (movieHeroReducedMotion()) return false;
+  return true;
+}
+
+function stopMovieHeroTimer() {
+  if (movieHero.timer) {
+    clearInterval(movieHero.timer);
+    movieHero.timer = null;
+  }
+}
+
+function startMovieHeroTimer() {
+  stopMovieHeroTimer();
+  if (!movieHeroShouldRotate()) return;
+  movieHero.timer = setInterval(() => {
+    if (!movieHeroShouldRotate()) {
+      stopMovieHeroTimer();
+      return;
+    }
+    showMovieHeroSlide(movieHero.index + 1);
+  }, movieHero.rotateMs);
+}
+
+/** A manual move restarts the clock, so the next slide is a full interval. */
+function resetMovieHeroTimer() {
+  startMovieHeroTimer();
+}
+
+function pauseMovieHero() {
+  movieHero.paused = true;
+  stopMovieHeroTimer();
+}
+
+function resumeMovieHero() {
+  movieHero.paused = false;
+  startMovieHeroTimer();
+}
+
+/** The detail or the player opened. Only the movie home restarts this. */
+function stopMovieHeroRotation() {
+  movieHero.stopped = true;
+  stopMovieHeroTimer();
+}
+
+function resumeMovieHeroRotation() {
+  if (!movieHeroPanel || movieHeroPanel.hidden) return;
+  if (!onMovieHomeView()) return;
+  movieHero.stopped = false;
+  startMovieHeroTimer();
+}
+
+function hideMovieHeroPanel() {
+  stopMovieHeroRotation();
+  if (!movieHeroPanel) return;
+  movieHeroPanel.hidden = true;
+  movieHeroPanel.replaceChildren();
+  movieHero.items = [];
+  movieHero.index = 0;
+}
+
+// --- what one slot says -----------------------------------------------------
+
+function movieHeroMetaParts(entry) {
+  const parts = [];
+  if (entry.year) parts.push(String(entry.year));
+  if (entry.category) parts.push(String(entry.category));
+  parts.push(entry.type === 'series' ? 'Web Series' : 'Movie');
+  const genres = Array.isArray(entry.genres) ? entry.genres.slice(0, 2) : [];
+  if (genres.length) parts.push(genres.join(', '));
+  return parts;
+}
+
+/**
+ * A rating, or nothing at all.
+ *
+ * Always carrying the issuer: a TMDB score shown as "IMDb 8.1" is a
+ * different claim about a different thing. With no rating the element is
+ * not rendered, rather than rendered empty or with a placeholder.
+ */
+function movieHeroRatingText(entry) {
+  const value = Number(entry.rating);
+  if (!Number.isFinite(value) || value <= 0) return '';
+  const source = String(entry.rating_source || '').trim();
+  return source ? `${source} ${value}` : String(value);
+}
+
+/**
+ * The action buttons for one slot.
+ *
+ * Built separately from the copy because the two live in different places:
+ * the copy sits in the Hero's body, the actions in a footer row it shares
+ * with the carousel controls. Putting them in one block is what let the
+ * controls overlap the buttons at four of the eleven tested widths.
+ */
+function buildMovieHeroActions(entry) {
+  const actions = document.createElement('div');
+  actions.className = 'movie-hero-actions';
+  if (entry.type === 'series') {
+    // One button for a series. There is no "play this series" - a season
+    // and an episode have to be chosen first, and the series detail is
+    // where that happens.
+    const view = document.createElement('button');
+    view.type = 'button';
+    view.className = 'movie-hero-play tv-focusable';
+    view.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i> View Series';
+    view.addEventListener('click', () => { void openMovieHeroSeries(entry); });
+    actions.appendChild(view);
+    return actions;
+  }
+  const play = document.createElement('button');
+  play.type = 'button';
+  play.className = 'movie-hero-play tv-focusable';
+  play.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i> Play';
+  play.addEventListener('click', () => { void openMovieHeroPlayback(entry); });
+  const details = document.createElement('button');
+  details.type = 'button';
+  details.className = 'movie-hero-details tv-focusable';
+  details.innerHTML = '<i class="fas fa-circle-info" aria-hidden="true"></i> Details';
+  details.addEventListener('click', () => { void openMovieHeroDetail(entry); });
+  actions.append(play, details);
+  return actions;
+}
+
+function buildMovieHeroSlide(entry) {
+  const copy = document.createElement('div');
+  copy.className = 'movie-hero-copy';
+
+  const kicker = document.createElement('span');
+  kicker.className = 'movie-hero-kicker';
+  const dot = document.createElement('i');
+  const kickerText = document.createElement('span');
+  // The label travels with the data, so no view can rename this row into
+  // "Trending". A manual pin may replace the kicker - and only the kicker.
+  kickerText.textContent = String(
+    entry.custom_kicker || movieHero.document?.label || 'FEATURED ON CLICK TV'
+  );
+  kicker.append(dot, kickerText);
+
+  const title = document.createElement('h3');
+  title.className = 'movie-hero-title';
+  title.textContent = String(entry.name || 'Untitled');
+
+  const meta = document.createElement('div');
+  meta.className = 'movie-hero-meta';
+  movieHeroMetaParts(entry).forEach((part, index) => {
+    if (index) {
+      const sep = document.createElement('span');
+      sep.className = 'sep';
+      sep.textContent = '•';
+      meta.appendChild(sep);
+    }
+    const node = document.createElement('span');
+    node.textContent = part;
+    meta.appendChild(node);
+  });
+  const rating = movieHeroRatingText(entry);
+  if (rating) {
+    const node = document.createElement('span');
+    node.className = 'movie-hero-tag';
+    node.textContent = rating;
+    meta.appendChild(node);
+  }
+  if (entry.quality) {
+    const node = document.createElement('span');
+    node.className = 'movie-hero-tag';
+    node.textContent = String(entry.quality);
+    meta.appendChild(node);
+  }
+
+  copy.append(kicker, title, meta);
+
+  // Badges come from the file, which only emits them for real states.
+  const badges = (Array.isArray(entry.badges) ? entry.badges : [])
+    .filter((badge) => badge !== 'TRENDING' || movieHeroTrendClaimStillHolds());
+  const labels = entry.custom_label ? [String(entry.custom_label), ...badges] : badges;
+  if (labels.length) {
+    const wrap = document.createElement('div');
+    wrap.className = 'movie-hero-badges';
+    labels.slice(0, 3).forEach((label) => {
+      const node = document.createElement('span');
+      node.className = 'movie-hero-badge';
+      node.textContent = String(label);
+      wrap.appendChild(node);
+    });
+    copy.appendChild(wrap);
+  }
+
+  const plot = String(entry.plot || '').trim();
+  if (plot) {
+    const desc = document.createElement('p');
+    desc.className = 'movie-hero-desc';
+    // Clamped to two lines in CSS rather than truncated here, so the full
+    // overview stays available to a screen reader.
+    desc.textContent = plot;
+    copy.appendChild(desc);
+  }
+
+  return copy;
+}
+
+/**
+ * Move to a slide, crossfading the background.
+ *
+ * A real backdrop fills the frame sharp. A poster - which is what most
+ * titles have - becomes a blurred wash behind its own sharp thumbnail
+ * instead of being stretched across a 16:5 banner. Which of the two it is
+ * comes from artwork_kind in the file, not from guessing at the image.
+ */
+function showMovieHeroSlide(next, options = {}) {
+  const count = movieHero.items.length;
+  if (!movieHeroPanel || !count) return;
+  const index = ((next % count) + count) % count;
+  movieHero.index = index;
+  const entry = movieHero.items[index];
+
+  const art = qs('.movie-hero-art', movieHeroPanel);
+  if (art) {
+    const poster = String(entry.poster || entry.backdrop || '').trim();
+    if (poster) {
+      art.src = poster;
+      art.hidden = false;
+    } else {
+      art.removeAttribute('src');
+      art.hidden = true;
+    }
+  }
+
+  const layers = Array.from(movieHeroPanel.querySelectorAll('.movie-hero-bg'));
+  if (layers.length === 2) {
+    const incoming = layers[movieHero.layer === 0 ? 1 : 0];
+    const outgoing = layers[movieHero.layer];
+    const image = String(entry.backdrop || entry.poster || '').trim();
+    incoming.style.backgroundImage = image ? `url("${image}")` : '';
+    incoming.classList.toggle('poster-fallback', entry.artwork_kind !== 'backdrop');
+    incoming.classList.add('active');
+    outgoing.classList.remove('active');
+    // Only the two visible layers ever hold an image, so five slides cost
+    // two decoded backgrounds rather than five.
+    movieHero.layer = movieHero.layer === 0 ? 1 : 0;
+  }
+
+  const copyHost = qs('.movie-hero-inner', movieHeroPanel);
+  const existingCopy = qs('.movie-hero-copy', movieHeroPanel);
+  if (copyHost && existingCopy) copyHost.replaceChild(buildMovieHeroSlide(entry), existingCopy);
+
+  const footHost = qs('.movie-hero-foot', movieHeroPanel);
+  const existingActions = qs('.movie-hero-actions', movieHeroPanel);
+  if (footHost && existingActions) {
+    footHost.replaceChild(buildMovieHeroActions(entry), existingActions);
+  }
+
+  movieHeroPanel.querySelectorAll('.movie-hero-dot').forEach((node, position) => {
+    node.classList.toggle('active', position === index);
+    node.setAttribute('aria-current', position === index ? 'true' : 'false');
+  });
+
+  if (options.manual) resetMovieHeroTimer();
+}
+
+// --- the handoffs -----------------------------------------------------------
+
+/** Resolve a Hero slot to the real catalogue record, or say it is gone. */
+async function resolveMovieHeroItem(entry) {
+  const summary = await findMovieSummaryById(entry.id);
+  if (!summary) return null;
+  const [item] = movieSummariesToItems([summary]);
+  if (!item) return null;
+  return (await resolveMovieSummary(item)) || item;
+}
+
+async function openMovieHeroDetail(entry) {
+  const summary = await findMovieSummaryById(entry.id);
+  if (!summary) {
+    showMovieDetailUnavailable(entry.name || entry.id);
+    return;
+  }
+  const [item] = movieSummariesToItems([summary]);
+  // The detail stops the Hero timer through closeMovieDetail/openMovieDetail.
+  if (item) await openMovieDetail(item);
+}
+
+async function openMovieHeroPlayback(entry) {
+  const resolved = await resolveMovieHeroItem(entry);
+  if (!resolved || !isPlayable(resolved)) {
+    // A Featured slot should never be unplayable - the builder checks - but
+    // the catalogue can move under a page that has been open for hours.
+    showMovieDetailUnavailable(entry.name || entry.id);
+    return;
+  }
+  stopMovieHeroRotation();
+  // The existing entry point, unchanged. Nothing about playback lives here.
+  startPlayback(resolved, true);
+}
+
+async function openMovieHeroSeries(entry) {
+  if (!seriesModule) {
+    showMovieDetailUnavailable(entry.name || entry.id);
+    return;
+  }
+  const series = await findSeriesSummaryById(entry.id);
+  if (!series) {
+    showMovieDetailUnavailable(entry.name || entry.id);
+    return;
+  }
+  stopMovieHeroRotation();
+  // The existing series flow: series detail, then a season, then an episode,
+  // then the same player. No episode is chosen for the viewer here.
+  await seriesModule.openSeries(series, { season: Number(entry.default_season) || 0 });
+}
+
+// --- rendering --------------------------------------------------------------
+
+function buildMovieHeroShell() {
+  const hero = document.createElement('div');
+  hero.className = 'movie-hero';
+
+  const layerA = document.createElement('div');
+  layerA.className = 'movie-hero-bg';
+  const layerB = document.createElement('div');
+  layerB.className = 'movie-hero-bg';
+  const scrim = document.createElement('div');
+  scrim.className = 'movie-hero-scrim';
+
+  const inner = document.createElement('div');
+  inner.className = 'movie-hero-inner';
+  const art = document.createElement('img');
+  art.className = 'movie-hero-art';
+  art.alt = '';
+  art.loading = 'lazy';
+  art.referrerPolicy = 'no-referrer';
+  const copy = document.createElement('div');
+  copy.className = 'movie-hero-copy';
+  inner.append(art, copy);
+
+  // The footer is a real row, not an overlay: the action buttons and the
+  // carousel controls share one flex line, so neither can ever cover the
+  // other however wide the buttons get or however many dots there are.
+  const foot = document.createElement('div');
+  foot.className = 'movie-hero-foot';
+  foot.appendChild(document.createElement('div')).className = 'movie-hero-actions';
+
+  hero.append(layerA, layerB, scrim, inner, foot);
+
+  if (movieHero.items.length > 1) {
+    const controls = document.createElement('div');
+    controls.className = 'movie-hero-controls';
+    const prev = document.createElement('button');
+    prev.type = 'button';
+    prev.className = 'movie-hero-arrow tv-focusable';
+    prev.setAttribute('aria-label', 'Previous featured title');
+    prev.innerHTML = '<i class="fas fa-chevron-left" aria-hidden="true"></i>';
+    prev.addEventListener('click', () => showMovieHeroSlide(movieHero.index - 1, { manual: true }));
+    const dots = document.createElement('div');
+    dots.className = 'movie-hero-dots';
+    movieHero.items.forEach((entry, position) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'movie-hero-dot';
+      dot.setAttribute('aria-label', `Featured ${position + 1}: ${entry.name || ''}`.trim());
+      dot.addEventListener('click', () => showMovieHeroSlide(position, { manual: true }));
+      dots.appendChild(dot);
+    });
+    const next = document.createElement('button');
+    next.type = 'button';
+    next.className = 'movie-hero-arrow tv-focusable';
+    next.setAttribute('aria-label', 'Next featured title');
+    next.innerHTML = '<i class="fas fa-chevron-right" aria-hidden="true"></i>';
+    next.addEventListener('click', () => showMovieHeroSlide(movieHero.index + 1, { manual: true }));
+    controls.append(prev, dots, next);
+    foot.appendChild(controls);
+
+    if (movieHeroCanHover()) {
+      // Optional in the plan, and only where a pointer can actually hover:
+      // on a touch screen a "hover" is a tap that never ends.
+      hero.addEventListener('mouseenter', pauseMovieHero);
+      hero.addEventListener('mouseleave', resumeMovieHero);
+    }
+    hero.addEventListener('touchstart', (event) => {
+      const touch = event.touches && event.touches[0];
+      movieHero.touchStartX = touch ? touch.clientX : 0;
+      movieHero.touchStartY = touch ? touch.clientY : 0;
+    }, { passive: true });
+    hero.addEventListener('touchend', (event) => {
+      const touch = event.changedTouches && event.changedTouches[0];
+      if (!touch || !movieHero.touchStartX) return;
+      const dx = touch.clientX - movieHero.touchStartX;
+      const dy = touch.clientY - movieHero.touchStartY;
+      movieHero.touchStartX = 0;
+      // Horizontal intent only, so scrolling the page never changes slide.
+      if (Math.abs(dx) < MOVIE_HERO_SWIPE_PX || Math.abs(dx) <= Math.abs(dy)) return;
+      showMovieHeroSlide(movieHero.index + (dx < 0 ? 1 : -1), { manual: true });
+    }, { passive: true });
+  }
+  return hero;
+}
+
+/**
+ * The Hero, on Movie Home, only when there is something real to show.
+ *
+ * Cached after one successful load: the file changes twice a day and the
+ * page outlives neither. A failed load is not cached, so the next visit to
+ * Movie Home tries again.
+ */
+async function renderMovieHeroPanel() {
+  if (!movieHeroPanel) return;
+  if (!onMovieHomeView()) {
+    hideMovieHeroPanel();
+    return;
+  }
+
+  let payload = movieHero.document;
+  if (!payload) {
+    try {
+      payload = await fetchMovieJson(MOVIE_FEATURED_PATH, { cache: 'no-store' });
+      movieHero.document = payload;
+    } catch (_) {
+      // No Hero rather than a broken one, and no error surfaced: the rest
+      // of Movie Home is unaffected and still works.
+      hideMovieHeroPanel();
+      return;
+    }
+  }
+
+  // Checked again: the fetch above can outlive the view it was started
+  // for, and a Hero appearing over Live TV would be a real bug.
+  if (!onMovieHomeView()) {
+    hideMovieHeroPanel();
+    return;
+  }
+
+  const items = Array.isArray(payload?.items)
+    ? payload.items.filter((entry) => entry && String(entry.id || '').trim())
+    : [];
+  if (!items.length) {
+    hideMovieHeroPanel();
+    return;
+  }
+
+  const seconds = Number(payload?.hero_rotate_seconds);
+  movieHero.rotateMs = Number.isFinite(seconds) && seconds > 0
+    ? Math.min(MOVIE_HERO_ROTATE_MAX_MS, Math.max(MOVIE_HERO_ROTATE_MIN_MS, seconds * 1000))
+    : MOVIE_HERO_ROTATE_MS;
+  movieHero.items = items;
+  movieHero.index = 0;
+  movieHero.layer = 0;
+  movieHero.paused = false;
+  movieHero.stopped = false;
+
+  movieHeroPanel.replaceChildren(buildMovieHeroShell());
+  movieHeroPanel.hidden = false;
+  showMovieHeroSlide(0);
+  startMovieHeroTimer();
+}
+
+// ===========================================================================
+// INTERNAL ANALYTICS + POPULAR ON CLICK TV (PART 22). Movies only.
+//
+// This is NOT Trending. Trending (PART 06) is an external signal about what
+// the world is watching; this row counts what happened on Click TV itself,
+// and it carries its own label so no view can rename it into something it
+// is not.
+//
+// What is sent is four facts: which title, which event, when (to the day at
+// aggregation), and a per-session id used only to deduplicate. No stream URL,
+// no backup, no header, no token, no profile - the payload is built from a
+// fixed field list rather than by copying an item, so a field cannot leak in
+// by being added to the catalogue later.
+//
+// It is entirely optional. With no telemetry endpoint configured, or with the
+// endpoint down, every function here is a no-op: nothing retries, nothing
+// blocks, nothing surfaces an error, and playback neither waits for it nor
+// knows it exists.
+// ===========================================================================
+
+const MOVIE_ANALYTICS_QUALIFY_SECONDS = 30;
+const MOVIE_ANALYTICS_COMPLETE_PERCENT = 90;
+const movieAnalyticsSent = new Set();
+
+function movieAnalyticsEndpoint() {
+  const base = telemetryEndpoint();
+  if (!base || !state.telemetryEnabled) return '';
+  try {
+    return new URL('/event', base).toString();
+  } catch (_) {
+    return '';
+  }
+}
+
+/**
+ * Report one usage event, at most once per session per title per event.
+ *
+ * Fire and forget: the return value is ignored, failures are swallowed, and
+ * nothing here is awaited by anything a viewer is waiting for.
+ */
+function sendMovieAnalyticsEvent(eventType, item) {
+  if (!eventType || !item) return false;
+  const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+  if (!isMovie) return false;
+
+  const endpoint = movieAnalyticsEndpoint();
+  if (!endpoint) return false;
+
+  const episode = Boolean(seriesModule?.isEpisodeItem?.(item));
+  const series = Boolean(seriesModule?.isSeriesItem?.(item));
+  const itemId = String(item.id || item._uid || '').trim();
+  if (!itemId) return false;
+
+  const key = `${eventType}:${itemId}`;
+  if (movieAnalyticsSent.has(key)) return false;
+  movieAnalyticsSent.add(key);
+
+  // Built field by field. Never a spread of the item: that is how a stream
+  // URL ends up in an analytics payload six months from now.
+  const payload = {
+    event_type: eventType,
+    item_id: itemId.slice(0, 160),
+    content_type: episode ? 'episode' : series ? 'series' : 'movie',
+    session_id: telemetrySessionId(),
+    ts: Date.now()
+  };
+  if (episode) {
+    payload.series_id = String(item.series_id || '').slice(0, 160);
+    payload.season_number = Number(item.season_number || 0);
+    payload.episode_number = Number(item.episode_number || 0);
+  }
+
+  try {
+    const body = JSON.stringify(payload);
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(endpoint, new Blob([body], { type: 'text/plain;charset=UTF-8' }));
+      return true;
+    }
+    void fetch(endpoint, {
+      method: 'POST', body, keepalive: true, mode: 'cors',
+      headers: { 'Content-Type': 'text/plain;charset=UTF-8' }
+    }).catch(() => {});
+  } catch (_) {
+    // An analytics failure is not a viewer's problem.
+  }
+  return true;
+}
+
+/**
+ * A qualified play, and only from real playback.
+ *
+ * play_start says someone pressed play - it is a measure of curiosity and of
+ * mis-taps. play_30s says they were still watching half a minute later, and
+ * that is the only event the published row counts.
+ */
+function reportMoviePlaybackProgress() {
+  const item = state.currentItem;
+  if (!item) return;
+  const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+  if (!isMovie) return;
+
+  const position = Number(video.currentTime);
+  const duration = Number(video.duration);
+  if (Number.isFinite(position) && position >= MOVIE_ANALYTICS_QUALIFY_SECONDS) {
+    sendMovieAnalyticsEvent('play_30s', item);
+  }
+  if (Number.isFinite(duration) && duration > 0
+    && (position / duration) * 100 >= MOVIE_ANALYTICS_COMPLETE_PERCENT) {
+    sendMovieAnalyticsEvent('play_complete', item);
+  }
+}
+
+// --- the published row ------------------------------------------------------
+
+const MOVIE_POPULAR_PATH = 'data/movies/discovery/popular-clicktv.json';
+
+function hideMoviePopularRow() {
+  if (!moviePopularPanel) return;
+  moviePopularPanel.hidden = true;
+  moviePopularPanel.replaceChildren();
+}
+
+/**
+ * Popular on Click TV, on Movie Home, only when there is something real.
+ *
+ * The heading comes from the file, which carries its own label and a note
+ * saying what the signal is. With no file, an empty file or a failed fetch
+ * the row simply is not there - an empty "Popular" shelf says something
+ * false about the catalogue, and filling it would say something worse.
+ */
+async function renderMoviePopularRow() {
+  if (!moviePopularPanel) return;
+  if (!onMovieHomeView()) {
+    hideMoviePopularRow();
+    return;
+  }
+
+  let document_ = null;
+  try {
+    document_ = await fetchMovieJson(MOVIE_POPULAR_PATH, { cache: 'no-store' });
+  } catch (_) {
+    hideMoviePopularRow();
+    return;
+  }
+
+  const rows = Array.isArray(document_?.items) ? document_.items : [];
+  if (!rows.length || !onMovieHomeView()) {
+    hideMoviePopularRow();
+    return;
+  }
+
+  const shell = document.createElement('div');
+  shell.className = 'movie-continue-inner';
+  const heading = document.createElement('h3');
+  heading.className = 'movie-continue-title';
+  // The label travels with the data. Nothing here invents a nicer name.
+  heading.textContent = String(document_.label || 'Popular on Click TV');
+  const strip = document.createElement('div');
+  strip.className = 'movie-related-grid';
+
+  for (const row of rows) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'movie-related-card tv-focusable';
+    card.dataset.popularId = String(row.id || '');
+    const poster = String(row.logo || row.poster || '').trim();
+    card.innerHTML =
+      (poster
+        ? `<img src="${escapeHtml(poster)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+        : '<span class="movie-related-poster placeholder"></span>') +
+      `<strong>${escapeHtml(row.name || row.id || 'Untitled')}</strong>` +
+      (row.year ? `<small>${escapeHtml(String(row.year))}</small>` : '');
+    card.addEventListener('click', async () => {
+      const summary = await findMovieSummaryById(row.id);
+      if (!summary) {
+        showMovieDetailUnavailable(row.name || row.id);
+        return;
+      }
+      const [item] = movieSummariesToItems([summary]);
+      if (item) void openMovieDetail(item);
+    });
+    strip.appendChild(card);
+  }
+
+  shell.append(heading, strip);
+  moviePopularPanel.replaceChildren(shell);
+  moviePopularPanel.hidden = false;
+}
+
+// ===========================================================================
+// DEEP LINKS + DOCUMENT METADATA (PART 21). Movies only.
+//
+// This app had no routing at all before this block, so everything here is
+// additive and scoped: only ?movie= and ?series= are read, only the movie
+// detail writes them, and every other view behaves exactly as it did.
+//
+// Canonical shapes:
+//     ?movie={id}
+//     ?series={id}
+//     ?series={id}&season=2&episode=4
+//
+// Opening a deep link opens a DETAIL. It never starts the player: a link
+// someone was sent should not begin playing at them, and Play is one click
+// away through the same handoff every other card uses.
+//
+// SEO reality, stated rather than implied: the title, description, canonical
+// and JSON-LD below are written by JavaScript after load. Browsers and some
+// crawlers read them; several social scrapers do not execute JS and will
+// keep seeing the static tags in index.html. Making shared links render
+// per-title previews needs pre-rendered HTML or an edge function - that is
+// Tier 2 and is deliberately NOT claimed here. See
+// docs/movie-system-final-validation-v2.md.
+// ===========================================================================
+
+const MOVIE_ROUTE_KEYS = Object.freeze(['movie', 'series']);
+let movieRouteSuppressed = false;
+let movieDocumentMetadataSaved = null;
+// Captured once, before anything runs. The app selects an initial view during
+// bootstrap, and that closes the (empty) movie detail, which clears the route
+// - so by the time the catalogue is ready to resolve a link, the link is gone
+// from the address bar. Reading it first is the whole fix.
+let movieOpeningRoute = null;
+
+function movieRouteFromLocation() {
+  let params;
+  try {
+    params = new URLSearchParams(window.location.search);
+  } catch (_) {
+    return null;
+  }
+  const movie = String(params.get('movie') || '').trim();
+  if (movie) return { kind: 'movie', id: movie };
+  const series = String(params.get('series') || '').trim();
+  if (!series) return null;
+  const season = Number(params.get('season'));
+  const episode = Number(params.get('episode'));
+  return {
+    kind: 'series',
+    id: series,
+    season: Number.isFinite(season) && season > 0 ? season : 0,
+    episode: Number.isFinite(episode) && episode > 0 ? episode : 0
+  };
+}
+
+function movieRouteHref(item) {
+  const url = new URL(window.location.href);
+  MOVIE_ROUTE_KEYS.forEach((key) => url.searchParams.delete(key));
+  url.searchParams.delete('season');
+  url.searchParams.delete('episode');
+  const id = String(item?.id || '').trim();
+  if (!id) return url.toString();
+  if (seriesModule?.isEpisodeItem?.(item)) {
+    url.searchParams.set('series', String(item.series_id || ''));
+    if (item.season_number) url.searchParams.set('season', String(item.season_number));
+    if (item.episode_number) url.searchParams.set('episode', String(item.episode_number));
+  } else if (seriesModule?.isSeriesItem?.(item)) {
+    url.searchParams.set('series', id);
+  } else {
+    url.searchParams.set('movie', id);
+  }
+  return url.toString();
+}
+
+/** Write the route without reloading. Silently a no-op where history is blocked. */
+function pushMovieRoute(item, replace) {
+  if (movieRouteSuppressed) return;
+  try {
+    const href = movieRouteHref(item);
+    if (href === window.location.href) return;
+    if (replace) window.history.replaceState({ movieRoute: true }, '', href);
+    else window.history.pushState({ movieRoute: true }, '', href);
+  } catch (_) {}
+}
+
+function clearMovieRoute() {
+  if (movieRouteSuppressed) return;
+  try {
+    const url = new URL(window.location.href);
+    const had = MOVIE_ROUTE_KEYS.some((key) => url.searchParams.has(key));
+    if (!had) return;
+    MOVIE_ROUTE_KEYS.forEach((key) => url.searchParams.delete(key));
+    url.searchParams.delete('season');
+    url.searchParams.delete('episode');
+    window.history.pushState({ movieRoute: false }, '', url.toString());
+  } catch (_) {}
+}
+
+// --- document metadata -----------------------------------------------------
+
+function movieMetaTag(selector, create) {
+  let tag = document.head.querySelector(selector);
+  if (!tag && create) {
+    tag = create();
+    document.head.appendChild(tag);
+  }
+  return tag;
+}
+
+function setMovieMetaContent(selector, attribute, value, content) {
+  const tag = movieMetaTag(selector, () => {
+    const node = document.createElement('meta');
+    node.setAttribute(attribute, value);
+    return node;
+  });
+  if (tag) tag.setAttribute('content', content);
+}
+
+function movieDescriptionFor(item) {
+  const plot = String(item.plot || item.description || item.overview || '').trim();
+  if (plot) return plot.slice(0, 300);
+  // No invented blurb: say only what the record actually carries.
+  const facts = movieDetailRows(item)
+    .filter(([label]) => ['Year', 'Category', 'Genres', 'Rating'].includes(label))
+    .map(([label, value]) => `${label}: ${value}`);
+  return facts.length ? `${item.name} - ${facts.join(' · ')}` : String(item.name || '');
+}
+
+/**
+ * Structured data built ONLY from fields the record carries.
+ *
+ * No ratingCount, no review, no cast, no release date is ever synthesised -
+ * an invented aggregateRating is a lie told to a search engine in a format
+ * designed to be trusted.
+ */
+function movieJsonLd(item) {
+  const isSeries = Boolean(seriesModule?.isSeriesItem?.(item) || seriesModule?.isEpisodeItem?.(item));
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': isSeries ? 'TVSeries' : 'Movie',
+    name: String(item.name || '').trim()
+  };
+  const genres = movieGenresOf(item);
+  if (genres.length) data.genre = genres;
+  const released = String(item.release_date || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(released)) data.datePublished = released;
+  const poster = String(item.logo || item.poster || '').trim();
+  if (poster) data.image = poster;
+  const plot = String(item.plot || item.description || '').trim();
+  if (plot) data.description = plot;
+  const rating = Number(item.rating);
+  const ratingSource = String(item.rating_source || '').trim();
+  if (Number.isFinite(rating) && rating > 0 && ratingSource) {
+    // ratingValue and the body that issued it, and nothing else. ratingCount
+    // is omitted because we do not have one.
+    data.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: rating,
+      bestRating: 10,
+      author: { '@type': 'Organization', name: ratingSource }
+    };
+  }
+  return data;
+}
+
+function applyMovieDocumentMetadata(item) {
+  if (!movieDocumentMetadataSaved) {
+    movieDocumentMetadataSaved = {
+      title: document.title,
+      description: document.head.querySelector('meta[name="description"]')?.getAttribute('content') || '',
+      ogTitle: document.head.querySelector('meta[property="og:title"]')?.getAttribute('content') || '',
+      ogDescription: document.head.querySelector('meta[property="og:description"]')?.getAttribute('content') || ''
+    };
+  }
+  const name = String(item.name || '').trim() || 'Movie';
+  const title = `${name} — Click TV`;
+  const description = movieDescriptionFor(item);
+  document.title = title;
+  setMovieMetaContent('meta[name="description"]', 'name', 'description', description);
+  setMovieMetaContent('meta[property="og:title"]', 'property', 'og:title', title);
+  setMovieMetaContent('meta[property="og:description"]', 'property', 'og:description', description);
+
+  const canonical = movieMetaTag('link[rel="canonical"]', () => {
+    const node = document.createElement('link');
+    node.setAttribute('rel', 'canonical');
+    return node;
+  });
+  if (canonical) canonical.setAttribute('href', movieRouteHref(item));
+
+  let script = document.getElementById('movieJsonLd');
+  if (!script) {
+    script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'movieJsonLd';
+    document.head.appendChild(script);
+  }
+  script.textContent = JSON.stringify(movieJsonLd(item));
+}
+
+function restoreMovieDocumentMetadata() {
+  const saved = movieDocumentMetadataSaved;
+  document.getElementById('movieJsonLd')?.remove();
+  document.head.querySelector('link[rel="canonical"]')?.remove();
+  if (!saved) return;
+  document.title = saved.title;
+  setMovieMetaContent('meta[name="description"]', 'name', 'description', saved.description);
+  setMovieMetaContent('meta[property="og:title"]', 'property', 'og:title', saved.ogTitle);
+  setMovieMetaContent('meta[property="og:description"]', 'property', 'og:description', saved.ogDescription);
+}
+
+// --- resolving a route to something real ------------------------------------
+
+async function findMovieSummaryById(id) {
+  const index = await loadMovieBrowseIndex();
+  const wanted = String(id || '').trim();
+  if (!wanted) return null;
+  return (index || []).find((row) => String(row?.id || '').trim() === wanted) || null;
+}
+
+async function findSeriesSummaryById(id) {
+  if (!seriesModule) return null;
+  const wanted = String(id || '').trim();
+  if (!wanted) return null;
+  for (const [, slug] of MOVIE_ORDER) {
+    try {
+      const items = await seriesModule.loadCategory(slug);
+      const found = (items || []).find((row) => String(row?.id || '').trim() === wanted);
+      if (found) return found;
+    } catch (_) {
+      // One category's series data missing must not end the search.
+    }
+  }
+  return null;
+}
+
+/**
+ * Open whatever the URL asks for.
+ *
+ * Four outcomes, all of them explicit: a real movie opens its detail, a real
+ * series opens its season list, something that is no longer in the catalogue
+ * gets the unavailable state, and a parameter that matches nothing lands on
+ * Movie Home with a message rather than a blank screen.
+ */
+async function applyMovieRoute(route) {
+  if (!route) return false;
+  movieRouteSuppressed = true;
+  try {
+    await selectMovieNavItem('home');
+    if (route.kind === 'series') {
+      const series = await findSeriesSummaryById(route.id);
+      if (!series) {
+        showMovieDetailUnavailable(route.id);
+        return true;
+      }
+      if (route.episode) {
+        await seriesModule.openEpisodeContext({
+          content_kind: 'episode',
+          series_id: series.id,
+          series_name: series.name,
+          series_manifest: series.series_manifest,
+          season_number: route.season || 0,
+          episode_number: route.episode
+        });
+      } else {
+        await seriesModule.openSeries(series, { season: route.season || 0 });
+      }
+      return true;
+    }
+    const summary = await findMovieSummaryById(route.id);
+    if (!summary) {
+      // Withdrawn content never reaches the browse index (PART 18), so a id
+      // that used to work and no longer resolves lands here - which is the
+      // right answer for it, and for a typo too.
+      showMovieDetailUnavailable(route.id);
+      return true;
+    }
+    const [item] = movieSummariesToItems([summary]);
+    if (item) await openMovieDetail(item);
+    return true;
+  } catch (error) {
+    showMovieDetailUnavailable(route.id);
+    return true;
+  } finally {
+    movieRouteSuppressed = false;
+  }
+}
+
+/** Back and forward move between the detail and the list, not out of the app. */
+function setupMovieRouting() {
+  movieOpeningRoute = movieRouteFromLocation();
+  window.addEventListener('popstate', () => {
+    const route = movieRouteFromLocation();
+    if (route) {
+      void applyMovieRoute(route);
+      return;
+    }
+    if (state.movieDetailItem || !movieDetailPanel?.hidden) {
+      movieRouteSuppressed = true;
+      closeMovieDetail();
+      movieRouteSuppressed = false;
+    }
+  });
+}
+
+// ===========================================================================
+// LOADING / EMPTY / ERROR / OFFLINE (PART 20). Movie browse surfaces only.
+//
+// Three rules shape all of it. A failure is bounded - a fixed, small number
+// of attempts and then a Retry the viewer controls, never a spinner that
+// turns for ever. A failure is local - one shelf that cannot load does not
+// take the page with it. And a failure never destroys what is already on
+// screen: last-good content stays, because a stale list is worth more than
+// an empty one.
+//
+// The existing service worker already answers data requests network-first
+// with a cache fallback, so offline reads come back through it. No second
+// worker is registered here, and none of the player's own error or retry
+// behaviour is touched.
+// ===========================================================================
+
+const MOVIE_FETCH_ATTEMPTS = 2;
+const MOVIE_FETCH_RETRY_DELAY_MS = 700;
+const MOVIE_SKELETON_CARDS = 12;
+
+/**
+ * Movie-only UI copy, taken from wording already used elsewhere in this
+ * file so the failure states read like the rest of the app.
+ */
+const MOVIE_TEXT = Object.freeze({
+  movieList: 'মুভির তালিকা',
+  listFailed: 'তালিকা লোড করা যায়নি'
+});
+
+/**
+ * Fetch a movie JSON with a bounded number of attempts.
+ *
+ * Two tries, not a loop: a transient blip deserves a second chance, and a
+ * real outage deserves an answer rather than an indefinite wait. What
+ * happens after that is the caller's to show.
+ */
+async function fetchMovieJson(path, options = {}) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= MOVIE_FETCH_ATTEMPTS; attempt += 1) {
+    try {
+      return await fetchJson(path, options);
+    } catch (error) {
+      lastError = error;
+      if (attempt < MOVIE_FETCH_ATTEMPTS) {
+        await new Promise((resolve) => setTimeout(resolve, MOVIE_FETCH_RETRY_DELAY_MS));
+      }
+    }
+  }
+  throw lastError || new Error('Could not load ' + path);
+}
+
+/**
+ * A lightweight skeleton in the shape of what is coming.
+ *
+ * Deliberately plain: a dozen grey cards sharing one shimmer, not dozens of
+ * separate animations. The point is to hold the layout still so nothing
+ * jumps when the real cards arrive.
+ */
+function showMovieSkeleton(kind, count) {
+  if (!sidebarList) return;
+  cancelPendingImages(sidebarList);
+  sidebarList.classList.remove('movie-grid', 'upcoming-grid', 'series-detail-list');
+  const shell = document.createElement('div');
+  shell.className = 'movie-skeleton movie-skeleton-' + (kind || 'grid');
+  shell.setAttribute('aria-busy', 'true');
+  shell.setAttribute('aria-live', 'polite');
+  shell.setAttribute('aria-label', 'Loading');
+  const cards = kind === 'detail' ? 1 : Math.max(1, count || MOVIE_SKELETON_CARDS);
+  for (let index = 0; index < cards; index += 1) {
+    const card = document.createElement('div');
+    card.className = 'movie-skeleton-card';
+    card.innerHTML = '<span class="movie-skeleton-poster"></span>'
+      + '<span class="movie-skeleton-line"></span>'
+      + '<span class="movie-skeleton-line short"></span>';
+    shell.appendChild(card);
+  }
+  sidebarList.replaceChildren(shell);
+}
+
+function movieOfflineNow() {
+  return typeof navigator !== 'undefined' && navigator.onLine === false;
+}
+
+/**
+ * A failure the viewer can act on.
+ *
+ * Retry is a real button, reachable from the keyboard, and the message names
+ * what failed rather than saying "something went wrong". When the browser
+ * reports itself offline the message says so, because "retry" is poor advice
+ * to someone with no connection.
+ */
+function showMovieErrorState(message, retry) {
+  const offline = movieOfflineNow();
+  showListMessage(
+    offline ? 'আপনি অফলাইন - সংরক্ষিত তালিকা দেখানো যায়নি' : message,
+    offline ? 'fa-wifi' : 'fa-triangle-exclamation'
+  );
+  setSidebarCount('');
+  const host = qs('.movie-prompt-msg', sidebarList);
+  if (!host || typeof retry !== 'function') return;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'movie-retry-btn tv-focusable';
+  button.textContent = 'Retry';
+  button.addEventListener('click', () => { void retry(); });
+  host.appendChild(button);
+}
+
+/**
+ * A failure that arrived while real content was already on screen.
+ *
+ * The list is left exactly as it is - blanking it would turn a refresh
+ * failure into data loss - and the viewer is told quietly instead.
+ */
+function noteMovieRefreshFailure(label) {
+  showToast(
+    movieOfflineNow()
+      ? 'অফলাইন - আগের তালিকা দেখানো হচ্ছে'
+      : label + ' রিফ্রেশ করা যায়নি - আগের তালিকা দেখানো হচ্ছে'
+  );
+}
+
+/** An empty movie surface, with the one action that gets the viewer out of it. */
+function showMovieEmptyWithAction(message, actionLabel, action) {
+  showListMessage(message, 'fa-film');
+  setSidebarCount('0 Titles');
+  const host = qs('.movie-prompt-msg', sidebarList);
+  if (!host || !actionLabel || typeof action !== 'function') return;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'movie-clear-genre tv-focusable';
+  button.textContent = actionLabel;
+  button.addEventListener('click', () => { void action(); });
+  host.appendChild(button);
+}
+
+// ===========================================================================
+// RELATED CONTENT (PART 17). Deterministic, from real metadata, and computed
+// from the browse index the movie system already loads - so no related file
+// duplicates the catalogue and no stream URL is copied anywhere.
+//
+// The weights are named rather than buried: shared genre is the strongest
+// signal, then language/category, then a nearby release year. A real rating
+// breaks ties and nothing else. `available_link_count` is never consulted:
+// how many servers happen to carry a file says nothing about whether a
+// viewer would like it, and treating it as popularity is the specific
+// mistake this scoring exists to avoid.
+//
+// There is no personalisation here and nothing claims otherwise.
+// ===========================================================================
+
+const MOVIE_RELATED_WEIGHTS = Object.freeze({
+  sharedGenre: 3,
+  sharedGenreCap: 9,
+  sameCategory: 2,
+  sameYear: 2,
+  nearYear: 1,
+  nearYearSpan: 3,
+  ratingTieBreakMax: 0.1,
+  minimumScore: 1
+});
+const MOVIE_RELATED_LIMIT = 12;
+
+/** The weights, readable rather than buried, so a test can assert their order. */
+function movieRelatedWeights() {
+  return { ...MOVIE_RELATED_WEIGHTS, limit: MOVIE_RELATED_LIMIT };
+}
+
+function movieRelatedYear(item) {
+  const year = Number(item?.year || String(item?.release_date || '').slice(0, 4));
+  return Number.isFinite(year) && year > 1800 ? year : 0;
+}
+
+function movieRelatedType(item) {
+  const kind = String(item?.type || item?.content_kind || '').toLowerCase();
+  if (kind === 'series' || kind === 'episode' || item?._isSeries) return 'series';
+  return 'movie';
+}
+
+/** Real rating only, and only ever as a tie-break. */
+function movieRelatedRating(item) {
+  const rating = Number(item?.rating);
+  if (!Number.isFinite(rating) || rating <= 0) return 0;
+  return Math.min(10, rating) / 10;
+}
+
+/**
+ * Score one candidate against the item being viewed, or -1 when it must not
+ * be offered at all.
+ */
+function movieRelatedScore(candidate, item) {
+  if (!candidate || !item) return -1;
+  const candidateId = String(candidate.id || '').trim();
+  if (!candidateId) return -1;
+  // The current item, and anything sharing its identity.
+  if (candidateId === String(item.id || '').trim()) return -1;
+  if (candidate.tmdb_id && item.tmdb_id && String(candidate.tmdb_id) === String(item.tmdb_id)) return -1;
+  if (candidate.imdb_id && item.imdb_id && String(candidate.imdb_id) === String(item.imdb_id)) return -1;
+  // Withdrawn content is never recommended. (PART 18 sets is_active; until it
+  // runs, a published entry carries no flag and is treated as active.)
+  if (candidate.is_active === false) return -1;
+  if (candidate.metadata_only === true) return -1;
+  // A film is never offered as a series, or the other way round.
+  if (movieRelatedType(candidate) !== movieRelatedType(item)) return -1;
+
+  let score = 0;
+  const wanted = new Set(movieGenresOf(item).map((genre) => String(genre).toLowerCase()));
+  if (wanted.size) {
+    const shared = movieGenresOf(candidate)
+      .filter((genre) => wanted.has(String(genre).toLowerCase())).length;
+    score += Math.min(shared * MOVIE_RELATED_WEIGHTS.sharedGenre, MOVIE_RELATED_WEIGHTS.sharedGenreCap);
+  }
+
+  const category = String(item.category || '').toLowerCase();
+  if (category && String(candidate.category || '').toLowerCase() === category) {
+    score += MOVIE_RELATED_WEIGHTS.sameCategory;
+  }
+
+  const year = movieRelatedYear(item);
+  const candidateYear = movieRelatedYear(candidate);
+  if (year && candidateYear) {
+    const gap = Math.abs(year - candidateYear);
+    if (gap === 0) score += MOVIE_RELATED_WEIGHTS.sameYear;
+    else if (gap <= MOVIE_RELATED_WEIGHTS.nearYearSpan) score += MOVIE_RELATED_WEIGHTS.nearYear;
+  }
+
+  if (score < MOVIE_RELATED_WEIGHTS.minimumScore) return -1;
+  return score + movieRelatedRating(candidate) * MOVIE_RELATED_WEIGHTS.ratingTieBreakMax;
+}
+
+/**
+ * The related list for one item. Fewer good matches is the right answer:
+ * nothing is padded to reach a fixed count.
+ */
+async function movieRelatedFor(item) {
+  if (!item) return [];
+  const index = await loadMovieBrowseIndex();
+  if (!Array.isArray(index) || !index.length) return [];
+
+  const seen = new Set([String(item.id || '').trim()]);
+  const scored = [];
+  for (const candidate of index) {
+    const id = String(candidate?.id || '').trim();
+    if (!id || seen.has(id)) continue;
+    const score = movieRelatedScore(candidate, item);
+    if (score < 0) continue;
+    seen.add(id);
+    scored.push({ candidate, score });
+  }
+
+  scored.sort((a, b) => (
+    b.score - a.score
+    || movieRelatedYear(b.candidate) - movieRelatedYear(a.candidate)
+    || String(a.candidate.id).localeCompare(String(b.candidate.id))
+  ));
+  return scored.slice(0, MOVIE_RELATED_LIMIT).map((entry) => entry.candidate);
+}
+
+function buildMovieRelatedGrid(rows) {
+  const grid = document.createElement('div');
+  grid.className = 'movie-related-grid';
+  for (const row of rows) {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'movie-related-card tv-focusable';
+    card.dataset.relatedId = String(row.id || '');
+    const poster = String(row.poster || row.logo || '').trim();
+    const year = movieRelatedYear(row);
+    card.innerHTML =
+      (poster
+        ? `<img src="${escapeHtml(poster)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+        : '<span class="movie-related-poster placeholder"></span>') +
+      `<strong>${escapeHtml(row.name || 'Untitled')}</strong>` +
+      (year ? `<small>${escapeHtml(String(year))}</small>` : '');
+    card.addEventListener('click', () => {
+      // Opens its detail rather than playing it: a related card is a
+      // suggestion, and taking over the player on a stray tap is not.
+      const [summary] = movieSummariesToItems([row]);
+      if (summary) void openMovieDetail(summary);
+    });
+    grid.appendChild(card);
+  }
+  return grid;
+}
+
+function buildMovieRelatedSection(rows, heading = 'Related Movies') {
+  if (!rows.length) return null;
+  const section = document.createElement('section');
+  section.className = 'movie-related';
+  const title = document.createElement('h3');
+  title.className = 'movie-related-title';
+  title.textContent = heading;
+  section.append(title, buildMovieRelatedGrid(rows));
+  return section;
+}
+
+function hideMovieRelatedPanel() {
+  if (!movieRelatedPanel) return;
+  movieRelatedPanel.hidden = true;
+  movieRelatedPanel.replaceChildren();
+}
+
+/**
+ * Related beside the player, while a movie is playing.
+ *
+ * A series episode never reaches here: its own season list already occupies
+ * this area (PART 15) and related content must not displace episode
+ * navigation.
+ */
+async function renderMovieRelatedPanel() {
+  if (!movieRelatedPanel) return;
+  const item = state.currentItem;
+  const playingMovie = Boolean(item)
+    && state.view === VIEW.MOVIE
+    && !seriesModule?.isEpisodeItem?.(item)
+    && !seriesModule?.detailActive;
+  if (!playingMovie) {
+    hideMovieRelatedPanel();
+    return;
+  }
+
+  const token = `${item.id || item._uid}`;
+  state.movieRelatedToken = token;
+  const rows = await movieRelatedFor(item);
+  if (state.movieRelatedToken !== token) return;
+
+  const section = buildMovieRelatedSection(rows);
+  if (!section) {
+    hideMovieRelatedPanel();
+    return;
+  }
+  movieRelatedPanel.replaceChildren(section);
+  movieRelatedPanel.hidden = false;
+}
+
+// ===========================================================================
+// CONTINUE WATCHING (PART 16). Real playback progress only - there is no seed
+// data, no demo entry and no "recently viewed" masquerading as progress. An
+// entry appears once someone has genuinely watched CONTINUE_MIN_SECONDS, is
+// rewritten at most every CONTINUE_SAVE_INTERVAL_MS, and disappears from the
+// row once it is finished.
+//
+// It is deliberately a different thing from two stores that already exist:
+// `favorites` is the watchlist (what someone meant to watch) and `positions`
+// is keyed by the stream that played (so it forgets a movie whose server
+// changed). Neither is touched here.
+//
+// Live TV and Live Sports never reach this code: every entry point below is
+// inside the movie branch, which a live item never enters.
+// ===========================================================================
+
+/** Identity of the thing watched, not of the stream that happened to serve it. */
+function continueWatchingKey(item) {
+  if (!item) return '';
+  if (seriesModule?.isEpisodeItem?.(item)) {
+    const series = String(item.series_id || '').trim();
+    if (!series) return '';
+    return `episode:${series}:s${Number(item.season_number || 0)}:e${Number(item.episode_number || 0)}`;
+  }
+  const id = String(item.id || item.playback_id || item.url || '').trim();
+  return id ? `movie:${id}` : '';
+}
+
+function readContinueWatching() {
+  // A corrupt or hand-edited store must not take the site down with it, so
+  // anything that is not a well-formed entry is simply dropped.
+  const raw = readJsonStorage(STORAGE_KEYS.continueWatching, {});
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+  const clean = {};
+  for (const [key, entry] of Object.entries(raw)) {
+    if (!key || !entry || typeof entry !== 'object' || Array.isArray(entry)) continue;
+    const position = Number(entry.position_seconds);
+    const duration = Number(entry.duration_seconds);
+    if (!Number.isFinite(position) || position <= 0) continue;
+    clean[key] = {
+      ...entry,
+      position_seconds: position,
+      duration_seconds: Number.isFinite(duration) && duration > 0 ? duration : 0,
+      progress_percent: Number(entry.progress_percent) || 0,
+      last_played_at: Number(entry.last_played_at) || 0,
+      completed: entry.completed === true
+    };
+  }
+  return clean;
+}
+
+function writeContinueWatching() {
+  const entries = Object.entries(state.continueWatching)
+    .sort((a, b) => Number(b[1]?.last_played_at || 0) - Number(a[1]?.last_played_at || 0))
+    .slice(0, CONTINUE_HISTORY_LIMIT);
+  state.continueWatching = Object.fromEntries(entries);
+  writeJsonStorage(STORAGE_KEYS.continueWatching, state.continueWatching);
+}
+
+/**
+ * Record where the viewer got to. `force` is the best-effort path used by
+ * pause, ended and page-hide; the periodic path is throttled so a store write
+ * does not ride on every timeupdate event.
+ */
+function saveContinueWatching(force = false) {
+  const item = state.currentItem;
+  if (!item) return false;
+  const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
+  if (!isMovie) return false;
+
+  const position = Number(video.currentTime);
+  const duration = Number(video.duration);
+  if (!Number.isFinite(position) || position < CONTINUE_MIN_SECONDS) return false;
+  if (!Number.isFinite(duration) || duration <= 0) return false;
+
+  const key = continueWatchingKey(item);
+  if (!key) return false;
+
+  const now = Date.now();
+  // The throttle is per title: switching to something else records that
+  // straight away rather than waiting out the previous title's interval.
+  const sameTitle = key === state.continueSavedKey;
+  if (!force && sameTitle && now - Number(state.continueSavedAt || 0) < CONTINUE_SAVE_INTERVAL_MS) return false;
+  state.continueSavedAt = now;
+  state.continueSavedKey = key;
+
+  const percent = Math.max(0, Math.min(100, (position / duration) * 100));
+  const episode = Boolean(seriesModule?.isEpisodeItem?.(item));
+  state.continueWatching[key] = {
+    key,
+    content_type: episode ? 'episode' : 'movie',
+    item_id: String(item.id || ''),
+    name: String(item.name || ''),
+    logo: String(item.logo || ''),
+    category: String(item.category || ''),
+    series_id: episode ? String(item.series_id || '') : '',
+    series_name: episode ? String(item.series_name || '') : '',
+    season_number: episode ? Number(item.season_number || 0) : 0,
+    episode_number: episode ? Number(item.episode_number || 0) : 0,
+    episode_title: episode ? String(item.episode_title || '') : '',
+    position_seconds: position,
+    duration_seconds: duration,
+    progress_percent: percent,
+    last_played_at: now,
+    completed: percent >= CONTINUE_COMPLETE_PERCENT,
+    // Enough of the record to resume without a catalogue round-trip. This is
+    // compactItem, the same shape the watchlist already stores, so no header,
+    // cookie or credential is written here either.
+    snapshot: episode
+      ? { ...compactItem(item), content_kind: 'episode', series_id: item.series_id,
+          series_name: item.series_name, series_manifest: item.series_manifest || '',
+          season_number: Number(item.season_number || 0),
+          episode_number: Number(item.episode_number || 0),
+          episode_title: item.episode_title || '' }
+      : compactItem(item)
+  };
+  writeContinueWatching();
+  return true;
+}
+
+/** Entries still worth offering: real progress, not finished, still playable. */
+function continueWatchingEntries() {
+  return Object.values(state.continueWatching)
+    .filter((entry) => !entry.completed
+      && entry.progress_percent > 0
+      && entry.progress_percent < CONTINUE_COMPLETE_PERCENT
+      && entry.position_seconds >= CONTINUE_MIN_SECONDS)
+    .sort((a, b) => Number(b.last_played_at || 0) - Number(a.last_played_at || 0));
+}
+
+function removeContinueWatching(key) {
+  if (!key || !state.continueWatching[key]) return false;
+  delete state.continueWatching[key];
+  writeContinueWatching();
+  // The watchlist is a different store and is deliberately left alone.
+  renderContinueWatchingRow();
+  return true;
+}
+
+function continueWatchingLabel(entry) {
+  if (entry.content_type !== 'episode') return String(entry.name || '');
+  const season = String(Math.max(0, Number(entry.season_number || 0))).padStart(2, '0');
+  const episode = String(Math.max(0, Number(entry.episode_number || 0))).padStart(2, '0');
+  return `${entry.series_name || entry.name} — S${season} E${episode}`;
+}
+
+function continueWatchingRemaining(entry) {
+  const left = Number(entry.duration_seconds || 0) - Number(entry.position_seconds || 0);
+  if (!Number.isFinite(left) || left <= 0) return '';
+  const minutes = Math.round(left / 60);
+  return minutes >= 1 ? `${minutes} min left` : 'Almost finished';
+}
+
+/**
+ * Resume the exact thing that was left unfinished. The seek itself is handed
+ * to the existing loadedmetadata path: nothing about source selection, proxy
+ * fallback or retry is altered to make a resume happen.
+ */
+async function resumeContinueWatching(entry) {
+  const snapshot = entry?.snapshot;
+  if (!snapshot || !isPlayable(snapshot)) return false;
+  state.pendingResumeSeconds = Number(entry.position_seconds || 0);
+
+  if (entry.content_type === 'episode' && seriesModule?.openEpisodeContext) {
+    // Opens the series, loads that season and plays that episode - the exact
+    // episode, never the series' first one.
+    const opened = await seriesModule.openEpisodeContext(snapshot);
+    if (opened) return true;
+  }
+  const item = normalizeItem(snapshot, 0, VIEW.MOVIE);
+  item._uid = snapshot._uid || item._uid;
+  await startPlayback(item, true);
+  return true;
+}
+
+function hideContinueWatchingRow() {
+  if (!movieContinuePanel) return;
+  movieContinuePanel.hidden = true;
+  movieContinuePanel.replaceChildren();
+}
+
+function renderContinueWatchingRow() {
+  if (!movieContinuePanel) return;
+  const show = state.view === VIEW.MOVIE && state.currentCategory === 'home';
+  const entries = show ? continueWatchingEntries() : [];
+  if (!entries.length) {
+    movieContinuePanel.hidden = true;
+    movieContinuePanel.replaceChildren();
+    return;
+  }
+
+  const shell = document.createElement('div');
+  shell.className = 'movie-continue-inner';
+  shell.innerHTML = '<h3 class="movie-continue-title">Continue Watching</h3>' +
+    '<div class="movie-continue-strip"></div>';
+  const strip = qs('.movie-continue-strip', shell);
+
+  for (const entry of entries) {
+    const playable = isPlayable(entry.snapshot);
+    const card = document.createElement('div');
+    card.className = `movie-continue-card${playable ? '' : ' unavailable'}`;
+    card.dataset.continueKey = entry.key;
+    const remaining = continueWatchingRemaining(entry);
+    card.innerHTML =
+      (entry.logo ? `<img class="movie-continue-poster" src="${escapeHtml(entry.logo)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '<div class="movie-continue-poster placeholder"></div>') +
+      '<div class="movie-continue-copy">' +
+        `<strong>${escapeHtml(continueWatchingLabel(entry))}</strong>` +
+        (remaining ? `<small>${escapeHtml(remaining)}</small>` : '') +
+        `<span class="movie-continue-track"><i style="width:${entry.progress_percent.toFixed(1)}%"></i></span>` +
+      '</div>' +
+      (playable
+        ? '<button type="button" class="movie-continue-resume tv-focusable">Resume</button>'
+        : '<span class="movie-continue-gone">Unavailable</span>') +
+      '<button type="button" class="movie-continue-remove tv-focusable" aria-label="Remove from Continue Watching">&times;</button>';
+
+    if (playable) {
+      qs('.movie-continue-resume', card)?.addEventListener('click', () => { void resumeContinueWatching(entry); });
+    }
+    qs('.movie-continue-remove', card)?.addEventListener('click', () => removeContinueWatching(entry.key));
+    strip.appendChild(card);
+  }
+
+  movieContinuePanel.replaceChildren(shell);
+  movieContinuePanel.hidden = false;
+}
+
+// ===========================================================================
+// MOVIE DETAIL (PART 14). Every field shown here is one the data actually
+// carries. Nothing is inferred, nothing is filled in to make the panel look
+// complete, and a field with no value is simply absent - a row reading
+// "Runtime: -" is a worse answer than no row at all.
+//
+// Opening a detail NEVER starts playback. Play hands the resolved record to
+// the same startPlayback entry point every other card uses; there is no
+// second player and no duplicate playback path anywhere in this block.
+// ===========================================================================
+
+/** Quality comes from the item's own stream metadata, never from its title. */
+function movieDetailQuality(item) {
+  const height = Number(item.resolution_height || item.height || 0);
+  if (height >= 2160) return '4K UHD';
+  if (height >= 1080) return 'FHD 1080p';
+  if (height >= 720) return 'HD 720p';
+  if (height > 0) return height + 'p';
+  // No measured height: fall back to the label the source itself published,
+  // and to nothing at all if there is not one. A title containing "4K" is
+  // not evidence that the stream is 4K.
+  return String(item.resolution || item.label || '').trim();
+}
+
+function movieDetailRows(item) {
+  const rows = [];
+  const add = (label, value) => {
+    if (value === null || value === undefined) return;
+    const text = Array.isArray(value) ? value.filter(Boolean).join(', ') : String(value).trim();
+    if (text) rows.push([label, text]);
+  };
+
+  add('Year', item.year);
+  add('Release Date', item.release_date);
+  add('Category', item.category);
+  add('Genres', movieGenresOf(item));
+  // The rating and the source it came from always travel together: a TMDB
+  // score presented as IMDb is the one dishonesty this contract forbids.
+  if (item.rating !== undefined && item.rating !== null && String(item.rating).trim()) {
+    const source = String(item.rating_source || '').trim();
+    add('Rating', source ? item.rating + ' (' + source + ')' : String(item.rating));
+  }
+  add('Quality', movieDetailQuality(item));
+  add('Runtime', item.runtime_minutes ? item.runtime_minutes + ' min' : '');
+  add('Original Title', item.original_title);
+  add('Director', item.director);
+  add('Cast', item.cast_top);
+  add('Audio', item.audio_languages);
+  add('Subtitles', item.subtitle_languages);
+  return rows;
+}
+
+/**
+ * A title that cannot be shown - withdrawn, or a link to something that is
+ * no longer in the catalogue.
+ *
+ * It says so plainly and offers the way back. It does NOT quietly play
+ * something else: substituting another film for the one that was asked for
+ * is worse than an honest dead end, because the viewer never learns that
+ * what they wanted is gone.
+ */
+function showMovieDetailUnavailable(title) {
+  if (!movieDetailPanel) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'movie-detail-inner movie-detail-unavailable';
+  wrap.innerHTML =
+    '<button type="button" class="movie-detail-close tv-focusable" aria-label="Close details">&times;</button>' +
+    '<div class="movie-detail-gone" role="status">' +
+      '<i class="fas fa-circle-exclamation" aria-hidden="true"></i>' +
+      '<strong>' + escapeHtml(title || 'This title') + ' is not available</strong>' +
+      '<p>It may have been withdrawn, or the link may be out of date.</p>' +
+      '<button type="button" class="movie-clear-genre tv-focusable movie-detail-back">Back to Movies</button>' +
+    '</div>';
+  movieDetailPanel.replaceChildren(wrap);
+  movieDetailPanel.hidden = false;
+  if (sidebarList) sidebarList.hidden = true;
+  const leave = () => { closeMovieDetail(); void selectMovieNavItem('home'); };
+  qs('.movie-detail-close', wrap)?.addEventListener('click', closeMovieDetail);
+  // A broken poster must not sit there as a broken-image icon: the detail
+  // stays readable with an honest placeholder in its place.
+  const posterImage = qs('.movie-detail-poster', wrap);
+  posterImage?.addEventListener('error', () => {
+    const fallback = document.createElement('div');
+    fallback.className = 'movie-poster-placeholder movie-detail-poster';
+    fallback.setAttribute('role', 'img');
+    fallback.setAttribute('aria-label', (resolved.name || 'Movie') + ' poster unavailable');
+    fallback.innerHTML = '<i class="fas fa-film"></i>';
+    posterImage.replaceWith(fallback);
+  });
+  qs('.movie-detail-back', wrap)?.addEventListener('click', leave);
+  qs('.movie-detail-back', wrap)?.focus?.();
+}
+
+function closeMovieDetail() {
+  if (!movieDetailPanel) return;
+  clearMovieRoute();
+  restoreMovieDocumentMetadata();
+  movieDetailPanel.hidden = true;
+  movieDetailPanel.replaceChildren();
+  state.movieDetailItem = null;
+  if (sidebarList) sidebarList.hidden = false;
+  // Back to the grid on Movie Home - and nowhere else.
+  resumeMovieHeroRotation();
+}
+
+/**
+ * Open the detail for a card. A summary is resolved to its real published
+ * record first, so quality and playback come from the catalogue rather than
+ * from the shelf - and so Play has something real to hand over.
+ */
+async function openMovieDetail(item) {
+  if (!movieDetailPanel || !item) return;
+  const resolved = item._summaryOnly ? (await resolveMovieSummary(item)) || item : item;
+  state.movieDetailItem = resolved;
+
+  const rows = movieDetailRows(resolved);
+  const poster = String(resolved.logo || resolved.poster || '').trim();
+  const plot = String(resolved.plot || resolved.description || resolved.overview || '').trim();
+  const playable = isPlayable(resolved);
+
+  const factsHtml = rows.map(function (pair) {
+    return '<div class="movie-detail-fact"><dt>' + escapeHtml(pair[0]) +
+      '</dt><dd>' + escapeHtml(pair[1]) + '</dd></div>';
+  }).join('');
+
+  const wrap = document.createElement('div');
+  wrap.className = 'movie-detail-inner';
+  wrap.innerHTML =
+    '<button type="button" class="movie-detail-close tv-focusable" aria-label="Close details">&times;</button>' +
+    '<div class="movie-detail-head">' +
+      (poster ? '<img class="movie-detail-poster" src="' + escapeHtml(poster) + '" alt="" loading="lazy">' : '') +
+      '<div class="movie-detail-main">' +
+        '<h2 class="movie-detail-title">' + escapeHtml(resolved.name || 'Untitled') + '</h2>' +
+        '<dl class="movie-detail-facts">' + factsHtml + '</dl>' +
+        (plot ? '<p class="movie-detail-plot">' + escapeHtml(plot) + '</p>' : '') +
+        '<div class="movie-detail-actions">' +
+          '<button type="button" class="movie-detail-play tv-focusable"' + (playable ? '' : ' disabled') + '>' +
+            '<i class="fas fa-play" aria-hidden="true"></i> Play</button>' +
+          '<button type="button" class="movie-detail-watchlist tv-focusable">' +
+            '<i class="fas fa-star" aria-hidden="true"></i> Watchlist</button>' +
+          '<button type="button" class="movie-detail-share tv-focusable">' +
+            '<i class="fas fa-link" aria-hidden="true"></i> Copy Link</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  movieDetailPanel.replaceChildren(wrap);
+  movieDetailPanel.hidden = false;
+  if (sidebarList) sidebarList.hidden = true;
+  // PART 21: the URL now names what is on screen, so it can be copied,
+  // shared and reloaded. It never starts playback by itself.
+  // The detail is now the subject of the page; a carousel rotating
+  // behind it is movement nobody asked for.
+  stopMovieHeroRotation();
+  pushMovieRoute(resolved);
+  applyMovieDocumentMetadata(resolved);
+  sendMovieAnalyticsEvent('detail_open', resolved);
+
+  qs('.movie-detail-close', wrap)?.addEventListener('click', closeMovieDetail);
+  qs('.movie-detail-play', wrap)?.addEventListener('click', () => {
+    if (!isPlayable(resolved)) return;
+    closeMovieDetail();
+    // The existing entry point. Nothing about playback is reimplemented here.
+    startPlayback(resolved, true);
+  });
+  qs('.movie-detail-watchlist', wrap)?.addEventListener('click', (event) => {
+    // The existing watchlist store, not a second favourites list.
+    toggleFavorite(resolved._uid, event);
+  });
+  qs('.movie-detail-share', wrap)?.addEventListener('click', async () => {
+    const href = movieRouteHref(resolved);
+    try {
+      await navigator.clipboard.writeText(href);
+      showToast('Link copied');
+    } catch (_) {
+      // Clipboard access is not always granted. Showing the link is a
+      // worse experience than copying it, but it is not a dead end.
+      showToast(href);
+    }
+  });
+  qs('.movie-detail-close', wrap)?.focus?.();
+
+  // Related, appended once it has been worked out, so the detail itself never
+  // waits on it. Fewer quality matches is shown as fewer cards; when there is
+  // nothing worth offering, there is no section at all.
+  const related = await movieRelatedFor(resolved);
+  if (state.movieDetailItem !== resolved) return;
+  const section = buildMovieRelatedSection(related, 'You May Also Like');
+  if (section) wrap.appendChild(section);
 }
 
 function moviePagePath(pageEntry) {
@@ -1854,11 +4323,25 @@ function applyFilterAndSort() {
     }
   }
 
+  // PART 12 filter chain, movie view only: playable catalog AND category
+  // scope (already applied by what was loaded) AND genre AND query, THEN
+  // sort. Guarded by the view so Live TV and Sports filtering is untouched.
+  if (state.view === VIEW.MOVIE && state.currentGenre && state.currentGenre !== MOVIE_GENRE_ALL) {
+    items = items.filter((item) => movieHasGenre(item, state.currentGenre));
+  }
+
   if (query) {
-    items = items.filter((item) => {
-      const haystack = `${item.name || ''} ${item.category || ''} ${item.competition || ''}`.toLowerCase();
-      return haystack.includes(query);
-    });
+    if (state.view === VIEW.MOVIE) {
+      // Movies get the normalised, punctuation-tolerant matcher; every
+      // other view keeps the substring behaviour it always had.
+      const terms = movieSearchTerms(state.searchQuery);
+      items = items.filter((item) => movieMatchesQuery(item, terms));
+    } else {
+      items = items.filter((item) => {
+        const haystack = `${item.name || ''} ${item.category || ''} ${item.competition || ''}`.toLowerCase();
+        return haystack.includes(query);
+      });
+    }
   }
 
   if (state.currentSortMode === 'az') {
@@ -2038,7 +4521,7 @@ function watchTodayCardForMasonry(card) {
 
 function renderCurrentList(reset = true, options = {}) {
   if (state.seriesDetailMode || seriesModule?.detailActive) return;
-  if (state.view === VIEW.MOVIE && !state.selectedMovieCategory && !state.moviePreviewMode) {
+  if (state.view === VIEW.MOVIE && !state.selectedMovieCategory && !state.moviePreviewMode && !state.movieBrowseMode) {
     showListMessage(MOVIE_PROMPT_TEXT, 'fa-film');
     setSidebarCount('0 Movies');
     return;
@@ -4248,6 +6731,7 @@ function createMovieCard(item, visualIndex) {
     ${rating}
     ${createImageHtml(item, 'movie-poster')}
     <div class="movie-hover-play"><i class="fas fa-play"></i></div>
+    <button type="button" class="movie-card-info tv-focusable" aria-label="Details"><i class="fas fa-circle-info" aria-hidden="true"></i></button>
     <div class="movie-card-overlay">
       <div class="movie-card-title">${escapeHtml(item.name)}</div>
       <div class="movie-card-year">${escapeHtml(year)}</div>
@@ -4369,10 +6853,29 @@ sidebarList.addEventListener('click', (event) => {
   // this the shell's data-uid would catch a click on the strip's padding and
   // restart playback on the default channel - the opposite of what the viewer
   // asked for by reaching into the selector.
+  const infoButton = event.target.closest('.movie-card-info');
   if (!card || event.target.closest('.card-fav-btn, .card-remind-btn, .event-channel-strip')) return;
   const item = state.currentItems.find((entry) => entry._uid === card.dataset.uid);
   if (!item) return;
+  if (infoButton) {
+    // Details never starts playback - that is the whole point of it being a
+    // separate affordance from the card body.
+    event.preventDefault();
+    openMovieDetail(item);
+    return;
+  }
   if (seriesModule?.handleCatalogClick(item)) return;
+  if (item._summaryOnly) {
+    // A discovery/browse card carries no stream by design. Resolve the real
+    // published record, then hand it to the existing player entry point -
+    // there is no alternate playback path.
+    closeEventPreview();
+    resolveMovieSummary(item).then((resolved) => {
+      if (resolved) startPlayback(resolved, true);
+      else showToast('এই টাইটেলটি এখন আর পাওয়া যাচ্ছে না');
+    });
+    return;
+  }
   if (!isPlayable(item)) {
     // Guide 18 and 32. Level 3 detail belongs in the popup, so any event card
     // without a link opens it rather than firing a toast that says less.
@@ -4457,9 +6960,13 @@ function debounce(fn, wait) {
 }
 
 const handleSearch = debounce(async () => {
-  if (state.view === VIEW.MOVIE && !state.selectedMovieCategory) return;
-  if (state.view === VIEW.MOVIE && state.searchQuery) {
-    await preloadAllMoviePagesForSearch();
+  if (state.view === VIEW.MOVIE) {
+    // 220ms: inside the 150-300ms the plan asks for, so a phone keyboard
+    // does not re-render the grid on every keystroke.
+    if (!state.selectedMovieCategory && !state.movieBrowseMode) return;
+    if (state.searchQuery) await preloadAllMoviePagesForSearch();
+    await runMovieSearch();
+    return;
   }
   renderCurrentList(true);
 }, 220);
@@ -5711,6 +8218,10 @@ function selectWithoutPlaying(item) {
 // naming one fixture on top of another one playing. It is closed below, once,
 // for all ten of them.
 async function startPlayback(item, userInitiated = true) {
+  // Featured/Hero plan: the player is open, so the Hero timer stops.
+  // This is the only line this function gains; nothing about playback,
+  // recovery, proxying or engine selection is touched.
+  stopMovieHeroRotation();
   if (!item || !isPlayable(item)) return;
   closeEventPreview();
   seriesModule?.handlePlaybackSelection?.(item);
@@ -8939,7 +11450,13 @@ video.addEventListener('timeupdate', () => {
   }
   updatePlaybackProgress();
   if (seriesModule?.isEpisodeItem(state.currentItem)) {
-    seriesModule.updateProgress(state.currentItem, video.currentTime, video.duration);
+    // Throttled (PART 16). This used to write localStorage on every
+    // timeupdate - four stringified maps a second while an episode played.
+    const now = Date.now();
+    if (now - Number(state.seriesProgressSavedAt || 0) >= CONTINUE_SAVE_INTERVAL_MS) {
+      state.seriesProgressSavedAt = now;
+      seriesModule.updateProgress(state.currentItem, video.currentTime, video.duration);
+    }
   }
 });
 
@@ -9032,6 +11549,10 @@ function updatePlaybackProgress() {
     }
     writeJsonStorage(STORAGE_KEYS.positions, state.playbackPositions);
   }
+  // Continue Watching rides the same movie-only progress path; it has its own
+  // threshold and interval and does not add a listener to the player.
+  saveContinueWatching();
+  reportMoviePlaybackProgress();
 }
 
 function formatTime(seconds, referenceDuration = video.duration) {
@@ -10099,6 +12620,49 @@ $('resumeBadge').addEventListener('click', () => {
 
 video.addEventListener('loadedmetadata', maybeOfferResume);
 
+// --- Continue Watching integration (PART 16) -------------------------------
+// Listeners only. No source selection, proxy fallback, retry or buffering
+// decision is read or changed here; these observe playback, they do not steer
+// it. Every one is a no-op unless the current item is a movie or an episode.
+
+/**
+ * Apply a resume the viewer explicitly asked for, once the media is actually
+ * ready to be seeked. Anything earlier is thrown away by the element.
+ */
+video.addEventListener('loadedmetadata', () => {
+  const target = Number(state.pendingResumeSeconds || 0);
+  state.pendingResumeSeconds = 0;
+  if (!(target > 0)) return;
+  const duration = Number(video.duration);
+  // Never seek past the end, and never resume something that turned out to be
+  // a different length than when it was saved.
+  if (!Number.isFinite(duration) || duration <= 0 || target >= duration - 5) return;
+  try { video.currentTime = target; } catch (_) {}
+  hideResumeBadge();
+});
+
+// Related follows whatever is now playing. Listeners only - neither one
+// changes how a source is chosen. loadstart fires as soon as a source is
+// attached, so the panel is there from the moment a movie starts rather than
+// only once it has decoded.
+video.addEventListener('loadstart', () => { void renderMovieRelatedPanel(); });
+// PART 22: a play started, and later a play that lasted. Listeners only -
+// nothing here is awaited by playback and nothing retries.
+video.addEventListener('playing', () => { sendMovieAnalyticsEvent('play_start', state.currentItem); });
+video.addEventListener('ended', () => { sendMovieAnalyticsEvent('play_complete', state.currentItem); });
+video.addEventListener('loadedmetadata', () => { void renderMovieRelatedPanel(); });
+
+video.addEventListener('pause', () => { saveContinueWatching(true); });
+video.addEventListener('ended', () => { saveContinueWatching(true); renderContinueWatchingRow(); });
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') saveContinueWatching(true);
+  // Featured/Hero plan: a carousel advancing in a tab nobody is looking
+  // at burns battery and arrives on an unexpected slide.
+  if (document.visibilityState === 'hidden') pauseMovieHero();
+  else resumeMovieHero();
+});
+window.addEventListener('pagehide', () => { saveContinueWatching(true); });
+
 video.addEventListener('pause', () => {
   const isMovie = state.currentItem?._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
   $('centerPlayBtn').style.display = isMovie && video.paused ? 'flex' : 'none';
@@ -10315,6 +12879,10 @@ function setupReturnToTabRefresh() {
 }
 
 async function bootstrap() {
+  setupMovieRouting();
+  // Read once, after the safe-read helpers exist. A corrupt store yields an
+  // empty one rather than an exception on the first frame.
+  state.continueWatching = readContinueWatching();
   setupReturnToTabRefresh();
   setupFinalNavigationControls();
   setupEventSportFilter();
@@ -10345,6 +12913,14 @@ async function bootstrap() {
   try {
     await loadRuntimeAndManifest();
     void initializePlaybackTelemetry();
+    // PART 21. Last, and only when the URL actually asks for something: a
+    // normal visit is left exactly as it was, and a shared link opens the
+    // detail it names once the catalogue is there to resolve it against.
+    if (movieOpeningRoute) {
+      const route = movieOpeningRoute;
+      movieOpeningRoute = null;
+      void applyMovieRoute(route);
+    }
   } catch (error) {
     console.error(error);
     showPlayerMessage('Data manifest load হয়নি। Refresh করে আবার চেষ্টা করুন।', false);

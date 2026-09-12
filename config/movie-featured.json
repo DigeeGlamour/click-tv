@@ -1,0 +1,30 @@
+{
+  "_note": "Featured/Hero tuning. Every key is optional: an absent or misspelled key falls back to the default in scanner/movie_featured.py rather than to zero, so one weight can be changed without restating the document. slots is clamped to maximum_slots.",
+  "slots": 5,
+  "minimum_slots": 3,
+  "maximum_slots": 6,
+  "refresh_hours": 12,
+  "hero_rotate_seconds": 6.5,
+  "cooldown_hours": 48,
+  "max_same_category": 2,
+  "max_series_slots": 2,
+  "just_added_window_days": 14,
+  "latest_window_days": 365,
+  "premiere_window_days": 30,
+  "_exclude_note": "A title the lifecycle is only republishing under grace has not been confirmed playable recently, so it is not auto-promoted to the Hero. A manual pin still overrides this and is flagged in the output.",
+  "exclude_verification_status": [
+    "stale_last_good"
+  ],
+  "_curated_note": "Ids of a real editorial collection, if one ever exists. Empty means there is none - it is not a place to hand-pick the Hero, which is what state/manual-featured.json is for.",
+  "curated_ids": [],
+  "_weights_note": "Out of 100. available_link_count is NOT a weight: it contributes at most a tenth of the playback weight as a tie-break and can never reorder a real trend.",
+  "weights": {
+    "trending": 40,
+    "latest": 20,
+    "just_added": 12,
+    "premium": 10,
+    "artwork": 8,
+    "playback": 6,
+    "metadata": 4
+  }
+}

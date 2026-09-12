@@ -75,6 +75,74 @@
     return String(Math.max(0, Number(value || 0))).padStart(2, '0');
   }
 
+  // The number the source published for an episode - "04", "Episode 04", or a
+  // batch link covering "01-07". Published data carries it outright since the
+  // publisher started writing episode_start_number; anything published before
+  // that is read back out of its own key/label rather than being re-guessed.
+  const EPISODE_NUMBER_RE = /(?:^|[^\d])(\d{1,4})(?:\s*[-–]\s*(\d{1,4}))?(?!\d)/;
+
+  function publishedEpisodeRange(raw) {
+    const start = Number(raw?.episode_start_number);
+    if (Number.isFinite(start) && start > 0) {
+      const end = Number(raw?.episode_end_number);
+      return { start, end: Number.isFinite(end) && end >= start ? end : start };
+    }
+    for (const candidate of [raw?.episode_key, raw?.episode_label, raw?.episode_title, raw?.title]) {
+      const match = EPISODE_NUMBER_RE.exec(safeText(candidate));
+      if (!match) continue;
+      const first = Number(match[1]);
+      const second = match[2] ? Number(match[2]) : first;
+      return second >= first ? { start: first, end: second } : { start: second, end: first };
+    }
+    // An episode the source never numbered keeps no number. Filling one in
+    // would read exactly like a real one on the card.
+    return { start: null, end: null };
+  }
+
+  /**
+   * Numeric ascending, so E02 comes before E10 and a season published out of
+   * order still reads correctly. A batch link leads the run it covers, source
+   * order breaks ties, and unnumbered extras keep their order at the end.
+   * Ordering only - no episode is renumbered here, because episode_number is
+   * half of the stored identity and must stay exactly what was published.
+   */
+  function orderEpisodes(list) {
+    return list
+      .map((episode, index) => ({ episode, index, range: publishedEpisodeRange(episode) }))
+      .sort((a, b) => {
+        const aMissing = a.range.start === null;
+        const bMissing = b.range.start === null;
+        if (aMissing !== bMissing) return aMissing ? 1 : -1;
+        if (!aMissing && a.range.start !== b.range.start) return a.range.start - b.range.start;
+        if (!aMissing && a.range.end !== b.range.end) return b.range.end - a.range.end;
+        return a.index - b.index;
+      })
+      .map((entry) => entry.episode);
+  }
+
+  /** The badge a viewer reads: the real number, or nothing when there isn't one. */
+  function episodeBadge(episode) {
+    const start = Number(episode?.episode_start_number);
+    if (!Number.isFinite(start) || start <= 0) return '';
+    const end = Number(episode?.episode_end_number);
+    return Number.isFinite(end) && end > start
+      ? `E${twoDigits(start)}-${twoDigits(end)}`
+      : `E${twoDigits(start)}`;
+  }
+
+  /**
+   * An episode with nothing to play is shown as unavailable rather than
+   * offered and then failing. Mirrors the app's own isPlayable rule.
+   */
+  function episodePlayable(episode) {
+    if (!episode || episode.metadata_only) return false;
+    if (episode.playback_id || episode.url || episode.link || episode.stream_url) return true;
+    if (Array.isArray(episode._sources) && episode._sources.some((source) => source?.url || source?.playback_id)) return true;
+    return Array.isArray(episode.backups) && episode.backups.some((source) => (
+      typeof source === 'string' ? Boolean(source.trim()) : Boolean(source?.url || source?.link || source?.stream_url || source?.playback_id)
+    ));
+  }
+
   function categoryLabelFromSlug(slug) {
     const found = bridge?.movieOrder?.find((entry) => entry[1] === slug);
     return found?.[0] || String(slug || '').replaceAll('-', ' ');
@@ -157,6 +225,10 @@
       _isSeries: true,
       _sourceKind: bridge?.VIEW?.MOVIE || 'movie',
       _uid: `series:${slug}:${id}`,
+      // Its own category, remembered on the record. Web Series loads all seven
+      // categories in turn, so the module-level "active" slug is whichever one
+      // finished last - not this series' own.
+      _seriesCategorySlug: slug,
       seqNumber: index + 1,
       total_seasons: totalSeasons,
       total_episodes: totalEpisodes,
@@ -226,7 +298,7 @@
     const merged = [...manualMovies, ...seriesItems, ...otherMovies];
     merged.forEach((item, index) => {
       item.seqNumber = index + 1;
-      if (isSeriesItem(item)) item._uid = `series:${activeCategorySlug}:${item.id}`;
+      if (isSeriesItem(item)) item._uid = `series:${safeText(item._seriesCategorySlug, activeCategorySlug)}:${item.id}`;
       else if (!String(item._uid || '').startsWith('movie:')) item._uid = `movie:${item.id}:${index}`;
     });
     bridge.state.currentItems = merged;
@@ -385,6 +457,13 @@
     normalized.season_number = seasonNumber;
     normalized.episode_number = episodeNumber;
     normalized.episode_title = episodeTitle;
+    // The number the source actually published, kept beside the position-based
+    // episode_number so the card can show "Episode 10" instead of "E02".
+    const published = publishedEpisodeRange(raw);
+    if (published.start !== null) {
+      normalized.episode_start_number = published.start;
+      normalized.episode_end_number = published.end;
+    }
     normalized.duration_seconds = numberValue(raw.duration_seconds || raw.duration);
     normalized.release_date = safeText(raw.release_date);
     normalized.thumbnail = safeText(raw.thumbnail || raw.logo);
@@ -414,9 +493,9 @@
       }
       if (requestId !== seasonRequestId) return [];
       const rawItems = Array.isArray(payload.items) ? payload.items : Array.isArray(payload.episodes) ? payload.episodes : [];
-      activeEpisodes = rawItems
-        .filter((episode) => episode && episode.publish_allowed !== false && episode.enabled !== false)
-        .map((episode, index) => normalizeEpisode(episode, index, activeSeasonNumber));
+      activeEpisodes = orderEpisodes(
+        rawItems.filter((episode) => episode && episode.publish_allowed !== false && episode.enabled !== false)
+      ).map((episode, index) => normalizeEpisode(episode, index, activeSeasonNumber));
       renderSeriesDetail();
       if (options.playEpisode) {
         const wanted = activeEpisodes.find((episode) => numberValue(episode.episode_number) === numberValue(options.playEpisode));
@@ -505,6 +584,41 @@
     return `${seasons} Season${seasons === 1 ? '' : 's'} · ${episodes} Episodes · ${status.toLowerCase() === 'complete' ? 'Complete' : 'Ongoing'}`;
   }
 
+  /**
+   * The facts line under a series title: year, category, rating and genres,
+   * each shown only when the catalogue actually carries it. A series with no
+   * rating shows no rating - it does not show an empty one, and it never
+   * borrows a number from somewhere else. The rating always travels with the
+   * source that issued it, so a TMDB score is never presented as IMDb.
+   */
+  function seriesFacts() {
+    const source = activeSeriesData || activeSeriesItem || {};
+    const fallback = activeSeriesItem || {};
+    const facts = [];
+    const year = numberValue(source.year || fallback.year);
+    if (year > 0) facts.push(['Year', String(year)]);
+    const category = safeText(source.category || fallback.category);
+    if (category) facts.push(['Category', category]);
+    const genres = (Array.isArray(source.genres) ? source.genres : Array.isArray(fallback.genres) ? fallback.genres : [])
+      .map((genre) => safeText(genre))
+      .filter(Boolean);
+    if (genres.length) facts.push(['Genres', genres.join(', ')]);
+    const rating = safeText(source.rating ?? fallback.rating);
+    if (rating) {
+      const ratingSource = safeText(source.rating_source || fallback.rating_source);
+      facts.push(['Rating', ratingSource ? `${rating} (${ratingSource})` : rating]);
+    }
+    return facts;
+  }
+
+  function seriesFactsHtml() {
+    const facts = seriesFacts();
+    if (!facts.length) return '';
+    return `<dl class="series-detail-facts">${facts.map((pair) => (
+      `<div class="series-detail-fact"><dt>${escapeHtml(pair[0])}</dt><dd>${escapeHtml(pair[1])}</dd></div>`
+    )).join('')}</dl>`;
+  }
+
   function episodeState(episode) {
     const progress = episodeProgress(episode);
     const isCurrent = isEpisodeItem(bridge?.state?.currentItem) && bridge.state.currentItem._uid === episode._uid;
@@ -525,12 +639,21 @@
       const minutes = Math.round(seconds / 60);
       return `${minutes} min`;
     }
-    return safeText(episode.duration_label || episode.duration_text, 'Episode');
+    // No runtime published means no runtime shown. The old fallback printed
+    // the word "Episode" in the runtime slot, which reads like a measurement.
+    return safeText(episode.duration_label || episode.duration_text);
+  }
+
+  /** The sub-line under an episode title: only the facts this episode has. */
+  function episodeSubline(episode) {
+    return [episodeDurationLabel(episode), safeText(episode.resolution)]
+      .filter(Boolean)
+      .join(' · ');
   }
 
   function episodeThumbnailHtml(episode) {
     const url = safeText(episode.thumbnail || episode.logo || activeSeriesItem?.logo);
-    if (!url) return `<div class="series-episode-thumb-placeholder">E${twoDigits(episode.episode_number)}</div>`;
+    if (!url) return `<div class="series-episode-thumb-placeholder">${escapeHtml(episodeBadge(episode) || 'EP')}</div>`;
     return `<img src="${escapeHtml(url)}" alt="${escapeHtml(episode.episode_title)}" loading="lazy" decoding="async" referrerpolicy="no-referrer">`;
   }
 
@@ -556,6 +679,7 @@
         <div class="series-detail-copy">
           <h3>${escapeHtml(activeSeriesData?.name || activeSeriesItem.name)}</h3>
           <p class="series-detail-summary">${escapeHtml(seriesSummaryText())}</p>
+          ${seriesFactsHtml()}
           <p class="series-detail-description">${escapeHtml(safeText(activeSeriesData?.description || activeSeriesItem.description, 'Season নির্বাচন করে Episode দেখুন।'))}</p>
           <button type="button" class="series-continue-button tv-focusable">${escapeHtml(continueLabel)}</button>
         </div>
@@ -591,19 +715,30 @@
       episodeList.className = 'series-episode-list';
       activeEpisodes.forEach((episode) => {
         const state = episodeState(episode);
+        const playable = episodePlayable(episode);
+        const badge = episodeBadge(episode);
+        const subline = episodeSubline(episode);
         const row = document.createElement('button');
         row.type = 'button';
-        row.className = `series-episode-card tv-focusable${state.className === 'playing' ? ' active' : ''}`;
+        row.className = `series-episode-card tv-focusable${state.className === 'playing' ? ' active' : ''}${playable ? '' : ' unavailable'}`;
         row.dataset.uid = episode._uid;
         row.dataset.episodeUid = episode._uid;
+        if (!playable) row.disabled = true;
+        const trailing = !playable
+          ? '<em class="series-episode-state unavailable">UNAVAILABLE</em>'
+          : state.label
+            ? `<em class="series-episode-state ${state.className}">${escapeHtml(state.label)}</em>`
+            : '<span class="series-episode-state-placeholder" aria-hidden="true"></span>';
         row.innerHTML = `
-          <span class="series-episode-number">E${twoDigits(episode.episode_number)}</span>
+          <span class="series-episode-number${badge.includes('-') ? ' range' : ''}">${escapeHtml(badge || '·')}</span>
           <span class="series-episode-copy">
-            <strong>E${twoDigits(episode.episode_number)} · ${escapeHtml(episode.episode_title)}</strong>
-            <small>${escapeHtml(episodeDurationLabel(episode))}${episode.resolution ? ` · ${escapeHtml(episode.resolution)}` : ''}</small>
+            <strong>${escapeHtml(episode.episode_title)}</strong>
+            ${subline ? `<small>${escapeHtml(subline)}</small>` : ''}
           </span>
-          ${state.label ? `<em class="series-episode-state ${state.className}">${escapeHtml(state.label)}</em>` : '<span class="series-episode-state-placeholder" aria-hidden="true"></span>'}`;
-        row.addEventListener('click', (event) => { event.stopPropagation(); playEpisode(episode); });
+          ${trailing}`;
+        if (playable) {
+          row.addEventListener('click', (event) => { event.stopPropagation(); playEpisode(episode); });
+        }
         episodeList.appendChild(row);
       });
       region.appendChild(episodeList);
@@ -656,7 +791,10 @@
     if (!isEpisodeItem(current)) return false;
     const currentIndex = activeEpisodes.findIndex((episode) => episode._uid === current._uid);
     if (currentIndex >= 0) {
-      const next = activeEpisodes[currentIndex + direction];
+      const ahead = direction > 0
+        ? activeEpisodes.slice(currentIndex + 1)
+        : activeEpisodes.slice(0, currentIndex).reverse();
+      const next = ahead.find(episodePlayable);
       if (next) {
         playEpisode(next);
         return true;
@@ -668,7 +806,8 @@
     const adjacentSeason = seasons[seasonIndex + direction];
     if (!adjacentSeason) return true;
     await loadSeason(numberValue(adjacentSeason.number));
-    const next = direction > 0 ? activeEpisodes[0] : activeEpisodes[activeEpisodes.length - 1];
+    const candidates = direction > 0 ? activeEpisodes : activeEpisodes.slice().reverse();
+    const next = candidates.find(episodePlayable);
     if (next) playEpisode(next);
     return true;
   }
@@ -787,21 +926,32 @@
 
     items.forEach((episode) => {
       const status = episodeState(episode);
+      const playable = episodePlayable(episode);
+      const badge = episodeBadge(episode);
+      const subline = episodeSubline(episode);
       const row = document.createElement('button');
       row.type = 'button';
-      row.className = `fs-series-episode fs-drawer-item tv-focusable${status.className === 'playing' ? ' active' : ''}`;
+      row.className = `fs-series-episode fs-drawer-item tv-focusable${status.className === 'playing' ? ' active' : ''}${playable ? '' : ' unavailable'}`;
       row.dataset.uid = episode._uid;
+      if (!playable) row.disabled = true;
+      const trailing = !playable
+        ? '<em class="fs-series-state unavailable">UNAVAILABLE</em>'
+        : status.label
+          ? `<em class="fs-series-state ${status.className}">${escapeHtml(status.label)}</em>`
+          : '<span class="fs-series-state-placeholder" aria-hidden="true"></span>';
       row.innerHTML = `
-        <span class="fs-series-episode-number">E${twoDigits(episode.episode_number)}</span>
+        <span class="fs-series-episode-number${badge.includes('-') ? ' range' : ''}">${escapeHtml(badge || '·')}</span>
         <span class="fs-series-episode-copy">
-          <strong>E${twoDigits(episode.episode_number)} · ${escapeHtml(episode.episode_title)}</strong>
-          <small>${escapeHtml(episode.resolution || episodeDurationLabel(episode))}</small>
+          <strong>${escapeHtml(episode.episode_title)}</strong>
+          ${subline ? `<small>${escapeHtml(subline)}</small>` : ''}
         </span>
-        ${status.label ? `<em class="fs-series-state ${status.className}">${escapeHtml(status.label)}</em>` : '<span class="fs-series-state-placeholder" aria-hidden="true"></span>'}`;
-      row.addEventListener('click', (event) => {
-        event.stopPropagation();
-        void playEpisode(episode);
-      });
+        ${trailing}`;
+      if (playable) {
+        row.addEventListener('click', (event) => {
+          event.stopPropagation();
+          void playEpisode(episode);
+        });
+      }
       episodeRegion.appendChild(row);
     });
 
@@ -939,7 +1089,10 @@
     const current = bridge?.state?.currentItem;
     if (!isEpisodeItem(current)) return null;
     const index = activeEpisodes.findIndex((episode) => episode._uid === current._uid);
-    return index >= 0 ? activeEpisodes[index + 1] || null : null;
+    if (index < 0) return null;
+    // An episode with nothing to play is not offered as "next" - the prompt
+    // would count down to a failure.
+    return activeEpisodes.slice(index + 1).find(episodePlayable) || null;
   }
 
   function handleEnded() {
@@ -950,7 +1103,7 @@
     const prompt = document.createElement('div');
     prompt.className = 'series-next-episode-prompt';
     prompt.innerHTML = `
-      <div><small>Next Episode</small><strong>E${twoDigits(next.episode_number)} · ${escapeHtml(next.episode_title)}</strong></div>
+      <div><small>Next Episode</small><strong>${escapeHtml([episodeBadge(next), next.episode_title].filter(Boolean).join(' · '))}</strong></div>
       <button type="button" class="series-next-play">Play in <span>${nextEpisodeCountdown}</span>s</button>
       <button type="button" class="series-next-cancel">Cancel</button>`;
     prompt.querySelector('.series-next-play').addEventListener('click', () => playEpisode(next));
@@ -1025,6 +1178,13 @@
     handleEnded,
     handlePlaybackSelection,
     episodeByUid,
+    // Pure helpers, exported so the browser smoke test can drive the ordering
+    // and labelling rules directly instead of inferring them from the DOM.
+    publishedEpisodeRange,
+    orderEpisodes,
+    episodeBadge,
+    episodePlayable,
+    seriesFacts,
     get detailActive() { return detailActive; },
     get activeSeriesItem() { return activeSeriesItem; },
     get activeEpisodes() { return activeEpisodes.slice(); }

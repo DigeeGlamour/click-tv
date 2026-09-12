@@ -612,6 +612,182 @@
       box-shadow: 0 0 10px var(--phosphor-glow) !important;
     }
 
+    /* ---- Movie genre filter (PART 12) -------------------------------
+       Movies-only: the bar is [hidden] in every other view, so nothing
+       here can reach Live Sports, Live TV, Notice or the player.
+
+       One control serves all three breakpoints - rounded pills that wrap
+       on desktop and become a swipeable tray on a phone, which is what
+       keeps genre reachable once the desktop sidebar collapses. The row
+       scrolls inside itself, so the page body never gains a horizontal
+       scrollbar. */
+    .movie-genre-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      padding: 8px 2px 10px 2px;
+      border-bottom: 1px solid var(--border-glass);
+      margin-bottom: 8px;
+    }
+    .movie-genre-bar[hidden] { display: none !important; }
+    .movie-genre-chip {
+      /* pill shape, colours and active state inherited from .sub-chip */
+      min-height: 30px;
+      padding: 5px 13px;
+    }
+    .movie-clear-genre {
+      margin-top: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-glass);
+      color: #dddddd;
+      border-radius: 16px;
+      padding: 7px 16px;
+      min-height: 34px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .movie-clear-genre:hover {
+      color: #ffffff;
+      border-color: rgba(255, 42, 68, 0.45);
+    }
+
+    @media (max-width: 900px) {
+      .movie-genre-bar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+      .movie-genre-bar::-webkit-scrollbar { display: none; }
+      .movie-genre-chip {
+        flex: 0 0 auto;
+        min-height: 34px;
+        padding: 7px 14px;
+        font-size: 11px;
+      }
+    }
+
+    /* ---- Movie detail panel (PART 14) --------------------------------
+       Movies-only: [hidden] everywhere else, and it replaces the grid
+       rather than overlaying the player, so nothing about the player's
+       size, position or controls is touched. */
+    .movie-detail-panel {
+      padding: 14px 4px 18px 4px;
+    }
+    .movie-detail-panel[hidden] { display: none !important; }
+    .movie-detail-inner {
+      position: relative;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-glass);
+      border-radius: 14px;
+      padding: 16px;
+    }
+    .movie-detail-close {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      background: transparent;
+      border: none;
+      color: #cccccc;
+      font-size: 24px;
+      line-height: 1;
+      min-width: 34px;
+      min-height: 34px;
+      cursor: pointer;
+    }
+    .movie-detail-close:hover { color: #ffffff; }
+    .movie-detail-head { display: flex; gap: 16px; align-items: flex-start; }
+    .movie-detail-poster {
+      width: 132px;
+      max-width: 34vw;
+      border-radius: 10px;
+      flex: 0 0 auto;
+      object-fit: cover;
+    }
+    .movie-detail-main { flex: 1 1 auto; min-width: 0; }
+    .movie-detail-title {
+      margin: 0 30px 10px 0;
+      font-size: 17px;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+    .movie-detail-facts {
+      margin: 0 0 10px 0;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 12px;
+      font-size: 12px;
+    }
+    .movie-detail-fact { display: contents; }
+    .movie-detail-fact dt { color: #8c93a1; font-weight: 700; }
+    .movie-detail-fact dd { margin: 0; color: #e6e6e6; }
+    .movie-detail-plot {
+      margin: 0 0 12px 0;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #c9c9c9;
+    }
+    .movie-detail-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .movie-detail-play,
+    .movie-detail-watchlist {
+      border-radius: 18px;
+      padding: 9px 18px;
+      min-height: 38px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      border: 1px solid var(--border-glass);
+      background: rgba(255, 255, 255, 0.05);
+      color: #e8e8e8;
+      transition: all 0.2s;
+    }
+    .movie-detail-play {
+      background: var(--phosphor);
+      border-color: var(--phosphor);
+      color: #ffffff;
+    }
+    .movie-detail-play[disabled] { opacity: .5; cursor: not-allowed; }
+    .movie-detail-watchlist:hover { border-color: rgba(255, 42, 68, 0.45); color: #ffffff; }
+
+    /* The Details affordance on a movie card. Deliberately a separate
+       target from the card body, which still plays on click exactly as it
+       always has. */
+    .movie-card-info {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      z-index: 3;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(0, 0, 0, 0.55);
+      color: #ffffff;
+      font-size: 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.18s;
+    }
+    .movie-card:hover .movie-card-info,
+    .movie-card:focus-within .movie-card-info { opacity: 1; }
+    @media (hover: none) {
+      /* No hover on a touch screen, so the control is simply always there. */
+      .movie-card-info { opacity: 1; }
+    }
+
+    @media (max-width: 640px) {
+      .movie-detail-head { flex-direction: column; }
+      .movie-detail-poster { width: 118px; max-width: 45vw; }
+    }
+
     /* Movie Prompt Message Container (Points 4, 16, 21, 24) */
     .movie-prompt-msg {
       display: flex;
@@ -2186,3 +2362,577 @@ html.fullscreen-4k-playback .video-container-wrap:-webkit-full-screen .fs-drawer
 .movie-card,.sidebar-item,.series-episode-card{content-visibility:auto;contain-intrinsic-size:180px}
 .video-container-wrap:fullscreen .fs-drawer-toggle.hide,
 .video-container-wrap:-webkit-full-screen .fs-drawer-toggle.hide{opacity:0!important;pointer-events:none!important}
+
+/* ==========================================================================
+   Continue Watching (PART 16). Additive only - no rule above is modified.
+   Movies-only surface: it sits above the grid and is hidden entirely when
+   there is no real playback progress to show.
+   ========================================================================== */
+.movie-continue-panel {
+  padding: 8px 10px 4px;
+}
+.movie-continue-title {
+  margin: 0 0 8px;
+  color: #dbe4f2;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.movie-continue-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.movie-continue-card {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 8px;
+  border: 1px solid #24324a;
+  border-radius: 10px;
+  background: #111a26;
+}
+.movie-continue-card.unavailable { opacity: 0.55; }
+.movie-continue-poster {
+  width: 44px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #182436;
+}
+.movie-continue-poster.placeholder { display: block; }
+.movie-continue-copy { min-width: 0; }
+.movie-continue-copy strong {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+.movie-continue-copy small {
+  display: block;
+  margin-top: 3px;
+  color: #94a0b4;
+  font-size: 9px;
+}
+.movie-continue-track {
+  display: block;
+  height: 3px;
+  margin-top: 6px;
+  border-radius: 999px;
+  background: #22314a;
+  overflow: hidden;
+}
+.movie-continue-track i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #ff2a4a;
+}
+.movie-continue-resume {
+  padding: 6px 11px;
+  border: 1px solid #ff2a4a;
+  border-radius: 999px;
+  background: rgba(255, 42, 74, 0.14);
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.movie-continue-gone {
+  color: #8b97ab;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.4px;
+}
+.movie-continue-remove {
+  width: 24px;
+  height: 24px;
+  border: 1px solid #2c3c56;
+  border-radius: 50%;
+  background: transparent;
+  color: #9aa7bd;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.movie-continue-remove:hover { color: #fff; border-color: #4a5f80; }
+
+@media (max-width: 640px) {
+  .movie-continue-card { grid-template-columns: 38px minmax(0, 1fr) auto auto; gap: 7px; }
+  .movie-continue-poster { width: 38px; height: 52px; }
+  .movie-continue-copy strong { font-size: 10.5px; }
+}
+
+/* ==========================================================================
+   Related movies (PART 17). Additive only - no rule above is modified.
+   A two-column grid, matching the density of the existing card surfaces.
+   ========================================================================== */
+.movie-related-panel { padding: 6px 10px 2px; }
+.movie-related { margin-top: 10px; }
+.movie-related-title {
+  margin: 0 0 8px;
+  color: #dbe4f2;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.movie-related-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.movie-related-card {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 6px 7px;
+  border: 1px solid #24324a;
+  border-radius: 9px;
+  background: #111a26;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.movie-related-card:hover { background: #192739; border-color: #3b5373; }
+.movie-related-card img,
+.movie-related-card .movie-related-poster {
+  grid-row: span 2;
+  width: 38px;
+  height: 52px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #182436;
+}
+.movie-related-card strong {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 900;
+}
+.movie-related-card small {
+  display: block;
+  color: #94a0b4;
+  font-size: 8.5px;
+}
+
+@media (max-width: 640px) {
+  .movie-related-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* ==========================================================================
+   Loading / error states (PART 20). Additive only - no rule above is
+   modified. One shared shimmer across the whole skeleton rather than an
+   animation per card, and none at all when the viewer asked for less motion.
+   ========================================================================== */
+.movie-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+  padding: 10px;
+}
+.movie-skeleton-detail { grid-template-columns: minmax(0, 1fr); }
+.movie-skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.movie-skeleton-poster,
+.movie-skeleton-line {
+  display: block;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #16202f 25%, #1d2a3d 37%, #16202f 63%);
+  background-size: 400% 100%;
+  animation: movie-skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.movie-skeleton-poster { aspect-ratio: 2 / 3; width: 100%; }
+.movie-skeleton-line { height: 9px; }
+.movie-skeleton-line.short { width: 55%; }
+.movie-skeleton-detail .movie-skeleton-poster { aspect-ratio: 16 / 9; }
+
+@keyframes movie-skeleton-shimmer {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+
+.movie-retry-btn {
+  margin-top: 10px;
+  padding: 8px 18px;
+  border: 1px solid #ff2a4a;
+  border-radius: 999px;
+  background: rgba(255, 42, 74, 0.14);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.movie-retry-btn:hover { background: rgba(255, 42, 74, 0.24); }
+.movie-retry-btn:focus-visible { outline: 2px solid #ff5570; outline-offset: 2px; }
+
+.movie-detail-gone {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 28px 16px;
+  text-align: center;
+}
+.movie-detail-gone i { font-size: 26px; color: #ff5570; }
+.movie-detail-gone strong { color: #fff; font-size: 13px; font-weight: 900; }
+.movie-detail-gone p { margin: 0; color: #94a0b4; font-size: 10.5px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .movie-skeleton-poster,
+  .movie-skeleton-line {
+    animation: none;
+    background: #16202f;
+  }
+}
+
+/* Copy Link on the movie detail (PART 21). Additive only. */
+.movie-detail-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 1px solid #2c3c56;
+  border-radius: 999px;
+  background: transparent;
+  color: #dbe4f2;
+  font-size: 10.5px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.movie-detail-share:hover { border-color: #4a5f80; color: #fff; }
+.movie-detail-share:focus-visible { outline: 2px solid #ff5570; outline-offset: 2px; }
+
+/* Popular on Click TV (PART 22). Additive; reuses the related-card shape. */
+.movie-popular-panel { padding: 6px 10px 2px; }
+
+/* ==========================================================================
+   Featured Hero (Featured/Hero plan). Additive only - no rule above this
+   comment is modified, and nothing here touches the player, Notice, Live
+   Sports or Live TV.
+
+   This is NOT the demo's 410px full-width cinematic banner. The production
+   movie home lives in the right-hand panel beside the player, so the Hero is
+   a compact banner sized for that column: tall enough to be the top of the
+   page, short enough that the first row of cards is still on screen.
+
+   Artwork: a real 16:9 backdrop fills the frame sharp. A 2:3 poster - which
+   is all most titles have - is NOT stretched across it. It becomes a blurred
+   ambient wash behind its own sharp thumbnail, because a stretched poster as
+   a huge Hero background is the shortcut the plan names outright.
+   ========================================================================== */
+.movie-hero-panel {
+  padding: 8px 10px 2px;
+  /* The Hero sizes itself to THIS box, not to the viewport. The movie panel
+     is a column beside the player, and its width does not follow the screen:
+     at 844x390 the viewport says "tablet" while the panel is 179px wide. A
+     viewport media query cannot see that; a container query can. Browsers
+     without support simply get the default styles, which is the behaviour
+     that was there before. */
+  container-type: inline-size;
+  container-name: movieHero;
+}
+.movie-hero {
+  position: relative;
+  min-height: 164px;
+  border: 1px solid #24324a;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0c1420;
+  isolation: isolate;
+}
+.movie-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-size: cover;
+  background-position: center 22%;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+.movie-hero-bg.active { opacity: 1; }
+/* The poster fallback. Scaled past the frame so the blur has no soft edge. */
+.movie-hero-bg.poster-fallback {
+  filter: blur(18px) saturate(1.15) brightness(0.62);
+  transform: scale(1.18);
+}
+.movie-hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(9, 14, 22, 0.95) 0%, rgba(9, 14, 22, 0.82) 46%, rgba(9, 14, 22, 0.42) 100%),
+    linear-gradient(0deg, #0c1420 0%, rgba(9, 14, 22, 0.25) 52%, transparent 100%);
+}
+.movie-hero-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px 16px;
+  min-height: 164px;
+  box-sizing: border-box;
+}
+.movie-hero-art {
+  width: 62px;
+  height: 88px;
+  border-radius: 7px;
+  object-fit: cover;
+  background: #16202f;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+}
+.movie-hero-copy { min-width: 0; }
+.movie-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+  color: #ff5570;
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.movie-hero-kicker i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ff2a4a;
+}
+.movie-hero-title {
+  margin: 0 0 6px;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: -0.2px;
+  /* Two lines, everywhere. A Hero that grows with the title pushes the
+     first row of cards off the screen. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.movie-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 7px;
+  color: #9fb0c6;
+  font-size: 10px;
+  font-weight: 700;
+}
+.movie-hero-meta span.sep { color: #4c6382; }
+.movie-hero-tag {
+  padding: 2px 7px;
+  border: 1px solid #23364c;
+  border-radius: 10px;
+  background: rgba(14, 23, 35, 0.72);
+  color: #a4bad2;
+  font-size: 9px;
+  font-weight: 800;
+}
+.movie-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 7px;
+}
+.movie-hero-badge {
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid #2c3c56;
+  background: rgba(255, 42, 74, 0.12);
+  color: #ffd2da;
+  font-size: 8.5px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+}
+.movie-hero-desc {
+  margin: 0 0 10px;
+  color: #93a5bc;
+  font-size: 10.5px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+/* The footer row: actions on the left, carousel controls on the right, in
+   one flex line. They shared a stacking context before and the controls
+   covered the buttons at four widths. */
+.movie-hero-foot {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 14px 13px;
+  margin-top: -4px;
+}
+.movie-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.movie-hero-play,
+.movie-hero-details {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.movie-hero-play {
+  border: 1px solid #ff2a4a;
+  background: #ff2a4a;
+  color: #fff;
+}
+.movie-hero-play[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.movie-hero-details {
+  border: 1px solid #2c3c56;
+  background: transparent;
+  color: #dbe4f2;
+}
+.movie-hero-details:hover { border-color: #4a5f80; color: #fff; }
+.movie-hero-play:focus-visible,
+.movie-hero-details:focus-visible,
+.movie-hero-arrow:focus-visible,
+.movie-hero-dot:focus-visible {
+  outline: 2px solid #ff5570;
+  outline-offset: 2px;
+}
+/* Controls. In the footer row, pushed right, never overlapping anything. */
+.movie-hero-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+}
+.movie-hero-arrow {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(12, 18, 28, 0.72);
+  color: #f1f5f9;
+  font-size: 10px;
+  cursor: pointer;
+}
+.movie-hero-arrow:hover { background: #ff2a4a; border-color: #ff2a4a; }
+.movie-hero-dots { display: inline-flex; align-items: center; gap: 4px; }
+.movie-hero-dot {
+  width: 7px;
+  height: 3.5px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.34);
+  cursor: pointer;
+  transition: width 0.2s ease, background-color 0.2s ease;
+}
+.movie-hero-dot.active { width: 15px; background: #ff2a4a; }
+
+@media (max-width: 640px) {
+  .movie-hero { min-height: 148px; }
+  .movie-hero-inner {
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px 12px 8px;
+    min-height: 0;
+  }
+  .movie-hero-foot { padding: 0 12px 11px; }
+  .movie-hero-art { width: 52px; height: 74px; }
+  .movie-hero-title { font-size: 15px; }
+  /* The synopsis is the first thing to go on a phone: two lines of plot
+     here costs one full row of cards below. */
+  .movie-hero-desc { display: none; }
+  .movie-hero-arrow { width: 26px; height: 26px; }
+}
+
+/* Landscape phones: the viewport is short, so the Hero gives height back. */
+@media (max-height: 460px) and (orientation: landscape) {
+  .movie-hero { min-height: 112px; }
+  .movie-hero-inner { min-height: 0; }
+  .movie-hero-desc { display: none; }
+}
+
+/* A NARROW PANEL, at any viewport width. This is the case the viewport
+   cannot describe: the movie column is 179px wide on a landscape phone and
+   ~300px on a 360px portrait one, so the same Hero has to work at both. */
+@container movieHero (max-width: 330px) {
+  .movie-hero { min-height: 0; }
+  .movie-hero-inner {
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 9px;
+    padding: 11px 11px 7px;
+    min-height: 0;
+  }
+  .movie-hero-art { width: 46px; height: 65px; }
+  .movie-hero-kicker { font-size: 8px; letter-spacing: 0.7px; margin-bottom: 5px; }
+  .movie-hero-title { font-size: 14px; margin-bottom: 4px; }
+  .movie-hero-meta { font-size: 9px; gap: 4px; margin-bottom: 5px; }
+  .movie-hero-tag { font-size: 8px; padding: 1px 5px; }
+  .movie-hero-badges { gap: 4px; margin-bottom: 5px; }
+  /* Two badges is as many as a narrow column can carry without wrapping
+     into a third row. The rest are still in the data. */
+  .movie-hero-badge:nth-child(n + 3) { display: none; }
+  .movie-hero-desc { display: none; }
+  .movie-hero-foot { padding: 0 11px 10px; gap: 6px; }
+  .movie-hero-play,
+  .movie-hero-details { padding: 6px 11px; font-size: 9px; min-height: 28px; }
+  .movie-hero-arrow { width: 26px; height: 26px; }
+  .movie-hero-dot { width: 6px; }
+  .movie-hero-dot.active { width: 12px; }
+}
+
+/* Narrower still - a very compressed column. The genre tail of the meta row
+   is the first thing that stops earning its space. */
+@container movieHero (max-width: 230px) {
+  .movie-hero-inner { grid-template-columns: minmax(0, 1fr); }
+  .movie-hero-art { display: none; }
+  .movie-hero-dots { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The crossfade and the dot animation go; the rotation itself is stopped
+     in JS, and every control stays usable. */
+  .movie-hero-bg,
+  .movie-hero-dot {
+    transition-duration: 0s;
+  }
+  .movie-hero-bg.poster-fallback {
+    /* A large blur is itself a motion-adjacent effect on some devices, and
+       the darker flat wash reads the same without it. */
+    filter: brightness(0.5) saturate(1.05);
+    transform: none;
+  }
+}

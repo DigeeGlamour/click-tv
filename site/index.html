@@ -339,6 +339,35 @@
             <option value="za">Z-A Name</option>
           </select>
         </div>
+        <!-- Movie genre filter (PART 12). Movies-only: hidden for Live
+             Sports, Live TV and every other view. It sits directly above
+             the grid so one control serves desktop, tablet and mobile -
+             genre access cannot be lost when the sidebar collapses. -->
+        <div class="movie-genre-bar" id="movieGenreBar" role="group" aria-label="Filter movies by genre" hidden></div>
+        <!-- Featured Hero (Featured/Hero plan). Movies Home only, built from
+             data/movies/discovery/featured.json. Hidden entirely when nothing
+             real qualifies: an empty Hero frame says less than no Hero at
+             all, and filling one would mean inventing something. Play hands
+             off to the existing player entry point and starts nothing here. -->
+        <div class="movie-hero-panel" id="movieHeroPanel" role="region" aria-label="Featured on Click TV" hidden></div>
+        <!-- Continue Watching (PART 16). Movies only, on the Movies Home
+             view, and hidden unless real playback progress exists. It is
+             never seeded with demo entries, and Live TV / Live Sports never
+             write to it. -->
+        <div class="movie-continue-panel" id="movieContinuePanel" role="region" aria-label="Continue watching" hidden></div>
+        <!-- Related movies (PART 17). Shown beside the player while a movie
+             plays. A series episode never shows it: the season's own episode
+             list already occupies this area and must keep priority. -->
+        <div class="movie-related-panel" id="movieRelatedPanel" role="region" aria-label="Related movies" hidden></div>
+        <!-- Popular on Click TV (PART 22). Counted from playback here, and
+             labelled from the data file itself so it can never be presented
+             as international Trending. Hidden entirely when there is no real
+             data - an empty "Popular" shelf says something false. -->
+        <div class="movie-popular-panel" id="moviePopularPanel" role="region" aria-label="Popular on Click TV" hidden></div>
+        <!-- Movie detail (PART 14). Movies-only, hidden by default, and it
+             never starts playback by itself - Play hands off to the same
+             player entry point every other card uses. -->
+        <div class="movie-detail-panel" id="movieDetailPanel" role="region" aria-label="Movie details" hidden></div>
         <div class="sidebar-list" id="sidebarList" tabindex="0"></div>
       </div>
     </div>

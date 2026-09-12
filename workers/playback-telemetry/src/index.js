@@ -3,9 +3,11 @@
  *
  * Routes:
  *   GET  /health
- *   POST /report
+ *   POST /report       playback success/failure telemetry
+ *   POST /event        Movie usage events (PART 22)
  *   GET  /summary      Authorization: Bearer <EXPORT_TOKEN>
  *   GET  /export       Authorization: Bearer <EXPORT_TOKEN>
+ *   GET  /events       Authorization: Bearer <EXPORT_TOKEN>
  *
  * Required bindings:
  *   PLAYBACK_REPORTS   Cloudflare KV namespace
@@ -19,6 +21,27 @@ const MAX_BODY_BYTES = 16 * 1024;
 const REPORT_TTL_SECONDS = 7 * 24 * 60 * 60;
 const MAX_EXPORT_REPORTS = 5000;
 const ALLOWED_RESULTS = new Set(["success", "failure"]);
+// --- Movie usage events (PART 22) ------------------------------------------
+//
+// Separate from /report on purpose: that one answers "did playback work",
+// this one answers "what did people here watch". They share the KV namespace
+// and nothing else - different key prefix, different shape, different TTL.
+//
+// The stored event is an item id, an event name and a day. No address, no
+// user agent, no profile, and - whatever a client sends - no stream URL,
+// header or token survives sanitising.
+const EVENT_TTL_SECONDS = 30 * 24 * 60 * 60;
+const MAX_EXPORT_EVENTS = 20000;
+const ALLOWED_EVENTS = new Set([
+  "detail_open",
+  "play_start",
+  "play_30s",
+  "play_complete",
+  "watchlist_add",
+  "search_result_open",
+]);
+const ALLOWED_CONTENT_TYPES = new Set(["movie", "series", "episode"]);
+
 const ALLOWED_FAILURES = new Set([
   "",
   "manifest_or_segment_403",
@@ -54,6 +77,19 @@ export default {
       if (!originAllowed(request, env)) return text("Origin not allowed", 403, {});
       if (!env.PLAYBACK_REPORTS) return text("KV binding missing", 503, corsHeaders(request, env));
       return handleReport(request, env);
+    }
+
+    if (url.pathname === "/event" && request.method === "POST") {
+      if (!originAllowed(request, env)) return text("Origin not allowed", 403, {});
+      if (!env.PLAYBACK_REPORTS) return text("KV binding missing", 503, corsHeaders(request, env));
+      return handleEvent(request, env);
+    }
+
+    if (url.pathname === "/events" && request.method === "GET") {
+      if (!authorized(request, env)) return text("Unauthorized", 401, {});
+      if (!env.PLAYBACK_REPORTS) return text("KV binding missing", 503, {});
+      const events = await readEvents(env, Number(url.searchParams.get("limit") || MAX_EXPORT_EVENTS));
+      return json({ count: events.length, events }, 200, noStoreHeaders());
     }
 
     if ((url.pathname === "/summary" || url.pathname === "/export") && request.method === "GET") {
@@ -102,6 +138,96 @@ async function handleReport(request, env) {
   });
 
   return json({ ok: true }, 202, corsHeaders(request, env));
+}
+
+/**
+ * Record one Movie usage event.
+ *
+ * Deduplicated by (day, session, item, event): a client stuck in a retry
+ * loop, a reload, or a bot replaying the same beacon writes the same key
+ * over and over and the count moves by one. That is the whole bot story -
+ * no fingerprinting, no device probing, nothing that identifies a person.
+ */
+async function handleEvent(request, env) {
+  const size = Number(request.headers.get("content-length") || 0);
+  if (size > MAX_BODY_BYTES) return text("Payload too large", 413, corsHeaders(request, env));
+
+  let raw;
+  try {
+    const body = await request.text();
+    if (body.length > MAX_BODY_BYTES) return text("Payload too large", 413, corsHeaders(request, env));
+    raw = JSON.parse(body);
+  } catch (_) {
+    return text("Invalid JSON", 400, corsHeaders(request, env));
+  }
+
+  const event = sanitizeEvent(raw);
+  if (!event) return text("Invalid event", 400, corsHeaders(request, env));
+
+  const dayBucket = new Date(event.ts).toISOString().slice(0, 10);
+  const key = [
+    "event",
+    dayBucket,
+    safeKey(event.session_id || "anonymous"),
+    safeKey(event.item_id),
+    safeKey(event.event_type),
+  ].join(":");
+
+  await env.PLAYBACK_REPORTS.put(key, JSON.stringify(event), {
+    expirationTtl: EVENT_TTL_SECONDS,
+  });
+
+  return json({ ok: true }, 202, corsHeaders(request, env));
+}
+
+/** Only these fields exist afterwards. Anything else a client sent is gone. */
+function sanitizeEvent(raw) {
+  const eventType = stringValue(raw?.event_type, 32).toLowerCase();
+  if (!ALLOWED_EVENTS.has(eventType)) return null;
+  const itemId = stringValue(raw?.item_id, 160);
+  if (!itemId) return null;
+
+  let contentType = stringValue(raw?.content_type, 16).toLowerCase();
+  if (!ALLOWED_CONTENT_TYPES.has(contentType)) contentType = "movie";
+
+  const event = {
+    event_type: eventType,
+    item_id: itemId,
+    content_type: contentType,
+    session_id: stringValue(raw?.session_id, 64),
+    ts: numberValue(raw?.ts, Date.now() - 86400000, Date.now() + 300000) || Date.now(),
+  };
+
+  if (contentType !== "movie") {
+    const seriesId = stringValue(raw?.series_id, 160);
+    if (seriesId) event.series_id = seriesId;
+    const season = numberValue(raw?.season_number, 0, 200);
+    const episode = numberValue(raw?.episode_number, 0, 5000);
+    if (season > 0) event.season_number = season;
+    if (episode > 0) event.episode_number = episode;
+  }
+  return event;
+}
+
+async function readEvents(env, requestedLimit) {
+  const limit = Math.max(1, Math.min(MAX_EXPORT_EVENTS, requestedLimit || MAX_EXPORT_EVENTS));
+  const events = [];
+  let cursor;
+  do {
+    const page = await env.PLAYBACK_REPORTS.list({ prefix: "event:", cursor, limit: 1000 });
+    for (const entry of page.keys) {
+      if (events.length >= limit) break;
+      const value = await env.PLAYBACK_REPORTS.get(entry.name);
+      if (!value) continue;
+      try {
+        events.push(JSON.parse(value));
+      } catch (_) {
+        // A single unreadable entry is skipped, never fatal.
+      }
+    }
+    cursor = page.list_complete ? undefined : page.cursor;
+  } while (cursor && events.length < limit);
+  return events;
 }
 
 function sanitizeReport(raw) {

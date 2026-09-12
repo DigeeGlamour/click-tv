@@ -268,7 +268,13 @@ class OrderingTests(unittest.TestCase):
 
 
 class RetentionTests(unittest.TestCase):
-    """One scan of grace, and no more."""
+    """Three scans of grace, and no more.
+
+    It was one. PART 18 of the movie plan requires a conservative grace of
+    about three consecutive successful scans before a title stops being
+    offered, and the published grace now matches the lifecycle threshold
+    rather than disagreeing with it by two days.
+    """
 
     def setUp(self):
         self._tmp = tempfile.TemporaryDirectory()
@@ -307,9 +313,17 @@ class RetentionTests(unittest.TestCase):
             self.assertEqual(movie["verification_status"], "stale_last_good")
             self.assertIn("transient", movie["retention_note"])
 
-    def test_a_movie_missing_twice_is_dropped(self):
+    def test_a_movie_missing_twice_is_still_kept(self):
         incoming = [dict(m) for m in self.previous[:4]]
         self._retain(incoming)
+        kept, summary = self._retain([dict(m) for m in self.previous[:4]])
+        self.assertEqual(summary["retained"], 6)
+        self.assertEqual(summary["dropped_after_grace"], 0)
+        self.assertEqual(len(kept), 10)
+
+    def test_a_movie_missing_past_the_grace_is_dropped(self):
+        for _ in range(mrt.GRACE_SCANS):
+            self._retain([dict(m) for m in self.previous[:4]])
         kept, summary = self._retain([dict(m) for m in self.previous[:4]])
         self.assertEqual(summary["retained"], 0)
         self.assertEqual(summary["dropped_after_grace"], 6)

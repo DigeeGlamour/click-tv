@@ -581,10 +581,219 @@ def _annotate_recency(movies: List[Dict[str, Any]]) -> Dict[str, int]:
     try:
         from scanner import movie_recency
 
-        return movie_recency.enrich(movies)
+        summary = movie_recency.enrich(movies)
+        _reconcile_first_seen(movies)
+        return summary
     except Exception as error:  # noqa: BLE001 - ordering must not fail a scan
         print(f"   movie recency annotation skipped: {error}")
         return {}
+
+
+def _reconcile_first_seen(movies: List[Dict[str, Any]]) -> Dict[str, int]:
+    """Give a film back its real arrival date when its id changed - PART 07.
+
+    Runs straight after the stamping above, so `is_new` is recomputed from
+    the corrected date rather than the freshly minted one. Wrapped
+    separately: reconciliation failing must leave the ordinary first-seen
+    behaviour exactly as it was.
+    """
+    try:
+        from scanner import movie_identity_alias
+        from scanner import movie_recency
+
+        summary = movie_identity_alias.reconcile(movies)
+        if summary.get("corrected"):
+            for movie in movies or ():
+                if isinstance(movie, dict):
+                    movie["is_new"] = movie_recency.is_new(movie)
+            print(
+                f"   movie first-seen: {summary['corrected']} film(s) kept "
+                f"their original arrival date through an id change"
+            )
+        return summary
+    except Exception as error:  # noqa: BLE001 - must not fail a scan
+        print(f"   movie first-seen reconciliation skipped: {error}")
+        return {}
+
+
+def _annotate_metadata(
+    movies: List[Dict[str, Any]], *, allow_lookup: bool
+) -> Dict[str, int]:
+    """Add real metadata fields (tmdb_id, genres, rating, ...) - PART 02/03.
+
+    Adds only - never hides or removes an existing field. `allow_lookup`
+    gates whether new provider network calls may happen at all: only the
+    real publish path (retain_recent_dropouts=True) sets this true, so
+    tests/ad-hoc calls to paginate_movie_list only ever apply the existing
+    cache and never reach the network. Wrapped so a provider/cache bug can
+    never take a scan down.
+    """
+    try:
+        from scanner import movie_metadata_cache
+
+        lookup = None
+        availability = None
+        if allow_lookup:
+            from scanner import metadata_providers
+            from scanner import provider_health
+
+            lookup = metadata_providers.resolve_metadata
+            availability = provider_health.any_metadata_provider_available
+
+        summary = movie_metadata_cache.enrich(
+            movies, lookup=lookup, availability=availability
+        )
+
+        if allow_lookup:
+            # PART 04 metrics: cache hits, request counts, 429s and retries
+            # are the numbers that say whether the request policy is
+            # working, so they are persisted next to the provider health
+            # they belong to rather than only printed.
+            from scanner import provider_health
+
+            provider_health.record_cache_stats(summary)
+            provider_health.save()
+            line = provider_health.summary_line()
+            if line:
+                print(f"   movie metadata: {line}")
+
+        # PART 19. Surfaced, never merged: two items on one external id means
+        # one of them is matched to the wrong film, and the streams of both
+        # are worth more than a tidy metadata table.
+        for conflict in summary.get("external_id_conflicts") or ():
+            print(
+                f"   metadata conflict: {conflict['field']}="
+                f"{conflict['external_id']} claimed by "
+                f"{', '.join(conflict['items'])} - {conflict['action']}"
+            )
+        return summary
+    except Exception as error:  # noqa: BLE001 - metadata must not fail a scan
+        print(f"   movie metadata annotation skipped: {error}")
+        return {}
+
+
+def _generate_genre_indexes(paginated: Dict[str, Any]) -> Dict[str, Any]:
+    """Write data/movies/genres/*.json - PART 05. Never fails a scan."""
+    try:
+        from scanner import movie_genre_index
+
+        summary = movie_genre_index.generate(paginated)
+        indexed = summary.get("total_indexed", 0)
+        preserved = summary.get("preserved", 0)
+        print(
+            f"   movie genres: {indexed} genre entries across "
+            f"{summary.get('written', 0)} index file(s)"
+            + (f", {preserved} kept at last-good" if preserved else "")
+        )
+        return summary
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie genre index skipped: {error}")
+        return {}
+
+
+def _generate_trending(paginated: Dict[str, Any]) -> Dict[str, Any]:
+    """Write data/movies/discovery/trending.json - PART 06. Never fails a scan."""
+    try:
+        from scanner import movie_trending
+
+        summary = movie_trending.generate(paginated)
+        if summary.get("skipped"):
+            print(f"   movie trending: {summary['skipped']}")
+        else:
+            print(
+                f"   movie trending: {summary.get('matched', 0)} of "
+                f"{summary.get('external_items', 0)} external titles playable here"
+                f" ({summary.get('freshness', 'unknown')})"
+            )
+        return summary
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie trending skipped: {error}")
+        return {}
+
+
+def _generate_discovery(paginated: Dict[str, Any]) -> Dict[str, Any]:
+    """Write just-added.json, latest.json and home.json - PARTs 07-09.
+
+    Never fails a scan: a discovery row missing for a day is a far smaller
+    problem than a catalogue that did not publish.
+    """
+    summary: Dict[str, Any] = {}
+    try:
+        from scanner import movie_discovery
+
+        just_added = movie_discovery.generate_just_added(paginated)
+        summary["just_added"] = just_added
+        print(
+            f"   movie just-added: {just_added['count']} film(s) added in the "
+            f"last {just_added['window_days']} days"
+        )
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie just-added skipped: {error}")
+
+    try:
+        from scanner import movie_discovery
+
+        latest = movie_discovery.generate_latest(paginated)
+        summary["latest"] = latest
+        excluded = latest.get("excluded", {})
+        print(
+            f"   movie latest: {latest['count']} of {latest['eligible']} film(s) "
+            f"with a real release date "
+            f"({excluded.get('no_exact_release_date', 0)} without one, "
+            f"{excluded.get('future_release', 0)} not released yet)"
+        )
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie latest skipped: {error}")
+
+    try:
+        from scanner import movie_discovery
+
+        index = movie_discovery.generate_search_index(paginated)
+        summary["search_index"] = index
+        print(
+            f"   movie browse index: {index['count']} title(s)"
+            + (" (kept at last-good)" if index.get("preserved") else "")
+        )
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie browse index skipped: {error}")
+
+    try:
+        from scanner import movie_featured
+
+        # Before home, which reads featured.json for its Featured row.
+        featured = movie_featured.generate(paginated)
+        summary["featured"] = {
+            key: featured[key] for key in ("written", "preserved", "count", "reason")
+        }
+        document = featured.get("document") or {}
+        if featured.get("preserved"):
+            print(f"   movie featured: {featured['reason']}")
+        else:
+            print(
+                f"   movie featured: {document.get('count', 0)} of "
+                f"{document.get('slots', 0)} slot(s) "
+                f"({document.get('manual_count', 0)} manual, "
+                f"{document.get('auto_count', 0)} auto)"
+                + (f" - {document['shortfall_reason']}" if document.get("shortfall_reason") else "")
+            )
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie featured skipped: {error}")
+
+    try:
+        from scanner import movie_discovery
+
+        # Last, so it can draw on the trending and featured files above.
+        home = movie_discovery.generate_home(paginated)
+        summary["home"] = home
+        counts = home.get("counts", {})
+        print(
+            f"   movie home: featured {counts.get('featured', 0)} "
+            f"({home.get('featured_status')}), trending {counts.get('trending', 0)}, "
+            f"just added {counts.get('just_added', 0)}, latest {counts.get('latest', 0)}"
+        )
+    except Exception as error:  # noqa: BLE001 - discovery must not fail a scan
+        print(f"   movie home skipped: {error}")
+    return summary
 
 
 def _first_seen_day(movie: Dict[str, Any]) -> int:
@@ -3209,6 +3418,12 @@ def paginate_movie_list(
     # fields that are not there yet, which is the bug this fixes rather than a
     # detail of it.
     _annotate_recency(prepared)
+    # PART 03: scanner/metadata_providers.py now exists, so real provider
+    # lookups are allowed - but only on the true publish path
+    # (retain_recent_dropouts=True), the same gate _retain_recent_dropouts
+    # uses above. Tests/ad-hoc calls to paginate_movie_list therefore still
+    # only ever apply the existing cache and never reach the network.
+    _annotate_metadata(prepared, allow_lookup=retain_recent_dropouts)
     ordered_movies = sorted(prepared, key=_movie_sort_key)
 
     total_count = len(ordered_movies)
@@ -3485,7 +3700,7 @@ def process_movies(
     ]
     _validate_and_report_manual_integrity(integrity_manual_movies, grouped_movies)
 
-    return {
+    paginated = {
         category: paginate_movie_list(
             movies=grouped_movies[category],
             category_name=category,
@@ -3498,3 +3713,13 @@ def process_movies(
         )
         for category in VALID_MOVIE_CATEGORIES
     }
+
+    # Discovery outputs are built from the paginated catalogue above, so
+    # they can only ever reference movies this scan actually publishes.
+    # Both are wrapped: a discovery-side failure must never cost the
+    # catalogue, which is the part people actually watch.
+    _generate_genre_indexes(paginated)
+    _generate_trending(paginated)
+    _generate_discovery(paginated)
+
+    return paginated

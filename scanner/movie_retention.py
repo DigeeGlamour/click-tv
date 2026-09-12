@@ -11,13 +11,18 @@ the CATEGORY total: it refuses a publish when the count drops by more than 40%.
 Across those two scans the total went UP, 817 to 944, so the guard was silent
 while 383 individual films were lost.
 
-What this adds is per-item, and deliberately short: one scan of grace. A movie
-published last time and missing this time is re-published once, marked
-`stale_last_good` - a status this project already defines and already ranks
-below a fresh verification. If it is missing again on the next scan it goes.
-With the movie scan now running daily, that is a single day of grace, which is
-long enough to survive a CDN hiccup or a timeout and too short to leave a dead
-link in the catalogue.
+What this adds is per-item: a movie published last time and missing this time
+is re-published, marked `stale_last_good` - a status this project already
+defines and already ranks below a fresh verification - until it has been
+missing for GRACE_SCANS consecutive scans. With the movie scan running daily
+that is three days, long enough to survive a source outage across a weekend
+and short enough that a withdrawn film stops being offered within the week.
+
+PART 18 adds the lifecycle beside it: last_seen_at, is_active, inactive_since
+and consecutive_missing_scans, plus the rule that a scan which did not cover
+enough of a category is not evidence that anything is missing. first_seen_at
+is never touched here, so a film that comes back comes back as itself and is
+not announced as a new arrival.
 
 Nothing here hides, removes or reorders anything. It only re-adds.
 """
@@ -42,14 +47,51 @@ MOVIES_ROOT = os.path.join(
     "movies",
 )
 
-#: Consecutive scans a movie may be missing and still be re-published. One:
-#: enough for a transient failure, not enough to keep a withdrawn film.
-GRACE_SCANS = 1
+#: Consecutive scans a movie may be missing and still be re-published.
+#:
+#: This was 1. PART 18 of the movie plan requires a conservative grace of
+#: about three consecutive successful scans before a title stops being
+#: offered, so the published grace and the lifecycle threshold below are now
+#: the same number rather than disagreeing by two days. The measured incident
+#: this module was written for - 383 of 817 films lost between two scans -
+#: argues for the longer grace, not the shorter one.
+GRACE_SCANS = 3
 
 #: The status a re-published movie carries. Already defined in
 #: scanner/movies.py's MOVIE_STATUS_PRIORITY, ranked below every fresh
 #: verification, so a retained item sorts after a verified one by construction.
 RETAINED_STATUS = "stale_last_good"
+
+# --- lifecycle (PART 18) ---------------------------------------------------
+#
+# The grace above decides whether to keep PUBLISHING a card. The lifecycle
+# below is a separate question: is this title still part of the catalogue at
+# all? They are deliberately different numbers. One missing scan must never
+# mean either, and a scan that half-failed must not mean anything at all.
+
+#: Consecutive *successful* scans a movie may be missing before it is marked
+#: inactive. The movie scan runs daily (scan.yml, `37 4 * * *`), so three is
+#: three days - long enough to ride out a source outage over a weekend, short
+#: enough that a withdrawn film stops being offered within the week. This is
+#: the plan's "3 consecutive successful movie scans" option, chosen over the
+#: 7-day window because the cadence is already daily and counting scans is
+#: exact where counting days has to guess at missed runs.
+INACTIVE_AFTER_MISSING_SCANS = 3
+
+#: A scan that found less than this fraction of what the category published
+#: last time is treated as a failed or partial run, not as a discovery that
+#: the catalogue shrank. Nothing is counted absent on such a scan.
+#:
+#: This is the gap the existing empty-list check leaves open: a run that dies
+#: a third of the way through returns a short list, not an empty one, and
+#: every film it never reached would otherwise be recorded as missing.
+MINIMUM_SCAN_COVERAGE = 0.5
+
+#: How long an inactive record is kept before it may be garbage-collected.
+#: Long on purpose: the history, the metadata and any manual override are
+#: worth more than the bytes, and a film that returns after a season should
+#: come back as itself rather than as a new arrival.
+GC_AFTER_INACTIVE_DAYS = 90
 
 
 def _load(path: Optional[str] = None) -> Dict[str, Any]:
@@ -58,11 +100,13 @@ def _load(path: Optional[str] = None) -> Dict[str, Any]:
         with open(target, "r", encoding="utf-8") as handle:
             payload = json.load(handle)
     except (OSError, ValueError):
-        return {"version": 1, "absent": {}}
+        return {"version": 1, "absent": {}, "lifecycle": {}}
     if not isinstance(payload, dict):
-        return {"version": 1, "absent": {}}
+        return {"version": 1, "absent": {}, "lifecycle": {}}
     if not isinstance(payload.get("absent"), dict):
         payload["absent"] = {}
+    if not isinstance(payload.get("lifecycle"), dict):
+        payload["lifecycle"] = {}
     payload.setdefault("version", 1)
     return payload
 
@@ -115,6 +159,142 @@ def previously_published(
     return found
 
 
+def _lifecycle_record(store: Dict[str, Any], key: str) -> Dict[str, Any]:
+    lifecycle = store.setdefault("lifecycle", {})
+    if not isinstance(lifecycle, dict):
+        lifecycle = {}
+        store["lifecycle"] = lifecycle
+    record = lifecycle.get(key)
+    if not isinstance(record, dict):
+        record = {}
+        lifecycle[key] = record
+    return record
+
+
+def scan_looks_complete(found: int, previously: int) -> bool:
+    """Did this scan see enough of the category to be believed?
+
+    A category that published 800 films last time and returns 12 this time has
+    not lost 788 films; the run broke. Absence is only meaningful when the scan
+    that reported it actually finished.
+    """
+    if found <= 0:
+        return False
+    if previously <= 0:
+        return True
+    return (found / previously) >= MINIMUM_SCAN_COVERAGE
+
+
+def update_lifecycle(
+    present_keys,
+    previous_keys,
+    *,
+    store: Dict[str, Any],
+    stamp: str,
+    scan_complete: bool,
+    now: Optional[_dt.datetime] = None,
+) -> Dict[str, Any]:
+    """Move the lifecycle on by one scan. Returns a summary.
+
+    Seen this scan: active, `last_seen_at` refreshed, missing count back to
+    zero. `first_seen_at` is never touched here - it belongs to
+    scanner/movie_recency and a reappearance must not reset it, or a film that
+    came back after an outage would be announced as a new arrival.
+
+    Missing on a complete scan: the count goes up, and only once it passes
+    INACTIVE_AFTER_MISSING_SCANS does the record go inactive.
+
+    Missing on an incomplete scan: nothing happens at all. Not a smaller
+    increment, not a shorter grace - nothing. The scan simply did not produce
+    evidence of absence.
+    """
+    reference = now or _dt.datetime.now(_dt.timezone.utc)
+    summary = {
+        "seen": 0,
+        "reactivated": 0,
+        "missing": 0,
+        "newly_inactive": 0,
+        "absence_ignored_incomplete_scan": 0,
+    }
+
+    for key in present_keys:
+        if not key:
+            continue
+        record = _lifecycle_record(store, key)
+        was_inactive = record.get("is_active") is False
+        record["last_seen_at"] = stamp
+        record["is_active"] = True
+        record["inactive_since"] = None
+        record["consecutive_missing_scans"] = 0
+        summary["seen"] += 1
+        if was_inactive:
+            # Same stable identity, so it is the same film: it comes back as
+            # itself, keeping its history and anything manual set on it.
+            record["reactivated_at"] = stamp
+            summary["reactivated"] += 1
+
+    for key in previous_keys:
+        if not key or key in present_keys:
+            continue
+        if not scan_complete:
+            summary["absence_ignored_incomplete_scan"] += 1
+            continue
+        record = _lifecycle_record(store, key)
+        misses = int(record.get("consecutive_missing_scans") or 0) + 1
+        record["consecutive_missing_scans"] = misses
+        record["last_missing_at"] = stamp
+        summary["missing"] += 1
+        if misses >= INACTIVE_AFTER_MISSING_SCANS and record.get("is_active") is not False:
+            record["is_active"] = False
+            record["inactive_since"] = stamp
+            summary["newly_inactive"] += 1
+
+    summary["collected"] = _collect_expired(store, reference)
+    return summary
+
+
+def _collect_expired(store: Dict[str, Any], reference: _dt.datetime) -> int:
+    """Drop lifecycle records that have been inactive longer than the window.
+
+    Deliberately the last thing that happens and deliberately slow: history is
+    cheap and a film that returns should return as itself.
+    """
+    lifecycle = store.get("lifecycle")
+    if not isinstance(lifecycle, dict):
+        return 0
+    cutoff = reference - _dt.timedelta(days=GC_AFTER_INACTIVE_DAYS)
+    removed = 0
+    for key, record in list(lifecycle.items()):
+        if not isinstance(record, dict) or record.get("is_active") is not False:
+            continue
+        stamp = record.get("inactive_since")
+        if not stamp:
+            continue
+        try:
+            when = _dt.datetime.fromisoformat(str(stamp))
+        except ValueError:
+            continue
+        if when.tzinfo is None:
+            when = when.replace(tzinfo=_dt.timezone.utc)
+        if when < cutoff:
+            lifecycle.pop(key, None)
+            removed += 1
+    return removed
+
+
+def lifecycle_state(path: Optional[str] = None) -> Dict[str, Any]:
+    """The lifecycle records, read-only, for callers that need to filter."""
+    return dict(_load(path).get("lifecycle") or {})
+
+
+def is_active(key: str, path: Optional[str] = None) -> bool:
+    """Unknown means active: a title nobody has recorded is not withdrawn."""
+    record = lifecycle_state(path).get(key)
+    if not isinstance(record, dict):
+        return True
+    return record.get("is_active") is not False
+
+
 def retain(
     movies: List[Dict[str, Any]],
     category_slug: str,
@@ -155,8 +335,34 @@ def retain(
         if key in present_keys:
             absent.pop(key, None)
 
+    previous_items = previously_published(category_slug, root)
+    previous_keys = {_item_key(item) for item in previous_items}
+    previous_keys.discard("")
+
+    # Was this scan complete enough to be evidence of anything? A run that
+    # broke half way through returns a short list, and every title it never
+    # reached would otherwise be recorded as missing.
+    complete = scan_looks_complete(len(present_keys), len(previous_keys))
+    summary["scan_complete"] = complete
+    summary["lifecycle"] = update_lifecycle(
+        present_keys,
+        previous_keys,
+        store=store,
+        stamp=stamp,
+        scan_complete=complete,
+        now=reference,
+    )
+    if not complete:
+        summary["lifecycle_note"] = (
+            f"{len(present_keys)} of {len(previous_keys)} previously published "
+            "found; treated as an incomplete scan, so nothing was counted "
+            "absent in the lifecycle. The publish grace above is unchanged - "
+            "it owns whether a card is still shown, and its behaviour is "
+            "pinned by its own tests."
+        )
+
     retained: List[Dict[str, Any]] = []
-    for previous in previously_published(category_slug, root):
+    for previous in previous_items:
         key = _item_key(previous)
         if not key or key in present_keys:
             continue

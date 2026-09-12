@@ -31,6 +31,7 @@ import datetime as _dt
 import json
 import os
 import re
+import time
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 try:
@@ -266,10 +267,27 @@ def _write(store: Dict[str, Any], path: Optional[str] = None) -> bool:
         "release sorted alphabetically onto page 5."
     )
     try:
-        os.makedirs(os.path.dirname(target), exist_ok=True)
-        with open(target, "w", encoding="utf-8") as handle:
-            json.dump(store, handle, indent=2, ensure_ascii=False)
-            handle.write("\n")
+        target_dir = os.path.dirname(target) or "."
+        os.makedirs(target_dir, exist_ok=True)
+        # Atomic write (PART 02 hardening): a mid-write crash/kill must never
+        # leave this 15k+ entry ledger half-written, since every entry lost
+        # here makes an old film look newly added on the next scan.
+        temp_path = os.path.join(
+            target_dir, f".{os.path.basename(target)}.{os.getpid()}.{time.time_ns()}.tmp"
+        )
+        try:
+            with open(temp_path, "w", encoding="utf-8") as handle:
+                json.dump(store, handle, indent=2, ensure_ascii=False)
+                handle.write("\n")
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temp_path, target)
+        finally:
+            if os.path.exists(temp_path):
+                try:
+                    os.remove(temp_path)
+                except OSError:
+                    pass
     except OSError:
         return False
     return True
