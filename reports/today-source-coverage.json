@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-09-12T08:25:29.972909+00:00",
+  "generated_at": "2026-09-12T08:30:23.894841+00:00",
   "configured_source_count": 22,
   "content_states": {
     "FRESH": 13,
-    "STALE": 4,
-    "EMPTY": 5,
+    "STALE": 5,
+    "EMPTY": 4,
     "UNREACHABLE": 0
   },
   "source_count": 22,
   "unconfigured_source_count": 1,
   "totals": {
-    "raw_items": 2390,
+    "raw_items": 2403,
     "parsed_events": 2,
     "sport_allowed_events": 2,
     "deduped_events": 0,
@@ -61,7 +61,7 @@
       "source_id": "srhady-axsports-live",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 591,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -74,7 +74,7 @@
         "every record was an exact duplicate of another source's; still credited on 35 published card(s)"
       ],
       "newest_fixture_start": "2026-09-12T19:00:00+00:00",
-      "future_fixture_count": 29,
+      "future_fixture_count": 28,
       "content_state": "FRESH",
       "verified_streams": 0,
       "failed_streams": 0,
@@ -84,7 +84,7 @@
       "source_id": "srhady-tapmad-bd",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 18,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -177,7 +177,7 @@
       "source_id": "srhady-bingstream",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 859,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -190,7 +190,7 @@
         "every record was an exact duplicate of another source's; still credited on 57 published card(s)"
       ],
       "newest_fixture_start": "2026-09-12T19:00:00+00:00",
-      "future_fixture_count": 50,
+      "future_fixture_count": 49,
       "content_state": "FRESH",
       "verified_streams": 0,
       "failed_streams": 0,
@@ -339,7 +339,7 @@
       "source_id": "kajju-sonyliv-backup",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 304,
+      "http_status": 200,
       "raw_items": 15,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -362,9 +362,9 @@
     {
       "source_id": "drmlive-sonyliv-backup",
       "configured": true,
-      "fetch_status": "success_empty",
+      "fetch_status": "success",
       "http_status": 200,
-      "raw_items": 0,
+      "raw_items": 13,
       "parsed_events": 0,
       "sport_allowed_events": 0,
       "deduped_events": 0,
@@ -373,11 +373,12 @@
       "published_upcoming": 0,
       "dropped_count": 0,
       "drop_reasons": [
-        "nothing fetched from this source"
+        "fetched but no record reached the event pipeline",
+        "every fixture this source carries has already kicked off"
       ],
       "newest_fixture_start": "",
       "future_fixture_count": 0,
-      "content_state": "EMPTY",
+      "content_state": "STALE",
       "verified_streams": 0,
       "failed_streams": 0,
       "registry": "today_match"
@@ -410,7 +411,7 @@
       "source_id": "drmlive-fancode-mirror",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 40,
       "parsed_events": 1,
       "sport_allowed_events": 1,
@@ -564,7 +565,7 @@
         "parsed, but no event survived enrichment - no reliable event or channel identity, or not cricket/football"
       ],
       "newest_fixture_start": "2026-09-19T23:30:00+00:00",
-      "future_fixture_count": 600,
+      "future_fixture_count": 599,
       "content_state": "FRESH",
       "verified_streams": 0,
       "failed_streams": 0,
@@ -579,7 +580,7 @@
     }
   ],
   "invariants": {
-    "checked_at": "2026-09-12T08:25:29.975353+00:00",
+    "checked_at": "2026-09-12T08:30:23.897329+00:00",
     "passed": 10,
     "failed": 0,
     "failures": [],
@@ -602,7 +603,7 @@
       {
         "name": "a fetched configured source has a row even at raw_items 0",
         "passed": true,
-        "detail": "5 row(s) at zero, 0 without a reason"
+        "detail": "4 row(s) at zero, 0 without a reason"
       },
       {
         "name": "a candidate that is not published has an explicit drop reason",
