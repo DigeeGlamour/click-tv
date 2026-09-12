@@ -1,5 +1,6 @@
 """PART 11: verify each plan claim against what the repo actually does."""
 import datetime as dt
+import collections
 import json
 import os
 import pathlib
@@ -291,14 +292,31 @@ PROTECTED_TOKENS = (
 )
 # encoding is explicit: the diff carries Bengali UI strings, and Python's
 # default decode on Windows (cp1252) throws on them and leaves stdout None.
-removed = subprocess.run(
+diff_lines = subprocess.run(
     ["git", "diff", "-U0", "%s..HEAD" % base_sha, "--"] + sorted(MOVIE_SURFACE_FILES),
     capture_output=True, encoding="utf-8", errors="replace").stdout.splitlines()
+
+# A line that is ALSO added somewhere in this diff moved or was re-indented.
+# It did not go away and the behaviour it carries is still there. Inserting
+# a movie-only line above an existing block is enough to make git re-pair
+# the hunks and report that block as removed-and-added, which is how this
+# row first went red on a change that deleted nothing at all.
+added = collections.Counter(
+    line[1:].strip() for line in diff_lines
+    if line.startswith("+") and not line.startswith("+++")
+)
 offending = []
-for line in removed:
+removed_count = 0
+for line in diff_lines:
     if not line.startswith("-") or line.startswith("---"):
         continue
     body = line[1:].strip()
+    removed_count += 1
+    if added.get(body):
+        # Matched one-for-one, so two genuinely deleted copies of the same
+        # line cannot both be excused by a single added one.
+        added[body] -= 1
+        continue
     # A removed comment line is prose, not behaviour.
     if body.startswith(("//", "/*", "*", "<!--")):
         continue
@@ -307,8 +325,7 @@ for line in removed:
         offending.append(body[:90])
 check("No player / live / notice LINE removed from the shared frontend files",
       not offending,
-      offending[:3] or "%d removed lines, none protected" % sum(
-          1 for line in removed if line.startswith("-") and not line.startswith("---")))
+      offending[:3] or "%d removed line(s), none protected" % removed_count)
 
 print("%-6s %-68s %s" % ("RESULT", "CHECK", "EVIDENCE"))
 for status, name, evidence in results:
