@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T14:13:54.351015+00:00",
+  "generated_at": "2026-09-17T14:49:44.914553+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,13 +12,15 @@
       "requests_ok": 6,
       "fixtures": 721,
       "unknown_statuses": [
+        "10|HT",
         "132|Stumps - day 1",
         "182|Tea - day 3",
-        "2|13'",
-        "2|14'",
-        "2|43'",
-        "3|54'",
-        "3|55'"
+        "213|Rain delay",
+        "2|45+4'",
+        "2|6'",
+        "3|53'",
+        "3|90'",
+        "3|90+1'"
       ],
       "attempts": [
         {
@@ -66,7 +68,7 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 390,
+      "fixtures": 389,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -85,7 +87,7 @@
           "sport": "cricket",
           "date": "2026-09-18",
           "result": "ok",
-          "fixtures": 29
+          "fixtures": 28
         },
         {
           "sport": "football",
@@ -110,53 +112,54 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 13,
-    "upcoming": 64,
-    "fixtures": 77,
+    "today_match": 12,
+    "upcoming": 69,
+    "fixtures": 81,
     "verdicts": {
-      "CONFLICT": 6,
+      "CONFLICT": 5,
       "PARTIAL_AUTHORITY": 1,
-      "VERIFIED": 37,
+      "VERIFIED": 42,
       "UNVERIFIED": 33
     },
-    "verified": 37,
+    "verified": 42,
     "partial_authority": 1,
     "unverified": 33,
-    "conflict": 6,
+    "conflict": 5,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 29,
-        "unmatched": 48
+        "matched": 28,
+        "unmatched": 53
       },
       "livescore": {
-        "matched": 37,
+        "matched": 41,
         "unmatched": 40
       }
     },
-    "matched_by_two_independent_authorities": 22,
+    "matched_by_two_independent_authorities": 21,
     "authority_agreements": 20,
-    "authority_disagreements": 2,
+    "authority_disagreements": 1,
     "card_status_conflicts": 4,
     "conflict_reason_counts": {
-      "authorities disagree": 2,
-      "card says LIVE, authority says FINISHED": 3,
-      "card says LIVE, authority says UPCOMING": 1
+      "authorities disagree": 1,
+      "card says LIVE, authority says FINISHED": 4
     },
     "identity_near_misses": 26,
     "independent_authority_count_distribution": {
       "0": 33,
-      "1": 22,
-      "2": 22
+      "1": 27,
+      "2": 21
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "132|Stumps - day 1",
         "182|Tea - day 3",
-        "2|13'",
-        "2|14'",
-        "2|43'",
-        "3|54'",
-        "3|55'"
+        "213|Rain delay",
+        "2|45+4'",
+        "2|6'",
+        "3|53'",
+        "3|90'",
+        "3|90+1'"
       ],
       "espn-header": []
     }
@@ -499,7 +502,7 @@
           "competition_id": "1176",
           "kickoff": "2026-09-17T13:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "55'",
+          "status_raw": "90+1'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -527,7 +530,7 @@
       "competition": "AFC Champions League Two",
       "kickoff": "2026-09-17T12:15:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -555,18 +558,18 @@
           "competition_id": "2466",
           "kickoff": "2026-09-17T12:15:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "13'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "13'",
-          "espn_status_description": "First Half",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:2466~e:401912805~c:401912805"
         },
@@ -602,10 +605,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+        "card says LIVE, authority says FINISHED"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -644,18 +647,18 @@
           "competition_id": "2466",
           "kickoff": "2026-09-17T12:15:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "13'",
-          "status_code": "STATUS_IN_PROGRESS",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "13'",
-          "espn_status_description": "In Progress",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:2466~e:401912804~c:401912804"
         },
@@ -678,10 +681,12 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -764,11 +769,9 @@
       "lifecycle_state": "LIVE",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
       "provider_identity": "",
       "source_ids": [
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -827,7 +830,7 @@
       "card_id": "green-mountain-championship-round-1",
       "name": "Green Mountain Championship, Round 1",
       "competition": "",
-      "kickoff": "2026-09-17T14:13:54+00:00",
+      "kickoff": "2026-09-17T14:49:44+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -869,11 +872,9 @@
       "lifecycle_state": "STARTING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
       "provider_identity": "",
       "source_ids": [
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -899,48 +900,11 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:tekstilshchik-vs-rotor-volgograd|first league|2026-09-17",
-      "card_id": "tekstilshchik-vs-rotor-volgograd",
-      "name": "Tekstilshchik vs Rotor Volgograd",
-      "competition": "First League",
-      "kickoff": "2026-09-17T14:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:u23-world-cup",
       "card_id": "u23-world-cup-day-3-session-4",
       "name": "U23 World Cup Day 3, Session 5",
       "competition": "",
-      "kickoff": "2026-09-17T14:13:54+00:00",
+      "kickoff": "2026-09-17T14:49:44+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -998,26 +962,26 @@
           "verified": true,
           "event_id": "1547901",
           "upstream_family": "ESPN",
-          "name": "Rotterdam Dockers vs Dublin Guardians",
-          "home": "Rotterdam Dockers",
-          "away": "Dublin Guardians",
-          "home_team_id": "1547865",
-          "away_team_id": "1547868",
+          "name": "Dublin Guardians vs Rotterdam Dockers",
+          "home": "Dublin Guardians",
+          "away": "Rotterdam Dockers",
+          "home_team_id": "1547868",
+          "away_team_id": "1547865",
           "competition": "European T20 Premier League",
           "competition_id": "24698",
           "kickoff": "2026-09-17T13:15:00+00:00",
           "kickoff_delta_minutes": -15.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
+          "status_raw": "Match delayed by rain",
+          "status_code": "Match delayed by rain",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "30th Match",
           "format": "T20",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Match delayed by rain",
           "espn_completed": null,
           "espn_end_date_raw": "2026-09-18T23:59:00Z",
           "authority_uid": "s:200~e:1547901~c:1547901"
@@ -1037,9 +1001,9 @@
           "competition_id": "25975",
           "kickoff": "2026-09-17T13:15:00+00:00",
           "kickoff_delta_minutes": -15.0,
-          "status_raw": "NS",
-          "status_code": "219",
-          "status": "UPCOMING",
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "Match 30",
           "format": "Domestic Twenty20",
@@ -1053,12 +1017,47 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:tekstilshchik-vs-rotor-volgograd|first league|2026-09-17",
+      "card_id": "tekstilshchik-vs-rotor-volgograd",
+      "name": "Tekstilshchik vs Rotor Volgograd",
+      "competition": "First League",
+      "kickoff": "2026-09-17T14:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -1068,7 +1067,7 @@
       "competition": "AFC Champions League Two",
       "kickoff": "2026-09-17T10:00:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1134,95 +1133,6 @@
         "card says LIVE, authority says FINISHED"
       ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:lion-city-sailors-vs-bg-pathum-united|afc champions league two|2026-09-17",
-      "card_id": "lion-city-sailors-vs-bg-pathum-united",
-      "name": "Lion City Sailors Vs BG Pathum United",
-      "competition": "AFC Champions League Two",
-      "kickoff": "2026-09-17T10:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401912809",
-          "upstream_family": "ESPN",
-          "name": "Lion City Sailors FC vs BG Pathum United",
-          "home": "Lion City Sailors FC",
-          "away": "BG Pathum United",
-          "home_team_id": "8040",
-          "away_team_id": "8519",
-          "competition": "AFC Champions League Two",
-          "competition_id": "2466",
-          "kickoff": "2026-09-17T10:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:2466~e:401912809~c:401912809"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1873895",
-          "upstream_family": "LiveScore",
-          "name": "Lion City Sailors FC vs BG Pathum United",
-          "home": "Lion City Sailors FC",
-          "away": "BG Pathum United",
-          "home_team_id": "10583",
-          "away_team_id": "10258",
-          "competition": "AFC Champions League Two: Group F",
-          "competition_id": "26195",
-          "kickoff": "2026-09-17T10:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
       "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
@@ -1522,7 +1432,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1627,8 +1539,8 @@
       "name": "Akron Togliatti Vs Akhmat Grozny",
       "competition": "Russian Premier League",
       "kickoff": "2026-09-17T15:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1684,12 +1596,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "srhady-crichd-footy-live",
         "sportlive-fancode-backup",
+        "srhady-crichd-footy-live",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "CricHD",
@@ -1899,7 +1811,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2260,12 +2174,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "srhady-crichd-footy-live",
         "sportlive-fancode-backup",
+        "srhady-crichd-footy-live",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "CricHD",
@@ -2305,10 +2219,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2508,10 +2422,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2970,8 +2884,8 @@
       "name": "FC Rostov vs Dynamo",
       "competition": "Premier League",
       "kickoff": "2026-09-17T15:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
@@ -3119,20 +3033,22 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-tapmad-bd",
-        "sm-fancode",
         "sportlive-fancode-backup",
+        "sm-fancode",
+        "srhady-willow-event",
+        "srhady-tapmad-bd",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
         "SM-Aggregate",
-        "Tapmad"
+        "Tapmad",
+        "Willow"
       ],
-      "independent_witness_count": 3,
+      "independent_witness_count": 4,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -3491,6 +3407,66 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:kuwait-u23-vs-uzbekistan-u23|asian games|2026-09-18",
+      "card_id": "kuwait-u23-vs-uzbekistan-u23",
+      "name": "Kuwait U23 vs Uzbekistan U23",
+      "competition": "Asian Games",
+      "kickoff": "2026-09-18T10:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1874219",
+          "upstream_family": "LiveScore",
+          "name": "Kuwait U23 vs Uzbekistan U23",
+          "home": "Kuwait U23",
+          "away": "Uzbekistan U23",
+          "home_team_id": "12428",
+          "away_team_id": "3474",
+          "competition": "Asian Games: Group C",
+          "competition_id": "26202",
+          "kickoff": "2026-09-18T10:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "2",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:ld-alajuelense-vs-cd-marathon|concacaf central american cup|2026-09-18",
       "card_id": "ld-alajuelense-vs-cd-marathon",
       "name": "LD Alajuelense Vs CD Marathon",
@@ -3706,6 +3682,65 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:lumezzane-vs-novara|serie c girone a|2026-09-17",
+      "card_id": "lumezzane-vs-novara",
+      "name": "Lumezzane vs Novara",
+      "competition": "Serie C - Girone A",
+      "kickoff": "2026-09-17T16:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1855264",
+          "upstream_family": "LiveScore",
+          "name": "Lumezzane vs Novara",
+          "home": "Lumezzane",
+          "away": "Novara",
+          "home_team_id": "231489",
+          "away_team_id": "4223",
+          "competition": "Serie C: Group A",
+          "competition_id": "198",
+          "kickoff": "2026-09-17T16:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "5",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:málaga-cf-vs-villarreal|laliga|2026-09-17",
       "card_id": "málaga-cf-vs-villarreal",
       "name": "Malaga vs Villarreal",
@@ -3808,10 +3843,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4216,9 +4251,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "srhady-crichd-footy-live",
         "srhady-axsports-live",
-        "srhady-bingstream",
-        "srhady-crichd-footy-live"
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4292,6 +4327,66 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:philippines-u23-vs-vietnam-u23|asian games|2026-09-18",
+      "card_id": "philippines-u23-vs-vietnam-u23",
+      "name": "Philippines U23 vs Vietnam U23",
+      "competition": "Asian Games",
+      "kickoff": "2026-09-18T06:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1874218",
+          "upstream_family": "LiveScore",
+          "name": "Philippines U23 vs Vietnam U23",
+          "home": "Philippines U23",
+          "away": "Vietnam U23",
+          "home_team_id": "7862",
+          "away_team_id": "391",
+          "competition": "Asian Games: Group C",
+          "competition_id": "26202",
+          "kickoff": "2026-09-18T06:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "2",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:plzen-vs-union-st-gilloise|uefa europa league|2026-09-17",
       "card_id": "plzen-vs-union-st-gilloise",
       "name": "Plzen vs Union St Gilloise",
@@ -4362,10 +4457,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4404,7 +4499,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4604,6 +4701,125 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:renate-vs-dolomiti-bellunesi|serie c girone a|2026-09-17",
+      "card_id": "renate-vs-dolomiti-bellunesi",
+      "name": "Renate vs Dolomiti Bellunesi",
+      "competition": "Serie C - Girone A",
+      "kickoff": "2026-09-17T19:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1855262",
+          "upstream_family": "LiveScore",
+          "name": "Renate vs Dolomiti Bellunesi",
+          "home": "Renate",
+          "away": "Dolomiti Bellunesi",
+          "home_team_id": "4191",
+          "away_team_id": "189263",
+          "competition": "Serie C: Group A",
+          "competition_id": "198",
+          "kickoff": "2026-09-17T19:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "5",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:saudi-arabia-u23-vs-qatar-u23|asian games|2026-09-18",
+      "card_id": "saudi-arabia-u23-vs-qatar-u23",
+      "name": "Saudi Arabia U23 vs Qatar U23",
+      "competition": "Asian Games",
+      "kickoff": "2026-09-18T10:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1874225",
+          "upstream_family": "LiveScore",
+          "name": "Saudi Arabia U23 vs Qatar U23",
+          "home": "Saudi Arabia U23",
+          "away": "Qatar U23",
+          "home_team_id": "3538",
+          "away_team_id": "3552",
+          "competition": "Asian Games: Group D",
+          "competition_id": "26203",
+          "kickoff": "2026-09-18T10:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "2",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:sharjah-warriorz-development-vs-gulf-giants-development|dp world ilt20 development tournament 2026|2026-09-19",
       "card_id": "sharjah-warriorz-development-vs-gulf-giants-development",
       "name": "Sharjah Warriorz Development vs Gulf Giants Development",
@@ -4618,10 +4834,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4697,10 +4913,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4959,10 +5175,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5051,7 +5267,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5252,7 +5470,7 @@
       "name": "Akron vs Akhmat",
       "competition": "Premier League",
       "kickoff": "2026-09-17T15:30:00+00:00",
-      "schedule_status": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
       "lifecycle_state": "",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
@@ -5375,7 +5593,7 @@
       "name": "FC Rostov Vs Dynamo Moscow",
       "competition": "Russian Premier League",
       "kickoff": "2026-09-17T15:30:00+00:00",
-      "schedule_status": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
       "lifecycle_state": "",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
