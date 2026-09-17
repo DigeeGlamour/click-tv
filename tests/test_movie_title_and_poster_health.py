@@ -28,6 +28,7 @@ The rules the tests below hold to:
   * a title the rules cannot improve comes back exactly as it arrived.
 """
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -607,6 +608,22 @@ class TheValidatorsOwnRuleTests(unittest.TestCase):
             return found
 
         before = {c: duplicates(rows) for c, rows in grouped.items()}
+
+        # No reachability probing. Without this the pass opens a socket per
+        # published poster - 1,667 of them - and this one test took longer
+        # than the whole rest of the suite on a network where those hosts do
+        # not answer. The probing has tests of its own; what is under test
+        # here is the identity the pass produces, which does not depend on it.
+        previous_probe = os.environ.get("CLICKTV_POSTER_VALIDATION")
+        os.environ["CLICKTV_POSTER_VALIDATION"] = "0"
+
+        def _restore_probe():
+            if previous_probe is None:
+                os.environ.pop("CLICKTV_POSTER_VALIDATION", None)
+            else:
+                os.environ["CLICKTV_POSTER_VALIDATION"] = previous_probe
+
+        self.addCleanup(_restore_probe)
 
         original_tmdb = M._tmdb_poster_lookup
         original_supplementary = M.supplementary_poster_lookup

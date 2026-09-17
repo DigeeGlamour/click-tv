@@ -200,8 +200,9 @@ async function newPage(payload) {
     '[real] the label is the one the plan fixes', hero.kicker);
   check(!/trending/i.test(hero.kicker),
     '[real] the Hero never calls itself Trending', hero.kicker);
-  check(hero.buttons.some((t) => /Play/i.test(t)), '[real] a Play button is present',
-    JSON.stringify(hero.buttons));
+  // The demo labels this button "Watch Now"; it used to read "Play".
+  check(hero.buttons.some((t) => /Play|Watch Now|View Series/i.test(t)),
+    '[real] the primary play action is present', JSON.stringify(hero.buttons));
   check(hero.buttons.some((t) => /Details/i.test(t)), '[real] a Details button is present',
     JSON.stringify(hero.buttons));
   check(hero.right <= hero.docWidth + 2, '[real] the Hero stays inside the viewport',
@@ -436,7 +437,22 @@ async function newPage(payload) {
     '[facts] a title with no rating shows no rating element', JSON.stringify(first.tags));
   check(!first.badges.length, '[facts] a title in no special state shows no badge',
     JSON.stringify(first.badges));
-  check(!first.desc, '[facts] a title with no real overview shows no synopsis', first.desc);
+  // The rule this used to state was "no overview, no synopsis line". The
+  // demo - the design source - always prints a line there, and builds it from
+  // the category and the year when the record has no overview. Those are two
+  // fields already printed on the row above it, so the line invents nothing
+  // about the film; what it must never do is read as a plot the catalogue
+  // does not have. So the rule is now the narrower one that actually protects
+  // the viewer: whatever stands in for a missing overview may contain only
+  // the record's own category and year, and nothing that looks like a
+  // sentence about the story.
+  const overviewIsInvented = Boolean(first.desc)
+    && !/^[^—]*(ক্যাটাগরির|কনটেন্ট)[^—]*—\s*Click TV/.test(first.desc);
+  check(!overviewIsInvented,
+    '[facts] a title with no real overview gets no invented plot', first.desc);
+  check(!first.desc || first.desc.includes('Click TV'),
+    '[facts] and the stand-in line is the site line, not a description of the film',
+    first.desc);
   check(first.posterFallback,
     '[facts] a poster-only title is treated as a fallback, not stretched as a backdrop');
   check(Boolean(first.artSrc),
@@ -831,8 +847,23 @@ for (const viewport of VIEWPORTS) {
     check(!measured.descVisible || measured.descLines <= 3,
       `[${label}] the synopsis never runs past three lines`, String(measured.descLines));
     if (viewport.mobile) {
-      check(!measured.descVisible,
-        `[${label}] the synopsis is dropped on a phone so the cards stay visible`);
+      // The demo keeps the description on a phone, and says so where it sets
+      // the phone Hero: "Keep hero compact but retain a useful two-line
+      // description". This check used to assert the opposite - the synopsis
+      // was the first thing dropped to save a row of cards - and the two
+      // cannot both hold. The demo is the design source, so the rule is now
+      // the demo's: the line stays, clamped to two lines, and the Hero still
+      // has to fit inside the height ceiling below. Short landscape is the
+      // one exception, where there is no height to spend.
+      const shortLandscape = viewport.height <= 460 && viewport.width > viewport.height;
+      if (shortLandscape) {
+        check(!measured.descVisible,
+          `[${label}] the synopsis gives its height back in short landscape`);
+      } else {
+        check(measured.descVisible && measured.descLines <= 2,
+          `[${label}] the demo's two-line synopsis is kept on a phone`,
+          `visible=${measured.descVisible} lines=${measured.descLines}`);
+      }
       check(measured.smallestButton >= 28,
         `[${label}] the Hero buttons are tappable`, `${measured.smallestButton}px`);
       check(measured.smallestArrow >= 24,

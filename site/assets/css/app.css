@@ -3416,8 +3416,10 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     min-height: 190px !important;
     padding: 16px 16px 8px !important;
   }
-  body.movie-portal .movie-hero-title { font-size: 22px !important; }
-  body.movie-portal .movie-hero-desc { display: none !important; }
+  /* Hero title and description at this width are the demo port's, at the
+     demo's own breakpoints. The two rules that were here set 22px and
+     `display: none` - and the demo keeps the description, in as many
+     words: "Keep hero compact but retain a useful two-line description". */
   body.movie-portal .movie-hero-foot { padding: 0 16px 14px !important; }
   body.movie-portal .sidebar-list.movie-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
@@ -3481,7 +3483,8 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     gap: 20px !important;
     height: 64px !important;
     min-height: 64px !important;
-    padding: 0 28px !important;
+    /* Measured off the demo at 1440 and 1920: 0 24px, not 28. */
+    padding: 0 24px !important;
     background: transparent !important;
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
@@ -4008,7 +4011,8 @@ body.movie-detail-view #movieGridHeader {
 }
 .movie-detail-hero .movie-detail-title {
   margin: 0 0 7px !important;
-  font-size: clamp(26px, 2.6vw, 36px) !important;
+  /* Demo `.detail-heading`, final block: clamp(29px, 2.5vw, 35px). */
+  font-size: clamp(29px, 2.5vw, 35px) !important;
   font-weight: 900 !important;
   letter-spacing: -0.6px;
   line-height: 1.15 !important;
@@ -4371,3 +4375,654 @@ html.movie-playback-context body:not(.movie-portal):not(.movie-detail-view) .you
     gap: 10px !important;
   }
 }
+
+/* =========================================================================
+   DEMO FINAL-POLISH PORT
+   `Movie demo design index.html`, block "FINAL VISUAL POLISH LOCK - MOVIE
+   BROWSE / DETAIL ONLY", plus the demo's own player-stage block.
+
+   Why this exists: the earlier port took the demo's FIRST definition of each
+   rule. The demo overrides most of them again at the end of its stylesheet,
+   and that later block is what actually renders. Measured side by side at
+   1440, the two differed on the detail grid (210/32/34-38 against the demo's
+   220/28/28-32), the hero (no description, wrong inner padding), the shell
+   (no max-width, wrong side padding) and the whole player stage. Every
+   number below was read out of the demo's cascade or measured in a browser
+   on the demo file. None is invented and none is an approximation.
+
+   Scope: movie surfaces only. Live TV and Live Sports keep their own shell,
+   cards, player and sidebar structure. The single exception is category
+   TYPOGRAPHY, which the brief asks to unify on the movie rail values and
+   which changes no box, size or position.
+   ========================================================================= */
+
+/* ---- Shell: demo .app-shell (browse + detail) ------------------------- */
+body.movie-portal .youtube-layout.final-shell:has(.sidebar-section.side-panel),
+body.movie-detail-view .youtube-layout.final-shell:has(.sidebar-section.side-panel) {
+  /* Demo: max-width 1580px, gap 18px, padding 14px 18px 72px, sidebar 255px.
+     The bottom padding is the one value that does not carry over: the demo
+     scrolls the whole page, this shell is a fixed height with its own inner
+     scroller, so 72px there is dead space rather than breathing room. Sides
+     and top are the demo's, and they are what set the content width - 1131px
+     at 1440, the same number the demo measures. */
+  max-width: 1580px !important;
+  margin-inline: auto !important;
+  grid-template-columns: 255px minmax(0, 1fr) !important;
+  gap: 18px !important;
+  padding: 14px 18px 24px !important;
+}
+
+/* ---- Hero: demo .hero-showcase ---------------------------------------- */
+body.movie-portal .movie-hero {
+  min-height: 390px;
+  border-radius: 17px;
+  border-color: rgba(255, 255, 255, 0.085);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.52);
+}
+body.movie-portal .movie-hero-panel { padding: 0 0 20px; }
+body.movie-portal .movie-hero-inner {
+  /* Demo .hero-inner: one flex row, copy on the left, the slider controls
+     anchored to the card rather than sitting in a grid column. */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0 !important;
+  padding: 28px 32px !important;
+  min-height: 390px;
+}
+body.movie-portal .movie-hero-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 620px;
+}
+body.movie-portal .movie-hero-kicker {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #ff2a4a;
+  margin-bottom: 12px;
+}
+body.movie-portal .movie-hero-title {
+  font-size: clamp(31px, 2.6vw, 38px);
+  font-weight: 900;
+  letter-spacing: -0.6px;
+  line-height: 1.12;
+  margin-bottom: 8px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.9);
+}
+body.movie-portal .movie-hero-meta {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #c5d1e0;
+  gap: 9px;
+  margin-bottom: 11px;
+}
+body.movie-portal .movie-hero-desc {
+  max-width: 570px;
+  margin-bottom: 18px;
+  color: #a6b8ca;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+body.movie-portal .movie-hero-actions { gap: 10px; }
+body.movie-portal .movie-hero-play {
+  height: 40px;
+  padding: 0 22px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+}
+body.movie-portal .movie-hero-details {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ---- Detail: demo .detail-hero-card / .detail-inner-grid -------------- */
+.movie-detail-hero {
+  min-height: 365px;
+  margin: 0 0 24px;
+  border-radius: 18px;
+}
+.movie-detail-grid {
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 28px;
+  padding: 28px 32px;
+}
+.movie-detail-poster-wrap {
+  width: 220px;
+  border-radius: 14px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.58);
+}
+.movie-detail-hero .movie-detail-main { max-width: 720px; }
+.movie-detail-title {
+  font-size: clamp(29px, 2.5vw, 35px);
+  margin-bottom: 7px;
+}
+.movie-detail-desc {
+  max-width: 680px;
+  margin-bottom: 15px;
+  -webkit-line-clamp: 4;
+}
+.server-card-box {
+  max-width: 520px;
+  background: rgba(8, 14, 22, 0.70);
+}
+
+/* ---- Player stage: demo body.exact-player-mode + .exact-player-stage ---
+   The demo polish block says in as many words that it does not touch the
+   player, so these are the demo's own player values, unpolished.
+   `.youtube-layout.final-shell` is a named-area grid shared with Live TV and
+   Live Sports - "rail player catalog" - so the demo's two columns are
+   expressed as three tracks: the demo's 235px rail, the flexible player, and
+   the demo's 400px side panel. Nothing outside movie-playback-context can
+   match, so neither other section moves. ------------------------------- */
+html.movie-playback-context body:not(.movie-portal):not(.movie-detail-view) .youtube-layout.final-shell {
+  grid-template-columns: 235px minmax(0, 1fr) 400px !important;
+  gap: 14px !important;
+  padding: 12px 18px !important;
+  max-width: none !important;
+}
+
+/* The side panel is the demo .player-side-panel: a card of its own that
+   fills the column height, with a fixed 48px header and only the list
+   scrolling underneath it. */
+html.movie-playback-context body:not(.movie-portal) .movie-related-panel,
+html.movie-playback-context body:not(.movie-portal) .movie-related-panel > .movie-related {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  background: linear-gradient(180deg, #0d1521 0%, #091019 100%);
+  border: 1px solid #1b2942;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-head {
+  /* Demo .panel-top-header: 48px, its own ground, a bottom rule and a
+     shadow, so the list reads as scrolling underneath it. */
+  flex: 0 0 auto;
+  height: 48px;
+  min-height: 48px;
+  align-items: center;
+  padding: 10px 16px;
+  margin: 0;
+  background: #0d1522;
+  border-bottom: 1px solid #1b2942;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-body,
+html.movie-playback-context body:not(.movie-portal) .movie-related-panel > .movie-related-list {
+  /* Demo .panel-scroll-body. */
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 12px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #243850 transparent;
+  overscroll-behavior: contain;
+}
+
+/* The NOW PLAYING strip is the demo .player-meta-strip. */
+html.movie-playback-context body:not(.movie-portal) .video-meta {
+  background: #090f17;
+  border: 1px solid #1b2942;
+  border-radius: 16px;
+  padding: 12px 16px;
+}
+
+/* ---- Category typography, site-wide -----------------------------------
+   The brief: the movie rail category text is the reference, and Live TV and
+   Live Sports category text must match it. Only the type is touched -
+   family, size, weight, line-height, colour. Every box, height, padding,
+   radius and icon stays where it is, so neither section's layout or cards
+   move. Demo .cat-label: 13.5px on #dce7f4. --------------------------- */
+/* `body` on the front: reference-design.css loads AFTER app.css and sets
+   `font-size: 14px !important` on `.desktop-sub-navigation .final-sub-button`
+   at the same specificity, so at equal weight the later sheet was winning and
+   Live Sports and Live TV stayed at 14px while Movies was at 13.5px. */
+body #desktopSubNav.movie-rail .final-sub-button,
+body .desktop-sub-navigation .final-sub-button,
+body .mobile-sub-navigation .final-sub-button {
+  font-family: var(--font-sans) !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+  letter-spacing: 0 !important;
+  color: #dce7f4 !important;
+}
+body #desktopSubNav.movie-rail .final-sub-button.active,
+body .desktop-sub-navigation .final-sub-button.active,
+body .mobile-sub-navigation .final-sub-button.active {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+html.movie-playback-context body:not(.movie-portal) .movie-related-panel > .movie-related {
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  margin: 0;
+}
+/* Demo .btn-player-close-stage, in the panel header. */
+.movie-related-back {
+  flex: 0 0 auto;
+  height: 30px;
+  padding: 0 11px;
+  border-radius: 8px;
+  background: rgba(255, 42, 74, 0.14);
+  border: 1px solid rgba(255, 42, 74, 0.38);
+  color: #ff6b82;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+.movie-related-back:hover { background: #ff2a4a; color: #fff; }
+
+/* ---- The last inset between the demo width and ours ------------------
+   Measured, not guessed. The content column is the demo's 1131px at 1440,
+   but three wrappers sat inside it and the Hero, the detail card and the
+   side panel all came out narrower than the demo:
+
+     .sidebar-scroll-area   padding 0 6px 0 10px   ->  -16px
+     .movie-detail-panel    padding 14px 4px 18px  ->   -8px
+     .movie-detail-inner    padding 16px           ->  -32px
+
+   They are scrollbar gutters from the Live TV shell. On the movie surfaces
+   the scroller is the panel itself, so the gutters only shrink the design.
+   Vertical padding is left alone - only the horizontal inset goes. ---- */
+body.movie-portal .sidebar-scroll-area,
+body.movie-detail-view .sidebar-scroll-area,
+html.movie-playback-context body:not(.movie-portal) .sidebar-scroll-area {
+  padding-inline: 0 !important;
+}
+body.movie-detail-view .movie-detail-panel,
+.movie-detail-panel {
+  padding-inline: 0 !important;
+}
+.movie-detail-inner.detail-section-inner {
+  padding-inline: 0 !important;
+}
+
+/* The NOW PLAYING strip: reference-design.css sets this with !important, so
+   the demo values have to be stated the same way. Demo .player-meta-strip:
+   padding 12px 16px, radius 16. */
+html.movie-playback-context body:not(.movie-portal) .video-meta {
+  padding: 12px 16px !important;
+  border-radius: 16px !important;
+}
+
+/* Demo .hero-inner has no min-height of its own: the card is 390px and
+   centres whatever the copy needs. Ours inherited a 164px floor from the
+   narrow-column Hero and then had 390px forced on top, which stretched the
+   copy block instead of centring it. */
+body.movie-portal .movie-hero-inner {
+  min-height: 0 !important;
+}
+
+/* ---- The demo's own responsive values --------------------------------
+   The block above is the demo's desktop design, and left unqualified it
+   followed the page down to 390px, where it squeezed the detail grid into
+   220px + 18px and stretched the card to 745px tall. These are the demo's
+   own breakpoints and its own numbers, read from the same stylesheet:
+   `@media (max-width: 990px)` and `@media (max-width: 680px)`.
+   -------------------------------------------------------------------- */
+@media (max-width: 1000px) {
+  body.movie-portal .youtube-layout.final-shell:has(.sidebar-section.side-panel),
+  body.movie-detail-view .youtube-layout.final-shell:has(.sidebar-section.side-panel) {
+    /* Demo: padding 10px 12px 58px. The rail is off-canvas at this width in
+       both designs, so the column rule goes back to the shell's own. */
+    max-width: none !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    padding: 10px 12px 24px !important;
+  }
+  body.movie-portal .movie-hero { min-height: 330px; }
+  body.movie-portal .movie-hero-inner { padding: 20px !important; }
+
+  /* Demo, at this width, drops the poster and stacks the detail. */
+  .movie-detail-poster-wrap { display: none !important; }
+  .movie-detail-hero {
+    min-height: auto !important;
+    display: block !important;
+    margin-bottom: 16px !important;
+    border-radius: 14px !important;
+  }
+  .movie-detail-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    padding: 14px !important;
+  }
+  .movie-detail-hero .movie-detail-main {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+  .movie-detail-backdrop { opacity: 0.32; }
+  .movie-detail-hero .movie-detail-title {
+    font-size: 21px !important;
+    line-height: 1.22 !important;
+    margin-bottom: 6px !important;
+  }
+  .movie-detail-meta {
+    font-size: 11px !important;
+    gap: 6px !important;
+    margin-bottom: 8px !important;
+    flex-wrap: wrap !important;
+  }
+}
+
+@media (max-width: 680px) {
+  body.movie-portal .youtube-layout.final-shell:has(.sidebar-section.side-panel),
+  body.movie-detail-view .youtube-layout.final-shell:has(.sidebar-section.side-panel) {
+    padding: 8px 10px 24px !important;
+  }
+  body.movie-portal .movie-hero {
+    min-height: 272px;
+    max-height: none;
+    border-radius: 12px;
+  }
+  body.movie-portal .movie-hero-panel { padding: 0 0 12px; }
+  body.movie-portal .movie-hero-inner {
+    min-height: 272px !important;
+    padding: 12px !important;
+  }
+  body.movie-portal .movie-hero-title { font-size: 20px !important; }
+  body.movie-portal .movie-hero-desc {
+    /* !important throughout: the desktop portal rule above sets font-size,
+       line-height and margin with !important, so the demo's phone values
+       have to answer at the same weight. */
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 2px 0 7px !important;
+    font-size: 11px !important;
+    line-height: 1.4 !important;
+    color: #9db0c4;
+  }
+  /* The demo's phone Hero is title, meta, two lines and the buttons - 272px.
+     Ours carried a separate badge row on top of that and came out 365px. The
+     badges are real, and they stay on desktop where there is room; at phone
+     width the demo's composition wins. */
+  body.movie-portal .movie-hero-badges { display: none !important; }
+  body.movie-portal .movie-hero-actions { margin-top: 3px; }
+
+  .movie-detail-hero { margin-bottom: 14px !important; }
+  .movie-detail-grid { padding: 13px !important; }
+  .movie-detail-hero .movie-detail-title { font-size: 20px !important; }
+  .movie-detail-desc {
+    -webkit-line-clamp: 4 !important;
+    margin-bottom: 9px !important;
+  }
+}
+
+/* ---- Final measured deltas -------------------------------------------
+   Each of these was a number read off the two pages side by side, not a
+   preference. --------------------------------------------------------- */
+
+/* The movie content column carried a 10px side padding of its own on top of
+   the shell gutter, so the Hero came out 350px against the demo 370px. */
+@media (max-width: 1000px) {
+  body.movie-portal .sidebar-section.side-panel,
+  body.movie-detail-view .sidebar-section.side-panel {
+    padding-inline: 0 !important;
+  }
+}
+
+/* Demo .video-stage-box: radius 16 (var(--radius-lg)). Ours was 15/14. */
+html.movie-playback-context body:not(.movie-portal) .video-container-wrap {
+  border-radius: 16px !important;
+}
+
+/* Demo .hero-showcase, final block: radius 17. */
+body.movie-portal .movie-hero { border-radius: 17px !important; }
+
+/* Demo, at phone width: the panel header is shorter and its card corner
+   softer - .panel-top-header 42px / 6px 12px, .player-side-panel radius 10. */
+@media (max-width: 680px) {
+  html.movie-playback-context body:not(.movie-portal) .movie-related-head {
+    /* Demo, at phone width: 352x42 - the title and the back button on one
+       line. Letting it wrap put them on three lines and made the header 90px
+       tall, so the "Suggested from this movie" line steps aside here. It is
+       the least informative of the three: the panel title already says what
+       the list is. */
+    height: 42px;
+    min-height: 42px;
+    padding: 6px 12px;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  html.movie-playback-context body:not(.movie-portal) .movie-related-desc {
+    display: none;
+  }
+  html.movie-playback-context body:not(.movie-portal) .movie-related-panel {
+    border-radius: 10px;
+  }
+  body.movie-portal .movie-hero { border-radius: 12px !important; }
+}
+
+/* Demo .hero-control-pill: anchored to the bottom-right of the card, not a
+   row beneath it. Moving the buttons into the copy block left this row with
+   only the arrows and dots in it, so it can now be positioned the way the
+   demo positions it. */
+body.movie-portal .movie-hero-foot {
+  position: absolute !important;
+  right: 20px;
+  bottom: 18px;
+  left: auto !important;
+  z-index: 3;
+  width: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex;
+  justify-content: flex-end;
+}
+body.movie-portal .movie-hero-actions {
+  margin-top: 0;
+}
+@media (max-width: 680px) {
+  body.movie-portal .movie-hero-foot { right: 12px; bottom: 10px; }
+}
+
+/* ---- Related card in the player panel ---------------------------------
+   Demo `.player-related-grid` and `.related-movie-card`, value for value.
+   What was here was a compact horizontal row with a 44px thumbnail; the
+   demo's is a poster card in two columns with a rank, a category-and-year
+   line, the gold rule and a Watch Now button. ------------------------- */
+html.movie-playback-context body:not(.movie-portal) .movie-related-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-card {
+  min-width: 0;
+  background: #0d1522;
+  border: 1px solid #1a283c;
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-card:hover {
+  background: #131f31;
+  border-color: #2b4160;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+.movie-related-poster-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+  /* The designed ground, and also what a card with no artwork shows. Nothing
+     is substituted for a missing poster. */
+  background:
+    radial-gradient(110% 130% at 80% 10%, rgba(255, 42, 74, 0.14) 0%, transparent 60%),
+    linear-gradient(150deg, #131d2c 0%, #070c14 100%);
+  margin-bottom: 7px;
+}
+.movie-related-poster-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.movie-related-card:hover .movie-related-poster-box img { transform: scale(1.06); }
+.movie-related-rank {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(8, 14, 22, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 1.5px 6.5px;
+  border-radius: 3.5px;
+  line-height: 1.3;
+  z-index: 2;
+}
+.movie-related-sub {
+  font-size: 11px;
+  color: #7b94b3;
+  font-weight: 600;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.movie-related-name {
+  font-size: 14.5px;
+  font-weight: 850;
+  color: #ffffff;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+.movie-related-rule {
+  width: 24px;
+  height: 2.5px;
+  background: #e59819;
+  border-radius: 2px;
+  margin: 5px 0 6px;
+}
+.movie-related-play {
+  width: 100%;
+  height: 30px;
+  background: #0e1724;
+  border: 1px solid #1d2d42;
+  border-radius: 6px;
+  color: #c2d2e5;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: auto;
+}
+.movie-related-card:hover .movie-related-play {
+  background: #ff2a4a;
+  border-color: #ff2a4a;
+  color: #ffffff;
+}
+
+/* The NOW PLAYING sub-row. reference-design.css hides .meta-subtitle-row
+   site-wide with !important; the demo player has it, so it comes back for
+   movie playback only - Live TV and Live Sports keep it hidden, because the
+   rule that hides them is untouched and nothing here can match them. Demo
+   .player-meta-sub: 11.5px, muted, gap 8, 2px under the title. */
+/* Desktop only. Below 1001px the NOW PLAYING strip is a single wrapping row
+   and reference-design.css hides this line there for a reason: un-hidden at
+   390 it landed on top of the Bookmark button. The demo's phone player has
+   its own two-row meta strip; ours keeps the title and the actions, which is
+   the same information in the space there is. */
+@media (min-width: 1001px) {
+html.movie-playback-context body:not(.movie-portal) .video-meta .meta-subtitle-row {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: #8fa3ba;
+}
+}
+
+/* Demo .detail-nav-bar: the view name on the left, the back pill on the
+   right, 14px above the card. */
+.movie-detail-inner .detail-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.detail-nav-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-sans);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  color: #ffffff;
+}
+.detail-nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #28d68f;
+  box-shadow: 0 0 8px rgba(40, 214, 143, 0.7);
+}
+@media (max-width: 680px) {
+  .detail-nav-heading { font-size: 15px; }
+}
+
+/* ---- Short landscape phones -------------------------------------------
+   The demo has no case for this, and the rule that was already here does:
+   at 460px of height the Hero gives its height back so a row of cards is
+   still on screen. The demo port's phone block is later in the file and
+   carries !important, so it was overriding that guard and the Hero came out
+   312px against a 290px ceiling. This restates the guard after it, which is
+   the only reason these declarations exist. */
+@media (max-height: 460px) and (orientation: landscape) {
+  body.movie-portal .movie-hero {
+    min-height: 112px !important;
+    border-radius: 12px !important;
+  }
+  body.movie-portal .movie-hero-inner {
+    min-height: 0 !important;
+    padding: 12px 14px !important;
+  }
+  body.movie-portal .movie-hero-desc { display: none !important; }
+  body.movie-portal .movie-hero-badges { display: none !important; }
+}
+

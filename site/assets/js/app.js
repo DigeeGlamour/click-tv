@@ -2921,16 +2921,40 @@ function buildMovieHeroActions(entry) {
   const play = document.createElement('button');
   play.type = 'button';
   play.className = 'movie-hero-play tv-focusable';
-  play.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i> Play';
+  play.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i> Watch Now';
   play.addEventListener('click', () => { void openMovieHeroPlayback(entry); });
   const details = document.createElement('button');
   details.type = 'button';
   details.className = 'movie-hero-details tv-focusable';
-  details.innerHTML = '<i class="fas fa-circle-info" aria-hidden="true"></i> Details';
+  details.innerHTML = '<i class="fas fa-circle-info" aria-hidden="true"></i> Movie Details';
   details.addEventListener('click', () => { void openMovieHeroDetail(entry); });
   actions.append(play, details);
   return actions;
 }
+
+/**
+ * The Hero's description line when the record has no overview.
+ *
+ * Built from the category, the year and the measured quality - three fields
+ * already printed on the card above it - so it states nothing new. Anything
+ * missing is simply left out rather than filled in.
+ */
+function movieHeroFallbackLine(entry) {
+  const category = String(entry.category || '').trim();
+  const year = String(entry.year || '').trim();
+  const quality = String(entry.quality || '').trim();
+  if (!category && !year) return '';
+  const subject = [
+    category ? `${category} ক্যাটাগরির` : '',
+    year ? `${year} সালের` : '',
+    'কনটেন্ট',
+  ].filter(Boolean).join(' ');
+  const tail = quality
+    ? ` — Click TV তে ${quality} প্রিন্টে উপভোগ করুন।`
+    : ' — Click TV তে উপভোগ করুন।';
+  return `${subject}${tail}`;
+}
+
 
 function buildMovieHeroSlide(entry) {
   const copy = document.createElement('div');
@@ -2996,15 +3020,22 @@ function buildMovieHeroSlide(entry) {
     copy.appendChild(wrap);
   }
 
-  const plot = String(entry.plot || '').trim();
-  if (plot) {
-    const desc = document.createElement('p');
-    desc.className = 'movie-hero-desc';
-    // Clamped to two lines in CSS rather than truncated here, so the full
-    // overview stays available to a screen reader.
-    desc.textContent = plot;
-    copy.appendChild(desc);
-  }
+  // The demo's Hero always carries a description line, and its own data
+  // builds that line out of the category and the year rather than storing an
+  // overview per film. Ours does the same when there is no real plot: every
+  // word below comes from a field on the record, so nothing is claimed about
+  // the film that the catalogue does not already say. A real plot, when one
+  // exists, always wins.
+  const desc = document.createElement('p');
+  desc.className = 'movie-hero-desc';
+  desc.textContent = String(entry.plot || '').trim() || movieHeroFallbackLine(entry);
+  if (desc.textContent) copy.appendChild(desc);
+
+  // Demo `.hero-content`: the buttons are the last thing in the copy block,
+  // not a row of their own. The overlap this used to avoid is now handled the
+  // way the demo handles it - the slider controls are anchored to the card
+  // rather than sharing a line with anything.
+  copy.appendChild(buildMovieHeroActions(entry));
 
   return copy;
 }
@@ -3114,12 +3145,6 @@ function showMovieHeroSlide(next, options = {}) {
   const existingCopy = qs('.movie-hero-copy', movieHeroPanel);
   if (copyHost && existingCopy) copyHost.replaceChild(buildMovieHeroSlide(entry), existingCopy);
 
-  const footHost = qs('.movie-hero-foot', movieHeroPanel);
-  const existingActions = qs('.movie-hero-actions', movieHeroPanel);
-  if (footHost && existingActions) {
-    footHost.replaceChild(buildMovieHeroActions(entry), existingActions);
-  }
-
   movieHeroPanel.querySelectorAll('.movie-hero-dot').forEach((node, position) => {
     node.classList.toggle('active', position === index);
     node.setAttribute('aria-current', position === index ? 'true' : 'false');
@@ -3203,12 +3228,11 @@ function buildMovieHeroShell() {
   copy.className = 'movie-hero-copy';
   inner.append(art, copy);
 
-  // The footer is a real row, not an overlay: the action buttons and the
-  // carousel controls share one flex line, so neither can ever cover the
-  // other however wide the buttons get or however many dots there are.
+  // Demo `.hero-control-pill`: the slider controls sit at the bottom-right
+  // of the card. Nothing else is in this row any more, so there is nothing
+  // for them to collide with at any width.
   const foot = document.createElement('div');
   foot.className = 'movie-hero-foot';
-  foot.appendChild(document.createElement('div')).className = 'movie-hero-actions';
 
   hero.append(layerA, layerB, scrim, inner, foot);
 
@@ -4079,21 +4103,56 @@ async function movieRelatedFor(item) {
 }
 
 function buildMovieRelatedGrid(rows) {
+  // Demo `.player-related-grid` / `.related-movie-card`: two columns, and each
+  // card is poster, rank, "category - year", title, the gold rule and a Watch
+  // Now button. Every field below is one the record already carries; a card
+  // with no poster gets the designed placeholder rather than a stand-in
+  // image, and a card with no category or year simply prints the half it has.
   const grid = document.createElement('div');
   grid.className = 'movie-related-grid';
-  for (const row of rows) {
+  rows.forEach((row, index) => {
     const card = document.createElement('button');
     card.type = 'button';
     card.className = 'movie-related-card tv-focusable';
     card.dataset.relatedId = String(row.id || '');
+
     const poster = String(row.poster || row.logo || '').trim();
     const year = movieRelatedYear(row);
-    card.innerHTML =
-      (poster
-        ? `<img src="${escapeHtml(poster)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
-        : '<span class="movie-related-poster placeholder"></span>') +
-      `<strong>${escapeHtml(row.name || 'Untitled')}</strong>` +
-      (year ? `<small>${escapeHtml(String(year))}</small>` : '');
+    const category = String(row.category || '').trim();
+    const sub = [category, year ? String(year) : ''].filter(Boolean).join(' · ');
+
+    const box = document.createElement('div');
+    box.className = 'movie-related-poster-box';
+    if (poster) {
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.alt = '';
+      img.referrerPolicy = 'no-referrer';
+      // No stand-in artwork: a poster that will not decode leaves the
+      // designed placeholder behind it, which is what the box already is.
+      img.addEventListener('error', () => { img.remove(); });
+      img.src = poster;
+      box.appendChild(img);
+    }
+    const rank = document.createElement('span');
+    rank.className = 'movie-related-rank';
+    rank.textContent = String(index + 1);
+    box.appendChild(rank);
+
+    const metaSub = document.createElement('div');
+    metaSub.className = 'movie-related-sub';
+    metaSub.textContent = sub;
+    const title = document.createElement('div');
+    title.className = 'movie-related-name';
+    title.title = String(row.name || '');
+    title.textContent = String(row.name || 'Untitled');
+    const rule = document.createElement('div');
+    rule.className = 'movie-related-rule';
+    const play = document.createElement('span');
+    play.className = 'movie-related-play';
+    play.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i> Watch Now';
+
+    card.append(box, metaSub, title, rule, play);
     card.addEventListener('click', () => {
       // Opens its detail rather than playing it: a related card is a
       // suggestion, and taking over the player on a stray tap is not.
@@ -4101,7 +4160,7 @@ function buildMovieRelatedGrid(rows) {
       if (summary) void openMovieDetail(summary);
     });
     grid.appendChild(card);
-  }
+  });
   return grid;
 }
 
@@ -4169,9 +4228,24 @@ function buildMovieRelatedSection(rows, heading = 'Related Movies') {
   desc.className = 'movie-related-desc';
   desc.textContent = 'Suggested from this movie';
   group.append(titleRow, desc);
-  head.append(group);
 
-  section.append(head, buildMovieRelatedGrid(rows));
+  // Demo `.btn-player-close-stage`, in the demo's own position: the right of
+  // the panel header. It takes the route the grid header's Back to Home
+  // already takes, so there is one way out of playback, not two.
+  const back = document.createElement('button');
+  back.type = 'button';
+  back.className = 'movie-related-back tv-focusable';
+  back.innerHTML = '<i class="fas fa-arrow-left" aria-hidden="true"></i> <span>Back to Movies</span>';
+  back.addEventListener('click', () => { void selectFinalSubcategory('movie:home'); });
+
+  head.append(group, back);
+
+  // Demo `.panel-scroll-body`: the header stays put and only this scrolls.
+  const body = document.createElement('div');
+  body.className = 'movie-related-body';
+  body.appendChild(buildMovieRelatedGrid(rows));
+
+  section.append(head, body);
   return section;
 }
 
@@ -4682,6 +4756,8 @@ async function openMovieDetail(item) {
   wrap.className = 'movie-detail-inner detail-section-inner';
   wrap.innerHTML =
     '<div class="detail-nav-bar">' +
+      '<span class="detail-nav-heading"><span class="detail-nav-dot" aria-hidden="true"></span>'
+        + (isSeries ? 'Series Details' : 'Movie Details') + '</span>' +
       '<button type="button" class="btn-back-pill movie-detail-close tv-focusable">' +
         '<i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Movies</button>' +
     '</div>' +
@@ -4716,7 +4792,10 @@ async function openMovieDetail(item) {
             ? '<div class="movie-detail-genres">' +
               genres.map((g) => '<span>' + escapeHtml(String(g)) + '</span>').join('') + '</div>'
             : '') +
-          (plot ? '<p class="detail-desc movie-detail-plot">' + escapeHtml(plot) + '</p>' : '') +
+          ((plot || movieHeroFallbackLine(resolved))
+            ? '<p class="detail-desc movie-detail-plot">'
+              + escapeHtml(plot || movieHeroFallbackLine(resolved)) + '</p>'
+            : '') +
           '<div class="detail-actions-row movie-detail-actions">' +
             '<button type="button" class="btn-play-white movie-detail-play tv-focusable"' + (playable ? '' : ' disabled') + '>' +
               '<i class="fas fa-play" aria-hidden="true"></i> ' + (isSeries ? 'Watch Episode 1' : 'Watch Now') + '</button>' +
@@ -11969,7 +12048,14 @@ function setupPlayerUi(item) {
 
 function updateMetadata(item, options = {}) {
   $('metaTitle').textContent = item.name;
-  $('metaCategory').textContent = item.category || state.selectedCategory || '';
+  // Demo `.player-meta-sub`: category, then year, then the measured quality.
+  // The year is only added for a movie, and only when the record has one -
+  // a channel has no release year and must not grow one here.
+  const metaYear = isMovieContentItem(item) ? String(item.year || '').trim() : '';
+  $('metaCategory').textContent = [
+    item.category || state.selectedCategory || '',
+    metaYear,
+  ].filter(Boolean).join(' · ');
   $('metaWatchingCount').textContent = state.view === VIEW.EVENT
     ? (item.competition || 'Live Event')
     : 'Watching Now';
