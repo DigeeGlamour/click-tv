@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-17T10:34:53.608094+00:00",
+  "generated_at": "2026-09-17T10:50:42.583576+00:00",
   "today_match_count": 7,
   "upcoming_count": 59,
   "today_missing_logo": [
@@ -18,12 +18,12 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 421,
-  "provider_rejected": 92,
+  "provider_fixture": 422,
+  "provider_rejected": 93,
   "provider_rejected_reasons": {
     "provider_dead_status": 44,
     "status_neither_live_nor_upcoming": 24,
-    "kickoff_missing_and_not_live": 1,
+    "kickoff_missing_and_not_live": 2,
     "upcoming_kickoff_already_passed": 23
   },
   "provider_rejected_by_source": {
@@ -38,6 +38,10 @@
     "iptvflixbd-fancode-data": {
       "upcoming_kickoff_already_passed": 23,
       "total": 23
+    },
+    "kajju-sonyliv-backup": {
+      "kickoff_missing_and_not_live": 1,
+      "total": 1
     },
     "srhady-willow-event": {
       "kickoff_missing_and_not_live": 1,
@@ -596,8 +600,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 424,
-    "discarded": 158,
+    "total": 425,
+    "discarded": 159,
     "examples": [
       {
         "name": "EUROPEAN T20 Vs Premier League T20",
@@ -609,7 +613,7 @@
       },
       {
         "name": "BMW Championship",
-        "source": "srhady-crichd-footy-live, sportlive-fancode-backup, drmlive-",
+        "source": "srhady-crichd-footy-live, sportlive-fancode-backup, sayanpal",
         "competition": "PGA Tour",
         "sport_type": "",
         "reason": "league map: golf",
@@ -769,7 +773,7 @@
       },
       {
         "name": "Day 2 vs La Sella Golf Resort (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, sportlive-fancode-backup, sayanpal-fancode-mirro",
         "competition": "La Sella Open 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
@@ -777,7 +781,7 @@
       },
       {
         "name": "Day 2 vs Spielberg (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, sportlive-fancode-backup, sayanpal-fancode-mirro",
         "competition": "GRAND PRIX OF AUSTRIA 2026",
         "sport_type": "",
         "reason": "league map: motorsport",
@@ -1094,13 +1098,13 @@
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 39,
       "LIVE": 2,
-      "FINISHED": 1
+      "FINISHED": 1,
+      "UPCOMING": 39
     },
     "by_confidence": {
-      "HIGH": 22,
-      "LOW": 20
+      "LOW": 20,
+      "HIGH": 22
     },
     "applied_fixtures": [
       {
@@ -1116,8 +1120,8 @@
           "ESPN espn-header=Result (Result, event 1550475)",
           "LiveScore livescore=FT (6, event 1880658)"
         ],
-        "authority_finished_seen_at": "2026-09-17T10:34:21.177346+00:00",
-        "remove_after": "2026-09-17T10:54:21.177346+00:00",
+        "authority_finished_seen_at": "2026-09-17T10:50:14.332165+00:00",
+        "remove_after": "2026-09-17T11:10:14.332165+00:00",
         "was_playable": true,
         "lifecycle_state_before": ""
       }
@@ -1136,20 +1140,56 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
-    "live": 0,
+    "live": 3,
     "recorded": 0,
     "conflict": 0,
-    "unmatched": 0,
+    "unmatched": 3,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
-    "by_status": {},
-    "by_confidence": {},
-    "applied_fixtures": [],
-    "conflicts": []
+    "by_status": {
+      "FINISHED": 1,
+      "LIVE": 3
+    },
+    "by_confidence": {
+      "HIGH": 2,
+      "LOW": 2
+    },
+    "applied_fixtures": [
+      {
+        "name": "Pakistan Women Vs Thailand Women",
+        "fixture_id": "provider:pakistan-vs-thailand-women|asian games women|2026-09-17",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1550475)",
+          "LiveScore livescore=FT (6, event 1880658)"
+        ],
+        "authority_finished_seen_at": "2026-09-17T10:34:21.177346+00:00",
+        "remove_after": "2026-09-17T10:54:21.177346+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
+      }
+    ],
+    "conflicts": [
+      {
+        "name": "Pakistan Women Vs Thailand Women",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "fixture_status_api": {
     "asked": 0,
@@ -1196,10 +1236,8 @@
     ],
     "held": 0,
     "held_names": [],
-    "considered": 1,
-    "refused": {
-      "authority productive this scan": 1
-    },
+    "considered": 0,
+    "refused": {},
     "hold_expired": 0
   },
   "channel_names": {
@@ -1332,7 +1370,7 @@
           "rejected": 0,
           "published": 13
         },
-        "dartv-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 13,
           "cricket": 5,
           "football": 8,
@@ -1340,7 +1378,7 @@
           "rejected": 0,
           "published": 13
         },
-        "sayanpal-fancode-mirror": {
+        "dartv-fancode-mirror": {
           "total": 13,
           "cricket": 5,
           "football": 8,
@@ -1508,10 +1546,18 @@
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_cricket": 2,
-        "confirmed_football": 5
+        "confirmed_football": 5,
+        "confirmed_cricket": 2
       },
       "by_source": {
+        "sm-sports-data": {
+          "total": 4,
+          "cricket": 1,
+          "football": 3,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 4
+        },
         "srhady-bingstream": {
           "total": 1,
           "cricket": 1,
@@ -1528,14 +1574,6 @@
           "rejected": 0,
           "published": 1
         },
-        "sm-sports-data": {
-          "total": 4,
-          "cricket": 1,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 4
-        },
         "sportlive-fancode-backup": {
           "total": 1,
           "cricket": 0,
@@ -1544,7 +1582,7 @@
           "rejected": 0,
           "published": 1
         },
-        "dartv-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 1,
           "cricket": 0,
           "football": 1,
@@ -1552,7 +1590,7 @@
           "rejected": 0,
           "published": 1
         },
-        "sayanpal-fancode-mirror": {
+        "dartv-fancode-mirror": {
           "total": 1,
           "cricket": 0,
           "football": 1,
@@ -1631,6 +1669,14 @@
           "rejected": 0,
           "published": 5
         },
+        "sayanpal-fancode-mirror": {
+          "total": 12,
+          "cricket": 5,
+          "football": 7,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 12
+        },
         "drmlive-fancode-mirror": {
           "total": 12,
           "cricket": 5,
@@ -1648,14 +1694,6 @@
           "published": 12
         },
         "dartv-fancode-mirror": {
-          "total": 12,
-          "cricket": 5,
-          "football": 7,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 12
-        },
-        "sayanpal-fancode-mirror": {
           "total": 12,
           "cricket": 5,
           "football": 7,
@@ -1693,16 +1731,16 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 795,
+    "raw_events": 797,
     "cricket_kept": 12,
     "football_kept": 57,
-    "other_discarded": 159,
+    "other_discarded": 160,
     "unresolved": 13,
     "today_final": 7,
     "upcoming_final": 59,
     "published_states": {
-      "confirmed_cricket": 13,
-      "confirmed_football": 53
+      "confirmed_football": 53,
+      "confirmed_cricket": 13
     },
     "other_sport_leak": 0,
     "ball_sport_wrongly_refused": 0
@@ -1764,7 +1802,7 @@
     "fixtures_left_with_nothing": 29,
     "distinct_failure_codes": 7,
     "unrecognised_candidate_groups": 61,
-    "unrecognised_failed_routes": 132
+    "unrecognised_failed_routes": 134
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
