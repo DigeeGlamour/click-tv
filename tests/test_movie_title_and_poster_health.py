@@ -636,5 +636,162 @@ class TheValidatorsOwnRuleTests(unittest.TestCase):
                 )
 
 
+class TheIdentityTheValidatorUsesTests(unittest.TestCase):
+    """The replica must not drift from the check it exists to satisfy.
+
+    The first version of this guard borrowed the scanner's own
+    _normalize_title(), which strips "hindi dubbed", "dual", "official" and a
+    dozen other words the validator keeps. The two disagreed in both
+    directions, so the guard passed while three consecutive real scans failed
+    validation. It is now a literal copy, and this test is what keeps it one.
+    """
+
+    def _validator(self):
+        import importlib.util
+
+        path = ROOT / "scripts" / "validate-pages.py"
+        if not path.is_file():
+            self.skipTest("validator not present")
+        spec = importlib.util.spec_from_file_location("validate_pages", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.normalize_movie_identity
+
+    CASES = (
+        ("KD The Devil", None),
+        ("KD – The Devil", None),
+        ("Alpha 2025 Hindi Dubbed", None),
+        ("Alpha", 2025),
+        ("Reacher (2022) S01 720p", None),
+        ("Sita Ramam 2022 Hindi 1080p WEB-DL", None),
+        ("Dhamaal 4", 2025),
+        ("Lenin", None),
+        ("", None),
+    )
+
+    def test_it_agrees_with_the_validator_case_by_case(self):
+        identity = self._validator()
+        for name, year in self.CASES:
+            with self.subTest(name=name, year=year):
+                item = {"name": name}
+                if year:
+                    item["year"] = year
+                self.assertEqual(
+                    M._presentation_identity(name, year), identity(item)
+                )
+
+    def test_an_en_dash_is_the_same_title_as_a_space(self):
+        """The exact pair that failed the third real scan."""
+        self.assertEqual(
+            M._presentation_identity("KD The Devil", None),
+            M._presentation_identity("KD – The Devil", None),
+        )
+
+    def test_it_agrees_with_the_validator_on_every_published_row(self):
+        identity = self._validator()
+        rows = []
+        for path in sorted((ROOT / "data" / "movies").glob("*/page-*.json")):
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            rows.extend(payload.get("items") or [])
+        if not rows:
+            self.skipTest("no published movie pages")
+        for row in rows:
+            key = M._presentation_identity(row.get("name"), row.get("year"))
+            if key != identity(row):
+                self.fail(f"{row.get('name')!r}: {key!r} != {identity(row)!r}")
+
+
+class RetentionCanCollideTooTests(unittest.TestCase):
+    """What the third scan actually tripped on.
+
+    _finalize_movie_presentation() guards the list it is handed, but
+    paginate_movie_list() afterwards calls _retain_recent_dropouts(), which
+    reads the previous pages off disk and adds back a film that vanished from
+    the source this scan. That card was never offered to the guard, and the
+    fresh card for the same film - different id, differently spelled - has
+    just been cleaned onto the same name.
+    """
+
+    def _identities(self, rows):
+        return [M._presentation_identity(r.get("name"), r.get("year")) for r in rows]
+
+    def test_a_retained_card_and_a_cleaned_card_stay_distinguishable(self):
+        rows = [
+            # carried over from the previous publish, untouched this scan
+            {"id": "kd-old", "name": "KD The Devil", "year": 2024},
+            # this scan's card for the same film, already cleaned
+            {
+                "id": "kd-new",
+                "name": "KD – The Devil",
+                "source_title": "KD – The Devil 2024 Hindi Dubbed 1080p",
+                "year": 2024,
+                "year_source": "source_title",
+            },
+        ]
+        summary = M._resolve_presentation_collisions(rows)
+        self.assertEqual(summary["reverted_for_uniqueness"], 1)
+        self.assertEqual(len(set(self._identities(rows))), 2, rows)
+
+    def test_the_reverted_card_gets_its_own_raw_title_back(self):
+        rows = [
+            {"id": "a", "name": "Alpha", "year": 2025},
+            {
+                "id": "b",
+                "name": "Alpha",
+                "source_title": "Alpha 2025 Hindi Dubbed",
+                "year": 2025,
+                "year_source": "source_title",
+            },
+        ]
+        M._resolve_presentation_collisions(rows)
+        self.assertEqual(rows[0]["name"], "Alpha")
+        self.assertEqual(rows[1]["name"], "Alpha 2025 Hindi Dubbed")
+
+    def test_a_card_that_was_never_cleaned_is_left_alone(self):
+        """A clash already in the source is not this pass's to rewrite."""
+        rows = [
+            {"id": "a", "name": "Lenin", "year": 2021},
+            {"id": "b", "name": "Lenin", "year": 2021},
+        ]
+        summary = M._resolve_presentation_collisions(rows)
+        self.assertEqual(summary["reverted_for_uniqueness"], 0)
+        self.assertEqual([r["name"] for r in rows], ["Lenin", "Lenin"])
+
+    def test_nothing_is_touched_when_nothing_collides(self):
+        rows = [
+            {"id": "a", "name": "Alpha", "source_title": "Alpha 2025 Dual", "year": 2025},
+            {"id": "b", "name": "Beta", "source_title": "Beta 2024 Dual", "year": 2024},
+        ]
+        before = json.loads(json.dumps(rows))
+        summary = M._resolve_presentation_collisions(rows)
+        self.assertEqual(summary["reverted_for_uniqueness"], 0)
+        self.assertEqual(rows, before)
+
+    def test_no_card_is_ever_dropped(self):
+        rows = [
+            {"id": "a", "name": "Alpha", "year": 2025},
+            {"id": "b", "name": "Alpha", "source_title": "Alpha 2025 Dual", "year": 2025,
+             "year_source": "source_title"},
+            {"id": "c", "name": "Alpha", "year": 2025, "source_title": "Alpha Hindi Dubbed"},
+        ]
+        M._resolve_presentation_collisions(rows)
+        self.assertEqual([r["id"] for r in rows], ["a", "b", "c"])
+
+    def test_the_guard_runs_on_the_list_pagination_publishes(self):
+        """Wired in, not merely written - the bug was that it was not called."""
+        import inspect
+
+        source = inspect.getsource(M.paginate_movie_list)
+        self.assertIn("_resolve_presentation_collisions", source)
+        retention = source.index("_retain_recent_dropouts")
+        guard = source.index("_resolve_presentation_collisions")
+        self.assertLess(
+            retention,
+            guard,
+            "the guard must run after retention, which is what adds the "
+            "second card",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

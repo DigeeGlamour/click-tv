@@ -3548,6 +3548,14 @@ def paginate_movie_list(
     # as well. Only the real publish path asks for it.
     if retain_recent_dropouts:
         prepared = _retain_recent_dropouts(prepared, category_slug)
+    # After retention, because retention is what can introduce a second card
+    # with the same cleaned title - see _resolve_presentation_collisions.
+    _collisions = _resolve_presentation_collisions(prepared)
+    if _collisions["reverted_for_uniqueness"]:
+        print(
+            f"   {category_slug}: {_collisions['reverted_for_uniqueness']} "
+            "title(s) kept their raw name so two cards stay distinguishable"
+        )
     # Year, first_seen_at and is_new are filled in HERE, before the sort and
     # therefore before pagination. Doing it after would order the catalogue on
     # fields that are not there yet, which is the bug this fixes rather than a
@@ -3821,15 +3829,113 @@ def _resolve_published_poster(
     return ""
 
 
-def _presentation_identity(name: Any, year: Any) -> str:
-    """The identity scripts/validate-pages.py dedupes published movies on.
+#: The year and quality patterns scripts/validate-pages.py strips before it
+#: compares two published names. Copied literally, not approximated: the
+#: scanner's own _normalize_title() is a different and much more aggressive
+#: normaliser - it also removes "hindi dubbed", "dual", "official" and the
+#: rest - so using it here made this guard disagree with the check it exists
+#: to satisfy, in both directions.
+_VALIDATOR_YEAR_PATTERN = re.compile(r"\b(?:19|20)\d{2}\b")
+_VALIDATOR_QUALITY_PATTERN = re.compile(
+    r"\b(?:4k|2k|uhd|fhd|full\s*hd|hd|sd|1080p?|720p?|576p?|480p?|360p?"
+    r"|web[- ]?dl|webrip|bluray|brrip|hdrip)\b"
+)
 
-    Normalised name plus year. Replicated here rather than imported because
-    the scanner does not depend on the validator, but it must not be allowed
-    to drift: tests/test_movie_title_and_poster_health.py checks this pass's
-    output with the validator's own function.
+
+def _catalog_identity(value: Any) -> str:
+    """scripts/validate-pages.py::normalize_catalog_identity, verbatim."""
+    text = str(value or "").casefold()
+    text = _VALIDATOR_YEAR_PATTERN.sub(" ", text)
+    text = _VALIDATOR_QUALITY_PATTERN.sub(" ", text)
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    return " ".join(text.split())
+
+
+def _presentation_identity(name: Any, year: Any) -> str:
+    """scripts/validate-pages.py::normalize_movie_identity, verbatim.
+
+    Replicated rather than imported because the scanner does not depend on
+    the validator, and kept honest by tests/test_movie_title_and_poster_health
+    .py, which loads the validator's own function and compares the two over
+    the real catalogue.
+
+    Note the year: the validator falls back to a year found *inside the name*
+    when the record has no year field, so a row that keeps its raw title is
+    still identified by the year printed in that title.
     """
-    return f"{_normalize_title(name)}:{_parse_year(year) or ''}"
+    name_text = str(name or "").strip()
+    match = _VALIDATOR_YEAR_PATTERN.search(name_text)
+    year_text = str(year or (match.group(0) if match else "")).strip()
+    return f"{_catalog_identity(name_text)}:{year_text}"
+
+
+def _raw_presentation(movie: Dict[str, Any]) -> Tuple[str, Any]:
+    """What this row looked like before the title pass touched it."""
+    raw_name = str(movie.get("source_title") or "").strip()
+    if not raw_name:
+        return "", movie.get("year")
+    year = movie.get("year")
+    if str(movie.get("year_source") or "") == "source_title":
+        # Recovered out of the release label the raw name still carries, so
+        # it goes back with the name it came from.
+        year = None
+    return raw_name, year
+
+
+def _resolve_presentation_collisions(
+    movies: List[Dict[str, Any]],
+) -> Dict[str, int]:
+    """Undo a title cleanup that made two published cards indistinguishable.
+
+    _finalize_movie_presentation() already guards the list it is given, but
+    it is not given the whole list: paginate_movie_list() afterwards calls
+    _retain_recent_dropouts(), which reads the previous pages off disk and
+    adds back a film that vanished from the source this scan. A retained card
+    carries its old published name, and the fresh card for the same film -
+    different id, differently spelled - has just been cleaned. The two can
+    converge:
+
+        retained from disk   "KD The Devil"
+        cleaned this scan    "KD - The Devil 2024 Hindi Dubbed" -> "KD The Devil"
+
+    Neither card is wrong and neither may be dropped, so the cleaned one goes
+    back to the raw title it arrived with. That is exactly the state the
+    validator accepted before the title pass existed.
+    """
+    reverted = 0
+    for _attempt in range(4):
+        counts: Dict[str, int] = {}
+        for movie in movies:
+            if not isinstance(movie, dict):
+                continue
+            key = _presentation_identity(movie.get("name"), movie.get("year"))
+            counts[key] = counts.get(key, 0) + 1
+
+        changed = False
+        for movie in movies:
+            if not isinstance(movie, dict):
+                continue
+            key = _presentation_identity(movie.get("name"), movie.get("year"))
+            if counts.get(key, 0) < 2:
+                continue
+            raw_name, raw_year = _raw_presentation(movie)
+            if not raw_name or raw_name == movie.get("name"):
+                # Nothing to give back: this row was never cleaned, so the
+                # clash is in the source data and predates this pass.
+                continue
+            movie["name"] = raw_name
+            if raw_year is None:
+                movie.pop("year", None)
+                movie.pop("year_source", None)
+            else:
+                movie["year"] = raw_year
+            movie.pop("source_title", None)
+            reverted += 1
+            changed = True
+        if not changed:
+            break
+
+    return {"reverted_for_uniqueness": reverted}
 
 
 def _finalize_movie_presentation(
