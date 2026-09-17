@@ -6,9 +6,11 @@ A source feed's ``tvg-logo`` was trusted on syntax alone. ``_valid_poster_url``
 asks "does this start with https://", never "does this return an image", so a
 host that has since died kept its place at the top of the poster priority
 order and blocked every working fallback beneath it. Measured on the published
-catalogue: 1,312 of 1,667 posters answered HTTP 403 - one dead image proxy
-(``srhady-live-stream.hf.space``) standing in front of an already dead CDN
-(``jrtyh.b-cdn.net``), plus a second dead worker.
+catalogue: 1,312 of 1,667 posters answered HTTP 403 from a Bangladesh egress -
+an image proxy (``srhady-live-stream.hf.space``) in front of
+``jrtyh.b-cdn.net``, plus a second worker. The same URLs answer 200 with real
+image bytes from a GitHub runner, which is why 403 is treated below as a fact
+about the asker rather than about the image.
 
 The rule this module enforces is the simple one: a poster that is provably
 not an image is not a poster. It loses its priority, the resolver falls
@@ -19,11 +21,14 @@ its designed placeholder. Nothing here invents artwork.
 Three verdicts, not two
 -----------------------
 ``ok``      the URL returned image bytes.
-``dead``    the URL definitively refused: 401/403/404/410, or 200 with
-            non-image content. This is what the scanner acts on.
-``unknown`` a timeout, a DNS failure, a 5xx. Our egress having a bad moment is
-            not evidence about the artwork, so an unknown never demotes a URL
-            that is already published; it simply is not counted as verified.
+``dead``    the URL refused in a way that is about the resource - 404, 410,
+            400, 405 - or answered 200 with something that is not an image.
+            This is what the scanner acts on.
+``unknown`` a timeout, a DNS failure, a 5xx, or a refusal that is about the
+            asker rather than the image (401/403/451). Our egress having a bad
+            moment - or being geo-blocked - is not evidence about the artwork,
+            so an unknown never demotes a URL that is already published; it
+            simply is not counted as verified.
 
 Cost control
 ------------
@@ -72,10 +77,25 @@ _USER_AGENT = (
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
 
-#: A definitive refusal. 403 is included deliberately: these URLs answer 403
-#: to the viewer's browser too - that is precisely why the site shows blank
-#: artwork - so for artwork purposes it is indistinguishable from 404.
-DEFINITIVE_REFUSALS = frozenset({400, 401, 402, 403, 404, 405, 410, 451})
+#: A refusal about the *resource*: the image is not there. Safe to act on.
+DEFINITIVE_REFUSALS = frozenset({400, 404, 405, 410})
+
+#: A refusal about the *asker*, not the resource - and the difference is not
+#: academic here. Measured on the same URL on the same day:
+#:
+#:     from a Bangladesh egress   HTTP 403
+#:     from a GitHub runner       HTTP 200, real JPEG bytes
+#:
+#: so 1,312 posters read as "dead" from one vantage and perfectly healthy from
+#: another. Retiring artwork on that evidence would blank a poster for every
+#: viewer who can see it, on the word of one network that cannot. scanner/
+#: verifier.py already draws this line for streams (VANTAGE_SHAPED_CODES);
+#: artwork is held to the same rule.
+#:
+#: Viewers behind the blocked vantage are not left with a broken image: the
+#: page swaps in the designed placeholder on the img error event, which is
+#: where a per-viewer failure belongs.
+VANTAGE_SHAPED_REFUSALS = frozenset({401, 402, 403, 407, 451})
 
 OK = "ok"
 DEAD = "dead"
@@ -249,9 +269,14 @@ class PosterValidator:
                 payload = response.read(PROBE_BYTES)
         except urllib.error.HTTPError as error:
             status = int(getattr(error, "code", 0) or 0)
+            if status in VANTAGE_SHAPED_REFUSALS:
+                # Says something about this runner, not about the image.
+                return UNKNOWN, status
             return (DEAD if status in DEFINITIVE_REFUSALS else UNKNOWN), status
         except Exception:  # noqa: BLE001 - DNS, TLS, timeout, reset, ...
             return UNKNOWN, 0
+        if status in VANTAGE_SHAPED_REFUSALS:
+            return UNKNOWN, status
         if status in DEFINITIVE_REFUSALS:
             return DEAD, status
         if status >= 500:

@@ -140,9 +140,29 @@ class PosterVerdictTests(unittest.TestCase):
             cache_path=temporary.name, opener=_opener(script), **kwargs
         )
 
-    def test_a_403_is_dead(self):
+    def test_a_403_is_about_the_asker_not_the_image(self):
+        """Measured, not assumed.
+
+        The same poster URL answered 403 from a Bangladesh egress and 200 with
+        real JPEG bytes from a GitHub runner on the same day. Retiring artwork
+        on a 403 would blank a poster for everyone who can see it on the word
+        of one network that cannot, so 403 is an unknown - the same line
+        scanner/verifier.py draws for streams. The viewer behind the block
+        still gets the designed placeholder, from the img error event.
+        """
         validator = self._validator({DEAD_URL: (403, b"", "")})
-        self.assertEqual(validator.verdict(DEAD_URL), PV.DEAD)
+        self.assertEqual(validator.verdict(DEAD_URL), PV.UNKNOWN)
+
+    def test_a_401_and_a_451_are_the_same_kind_of_answer(self):
+        for code in (401, 451):
+            with self.subTest(code=code):
+                validator = self._validator({DEAD_URL: (code, b"", "")})
+                self.assertEqual(validator.verdict(DEAD_URL), PV.UNKNOWN)
+
+    def test_an_unknown_poster_is_never_retired(self):
+        """The consequence that matters: it keeps its place."""
+        validator = self._validator({DEAD_URL: (403, b"", "")})
+        self.assertNotEqual(validator.verdict(DEAD_URL), PV.DEAD)
 
     def test_a_404_is_dead(self):
         validator = self._validator({DEAD_URL: (404, b"", "")})
@@ -174,9 +194,9 @@ class PosterVerdictTests(unittest.TestCase):
         self.assertEqual(validator.stats["cache_hits"], 1)
 
     def test_a_host_that_only_ever_refuses_is_short_circuited(self):
-        """What turns 1,197 probes into a handful."""
+        """What keeps a wholly-gone host from costing a probe per poster."""
         script = {
-            f"https://dead.example/{index}.jpg": (403, b"", "")
+            f"https://dead.example/{index}.jpg": (404, b"", "")
             for index in range(PV.HOST_BREAKER_TRIPS + 6)
         }
         validator = self._validator(script)
@@ -187,10 +207,10 @@ class PosterVerdictTests(unittest.TestCase):
 
     def test_one_success_keeps_a_host_alive(self):
         """A few withdrawn images must not retire a working host."""
-        script = {f"https://mixed.example/{i}.jpg": (403, b"", "") for i in range(3)}
+        script = {f"https://mixed.example/{i}.jpg": (404, b"", "") for i in range(3)}
         script["https://mixed.example/good.jpg"] = (200, JPEG, "image/jpeg")
         script.update({
-            f"https://mixed.example/late{i}.jpg": (403, b"", "") for i in range(6)
+            f"https://mixed.example/late{i}.jpg": (404, b"", "") for i in range(6)
         })
         validator = self._validator(script)
         for url in script:
@@ -246,7 +266,7 @@ class PublishedPosterTests(unittest.TestCase):
         """The whole point: the dead URL loses its priority."""
         resolved, counters = self._resolve(
             {"name": "Gargi", "year": 2024, "logo": DEAD_URL},
-            {DEAD_URL: (403, b"", ""), LIVE_URL: (200, JPEG, "image/jpeg")},
+            {DEAD_URL: (404, b"", ""), LIVE_URL: (200, JPEG, "image/jpeg")},
             tmdb=LIVE_URL,
         )
         self.assertEqual(resolved, LIVE_URL)
@@ -257,7 +277,7 @@ class PublishedPosterTests(unittest.TestCase):
         """Empty draws the designed placeholder. A broken image draws nothing."""
         resolved, counters = self._resolve(
             {"name": "Gargi", "year": 2024, "logo": DEAD_URL},
-            {DEAD_URL: (403, b"", "")},
+            {DEAD_URL: (404, b"", "")},
         )
         self.assertEqual(resolved, "")
         self.assertEqual(counters["blank"], 1)
@@ -274,7 +294,7 @@ class PublishedPosterTests(unittest.TestCase):
         """The cache and the generated map hold the URLs being retired."""
         resolved, _counters = self._resolve(
             {"name": "Gargi", "year": 2024, "logo": DEAD_URL},
-            {DEAD_URL: (403, b"", "")},
+            {DEAD_URL: (404, b"", "")},
             cache={M._poster_identity("Gargi", 2024): DEAD_URL},
         )
         self.assertEqual(resolved, "")
@@ -283,7 +303,7 @@ class PublishedPosterTests(unittest.TestCase):
         other = "https://assets.fanart.tv/real.jpg"
         resolved, counters = self._resolve(
             {"name": "Gargi", "year": 2024, "logo": DEAD_URL},
-            {DEAD_URL: (403, b"", ""), other: (200, JPEG, "image/jpeg")},
+            {DEAD_URL: (404, b"", ""), other: (200, JPEG, "image/jpeg")},
             tmdb="", supplementary=other,
         )
         self.assertEqual(resolved, other)
@@ -379,14 +399,15 @@ class TheCatalogueAsPublishedTests(unittest.TestCase):
         if not cls.items:
             raise unittest.SkipTest("no published movie pages")
 
-    def test_no_published_poster_sits_on_a_host_already_proven_dead(self):
-        """Fails until a full movie scan republishes with the fix applied.
+    def test_no_published_poster_sits_on_a_host_this_vantage_cannot_reach(self):
+        """Reported, not asserted - because it is vantage-dependent.
 
-        Left as an explicit, readable failure rather than a skip: the dead
-        artwork is real and still on the site, and the number here is the one
-        that should be going down.
+        These hosts answer 403 from a Bangladesh egress and 200 with real
+        image bytes from a GitHub runner. The count is worth surfacing, since
+        it is what a viewer behind the block sees as placeholders, but it is
+        not evidence the artwork is gone and must not fail a build.
         """
-        dead_hosts = {
+        blocked_here = {
             "srhady-live-stream.hf.space",
             "image.sm-iptv-monirul-islam.workers.dev",
         }
@@ -394,13 +415,13 @@ class TheCatalogueAsPublishedTests(unittest.TestCase):
         offenders = [
             item.get("name")
             for item in self.items
-            if urllib.parse.urlparse(str(item.get("logo") or "")).netloc in dead_hosts
+            if urllib.parse.urlparse(str(item.get("logo") or "")).netloc in blocked_here
         ]
         if offenders:
             raise unittest.SkipTest(
-                f"{len(offenders)} of {len(self.items)} published posters are still "
-                "on a dead host; a full movie scan has not run with the poster "
-                "reachability fix yet"
+                f"{len(offenders)} of {len(self.items)} published posters sit on a "
+                "host this vantage cannot reach; they load elsewhere, and a "
+                "blocked viewer gets the designed placeholder"
             )
 
     def test_every_published_poster_is_a_syntactically_usable_url(self):
