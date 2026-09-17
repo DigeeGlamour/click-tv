@@ -5423,3 +5423,759 @@ body.movie-detail-view .sidebar-list.movie-grid .movie-card {
   overflow: visible !important;
 }
 
+
+/* ==========================================================================
+   DEMO EXACT PARITY - DETAIL VIEW, PLAYER SIDE PANEL, RATING BADGE
+   ==========================================================================
+   Measured in a real browser, demo against site, element by element, and
+   written here from the demo's own final values. This block is last in the
+   file on purpose: the rules it answers are spread across four earlier
+   sections of this sheet, and the demo's value has to be the one that wins.
+
+   Source: `Movie demo design index.html`
+     .panel-top-header / .panel-top-title-group h4 / .btn-player-close-stage
+     .player-related-grid / .related-movie-card / .related-poster-box
+     .related-meta-sub / .related-movie-title / .related-gold-line
+     .btn-play-suggest / .badge-rank / .badge-res-tag.badge-rating-pill
+     .btn-back-pill / .detail-type-pill / .detail-heading / .detail-meta-row
+     .detail-desc / .detail-actions-row / .btn-play-white / .btn-bookmark-dark
+     .server-card-box / .server-box-title / .server-pill-btn / .badge-health
+   ------------------------------------------------------------------------ */
+
+/* ---- The rating, on the poster and nowhere else ------------------------ */
+.badge-res-tag.badge-rating-pill {
+  position: absolute;
+  bottom: 5px;
+  right: 6px;
+  z-index: 3;
+  background: rgba(10, 16, 26, 0.88);
+  color: #f8fafc;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 10.5px;
+  line-height: 1.2;
+  padding: 2.5px 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  display: inline-flex;
+  align-items: center;
+  gap: 3.5px;
+  letter-spacing: 0.3px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+}
+.badge-res-tag.badge-rating-pill i {
+  color: #fbbf24;
+  font-size: 9px;
+  filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.65));
+}
+
+/* ---- Player side panel: the demo's header ----------------------------- */
+html.movie-playback-context body:not(.movie-portal) .movie-related-head {
+  align-items: center;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-title,
+html.movie-playback-context body:not(.movie-portal) .movie-related-head .movie-related-title {
+  /* Demo `.panel-top-title-group h4`. Ours was 11px, 900, uppercase and
+     letter-spaced, which is a different heading altogether. */
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.2px;
+  color: #ffffff;
+  text-transform: none;
+  white-space: nowrap;
+}
+/* The demo hides both outright - "Hide counter badge and description
+   completely as requested". Ours drew a red pill and a second line, which is
+   what pushed the header past the demo's 48px. */
+html.movie-playback-context body:not(.movie-portal) .movie-related-count,
+html.movie-playback-context body:not(.movie-portal) .movie-related-desc {
+  display: none !important;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-back {
+  /* Demo `.btn-player-close-stage`: dark navy, not red. */
+  height: 32px;
+  padding: 0 13px;
+  border-radius: 7px;
+  background: #0b1320;
+  border: 1px solid #20354e;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 750;
+  gap: 7px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-back i {
+  color: #38bdf8;
+  font-size: 12.5px;
+  transition: transform 0.2s ease;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-back:hover {
+  background: #111e30;
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateX(-2px);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-back:hover i {
+  transform: translateX(-2px);
+}
+
+/* ---- Player side panel: the demo's card ------------------------------- */
+html.movie-playback-context body:not(.movie-portal) .movie-related-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-card {
+  /* The two-column grid and the 38px thumbnail column below are the old
+     compact row this panel used to draw; they survived as the button's own
+     `display: grid`, which kept squeezing the demo's poster card. */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  grid-template-columns: none;
+  gap: 0;
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid #1a283c;
+  border-radius: 8px;
+  background: #0d1522;
+  color: inherit;
+  text-align: left;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-card:hover {
+  background: #131f31;
+  border-color: #2b4160;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-poster-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #070c14;
+  margin: 0 0 7px;
+  flex: 0 0 auto;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-poster-box img {
+  grid-row: auto;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+  display: block;
+  background: none;
+  transition: transform 0.3s ease;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-card:hover .movie-related-poster-box img {
+  transform: scale(1.06);
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-rank {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  left: auto;
+  background: rgba(8, 14, 22, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.3;
+  padding: 1.5px 6.5px;
+  border-radius: 3.5px;
+  z-index: 3;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-sub {
+  font-size: 11px;
+  color: #7b94b3;
+  font-weight: 600;
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-name {
+  font-size: 14.5px;
+  font-weight: 850;
+  color: #ffffff;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-rule {
+  width: 24px;
+  height: 2.5px;
+  background: #e59819;
+  border-radius: 2px;
+  margin: 5px 0 6px;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-play {
+  width: 100%;
+  height: 30px;
+  margin-top: auto;
+  background: #0e1724;
+  border: 1px solid #1d2d42;
+  border-radius: 6px;
+  color: #c2d2e5;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  transition: all 0.18s ease;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-play i { font-size: 9.5px; }
+html.movie-playback-context body:not(.movie-portal) .movie-related-card:hover .movie-related-play {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: #10b981;
+  color: #10b981;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-card:hover .movie-related-play i { color: #10b981; }
+/* Demo: the button turns green the moment the suggestion is chosen. */
+html.movie-playback-context body:not(.movie-portal) .movie-related-play.is-playing {
+  background: rgba(16, 185, 129, 0.14);
+  border: 1.5px solid #10b981;
+  color: #10b981;
+  box-shadow: 0 0 14px rgba(16, 185, 129, 0.35);
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-play.is-playing i { color: #10b981; }
+
+/* ---- Detail view ------------------------------------------------------ */
+.movie-detail-inner .btn-back-pill {
+  height: 33px;
+  padding: 0 14px;
+  border-radius: 8px;
+  background: #0b1320;
+  border: 1px solid #20354e;
+  color: #ffffff;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: normal;
+  gap: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.movie-detail-inner .btn-back-pill i { color: #38bdf8; font-size: 12.5px; }
+.movie-detail-inner .btn-back-pill:hover {
+  background: #111e30;
+  border-color: #38bdf8;
+  color: #ffffff;
+}
+
+.movie-detail-main > .detail-type-pill {
+  font-size: 10px;
+  font-weight: 800;
+  padding: 3px 9px;
+  line-height: 1.45;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
+}
+.movie-detail-title.detail-heading {
+  display: block;
+  margin-bottom: 7px;
+}
+.movie-detail-meta.detail-meta-row {
+  font-size: 12.5px;
+  line-height: 1.45;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.movie-detail-plot.detail-desc { margin-bottom: 15px; }
+.movie-detail-actions.detail-actions-row {
+  align-items: center;
+  margin-bottom: 16px;
+}
+.movie-detail-actions .btn-play-white {
+  border: 0;
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 8px;
+}
+.movie-detail-actions .btn-bookmark-dark {
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 8px;
+}
+.movie-detail-main > .server-card-box {
+  max-width: 520px;
+  padding: 12px 16px;
+  background: rgba(8, 14, 22, 0.7);
+}
+.movie-detail-main .server-box-title {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+.movie-detail-main .server-pill-btn {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: #0d1723;
+  border: 1px solid #1f2f44;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  gap: 7px;
+  text-align: center;
+}
+.movie-detail-main .server-pill-btn.active {
+  border-color: #28d68f;
+  background: rgba(40, 214, 143, 0.12);
+  box-shadow: 0 0 10px rgba(40, 214, 143, 0.2);
+}
+.movie-detail-meta .badge-health {
+  height: auto;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+/* ---- Phone, the demo's own values ------------------------------------- */
+@media (max-width: 680px) {
+  html.movie-playback-context body:not(.movie-portal) .movie-related-head {
+    padding: 6px 12px;
+    height: 42px;
+    min-height: 42px;
+  }
+  html.movie-playback-context body:not(.movie-portal) .movie-related-title,
+  html.movie-playback-context body:not(.movie-portal) .movie-related-head .movie-related-title {
+    font-size: 13.5px;
+    font-weight: 800;
+  }
+  html.movie-playback-context body:not(.movie-portal) .movie-related-back {
+    height: 28px;
+    padding: 0 10px;
+    font-size: 11px;
+    gap: 5px;
+    border-radius: 6px;
+  }
+  html.movie-playback-context body:not(.movie-portal) .movie-related-body {
+    padding: 8px 8px 16px;
+  }
+  html.movie-playback-context body:not(.movie-portal) .movie-related-grid { gap: 8px; }
+  html.movie-playback-context body:not(.movie-portal) .movie-related-poster-box {
+    aspect-ratio: 1 / 1.15;
+    margin-bottom: 6px;
+    border-radius: 7px;
+  }
+  html.movie-playback-context body:not(.movie-portal) .movie-related-name {
+    font-size: 13.5px;
+    font-weight: 850;
+    line-height: 1.25;
+  }
+  .movie-detail-actions .btn-play-white,
+  .movie-detail-actions .btn-bookmark-dark {
+    flex: 1;
+    height: 36px;
+    font-size: 12px;
+    justify-content: center;
+  }
+  .movie-detail-main > .server-card-box { padding: 10px 12px; }
+  .movie-detail-main .server-box-title { margin-bottom: 6px; }
+  .movie-detail-main .server-pill-btn {
+    height: 30px;
+    font-size: 11.5px;
+    padding: 0 12px;
+  }
+}
+
+/* ---- Corrections measured after the first pass ------------------------ */
+
+/* `h1 { display:flex; align-items:center; gap:8px }` is a site-wide rule and
+   the detail heading is an h1. The demo's `.detail-heading` is a plain block. */
+.movie-detail-title.detail-heading {
+  gap: normal;
+  align-items: normal;
+}
+
+/* The demo's final block gives the synopsis `max-width: 680px`, four lines
+   and a 15px gap. It was written against `.movie-detail-desc`, but the class
+   this view actually renders is `.movie-detail-plot`, so none of it ever
+   applied and the earlier `margin: 0 0 18px !important` stood. */
+.movie-detail-hero .movie-detail-plot.detail-desc {
+  max-width: 680px;
+  margin: 0 0 15px !important;
+  -webkit-line-clamp: 4;
+}
+
+.movie-detail-main .server-box-title { line-height: 1.45; }
+
+/* The demo's ground and rule are literal rgba(40,214,143,...) while the text
+   and the active rule take `var(--emerald-green)`, which is #19c987. Ours
+   used #28d68f for all three. */
+.movie-detail-meta .badge-health {
+  color: #19c987;
+  border-color: rgba(40, 214, 143, 0.35);
+  background: rgba(40, 214, 143, 0.14);
+}
+.movie-detail-main .server-pill-btn.active {
+  border-color: #19c987;
+  background: rgba(40, 214, 143, 0.12);
+  box-shadow: 0 0 10px rgba(40, 214, 143, 0.2);
+}
+.movie-detail-main .server-green-dot {
+  background: #19c987;
+  box-shadow: 0 0 6px #19c987;
+}
+
+html.movie-playback-context body:not(.movie-portal) .movie-related-card,
+html.movie-playback-context body:not(.movie-portal) .movie-related-sub {
+  line-height: 1.45;
+}
+html.movie-playback-context body:not(.movie-portal) .movie-related-panel {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+html.movie-playback-context body:not(.movie-portal) .movie-related-head {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+/* A hidden panel must actually be hidden.
+   `html.movie-playback-context ... .movie-related-panel { display: flex }`
+   above beats the `[hidden]` attribute's own `display: none`, so during a
+   series the emptied Related panel still held a 479px void at the top of the
+   column and pushed the episode list off the first screen. */
+html.movie-playback-context body:not(.movie-portal) .movie-related-panel[hidden],
+html.movie-playback-context .movie-related-panel[hidden] {
+  display: none !important;
+}
+
+/* On a phone the demo's action row is two buttons at `flex: 1`. Ours carries
+   a third - Copy Link, which the demo has no equivalent for - and three at
+   flex:1 wrapped "Watch Now" onto two lines. The label goes, the control
+   stays: the icon is the affordance and the row keeps the demo's shape. */
+@media (max-width: 680px) {
+  .movie-detail-actions .movie-detail-share {
+    flex: 0 0 auto;
+    padding: 0 12px;
+  }
+  .movie-detail-actions .movie-detail-share span { display: none; }
+}
+
+/* ==========================================================================
+   DEMO EXACT PARITY - MOVIE HOME
+   ==========================================================================
+   Hero, the four discovery cards, and the row headers, taken from the demo's
+   FINAL block (`.hero-showcase`, `.status-card`, `.sec-header` at the end of
+   the sheet), not from its first definitions - the first ones are what the
+   final block then overrides.
+   ------------------------------------------------------------------------ */
+
+/* ---- Hero ------------------------------------------------------------- */
+body.movie-portal .movie-hero {
+  background: #080c14;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+body.movie-portal .movie-hero-title {
+  /* Demo: clamp(31px, 2.6vw, 38px). The two-line clamp this view already
+     has is kept - the demo's titles are short enough never to need one, and
+     ours are not; without it the Hero grows past its own ceiling. */
+  font-size: clamp(31px, 2.6vw, 38px);
+  margin: 0 0 8px;
+}
+body.movie-portal .movie-hero-meta {
+  line-height: 1.45;
+}
+body.movie-portal .movie-hero-desc {
+  max-width: 570px;
+  color: #a6b8ca;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+body.movie-portal .movie-hero-actions { gap: 10px; }
+body.movie-portal .movie-hero-play {
+  border: 0;
+  gap: 8px;
+  letter-spacing: -0.2px;
+  justify-content: center;
+}
+
+/* ---- The four discovery cards ----------------------------------------- */
+body.movie-portal .movie-status-strip {
+  gap: 10px;
+  margin-bottom: 26px;
+}
+body.movie-portal .movie-status-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 84px;
+  padding: 13px 14px;
+  border-radius: 13px;
+  background: #0d1520;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: normal;
+}
+/* Demo `.status-card::before`: one blurred disc of the card's own colour in
+   the top-right corner. Ours had no such tint at all. */
+body.movie-portal .movie-status-card::before {
+  content: "";
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  filter: blur(28px);
+  opacity: 0.2;
+  pointer-events: none;
+}
+body.movie-portal .movie-status-card.hot::before { background: #ff3154; }
+body.movie-portal .movie-status-card.fresh::before { background: #28d68f; }
+body.movie-portal .movie-status-card.latest::before { background: #aa7cff; }
+body.movie-portal .movie-status-card.premium::before { background: #ffb84a; }
+
+body.movie-portal .movie-status-icon {
+  width: 29px;
+  height: 29px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  background: #111a26;
+  border: 1px solid #203144;
+}
+body.movie-portal .movie-status-card.hot .movie-status-icon { color: #ff2a4a; border-color: rgba(255, 49, 84, 0.4); }
+body.movie-portal .movie-status-card.fresh .movie-status-icon { color: #28d68f; border-color: rgba(40, 214, 143, 0.4); }
+body.movie-portal .movie-status-card.latest .movie-status-icon { color: #aa7cff; border-color: rgba(170, 124, 255, 0.4); }
+body.movie-portal .movie-status-card.premium .movie-status-icon { color: #ffb84a; border-color: rgba(255, 184, 74, 0.4); }
+body.movie-portal .movie-status-card h3 {
+  margin: 6px 0 2px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #ffffff;
+}
+body.movie-portal .movie-status-card p {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.35;
+}
+body.movie-portal .movie-status-tag {
+  font-size: 9.5px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+}
+
+/* ---- Row headers ------------------------------------------------------ */
+body.movie-portal .movie-row-head,
+body.movie-detail-view .movie-row-head {
+  align-items: flex-end;
+  padding: 0 2px;
+  margin-bottom: 12px;
+}
+body.movie-portal .movie-row-head h2,
+body.movie-detail-view .movie-row-head h2 {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.25px;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+body.movie-portal .movie-row-head p,
+body.movie-detail-view .movie-row-head p {
+  margin-top: 3px;
+  font-size: 11px;
+  font-weight: 400;
+  color: #7f90a6;
+}
+/* Demo `.sec-controls`. */
+.movie-row-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+body.movie-portal .movie-row-all,
+body.movie-detail-view .movie-row-all {
+  /* Demo `.btn-see-all`: text, not a bordered pill. */
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  padding: 5px 9px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: normal;
+  color: #8fa0b6;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+body.movie-portal .movie-row-all:hover,
+body.movie-detail-view .movie-row-all:hover { color: #ff2a4a; }
+body.movie-portal .movie-row-all i,
+body.movie-detail-view .movie-row-all i { font-size: 9px; }
+/* Demo `.carousel-arrows` / `.arrow-btn` - absent here entirely until now. */
+.movie-row-arrows {
+  display: flex;
+  gap: 6px;
+}
+.movie-row-arrow {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0d1521;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #c5d1e0;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.movie-row-arrow:hover {
+  background: #19273a;
+  color: #ffffff;
+  border-color: #496385;
+}
+@media (max-width: 990px) {
+  .movie-row-arrows { display: none; }
+}
+
+/* Demo `.cards-row`, final block: gap 12 and padding 5px 2px 7px. */
+body.movie-portal .movie-row-strip,
+body.movie-detail-view .movie-row-strip {
+  gap: 12px !important;
+  padding: 5px 2px 7px !important;
+  scroll-behavior: smooth;
+}
+
+/* ---- Home, the last measured gaps ------------------------------------- */
+/* The demo's page line-height is 1.45; ours is `normal`, which is what made
+   every heading and kicker on Movie Home a pixel or two short of the demo.
+   Set on the movie surfaces only - Live TV and Live Sports keep theirs. */
+body.movie-portal .movie-status-card h3,
+body.movie-portal .movie-status-card p,
+body.movie-portal .movie-status-icon,
+body.movie-portal .movie-row-head h2,
+body.movie-portal .movie-row-head p,
+body.movie-detail-view .movie-row-head h2,
+body.movie-detail-view .movie-row-head p {
+  line-height: 1.45;
+}
+/* Desktop and tablet only. The phone Hero has its own measured block - and
+   its own short-landscape ceiling - and forcing the demo's desktop margins
+   into it moved the slider controls onto the action buttons. */
+@media (min-width: 681px) {
+  body.movie-portal .movie-hero .movie-hero-title {
+    font-size: clamp(31px, 2.6vw, 38px) !important;
+    line-height: 1.12 !important;
+    margin: 0 0 8px !important;
+  }
+  body.movie-portal .movie-hero .movie-hero-meta { margin: 0 0 11px !important; }
+  body.movie-portal .movie-hero .movie-hero-desc { margin: 0 0 18px !important; }
+}
+/* Demo `.hero-bg-layer.active { transform: scale(1.02) }`. */
+body.movie-portal .movie-hero .movie-hero-bg { transform: scale(1.02); }
+
+/* The card's older `.movie-rating-badge` rule pins `top: 6px !important`.
+   With the demo's `bottom: 5px` on the same element the badge was anchored
+   top AND bottom and stretched into a vertical stripe down the poster. The
+   demo puts it at the bottom-right, under the rank. */
+.movie-card > .poster-box > .badge-rating-pill,
+.badge-res-tag.badge-rating-pill {
+  top: auto !important;
+  bottom: 5px !important;
+  right: 6px !important;
+  left: auto !important;
+  background: rgba(10, 16, 26, 0.88) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: #f8fafc !important;
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  padding: 2.5px 7px !important;
+  border-radius: 4px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3.5px !important;
+  z-index: 3 !important;
+}
+.movie-card > .poster-box > .badge-rating-pill i,
+.badge-res-tag.badge-rating-pill i {
+  color: #fbbf24 !important;
+  font-size: 9px !important;
+}
+
+@media (max-width: 680px) {
+  /* The demo's phone buttons are one line each. */
+  .movie-detail-actions .btn-play-white,
+  .movie-detail-actions .btn-bookmark-dark { white-space: nowrap; }
+}
+
+/* Demo `.card-quick-bookmark`: a round star on the poster, revealed on
+   hover, gold once the title is on the watchlist. It was the one card
+   affordance the demo has that this card did not. */
+.movie-card > .poster-box > .card-quick-bookmark {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  left: auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(8, 14, 22, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #cbd5e1;
+  font-size: 11.5px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: scale(0.8);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 5;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+}
+.movie-card:hover > .poster-box > .card-quick-bookmark,
+.movie-card > .poster-box > .card-quick-bookmark:focus-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.movie-card > .poster-box > .card-quick-bookmark.active {
+  opacity: 1;
+  transform: scale(1);
+  color: #ffb84a;
+  border-color: rgba(255, 184, 74, 0.55);
+}
+/* Touch has no hover: on a phone the star is simply always there, as the
+   rest of the card's controls are. */
+@media (hover: none) {
+  .movie-card > .poster-box > .card-quick-bookmark { opacity: 1; transform: scale(1); }
+}

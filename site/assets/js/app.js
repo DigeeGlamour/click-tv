@@ -2563,18 +2563,19 @@ function loadMovieSeriesCount() {
 
 // --- Movie Home: hero, status strip, then real rows ------------------------
 
+// Titles and kickers as the demo writes them, emoji included.
 const MOVIE_HOME_ROWS = Object.freeze([
-  ['trending', 'Trending', 'এখন ট্রেন্ডে থাকা বাছাই করা সিনেমা ও সিরিজ'],
-  ['just-added', 'Just Added', 'Click TV-তে সদ্য যোগ হওয়া কনটেন্ট'],
-  ['latest', 'Latest Releases', 'সাম্প্রতিক রিলিজের নতুন সিনেমা ও সিরিজ'],
-  ['web-series', 'Web Series', 'সিজন ও এপিসোডসহ সিরিজ কালেকশন'],
-  ['bangla', 'Bangla Movies', 'বাংলা সিনেমার কালেকশন'],
-  ['hindi', 'Hindi Movies', 'হিন্দি সিনেমার কালেকশন'],
-  ['english', 'English Movies', 'ইংরেজি সিনেমার কালেকশন'],
-  ['south-indian', 'South Indian', 'সাউথ ইন্ডিয়ান সিনেমার কালেকশন'],
-  ['dubbed', 'Dubbed Movies', 'ডাবিং করা সিনেমার কালেকশন'],
-  ['premium', 'Premium Picks', 'বিশেষভাবে বাছাই করা প্রিমিয়াম কনটেন্ট'],
-  ['mix', 'Mix', 'অন্যান্য কনটেন্ট']
+  ['trending', '🔥 Trending', 'এখন ট্রেন্ডে থাকা বাছাই করা সিনেমা ও সিরিজ'],
+  ['just-added', '⚡ Just Added', 'Click TV-তে সদ্য যোগ হওয়া কনটেন্ট'],
+  ['latest', '📅 Latest Releases', 'সাম্প্রতিক রিলিজের নতুন সিনেমা ও সিরিজ'],
+  ['web-series', '📺 Web Series', 'সিজন ও এপিসোডসহ সিরিজ কালেকশন'],
+  ['bangla', '🎬 Bangla Movies', 'বাংলা সিনেমার কালেকশন'],
+  ['hindi', '🍿 Hindi Movies', 'হিন্দি সিনেমার কালেকশন'],
+  ['english', '🌐 English Movies', 'ইংরেজি সিনেমার কালেকশন'],
+  ['south-indian', '🎞️ South Indian', 'সাউথ ইন্ডিয়ান সিনেমার কালেকশন'],
+  ['dubbed', '🎙️ Dubbed Movies', 'ডাবিং করা সিনেমার কালেকশন'],
+  ['premium', '💎 Premium Picks', 'বিশেষভাবে বাছাই করা প্রিমিয়াম কনটেন্ট'],
+  ['mix', '🧩 Mix Collection', 'অন্যান্য কনটেন্ট']
 ]);
 
 const MOVIE_HOME_ROW_LIMIT = 14;
@@ -2604,17 +2605,43 @@ function buildMovieHomeRow(key, title, description, rows) {
   group.append(heading, sub);
   head.appendChild(group);
 
+  // Demo `.sec-controls`: VIEW ALL and the pair of carousel arrows.
+  const controls = document.createElement('div');
+  controls.className = 'movie-row-controls';
   const all = document.createElement('button');
   all.type = 'button';
   all.className = 'movie-row-all tv-focusable';
-  all.textContent = 'VIEW ALL';
+  all.innerHTML = 'VIEW ALL <i class="fas fa-chevron-right" aria-hidden="true"></i>';
   all.addEventListener('click', () => selectMovieNavItem(key));
-  head.appendChild(all);
+  controls.appendChild(all);
 
   const strip = document.createElement('div');
   strip.className = 'movie-row-strip';
+
+  const arrows = document.createElement('div');
+  arrows.className = 'movie-row-arrows';
+  [['left', 'fa-chevron-left', 'Scroll left'], ['right', 'fa-chevron-right', 'Scroll right']]
+    .forEach(([direction, icon, label]) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'movie-row-arrow tv-focusable';
+      button.setAttribute('aria-label', label);
+      button.innerHTML = `<i class="fas ${icon}" aria-hidden="true"></i>`;
+      button.addEventListener('click', () => {
+        // Three cards at a time, measured off the row itself so it keeps
+        // working at every breakpoint the card width changes at.
+        const card = strip.firstElementChild;
+        const step = card ? (card.getBoundingClientRect().width + 12) * 3 : 480;
+        strip.scrollBy({ left: direction === 'left' ? -step : step, behavior: 'smooth' });
+      });
+      arrows.appendChild(button);
+    });
+  controls.appendChild(arrows);
+  head.appendChild(controls);
+
+  const ranked = key === 'trending';
   items.forEach((item, index) => {
-    const card = createMovieCard(item, index);
+    const card = createMovieCard(item, index, { ranked });
     card.addEventListener('click', (event) => {
       if (event.target.closest('.movie-card-info')) return;
       void openMovieDetail(item);
@@ -2933,7 +2960,10 @@ function movieHeroRatingText(entry) {
   const value = Number(entry.rating);
   if (!Number.isFinite(value) || value <= 0) return '';
   const source = String(entry.rating_source || '').trim();
-  return source ? `${source} ${value}` : String(value);
+  // One decimal, as the demo prints it. TMDB hands back 8.154 and the raw
+  // number read like a version string in the Hero's meta row.
+  const text = value.toFixed(1);
+  return source ? `${source} ${text}` : text;
 }
 
 /**
@@ -4176,9 +4206,18 @@ function buildMovieRelatedGrid(rows) {
       box.appendChild(img);
     }
     const rank = document.createElement('span');
-    rank.className = 'movie-related-rank';
+    rank.className = 'badge-rank movie-related-rank';
     rank.textContent = String(index + 1);
     box.appendChild(rank);
+    // Demo `ratingBadgeHtml(s)` on the poster of every suggestion. Drawn only
+    // when the record carries a real rating.
+    const ratingHtml = movieRatingBadgeHtml(row);
+    if (ratingHtml) {
+      const holder = document.createElement('div');
+      holder.innerHTML = ratingHtml;
+      const badge = holder.firstElementChild;
+      if (badge) box.appendChild(badge);
+    }
 
     const metaSub = document.createElement('div');
     metaSub.className = 'movie-related-sub';
@@ -4194,11 +4233,27 @@ function buildMovieRelatedGrid(rows) {
     play.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i> Watch Now';
 
     card.append(box, metaSub, title, rule, play);
-    card.addEventListener('click', () => {
-      // Opens its detail rather than playing it: a related card is a
-      // suggestion, and taking over the player on a stray tap is not.
+    card.addEventListener('click', async () => {
+      // This grid only ever exists beside a running player, and the demo's
+      // own handler starts the next title straight away
+      // (`startPlayback(next)`) rather than stepping through a detail page.
+      // A viewer who is already watching wants the next thing to play, not a
+      // second click. The detail stays the route from the portal's cards.
       const [summary] = movieSummariesToItems([row]);
-      if (summary) void openMovieDetail(summary);
+      if (!summary) return;
+      qsa('.movie-related-play', grid).forEach((node) => node.classList.remove('is-playing'));
+      play.classList.add('is-playing');
+      const resolved = summary._summaryOnly
+        ? (await resolveMovieSummary(summary)) || summary
+        : summary;
+      // Nothing playable behind it means nothing to hand the player: the
+      // detail says why, which is better than a silent dead click.
+      if (!isPlayable(resolved)) {
+        play.classList.remove('is-playing');
+        void openMovieDetail(resolved);
+        return;
+      }
+      startPlayback(resolved, true);
     });
     grid.appendChild(card);
   });
@@ -4780,7 +4835,12 @@ async function openMovieDetail(item) {
   if (resolved.runtime_minutes) metaBits.push(escapeHtml(resolved.runtime_minutes + ' min'));
 
   const quality = movieDetailQuality(resolved);
-  const ratingValue = String(resolved.rating ?? '').trim();
+  // One decimal, as the demo's `getItemRating` does. The provider's raw
+  // 6.883 read like a measurement rather than a rating.
+  const ratingNumber = Number(resolved.rating);
+  const ratingValue = Number.isFinite(ratingNumber) && ratingNumber > 0
+    ? ratingNumber.toFixed(1)
+    : '';
   const ratingSource = String(resolved.rating_source || '').trim();
   const genres = movieGenresOf(resolved).filter(Boolean);
 
@@ -4805,8 +4865,14 @@ async function openMovieDetail(item) {
     '<div class="detail-hero-card movie-detail-hero">' +
       // No backdrop in the record means no backdrop layer at all - an empty
       // dark block behind the poster is worse than the card's own surface.
-      (backdrop
-        ? '<div class="detail-backdrop movie-detail-backdrop" style="background-image:url(' + JSON.stringify(backdrop) + ')"></div>'
+      // The demo paints the backdrop with the title's own artwork
+      // (`background-image:url('${item.img}')`) and blends it out behind the
+      // card. A record with a real backdrop uses that; otherwise the poster
+      // it already shows stands in, which is the demo's own behaviour and
+      // not a substituted image. With neither, there is no layer at all.
+      (backdrop || poster
+        ? '<div class="detail-backdrop movie-detail-backdrop" style="background-image:url('
+          + JSON.stringify(backdrop || poster) + ')"></div>'
         : '') +
       '<div class="detail-inner-grid movie-detail-grid">' +
         '<div class="detail-poster-wrap movie-detail-poster-wrap">' +
@@ -4841,7 +4907,7 @@ async function openMovieDetail(item) {
             '<button type="button" class="btn-play-white movie-detail-play tv-focusable"' + (playable ? '' : ' disabled') + '>' +
               '<i class="fas fa-play" aria-hidden="true"></i> ' + (isSeries ? 'Watch Episode 1' : 'Watch Now') + '</button>' +
             '<button type="button" class="btn-bookmark-dark movie-detail-watchlist tv-focusable">' +
-              '<i class="fas fa-star" aria-hidden="true"></i> <span>Watchlist</span></button>' +
+              '<i class="fas fa-star" aria-hidden="true"></i> <span>Bookmark</span></button>' +
             '<button type="button" class="btn-bookmark-dark movie-detail-share tv-focusable">' +
               '<i class="fas fa-link" aria-hidden="true"></i> <span>Copy Link</span></button>' +
           '</div>' +
@@ -5113,6 +5179,20 @@ function toggleFavorite(uid, event) {
   const item = state.currentItems.find((entry) => entry._uid === uid) || (state.currentItem?._uid === uid ? state.currentItem : null);
   if (!item) return;
   if (seriesModule?.handleFavorite(uid, event)) return;
+  toggleFavoriteItem(item);
+}
+
+/**
+ * The same toggle, for a card that holds its own record.
+ *
+ * Movie Home draws its rows outside `state.currentItems` - they come from
+ * the discovery documents, not from the category list - so the uid lookup
+ * above finds nothing for them and the control did nothing at all. The
+ * demo's quick-bookmark star sits on every card, so it has to work on every
+ * card.
+ */
+function toggleFavoriteItem(item) {
+  if (!item) return;
   const key = item.id || item.url;
   const favorites = favoriteIds();
   const isFavorite = favorites.includes(key);
@@ -5132,7 +5212,7 @@ function toggleFavorite(uid, event) {
 
 function updateFavoriteUi() {
   const favorites = favoriteIds();
-  qsa('[data-favorite-id]', sidebarList).forEach((button) => {
+  qsa('[data-favorite-id]').forEach((button) => {
     const active = favorites.includes(button.dataset.favoriteId);
     button.classList.toggle('active', active);
     const icon = qs('i', button);
@@ -7583,7 +7663,23 @@ function createChannelCard(item, visualIndex) {
   return card;
 }
 
-function createMovieCard(item, visualIndex) {
+/**
+ * The demo's `ratingBadgeHtml`, verbatim in behaviour.
+ *
+ * A rating is drawn on the poster and nowhere else, and only when the record
+ * really carries one. `getItemRating` in the demo returns null rather than a
+ * fabricated number, and the caller hides the badge - the same rule here: a
+ * missing, zero or unparseable rating draws nothing at all.
+ */
+function movieRatingBadgeHtml(item) {
+  const value = Number(item?.rating);
+  if (!Number.isFinite(value) || value <= 0) return '';
+  const text = value.toFixed(1);
+  return '<span class="badge-res-tag badge-rating-pill movie-rating-badge" title="Rating: ' + text +
+    '"><i class="fas fa-star" aria-hidden="true"></i>' + text + '</span>';
+}
+
+function createMovieCard(item, visualIndex, options = {}) {
   const card = document.createElement('div');
   card.className = 'movie-card tv-focusable';
   card.tabIndex = 0;
@@ -7598,7 +7694,7 @@ function createMovieCard(item, visualIndex) {
   });
 
   const year = item.year || item.name.match(/\((\d{4})\)/)?.[1] || 'Movie';
-  const rating = item.rating ? `<span class="movie-rating-badge"><i class="fas fa-star"></i> ${escapeHtml(item.rating)}</span>` : '';
+  const rating = movieRatingBadgeHtml(item);
   const newBadge = movieIsNew(item)
     ? '<span class="movie-new-badge">NEW</span>'
     : '';
@@ -7612,12 +7708,20 @@ function createMovieCard(item, visualIndex) {
   // AVAILABLE SERVERS box, where it can be read properly.
   const subParts = [String(item.category || '').trim(), String(year || '').trim()]
     .filter(Boolean);
+  // The demo passes a rank only for the Trending row (`buildRow(..., true)`);
+  // Just Added, Latest, every category row, the catalogue grid and the
+  // detail's related strip all call `createMediaCard(item)` with none, and so
+  // draw no numbered badge. Ours numbered everything.
+  const rankBadge = options.ranked
+    ? '<span class="badge-rank movie-rank-badge">' + (visualIndex + 1) + '</span>'
+    : '';
   card.innerHTML = `
     <div class="poster-box movie-card-poster-box">
       ${createImageHtml(item, 'movie-poster')}
       <div class="movie-hover-play"><i class="fas fa-play"></i></div>
       <button type="button" class="movie-card-info tv-focusable" aria-label="Details"><i class="fas fa-circle-info" aria-hidden="true"></i></button>
-      <span class="badge-rank movie-rank-badge">${visualIndex + 1}</span>
+      <button type="button" class="card-quick-bookmark movie-card-bookmark tv-focusable" data-favorite-id="${escapeHtml(String(item.id || item.url || ''))}" aria-label="Add to Watchlist" title="Add to Watchlist"><i class="far fa-star" aria-hidden="true"></i></button>
+      ${rankBadge}
       ${newBadge}
       ${rating}
     </div>
@@ -7628,6 +7732,19 @@ function createMovieCard(item, visualIndex) {
     </div>`;
   const image = qs('img', card);
   image?.addEventListener('error', () => replaceBrokenMovieImage(image));
+  const bookmark = qs('.movie-card-bookmark', card);
+  if (bookmark) {
+    if (favoriteIds().includes(String(item.id || item.url || ''))) {
+      bookmark.classList.add('active');
+      qs('i', bookmark).className = 'fas fa-star';
+    }
+    bookmark.addEventListener('click', (event) => {
+      // Stops here: the card behind it opens the detail.
+      event.stopPropagation();
+      event.preventDefault();
+      toggleFavoriteItem(item);
+    });
+  }
   return card;
 }
 

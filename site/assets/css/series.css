@@ -728,3 +728,214 @@ html.lite-performance .series-episode-card {
   font-weight: 800;
   overflow-wrap: anywhere;
 }
+
+/* ==========================================================================
+   DEMO EXACT PARITY - THE SERIES SIDE PANEL DURING PLAYBACK
+   ==========================================================================
+   Demo `.player-side-panel` when a series is playing: a card with a 48px
+   header reading "S2 Episodes" and one button out, and under it nothing but
+   the season's episodes in two columns.
+
+   What was drawn instead: the whole series detail - poster, summary, facts,
+   description and a Start Series button - stacked above the episodes inside
+   the narrow column, with the header row floating loose at the top. The
+   information is right on the detail view, which is where the demo keeps it;
+   beside a running player it is the episode list that is wanted.
+
+   Source: .panel-top-header / .panel-top-title-group h4 / .panel-scroll-body
+           .player-episode-list / .side-episode-card / .ep-seq-box / .ep-text
+   ------------------------------------------------------------------------ */
+
+/* The heading only exists for the panel; the detail view has its own. */
+.series-detail-head { display: contents; }
+.series-detail-head-title { display: none; }
+
+html.movie-playback-context body:not(.movie-portal) .sidebar-list.series-detail-list {
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0d1521 0%, #091019 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.32);
+}
+html.movie-playback-context body:not(.movie-portal) .series-detail-shell {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  gap: 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+html.movie-playback-context body:not(.movie-portal) .series-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 0 0 auto;
+  height: 48px;
+  min-height: 48px;
+  padding: 10px 16px;
+  background: #0d1522;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+html.movie-playback-context body:not(.movie-portal) .series-detail-head-title {
+  display: block;
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.2px;
+  color: #ffffff;
+  white-space: nowrap;
+}
+/* Demo `.btn-player-close-stage`. */
+html.movie-playback-context body:not(.movie-portal) .series-back-button {
+  flex: 0 0 auto;
+  height: 32px;
+  min-height: 32px;
+  margin: 0;
+  padding: 0 13px;
+  border-radius: 7px;
+  background: #0b1320;
+  border: 1px solid #20354e;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 750;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+html.movie-playback-context body:not(.movie-portal) .series-back-button i {
+  color: #38bdf8;
+  font-size: 12.5px;
+}
+html.movie-playback-context body:not(.movie-portal) .series-back-button:hover {
+  background: #111e30;
+  border-color: #38bdf8;
+}
+/* The series card belongs to the detail view, not to the panel. */
+html.movie-playback-context body:not(.movie-portal) .series-detail-main {
+  display: none;
+}
+/* Kept, unlike the demo, because a viewer mid-playback still has to be able
+   to reach another season: the demo only ever offers that on its detail. */
+html.movie-playback-context body:not(.movie-portal) .series-season-strip {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 10px 12px 0;
+}
+/* Demo `.panel-scroll-body`. */
+html.movie-playback-context body:not(.movie-portal) .series-episode-region {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 12px 20px;
+  scrollbar-width: thin;
+  scrollbar-color: #243850 transparent;
+  overscroll-behavior: contain;
+}
+/* Demo `.player-episode-list` and `.side-episode-card`. */
+html.movie-playback-context body:not(.movie-portal) .series-episode-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+html.movie-playback-context body:not(.movie-portal) .series-episode-card {
+  min-height: 0;
+  grid-template-columns: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  border-radius: 10px;
+  background: #111a26;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+html.movie-playback-context body:not(.movie-portal) .series-episode-card:hover {
+  background: #192739;
+  border-color: #3b5373;
+}
+html.movie-playback-context body:not(.movie-portal) .series-episode-card.active {
+  background: rgba(255, 49, 84, 0.16);
+  border-color: #ff2a4a;
+  box-shadow: 0 0 10px rgba(255, 49, 84, 0.25);
+}
+html.movie-playback-context body:not(.movie-portal) .series-episode-number {
+  width: 32px;
+  min-width: 32px;
+  height: 32px;
+  min-height: 32px;
+  border-radius: 6px;
+  background: #162232;
+  border: 1px solid #28394e;
+  display: grid;
+  place-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+html.movie-playback-context body:not(.movie-portal) .series-episode-card.active .series-episode-number {
+  background: #ff2a4a;
+  border-color: #ff2a4a;
+}
+html.movie-playback-context body:not(.movie-portal) .series-episode-copy {
+  overflow: hidden;
+  min-width: 0;
+}
+html.movie-playback-context body:not(.movie-portal) .series-episode-copy strong {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html.movie-playback-context body:not(.movie-portal) .series-episode-copy small {
+  font-size: 9px;
+  margin-top: 2px;
+}
+html.movie-playback-context body:not(.movie-portal) .series-episode-state,
+html.movie-playback-context body:not(.movie-portal) .series-episode-state-placeholder {
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 680px) {
+  html.movie-playback-context body:not(.movie-portal) .series-detail-head {
+    height: 42px;
+    min-height: 42px;
+    padding: 6px 12px;
+  }
+  html.movie-playback-context body:not(.movie-portal) .series-detail-head-title { font-size: 13.5px; }
+  html.movie-playback-context body:not(.movie-portal) .series-back-button {
+    height: 28px;
+    min-height: 28px;
+    padding: 0 10px;
+    font-size: 11px;
+    gap: 5px;
+    border-radius: 6px;
+  }
+  html.movie-playback-context body:not(.movie-portal) .series-episode-region { padding: 8px 8px 16px; }
+}
+
+/* The demo's stage is the same three tracks for a series as for a movie, but
+   the series detail lives inside the catalogue column, so `movie-detail-view`
+   is on the body throughout playback and the movie rule excludes it. Keyed on
+   the episode panel actually being on screen, so the movie detail page - which
+   carries the same body class and no such panel - is left alone. */
+html.movie-playback-context body.playback-active:has(.sidebar-list.series-detail-list) .youtube-layout.final-shell {
+  grid-template-columns: 215px minmax(0, 1fr) 400px !important;
+  gap: 14px !important;
+}

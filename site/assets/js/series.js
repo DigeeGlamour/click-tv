@@ -673,7 +673,10 @@
     const detail = document.createElement('section');
     detail.className = 'series-detail-shell';
     detail.innerHTML = `
-      <button type="button" class="series-back-button tv-focusable"><i class="fas fa-arrow-left"></i><span>Back to Movies</span></button>
+      <div class="series-detail-head">
+        <h4 class="series-detail-head-title">S${numberValue(activeSeasonNumber)} Episodes</h4>
+        <button type="button" class="series-back-button tv-focusable"><i class="fas fa-arrow-left"></i><span>Back to Movies</span></button>
+      </div>
       <div class="series-detail-main">
         <div class="series-detail-poster">${createPosterHtml(activeSeriesItem)}</div>
         <div class="series-detail-copy">
