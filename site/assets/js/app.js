@@ -1236,7 +1236,48 @@ function showFinalEmpty(label, kind = 'Items') {
   renderFinalNavigation();
 }
 
+/**
+ * Leaving a live stream behind when the viewer goes to Movies.
+ *
+ * A channel or an event keeps decoding when the header switches to Movies,
+ * and on desktop the movie portal hides the player column entirely - so the
+ * sound and the bandwidth carry on with no control anywhere on screen to
+ * stop them. Seen in production: the Movies tab active, the NOW PLAYING
+ * strip reading "Rotterdam Dockers vs Dublin Guardians", live segments still
+ * being fetched.
+ *
+ * Only a live item is stopped. A movie keeps playing while the viewer moves
+ * around inside Movies, which is the whole point of the portal.
+ *
+ * Nothing new tears the player down: cleanupPlayerEngine() is the same
+ * routine every other exit path uses - HLS destroy, Shaka destroy, MPEGTS
+ * unload and destroy, pause, src removed, load(). No engine, control or
+ * size rule is touched here.
+ */
+async function stopLivePlaybackForMovies() {
+  const playing = state.currentItem;
+  if (!playing) return;
+  if (isMovieContentItem(playing)) return;
+
+  clearPlaybackTimers();
+  stopStallDetector();
+  await cleanupPlayerEngine().catch(() => {});
+
+  state.currentItem = null;
+  state.playbackSession = null;
+  markPlaybackActive(false);
+  // The strip must stop claiming something is on: it is the only thing left
+  // on screen that would still name the stream.
+  const title = $('metaTitle');
+  if (title) title.textContent = '';
+  const category = $('metaCategory');
+  if (category) category.textContent = '';
+}
+
 async function selectFinalMainGroup(group) {
+  // Before the view changes, not after: the movie portal hides the player,
+  // so a stream left running here becomes unreachable.
+  if (group === 'movies') await stopLivePlaybackForMovies();
   state.activeMainGroup = group;
   if (group === 'sports') state.activeFinalSub = 'today-match';
   else if (group === 'live-tv') state.activeFinalSub = 'bangla';
@@ -7561,17 +7602,29 @@ function createMovieCard(item, visualIndex) {
   const newBadge = movieIsNew(item)
     ? '<span class="movie-new-badge">NEW</span>'
     : '';
+  // Demo `.media-card`: a square poster box, then a meta block BENEATH it -
+  // title, "Category - Year", gold rule. Ours printed the title and year in
+  // an overlay ON the poster instead, which is why the card came out 261px
+  // against the demo's 246 at 1440 and 132x200 against 165x259 at 390.
+  //
+  // The route badge that used to sit on the card face is gone: the demo has
+  // no such badge, and the same information is on the detail view, in the
+  // AVAILABLE SERVERS box, where it can be read properly.
+  const subParts = [String(item.category || '').trim(), String(year || '').trim()]
+    .filter(Boolean);
   card.innerHTML = `
-    <span class="movie-rank-badge">#${visualIndex + 1}</span>
-    ${newBadge}
-    ${rating}
-    ${createImageHtml(item, 'movie-poster')}
-    <div class="movie-hover-play"><i class="fas fa-play"></i></div>
-    <button type="button" class="movie-card-info tv-focusable" aria-label="Details"><i class="fas fa-circle-info" aria-hidden="true"></i></button>
-    <div class="movie-card-overlay">
-      <div class="movie-card-title">${escapeHtml(item.name)}</div>
-      <div class="movie-card-year">${escapeHtml(year)}</div>
-      <div class="source-route-badges movie-source-route-badges">${playbackBadgesHtml(item)}</div>
+    <div class="poster-box movie-card-poster-box">
+      ${createImageHtml(item, 'movie-poster')}
+      <div class="movie-hover-play"><i class="fas fa-play"></i></div>
+      <button type="button" class="movie-card-info tv-focusable" aria-label="Details"><i class="fas fa-circle-info" aria-hidden="true"></i></button>
+      <span class="badge-rank movie-rank-badge">${visualIndex + 1}</span>
+      ${newBadge}
+      ${rating}
+    </div>
+    <div class="card-meta movie-card-meta">
+      <div class="related-movie-title movie-card-title" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</div>
+      <div class="related-meta-sub movie-card-sub">${escapeHtml(subParts.join(' · '))}</div>
+      <div class="related-gold-line"></div>
     </div>`;
   const image = qs('img', card);
   image?.addEventListener('error', () => replaceBrokenMovieImage(image));

@@ -2662,10 +2662,19 @@ html.fullscreen-4k-playback .video-container-wrap:-webkit-full-screen .fs-drawer
   transition: opacity 0.5s ease-in-out;
 }
 .movie-hero-bg.active { opacity: 1; }
-/* The poster fallback. Scaled past the frame so the blur has no soft edge. */
+/* The poster fallback.
+
+   It used to be blurred to 18px at 62% brightness and scaled past the frame.
+   That is why the Featured hero read as an empty dark panel even when the
+   record had a real TMDB poster: the artwork was there, and then it was
+   smeared into a wash. The brief is explicit - a valid poster is used as the
+   hero background, cropped to cover, with a readable dark overlay and no
+   fake blur - and the demo simply covers with the image.
+
+   So it covers. The scrim above it is what keeps the text readable, which is
+   the job the brightness cut was doing badly. */
 .movie-hero-bg.poster-fallback {
-  filter: blur(18px) saturate(1.15) brightness(0.62);
-  transform: scale(1.18);
+  background-position: center 20%;
 }
 /* Third rung of the artwork chain: no backdrop, and no poster that loads.
    A designed ground rather than a flat dark rectangle, so a title with no
@@ -2685,9 +2694,15 @@ html.fullscreen-4k-playback .video-container-wrap:-webkit-full-screen .fs-drawer
   inset: 0;
   z-index: 1;
   pointer-events: none;
+  /* Demo `.hero-bg-overlay`, both gradients exactly. Ours held the right
+     edge at 0.42 and the bottom at 0.25 from halfway up, which kept the
+     artwork dim across the whole panel; the demo opens a window at 72%
+     where the image is only 30% covered, and that is where you actually see
+     it. The left-hand side, where the text sits, is if anything darker than
+     ours was - readability is not being traded away for it. */
   background:
-    linear-gradient(90deg, rgba(9, 14, 22, 0.95) 0%, rgba(9, 14, 22, 0.82) 46%, rgba(9, 14, 22, 0.42) 100%),
-    linear-gradient(0deg, #0c1420 0%, rgba(9, 14, 22, 0.25) 52%, transparent 100%);
+    linear-gradient(90deg, rgba(6, 9, 14, 0.96) 0%, rgba(6, 9, 14, 0.84) 40%, rgba(6, 9, 14, 0.3) 72%, rgba(6, 9, 14, 0.45) 100%),
+    linear-gradient(0deg, #080c14 0%, rgba(6, 9, 14, 0.3) 35%, transparent 70%);
 }
 .movie-hero-inner {
   position: relative;
@@ -3196,7 +3211,9 @@ body.movie-portal .movie-hero-details { background: #0d1522 !important; border-c
 .movie-row-strip {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 184px;
+  /* One number for both, or the track and the card disagree - at 390 the
+     tracks were 132px while the card was 165px. */
+  grid-auto-columns: var(--card-base-width, 184px);
   gap: 14px;
   overflow-x: auto;
   padding: 6px 4px 8px;
@@ -3260,48 +3277,42 @@ body.movie-portal .movie-card .movie-poster-placeholder,
   justify-content: center !important;
   gap: 6px !important;
 }
-/* The meta moves below the poster: no gradient, no overlay. */
-body.movie-portal .movie-card .movie-card-overlay,
-.movie-row-strip .movie-card .movie-card-overlay {
-  position: relative !important;
-  inset: auto !important;
-  background: none !important;
-  padding: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-}
+/* The card's meta block, beneath the poster.
+
+   This used to reshape `.movie-card-overlay` - the title and year painted
+   across the poster - into a column, and drew the gold rule with an ::after.
+   The card now carries the demo's own structure instead (`.poster-box` then
+   `.card-meta`), so the overlay, the year div and the pseudo-element are
+   gone rather than left to fight the real elements that replaced them.
+
+   The values are the demo's HOME card: `.media-card .related-movie-title` is
+   13.5px/800 on #f1f5f9, and `.media-card .related-meta-sub` 10.4px/600 on
+   #8495aa. They are NOT the panel card's 14.5px/850 - that is the related
+   list beside the player, a different card in the same design. Keeping the
+   two apart is why this block states them here. */
 body.movie-portal .movie-card .movie-card-title,
 .movie-row-strip .movie-card .movie-card-title {
-  order: 2;
-  color: #fff !important;
-  font-size: 14.5px !important;
-  font-weight: 850 !important;
-  line-height: 1.3 !important;
-  letter-spacing: -0.2px !important;
+  order: 1;
+  color: #f1f5f9 !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+  line-height: 1.28 !important;
+  letter-spacing: normal !important;
+  margin: 0 0 3px !important;
   display: -webkit-box !important;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden !important;
   white-space: normal !important;
+  text-align: left !important;
 }
-body.movie-portal .movie-card .movie-card-year,
-.movie-row-strip .movie-card .movie-card-year {
-  order: 1;
-  color: #7b94b3 !important;
-  font-size: 11px !important;
+body.movie-portal .movie-card .movie-card-sub,
+.movie-row-strip .movie-card .movie-card-sub {
+  order: 2;
+  color: #8495aa !important;
+  font-size: 10.4px !important;
   font-weight: 600 !important;
-  margin-bottom: 4px !important;
-}
-/* The gold rule under the title, as in the reference. */
-body.movie-portal .movie-card .movie-card-overlay::after,
-.movie-row-strip .movie-card .movie-card-overlay::after {
-  content: "";
-  order: 3;
-  width: 24px;
-  height: 2.5px;
-  margin: 5px 0 2px;
-  border-radius: 2px;
-  background: #e59819;
+  margin: 0 !important;
 }
 body.movie-portal .movie-card .source-route-badges,
 .movie-row-strip .movie-card .source-route-badges { display: none !important; }
@@ -3425,7 +3436,7 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
     gap: 14px 10px !important;
   }
-  .movie-row-strip { grid-auto-columns: 150px; gap: 10px; }
+  .movie-row-strip { grid-auto-columns: var(--card-base-width); gap: 12px; }
   .movie-row { margin-bottom: 22px; }
   .movie-row-head h2 { font-size: 16px; }
   .movie-status-strip { grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 16px; }
@@ -3434,7 +3445,7 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
   body.movie-portal .sidebar-list.movie-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
-  .movie-row-strip { grid-auto-columns: 132px; }
+  .movie-row-strip { grid-auto-columns: var(--card-base-width); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -5039,5 +5050,376 @@ html.movie-playback-context body:not(.movie-portal) .video-meta .meta-subtitle-r
   }
   body.movie-portal .movie-hero-desc { display: none !important; }
   body.movie-portal .movie-hero-badges { display: none !important; }
+}
+
+/* =========================================================================
+   MOVIE CARD - DEMO PORT
+   Demo `.media-card`, `.poster-box`, `.card-meta`, measured side by side and
+   value for value. What was here painted the title and the year in an
+   overlay across the poster; the demo puts a square poster on top and a meta
+   block underneath it, which is the whole difference in height:
+
+       1440   demo 184x246   ours 184x261
+        390   demo 165x259   ours 132x200  (poster 1/1.15 against 1/1)
+
+   `!important` throughout only because the rules being answered carry it.
+   ========================================================================= */
+/* The demo drives every card off one variable, at four widths:
+   184px, then 172 below 990, 165 below 680, 156 below 374. It was not
+   defined here at all, so the card fell back to whatever the older rules
+   set - 132px wide at 390 against the demo's 165. */
+:root { --card-base-width: 184px; }
+@media (max-width: 990px) { :root { --card-base-width: 172px; } }
+@media (max-width: 680px) { :root { --card-base-width: 165px; } }
+@media (max-width: 374px) { :root { --card-base-width: 156px; } }
+
+body.movie-portal .movie-row-strip,
+body.movie-portal .sidebar-list.movie-grid {
+  /* Demo `.cards-row`: gap 14, padding 6px 4px 8px. */
+  gap: 14px !important;
+  padding: 6px 4px 8px !important;
+}
+
+/* The fixed width belongs to the ROW only. In the demo a grid card is
+   `width: 100% !important` and fills its track; forcing the row's width on
+   it pushed the card out of its cell, and clicking a card's Details button
+   in a category grid then hit the grid behind it instead - the detail simply
+   did not open. */
+body.movie-portal .movie-row-strip > .movie-card,
+body.movie-detail-view .movie-row-strip > .movie-card {
+  width: var(--card-base-width) !important;
+  max-width: var(--card-base-width) !important;
+}
+body.movie-portal .sidebar-list.movie-grid > .movie-card,
+body.movie-detail-view .sidebar-list.movie-grid > .movie-card {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+body.movie-portal .movie-card,
+body.movie-detail-view .movie-card {
+  /* The original `.movie-card` is a 2/3 poster tile with the meta pinned to
+     its bottom: `aspect-ratio: 2/3`, `justify-content: flex-end`,
+     `contain: layout paint`. With the demo's structure - a square poster and
+     a meta block beneath it - that combination made the content taller than
+     the box and `flex-end` pushed the overflow out of the TOP: the poster
+     box measured 54px ABOVE its own card, over the genre bar, and the
+     Details button went with it. Clicking it in a category grid then hit the
+     bar instead, and the detail never opened. The card sizes to its content
+     here, which is what the demo card does. */
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  contain: none !important;
+  contain-intrinsic-size: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: #0d1522 !important;
+  border: 1px solid #1a283c !important;
+  border-radius: 11px !important;
+  padding: 9px !important;
+  overflow: visible !important;
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+body.movie-portal .movie-card:hover,
+body.movie-detail-view .movie-card:hover {
+  background: #131f31 !important;
+  border-color: #2e4466 !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Demo `.poster-box`. */
+.movie-card > .poster-box {
+  /* !important because the grid card is styled through a six-class chain in
+     reference-design.css; without it the box stayed static, the absolutely
+     positioned Details button resolved against an ancestor instead, and it
+     landed 30px above its own card - on top of the genre bar, where a click
+     never reached it. */
+  position: relative !important;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #070c14;
+  margin-bottom: 7px;
+  flex: 0 0 auto;
+}
+.movie-card > .poster-box > .movie-poster,
+.movie-card > .poster-box > img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  object-fit: cover !important;
+  display: block !important;
+  border-radius: 0 !important;
+  aspect-ratio: auto !important;
+  transition: transform 0.35s ease;
+}
+.movie-card:hover > .poster-box > img { transform: scale(1.06); }
+.movie-card > .poster-box > .movie-poster-placeholder {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+/* Demo `.card-meta`, and the order the demo's final block gives it:
+   title first, then the category-and-year line, then the gold rule. */
+.movie-card > .card-meta {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 2px !important;
+  gap: 1px;
+  position: static !important;
+  inset: auto !important;
+  background: none !important;
+  min-width: 0;
+}
+/* Type for these two lives in the block above, which has to carry the
+   higher specificity that the rules it replaced already had. Only what is
+   not type is stated here. */
+.movie-card > .card-meta > .movie-card-sub {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.movie-card > .card-meta > .related-gold-line {
+  order: 3;
+  width: 20px;
+  height: 2.5px;
+  background: #e59819;
+  border-radius: 2px;
+  opacity: 0.7;
+  margin-top: 5px;
+}
+
+/* Demo `.badge-rank`, on the poster rather than the card corner. */
+.movie-card > .poster-box > .movie-rank-badge {
+  position: absolute !important;
+  top: 6px !important;
+  right: 6px !important;
+  left: auto !important;
+  background: rgba(8, 14, 22, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  padding: 1.5px 6.5px !important;
+  border-radius: 3.5px !important;
+  line-height: 1.3 !important;
+  z-index: 3;
+}
+/* The demo keeps its corner control at the top-right of the poster box, and
+   so does this one - moving it to the left served nothing and put it under
+   the rank badge's old corner. */
+.movie-card > .poster-box > .movie-card-info {
+  top: 6px !important;
+  right: 42px !important;
+  left: auto !important;
+  z-index: 4;
+}
+.movie-card > .poster-box > .movie-new-badge,
+.movie-card > .poster-box > .movie-rating-badge {
+  z-index: 3;
+}
+
+/* Demo phone values: a 172px card, a slightly taller poster at 1 / 1.15. */
+@media (max-width: 680px) {
+  body.movie-portal .movie-row-strip,
+  body.movie-portal .sidebar-list.movie-grid {
+    gap: 12px !important;
+  }
+  body.movie-portal .movie-row-strip > .movie-card,
+  body.movie-detail-view .movie-row-strip > .movie-card {
+    width: var(--card-base-width) !important;
+    max-width: var(--card-base-width) !important;
+  }
+  body.movie-portal .movie-card,
+  body.movie-detail-view .movie-card {
+    padding: 8px !important;
+    border-radius: 10px !important;
+  }
+  .movie-card > .poster-box {
+    aspect-ratio: 1 / 1.15;
+    margin-bottom: 6px;
+    border-radius: 7px;
+  }
+  body.movie-portal .movie-card .movie-card-title,
+  .movie-row-strip .movie-card .movie-card-title {
+    font-size: 13px !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+  }
+  body.movie-portal .movie-card .movie-card-sub,
+  .movie-row-strip .movie-card .movie-card-sub {
+    font-size: 10.2px !important;
+    margin-bottom: 3px !important;
+  }
+  .movie-card > .card-meta > .related-gold-line {
+    width: 22px;
+    height: 2px;
+    margin: 4px 0 2px;
+  }
+}
+
+/* ---- Typeface -----------------------------------------------------------
+   The demo sets `'Plus Jakarta Sans', 'Noto Sans Bengali', -apple-system'`
+   on everything. reference-design.css puts Manrope in front of it site-wide,
+   so every movie surface was rendering in the wrong face - measured on the
+   card row and the card title, both Manrope against the demo's Plus Jakarta
+   Sans.
+
+   Scoped to the movie surfaces. Live TV and Live Sports keep their own body
+   face, because changing a typeface changes every text width and this brief
+   is explicit that their layout and cards must not move. Their CATEGORY text
+   is the one exception, and it is handled where the brief asks for it. */
+body.movie-portal,
+body.movie-detail-view,
+html.movie-playback-context body:not(.movie-portal) .sidebar-section.side-panel,
+html.movie-playback-context body:not(.movie-portal) .video-meta {
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Bengali', -apple-system,
+    BlinkMacSystemFont, sans-serif;
+}
+body.movie-portal .movie-card,
+body.movie-portal .movie-card *,
+body.movie-detail-view .movie-detail-panel,
+body.movie-detail-view .movie-detail-panel *,
+body.movie-portal .movie-hero,
+body.movie-portal .movie-hero *,
+html.movie-playback-context .movie-related-panel,
+html.movie-playback-context .movie-related-panel * {
+  font-family: 'Plus Jakarta Sans', 'Noto Sans Bengali', -apple-system,
+    BlinkMacSystemFont, sans-serif !important;
+}
+
+/* ---- The last three card deltas ---------------------------------------
+   1. `content-visibility: auto; contain-intrinsic-size: 180px` is a render
+      guard for long lists, and on a movie card it was deciding the height:
+      180 + 18 of padding is exactly the 198px the card measured at 390,
+      against the demo's 259. The card now measures itself. The guard stays
+      on every other list it was written for.
+   2. The category-and-year line came out 13px tall against the demo's 15.1,
+      which is line-height, not size - the size already matched.
+   3. The gold rule is 20px wide on the card at every width: the demo's own
+      phone block says 22px, but its later card block says 20px and wins. */
+body.movie-portal .movie-card,
+body.movie-detail-view .movie-card,
+html.movie-playback-context .movie-card {
+  content-visibility: visible !important;
+  contain-intrinsic-size: auto !important;
+}
+body.movie-portal .movie-card .movie-card-sub,
+.movie-row-strip .movie-card .movie-card-sub {
+  line-height: 1.45 !important;
+}
+@media (max-width: 680px) {
+  .movie-card > .card-meta > .related-gold-line {
+    width: 20px;
+    margin: 4px 0 2px;
+  }
+}
+
+/* Demo `.media-grid`: tracks that fit the card rather than a number of their
+   own, so a card always matches its cell. */
+body.movie-portal .sidebar-list.movie-grid {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+  gap: 20px 14px !important;
+}
+@media (max-width: 990px) {
+  body.movie-portal .sidebar-list.movie-grid {
+    grid-template-columns: repeat(auto-fill, var(--card-base-width)) !important;
+  }
+}
+@media (max-width: 680px) {
+  body.movie-portal .sidebar-list.movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(var(--card-base-width), 1fr)) !important;
+    gap: 14px 10px !important;
+    justify-content: center;
+  }
+}
+
+/* ---- The grid card's poster box ----------------------------------------
+   The category grid is owned by a six-class chain in reference-design.css -
+   `.sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card>img
+   .movie-poster` - and the block above already had to answer it once. The
+   card now wraps its poster in `.poster-box`, which that block never
+   mentions, so the box was laid out by whatever else matched: it came out
+   54px ABOVE its own card, taking the absolutely positioned Details button
+   with it, onto the genre bar where a click could never reach it. That is
+   why opening a detail from a category grid stopped working.
+
+   Same chain, same weight, the demo's values. ---------------------------- */
+body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card > .poster-box {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  background: #070c14 !important;
+  margin: 0 0 7px !important;
+  flex: 0 0 auto !important;
+  order: 0 !important;
+}
+body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card > .poster-box > .movie-poster,
+body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card > .poster-box > .movie-poster-placeholder {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: auto !important;
+  object-fit: cover !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+}
+body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card > .card-meta {
+  position: static !important;
+  inset: auto !important;
+  background: none !important;
+  padding: 2px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  order: 1 !important;
+}
+@media (max-width: 680px) {
+  body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-card > .poster-box {
+    aspect-ratio: 1 / 1.15 !important;
+    margin-bottom: 6px !important;
+    border-radius: 7px !important;
+  }
+}
+
+/* ---- The grid card's fixed height --------------------------------------
+   reference-design.css pins it:
+
+     .sidebar-list.movie-grid .movie-card { height:205px!important;
+       min-height:205px!important; max-height:205px!important }
+
+   That is (0,3,0) with !important, and it loads after this file, so every
+   height rule written as `body.movie-portal .movie-card` - (0,2,1) - lost to
+   it. With the demo's card being a square poster plus a meta block, 205px is
+   shorter than the content, and the card's inherited `justify-content:
+   flex-end` pushed the overflow out through the TOP: the poster box sat 54px
+   above its own card, on the genre bar, and the Details button went with it,
+   so a click in a category grid could never reach it.
+
+   Four classes and an element (0,4,1) is what it takes to answer that rule,
+   and all it says is "measure yourself", which is what the demo card does.
+   Live TV and Live Sports grids never carry `.movie-grid`. --------------- */
+body.movie-portal .sidebar-list.movie-grid .movie-card,
+body.movie-detail-view .sidebar-list.movie-grid .movie-card {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  aspect-ratio: auto !important;
+  justify-content: flex-start !important;
+  contain: none !important;
+  contain-intrinsic-size: auto !important;
+  overflow: visible !important;
 }
 
