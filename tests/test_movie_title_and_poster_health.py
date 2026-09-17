@@ -511,6 +511,37 @@ class TitlesStayDistinguishableTests(unittest.TestCase):
         self.assertNotEqual(rows[0]["name"], rows[1]["name"])
         self.assertEqual(report["titles"]["kept_raw_for_uniqueness"], 2)
 
+    def test_recovering_a_year_cannot_merge_two_rows(self):
+        """The half the first fix missed.
+
+        The validator's key is name AND year, and this pass moves both: it
+        rewrites the name, and it lifts a year out of the release label the
+        name just lost. So a row that had no year could acquire one and land
+        on another row's identity without either name changing at all.
+
+            "Alpha 2025 Hindi Dubbed"  ->  Alpha / 2025   (year recovered)
+            "Alpha" (year already 2025) ->  Alpha / 2025
+
+        Both must stay distinguishable.
+        """
+        rows = [
+            {"id": "a", "name": "Alpha 2025 Hindi Dubbed", "logo": ""},
+            {"id": "b", "name": "Alpha", "year": 2025, "logo": ""},
+        ]
+        self._run({"Hindi": rows})
+        identities = {
+            (row["name"], str(row.get("year") or "")) for row in rows
+        }
+        self.assertEqual(len(identities), 2, rows)
+
+    def test_a_year_is_still_recovered_when_nothing_collides(self):
+        """The guard must not switch the recovery off wholesale."""
+        rows = [{"id": "a", "name": "Alpha 2025 Hindi Dubbed", "logo": ""}]
+        report = self._run({"Hindi": rows})
+        self.assertEqual(rows[0]["name"], "Alpha")
+        self.assertEqual(rows[0]["year"], 2025)
+        self.assertEqual(report["titles"]["years_recovered"], 1)
+
     def test_a_collision_in_another_category_is_not_a_collision(self):
         """The validator's rule is per category, and so is this."""
         grouped = {
@@ -523,12 +554,38 @@ class TitlesStayDistinguishableTests(unittest.TestCase):
         self.assertEqual(report["titles"]["kept_raw_for_uniqueness"], 0)
 
 
-class ThePublishedCatalogueStaysUniqueTests(unittest.TestCase):
-    """The same check the Cloudflare output validator runs, on real data."""
+# The exact-name uniqueness check that used to live here has been removed as
+# superseded, and wrong: the rule that gates the build is the validator's, and
+# it keys on name AND year. Two genuinely different films both called "Alpha"
+# are legitimate - the card shows the year beside the name - so demanding
+# distinct strings was stricter than the site needs and would have forced
+# scene junk back onto honest titles. TheValidatorsOwnRuleTests below borrows
+# the validator's own function instead, so the two cannot disagree again.
 
-    def test_the_pass_introduces_no_duplicate_name_in_any_category(self):
+class TheValidatorsOwnRuleTests(unittest.TestCase):
+    """Dedupe the pass's output with scripts/validate-pages.py itself.
+
+    The first fix checked uniqueness with a normaliser of its own and passed,
+    while the real scan still failed - because the validator keys on name AND
+    year, and this pass moves both. Borrowing the validator's function is the
+    only way this check cannot drift from the one that gates the build.
+    """
+
+    def _identity(self):
+        import importlib.util
+
+        path = ROOT / "scripts" / "validate-pages.py"
+        if not path.is_file():
+            self.skipTest("validator not present")
+        spec = importlib.util.spec_from_file_location("validate_pages", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module.normalize_movie_identity
+
+    def test_the_pass_adds_no_duplicate_identity_the_validator_would_refuse(self):
         import collections
 
+        identity = self._identity()
         grouped = collections.defaultdict(list)
         for path in sorted((ROOT / "data" / "movies").glob("*/page-*.json")):
             payload = json.loads(path.read_text(encoding="utf-8"))
@@ -537,16 +594,19 @@ class ThePublishedCatalogueStaysUniqueTests(unittest.TestCase):
         if not grouped:
             self.skipTest("no published movie pages")
 
-        before = {
-            category: sum(
-                count - 1
-                for count in collections.Counter(
-                    row.get("name", "") for row in rows
-                ).values()
-                if count > 1
-            )
-            for category, rows in grouped.items()
-        }
+        def duplicates(rows):
+            seen, found = set(), 0
+            for row in rows:
+                key = identity(row)
+                if not key or key.startswith(":"):
+                    continue
+                if key in seen:
+                    found += 1
+                else:
+                    seen.add(key)
+            return found
+
+        before = {c: duplicates(rows) for c, rows in grouped.items()}
 
         original_tmdb = M._tmdb_poster_lookup
         original_supplementary = M.supplementary_poster_lookup
@@ -567,19 +627,12 @@ class ThePublishedCatalogueStaysUniqueTests(unittest.TestCase):
             )
 
         for category, rows in grouped.items():
-            after = sum(
-                count - 1
-                for count in collections.Counter(
-                    row.get("name", "") for row in rows
-                ).values()
-                if count > 1
-            )
             with self.subTest(category=category):
                 self.assertLessEqual(
-                    after,
+                    duplicates(rows),
                     before[category],
-                    f"{category}: cleaning introduced duplicate names "
-                    f"({before[category]} -> {after})",
+                    f"{category}: the pass created an identity the published "
+                    "output validator would refuse",
                 )
 
 

@@ -3821,6 +3821,17 @@ def _resolve_published_poster(
     return ""
 
 
+def _presentation_identity(name: Any, year: Any) -> str:
+    """The identity scripts/validate-pages.py dedupes published movies on.
+
+    Normalised name plus year. Replicated here rather than imported because
+    the scanner does not depend on the validator, but it must not be allowed
+    to drift: tests/test_movie_title_and_poster_health.py checks this pass's
+    output with the validator's own function.
+    """
+    return f"{_normalize_title(name)}:{_parse_year(year) or ''}"
+
+
 def _finalize_movie_presentation(
     grouped_movies: Dict[str, List[Dict[str, Any]]],
     *,
@@ -3856,40 +3867,46 @@ def _finalize_movie_presentation(
 
     try:
         for movies in grouped_movies.values():
-            # Cleaning must never make two rows in one category look like the
-            # same title. Four seasons of one show reduced to four identical
-            # "Reacher" cards is both a published-output validation error and,
-            # more to the point, four cards a viewer cannot tell apart. So the
-            # cleaned names are proposed first, and any that would collide keep
-            # the raw title they arrived with.
-            proposed: Dict[int, str] = {}
-            taken: Dict[str, int] = {}
-            collided: set[int] = set()
+            # A row is identified by its name AND its year - that is the key
+            # the published-output validator dedupes on - and this pass can
+            # move both: it rewrites the name, and it recovers a year out of
+            # the release label the name just lost. Either can merge two rows
+            # that used to be distinct:
+            #
+            #   "Reacher (2022) S01 Dual"  ->  Reacher S01 / 2022
+            #   "Reacher (2022) S01 720p"  ->  Reacher S01 / 2022
+            #
+            #   "Alpha 2025 Hindi Dubbed"  ->  Alpha / 2025   (year recovered)
+            #   "Alpha"                    ->  Alpha / 2025   (year already set)
+            #
+            # So the cleaned presentation is proposed first and checked against
+            # the same identity the validator uses. A row whose proposal would
+            # collide is published exactly as it arrived - name and year both -
+            # because an ambiguous pair of cards is worse than a scruffy name.
+            proposals: List[Tuple[int, Dict[str, Any], str, str, int, int]] = []
             for index, movie in enumerate(movies):
                 if not isinstance(movie, dict):
                     continue
                 raw_name = _display_title(movie.get("name") or movie.get("title"))
-                clean_name = _clean_display_title(raw_name)
-                proposed[index] = clean_name
-                key = _normalize_title(clean_name)
-                if not key:
-                    continue
-                if key in taken:
-                    collided.add(index)
-                    collided.add(taken[key])
-                else:
-                    taken[key] = index
+                clean_name = _clean_display_title(raw_name) or raw_name
+                raw_year = _parse_year(movie.get("year"))
+                clean_year = raw_year or _parse_year(raw_name)
+                proposals.append(
+                    (index, movie, raw_name, clean_name, raw_year, clean_year)
+                )
 
-            for index, movie in enumerate(movies):
-                if not isinstance(movie, dict):
-                    continue
-                raw_name = _display_title(movie.get("name") or movie.get("title"))
-                clean_name = proposed.get(index) or raw_name
-                if index in collided:
-                    # Ambiguous once cleaned: the raw string, whatever else is
-                    # wrong with it, at least distinguishes this row.
-                    clean_name = raw_name
+            #: identity -> how many proposals land on it
+            counts: Dict[str, int] = {}
+            for _i, _m, raw_name, clean_name, _ry, clean_year in proposals:
+                counts[_presentation_identity(clean_name, clean_year)] = (
+                    counts.get(_presentation_identity(clean_name, clean_year), 0) + 1
+                )
+
+            for _index, movie, raw_name, clean_name, raw_year, clean_year in proposals:
+                if counts.get(_presentation_identity(clean_name, clean_year), 0) > 1:
+                    clean_name, clean_year = raw_name, raw_year
                     counters["titles_kept_for_uniqueness"] += 1
+
                 if clean_name and clean_name != raw_name:
                     movie["source_title"] = raw_name
                     movie["name"] = clean_name
@@ -3897,15 +3914,13 @@ def _finalize_movie_presentation(
                 elif clean_name:
                     movie["name"] = clean_name
 
-                year = _parse_year(movie.get("year"))
-                if not year:
+                year = clean_year
+                if year and not raw_year:
                     # The release label the title just lost often carried the
                     # only year this record has.
-                    year = _parse_year(raw_name)
-                    if year:
-                        movie["year"] = year
-                        movie["year_source"] = movie.get("year_source") or "source_title"
-                        counters["years_recovered"] += 1
+                    movie["year"] = year
+                    movie["year_source"] = movie.get("year_source") or "source_title"
+                    counters["years_recovered"] += 1
 
                 movie["logo"] = _resolve_published_poster(
                     movie,
