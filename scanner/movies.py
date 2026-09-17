@@ -493,12 +493,16 @@ _RELEASE_JUNK_PATTERN = re.compile(
     r"japanese|chinese|urdu|marathi|punjabi|gujarati|thai|spanish|french|"
     r"russian|arabic|turkish)[\s._-]+"
     r"(?:dub|dubs|dubbed|audio|org|esub|msub|sub|subs|subbed|line|studio|hq|dual|multi)\b"
-    # A bare season marker is a full-season bundle and belongs to the release
-    # label. An episode marker (S01E15) is left alone deliberately: it is the
-    # only thing telling five otherwise identically named rows apart.
-    r"|\bs\d{1,2}(?![a-z0-9])",
+    ,
     flags=re.IGNORECASE,
 )
+
+#: Season and episode markers are NOT release junk - they are what tells four
+#: rows of the same show apart. Cutting at a bare season marker turned
+#: "Reacher S01".."S04" into four rows all called "Reacher", which the
+#: published-output validator rightly refused as duplicate names in one
+#: category. The marker is kept, and re-attached if the cut took it.
+_SEASON_MARKER_PATTERN = re.compile(r"\bS\d{1,2}(?:E\d{1,3})*\b", flags=re.IGNORECASE)
 
 #: A parenthesised year is unambiguously metadata rather than part of a name -
 #: the year has its own field - so it comes out wherever it sits.
@@ -578,6 +582,13 @@ def _clean_display_title(value: Any) -> str:
     # above ate the name, the raw one was better.
     if len(text) < 2:
         return original
+
+    # "Reacher (2022) S01 Dual Audio" is "Reacher S01", not "Reacher": the
+    # season marker is the only thing separating it from the other three
+    # seasons sitting in the same category.
+    marker = _SEASON_MARKER_PATTERN.search(original)
+    if marker and not _SEASON_MARKER_PATTERN.search(text):
+        text = text + " " + marker.group(0).upper()
     return text
 
 
@@ -3830,7 +3841,8 @@ def _finalize_movie_presentation(
     kept on the card as ``source_title`` so the original is never lost.
     """
     counters = {
-        "titles_cleaned": 0, "years_recovered": 0, "kept": 0, "dropped_dead": 0,
+        "titles_cleaned": 0, "years_recovered": 0, "titles_kept_for_uniqueness": 0,
+        "kept": 0, "dropped_dead": 0,
         "recovered_cache": 0, "recovered_tmdb": 0, "recovered_provider": 0, "blank": 0,
     }
     try:
@@ -3844,11 +3856,40 @@ def _finalize_movie_presentation(
 
     try:
         for movies in grouped_movies.values():
-            for movie in movies:
+            # Cleaning must never make two rows in one category look like the
+            # same title. Four seasons of one show reduced to four identical
+            # "Reacher" cards is both a published-output validation error and,
+            # more to the point, four cards a viewer cannot tell apart. So the
+            # cleaned names are proposed first, and any that would collide keep
+            # the raw title they arrived with.
+            proposed: Dict[int, str] = {}
+            taken: Dict[str, int] = {}
+            collided: set[int] = set()
+            for index, movie in enumerate(movies):
                 if not isinstance(movie, dict):
                     continue
                 raw_name = _display_title(movie.get("name") or movie.get("title"))
                 clean_name = _clean_display_title(raw_name)
+                proposed[index] = clean_name
+                key = _normalize_title(clean_name)
+                if not key:
+                    continue
+                if key in taken:
+                    collided.add(index)
+                    collided.add(taken[key])
+                else:
+                    taken[key] = index
+
+            for index, movie in enumerate(movies):
+                if not isinstance(movie, dict):
+                    continue
+                raw_name = _display_title(movie.get("name") or movie.get("title"))
+                clean_name = proposed.get(index) or raw_name
+                if index in collided:
+                    # Ambiguous once cleaned: the raw string, whatever else is
+                    # wrong with it, at least distinguishes this row.
+                    clean_name = raw_name
+                    counters["titles_kept_for_uniqueness"] += 1
                 if clean_name and clean_name != raw_name:
                     movie["source_title"] = raw_name
                     movie["name"] = clean_name
@@ -3897,6 +3938,7 @@ def _finalize_movie_presentation(
         "titles": {
             "cleaned": counters["titles_cleaned"],
             "years_recovered": counters["years_recovered"],
+            "kept_raw_for_uniqueness": counters["titles_kept_for_uniqueness"],
         },
         "posters": {key: counters[key] for key in (
             "kept", "dropped_dead", "recovered_cache", "recovered_tmdb",

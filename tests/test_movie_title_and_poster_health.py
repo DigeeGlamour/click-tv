@@ -90,7 +90,9 @@ class TitleCleaningTests(unittest.TestCase):
                 "The Hijacking of Flight 601",
             "Spider Man Brand New Day (2026) Dual": "Spider Man Brand New Day",
             "Piranha 3DD Hindi Dubbed": "Piranha 3DD",
-            "Love O2O (2016) S01 Hindi Dubbed": "Love O2O",
+            # The season marker stays: it is what separates this row from
+            # the rest of the show sitting in the same category.
+            "Love O2O (2016) S01 Hindi Dubbed": "Love O2O S01",
             "Terminator 2 Judgment Day 1991 BluRay Dual Audio":
                 "Terminator 2 Judgment Day",
         }
@@ -421,6 +423,143 @@ class TheCatalogueAsPublishedTests(unittest.TestCase):
                 f"{len(broken)} published poster value(s) are not usable URLs "
                 f"({broken[:3]}); a full movie scan has not run with the fix yet"
             )
+
+
+class TitlesStayDistinguishableTests(unittest.TestCase):
+    """Cleaning must never make two rows in one category look identical.
+
+    Found by the published-output validator on the first real movie scan with
+    this pass enabled: dropping the season marker turned four seasons of
+    Reacher into four cards all called "Reacher", and the validator refused
+    the build with "Mix duplicate movie name". It was right to - four
+    identical cards are a defect for the viewer, not only for the check.
+
+    Two things answer it. The season/episode marker is kept, because it is the
+    part of the title doing the distinguishing; and the pass then verifies its
+    own work per category, handing back the raw string for any row that would
+    still collide.
+    """
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        original_tmdb = M._tmdb_poster_lookup
+        original_supplementary = M.supplementary_poster_lookup
+        M._tmdb_poster_lookup = lambda *_a, **_k: ""
+        M.supplementary_poster_lookup = lambda *_a, **_k: ""
+        self.addCleanup(setattr, M, "_tmdb_poster_lookup", original_tmdb)
+        self.addCleanup(
+            setattr, M, "supplementary_poster_lookup", original_supplementary
+        )
+
+    def _run(self, grouped):
+        return M._finalize_movie_presentation(
+            grouped,
+            poster_cache_path=self.root / "posters.json",
+            generated_root=self.root / "generated",
+            report_path=self.root / "health.json",
+        )
+
+    def test_a_season_marker_is_part_of_the_name(self):
+        for raw, expected in {
+            "Reacher (2022) S01 Dual Audio": "Reacher S01",
+            "Reacher (2023) S02 Dual Audio": "Reacher S02",
+            "Money Heist (2017) S01 Dual Audio": "Money Heist S01",
+            "Ananta Bhalobasha S01E15 Bangla Dubbed": "Ananta Bhalobasha S01E15",
+        }.items():
+            with self.subTest(raw=raw):
+                self.assertEqual(M._clean_display_title(raw), expected)
+
+    def test_four_seasons_stay_four_distinct_cards(self):
+        rows = [
+            {"id": f"reacher-s{n}", "name": f"Reacher (202{n}) S0{n} Dual Audio", "logo": ""}
+            for n in (1, 2, 3, 4)
+        ]
+        self._run({"Mix": rows})
+        names = [row["name"] for row in rows]
+        self.assertEqual(len(set(names)), 4, names)
+
+    def test_a_row_that_would_still_collide_keeps_its_raw_title(self):
+        """The guarantee, independent of how good the cleaner is."""
+        rows = [
+            {"id": "a", "name": "Same Show S01 1080p Dual Audio", "logo": ""},
+            {"id": "b", "name": "Same Show S01 720p Dual Audio", "logo": ""},
+        ]
+        report = self._run({"Mix": rows})
+        self.assertNotEqual(rows[0]["name"], rows[1]["name"])
+        self.assertEqual(report["titles"]["kept_raw_for_uniqueness"], 2)
+
+    def test_a_collision_in_another_category_is_not_a_collision(self):
+        """The validator's rule is per category, and so is this."""
+        grouped = {
+            "Mix": [{"id": "a", "name": "Reacher (2022) S01 Dual Audio", "logo": ""}],
+            "Hindi": [{"id": "b", "name": "Reacher (2022) S01 Dual Audio", "logo": ""}],
+        }
+        report = self._run(grouped)
+        self.assertEqual(grouped["Mix"][0]["name"], "Reacher S01")
+        self.assertEqual(grouped["Hindi"][0]["name"], "Reacher S01")
+        self.assertEqual(report["titles"]["kept_raw_for_uniqueness"], 0)
+
+
+class ThePublishedCatalogueStaysUniqueTests(unittest.TestCase):
+    """The same check the Cloudflare output validator runs, on real data."""
+
+    def test_the_pass_introduces_no_duplicate_name_in_any_category(self):
+        import collections
+
+        grouped = collections.defaultdict(list)
+        for path in sorted((ROOT / "data" / "movies").glob("*/page-*.json")):
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            for item in payload.get("items") or []:
+                grouped[item.get("category") or "?"].append(dict(item))
+        if not grouped:
+            self.skipTest("no published movie pages")
+
+        before = {
+            category: sum(
+                count - 1
+                for count in collections.Counter(
+                    row.get("name", "") for row in rows
+                ).values()
+                if count > 1
+            )
+            for category, rows in grouped.items()
+        }
+
+        original_tmdb = M._tmdb_poster_lookup
+        original_supplementary = M.supplementary_poster_lookup
+        M._tmdb_poster_lookup = lambda *_a, **_k: ""
+        M.supplementary_poster_lookup = lambda *_a, **_k: ""
+        self.addCleanup(setattr, M, "_tmdb_poster_lookup", original_tmdb)
+        self.addCleanup(
+            setattr, M, "supplementary_poster_lookup", original_supplementary
+        )
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            M._finalize_movie_presentation(
+                dict(grouped),
+                poster_cache_path=root / "p.json",
+                generated_root=root / "gen",
+                report_path=root / "h.json",
+            )
+
+        for category, rows in grouped.items():
+            after = sum(
+                count - 1
+                for count in collections.Counter(
+                    row.get("name", "") for row in rows
+                ).values()
+                if count > 1
+            )
+            with self.subTest(category=category):
+                self.assertLessEqual(
+                    after,
+                    before[category],
+                    f"{category}: cleaning introduced duplicate names "
+                    f"({before[category]} -> {after})",
+                )
 
 
 if __name__ == "__main__":
