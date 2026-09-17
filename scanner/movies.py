@@ -21,6 +21,15 @@ Manual movie rules:
   5. only once TMDB has nothing at all (scanner/poster_providers.py):
      Fanart.tv/Cinemeta when an id is already known, then OMDb, TVMaze
      and AniList by title;
+- every published poster must survive a reachability check before it keeps
+  its place in that order (scanner/poster_validity.py). A URL proven dead
+  loses priority and the chain continues beneath it; if nothing real is
+  found the field is published empty so the site draws its own placeholder.
+  A dead URL is never published as artwork;
+- the published ``name`` is the film's own title with the release label
+  removed, and the raw source string is kept as ``source_title``. The clean
+  title is also what the TMDB poster query uses, which is what makes the
+  lookup above able to match at all;
 - a poster lookup failure never removes the movie;
 - pagination output remains compatible with scanner/output.py.
 """
@@ -49,6 +58,7 @@ try:
     from scanner.merger import _movie_identity_key, merge_candidates
     from scanner.player_compatibility import is_confirmed_player_failure, is_player_proven, load_failure_keys, load_proof_keys, mark_confirmed_player_failures, mark_unproven_player_items
     from scanner.poster_providers import supplementary_poster_lookup
+    from scanner.poster_validity import DEAD as DEAD_POSTER
 except ImportError:
     module_dir = str(Path(__file__).resolve().parent)
     if module_dir not in sys.path:
@@ -56,6 +66,7 @@ except ImportError:
     from merger import _movie_identity_key, merge_candidates
     from player_compatibility import is_confirmed_player_failure, is_player_proven, load_failure_keys, load_proof_keys, mark_confirmed_player_failures, mark_unproven_player_items
     from poster_providers import supplementary_poster_lookup
+    from poster_validity import DEAD as DEAD_POSTER
 
 
 VALID_MOVIE_CATEGORIES = (
@@ -455,6 +466,119 @@ def _display_title(value: Any) -> str:
     text = _clean_scalar(value)
     text = re.sub(r"\s+", " ", text)
     return text.strip()
+
+
+#: Tokens that only ever appear in a release/scene label, never in the film's
+#: own name. Matched at a word boundary and - crucially - only past position 0,
+#: so a genuine title that opens with one of these words ("Hindi Medium",
+#: "Dual", "Extended") is left alone. Provider words that plausibly belong to a
+#: real title ("Amazon" as in Amazon Obhijaan, "Netflix") are deliberately
+#: absent; only their scene abbreviations are listed.
+_RELEASE_JUNK_PATTERN = re.compile(
+    r"\b(?:"
+    r"2160p|1440p|1080p|720p|576p|480p|360p|4k|2k|uhd|fhd|hq|hd|sd|"
+    r"web[\s._-]?dl|webrip|web[\s._-]?rip|hdrip|bdrip|brrip|bluray|blu[\s._-]ray|"
+    r"dvdrip|dvdscr|camrip|hdcam|hdts|hdtc|predvd|hdtv|"
+    r"x264|x265|h\.?264|h\.?265|hevc|av1|avc|aac|ac3|ddp?5|dts|atmos|10bit|8bit|"
+    r"dual[\s._-]?audio|dual|multi[\s._-]?audio|dubbed|dub|"
+    r"esub|msub|subs|subbed|org|uncut|unrated|extended|remastered|"
+    r"amzn|dsnp|hotstar|hoichoi|chorki|zee5|sonyliv|jiocinema|erosnow|mxplayer|ullu|"
+    r"fibwatch|season[\s._-]?\d{1,2}"
+    r")\b"
+    # A language name is only a cut point when a dub/subtitle/audio word is
+    # sitting right behind it. On its own it is far too likely to be the title
+    # ("Hindi Medium", "The English Patient"), which is why the bare word is
+    # not in the list above.
+    r"|\b(?:hindi|bengali|bangla|tamil|telugu|malayalam|kannada|english|korean|"
+    r"japanese|chinese|urdu|marathi|punjabi|gujarati|thai|spanish|french|"
+    r"russian|arabic|turkish)[\s._-]+"
+    r"(?:dub|dubs|dubbed|audio|org|esub|msub|sub|subs|subbed|line|studio|hq|dual|multi)\b"
+    # A bare season marker is a full-season bundle and belongs to the release
+    # label. An episode marker (S01E15) is left alone deliberately: it is the
+    # only thing telling five otherwise identically named rows apart.
+    r"|\bs\d{1,2}(?![a-z0-9])",
+    flags=re.IGNORECASE,
+)
+
+#: A parenthesised year is unambiguously metadata rather than part of a name -
+#: the year has its own field - so it comes out wherever it sits.
+_BRACKETED_YEAR_PATTERN = re.compile(r"\s*[\(\[\{]\s*(?:19|20)\d{2}\s*[\)\]\}]")
+
+#: A bare four-digit year. Only used as a cut point when it is neither the
+#: first nor the last token, so "Blade Runner 2049" and "2012" survive intact
+#: while "Gargi 2024 Bengali Dubbed" is cut at the year.
+_BARE_YEAR_PATTERN = re.compile(r"\b(?:19|20)\d{2}\b")
+
+_TRAILING_YEAR_PATTERN = re.compile(r"[\s._-]*[\(\[\{]\s*(?:19|20)\d{2}\s*[\)\]\}]\s*$")
+
+
+def _clean_display_title(value: Any) -> str:
+    """The film's own name, with the release label taken off the end.
+
+    Source catalogues publish scene-style titles - "Gargi 2024 Bengali Dubbed
+    ORG", "The Hijacking of Flight 601 (2024) Dual Audio Hindi ORG" - and the
+    whole string was being shown as the movie's name and sent to TMDB as the
+    search query. Both consequences matter: the card reads badly, and the
+    query never matches, so the title also never gets a real poster.
+
+    The approach is deliberately one-directional: find where the release label
+    starts and drop everything from there. Nothing is rewritten, reordered or
+    invented, so a title this cannot improve is returned exactly as it came in.
+    Every cut point is required to sit past the first token, which is what
+    keeps "Hindi Medium", "Dual" and "Extended" whole.
+    """
+    text = _display_title(value)
+    if not text:
+        return ""
+
+    original = text
+    text = re.sub(r"^\s*\[\s*18\+\s*\]\s*", "", text, flags=re.IGNORECASE).strip()
+
+    # A scene name carrying no spaces at all ("Spider.Man.Brand.New.Day") is
+    # separator-encoded rather than punctuated; give it its spaces back so the
+    # token rules below can see the words. An initialism ("G.D.N") separates
+    # on the same character without being encoded that way, so at least one
+    # real word has to fall out before this is believed.
+    if " " not in text and len(re.findall(r"[._]", text)) >= 2:
+        candidate = re.sub(r"[._]+", " ", text)
+        if any(len(word) >= 3 for word in candidate.split()):
+            text = candidate
+
+    cut = len(text)
+
+    junk = _RELEASE_JUNK_PATTERN.search(text)
+    while junk is not None:
+        if junk.start() > 0:
+            cut = min(cut, junk.start())
+            break
+        junk = _RELEASE_JUNK_PATTERN.search(text, junk.end())
+
+    for year in _BARE_YEAR_PATTERN.finditer(text):
+        # Neither the opening token nor the closing one: a year in either of
+        # those positions is far more likely to be part of the name.
+        if year.start() == 0 or not text[year.end():].strip():
+            continue
+        cut = min(cut, year.start())
+        break
+
+    text = text[:cut]
+    text = _BRACKETED_YEAR_PATTERN.sub(" ", text)
+    text = _TRAILING_YEAR_PATTERN.sub("", text)
+    text = re.sub(r"[\s._\-–—,:;|/\\]+$", "", text)
+    text = re.sub(r"[\(\[\{]\s*[\)\]\}]", " ", text)
+    # An unclosed bracket left behind by the cut, e.g. "Ponman (2025 Dual".
+    if text.count("(") > text.count(")"):
+        text = text.rsplit("(", 1)[0]
+    if text.count("[") > text.count("]"):
+        text = text.rsplit("[", 1)[0]
+    text = re.sub(r"[\s._\-–—,:;|/\\]+$", "", text)
+    text = " ".join(text.split())
+
+    # Never hand back something shorter than a plausible title: if the rules
+    # above ate the name, the raw one was better.
+    if len(text) < 2:
+        return original
+    return text
 
 
 def _slugify(value: Any) -> str:
@@ -3609,6 +3733,184 @@ def _validate_and_report_manual_integrity(
 
 
 
+DEFAULT_POSTER_HEALTH_REPORT_PATH = "reports/movie-poster-health.json"
+
+
+def _poster_validation_enabled() -> bool:
+    """Network probing is on by default and switchable off for offline runs."""
+    return os.getenv("CLICKTV_POSTER_VALIDATION", "1").strip().lower() not in {
+        "0", "false", "no", "off",
+    }
+
+
+def _resolve_published_poster(
+    movie: Dict[str, Any],
+    *,
+    validator: Any,
+    cache: Dict[str, str],
+    generated_posters: Dict[str, str],
+    clean_name: str,
+    year: int,
+    counters: Dict[str, int],
+) -> str:
+    """The published poster for one movie, never a URL proven to be dead.
+
+    The order is unchanged from the documented one - what changes is that a
+    candidate has to survive the reachability check to keep its place. Before
+    this, the feed's own ``logo`` was accepted on syntax alone and returned
+    immediately, so a dead host sat permanently above every working fallback.
+    """
+    current = _valid_poster_url(movie.get("logo") or movie.get("poster"))
+    if current:
+        verdict = validator.verdict(current)
+        if verdict != DEAD_POSTER:
+            # Live, or unprovable from here. An unprovable one is kept rather
+            # than dropped: our egress timing out says nothing about the art.
+            counters["kept"] += 1
+            return current
+        counters["dropped_dead"] += 1
+
+    identity = _poster_identity(clean_name, year)
+
+    for source in (cache, generated_posters):
+        candidate = _valid_poster_url(source.get(identity))
+        # The generated map is built from the previous publish, which is full
+        # of the very URLs being retired here, so it is checked too.
+        if candidate and validator.verdict(candidate) != DEAD_POSTER:
+            cache[identity] = candidate
+            counters["recovered_cache"] += 1
+            return candidate
+
+    if movie.get("poster_lookup") is False:
+        counters["blank"] += 1
+        return ""
+
+    # The clean title is what makes this worth doing: "Gargi 2024 Bengali
+    # Dubbed ORG" matches nothing at TMDB, "Gargi" + 2024 matches the film.
+    candidate = _tmdb_poster_lookup(clean_name, year)
+    if candidate and validator.verdict(candidate) != DEAD_POSTER:
+        cache[identity] = candidate
+        counters["recovered_tmdb"] += 1
+        return candidate
+
+    candidate = supplementary_poster_lookup(
+        clean_name, year,
+        tmdb_id=movie.get("tmdb_id"),
+        imdb_id=movie.get("imdb_id"),
+        media_kind=movie.get("tmdb_media_type") or "movie",
+    )
+    if candidate and validator.verdict(candidate) != DEAD_POSTER:
+        cache[identity] = candidate
+        counters["recovered_provider"] += 1
+        return candidate
+
+    # Nothing real was found. Empty is the honest answer: the site draws its
+    # designed placeholder, which is better than a broken image.
+    counters["blank"] += 1
+    return ""
+
+
+def _finalize_movie_presentation(
+    grouped_movies: Dict[str, List[Dict[str, Any]]],
+    *,
+    poster_cache_path: str | Path = DEFAULT_POSTER_CACHE_PATH,
+    generated_root: str | Path = DEFAULT_GENERATED_MOVIES_ROOT,
+    report_path: str | Path = DEFAULT_POSTER_HEALTH_REPORT_PATH,
+) -> Dict[str, Any]:
+    """Clean every published title, and give it artwork that actually loads.
+
+    Two problems with one cause. Source catalogues publish scene-style names,
+    and that name was both shown on the card and used as the TMDB query, so a
+    title with a release label on it could never be matched and could never
+    get a real poster either. Cleaning the name first is what lets the poster
+    lookup work at all.
+
+    Ids are already assigned and are read from the raw name, so nothing here
+    can renumber the catalogue or orphan a watchlist entry. The raw string is
+    kept on the card as ``source_title`` so the original is never lost.
+    """
+    counters = {
+        "titles_cleaned": 0, "years_recovered": 0, "kept": 0, "dropped_dead": 0,
+        "recovered_cache": 0, "recovered_tmdb": 0, "recovered_provider": 0, "blank": 0,
+    }
+    try:
+        from scanner.poster_validity import PosterValidator
+    except ImportError:  # pragma: no cover - direct-module execution path
+        from poster_validity import PosterValidator
+
+    validator = PosterValidator(enabled=_poster_validation_enabled())
+    cache = _load_poster_cache(poster_cache_path)
+    generated_posters = _load_generated_poster_map(generated_root)
+
+    try:
+        for movies in grouped_movies.values():
+            for movie in movies:
+                if not isinstance(movie, dict):
+                    continue
+                raw_name = _display_title(movie.get("name") or movie.get("title"))
+                clean_name = _clean_display_title(raw_name)
+                if clean_name and clean_name != raw_name:
+                    movie["source_title"] = raw_name
+                    movie["name"] = clean_name
+                    counters["titles_cleaned"] += 1
+                elif clean_name:
+                    movie["name"] = clean_name
+
+                year = _parse_year(movie.get("year"))
+                if not year:
+                    # The release label the title just lost often carried the
+                    # only year this record has.
+                    year = _parse_year(raw_name)
+                    if year:
+                        movie["year"] = year
+                        movie["year_source"] = movie.get("year_source") or "source_title"
+                        counters["years_recovered"] += 1
+
+                movie["logo"] = _resolve_published_poster(
+                    movie,
+                    validator=validator,
+                    cache=cache,
+                    generated_posters=generated_posters,
+                    clean_name=clean_name or raw_name,
+                    year=year,
+                    counters=counters,
+                )
+    finally:
+        validator.save()
+        _save_poster_cache(poster_cache_path, cache)
+
+    print(
+        "   movie titles: {titles_cleaned} cleaned, {years_recovered} year(s) "
+        "recovered from the release label".format(**counters)
+    )
+    print(
+        "   movie posters: {kept} kept, {dropped_dead} dead dropped, "
+        "{recovered_cache} from cache, {recovered_tmdb} from TMDB, "
+        "{recovered_provider} from other providers, {blank} left blank".format(**counters)
+    )
+    print(f"   poster reachability: {validator.summary_line()}")
+
+    report = {
+        "version": 1,
+        "generated_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "validation_enabled": _poster_validation_enabled(),
+        "titles": {
+            "cleaned": counters["titles_cleaned"],
+            "years_recovered": counters["years_recovered"],
+        },
+        "posters": {key: counters[key] for key in (
+            "kept", "dropped_dead", "recovered_cache", "recovered_tmdb",
+            "recovered_provider", "blank",
+        )},
+        "probe": dict(validator.stats),
+    }
+    try:
+        _atomic_write_json(report_path, report)
+    except OSError:
+        pass
+    return report
+
+
 def process_movies(
     bd_results_path: str = "working/bd-results.json",
     settings_path: str = "config/settings.json",
@@ -3699,6 +4001,13 @@ def process_movies(
         if _movie_identity(movie) in published_movie_keys
     ]
     _validate_and_report_manual_integrity(integrity_manual_movies, grouped_movies)
+
+    # Display name and artwork are settled here, after identity and integrity
+    # are already fixed, so neither can move an id or a dedupe key. Everything
+    # downstream - pagination, genres, trending, discovery and the featured
+    # hero - is built from the result, so all of them get the clean title and
+    # a poster that actually loads.
+    _finalize_movie_presentation(grouped_movies)
 
     paginated = {
         category: paginate_movie_list(

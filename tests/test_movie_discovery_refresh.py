@@ -19,8 +19,6 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import yaml
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
@@ -32,6 +30,16 @@ REFRESH_SCRIPT = ROOT / "scripts" / "refresh-movie-discovery.py"
 
 
 def _load_workflow(path):
+    # Guarded exactly the way every sibling workflow test guards it. This
+    # module used to `import yaml` at module scope, and requirements.txt is
+    # deliberately stdlib-only, so on CI the import raised at collection
+    # time: unittest reported one loader ERROR, the suite exited 1, and the
+    # scan job stopped before the scanner ever ran. A missing optional
+    # parser must skip this file, not fail the run that publishes the site.
+    try:
+        import yaml
+    except ImportError:  # pragma: no cover - depends on the runner
+        raise unittest.SkipTest("pyyaml unavailable")
     with open(path, encoding="utf-8") as handle:
         document = yaml.safe_load(handle)
     # PyYAML parses the unquoted `on:` key as the boolean True.
@@ -286,12 +294,17 @@ class RefreshWorkflowTests(unittest.TestCase):
             for line in commit["run"].splitlines()
             if not line.strip().startswith("#")
         ]
-        # The paths are the body of a `for` loop now, one `git add` per path,
-        # because `git add A B C` stages NOTHING and exits 128 when any one of
-        # them is missing - which is exactly what happened, silently, and is
-        # why trending.json never reached production.
-        add_start = next(i for i, line in enumerate(lines) if line.startswith("for MOVIE_OUTPUT in"))
-        add_end = next(i for i in range(add_start, len(lines)) if lines[i].endswith("; do"))
+        # The paths live in one MOVIE_OUTPUTS array, iterated with one
+        # `git add` per path, because `git add A B C` stages NOTHING and exits
+        # 128 when any one of them is missing - which is exactly what
+        # happened, silently, and is why trending.json never reached
+        # production. The array is declared once and then used for three
+        # things - staging, restoring after a lost push race, and the scope
+        # assertion before each push - so those cannot drift apart.
+        add_start = next(
+            i for i, line in enumerate(lines) if line.startswith("MOVIE_OUTPUTS=(")
+        )
+        add_end = next(i for i in range(add_start, len(lines)) if lines[i] == ")")
         staged = " ".join(lines[add_start : add_end + 1])
 
         for owned in ("data/movies/discovery", "data/movies/genres", "state/movie-trending-cache.json"):

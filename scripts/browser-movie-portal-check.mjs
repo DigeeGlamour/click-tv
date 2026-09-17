@@ -95,7 +95,9 @@ function snapshot(page) {
       gridBack: box('#movieGridBackBtn'),
       gridChips: document.querySelectorAll('#movieGridHeader .movie-genre-chip').length,
       header: box('.app-header'),
-      movieSection: document.body.classList.contains('movie-section'),
+      // The header is the site's header now, so what proves it is on is the
+      // capsule and the 64px bar, not a section class.
+      headerBg: getComputedStyle(document.querySelector('.app-header')).backgroundColor,
       capsule: box('.desktop-main-navigation .final-main-nav'),
       capsuleRadius: (() => {
         const n = document.querySelector('.desktop-main-navigation .final-main-nav');
@@ -182,7 +184,8 @@ async function run(label, viewport, isMobile) {
       JSON.stringify(home.railItems));
 
     // The header, as the approved design draws it.
-    check(home.movieSection, `[${label}] the Movie section header is on`);
+    check(home.headerBg === 'rgba(0, 0, 0, 0)',
+      `[${label}] the header shares the page background`, home.headerBg);
     check(home.header.h === 64, `[${label}] the header is 64px`, `${home.header.h}px`);
     check(home.capsuleRadius.startsWith('999'),
       `[${label}] the destinations sit in a capsule`, home.capsuleRadius);

@@ -135,6 +135,20 @@ function featuredFile(items, extra = {}) {
   };
 }
 
+//: Artwork the browser can really decode.
+//:
+//: These used to be image.tmdb.org paths that do not exist. That was fine
+//: while the hero painted any URL it was handed blind, but the hero now
+//: decodes a candidate before using it - precisely so a dead poster stops
+//: leaving the panel flatly dark - and a 404 fixture therefore exercises the
+//: no-artwork path instead of the one these checks are about. A data URI is
+//: always decodable and needs no network, so the assertions below test the
+//: styling they were written for.
+const DECODABLE_POSTER =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+const DECODABLE_BACKDROP =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+
 function slot(id, overrides = {}) {
   return {
     id,
@@ -146,7 +160,7 @@ function slot(id, overrides = {}) {
     name: `Title ${id}`,
     category: 'Hindi',
     year: 2026,
-    poster: 'https://image.tmdb.org/t/p/w600_and_h900_bestv2/x.jpg',
+    poster: DECODABLE_POSTER,
     artwork_kind: 'poster_fallback',
     ...overrides
   };
@@ -409,7 +423,7 @@ async function newPage(payload) {
       badges: ['NEW', 'PREMIUM'],
       plot: 'A real overview from the metadata cache.',
       genres: ['Action', 'Crime'],
-      backdrop: 'https://image.tmdb.org/t/p/w1280/back.jpg',
+      backdrop: DECODABLE_BACKDROP,
       artwork_kind: 'backdrop'
     })
   ];

@@ -2667,6 +2667,19 @@ html.fullscreen-4k-playback .video-container-wrap:-webkit-full-screen .fs-drawer
   filter: blur(18px) saturate(1.15) brightness(0.62);
   transform: scale(1.18);
 }
+/* Third rung of the artwork chain: no backdrop, and no poster that loads.
+   A designed ground rather than a flat dark rectangle, so a title with no
+   usable artwork still reads as a deliberate panel. Nothing is invented here:
+   this is the site's own colour, never a stand-in for the film's. */
+.movie-hero-panel.no-artwork {
+  background:
+    radial-gradient(120% 140% at 82% 8%, rgba(255, 42, 74, 0.16) 0%, transparent 58%),
+    radial-gradient(90% 120% at 8% 96%, rgba(73, 140, 255, 0.13) 0%, transparent 62%),
+    linear-gradient(135deg, #111c2b 0%, #0a1018 100%);
+}
+.movie-hero-panel.no-artwork .movie-hero-scrim {
+  background: linear-gradient(90deg, rgba(9, 14, 22, 0.86) 0%, rgba(9, 14, 22, 0.5) 62%, transparent 100%);
+}
 .movie-hero-scrim {
   position: absolute;
   inset: 0;
@@ -3433,31 +3446,34 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
 }
 
 /* =========================================================
-   MOVIE SECTION HEADER (approved demo header design).
+   GLOBAL SITE HEADER (approved demo header design).
 
    `Movie demo design index.html` is the source of truth for this header:
    64px tall, no separate header container (it shares the page background),
    a floating segmented capsule for Live Sports / Live TV / Movies, and a
-   250px pill search next to a red Subscribe pill.
+   250px pill search beside Install and a red Subscribe pill.
 
-   Scoped to `body.movie-section`, which the main-navigation renderer sets
-   whenever the Movies group is active - Home, Grid, Detail and Player alike.
-   Live Sports and Live TV keep the header they already had, untouched.
+   One header for the whole site. It was scoped to `body.movie-section` in the
+   first pass, which left Live Sports and Live TV on reference-design.css's
+   54px grid header with the underline active state - the two designs then
+   swapped on every section change. There is one approved header, so there is
+   one rule: `body ...` rather than a section class, which also keeps these
+   selectors a step above reference-design.css's own `.app-header ...` no
+   matter which stylesheet loads last.
 
    Desktop only. Below 981px reference-design.css docks `.app-header` as the
-   fixed bottom navigation bar for the whole site, and the demo hides its
-   capsule at that width anyway - so there is no capsule design to match, and
-   re-siting the bar for one section would move the primary navigation between
-   sections on a phone.
+   fixed bottom navigation bar for the whole site - identical on all three
+   sections already - and the demo hides its capsule at that width anyway, so
+   there is no capsule design to match down there.
    ========================================================= */
 @media (min-width: 981px) {
-  body.movie-section {
+  body {
     /* The shell height is calc(100dvh - notice - header), so the header
        height has to move as one value, not two. */
     --ref-header-h: 64px;
   }
 
-  body.movie-section .app-header {
+  body .app-header {
     display: flex !important;
     grid-template-columns: none !important;
     align-items: center !important;
@@ -3475,11 +3491,11 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
   }
 
   /* Brand */
-  body.movie-section .app-header .header-left.brand {
+  body .app-header .header-left.brand {
     flex: 0 0 auto !important;
     min-width: 0 !important;
   }
-  body.movie-section .app-header .brand h1 {
+  body .app-header .brand h1 {
     gap: 10px !important;
     font-family: 'Oswald', var(--font-sans), sans-serif !important;
     font-size: 21px !important;
@@ -3488,7 +3504,7 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     line-height: 1 !important;
     color: #ffffff !important;
   }
-  body.movie-section .app-header .brand-mark {
+  body .app-header .brand-mark {
     position: relative !important;
     width: 32px !important;
     height: 32px !important;
@@ -3498,7 +3514,7 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     background: linear-gradient(135deg, #ff2a4a 0%, #e0223e 100%) !important;
     box-shadow: 0 0 14px rgba(255, 42, 74, 0.35) !important;
   }
-  body.movie-section .app-header .brand-mark::after {
+  body .app-header .brand-mark::after {
     content: "" !important;
     position: absolute !important;
     inset: 0 !important;
@@ -3517,17 +3533,17 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
   }
 
   /* Floating segmented capsule: Live Sports | Live TV | Movies */
-  body.movie-section .app-header .header-center {
+  body .app-header .header-center {
     flex: 0 0 auto !important;
     margin: 0 !important;
     align-self: center !important;
     max-width: none !important;
   }
-  body.movie-section .desktop-main-navigation.final-nav-shell {
+  body .desktop-main-navigation.final-nav-shell {
     width: auto !important;
     height: auto !important;
   }
-  body.movie-section .desktop-main-navigation .final-main-nav {
+  body .desktop-main-navigation .final-main-nav {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -3541,7 +3557,7 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     -webkit-backdrop-filter: blur(10px) !important;
     box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.08) !important;
   }
-  body.movie-section .desktop-main-navigation .final-main-button {
+  body .desktop-main-navigation .final-main-button {
     position: relative !important;
     display: inline-flex !important;
     align-items: center !important;
@@ -3560,31 +3576,35 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     white-space: nowrap !important;
     transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) !important;
   }
-  body.movie-section .desktop-main-navigation .final-main-button:hover {
+  body .desktop-main-navigation .final-main-button:hover {
     color: #ffffff !important;
     background: rgba(255, 255, 255, 0.06) !important;
   }
-  body.movie-section .desktop-main-navigation .final-main-button.active {
+  body .desktop-main-navigation .final-main-button.active {
     color: #ffffff !important;
     font-weight: 800 !important;
+    /* Repeated, not inherited from the rule above: reference-design.css
+       squares the active button off in a selector one class heavier than
+       that one, so the pill has to be re-stated at this weight. */
+    border-radius: 999px !important;
     background: linear-gradient(135deg, #ff2a4a 0%, #e0223e 100%) !important;
     box-shadow: 0 2px 14px rgba(255, 42, 84, 0.55), inset 0 1px 1px rgba(255, 255, 255, 0.3) !important;
   }
-  /* The capsule carries the active state itself; the underline belongs to the
-     other sections' header. */
-  body.movie-section .desktop-main-navigation .final-main-button.active::after {
+  /* The capsule carries the active state itself; the underline was the old
+     header's way of showing it. */
+  body .desktop-main-navigation .final-main-button.active::after {
     display: none !important;
   }
 
   /* Header tools: search pill + Subscribe */
-  body.movie-section .app-header .header-right.header-actions {
+  body .app-header .header-right.header-actions {
     flex: 0 0 auto !important;
     gap: 12px !important;
     min-width: 0 !important;
     justify-content: flex-end !important;
   }
-  body.movie-section .app-header .search-wrap.desktop-search,
-  body.movie-section .app-header .search-wrap.desktop-search:focus-within {
+  body .app-header .search-wrap.desktop-search,
+  body .app-header .search-wrap.desktop-search:focus-within {
     width: 250px !important;
     height: 38px !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
@@ -3592,12 +3612,12 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     background: rgba(14, 21, 32, 0.85) !important;
     transition: border-color 0.2s ease, background 0.2s ease !important;
   }
-  body.movie-section .app-header .search-wrap.desktop-search:focus-within {
+  body .app-header .search-wrap.desktop-search:focus-within {
     border-color: rgba(255, 255, 255, 0.32) !important;
     background: rgba(18, 28, 42, 0.95) !important;
   }
-  body.movie-section .app-header .search-wrap.desktop-search input,
-  body.movie-section .app-header .search-wrap.desktop-search:focus-within input {
+  body .app-header .search-wrap.desktop-search input,
+  body .app-header .search-wrap.desktop-search:focus-within input {
     width: auto !important;
     min-width: 0 !important;
     flex: 1 1 auto !important;
@@ -3606,7 +3626,7 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     font-size: 13px !important;
     color: #ffffff !important;
   }
-  body.movie-section .app-header .search-wrap.desktop-search .search-btn {
+  body .app-header .search-wrap.desktop-search .search-btn {
     width: 38px !important;
     flex: 0 0 38px !important;
     padding: 0 !important;
@@ -3615,10 +3635,10 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     color: #94a3b8 !important;
     font-size: 13px !important;
   }
-  body.movie-section .app-header .search-wrap.desktop-search .search-btn:hover {
+  body .app-header .search-wrap.desktop-search .search-btn:hover {
     color: #ffffff !important;
   }
-  body.movie-section .app-header .header-glow-btn {
+  body .app-header .header-glow-btn {
     height: 38px !important;
     padding: 0 16px !important;
     gap: 7px !important;
@@ -3630,18 +3650,18 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
     font-weight: 700 !important;
     box-shadow: none !important;
   }
-  body.movie-section .app-header .header-glow-btn:hover {
+  body .app-header .header-glow-btn:hover {
     background: rgba(28, 40, 58, 0.95) !important;
     border-color: rgba(255, 255, 255, 0.32) !important;
     transform: translateY(-1.5px) !important;
   }
-  body.movie-section .app-header #subscribeBtn {
+  body .app-header #subscribeBtn {
     border: 0 !important;
     font-weight: 800 !important;
     background: linear-gradient(135deg, #ff2a4a 0%, #e0223e 100%) !important;
     box-shadow: 0 0 16px rgba(255, 42, 84, 0.45) !important;
   }
-  body.movie-section .app-header #subscribeBtn:hover {
+  body .app-header #subscribeBtn:hover {
     background: linear-gradient(135deg, #ff2a4a 0%, #e0223e 100%) !important;
     border: 0 !important;
     box-shadow: 0 0 24px rgba(255, 42, 84, 0.75) !important;
@@ -3649,9 +3669,9 @@ body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid .movie-ca
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.movie-section .desktop-main-navigation .final-main-button,
-  body.movie-section .app-header .header-glow-btn { transition: none !important; }
-  body.movie-section .app-header .header-glow-btn:hover { transform: none !important; }
+  body .desktop-main-navigation .final-main-button,
+  body .app-header .header-glow-btn { transition: none !important; }
+  body .app-header .header-glow-btn:hover { transform: none !important; }
 }
 
 /* =========================================================
@@ -3858,3 +3878,496 @@ body.movie-detail-view #movieGridHeader {
 }
 
 .movie-grid-back[hidden] { display: none !important; }
+
+/* =========================================================
+   MOVIE DETAIL CARD (approved demo detail design).
+
+   `Movie demo design index.html`: a wide showcase card, poster at 220px on a
+   2:3 slot, the information beside it - type pill, heading, one meta line,
+   genres, synopsis, then the actions - over the title's own backdrop.
+
+   Written to degrade honestly. Today the catalogue carries no genres, rating,
+   synopsis, runtime or backdrop for any title (the metadata backfill has not
+   run), so every one of those is simply absent rather than an empty row or a
+   blank grey block. What must never happen is the poster column reserving
+   space and showing nothing: a missing or 404'd poster gets the designed
+   stand-in, which fills the same 2:3 slot.
+   ========================================================= */
+.movie-detail-hero {
+  position: relative;
+  overflow: hidden;
+  /* Demo `.detail-hero-card`, value for value. */
+  margin: 0 0 28px;
+  border: 1px solid #1c2a3d;
+  border-radius: 20px;
+  background: #070c14;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
+  min-height: 390px;
+  display: flex;
+  align-items: center;
+}
+.movie-detail-backdrop {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: right 30%;
+  opacity: 0.55;
+  filter: saturate(1.15);
+  pointer-events: none;
+}
+.movie-detail-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #070c14 0%, rgba(7, 12, 20, 0.96) 42%, rgba(7, 12, 20, 0.5) 75%, rgba(7, 12, 20, 0.8) 100%),
+    linear-gradient(0deg, #070c14 0%, transparent 50%);
+}
+.movie-detail-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  /* Demo `.detail-inner-grid`. */
+  grid-template-columns: 210px minmax(0, 1fr);
+  gap: 32px;
+  align-items: center;
+  width: 100%;
+  padding: 34px 38px;
+}
+
+/* Poster slot: always 2:3, always filled. */
+.movie-detail-poster-wrap {
+  width: 210px;
+  aspect-ratio: 2 / 3;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #000000;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.58);
+}
+.movie-detail-poster-wrap > .movie-detail-poster {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  display: block;
+  object-fit: cover;
+  border-radius: 0 !important;
+}
+.movie-detail-poster-fallback {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 14px;
+  text-align: center;
+  background: linear-gradient(160deg, #141d2c 0%, #0a0f18 100%);
+  color: #6f8299;
+}
+.movie-detail-poster-fallback i { font-size: 30px; color: #ff5570; opacity: 0.75; }
+.movie-detail-poster-fallback span {
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.35;
+  color: #8fa3ba;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Information column */
+.movie-detail-hero .movie-detail-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 650px;
+  min-width: 0;
+}
+.movie-detail-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  padding: 3px 9px;
+  border: 1px solid rgba(255, 49, 84, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 49, 84, 0.14);
+  color: #ff6b82;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+.movie-detail-kind i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ff2a4a;
+  box-shadow: 0 0 6px #ff2a4a;
+}
+.movie-detail-hero .movie-detail-title {
+  margin: 0 0 7px !important;
+  font-size: clamp(26px, 2.6vw, 36px) !important;
+  font-weight: 900 !important;
+  letter-spacing: -0.6px;
+  line-height: 1.15 !important;
+  color: #ffffff;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.7);
+}
+.movie-detail-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #9cb0c5;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.movie-detail-dot { color: #4a5e74; font-style: normal; }
+.movie-detail-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  background: rgba(10, 16, 26, 0.92);
+  color: #f8fafc;
+  font-size: 11.5px;
+  font-weight: 800;
+}
+.movie-detail-rating i { color: #fbbf24; font-size: 10px; }
+.movie-detail-rating small { color: #93a6bb; font-size: 9.5px; font-weight: 700; }
+.movie-detail-quality {
+  padding: 2px 7px;
+  border: 1px solid rgba(73, 191, 255, 0.35);
+  border-radius: 4px;
+  background: rgba(73, 191, 255, 0.14);
+  color: #4a9eee;
+  font-size: 10.5px;
+  font-weight: 800;
+}
+.movie-detail-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.movie-detail-genres span {
+  padding: 3px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 999px;
+  background: rgba(16, 25, 38, 0.86);
+  color: #aebed0;
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.movie-detail-hero .movie-detail-plot {
+  max-width: 650px;
+  margin: 0 0 18px !important;
+  color: #a1b4c9 !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.movie-detail-hero .movie-detail-actions { gap: 10px; }
+.movie-detail-hero .movie-detail-play,
+.movie-detail-hero .movie-detail-watchlist,
+.movie-detail-hero .movie-detail-share {
+  height: 40px;
+  min-height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.movie-detail-hero .movie-detail-play {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #080c14;
+  font-weight: 800;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
+}
+.movie-detail-hero .movie-detail-play i { color: #080c14; }
+.movie-detail-hero .movie-detail-watchlist,
+.movie-detail-hero .movie-detail-share {
+  padding: 0 18px;
+  background: rgba(14, 23, 34, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* The leftover real facts, under the card. */
+.movie-detail-inner > .movie-detail-facts {
+  margin: 0 0 18px !important;
+  padding: 12px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.075);
+  border-radius: 12px;
+  background: rgba(8, 14, 22, 0.7);
+}
+
+/* The suggestions row reuses the Movie Home card, so it needs the row's own
+   spacing rather than the page's. */
+.movie-related-row { margin-bottom: 4px; }
+.movie-related-row .movie-row-head { margin-bottom: 12px; }
+
+@media (max-width: 1180px) {
+  .movie-detail-grid {
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 22px;
+    padding: 24px;
+  }
+  .movie-detail-poster-wrap { width: 180px; }
+}
+@media (max-width: 820px) {
+  .movie-detail-grid {
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px;
+    align-items: start;
+  }
+  .movie-detail-poster-wrap { width: 140px; }
+  .movie-detail-hero { border-radius: 14px; margin-bottom: 14px; }
+  .movie-detail-hero .movie-detail-plot { -webkit-line-clamp: 3; }
+}
+@media (max-width: 560px) {
+  /* One column on a phone. The poster stays - it is the only artwork on the
+     view - but it caps so the actions are still reachable without scrolling
+     the whole card away. */
+  .movie-detail-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+    padding: 14px;
+  }
+  .movie-detail-poster-wrap { width: 132px; }
+  .movie-detail-hero .movie-detail-play,
+  .movie-detail-hero .movie-detail-watchlist,
+  .movie-detail-hero .movie-detail-share {
+    height: 36px;
+    min-height: 36px;
+    padding: 0 14px;
+    font-size: 12px;
+  }
+}
+
+/* The close control belongs inside the card it closes, not floating over the
+   panel's corner. Round, translucent, and a focus ring that reads as a ring
+   rather than as a stray white box - it takes focus when the detail opens. */
+.movie-detail-inner > .movie-detail-close {
+  top: 28px;
+  right: 28px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  background: rgba(10, 16, 26, 0.78);
+  color: #c5d1e0;
+  font-size: 20px;
+  line-height: 1;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.movie-detail-inner > .movie-detail-close:hover {
+  background: rgba(255, 42, 74, 0.18);
+  border-color: rgba(255, 42, 74, 0.55);
+  color: #ffffff;
+}
+.movie-detail-inner > .movie-detail-close:focus-visible {
+  outline: 2px solid rgba(255, 42, 74, 0.9);
+  outline-offset: 2px;
+}
+@media (max-width: 560px) {
+  .movie-detail-inner > .movie-detail-close { top: 20px; right: 20px; }
+}
+
+/* `hidden` has never actually hidden the movie grid: the author rule
+   `.sidebar-list{display:grid}` outranks the user-agent's `[hidden]`, so every
+   `sidebarList.hidden = true` in the movie views was a no-op. That is how
+   Movie Home's empty-list message ended up sitting under the rows and, after
+   Play, in the column beside the player. Only the movie views ever set it;
+   Live TV and Live Sports leave it alone. */
+#sidebarList[hidden] { display: none !important; }
+
+/* =========================================================
+   MOVIE DETAIL - the rest of the demo's detail view.
+
+   `Movie demo design index.html` opens the detail with a back pill rather
+   than a close cross, states verification as a green badge, and lists the
+   servers a title really has. All three are ported here; the server row is
+   bound to `available_link_count`, so it says what the record says.
+   ========================================================= */
+.movie-detail-inner > .detail-nav-bar {
+  display: flex;
+  align-items: center;
+  margin: 0 0 16px;
+}
+.movie-detail-inner .btn-back-pill {
+  /* The pill keeps the `movie-detail-close` hook so every existing handler
+     and test still finds it, and that hook carries an older
+     `position:absolute; top:8px; right:10px` from the panel's first design -
+     which pinned the demo's top-left back pill to the card's top-right
+     corner. Put back in flow; the nav bar above the card places it. */
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 34px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid #23334a;
+  background: rgba(13, 21, 33, 0.9);
+  color: #9cb0c5;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+.movie-detail-inner .btn-back-pill:hover {
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateX(-2px);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+}
+.movie-detail-inner .btn-back-pill i { font-size: 11px; }
+
+.movie-detail-meta .badge-health {
+  padding: 2px 7px;
+  border: 1px solid rgba(40, 214, 143, 0.35);
+  border-radius: 4px;
+  background: rgba(40, 214, 143, 0.14);
+  color: #28d68f;
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+.movie-detail-main > .server-card-box {
+  width: 100%;
+  max-width: 460px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(8, 14, 22, 0.72);
+}
+.server-box-title {
+  margin-bottom: 9px;
+  color: #6f8299;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+}
+.server-pill-row { display: flex; flex-wrap: wrap; gap: 7px; }
+.server-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border: 1px solid #23334a;
+  border-radius: 999px;
+  background: rgba(16, 25, 38, 0.9);
+  color: #aebed0;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+.server-pill-btn.active {
+  border-color: rgba(40, 214, 143, 0.5);
+  background: rgba(40, 214, 143, 0.12);
+  color: #d7f5e8;
+}
+.server-green-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #28d68f;
+  box-shadow: 0 0 6px rgba(40, 214, 143, 0.9);
+}
+
+@media (max-width: 820px) {
+  .movie-detail-inner > .detail-nav-bar { margin-bottom: 12px; }
+  .movie-detail-main > .server-card-box { max-width: none; }
+}
+
+/* =========================================================
+   MOVIE PLAYER VIEW - the demo's outer stage.
+
+   `Movie demo design index.html` lays the player view out as
+   `.exact-player-stage`: one flexible player column and a fixed 400px side
+   panel, 14px apart. Ported here onto the production player rather than
+   around a new one - the `<video>`, its controls and every network path stay
+   exactly as they are; only the columns they sit in change.
+
+   Scope matters more than the values. `.youtube-layout` is the shell Live TV
+   and Live Sports also use, so the demo proportions are bound to
+   `html.movie-playback-context` (set only while a movie is the playback
+   context) AND to not being on Movie Home or Detail. Live TV and Live Sports
+   never match either half, so their layout is untouched.
+   ========================================================= */
+html.movie-playback-context body:not(.movie-portal):not(.movie-detail-view) .youtube-layout.final-shell {
+  /* THREE tracks, not two. `.youtube-layout.final-shell` is a named-area grid
+     - "rail player catalog" - shared with Live TV and Live Sports, and a
+     two-column override silently reshapes it: the rail collapsed to 3px and
+     the player took the 400px meant for the side panel, shrinking the video
+     from 779px to 398px. The rail keeps its 215px and the player keeps the
+     flexible middle; only the side panel is pinned to the demo's 400px. */
+  grid-template-columns: 215px minmax(0, 1fr) 400px !important;
+  gap: 14px !important;
+}
+
+/* The demo's `.panel-top-header`: the title, how many there are, and one
+   line saying where they came from. */
+.movie-related-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.movie-related-head .movie-related-title { margin: 0 0 3px; }
+.movie-related-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.movie-related-count {
+  padding: 2px 8px;
+  border: 1px solid rgba(255, 42, 74, 0.32);
+  border-radius: 999px;
+  background: rgba(255, 42, 74, 0.13);
+  color: #ff6b82;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.movie-related-desc {
+  margin: 0;
+  color: #6f8299;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+@media (max-width: 1100px) {
+  /* Below the demo's own two-column breakpoint the stage stacks, exactly as
+     the shared shell already does for every other section. */
+  /* Below the demo's two-column breakpoint the shared shell already has its
+     own stacking rules; the demo width is simply released back to them. */
+  html.movie-playback-context body:not(.movie-portal):not(.movie-detail-view) .youtube-layout.final-shell {
+    grid-template-columns: 215px minmax(0, 1fr) clamp(390px, 24vw, 460px) !important;
+    gap: 10px !important;
+  }
+}

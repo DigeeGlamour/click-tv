@@ -39,6 +39,32 @@ def _live() -> dict:
         return json.load(handle)
 
 
+def _inside_window(entry: dict):
+    """An hour after this entry's own recorded measurement.
+
+    A preference expires after PREFERENCE_TTL_SECONDS, which is the whole
+    point of the field. A test that reads the committed registry through the
+    real clock therefore passes until the TTL runs out and then fails for the
+    expiry working correctly - which is not a regression and must not stop the
+    scan. Evaluating at the entry's own timestamp asks the question these
+    tests actually mean: is this entry well-formed and resolvable at all.
+
+    The timestamp is read, never written. Expiry stays under test in
+    test_a_genuinely_expired_proof_falls_back_to_ordinary_ranking and in
+    test_an_expired_entry_is_inert_only_because_it_expired below.
+    """
+    stamp = str((entry or {}).get("recorded_at") or "").strip()
+    if not stamp:
+        # No timestamp is the original bug this file was written for. Return
+        # None so the caller uses the real clock and the entry fails, loudly.
+        return None
+    text = stamp[:-1] + "+00:00" if stamp.endswith("Z") else stamp
+    recorded = dt.datetime.fromisoformat(text)
+    if recorded.tzinfo is None:
+        recorded = recorded.replace(tzinfo=dt.timezone.utc)
+    return recorded.timestamp() + 3600
+
+
 class CommittedRegistryTests(unittest.TestCase):
     """The registry as committed, not a synthetic one."""
 
@@ -56,7 +82,9 @@ class CommittedRegistryTests(unittest.TestCase):
         """The whole point: an entry that cannot be looked up is dead weight."""
         for key, entry in (_live().get("preferred") or {}).items():
             got = rp.preferred_route_id(
-                entry.get("kind") or "channel", entry.get("channel") or ""
+                entry.get("kind") or "channel",
+                entry.get("channel") or "",
+                now=_inside_window(entry),
             )
             self.assertEqual(
                 got,
@@ -69,8 +97,33 @@ class CommittedRegistryTests(unittest.TestCase):
         self.assertIsNotNone(entry, "the Zee Bangla preference is missing")
         self.assertEqual(entry["pass_count"], 2)
         self.assertEqual(
-            rp.preferred_route_id("channel", "Zee Bangla"), entry["route_id"]
+            rp.preferred_route_id(
+                "channel", "Zee Bangla", now=_inside_window(entry)
+            ),
+            entry["route_id"],
         )
+
+    def test_an_expired_entry_is_inert_only_because_it_expired(self):
+        """An inert entry must be inert for the TTL and for nothing else.
+
+        The difference matters operationally: an expired proof needs a
+        re-verification run, while an unresolvable one is a broken registry.
+        Without this, the two look identical - both simply return None.
+        """
+        for key, entry in (_live().get("preferred") or {}).items():
+            with self.subTest(entry=key):
+                kind = entry.get("kind") or "channel"
+                channel = entry.get("channel") or ""
+                if rp.preferred_route_id(kind, channel) is not None:
+                    continue  # still inside its window, nothing to explain
+                self.assertEqual(
+                    rp.preferred_route_id(
+                        kind, channel, now=_inside_window(entry)
+                    ),
+                    entry.get("route_id"),
+                    f"{key} does not resolve even inside its own window, so "
+                    "the entry is broken rather than merely expired",
+                )
 
     def test_the_migrated_stamp_survives_as_retained_evidence(self):
         """The legacy entry is kept, not discarded, and keeps its real date.

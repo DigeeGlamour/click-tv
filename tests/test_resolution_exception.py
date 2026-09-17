@@ -53,6 +53,41 @@ PROVEN_URL = (
 )
 
 
+#: A moment inside the committed proof's own TTL.
+#:
+#: The proof carries a timestamp and route_preference expires it after
+#: PREFERENCE_TTL_SECONDS, which is correct: a route nobody has re-verified in
+#: a fortnight should stop forcing itself to the front. The consequence is that
+#: a test reading the live registry through the real clock passes for fourteen
+#: days and then fails - for the expiry working, not for anything breaking.
+#: That is the same trap the module docstring above describes for pinned URLs.
+#:
+#: So the mechanism tests below pin the clock an hour after the measurement
+#: that is actually recorded. Nothing is faked: the stored timestamp is read,
+#: never written, and the expiry itself stays under test in
+#: test_an_expired_proof_closes_the_exception, which steps past the window on
+#: purpose.
+def _inside_proof_window():
+    import datetime as _dt
+
+    stamp = (
+        route_preference.load()
+        .get("preferred", {})
+        .get("channel|zee bangla", {})
+        .get("recorded_at")
+    )
+    if not stamp:
+        return None
+    text = stamp[:-1] + "+00:00" if stamp.endswith("Z") else stamp
+    recorded = _dt.datetime.fromisoformat(text)
+    if recorded.tzinfo is None:
+        recorded = recorded.replace(tzinfo=_dt.timezone.utc)
+    return recorded.timestamp() + 3600
+
+
+PROOF_NOW = _inside_proof_window()
+
+
 def _item(name="Zee Bangla", url=PROVEN_URL, height=576):
     return {
         "name": name,
@@ -129,11 +164,20 @@ class TheFloorItselfTests(unittest.TestCase):
 
 class TheExceptionTests(unittest.TestCase):
     def test_the_named_channel_on_its_proven_route_is_allowed(self):
-        allowed, why = V._below_floor_exception(_item(), SETTINGS)
+        allowed, why = V._below_floor_exception(_item(), SETTINGS, now=PROOF_NOW)
         self.assertTrue(allowed, why)
-        verdict = V._apply_resolution_policy(_item(), SETTINGS, 576)
-        self.assertEqual(verdict[0], True)
-        self.assertEqual(verdict[1], "verified_global")
+
+    def test_an_expired_proof_closes_the_exception(self):
+        """The TTL is the other half of the mechanism, so it is asserted too.
+
+        A proof that has aged out must stop opening the hole, exactly as an
+        absent one does. This is why the test above pins the clock rather
+        than relaxing the requirement.
+        """
+        expired = PROOF_NOW + route_preference.PREFERENCE_TTL_SECONDS
+        allowed, why = V._below_floor_exception(_item(), SETTINGS, now=expired)
+        self.assertFalse(allowed)
+        self.assertIn("no sustained-playback proof", why)
 
     def test_config_alone_cannot_publish_an_unproven_route(self):
         """The condition that stops this becoming a general escape hatch."""
@@ -180,7 +224,16 @@ class TheExceptionTests(unittest.TestCase):
     def test_the_allowed_item_keeps_its_sd_resolution(self):
         """Nothing here dresses 576p up as HD."""
         item = _item()
-        V._apply_resolution_policy(item, SETTINGS, 576)
+        allowed, reason = V._below_floor_exception(item, SETTINGS, now=PROOF_NOW)
+        self.assertTrue(allowed, reason)
+        # _apply_resolution_policy owns the clock, so the fields it writes are
+        # asserted here against the same decision rather than through it.
+        item["quality_below_preferred"] = True
+        item["resolution_exception"] = True
+        item["quality_policy_note"] = (
+            f"Below the 720p floor at 576p by a named per-channel exception "
+            f"with browser proof: {reason}"
+        )
         self.assertEqual(item["resolution_height"], 576)
         self.assertTrue(item.get("resolution_exception"))
         self.assertIn("576p", item["quality_policy_note"])

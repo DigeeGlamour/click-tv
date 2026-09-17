@@ -1552,6 +1552,8 @@ def _resolution_policy(settings: Dict[str, Any]) -> Dict[str, Any]:
 def _below_floor_exception(
     item: Dict[str, Any],
     settings: Dict[str, Any],
+    *,
+    now: Optional[float] = None,
 ) -> Tuple[bool, str]:
     """(allowed, reason) for publishing one channel below the resolution floor.
 
@@ -1605,7 +1607,7 @@ def _below_floor_exception(
                 f"{name}: exception allows {floor}p and this route measured "
                 f"{detected}p"
             )
-        if not _has_sustained_proof(item):
+        if not _has_sustained_proof(item, now=now):
             return False, (
                 f"{name}: listed as an exception but this route carries no "
                 "sustained-playback proof"
@@ -1614,8 +1616,21 @@ def _below_floor_exception(
     return False, ""
 
 
-def _has_sustained_proof(item: Dict[str, Any]) -> bool:
-    """Whether route_preference records a browser proof for this exact route."""
+def _has_sustained_proof(
+    item: Dict[str, Any],
+    *,
+    now: Optional[float] = None,
+) -> bool:
+    """Whether route_preference records a browser proof for this exact route.
+
+    `now` exists for tests and defaults to the real clock, so nothing about
+    the published behaviour changes. A proof carries a TTL, which means a
+    test written against the live registry starts failing the day that TTL
+    runs out - for a correct expiry, not a regression. Pinning the clock
+    inside the proof's own window lets those tests keep checking the
+    mechanism, while the expiry itself stays covered by the tests that
+    deliberately step outside the window.
+    """
     url = str(item.get("url") or "").strip()
     if not url:
         return False
@@ -1625,7 +1640,7 @@ def _has_sustained_proof(item: Dict[str, Any]) -> bool:
 
         kind = "channel"
         name = str(item.get("name") or item.get("title") or "")
-        wanted = _rp.preferred_route_id(kind, name)
+        wanted = _rp.preferred_route_id(kind, name, now=now)
         if not wanted:
             return False
         return _rev.normalize_source_identity(url) == wanted

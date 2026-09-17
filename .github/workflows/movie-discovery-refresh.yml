@@ -129,20 +129,60 @@ jobs:
           #
           # scan.yml already learned this on the sports side; same guard
           # here. The path list itself is unchanged.
-          for MOVIE_OUTPUT in \
-            data/movies/discovery \
-            data/movies/genres \
-            state/movie-trending-cache.json \
-            state/provider-health.json \
-            state/movie-metadata-cache.json \
-            state/movie-identity-aliases.json \
-            state/movie-featured-history.json; do
-            if [[ -e "$MOVIE_OUTPUT" ]]; then
-              git add -- "$MOVIE_OUTPUT"
-            else
-              echo "   not produced by this run, skipped: $MOVIE_OUTPUT"
+          # Declared once, and used for three things: staging, restoring
+          # after a lost push race, and the final check that the commit
+          # touches nothing else. One list means those cannot drift apart.
+          MOVIE_OUTPUTS=(
+            data/movies/discovery
+            data/movies/genres
+            state/movie-trending-cache.json
+            state/provider-health.json
+            state/movie-metadata-cache.json
+            state/movie-identity-aliases.json
+            state/movie-featured-history.json
+          )
+
+          stage_movie_outputs() {
+            for MOVIE_OUTPUT in "${MOVIE_OUTPUTS[@]}"; do
+              if [[ -e "$MOVIE_OUTPUT" ]]; then
+                git add -- "$MOVIE_OUTPUT"
+              else
+                echo "   not produced by this run, skipped: $MOVIE_OUTPUT"
+              fi
+            done
+          }
+
+          # Every path the commit changes must sit inside the allowlist. This
+          # is the guarantee that a concurrent sports or live-TV commit can be
+          # neither carried along nor reverted, and it is checked rather than
+          # assumed - including after the re-apply path below has run.
+          assert_scope() {
+            # The merge base, never the branch tip. Comparing against
+            # origin/main directly would count a concurrent sports commit
+            # that this job simply does not have yet as a stray change, and
+            # refuse a push that was perfectly in scope.
+            BASE="$(git merge-base "$1" HEAD)"
+            STRAY=""
+            while IFS= read -r CHANGED; do
+              [[ -z "$CHANGED" ]] && continue
+              INSIDE=0
+              for MOVIE_OUTPUT in "${MOVIE_OUTPUTS[@]}"; do
+                if [[ "$CHANGED" == "$MOVIE_OUTPUT" || "$CHANGED" == "$MOVIE_OUTPUT"/* ]]; then
+                  INSIDE=1
+                  break
+                fi
+              done
+              if [[ "$INSIDE" == "0" ]]; then
+                STRAY="$STRAY $CHANGED"
+              fi
+            done < <(git diff --name-only "$BASE" HEAD)
+            if [[ -n "$STRAY" ]]; then
+              echo "Refusing to push: changes outside the movie discovery allowlist:$STRAY"
+              exit 1
             fi
-          done
+          }
+
+          stage_movie_outputs
           # data/movies/discovery above already covers featured.json and
           # home.json. state/manual-featured.json is deliberately NOT staged:
           # it is operator input, never a job output, so a refresh can never
@@ -158,23 +198,68 @@ jobs:
 
           git commit -m "Movie discovery refresh [$(date -u '+%Y-%m-%d %H:%M:%S UTC')]"
 
+          git fetch origin main --quiet
+          assert_scope origin/main
+
+          # Losing the push race to the sports scanner is normal here: it
+          # commits every few minutes and this job takes longer than that.
+          #
+          # The old retry ran `git rebase origin/main -X ours` and died on
+          # `cannot rebase: You have unstaged changes` every time. The refresh
+          # writes more than it publishes - reports/, working/, other state/
+          # files - and those stay dirty in the tree after the allowlisted
+          # paths are committed, which is a state rebase refuses to start in.
+          # So the retry never ran, and a lost race meant the discovery output
+          # was simply dropped.
+          #
+          # `-X ours` was the second bug. During a rebase "ours" is the
+          # upstream being replayed onto, not the local work, so on a real
+          # conflict that option would have resolved in favour of origin/main
+          # and silently discarded the very files this job exists to publish -
+          # the opposite of what its own comment claimed.
+          #
+          # Re-applying replaces both. The outputs are already safe inside
+          # this job's commit, so the tree is reset onto the newest main and
+          # only the allowlisted paths are restored from that commit. The
+          # result is one commit on top of whatever main now holds, whose diff
+          # is checked to touch nothing but the allowlist. Concurrent sports
+          # work is never overwritten because it is never in the diff, and no
+          # force push is involved at any point.
           for ATTEMPT in 1 2 3; do
             if git push origin HEAD:main; then
+              echo "Pushed on attempt $ATTEMPT."
               exit 0
             fi
             if [[ "$ATTEMPT" == "3" ]]; then
               echo "Push failed after 3 attempts."
               exit 1
             fi
-            echo "Push attempt $ATTEMPT failed; rebasing on latest main and retrying."
-            git fetch origin main
-            # Ours wins only for the files this job owns; everything else on
-            # main is taken as-is, so a concurrent scan's sports/live-TV
-            # commits are never overwritten.
-            git rebase origin/main -X ours || {
-              git rebase --abort || true
-              echo "Rebase failed; leaving main untouched."
-              exit 1
-            }
+            echo "Push attempt $ATTEMPT lost the race; re-applying on the latest main."
+
+            OURS="$(git rev-parse HEAD)"
+            git fetch origin main --quiet
+
+            # Safe because everything intended is inside $OURS. What this
+            # discards is only the unpublished working-tree noise that was
+            # blocking the old rebase.
+            git reset --hard --quiet origin/main
+
+            for MOVIE_OUTPUT in "${MOVIE_OUTPUTS[@]}"; do
+              if git cat-file -e "$OURS:$MOVIE_OUTPUT" 2>/dev/null; then
+                git checkout --quiet "$OURS" -- "$MOVIE_OUTPUT"
+              else
+                echo "   not in this run's commit, skipped: $MOVIE_OUTPUT"
+              fi
+            done
+
+            stage_movie_outputs
+            if git diff --cached --quiet; then
+              echo "Latest main already carries this refresh; nothing to push."
+              exit 0
+            fi
+            git commit -q -m "Movie discovery refresh [$(date -u '+%Y-%m-%d %H:%M:%S UTC')]"
+            assert_scope origin/main
+            echo "Re-applied onto $(git rev-parse --short origin/main); changed:"
+            git diff --name-only origin/main HEAD
             sleep 5
           done

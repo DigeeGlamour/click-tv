@@ -136,6 +136,9 @@ const POSITION_HISTORY_LIMIT = 200;
 // watched for half a minute, so a mis-tap and a change of mind leave no trace.
 const CONTINUE_MIN_SECONDS = 30;
 const CONTINUE_SAVE_INTERVAL_MS = 12000;
+//: How long a hero artwork candidate gets to decode before the next one in
+//: the chain is tried. Short: this runs on the first screen a viewer sees.
+const MOVIE_HERO_ARTWORK_TIMEOUT_MS = 6000;
 const CONTINUE_COMPLETE_PERCENT = 90;
 const CONTINUE_HISTORY_LIMIT = 40;
 const MOVIE_PROMPT_TEXT = 'মুভি দেখতে একটি বিভাগ নির্বাচন করুন';
@@ -160,6 +163,10 @@ const state = {
   view: VIEW.CHANNEL,
   selectedCategory: null,
   selectedMovieCategory: null,
+  // Whether the movie grid was already hidden when a detail opened, so
+  // closing the detail restores it rather than revealing Movie Home's
+  // empty-list message beside the player.
+  movieGridHiddenBeforeDetail: false,
   // Real series total, read from data/series/manifest.json for the rail.
   seriesTotalCount: 0,
   activeMainGroup: 'sports',
@@ -1158,11 +1165,9 @@ function finalSubItems(group = state.activeMainGroup) {
 }
 
 function renderFinalMainNavigation() {
-  // The Movie section carries the approved header design. It stays on for
-  // every Movie view - Home, Grid, Detail and Player - so the header does not
-  // change shape the moment a title starts playing. `movie-portal` cannot be
-  // used for this: playback deliberately turns that one off.
-  document.body.classList.toggle('movie-section', state.activeMainGroup === 'movies');
+  // No section class here any more: the approved header is the site's header,
+  // identical on Live Sports, Live TV and Movies, so it hangs off `body` in
+  // the stylesheet rather than off whichever section happens to be open.
   [desktopMainNav, mobileMainNav].forEach((root) => {
     if (!root) return;
     root.replaceChildren();
@@ -2117,9 +2122,11 @@ async function selectMovieNavItem(key, options = {}) {
   // row, category, genre browse and web series - so a category can never
   // inherit Home's shelves.
   hideMovieHomeSections();
+  // Closed first, so its restore cannot undo what this navigation decides
+  // about the grid a line later.
+  closeMovieDetail();
   if (sidebarList) sidebarList.hidden = false;
   renderFinalNavigation();
-  closeMovieDetail();
   renderContinueWatchingRow();
   void renderMovieRelatedPanel();
   void renderMoviePopularRow();
@@ -2338,6 +2345,21 @@ function movieBrowseViewActive() {
 
 function setMoviePortalMode(on) {
   document.body.classList.toggle('movie-portal', Boolean(on));
+  if (on) return;
+  // The portal off means Movie Home is no longer the page - Play took it, or
+  // another section did. Its furniture goes with it, so the column beside the
+  // player carries Related (or a season's episodes) and nothing else. The
+  // predicate alone was not enough: nothing re-runs these renderers on the
+  // way into playback, so whatever they had drawn simply stayed there.
+  hideMovieHeroPanel();
+  hideContinueWatchingRow();
+  hideMoviePopularRow();
+  // The grid header is the same kind of leftover. Playing from a category
+  // left FILTER BY GENRE and "Back to Home" sitting above Related Movies in
+  // the player's side panel - browse chrome in a playback column. Navigating
+  // back to a category calls setMovieGenreBarVisible again, so this only
+  // takes it off screen for as long as the player owns the page.
+  setMovieGenreBarVisible(false);
 }
 
 /** Is the desktop rail - and with it BROWSE BY GENRE - on screen right now? */
@@ -2718,8 +2740,19 @@ const movieHero = {
  * Leaving Movies changes activeMainGroup, so Live TV, Live Sports and every
  * other view answer false here without needing to know this exists.
  */
+/**
+ * Is Movie Home the page right now?
+ *
+ * The portal class is part of the answer, not decoration. `activeMainGroup`
+ * and `currentCategory` both survive playback - Play does not leave Movie Home
+ * in that sense - so without this the Hero, Continue Watching and Popular all
+ * kept rendering into the column beside the player, on top of Related. The
+ * portal is exactly the Home / Grid / Detail state: startPlayback turns it off.
+ */
 function onMovieHomeView() {
-  return state.activeMainGroup === 'movies' && state.currentCategory === 'home';
+  return state.activeMainGroup === 'movies'
+    && state.currentCategory === 'home'
+    && document.body.classList.contains('movie-portal');
 }
 
 /**
@@ -2984,6 +3017,56 @@ function buildMovieHeroSlide(entry) {
  * instead of being stretched across a 16:5 banner. Which of the two it is
  * comes from artwork_kind in the file, not from guessing at the image.
  */
+/**
+ * Which of a slide's artwork URLs actually loads.
+ *
+ * The hero paints its background with `style.backgroundImage`, and a CSS
+ * background has no error event: when the URL 403s the layer just stays
+ * empty and there is no signal to fall through on. That is why the hero read
+ * as a plain dark panel - the catalogue has no backdrops, so every slide fell
+ * to its poster, and most posters are on a dead host.
+ *
+ * So the candidate is decoded through an Image() first, which does report
+ * failure, and only a URL that decoded is handed to CSS. Verdicts are
+ * remembered for the session so rotating back to a slide costs nothing.
+ */
+const movieHeroArtworkVerdicts = new Map();
+
+function decodeMovieHeroArtwork(url) {
+  if (!url) return Promise.resolve(false);
+  const known = movieHeroArtworkVerdicts.get(url);
+  if (known !== undefined) return Promise.resolve(known);
+  return new Promise((resolve) => {
+    const probe = new Image();
+    let settled = false;
+    const finish = (ok) => {
+      if (settled) return;
+      settled = true;
+      movieHeroArtworkVerdicts.set(url, ok);
+      resolve(ok);
+    };
+    probe.onload = () => finish(Boolean(probe.naturalWidth));
+    probe.onerror = () => finish(false);
+    // A host that accepts the connection and then never answers would
+    // otherwise hold the slide on its previous artwork indefinitely.
+    setTimeout(() => finish(false), MOVIE_HERO_ARTWORK_TIMEOUT_MS);
+    probe.src = url;
+  });
+}
+
+/** Backdrop, then poster, then nothing — the approved Featured order. */
+async function resolveMovieHeroArtwork(entry) {
+  const candidates = [
+    [String(entry?.backdrop || '').trim(), 'backdrop'],
+    [String(entry?.poster || '').trim(), 'poster']
+  ].filter(([url]) => url);
+
+  for (const [url, kind] of candidates) {
+    if (await decodeMovieHeroArtwork(url)) return { url, kind };
+  }
+  return { url: '', kind: 'none' };
+}
+
 function showMovieHeroSlide(next, options = {}) {
   const count = movieHero.items.length;
   if (!movieHeroPanel || !count) return;
@@ -2995,6 +3078,9 @@ function showMovieHeroSlide(next, options = {}) {
   if (art) {
     const poster = String(entry.poster || entry.backdrop || '').trim();
     if (poster) {
+      // An <img> does report failure, so this one only has to be hidden
+      // rather than probed ahead of time.
+      art.onerror = () => { art.hidden = true; };
       art.src = poster;
       art.hidden = false;
     } else {
@@ -3007,14 +3093,21 @@ function showMovieHeroSlide(next, options = {}) {
   if (layers.length === 2) {
     const incoming = layers[movieHero.layer === 0 ? 1 : 0];
     const outgoing = layers[movieHero.layer];
-    const image = String(entry.backdrop || entry.poster || '').trim();
-    incoming.style.backgroundImage = image ? `url("${image}")` : '';
-    incoming.classList.toggle('poster-fallback', entry.artwork_kind !== 'backdrop');
-    incoming.classList.add('active');
-    outgoing.classList.remove('active');
     // Only the two visible layers ever hold an image, so five slides cost
     // two decoded backgrounds rather than five.
     movieHero.layer = movieHero.layer === 0 ? 1 : 0;
+    const token = (movieHero.artworkToken = (movieHero.artworkToken || 0) + 1);
+    resolveMovieHeroArtwork(entry).then(({ url, kind }) => {
+      // The viewer may have rotated on while the probe was in flight.
+      if (token !== movieHero.artworkToken || movieHero.index !== index) return;
+      incoming.style.backgroundImage = url ? `url("${url}")` : '';
+      incoming.classList.toggle('poster-fallback', Boolean(url) && kind !== 'backdrop');
+      // No artwork survived: the panel keeps its own designed ground rather
+      // than showing a torn image, and says so for the styling to pick up.
+      movieHeroPanel.classList.toggle('no-artwork', !url);
+      incoming.classList.add('active');
+      outgoing.classList.remove('active');
+    });
   }
 
   const copyHost = qs('.movie-hero-inner', movieHeroPanel);
@@ -3272,8 +3365,10 @@ function movieAnalyticsEndpoint() {
  */
 function sendMovieAnalyticsEvent(eventType, item) {
   if (!eventType || !item) return false;
-  const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
-  if (!isMovie) return false;
+  // Same page-vs-item confusion as the Continue Watching writer had: a Live
+  // TV channel opened while the Movies page was the last view was being
+  // reported as a movie play.
+  if (!isMovieContentItem(item)) return false;
 
   const endpoint = movieAnalyticsEndpoint();
   if (!endpoint) return false;
@@ -3328,8 +3423,7 @@ function sendMovieAnalyticsEvent(eventType, item) {
 function reportMoviePlaybackProgress() {
   const item = state.currentItem;
   if (!item) return;
-  const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
-  if (!isMovie) return;
+  if (!isMovieContentItem(item)) return;
 
   const position = Number(video.currentTime);
   const duration = Number(video.duration);
@@ -4011,14 +4105,73 @@ function buildMovieRelatedGrid(rows) {
   return grid;
 }
 
+/**
+ * Related as a row of posters, for a full-width page.
+ *
+ * Same data and the same cards Movie Home uses, so a suggestion looks like a
+ * suggestion everywhere. `buildMovieRelatedSection` below keeps the compact
+ * two-column grid, which is the shape the narrow column beside the player
+ * needs and the approved design draws there.
+ */
+function buildMovieRelatedStrip(rows, heading = 'You May Also Like') {
+  const items = movieSummariesToItems(rows);
+  if (!items.length) return null;
+  const section = document.createElement('section');
+  section.className = 'movie-row movie-related-row';
+
+  const head = document.createElement('div');
+  head.className = 'movie-row-head';
+  const group = document.createElement('div');
+  const title = document.createElement('h2');
+  title.textContent = heading;
+  group.appendChild(title);
+  head.appendChild(group);
+
+  const strip = document.createElement('div');
+  strip.className = 'movie-row-strip';
+  items.forEach((entry, index) => {
+    const card = createMovieCard(entry, index);
+    card.addEventListener('click', (event) => {
+      if (event.target.closest('.movie-card-info')) return;
+      void openMovieDetail(entry);
+    });
+    qs('.movie-card-info', card)?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      void openMovieDetail(entry);
+    });
+    strip.appendChild(card);
+  });
+
+  section.append(head, strip);
+  return section;
+}
+
 function buildMovieRelatedSection(rows, heading = 'Related Movies') {
   if (!rows.length) return null;
   const section = document.createElement('section');
   section.className = 'movie-related';
+
+  // The demo's `.panel-top-header`: what the panel is, how many it holds and
+  // where they came from. The count is the real number of rows below it.
+  const head = document.createElement('div');
+  head.className = 'movie-related-head';
+  const group = document.createElement('div');
+  const titleRow = document.createElement('div');
+  titleRow.className = 'movie-related-title-row';
   const title = document.createElement('h3');
   title.className = 'movie-related-title';
   title.textContent = heading;
-  section.append(title, buildMovieRelatedGrid(rows));
+  const count = document.createElement('span');
+  count.className = 'movie-related-count';
+  count.textContent = `${rows.length} ${rows.length === 1 ? 'Suggestion' : 'Suggestions'}`;
+  titleRow.append(title, count);
+  const desc = document.createElement('p');
+  desc.className = 'movie-related-desc';
+  desc.textContent = 'Suggested from this movie';
+  group.append(titleRow, desc);
+  head.append(group);
+
+  section.append(head, buildMovieRelatedGrid(rows));
   return section;
 }
 
@@ -4052,6 +4205,13 @@ async function renderMovieRelatedPanel() {
     return;
   }
 
+  // The demo's player view gives the right column to one thing. Playing from
+  // a category left that category's poster grid stacked underneath Related,
+  // so the column carried both. The grid is only taken off screen, never
+  // emptied: every way back - Back to Home, a rail entry, the sub-nav - calls
+  // selectMovieNavItem, which shows it again.
+  if (sidebarList) sidebarList.hidden = true;
+
   const token = `${item.id || item._uid}`;
   state.movieRelatedToken = token;
   const rows = await movieRelatedFor(item);
@@ -4083,6 +4243,40 @@ async function renderMovieRelatedPanel() {
 // ===========================================================================
 
 /** Identity of the thing watched, not of the stream that happened to serve it. */
+/**
+ * Is this title one the Movie section is allowed to record against?
+ *
+ * The page is not the answer. `state.view` is wherever the viewer last
+ * navigated, and `startPlayback` never changes it, so a Live TV channel
+ * opened from the fullscreen drawer - which lists channels, events, movies
+ * and series together - plays with `state.view` still on VIEW.MOVIE. Asking
+ * the page is what put "DBC News" in Movie Continue Watching. Only the item
+ * knows what it is, and every movie loader normalises with VIEW.MOVIE, so
+ * this is strictly narrower and never rejects a real movie.
+ */
+function isMovieContentItem(item) {
+  if (!item) return false;
+  if (item._sourceKind !== VIEW.MOVIE) return false;
+  // Only ever the item's own fields. `isLiveEventContext` cannot be used
+  // here, close as it looks: it falls back to `state.view`, which is the
+  // page-vs-item confusion this function exists to avoid.
+  const kind = String(item.content_kind || '').toLowerCase();
+  return kind !== 'event' && kind !== 'channel';
+}
+
+/** The same question for a stored Continue Watching record. */
+function isMovieContinueEntry(entry) {
+  if (!entry || typeof entry !== 'object') return false;
+  if (entry.content_type !== 'movie' && entry.content_type !== 'episode') return false;
+  const kind = entry.snapshot?._sourceKind;
+  // Entries written before the writer was fixed carry the true kind in their
+  // snapshot, so a legacy Live TV row is identifiable and is dropped on read.
+  // A record with no snapshot at all predates that field: it is left alone
+  // rather than guessed at, because deleting real movie progress is worse.
+  if (kind === undefined || kind === null || kind === '') return true;
+  return kind === VIEW.MOVIE;
+}
+
 function continueWatchingKey(item) {
   if (!item) return '';
   if (seriesModule?.isEpisodeItem?.(item)) {
@@ -4105,6 +4299,11 @@ function readContinueWatching() {
     const position = Number(entry.position_seconds);
     const duration = Number(entry.duration_seconds);
     if (!Number.isFinite(position) || position <= 0) continue;
+    // A Live TV or Live Sports row that an earlier build let through is
+    // dropped here rather than rendered. Nothing else in the store is
+    // touched: movie and episode progress survives untouched, and the
+    // watchlist is a separate store this never reads or writes.
+    if (!isMovieContinueEntry(entry)) continue;
     clean[key] = {
       ...entry,
       position_seconds: position,
@@ -4133,8 +4332,7 @@ function writeContinueWatching() {
 function saveContinueWatching(force = false) {
   const item = state.currentItem;
   if (!item) return false;
-  const isMovie = item._sourceKind === VIEW.MOVIE || state.view === VIEW.MOVIE;
-  if (!isMovie) return false;
+  if (!isMovieContentItem(item)) return false;
 
   const position = Number(video.currentTime);
   const duration = Number(video.duration);
@@ -4189,7 +4387,8 @@ function saveContinueWatching(force = false) {
 /** Entries still worth offering: real progress, not finished, still playable. */
 function continueWatchingEntries() {
   return Object.values(state.continueWatching)
-    .filter((entry) => !entry.completed
+    .filter((entry) => isMovieContinueEntry(entry)
+      && !entry.completed
       && entry.progress_percent > 0
       && entry.progress_percent < CONTINUE_COMPLETE_PERCENT
       && entry.position_seconds >= CONTINUE_MIN_SECONDS)
@@ -4249,8 +4448,10 @@ function hideContinueWatchingRow() {
 
 function renderContinueWatchingRow() {
   if (!movieContinuePanel) return;
-  const show = state.view === VIEW.MOVIE && state.currentCategory === 'home';
-  const entries = show ? continueWatchingEntries() : [];
+  // The same predicate the Hero and Popular use: Movie Home, and not the
+  // player view. Continue Watching belongs on the page you pick from, not in
+  // the column beside something already playing.
+  const entries = onMovieHomeView() ? continueWatchingEntries() : [];
   if (!entries.length) {
     movieContinuePanel.hidden = true;
     movieContinuePanel.replaceChildren();
@@ -4345,6 +4546,35 @@ function movieDetailRows(item) {
 }
 
 /**
+ * What the detail card's own header does not already say.
+ *
+ * Year, category, runtime, rating, quality and genres are shown in the card
+ * itself, as the approved design has them. This is the rest of what the record
+ * really carries - and nothing at all when it carries none of it, because an
+ * empty definition list under a card is worse than no list.
+ */
+const MOVIE_DETAIL_CARD_FIELDS = Object.freeze(
+  ['Year', 'Category', 'Genres', 'Rating', 'Quality', 'Runtime']
+);
+function movieDetailExtraRows(item) {
+  return movieDetailRows(item).filter(([label]) => !MOVIE_DETAIL_CARD_FIELDS.includes(label));
+}
+
+/**
+ * The designed stand-in when a title has no poster, or its poster 404s.
+ *
+ * Same words the cards use, so a missing poster reads the same everywhere.
+ * The title goes in the label rather than on screen: it is already the
+ * heading right beside this.
+ */
+function movieDetailPosterFallbackHtml(item) {
+  return '<div class="movie-detail-poster movie-detail-poster-fallback" role="img" aria-label="'
+    + escapeHtml((item?.name || 'Movie') + ' poster unavailable') + '">'
+    + '<i class="fas fa-film" aria-hidden="true"></i>'
+    + '<span>Poster নেই</span></div>';
+}
+
+/**
  * A title that cannot be shown - withdrawn, or a link to something that is
  * no longer in the catalogue.
  *
@@ -4398,7 +4628,8 @@ function closeMovieDetail() {
   movieDetailPanel.replaceChildren();
   state.movieDetailItem = null;
   document.body.classList.toggle('movie-detail-view', Boolean(state.seriesDetailMode));
-  if (sidebarList) sidebarList.hidden = false;
+  if (sidebarList) sidebarList.hidden = Boolean(state.movieGridHiddenBeforeDetail);
+  state.movieGridHiddenBeforeDetail = false;
   // Back to the grid on Movie Home - and nowhere else.
   resumeMovieHeroRotation();
 }
@@ -4413,39 +4644,112 @@ async function openMovieDetail(item) {
   const resolved = item._summaryOnly ? (await resolveMovieSummary(item)) || item : item;
   state.movieDetailItem = resolved;
 
-  const rows = movieDetailRows(resolved);
+  const rows = movieDetailExtraRows(resolved);
   const poster = String(resolved.logo || resolved.poster || '').trim();
+  const backdrop = String(resolved.backdrop || resolved.backdrop_url || '').trim();
   const plot = String(resolved.plot || resolved.description || resolved.overview || '').trim();
   const playable = isPlayable(resolved);
+  const isSeries = Boolean(resolved._isSeries || resolved.content_kind === 'series');
 
   const factsHtml = rows.map(function (pair) {
     return '<div class="movie-detail-fact"><dt>' + escapeHtml(pair[0]) +
       '</dt><dd>' + escapeHtml(pair[1]) + '</dd></div>';
   }).join('');
 
+  // Every line below is omitted when the catalogue does not really carry it.
+  // Nothing here invents a rating, a genre, a runtime or a synopsis.
+  const metaBits = [];
+  if (resolved.year) metaBits.push(escapeHtml(String(resolved.year)));
+  if (resolved.category) metaBits.push(escapeHtml(String(resolved.category)));
+  metaBits.push(isSeries ? 'Series' : 'Movie');
+  if (resolved.runtime_minutes) metaBits.push(escapeHtml(resolved.runtime_minutes + ' min'));
+
+  const quality = movieDetailQuality(resolved);
+  const ratingValue = String(resolved.rating ?? '').trim();
+  const ratingSource = String(resolved.rating_source || '').trim();
+  const genres = movieGenresOf(resolved).filter(Boolean);
+
+  // Ported from `Movie demo design index.html` (detail view): the demo's own
+  // class names and structure carry the styling, and the production hook
+  // classes ride alongside them so every existing handler and test keeps its
+  // selector. Only real catalogue values are bound - a field the record does
+  // not carry is not rendered at all.
+  const servers = Math.max(1, Number(resolved.available_link_count
+    || (Array.isArray(resolved.backups) ? resolved.backups.length + 1 : 1)) || 1);
+  const health = String(resolved.verification_badge || '').trim();
+
   const wrap = document.createElement('div');
-  wrap.className = 'movie-detail-inner';
+  wrap.className = 'movie-detail-inner detail-section-inner';
   wrap.innerHTML =
-    '<button type="button" class="movie-detail-close tv-focusable" aria-label="Close details">&times;</button>' +
-    '<div class="movie-detail-head">' +
-      (poster ? '<img class="movie-detail-poster" src="' + escapeHtml(poster) + '" alt="" loading="lazy">' : '') +
-      '<div class="movie-detail-main">' +
-        '<h2 class="movie-detail-title">' + escapeHtml(resolved.name || 'Untitled') + '</h2>' +
-        '<dl class="movie-detail-facts">' + factsHtml + '</dl>' +
-        (plot ? '<p class="movie-detail-plot">' + escapeHtml(plot) + '</p>' : '') +
-        '<div class="movie-detail-actions">' +
-          '<button type="button" class="movie-detail-play tv-focusable"' + (playable ? '' : ' disabled') + '>' +
-            '<i class="fas fa-play" aria-hidden="true"></i> Play</button>' +
-          '<button type="button" class="movie-detail-watchlist tv-focusable">' +
-            '<i class="fas fa-star" aria-hidden="true"></i> Watchlist</button>' +
-          '<button type="button" class="movie-detail-share tv-focusable">' +
-            '<i class="fas fa-link" aria-hidden="true"></i> Copy Link</button>' +
+    '<div class="detail-nav-bar">' +
+      '<button type="button" class="btn-back-pill movie-detail-close tv-focusable">' +
+        '<i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Movies</button>' +
+    '</div>' +
+    '<div class="detail-hero-card movie-detail-hero">' +
+      // No backdrop in the record means no backdrop layer at all - an empty
+      // dark block behind the poster is worse than the card's own surface.
+      (backdrop
+        ? '<div class="detail-backdrop movie-detail-backdrop" style="background-image:url(' + JSON.stringify(backdrop) + ')"></div>'
+        : '') +
+      '<div class="detail-inner-grid movie-detail-grid">' +
+        '<div class="detail-poster-wrap movie-detail-poster-wrap">' +
+          (poster
+            ? '<img class="movie-detail-poster" src="' + escapeHtml(poster) + '" alt="" loading="lazy" referrerpolicy="no-referrer">'
+            : movieDetailPosterFallbackHtml(resolved)) +
+        '</div>' +
+        '<div class="detail-info movie-detail-main">' +
+          '<span class="detail-type-pill movie-detail-kind"><span class="red-bullet" aria-hidden="true"></span>'
+            + (isSeries ? 'SERIES' : 'MOVIE') + '</span>' +
+          '<h1 class="detail-heading movie-detail-title">' + escapeHtml(resolved.name || 'Untitled') + '</h1>' +
+          '<div class="detail-meta-row movie-detail-meta">' +
+            metaBits.map((bit) => '<span>' + bit + '</span>').join('<i class="meta-dot movie-detail-dot" aria-hidden="true">•</i>') +
+            // The rating never travels without the source that issued it.
+            (ratingValue && ratingSource
+              ? '<span class="movie-detail-rating"><i class="fas fa-star" aria-hidden="true"></i>' +
+                escapeHtml(ratingValue) + '<small>' + escapeHtml(ratingSource) + '</small></span>'
+              : '') +
+            (quality ? '<span class="badge-res movie-detail-quality">' + escapeHtml(quality) + '</span>' : '') +
+            // Real verification state from the record, never a decoration.
+            (health ? '<span class="badge-health">&#10003; ' + escapeHtml(health) + '</span>' : '') +
+          '</div>' +
+          (genres.length
+            ? '<div class="movie-detail-genres">' +
+              genres.map((g) => '<span>' + escapeHtml(String(g)) + '</span>').join('') + '</div>'
+            : '') +
+          (plot ? '<p class="detail-desc movie-detail-plot">' + escapeHtml(plot) + '</p>' : '') +
+          '<div class="detail-actions-row movie-detail-actions">' +
+            '<button type="button" class="btn-play-white movie-detail-play tv-focusable"' + (playable ? '' : ' disabled') + '>' +
+              '<i class="fas fa-play" aria-hidden="true"></i> ' + (isSeries ? 'Watch Episode 1' : 'Watch Now') + '</button>' +
+            '<button type="button" class="btn-bookmark-dark movie-detail-watchlist tv-focusable">' +
+              '<i class="fas fa-star" aria-hidden="true"></i> <span>Watchlist</span></button>' +
+            '<button type="button" class="btn-bookmark-dark movie-detail-share tv-focusable">' +
+              '<i class="fas fa-link" aria-hidden="true"></i> <span>Copy Link</span></button>' +
+          '</div>' +
+          // The demo's server box, bound to the real link count this record
+          // publishes rather than an invented list.
+          '<div class="server-card-box">' +
+            '<div class="server-box-title">AVAILABLE SERVERS &middot; ' + servers +
+              ' VERIFIED ' + (servers > 1 ? 'SOURCES' : 'SOURCE') + '</div>' +
+            '<div class="server-pill-row">' +
+              Array.from({ length: Math.min(servers, 8) }, (_unused, index) =>
+                '<span class="server-pill-btn' + (index === 0 ? ' active' : '') + '">' +
+                  '<span class="server-green-dot" aria-hidden="true"></span> Server ' + (index + 1) + '</span>'
+              ).join('') +
+            '</div>' +
+          '</div>' +
         '</div>' +
       '</div>' +
-    '</div>';
+    '</div>' +
+    // Whatever else the record really carries - cast, director, audio - below
+    // the card. Omitted entirely when there is none of it.
+    (factsHtml ? '<dl class="movie-detail-facts">' + factsHtml + '</dl>' : '');
 
   movieDetailPanel.replaceChildren(wrap);
   movieDetailPanel.hidden = false;
+  // Remembered, not assumed: Movie Home keeps the grid hidden because its
+  // content is the Hero and the rows, and the grid holds only the empty-list
+  // message. Restoring it blindly on close put that message beside the player.
+  state.movieGridHiddenBeforeDetail = Boolean(sidebarList?.hidden);
   if (sidebarList) sidebarList.hidden = true;
   // Detail is a view of its own in the approved design, not a panel appended
   // under Movie Home. The Hero, Continue Watching, the rows and the grid
@@ -4483,14 +4787,25 @@ async function openMovieDetail(item) {
       showToast(href);
     }
   });
+  // A poster that 404s must not sit there as a broken-image icon: the card
+  // keeps its shape and the designed stand-in takes the slot.
+  const posterImage = qs('img.movie-detail-poster', wrap);
+  posterImage?.addEventListener('error', () => {
+    const slot = document.createElement('div');
+    slot.innerHTML = movieDetailPosterFallbackHtml(resolved);
+    posterImage.replaceWith(slot.firstElementChild);
+  }, { once: true });
+
   qs('.movie-detail-close', wrap)?.focus?.();
 
   // Related, appended once it has been worked out, so the detail itself never
   // waits on it. Fewer quality matches is shown as fewer cards; when there is
-  // nothing worth offering, there is no section at all.
+  // nothing worth offering, there is no section at all. On the detail it is a
+  // row of posters, as the approved design has it - the two-column grid is the
+  // shape for the narrow column beside the player, not for a full-width page.
   const related = await movieRelatedFor(resolved);
   if (state.movieDetailItem !== resolved) return;
-  const section = buildMovieRelatedSection(related, 'You May Also Like');
+  const section = buildMovieRelatedStrip(related, 'You May Also Like');
   if (section) wrap.appendChild(section);
 }
 

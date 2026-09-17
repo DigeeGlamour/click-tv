@@ -158,15 +158,28 @@ async function run(label, viewport, navSelector, subNavSelector) {
   if (await info.count()) {
     await info.click({ force: true });
     await page.waitForTimeout(2500);
-    const detail = await page.evaluate(() => ({
-      heading: document.querySelector('.movie-detail-panel .movie-related-title')?.textContent?.trim() || '',
-      cards: document.querySelectorAll('.movie-detail-panel .movie-related-card').length,
-      subject: document.querySelector('.movie-detail-title')?.textContent?.trim() || '',
-      names: [...document.querySelectorAll('.movie-detail-panel .movie-related-card strong')]
-        .map((node) => node.textContent.trim()),
-      claimsAi: /\b(ai|personalis|personaliz|for you|because you)\b/i.test(
-        document.querySelector('.movie-detail-panel')?.textContent || '')
-    }));
+    // Shape-agnostic on purpose. The approved design gives the detail a row
+    // of posters and the narrow column beside the player the compact
+    // two-column grid; what this suite is about is the suggestions being
+    // there, bounded, real and unbranded - not which of the two shapes drew
+    // them.
+    const detail = await page.evaluate(() => {
+      const panel = '.movie-detail-panel';
+      const heading = document.querySelector(
+        `${panel} .movie-related-title, ${panel} .movie-related-row .movie-row-head h2`);
+      const cards = [...document.querySelectorAll(
+        `${panel} .movie-related-card, ${panel} .movie-related-row .movie-card`)];
+      return {
+        heading: heading?.textContent?.trim() || '',
+        cards: cards.length,
+        subject: document.querySelector('.movie-detail-title')?.textContent?.trim() || '',
+        names: cards
+          .map((n) => n.querySelector('strong, .movie-card-title')?.textContent?.trim() || '')
+          .filter(Boolean),
+        claimsAi: /\b(ai|personalis|personaliz|for you|because you)\b/i.test(
+          document.querySelector(panel)?.textContent || '')
+      };
+    });
 
     check(/You May Also Like|Related/i.test(detail.heading),
       `[${label}] the detail offers a related section`, detail.heading);

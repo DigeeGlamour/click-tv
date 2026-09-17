@@ -126,7 +126,11 @@ async function run(label, viewport, isMobile) {
 
   const home = await page.evaluate(() => {
     const panel = document.querySelector('#movieHeroPanel');
-    const cards = document.querySelectorAll('#sidebarList .movie-card').length;
+    // The approved design makes Movie Home the Hero and the discovery rows;
+    // the grid belongs to the category, genre and search views. So what proves
+    // Home carries real content is the cards inside its rows.
+    const cards = document.querySelectorAll('#movieHomeSections .movie-row-strip .movie-card').length;
+    const rows = document.querySelectorAll('#movieHomeSections .movie-row').length;
     const chips = document.querySelectorAll('.movie-genre-chip').length;
     const heroTitle = panel ? panel.querySelector('.movie-hero-title') : null;
     const kicker = panel ? panel.querySelector('.movie-hero-kicker') : null;
@@ -141,12 +145,14 @@ async function run(label, viewport, isMobile) {
       dots,
       buttons,
       cards,
+      rows,
       chips,
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth
     };
   });
 
-  check(home.cards > 0, `[${label}] Movie Home shows a grid`, String(home.cards));
+  check(home.rows > 0, `[${label}] Movie Home shows discovery rows`, String(home.rows));
+  check(home.cards > 0, `[${label}] the rows carry real cards`, String(home.cards));
   check(home.heroVisible, `[${label}] the Featured Hero is displayed`);
   check(Boolean(home.heroTitle), `[${label}] the Hero shows a real title`, home.heroTitle);
   check(/FEATURED ON CLICK TV/i.test(home.kicker),
