@@ -810,5 +810,138 @@ class RetentionCanCollideTooTests(unittest.TestCase):
         )
 
 
+class DiscoveryFollowsTheCatalogueTests(unittest.TestCase):
+    """Discovery may only describe the catalogue that is actually published.
+
+    On 2026-09-17 the private source returned 377 publishable films against
+    1,667 already live. scanner/output.py did the right thing and kept the
+    previous pages - a 77% drop is not a catalogue, it is an outage. But the
+    discovery files had already been written from the 377, so Movie Home
+    advertised titles the catalogue did not contain: 40 of 40 Just Added and
+    4 of 5 Featured hero slides pointed at ids with no page behind them.
+
+    The rule these tests hold: if the pages are going to be preserved, so is
+    the discovery built from them.
+    """
+
+    PROTECTION = {
+        "movie_failure_protection": {
+            "enabled": True,
+            "maximum_drop_percentage": 40,
+            "minimum_previous_count": 100,
+        }
+    }
+
+    def _catalogue(self, root, count):
+        """A published catalogue of `count` films, as index.json sees it."""
+        category = Path(root) / "mix"
+        category.mkdir(parents=True, exist_ok=True)
+        (category / "index.json").write_text(
+            json.dumps({"category": "Mix", "slug": "mix", "count": count}),
+            encoding="utf-8",
+        )
+        return root
+
+    def test_a_collapse_leaves_the_previous_discovery_alone(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = self._catalogue(temporary, 1667)
+            self.assertTrue(
+                M._movie_output_would_be_preserved(
+                    {"Mix": {"index": {"count": 377}}},
+                    self.PROTECTION,
+                    movies_root=root,
+                )
+            )
+
+    def test_the_exact_numbers_from_the_run_that_found_this(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = self._catalogue(temporary, 1667)
+            # 1667 -> 377 is a 77.4% drop against a 40% ceiling.
+            self.assertTrue(
+                M._movie_output_would_be_preserved(
+                    {"Mix": {"index": {"count": 377}}},
+                    self.PROTECTION,
+                    movies_root=root,
+                )
+            )
+
+    def test_an_ordinary_scan_still_writes_discovery(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = self._catalogue(temporary, 1667)
+            for incoming in (1667, 1600, 1100, 1001):
+                with self.subTest(incoming=incoming):
+                    self.assertFalse(
+                        M._movie_output_would_be_preserved(
+                            {"Mix": {"index": {"count": incoming}}},
+                            self.PROTECTION,
+                            movies_root=root,
+                        )
+                    )
+
+    def test_a_growing_catalogue_is_never_held_back(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = self._catalogue(temporary, 1000)
+            self.assertFalse(
+                M._movie_output_would_be_preserved(
+                    {"Mix": {"index": {"count": 2000}}},
+                    self.PROTECTION,
+                    movies_root=root,
+                )
+            )
+
+    def test_protection_switched_off_is_respected(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = self._catalogue(temporary, 1667)
+            self.assertFalse(
+                M._movie_output_would_be_preserved(
+                    {"Mix": {"index": {"count": 1}}},
+                    {"movie_failure_protection": {"enabled": False}},
+                    movies_root=root,
+                )
+            )
+
+    def test_a_small_previous_catalogue_is_below_the_floor(self):
+        """The guard only protects a catalogue worth protecting."""
+        with tempfile.TemporaryDirectory() as temporary:
+            root = self._catalogue(temporary, 50)
+            self.assertFalse(
+                M._movie_output_would_be_preserved(
+                    {"Mix": {"index": {"count": 1}}},
+                    self.PROTECTION,
+                    movies_root=root,
+                )
+            )
+
+    def test_an_empty_disk_is_a_first_run_not_a_collapse(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            self.assertFalse(
+                M._movie_output_would_be_preserved(
+                    {"Mix": {"index": {"count": 400}}},
+                    self.PROTECTION,
+                    movies_root=temporary,
+                )
+            )
+
+    def test_it_reads_the_same_settings_block_the_guard_reads(self):
+        """Not a second opinion: the same knob, or it will drift."""
+        import inspect
+
+        source = inspect.getsource(M._movie_output_would_be_preserved)
+        self.assertIn("movie_failure_protection", source)
+        self.assertIn("maximum_drop_percentage", source)
+        self.assertIn("minimum_previous_count", source)
+
+    def test_process_movies_asks_before_it_writes_discovery(self):
+        """Wired in, and wired in BEFORE the writes - the whole point."""
+        import inspect
+
+        source = inspect.getsource(M.process_movies)
+        self.assertIn("_movie_output_would_be_preserved", source)
+        ask = source.index("_movie_output_would_be_preserved")
+        for writer in ("_generate_genre_indexes", "_generate_trending", "_generate_discovery"):
+            with self.subTest(writer=writer):
+                self.assertLess(ask, source.index(writer))
+
+
 if __name__ == "__main__":
     unittest.main()

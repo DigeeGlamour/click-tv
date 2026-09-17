@@ -4074,6 +4074,79 @@ def _finalize_movie_presentation(
     return report
 
 
+def _published_movie_total(movies_root: str | Path = DEFAULT_GENERATED_MOVIES_ROOT) -> int:
+    """How many movies are on disk right now, from the category indexes."""
+    total = 0
+    root = Path(movies_root)
+    for index_path in sorted(root.glob("*/index.json")):
+        try:
+            payload = json.loads(index_path.read_text(encoding="utf-8"))
+        except Exception:  # noqa: BLE001 - a missing or broken index is a zero
+            continue
+        if isinstance(payload, dict):
+            try:
+                total += int(payload.get("count") or 0)
+            except (TypeError, ValueError):
+                continue
+    return total
+
+
+def _movie_output_would_be_preserved(
+    paginated: Dict[str, Any],
+    settings: Dict[str, Any],
+    *,
+    movies_root: str | Path = DEFAULT_GENERATED_MOVIES_ROOT,
+) -> bool:
+    """Will scanner/output.py keep the previous pages instead of these?
+
+    The same three conditions that gate it there - protection on, a previous
+    catalogue big enough to be worth protecting, and a drop past the allowed
+    percentage - read from the same `movie_failure_protection` settings block,
+    so this cannot answer differently from the guard it is asking about.
+
+    The quality-migration escape hatch is deliberately not replicated: while a
+    migration is running the guard lets a large drop through, and so does
+    this, because `incoming >= previous` never trips either of them. A
+    migration that does shrink the catalogue would publish pages and keep the
+    old discovery for one scan - stale, but never pointing at films that are
+    not there.
+    """
+    config = settings.get("movie_failure_protection") if isinstance(settings, dict) else None
+    if not isinstance(config, dict):
+        config = {}
+    if not bool(config.get("enabled", True)):
+        return False
+
+    try:
+        maximum_drop = int(config.get("maximum_drop_percentage", 40) or 40)
+    except (TypeError, ValueError):
+        maximum_drop = 40
+    try:
+        minimum_previous = int(config.get("minimum_previous_count", 100) or 100)
+    except (TypeError, ValueError):
+        minimum_previous = 100
+
+    previous_total = _published_movie_total(movies_root)
+    if previous_total < minimum_previous:
+        return False
+
+    incoming_total = 0
+    for payload in (paginated or {}).values():
+        if not isinstance(payload, dict):
+            continue
+        index_payload = payload.get("index")
+        if isinstance(index_payload, dict):
+            try:
+                incoming_total += int(index_payload.get("count") or 0)
+            except (TypeError, ValueError):
+                continue
+
+    if incoming_total >= previous_total:
+        return False
+    drop = (previous_total - incoming_total) / float(previous_total) * 100.0
+    return drop > maximum_drop
+
+
 def process_movies(
     bd_results_path: str = "working/bd-results.json",
     settings_path: str = "config/settings.json",
@@ -4186,8 +4259,28 @@ def process_movies(
         for category in VALID_MOVIE_CATEGORIES
     }
 
-    # Discovery outputs are built from the paginated catalogue above, so
-    # they can only ever reference movies this scan actually publishes.
+    # Discovery is built from the paginated catalogue above - and that is only
+    # safe while the catalogue above is the one that gets published.
+    #
+    # It is not always. scanner/output.py keeps the previous movie pages when
+    # the incoming total collapses, which is what saved the catalogue on the
+    # 17th: the source returned 377 publishable films against 1,667 already
+    # live, a 77% drop, and the pages were rightly left alone. Discovery was
+    # written from the 377 anyway, so Movie Home advertised films the
+    # catalogue did not contain - 40 of 40 in Just Added and 4 of 5 in the
+    # Featured hero pointed at ids with no page behind them.
+    #
+    # So the same question is asked here, before anything is written: if the
+    # pages are going to be preserved, the discovery derived from them is
+    # preserved too, and the site keeps describing the catalogue it actually
+    # has.
+    if _movie_output_would_be_preserved(paginated, settings):
+        print(
+            "   movie discovery: previous outputs kept, because the catalogue "
+            "they describe is not being republished"
+        )
+        return paginated
+
     # Both are wrapped: a discovery-side failure must never cost the
     # catalogue, which is the part people actually watch.
     _generate_genre_indexes(paginated)
