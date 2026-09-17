@@ -92,7 +92,15 @@ async function run(label, viewport, isMobile) {
   // is. So a request to it is proof the movie itself started.
   const movieMediaRequests = [];
   page.on('request', (r) => {
-    if (/r2\.dev|\.mkv|\.mp4/i.test(r.url())) movieMediaRequests.push(r.url().slice(0, 90));
+    const url = r.url();
+    if (!/r2\.dev|\.mkv|\.mp4/i.test(url)) return;
+    // A live channel starts on load and keeps pulling segments through the
+    // Live TV proxy, whose query string carries the upstream URL - and that
+    // upstream often ends in .mp4. Those are not this page playing a movie.
+    // Counting them failed "a deep link opens the detail without starting the
+    // movie" on production with a live URL as the evidence.
+    if (/\/hls\?url=/i.test(url)) return;
+    movieMediaRequests.push(url.slice(0, 90));
   });
 
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
@@ -196,6 +204,9 @@ async function run(label, viewport, isMobile) {
     check(/movie=/.test(detail.url), `[${label}] the URL names what is on screen`, detail.url);
 
     // --- deep link reload --------------------------------------------------
+    // The assertion after the reload is about what the RELOAD started, so the
+    // record starts empty here rather than at the first page load.
+    movieMediaRequests.length = 0;
     const deepUrl = page.url();
     await page.goto(deepUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
     await page.waitForTimeout(8000);
