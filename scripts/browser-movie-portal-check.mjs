@@ -121,7 +121,17 @@ async function run(label, viewport, isMobile) {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   const movieMedia = [];
-  page.on('request', (r) => { if (/r2\.dev|\.mkv|\.mp4/i.test(r.url())) movieMedia.push(r.url().slice(0, 80)); });
+  page.on('request', (r) => {
+    const url = r.url();
+    if (!/r2\.dev|\.mkv|\.mp4/i.test(url)) return;
+    // A live channel starts on load and keeps requesting segments through the
+    // Live TV proxy, whose own query string carries the upstream URL - and
+    // that upstream often ends in .mp4. Those requests are not this page
+    // playing a movie, and counting them made "a card click starts NO
+    // playback" fail or pass depending on which channel happened to autoplay.
+    if (/\/hls\?url=/i.test(url)) return;
+    movieMedia.push(url.slice(0, 80));
+  });
 
   await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await page.waitForTimeout(6000);
@@ -209,6 +219,9 @@ async function run(label, viewport, isMobile) {
     return true;
   });
   if (cardOpened) {
+    // The assertion below is about what the CLICK started, so the record
+    // starts empty at the click rather than at page load.
+    movieMedia.length = 0;
     await page.waitForTimeout(4000);
     const detail = await snapshot(page);
     check(detail.detail.vis, `[${label}] a card opens the Movie Detail`);

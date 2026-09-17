@@ -4667,6 +4667,21 @@ body.movie-detail-view .movie-detail-panel,
 html.movie-playback-context body:not(.movie-portal) .video-meta {
   padding: 12px 16px !important;
   border-radius: 16px !important;
+  /* reference-design.css pins this strip to exactly 84px with
+     `overflow: hidden`, which is right for a live channel - title and
+     actions, one line. The demo's movie strip carries a second line under
+     the title (category, year, quality) and at 84px that line was sliced in
+     half. It grows to its content here and nowhere else: Live TV and Live
+     Sports never match this selector, so their strip stays pinned. */
+  height: auto !important;
+  min-height: 84px !important;
+  max-height: none !important;
+}
+/* The title row is stretched to the full height of the strip so the
+   "NOW PLAYING" label can hang off its top edge. With a second line beneath
+   it, that stretch pushed the sub-row out through the bottom of the box. */
+html.movie-playback-context body:not(.movie-portal) .video-meta .meta-title-row {
+  min-height: 0 !important;
 }
 
 /* Demo .hero-inner has no min-height of its own: the card is 390px and

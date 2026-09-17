@@ -12041,6 +12041,12 @@ function setupPlayerUi(item) {
   $('currentTime').textContent = '00:00';
   $('durationTime').textContent = isMovie ? '00:00' : 'LIVE';
   $('metaWatchingCount').style.display = isMovie ? 'none' : 'inline';
+  // The dot in front of it is a bare separator with nothing to separate once
+  // the count is hidden, and it was left sitting alone under the title.
+  const watchingSeparator = $('metaWatchingCount')?.previousElementSibling;
+  if (watchingSeparator && !watchingSeparator.id) {
+    watchingSeparator.style.display = isMovie ? 'none' : '';
+  }
   applyDefaultPlayerFit();
   updateContextualPlayerButtons();
   video.poster = isMovie ? (item.logo || '') : '';

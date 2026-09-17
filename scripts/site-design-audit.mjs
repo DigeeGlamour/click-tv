@@ -66,7 +66,7 @@ async function openMovies(page) {
   const nav = page.locator('.final-main-button:visible', { hasText: 'Movies' }).first();
   await nav.waitFor({ state: 'visible', timeout: 30000 });
   await nav.click();
-  await page.waitForTimeout(1800);
+  await page.waitForTimeout(2500);
 }
 
 const browser = await chromium.launch();
@@ -87,14 +87,15 @@ for (const vp of VIEWPORTS) {
   const card = page.locator('.movie-card:visible, .final-card:visible').first();
   if (await card.count()) {
     await card.click();
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(2500);
     report[`${vp.label}-detail`] = await page.evaluate(MEASURE);
     await page.screenshot({ path: path.join(outDir, `site-detail-${vp.label}.png`) });
 
     const play = page.locator('.btn-play-white:visible, .movie-detail-play:visible').first();
     if (await play.count()) {
       await play.click();
-      await page.waitForTimeout(3000);
+      // Production is slower to hand over to the player than a local dist.
+      await page.waitForTimeout(8000);
       report[`${vp.label}-player`] = await page.evaluate(MEASURE);
       await page.screenshot({ path: path.join(outDir, `site-player-${vp.label}.png`) });
     }
