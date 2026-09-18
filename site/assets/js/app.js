@@ -98,6 +98,23 @@ const MOVIE_GENRES = Object.freeze([
   'Action', 'Comedy', 'Horror', 'Romance', 'Thriller', 'Animation', 'Sci-Fi', 'Crime'
 ]);
 
+/**
+ * How the movie and series catalogue files are fetched.
+ *
+ * They are static between scans and site/_headers already publishes them as
+ * `public, max-age=300, stale-while-revalidate=600`. Every one of these calls
+ * used to pass `cache: 'no-store'`, which instructs the browser to ignore
+ * exactly that - so the 632KB search index, and every category page behind it,
+ * came down again on each visit and each re-entry into the section. Leaving
+ * the option off uses the normal HTTP cache, which means the server's own
+ * five minutes, a revalidation after it, and the same data either way.
+ *
+ * Live data is deliberately not in here: the snapshots, the boot manifest and
+ * the proxy health checks keep `no-store`, because for those being current is
+ * the whole point.
+ */
+const MOVIE_JSON_FETCH = Object.freeze({});
+
 const MOVIE_DISCOVERY_PATHS = Object.freeze({
   home: 'data/movies/discovery/home.json',
   trending: 'data/movies/discovery/trending.json',
@@ -1740,7 +1757,7 @@ async function selectMovieSubcategory(slug, button, options = {}) {
   state.dataAbortController = controller;
 
   try {
-    const indexData = await fetchJson(movieEntry.index, { signal: controller.signal, cache: 'no-store' });
+    const indexData = await fetchJson(movieEntry.index, { signal: controller.signal, ...MOVIE_JSON_FETCH });
     if (sessionId !== state.movieCategorySessionId || dataSessionId !== state.dataSessionId) return;
     state.movieIndex = indexData;
     state.moviePageCursor = 0;
@@ -1866,7 +1883,7 @@ async function loadMovieBrowseIndex() {
 
   state.movieBrowseIndexPromise = (async () => {
     try {
-      const data = await fetchMovieJson(MOVIE_BROWSE_INDEX_PATH, { cache: 'no-store' });
+      const data = await fetchMovieJson(MOVIE_BROWSE_INDEX_PATH, MOVIE_JSON_FETCH);
       state.movieBrowseIndex = Array.isArray(data?.items) ? data.items : [];
       state.movieBrowseIndexFailed = false;
     } catch (error) {
@@ -1935,12 +1952,12 @@ async function resolveMovieSummary(summary) {
     const entry = manifestMovieEntry(slug);
     if (!entry?.index) continue;
     try {
-      const indexData = await fetchJson(entry.index, { cache: 'no-store' });
+      const indexData = await fetchJson(entry.index, MOVIE_JSON_FETCH);
       const pages = Array.isArray(indexData?.pages) ? indexData.pages : [];
       for (const page of pages) {
         const path = page.path || (page.file ? `data/movies/${indexData.slug || slug}/${page.file}` : '');
         if (!path) continue;
-        const pageData = await fetchJson(path, { cache: 'no-store' });
+        const pageData = await fetchJson(path, MOVIE_JSON_FETCH);
         const items = pageData?.items || pageData?.movies || [];
         const found = Array.isArray(items) ? items.find((row) => String(row?.id || '') === id) : null;
         if (found) {
@@ -2081,7 +2098,7 @@ async function loadMovieDiscoveryRow(key) {
   let failed = false;
   let homeDocument = null;
   try {
-    const data = await fetchMovieJson(path, { cache: 'no-store' });
+    const data = await fetchMovieJson(path, MOVIE_JSON_FETCH);
     if (key === 'home') homeDocument = data;
     if (key === 'home') {
       // One file, four shelves. Until a real Featured source exists the
@@ -2671,7 +2688,7 @@ function loadMovieSeriesCount() {
   if (state.seriesTotalCount || movieSeriesCountPromise) return movieSeriesCountPromise;
   movieSeriesCountPromise = (async () => {
     try {
-      const manifest = await fetchJson('/data/series/manifest.json', { cache: 'no-store' });
+      const manifest = await fetchJson('/data/series/manifest.json', MOVIE_JSON_FETCH);
       const total = Number(manifest?.total_series);
       if (Number.isFinite(total) && total > 0) {
         state.seriesTotalCount = total;
@@ -3240,39 +3257,94 @@ async function renderMovieHomeSections(homeDocument) {
     'just-added': home.just_added || [],
     latest: home.latest || []
   };
-  // Same fallback the Just Added grid uses, so the row on Home and the page
-  // it opens never disagree about whether there is anything to show.
-  if (!byKey['just-added'].length) {
-    byKey['just-added'] = await movieRecentlyAddedRows(MOVIE_HOME_ROW_LIMIT);
-    if (state.movieHomeToken !== token) return;
-  }
 
-  // Category rows come from the browse index, which is already loaded for
-  // search and genre browse - no extra request in the common case.
-  let index = [];
-  try {
-    index = await loadMovieBrowseIndex();
-  } catch (_) {
-    index = [];
-  }
-  if (state.movieHomeToken !== token) return;
-
-  const categoryRows = (slug, wantSeries) => (index || []).filter((row) => {
-    const isSeries = row?.type === 'series';
-    if (wantSeries) return isSeries;
-    if (isSeries) return false;
-    return movieCategorySlug(row?.category) === slug;
+  // Every row is given its place in the page before any of them has content,
+  // so a row that arrives later lands where it has always been rather than at
+  // the end. An anchor that never receives a row is removed.
+  const slots = new Map();
+  MOVIE_HOME_ROWS.forEach(([key]) => {
+    const slot = document.createElement('div');
+    slot.className = 'movie-home-slot';
+    slot.hidden = true;
+    slots.set(key, slot);
+    host.appendChild(slot);
   });
 
-  MOVIE_HOME_ROWS.forEach(([key, title, description]) => {
-    const rows = key in byKey
-      ? byKey[key]
-      : categoryRows(key, key === 'web-series');
+  const fillSlot = (key, title, description, rows) => {
+    const slot = slots.get(key);
+    if (!slot) return;
     const section = buildMovieHomeRow(key, title, description, rows);
-    if (section) host.appendChild(section);
-  });
+    if (!section) {
+      slot.remove();
+      slots.delete(key);
+      return;
+    }
+    slot.replaceChildren(section);
+    slot.hidden = false;
+  };
 
-  host.hidden = host.childElementCount <= 1 && !host.querySelector('.movie-row');
+  const settle = () => {
+    host.hidden = !host.querySelector('.movie-row');
+  };
+
+  // 1. What home.json already gave us, drawn now. These three rows are the
+  //    first screen, and they cost nothing more to show.
+  MOVIE_HOME_ROWS.forEach(([key, title, description]) => {
+    if (!(key in byKey)) return;
+    // An empty shelf keeps its slot rather than losing it: Just Added's
+    // fallback is read from the browse index in step 2, and a slot filled
+    // with nothing now would be removed before that could arrive.
+    if (!byKey[key].length) return;
+    fillSlot(key, title, description, byKey[key]);
+  });
+  settle();
+
+  // 2. The category rows need the browse index. It is 632KB and it is not
+  //    needed to read the first screen, so the page is not held for it: it
+  //    loads after the paint and each row appears in its own place as soon as
+  //    it can be built. The same index is what search and genre browse use,
+  //    so this is also the request they would have made later.
+  const fillFromIndex = async () => {
+    let index = [];
+    try {
+      index = await loadMovieBrowseIndex();
+    } catch (_) {
+      index = [];
+    }
+    if (state.movieHomeToken !== token) return;
+
+    const categoryRows = (slug, wantSeries) => (index || []).filter((row) => {
+      const isSeries = row?.type === 'series';
+      if (wantSeries) return isSeries;
+      if (isSeries) return false;
+      return movieCategorySlug(row?.category) === slug;
+    });
+
+    MOVIE_HOME_ROWS.forEach(([key, title, description]) => {
+      // A discovery shelf that had rows was drawn before the paint; one that
+      // was empty is settled below, from this index.
+      if (key in byKey && byKey[key].length) return;
+      if (key in byKey) return;
+      fillSlot(key, title, description, categoryRows(key, key === 'web-series'));
+    });
+
+    // Just Added has its own shelf, and when that shelf is empty the fallback
+    // is read from this same index - so it is settled here rather than ahead
+    // of the paint, where it used to pull the index in on its own.
+    if (!byKey['just-added'].length) {
+      const recent = await movieRecentlyAddedRows(MOVIE_HOME_ROW_LIMIT);
+      if (state.movieHomeToken !== token) return;
+      const entry = MOVIE_HOME_ROWS.find(([key]) => key === 'just-added');
+      if (entry) fillSlot(entry[0], entry[1], entry[2], recent);
+    }
+    settle();
+  };
+
+  if (typeof requestIdleCallback === 'function') {
+    requestIdleCallback(() => { void fillFromIndex(); }, { timeout: 1500 });
+  } else {
+    setTimeout(() => { void fillFromIndex(); }, 0);
+  }
 }
 
 function hideMovieHomeSections() {
@@ -3881,7 +3953,7 @@ async function renderMovieHeroPanel() {
   let payload = movieHero.document;
   if (!payload) {
     try {
-      payload = await fetchMovieJson(MOVIE_FEATURED_PATH, { cache: 'no-store' });
+      payload = await fetchMovieJson(MOVIE_FEATURED_PATH, MOVIE_JSON_FETCH);
       movieHero.document = payload;
     } catch (_) {
       // No Hero rather than a broken one, and no error surfaced: the rest
@@ -4062,7 +4134,7 @@ async function renderMoviePopularRow() {
 
   let document_ = null;
   try {
-    document_ = await fetchMovieJson(MOVIE_POPULAR_PATH, { cache: 'no-store' });
+    document_ = await fetchMovieJson(MOVIE_POPULAR_PATH, MOVIE_JSON_FETCH);
   } catch (_) {
     hideMoviePopularRow();
     return;
