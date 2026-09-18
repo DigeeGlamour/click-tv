@@ -1,23 +1,89 @@
 {
-  "timestamp": "2026-09-18T09:30:19.631424+00:00",
+  "timestamp": "2026-09-18T09:36:05.474052+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 7,
-  "total_global_network_checked": 7,
+  "total_input_pool": 10,
+  "total_global_network_checked": 10,
   "total_proxy_selected": 0,
   "total_proxy_checked": 0,
-  "total_processed": 7,
-  "total_publishable": 5,
-  "strict_player_hidden": 1,
-  "browser_unreachable_hidden": 1,
+  "total_processed": 10,
+  "total_publishable": 6,
+  "strict_player_hidden": 0,
+  "browser_unreachable_hidden": 3,
   "unproven_hidden": 0,
   "status_counts": {
-    "verified_global": 5,
-    "metadata_only": 1,
-    "unreachable_from_browser": 1
+    "unreachable_from_browser": 3,
+    "verified_global": 6,
+    "failed": 1
   },
   "groups": {
+    "unreachable_from_browser": [
+      {
+        "id": "kuwait-u23-vs-uzbekistan-u23",
+        "name": "Kuwait U23 Vs Uzbekistan U23",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.44/hls/NNNNA.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.44): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "newcastle-knights-vs-north-queensland-cowboys",
+        "name": "Newcastle Knights Vs North Queensland Cowboys",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.44/hls/ssssAAA.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.44): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "sydney-swans-vs-fremantle-dockers",
+        "name": "Sydney Swans Vs Fremantle Dockers",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.44/hls/ssssA.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.44): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      }
+    ],
     "verified_global": [
+      {
+        "id": "newcastle-knights-vs-north-queensland-cowboys",
+        "name": "Newcastle Knights Vs North Queensland Cowboys",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://tmaxapp.site/8wirwjs76erftg/foxsoccer96654sdfss.m3u8",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      },
       {
         "id": "sydney-swans-vs-fremantle-dockers",
         "name": "Sydney Swans Vs Fremantle Dockers",
@@ -99,39 +165,21 @@
         "permanent_fail_count": 0
       }
     ],
-    "metadata_only": [
+    "failed": [
       {
         "id": "sydney-swans-vs-fremantle",
         "name": "Sydney Swans vs Fremantle",
         "source_id": "srhady-crichd-footy-live",
-        "source_pipeline": "upcoming",
-        "url": "",
-        "verification_status": "metadata_only",
-        "verification_mode": "none",
-        "publish_allowed": false,
-        "http_status": 0,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
-        "permanent_fail_count": 0
-      }
-    ],
-    "unreachable_from_browser": [
-      {
-        "id": "sydney-swans-vs-fremantle-dockers",
-        "name": "Sydney Swans Vs Fremantle Dockers",
-        "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
-        "url": "http://193.47.62.44/hls/ssssA.m3u8",
-        "verification_status": "unreachable_from_browser",
-        "verification_mode": "undeliverable_bare_ip",
+        "url": "",
+        "verification_status": "failed",
+        "verification_mode": "same_run_cloud_second_pass",
         "publish_allowed": false,
         "http_status": 0,
         "proxy_name": "",
         "proxy_http_status": 0,
-        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.44): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
-        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "verification_error": "Stream URL is empty",
+        "verification_note": "",
         "permanent_fail_count": 0
       }
     ]
