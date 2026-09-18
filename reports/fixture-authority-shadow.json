@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T05:30:32.591154+00:00",
+  "generated_at": "2026-09-18T05:51:09.850164+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,11 +10,11 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 1394,
+      "fixtures": 1399,
       "unknown_statuses": [
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "3|66'"
+        "3|90+1'"
       ],
       "attempts": [
         {
@@ -51,7 +51,7 @@
           "sport": "football",
           "date": "2026-09-19",
           "result": "ok",
-          "fixtures": 972
+          "fixtures": 977
         }
       ]
     },
@@ -61,21 +61,21 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 4,
-      "fixtures": 547,
+      "requests_ok": 6,
+      "fixtures": 601,
       "unknown_statuses": [],
       "attempts": [
         {
           "sport": "cricket",
           "date": "2026-09-17",
-          "result": "INCONCLUSIVE",
-          "reason": "http 504"
+          "result": "ok",
+          "fixtures": 30
         },
         {
           "sport": "cricket",
           "date": "2026-09-18",
-          "result": "INCONCLUSIVE",
-          "reason": "http 504"
+          "result": "ok",
+          "fixtures": 28
         },
         {
           "sport": "cricket",
@@ -87,13 +87,13 @@
           "sport": "football",
           "date": "2026-09-17",
           "result": "ok",
-          "fixtures": 108
+          "fixtures": 105
         },
         {
           "sport": "football",
           "date": "2026-09-18",
           "result": "ok",
-          "fixtures": 119
+          "fixtures": 118
         },
         {
           "sport": "football",
@@ -112,8 +112,8 @@
     "verdicts": {
       "CONFLICT": 2,
       "UNVERIFIED": 36,
-      "PARTIAL_AUTHORITY": 1,
-      "VERIFIED": 69
+      "VERIFIED": 69,
+      "PARTIAL_AUTHORITY": 1
     },
     "verified": 69,
     "partial_authority": 1,
@@ -121,33 +121,34 @@
     "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 62,
-        "matched": 46
+        "unmatched": 59,
+        "matched": 49
       },
       "livescore": {
         "matched": 68,
         "unmatched": 40
       }
     },
-    "matched_by_two_independent_authorities": 41,
-    "authority_agreements": 41,
-    "authority_disagreements": 0,
+    "matched_by_two_independent_authorities": 44,
+    "authority_agreements": 43,
+    "authority_disagreements": 1,
     "card_status_conflicts": 1,
     "conflict_reason_counts": {
       "card says LIVE, authority says FINISHED": 1,
-      "kickoff": 2
+      "kickoff": 3,
+      "authorities disagree": 1
     },
     "identity_near_misses": 22,
     "independent_authority_count_distribution": {
       "0": 36,
-      "1": 31,
-      "2": 41
+      "1": 28,
+      "2": 44
     },
     "unknown_authority_statuses": {
       "livescore": [
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "3|66'"
+        "3|90+1'"
       ],
       "espn-header": []
     }
@@ -469,7 +470,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1550477",
+          "upstream_family": "ESPN",
+          "name": "Japan Women vs India Women",
+          "home": "Japan Women",
+          "away": "India Women",
+          "home_team_id": "2280",
+          "away_team_id": "1812",
+          "competition": "Asian Games Women's Cricket Competition",
+          "competition_id": "22546",
+          "kickoff": "2026-09-18T05:00:00+00:00",
+          "kickoff_delta_minutes": 30.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "4th Quarter-Final",
+          "format": "T20",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-09-19T23:59:00Z",
+          "authority_uid": "s:200~e:1550477~c:1550477"
         },
         "livescore": {
           "result": "matched",
@@ -496,15 +524,18 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "kickoff: ours 2026-09-18T04:30, livescore 2026-09-18T05:00 (+30.0 min)"
+        "kickoff: ours 2026-09-18T04:30, espn-header 2026-09-18T05:00 (+30.0 min)",
+        "kickoff: ours 2026-09-18T04:30, livescore 2026-09-18T05:00 (+30.0 min)",
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
       ],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
@@ -514,7 +545,7 @@
       "card_id": "olimpia-vs-cd-la-firpo",
       "name": "Olimpia vs CD LA Firpo",
       "competition": "",
-      "kickoff": "2026-09-18T05:30:32+00:00",
+      "kickoff": "2026-09-18T05:51:09+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -551,7 +582,7 @@
       "card_id": "u23-world-cup-day-4-session-2",
       "name": "U23 World Cup Day 4, Session 2",
       "competition": "",
-      "kickoff": "2026-09-18T05:30:32+00:00",
+      "kickoff": "2026-09-18T05:51:09+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -581,6 +612,97 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:western-australia-vs-south-australia|one day cup 2026 27|2026-09-18",
+      "card_id": "western-australia-vs-south-australia",
+      "name": "Western Australia vs South Australia",
+      "competition": "One Day Cup, 2026/27",
+      "kickoff": "2026-09-18T06:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1544842",
+          "upstream_family": "ESPN",
+          "name": "Western Australia vs South Australia",
+          "home": "Western Australia",
+          "away": "South Australia",
+          "home_team_id": "602",
+          "away_team_id": "520",
+          "competition": "Australian Domestic One-Day Competition",
+          "competition_id": "8626",
+          "kickoff": "2026-09-18T06:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "1st Match (D/N)",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-09-19T23:59:00Z",
+          "authority_uid": "s:200~e:1544842~c:1544842"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1825044",
+          "upstream_family": "LiveScore",
+          "name": "Western Australia vs South Australia",
+          "home": "Western Australia",
+          "away": "South Australia",
+          "home_team_id": "86294",
+          "away_team_id": "86297",
+          "competition": "One-Day Cup",
+          "competition_id": "25773",
+          "kickoff": "2026-09-18T06:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Match 1",
+          "format": "Domestic One Day",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -621,7 +743,7 @@
           "competition_id": "25618",
           "kickoff": "2026-09-18T04:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "66'",
+          "status_raw": "90+1'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -640,75 +762,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "PARTIAL_AUTHORITY",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:tba|cpl|2026-09-18",
-      "card_id": "tba-vs-tba",
-      "name": "TBA vs TBA",
-      "competition": "CPL",
-      "kickoff": "2026-09-18T00:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1552926",
-          "upstream_family": "ESPN",
-          "name": "TBA vs TBA",
-          "home": "TBA",
-          "away": "TBA",
-          "home_team_id": "984779",
-          "away_team_id": "984779",
-          "competition": "Africa Continental Cup",
-          "competition_id": "21470",
-          "kickoff": "2026-09-19T11:30:00+00:00",
-          "kickoff_delta_minutes": 2130.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "Final",
-          "format": "T20",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-09-20T23:59:00Z",
-          "authority_uid": "s:200~e:1552926~c:1552926"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
-        "ESPN"
-      ],
-      "near_miss_count": 1,
-      "conflict_reasons": [
-        "kickoff: ours 2026-09-18T00:00, espn-header 2026-09-19T11:30 (+2130.0 min)"
-      ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -746,96 +799,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:san-diego-wave-w-vs-kansas-city-w|nwsl women|2026-09-19",
-      "card_id": "san-diego-wave-w-vs-kansas-city-w",
-      "name": "San Diego Wave W vs Kansas City W",
-      "competition": "NWSL Women",
-      "kickoff": "2026-09-19T02:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live",
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "AXS-Bing",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401854003",
-          "upstream_family": "ESPN",
-          "name": "San Diego Wave FC vs Kansas City Current",
-          "home": "San Diego Wave FC",
-          "away": "Kansas City Current",
-          "home_team_id": "21423",
-          "away_team_id": "20907",
-          "competition": "NWSL",
-          "competition_id": "8301",
-          "kickoff": "2026-09-19T02:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, September 18th at 10:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:8301~e:401854003~c:401854003"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1731812",
-          "upstream_family": "LiveScore",
-          "name": "San Diego Wave FC vs Kansas City Current",
-          "home": "San Diego Wave FC",
-          "away": "Kansas City Current",
-          "home_team_id": "207288",
-          "away_team_id": "148228",
-          "competition": "National Women's Soccer League",
-          "competition_id": "24463",
-          "kickoff": "2026-09-19T02:05:00+00:00",
-          "kickoff_delta_minutes": 5.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2289,8 +2252,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2459,13 +2422,13 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "srhady-bingstream",
         "srhady-axsports-live",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "srhady-bingstream"
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2555,8 +2518,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3881,8 +3844,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4009,8 +3972,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4739,8 +4702,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4981,8 +4944,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -5648,6 +5611,96 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:san-diego-wave-w-vs-kansas-city-w|nwsl women|2026-09-19",
+      "card_id": "san-diego-wave-w-vs-kansas-city-w",
+      "name": "San Diego Wave W vs Kansas City W",
+      "competition": "NWSL Women",
+      "kickoff": "2026-09-19T02:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live",
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "AXS-Bing",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401854003",
+          "upstream_family": "ESPN",
+          "name": "San Diego Wave FC vs Kansas City Current",
+          "home": "San Diego Wave FC",
+          "away": "Kansas City Current",
+          "home_team_id": "21423",
+          "away_team_id": "20907",
+          "competition": "NWSL",
+          "competition_id": "8301",
+          "kickoff": "2026-09-19T02:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, September 18th at 10:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8301~e:401854003~c:401854003"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1731812",
+          "upstream_family": "LiveScore",
+          "name": "San Diego Wave FC vs Kansas City Current",
+          "home": "San Diego Wave FC",
+          "away": "Kansas City Current",
+          "home_team_id": "207288",
+          "away_team_id": "148228",
+          "competition": "National Women's Soccer League",
+          "competition_id": "24463",
+          "kickoff": "2026-09-19T02:05:00+00:00",
+          "kickoff_delta_minutes": 5.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:saudi-arabia-u23-vs-qatar-u23|asian games|2026-09-18",
       "card_id": "saudi-arabia-u23-vs-qatar-u23",
       "name": "Saudi Arabia U23 Vs Qatar U23",
@@ -5661,8 +5714,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -5804,8 +5857,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -5962,8 +6015,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -6136,6 +6189,75 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:tba|cpl|2026-09-18",
+      "card_id": "tba-vs-tba",
+      "name": "TBA vs TBA",
+      "competition": "CPL",
+      "kickoff": "2026-09-18T23:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "kickoff_lifted",
+          "verified": false,
+          "event_id": "1552926",
+          "upstream_family": "ESPN",
+          "name": "TBA vs TBA",
+          "home": "TBA",
+          "away": "TBA",
+          "home_team_id": "984779",
+          "away_team_id": "984779",
+          "competition": "Africa Continental Cup",
+          "competition_id": "21470",
+          "kickoff": "2026-09-19T11:30:00+00:00",
+          "kickoff_delta_minutes": 750.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Final",
+          "format": "T20",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-09-20T23:59:00Z",
+          "authority_uid": "s:200~e:1552926~c:1552926"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [
+        "ESPN"
+      ],
+      "near_miss_count": 1,
+      "conflict_reasons": [
+        "kickoff: ours 2026-09-18T23:00, espn-header 2026-09-19T11:30 (+750.0 min)"
+      ],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -6690,70 +6812,6 @@
           "sport": "football",
           "round": "9",
           "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:western-australia-vs-south-australia|one day cup 2026 27|2026-09-18",
-      "card_id": "western-australia-vs-south-australia",
-      "name": "Western Australia vs South Australia",
-      "competition": "One Day Cup, 2026/27",
-      "kickoff": "2026-09-18T06:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1825044",
-          "upstream_family": "LiveScore",
-          "name": "Western Australia vs South Australia",
-          "home": "Western Australia",
-          "away": "South Australia",
-          "home_team_id": "86294",
-          "away_team_id": "86297",
-          "competition": "One-Day Cup",
-          "competition_id": "25773",
-          "kickoff": "2026-09-18T06:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "Match 1",
-          "format": "Domestic One Day",
           "gender": ""
         }
       },
@@ -7326,7 +7384,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1530204",
+          "upstream_family": "ESPN",
+          "name": "Zimbabwe vs Australia",
+          "home": "Zimbabwe",
+          "away": "Australia",
+          "home_team_id": "9",
+          "away_team_id": "2",
+          "competition": "Australia tour of Zimbabwe 2026",
+          "competition_id": "24303",
+          "kickoff": "2026-09-18T07:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "2nd ODI",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-09-19T23:59:00Z",
+          "authority_uid": "s:200~e:1530204~c:1530204"
         },
         "livescore": {
           "result": "matched",
@@ -7353,13 +7438,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -7378,8 +7464,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "srhady-crichd-footy-live",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
@@ -7497,92 +7583,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:san-diego-wave-fc-vs-kansas-city-current|nwsl|2026-09-19",
-      "card_id": "san-diego-wave-fc-vs-kansas-city-current",
-      "name": "San Diego Wave FC Vs Kansas City Current",
-      "competition": "NWSL",
-      "kickoff": "2026-09-19T02:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401854003",
-          "upstream_family": "ESPN",
-          "name": "San Diego Wave FC vs Kansas City Current",
-          "home": "San Diego Wave FC",
-          "away": "Kansas City Current",
-          "home_team_id": "21423",
-          "away_team_id": "20907",
-          "competition": "NWSL",
-          "competition_id": "8301",
-          "kickoff": "2026-09-19T02:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, September 18th at 10:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:8301~e:401854003~c:401854003"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1731812",
-          "upstream_family": "LiveScore",
-          "name": "San Diego Wave FC vs Kansas City Current",
-          "home": "San Diego Wave FC",
-          "away": "Kansas City Current",
-          "home_team_id": "207288",
-          "away_team_id": "148228",
-          "competition": "National Women's Soccer League",
-          "competition_id": "24463",
-          "kickoff": "2026-09-19T02:05:00+00:00",
-          "kickoff_delta_minutes": 5.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED"
     },
     {
       "fixture_id": "provider:alianza-atletico-vs-comerciantes-unidos|primera divisi n|2026-09-18",
@@ -7825,13 +7825,13 @@
       "verdict": "VERIFIED"
     },
     {
-      "fixture_id": "provider:ofi-crete-vs-tsg-hoffenheim|uefa europa league|2026-09-17",
-      "card_id": "ofi-crete-vs-tsg-hoffenheim",
-      "name": "OFI Crete Vs TSG Hoffenheim",
-      "competition": "UEFA Europa League",
-      "kickoff": "2026-09-17T16:45:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "END_PENDING",
+      "fixture_id": "provider:san-diego-wave-fc-vs-kansas-city-current|nwsl|2026-09-19",
+      "card_id": "san-diego-wave-fc-vs-kansas-city-current",
+      "name": "San Diego Wave FC Vs Kansas City Current",
+      "competition": "NWSL",
+      "kickoff": "2026-09-19T02:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -7848,384 +7848,67 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "401915585",
+          "event_id": "401854003",
           "upstream_family": "ESPN",
-          "name": "OFI Crete vs TSG Hoffenheim",
-          "home": "OFI Crete",
-          "away": "TSG Hoffenheim",
-          "home_team_id": "1010",
-          "away_team_id": "7911",
-          "competition": "UEFA Europa League",
-          "competition_id": "776",
-          "kickoff": "2026-09-17T16:45:00+00:00",
+          "name": "San Diego Wave FC vs Kansas City Current",
+          "home": "San Diego Wave FC",
+          "away": "Kansas City Current",
+          "home_team_id": "21423",
+          "away_team_id": "20907",
+          "competition": "NWSL",
+          "competition_id": "8301",
+          "kickoff": "2026-09-19T02:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, September 18th at 10:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
           "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:776~e:401915585~c:401915585"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "OFI Crete vs Hoffenheim",
-              "event_id": "1883601",
-              "agreed_side": "ofi crete",
-              "ours": "tsg hoffenheim",
-              "theirs": "hoffenheim"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says UPCOMING, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:fk-železničar-pančevo-vs-fk-crvena-zvezda|mozzart bet superliga|2026-09-17",
-      "card_id": "fk-železničar-pančevo-vs-fk-crvena-zvezda",
-      "name": "FK Železničar Pančevo Vs FK Crvena Zvezda",
-      "competition": "Mozzart Bet Superliga",
-      "kickoff": "2026-09-17T18:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
+          "authority_uid": "s:600~l:8301~e:401854003~c:401854003"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1799117",
+          "event_id": "1731812",
           "upstream_family": "LiveScore",
-          "name": "Zeleznicar Pancevo vs FK Crvena Zvezda",
-          "home": "Zeleznicar Pancevo",
-          "away": "FK Crvena Zvezda",
-          "home_team_id": "100024",
-          "away_team_id": "6492",
-          "competition": "Super Liga",
-          "competition_id": "320",
-          "kickoff": "2026-09-17T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
+          "name": "San Diego Wave FC vs Kansas City Current",
+          "home": "San Diego Wave FC",
+          "away": "Kansas City Current",
+          "home_team_id": "207288",
+          "away_team_id": "148228",
+          "competition": "National Women's Soccer League",
+          "competition_id": "24463",
+          "kickoff": "2026-09-19T02:05:00+00:00",
+          "kickoff_delta_minutes": 5.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
           "sport": "football",
-          "round": "5",
+          "round": "1",
           "format": "",
-          "gender": ""
+          "gender": "women"
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says UPCOMING, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:fc-viktoria-plzeň-vs-royale-union-saint-gilloise|uefa europa league|2026-09-17",
-      "card_id": "fc-viktoria-plzeň-vs-royale-union-saint-gilloise",
-      "name": "FC Viktoria Plzeň Vs Royale Union Saint Gilloise",
-      "competition": "UEFA Europa League",
-      "kickoff": "2026-09-17T19:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Viktoria Plzen vs Union St.-Gilloise",
-              "event_id": "401915580",
-              "agreed_side": "viktoria plzen",
-              "ours": "royale union saint gilloise",
-              "theirs": "union st gilloise"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Viktoria Plzen vs Union St.Gilloise",
-              "event_id": "1883503",
-              "agreed_side": "viktoria plzen",
-              "ours": "royale union saint gilloise",
-              "theirs": "union st gilloise"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:lillestrøm-sk-vs-torreense|uefa europa league|2026-09-17",
-      "card_id": "lillestrøm-sk-vs-torreense",
-      "name": "Lillestrøm SK Vs Torreense",
-      "competition": "UEFA Europa League",
-      "kickoff": "2026-09-17T19:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401915570",
-          "upstream_family": "ESPN",
-          "name": "Lillestrom vs Torreense",
-          "home": "Lillestrom",
-          "away": "Torreense",
-          "home_team_id": "987",
-          "away_team_id": "21615",
-          "competition": "UEFA Europa League",
-          "competition_id": "776",
-          "kickoff": "2026-09-17T19:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:776~e:401915570~c:401915570"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Lillestroem vs Torreense",
-              "event_id": "1883598",
-              "agreed_side": "torreense",
-              "ours": "lillestrom",
-              "theirs": "lillestroem"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says UPCOMING, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:ld-alajuelense-vs-cd-marathon|concacaf central american cup|2026-09-18",
-      "card_id": "ld-alajuelense-vs-cd-marathon",
-      "name": "LD Alajuelense Vs CD Marathon",
-      "competition": "CONCACAF Central American Cup",
-      "kickoff": "2026-09-18T00:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1884007",
-          "upstream_family": "LiveScore",
-          "name": "LD Alajuelense vs CD Marathon",
-          "home": "LD Alajuelense",
-          "away": "CD Marathon",
-          "home_team_id": "4268",
-          "away_team_id": "3503",
-          "competition": "Central American Cup: Knockout Stage",
-          "competition_id": "26271",
-          "kickoff": "2026-09-18T00:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Quarter Finals",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:durango-vs-cruz-azul-hidalgo|liga de expansi n mx|2026-09-18",
-      "card_id": "durango-vs-cruz-azul-hidalgo",
-      "name": "Durango vs Cruz Azul Hidalgo",
-      "competition": "Liga de Expansión MX",
-      "kickoff": "2026-09-18T01:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401886370",
-          "upstream_family": "ESPN",
-          "name": "Durango vs Cruz Azul Hidalgo",
-          "home": "Durango",
-          "away": "Cruz Azul Hidalgo",
-          "home_team_id": "21534",
-          "away_team_id": "9371",
-          "competition": "Mexican Liga de Expansión MX",
-          "competition_id": "3932",
-          "kickoff": "2026-09-18T01:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3932~e:401886370~c:401886370"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Alacranes de Durango vs Cruz Azul Hidalgo",
-              "event_id": "1819317",
-              "agreed_side": "cruz azul hidalgo",
-              "ours": "durango",
-              "theirs": "alacranes de durango"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
+      "verdict": "VERIFIED"
     }
   ]
 }
