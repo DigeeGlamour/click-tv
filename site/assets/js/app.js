@@ -4822,7 +4822,7 @@ function buildMovieRelatedGrid(rows) {
  * two-column grid, which is the shape the narrow column beside the player
  * needs and the approved design draws there.
  */
-function buildMovieRelatedStrip(rows, heading = 'You May Also Like', kicker = 'Related catalogue items') {
+function buildMovieRelatedStrip(rows, heading = 'You May Also Like', kicker = 'একই ধরনের আরও') {
   const items = movieSummariesToItems(rows);
   if (!items.length) return null;
   const section = document.createElement('section');
@@ -5290,6 +5290,36 @@ function movieDetailQuality(item) {
   return String(item.resolution || item.label || '').trim();
 }
 
+/** Western digits in Bengali numerals, for the counts the UI states in Bengali. */
+function movieBnNumber(value) {
+  return String(value).replace(/[0-9]/g, (d) => '০১২৩৪৫৬৭৮৯'[Number(d)]);
+}
+
+/** 134 -> "২ঘ ১৪মি", 47 -> "৪৭ মিনিট". Bengali digits, as the rest of the UI. */
+function movieRuntimeText(minutes) {
+  const total = Number(minutes) || 0;
+  if (total <= 0) return '';
+  const hours = Math.floor(total / 60);
+  const rest = total % 60;
+  const bn = (value) => String(value).replace(/[0-9]/g, (d) => '০১২৩৪৫৬৭৮৯'[Number(d)]);
+  if (!hours) return bn(rest) + ' মিনিট';
+  return bn(hours) + 'ঘ' + (rest ? ' ' + bn(rest) + 'মি' : '');
+}
+
+const MOVIE_BN_MONTHS = Object.freeze([
+  'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
+  'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'
+]);
+
+/** An ISO timestamp as "১২ আগস্ট ২০২৬", or nothing if it is not a real date. */
+function movieAddedOnText(value) {
+  const time = Date.parse(String(value || ''));
+  if (!Number.isFinite(time)) return '';
+  const date = new Date(time);
+  const bn = (n) => String(n).replace(/[0-9]/g, (d) => '০১২৩৪৫৬৭৮৯'[Number(d)]);
+  return bn(date.getDate()) + ' ' + MOVIE_BN_MONTHS[date.getMonth()] + ' ' + bn(date.getFullYear());
+}
+
 function movieDetailRows(item) {
   const rows = [];
   const add = (label, value) => {
@@ -5300,6 +5330,11 @@ function movieDetailRows(item) {
 
   add('Year', item.year);
   add('Release Date', item.release_date);
+  // Every record carries `first_seen_at` - the moment the scanner first saw
+  // the file - so this row is on every title, where Release Date is on 18% of
+  // them. It is also the question a viewer actually asks of a catalogue like
+  // this one: is this new here?
+  add('Click TV-তে যোগ হয়েছে', movieAddedOnText(item.first_seen_at));
   add('Category', item.category);
   add('Genres', movieGenresOf(item));
   // The rating and the source it came from always travel together: a TMDB
@@ -5327,7 +5362,10 @@ function movieDetailRows(item) {
  * empty definition list under a card is worse than no list.
  */
 const MOVIE_DETAIL_CARD_FIELDS = Object.freeze(
-  ['Year', 'Category', 'Genres', 'Rating', 'Quality', 'Runtime']
+  // Director and Cast left this list the moment the page grew a credits row:
+  // a name is worth a face, and stating them twice is what the last review
+  // called clutter.
+  ['Year', 'Category', 'Genres', 'Rating', 'Quality', 'Runtime', 'Director', 'Cast']
 );
 function movieDetailExtraRows(item) {
   return movieDetailRows(item).filter(([label]) => !MOVIE_DETAIL_CARD_FIELDS.includes(label));
@@ -5395,6 +5433,8 @@ function showMovieDetailUnavailable(title) {
 
 function closeMovieDetail() {
   if (!movieDetailPanel) return;
+  // The overlay belongs to this page; it does not outlive it.
+  closeMovieTrailer();
   clearMovieRoute();
   restoreMovieDocumentMetadata();
   movieDetailPanel.hidden = true;
@@ -5437,13 +5477,18 @@ async function openMovieDetail(item) {
 
   // Every line below is omitted when the catalogue does not really carry it.
   // Nothing here invents a rating, a genre, a runtime or a synopsis.
+  // Year, category and - once the catalogue carries one - runtime. "Movie"
+  // used to sit in here too, repeating the chip above it on a page that could
+  // only ever be about a movie. A series still says so, because there the word
+  // distinguishes something.
   const metaBits = [];
   if (resolved.year) metaBits.push(escapeHtml(String(resolved.year)));
   if (resolved.category) metaBits.push(escapeHtml(String(resolved.category)));
-  metaBits.push(isSeries ? 'Series' : 'Movie');
-  if (resolved.runtime_minutes) metaBits.push(escapeHtml(resolved.runtime_minutes + ' min'));
+  if (isSeries) metaBits.push('Series');
+  if (Number(resolved.runtime_minutes) > 0) {
+    metaBits.push(escapeHtml(movieRuntimeText(resolved.runtime_minutes)));
+  }
 
-  const quality = movieDetailQuality(resolved);
   // One decimal, as the demo's `getItemRating` does. The provider's raw
   // 6.883 read like a measurement rather than a rating.
   const ratingNumber = Number(resolved.rating);
@@ -5452,6 +5497,7 @@ async function openMovieDetail(item) {
     : '';
   const ratingSource = String(resolved.rating_source || '').trim();
   const genres = movieGenresOf(resolved).filter(Boolean);
+  const trailerKey = String(resolved.trailer_key || '').trim();
 
   // Ported from `Movie demo design index.html` (detail view): the demo's own
   // class names and structure carry the styling, and the production hook
@@ -5465,7 +5511,6 @@ async function openMovieDetail(item) {
   const linkCount = Number(resolved.available_link_count
     || (Array.isArray(resolved.backups) ? resolved.backups.length + 1 : 0)) || 0;
   const servers = playable ? Math.max(1, linkCount) : 0;
-  const health = String(resolved.verification_badge || '').trim();
   // The pills say what each source actually is. "Server 1 / Server 2" named
   // nothing the viewer could act on; the resolution is the one thing that
   // differs between two links to the same film. Every source - the record
@@ -5510,8 +5555,12 @@ async function openMovieDetail(item) {
             : movieDetailPosterFallbackHtml(resolved)) +
         '</div>' +
         '<div class="detail-info movie-detail-main">' +
-          '<span class="detail-type-pill movie-detail-kind"><span class="red-bullet" aria-hidden="true"></span>'
-            + (isSeries ? 'SERIES' : 'MOVIE') + '</span>' +
+          // Only a series is worth labelling: on the movie detail the chip read
+          // MOVIE on every record ever opened, which is a label that answers a
+          // question nobody asked.
+          (isSeries
+            ? '<span class="detail-type-pill movie-detail-kind"><span class="red-bullet" aria-hidden="true"></span>SERIES</span>'
+            : '') +
           '<h1 class="detail-heading movie-detail-title">' + escapeHtml(resolved.name || 'Untitled') + '</h1>' +
           '<div class="detail-meta-row movie-detail-meta">' +
             metaBits.map((bit) => '<span>' + bit + '</span>').join('<i class="meta-dot movie-detail-dot" aria-hidden="true">•</i>') +
@@ -5520,9 +5569,15 @@ async function openMovieDetail(item) {
               ? '<span class="movie-detail-rating"><i class="fas fa-star" aria-hidden="true"></i>' +
                 escapeHtml(ratingValue) + '<small>' + escapeHtml(ratingSource) + '</small></span>'
               : '') +
-            (quality ? '<span class="badge-res movie-detail-quality">' + escapeHtml(quality) + '</span>' : '') +
-            // Real verification state from the record, never a decoration.
-            (health ? '<span class="badge-health">&#10003; ' + escapeHtml(health) + '</span>' : '') +
+            // The print used to be a badge here as well as a pill in the box
+            // below, which stated the same 1080p twice in two colours. The box
+            // owns it now, and it names every print on offer rather than one.
+            //
+            // The verification badge is gone at the owner's request. It printed
+            // the scanner's own word - "Manual" for a hand-added source - which
+            // to a viewer reads as a warning rather than the assurance it was
+            // meant to be. The green dot on each quality pill already says the
+            // source was checked.
           '</div>' +
           (genres.length
             ? '<div class="movie-detail-genres">' +
@@ -5533,12 +5588,24 @@ async function openMovieDetail(item) {
           // every title with the category and year swapped in. It told the
           // viewer nothing they could not read one line above it, and it cost
           // the page three lines of height to say it.
+          // Three lines, then "আরও পড়ুন". A TMDB synopsis runs to a paragraph
+          // and the actions belong above the fold; the control is only drawn
+          // when the text is actually long enough to be cut.
           (plot
-            ? '<p class="detail-desc movie-detail-plot">' + escapeHtml(plot) + '</p>'
+            ? '<div class="movie-detail-plot-wrap">' +
+                '<p class="detail-desc movie-detail-plot">' + escapeHtml(plot) + '</p>' +
+                '<button type="button" class="movie-plot-more tv-focusable" hidden>আরও পড়ুন</button>' +
+              '</div>'
             : '') +
           '<div class="detail-actions-row movie-detail-actions">' +
             '<button type="button" class="btn-play-white movie-detail-play tv-focusable"' + (playable ? '' : ' disabled') + '>' +
               '<i class="fas fa-play" aria-hidden="true"></i> ' + (isSeries ? 'Watch Episode 1' : 'Watch Now') + '</button>' +
+            // Only when the catalogue actually holds a trailer key. No key,
+            // no button - never a button that opens nothing.
+            (trailerKey
+              ? '<button type="button" class="btn-bookmark-dark movie-detail-trailer tv-focusable">' +
+                  '<i class="fas fa-play" aria-hidden="true"></i> <span>ট্রেইলার</span></button>'
+              : '') +
             // Watch Now and Bookmark, which is the demo's whole action row.
             // Copy Link was ours; the address bar already holds the same
             // route (PART 21 writes it), so nothing is lost by dropping it.
@@ -5550,8 +5617,8 @@ async function openMovieDetail(item) {
           (servers
             ? '<div class="server-card-box">' +
                 '<div class="server-box-title">' +
-                  (qualityOptions.length ? 'AVAILABLE QUALITY' : 'AVAILABLE SERVERS') +
-                  ' &middot; ' + servers + ' VERIFIED ' + (servers > 1 ? 'SOURCES' : 'SOURCE') + '</div>' +
+                  (qualityOptions.length ? 'কোয়ালিটি' : 'সোর্স') +
+                  ' &middot; ' + movieBnNumber(servers) + 'টি সোর্স যাচাই করা</div>' +
                 '<div class="server-pill-row">' +
                   (qualityOptions.length
                     ? qualityOptions.map((label, index) =>
@@ -5623,6 +5690,26 @@ async function openMovieDetail(item) {
       startPlayback(resolved, true);
     });
   });
+  qs('.movie-detail-trailer', wrap)?.addEventListener('click', () => {
+    openMovieTrailer(trailerKey, resolved.name);
+  });
+
+  // The control appears only if the text is actually clipped, which can only
+  // be known once it has been laid out.
+  const plotWrap = qs('.movie-detail-plot-wrap', wrap);
+  if (plotWrap) {
+    const paragraph = qs('.movie-detail-plot', plotWrap);
+    const moreButton = qs('.movie-plot-more', plotWrap);
+    requestAnimationFrame(() => {
+      if (!paragraph || !moreButton) return;
+      if (paragraph.scrollHeight - paragraph.clientHeight > 2) moreButton.hidden = false;
+    });
+    moreButton?.addEventListener('click', () => {
+      const open = plotWrap.classList.toggle('open');
+      moreButton.textContent = open ? 'কম দেখুন' : 'আরও পড়ুন';
+    });
+  }
+
   qs('.movie-detail-watchlist', wrap)?.addEventListener('click', (event) => {
     // The existing watchlist store, not a second favourites list.
     toggleFavorite(resolved._uid, event);
@@ -5643,10 +5730,144 @@ async function openMovieDetail(item) {
   // nothing worth offering, there is no section at all. On the detail it is a
   // row of posters, as the approved design has it - the two-column grid is the
   // shape for the narrow column beside the player, not for a full-width page.
+  // Credits, when the catalogue has them. Appended before Related so the page
+  // reads: what it is, who made it, what else you might want.
+  const credits = buildMovieCreditsRow(resolved);
+  if (credits) wrap.appendChild(credits);
+
   const related = await movieRelatedFor(resolved);
   if (state.movieDetailItem !== resolved) return;
   const section = buildMovieRelatedStrip(related, 'You May Also Like');
   if (section) wrap.appendChild(section);
+}
+
+/**
+ * The credits row: the director, then the billed cast, each with a face.
+ *
+ * No record, no row. A person without a photograph gets the same drawn
+ * placeholder the posters use rather than a broken image, and a cast entry
+ * with no character name simply shows no second line - nothing here invents a
+ * role, a face or an order.
+ */
+function buildMovieCreditsRow(item) {
+  const director = String(item?.director || '').trim();
+  const cast = Array.isArray(item?.cast) ? item.cast.filter((entry) => entry?.name) : [];
+  if (!director && !cast.length) return null;
+
+  const section = document.createElement('section');
+  section.className = 'movie-row movie-credits-row';
+
+  const head = document.createElement('div');
+  head.className = 'movie-row-head';
+  const group = document.createElement('div');
+  const title = document.createElement('h2');
+  title.textContent = 'কলাকুশলী';
+  group.appendChild(title);
+  head.appendChild(group);
+
+  const strip = document.createElement('div');
+  strip.className = 'movie-credits-strip';
+
+  const people = [];
+  if (director) people.push({ name: director, role: 'পরিচালক', isDirector: true });
+  cast.forEach((entry) => people.push({
+    name: String(entry.name).trim(),
+    role: String(entry.character || '').trim(),
+    profile: String(entry.profile || '').trim()
+  }));
+
+  people.forEach((person) => {
+    const card = document.createElement('div');
+    card.className = 'movie-credit' + (person.isDirector ? ' is-director' : '');
+    const face = person.profile
+      ? '<img class="movie-credit-face" src="' + escapeHtml(person.profile) +
+        '" alt="" loading="lazy" referrerpolicy="no-referrer">'
+      : '<span class="movie-credit-face movie-credit-face-blank" aria-hidden="true">' +
+        '<i class="fas fa-user"></i></span>';
+    card.innerHTML = face +
+      '<strong class="movie-credit-name">' + escapeHtml(person.name) + '</strong>' +
+      (person.role ? '<small class="movie-credit-role">' + escapeHtml(person.role) + '</small>' : '');
+    // A photograph that 404s must not sit there as a broken-image icon.
+    const image = qs('img.movie-credit-face', card);
+    image?.addEventListener('error', () => {
+      const blank = document.createElement('span');
+      blank.className = 'movie-credit-face movie-credit-face-blank';
+      blank.setAttribute('aria-hidden', 'true');
+      blank.innerHTML = '<i class="fas fa-user"></i>';
+      image.replaceWith(blank);
+    }, { once: true });
+    strip.appendChild(card);
+  });
+
+  section.append(head, strip);
+  return section;
+}
+
+/**
+ * The trailer overlay.
+ *
+ * A panel over the page, not a full-screen takeover and not a new tab - the
+ * viewer stays where they were and closes it back onto the same detail page.
+ *
+ * It has nothing to do with the movie player: a YouTube iframe in a layer of
+ * its own, created when it is opened and REMOVED when it is closed, so no
+ * second video element is ever left alive on the page. Closing it stops the
+ * trailer by destroying the frame, which is the only way to be sure a
+ * third-party player has actually stopped.
+ */
+let movieTrailerLayer = null;
+
+function closeMovieTrailer() {
+  if (!movieTrailerLayer) return;
+  movieTrailerLayer.remove();
+  movieTrailerLayer = null;
+  document.removeEventListener('keydown', movieTrailerKeydown);
+}
+
+function movieTrailerKeydown(event) {
+  if (event.key === 'Escape') closeMovieTrailer();
+}
+
+function openMovieTrailer(key, title) {
+  const trailerKey = String(key || '').trim();
+  if (!trailerKey) return;
+  closeMovieTrailer();
+
+  const layer = document.createElement('div');
+  layer.className = 'movie-trailer-layer';
+  layer.setAttribute('role', 'dialog');
+  layer.setAttribute('aria-modal', 'true');
+  layer.setAttribute('aria-label', (title || 'Trailer') + ' trailer');
+  layer.innerHTML =
+    '<div class="movie-trailer-panel">' +
+      '<div class="movie-trailer-bar">' +
+        '<span class="movie-trailer-title">ট্রেইলার</span>' +
+        '<span class="movie-trailer-bar-actions">' +
+          // Not every video allows itself to be embedded. When one refuses,
+          // YouTube draws its own "unavailable" panel inside the frame and the
+          // viewer is stuck; this is the way out, and it costs one link.
+          '<a class="movie-trailer-open tv-focusable" target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=' +
+            encodeURIComponent(trailerKey) + '">YouTube-এ খুলুন</a>' +
+          '<button type="button" class="movie-trailer-close tv-focusable" aria-label="বন্ধ করুন">' +
+            '<i class="fas fa-xmark" aria-hidden="true"></i></button>' +
+        '</span>' +
+      '</div>' +
+      '<div class="movie-trailer-frame">' +
+        '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(trailerKey) +
+          '?autoplay=1&rel=0&modestbranding=1" title="Trailer" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>' +
+      '</div>' +
+    '</div>';
+
+  qs('.movie-trailer-close', layer)?.addEventListener('click', closeMovieTrailer);
+  // The dark ground closes it; the panel itself does not.
+  layer.addEventListener('click', (event) => {
+    if (event.target === layer) closeMovieTrailer();
+  });
+  document.addEventListener('keydown', movieTrailerKeydown);
+
+  document.body.appendChild(layer);
+  movieTrailerLayer = layer;
+  qs('.movie-trailer-close', layer)?.focus?.();
 }
 
 function moviePagePath(pageEntry) {

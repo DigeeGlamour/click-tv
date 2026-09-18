@@ -61,6 +61,9 @@ RATING_SOURCE_ANILIST = "AniList"
 TMDB_SEARCH_MOVIE_URL = "https://api.themoviedb.org/3/search/movie"
 TMDB_MOVIE_DETAIL_URL = "https://api.themoviedb.org/3/movie/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w780"
+#: Faces are shown at ~56px. w185 is the smallest TMDB profile size that
+#: still looks right on a 2x screen, and it is a fifth of w780's weight.
+TMDB_PROFILE_BASE = "https://image.tmdb.org/t/p/w185"
 
 OMDB_URL = "https://www.omdbapi.com/"
 
@@ -106,12 +109,118 @@ def _title_similarity(a: str, b: str) -> float:
     return difflib.SequenceMatcher(None, a.strip().casefold(), b.strip().casefold()).ratio()
 
 
+def _coerce_runtime(value: Any) -> Optional[int]:
+    """Minutes as a positive int, or None. Never a guess.
+
+    Providers send 134, "134", or "134 min". Anything that is not a plain
+    number of minutes in a believable range is dropped rather than published:
+    a wrong runtime is worse than no runtime, because the viewer plans around
+    it.
+    """
+    try:
+        minutes = int(str(value or "0").strip().split(" ")[0])
+    except (TypeError, ValueError):
+        return None
+    return minutes if 1 <= minutes <= 900 else None
+
+
 def _coerce_year(value: Any) -> int:
     try:
         year = int(str(value or "0").strip()[:4])
     except (TypeError, ValueError):
         return 0
     return year if 1888 <= year <= 2100 else 0
+
+
+#: How many names the cast row shows. More than this is a database, not a
+#: credit list, and each one is an image request.
+CAST_LIMIT = 8
+
+
+def _tmdb_director(credits: Any) -> Optional[str]:
+    """The director's name from a TMDB credits block, or None.
+
+    Co-directed films list several; the first is taken rather than joining
+    them, because the row is one line and a truncated pair reads worse than
+    one accurate name.
+    """
+    if not isinstance(credits, dict):
+        return None
+    crew = credits.get("crew")
+    if not isinstance(crew, list):
+        return None
+    for member in crew:
+        if not isinstance(member, dict):
+            continue
+        if str(member.get("job") or "").strip().casefold() == "director":
+            name = str(member.get("name") or "").strip()
+            if name:
+                return name
+    return None
+
+
+def _tmdb_cast(credits: Any) -> List[Dict[str, str]]:
+    """Top billed cast as {name, character, profile}, in TMDB's own order.
+
+    `profile` is omitted when the person has no photo - the page draws its own
+    placeholder rather than a broken image, and a URL to nothing is not worth
+    publishing.
+    """
+    if not isinstance(credits, dict):
+        return []
+    people = credits.get("cast")
+    if not isinstance(people, list):
+        return []
+    out: List[Dict[str, str]] = []
+    for person in people:
+        if not isinstance(person, dict):
+            continue
+        name = str(person.get("name") or "").strip()
+        if not name:
+            continue
+        entry: Dict[str, str] = {"name": name}
+        character = str(person.get("character") or "").strip()
+        if character:
+            entry["character"] = character
+        profile_path = str(person.get("profile_path") or "").strip()
+        if profile_path:
+            entry["profile"] = TMDB_PROFILE_BASE + profile_path
+        out.append(entry)
+        if len(out) >= CAST_LIMIT:
+            break
+    return out
+
+
+def _tmdb_trailer_key(videos: Any) -> Optional[str]:
+    """The YouTube key of the best trailer TMDB lists, or None.
+
+    Order: an official trailer, then any trailer, then a teaser. Only YouTube
+    is considered - it is the only host the page can open - and only a key is
+    stored, never a constructed URL, so how it is opened stays the page's
+    decision.
+    """
+    if not isinstance(videos, dict):
+        return None
+    results = videos.get("results")
+    if not isinstance(results, list):
+        return None
+
+    def pick(kind: str, official_only: bool) -> Optional[str]:
+        for video in results:
+            if not isinstance(video, dict):
+                continue
+            if str(video.get("site") or "").strip().casefold() != "youtube":
+                continue
+            if str(video.get("type") or "").strip().casefold() != kind:
+                continue
+            if official_only and not video.get("official"):
+                continue
+            key = str(video.get("key") or "").strip()
+            if key:
+                return key
+        return None
+
+    return pick("trailer", True) or pick("trailer", False) or pick("teaser", False)
 
 
 def _clean_genres(values: Any) -> List[str]:
@@ -179,7 +288,13 @@ def tmdb_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any]]:
         return None
 
     tmdb_id = best.get("id")
-    detail_params: Dict[str, str] = {"language": "en-US"}
+    # `append_to_response` is not a second request: TMDB returns credits and
+    # videos inside the detail response we were already fetching. The only cost
+    # is a larger body.
+    detail_params: Dict[str, str] = {
+        "language": "en-US",
+        "append_to_response": "credits,videos",
+    }
     detail_headers = _tmdb_auth_params_and_headers(detail_params) or {}
     detail = _get_json(
         "tmdb",
@@ -193,9 +308,18 @@ def tmdb_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any]]:
     backdrop_path = detail.get("backdrop_path") or best.get("backdrop_path")
     release_date = str(detail.get("release_date") or best.get("release_date") or "").strip()
 
+    overview = str(detail.get("overview") or best.get("overview") or "").strip()
+    runtime_minutes = _coerce_runtime(detail.get("runtime"))
+    cast = _tmdb_cast(detail.get("credits"))
+
     result: Dict[str, Any] = {
         "tmdb_id": tmdb_id,
         "imdb_id": str(detail.get("imdb_id") or "").strip() or None,
+        "overview": overview or None,
+        "runtime_minutes": runtime_minutes,
+        "director": _tmdb_director(detail.get("credits")),
+        "cast": cast or None,
+        "trailer_key": _tmdb_trailer_key(detail.get("videos")),
         # PART 19: report WHICH candidate was matched, so the confidence
         # policy can check the match instead of taking this adapter's word
         # for it. A provider that names its candidate can be verified; one
@@ -254,8 +378,27 @@ def omdb_metadata(title: str, year: int = 0, imdb_id: Optional[str] = None) -> O
     votes_text = str(payload.get("imdbVotes") or "").replace(",", "").strip()
     votes = int(votes_text) if votes_text.isdigit() else None
 
+    # OMDb answers with the same four in its own spelling. They are only ever
+    # used to fill a gap: resolve_metadata merges fill-only, so TMDB's values
+    # win wherever TMDB had one.
+    plot = str(payload.get("Plot") or "").strip()
+    if plot.upper() == "N/A":
+        plot = ""
+    director = str(payload.get("Director") or "").strip()
+    if director.upper() == "N/A":
+        director = ""
+    actors = [name.strip() for name in str(payload.get("Actors") or "").split(",") if name.strip()]
+    if actors and actors[0].upper() == "N/A":
+        actors = []
+
     result: Dict[str, Any] = {
         "imdb_id": str(payload.get("imdbID") or "").strip() or None,
+        "overview": plot or None,
+        "runtime_minutes": _coerce_runtime(str(payload.get("Runtime") or "").split(" ")[0]),
+        "director": director or None,
+        # No photographs from OMDb - it sends names only, so these people have
+        # no `profile` and the page draws its placeholder for them.
+        "cast": [{"name": name} for name in actors[:CAST_LIMIT]] or None,
         # PART 19: name the candidate so the match can be checked, and say
         # what kind of thing it is - OMDb answers for series too, and a
         # series record must never be applied to a film.
@@ -306,9 +449,22 @@ def cinemeta_metadata(imdb_id: Any, kind: str = "movie") -> Optional[Dict[str, A
     except ValueError:
         rating = None
 
+    cinemeta_cast = [
+        {"name": str(name).strip()}
+        for name in (meta.get("cast") if isinstance(meta.get("cast"), list) else [])
+        if str(name).strip()
+    ][:CAST_LIMIT]
+
     result: Dict[str, Any] = {
         "genres": _clean_genres(meta.get("genres")),
         "release_date": release_date,
+        "overview": str(meta.get("description") or "").strip() or None,
+        "runtime_minutes": _coerce_runtime(str(meta.get("runtime") or "").split(" ")[0]),
+        "director": next(
+            (str(name).strip() for name in (meta.get("director") or []) if str(name).strip()),
+            None,
+        ) if isinstance(meta.get("director"), list) else None,
+        "cast": cinemeta_cast or None,
         "rating": rating,
         "rating_source": RATING_SOURCE_IMDB if rating is not None else None,
         "backdrop": str(meta.get("background") or "").strip() or None,

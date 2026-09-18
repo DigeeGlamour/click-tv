@@ -1310,3 +1310,243 @@ body.movie-detail-view .movie-detail-inner {
 .movie-detail-hero .server-pill-btn:hover {
   transform: none !important;
 }
+
+/* --------------------------------------------------------------------------
+   17. THE FOUR NEW VALUES — synopsis, runtime, credits, trailer.
+
+   Every rule here draws something that is only on the page when the catalogue
+   actually holds it. Nothing below reserves space for a value that is missing:
+   no synopsis means no paragraph, no cast means no section, no trailer key
+   means no button, and the page is exactly what it was before them.
+   -------------------------------------------------------------------------- */
+
+/* 17a. The synopsis: three lines, then a control - and only if it is clipped.
+   --------------------------------------------------------------------------
+   A TMDB overview runs to a full paragraph. Left to itself it pushed Watch
+   Now below the fold on a phone, which is the one thing on this page that
+   must not move. */
+.movie-detail-plot-wrap {
+  margin-bottom: 14px;
+}
+.movie-detail-hero .movie-detail-plot-wrap .movie-detail-plot {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0 !important;
+}
+.movie-detail-plot-wrap.open .movie-detail-plot {
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
+.movie-plot-more {
+  margin-top: 5px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #ff5f78;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.movie-plot-more:hover {
+  color: #ff8497;
+}
+
+/* 17b. The credits row.
+   --------------------
+   An open section under the card, the same shape as You May Also Like - no
+   box of its own, because the page has one container and it is the title
+   card. It scrolls sideways like every other row on the movie surfaces. */
+.movie-credits-strip {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.movie-credits-strip::-webkit-scrollbar {
+  display: none;
+}
+.movie-credit {
+  flex: 0 0 auto;
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 7px;
+}
+.movie-credit-face {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #101927;
+}
+.movie-credit-face-blank {
+  display: grid;
+  place-items: center;
+  color: #4d5e73;
+  font-size: 22px;
+}
+/* The director is the one name on this row that is not an actor, so it is
+   marked rather than left to be read as the first cast member. */
+.movie-credit.is-director .movie-credit-face {
+  border-color: rgba(255, 49, 84, 0.45);
+  box-shadow: 0 0 0 3px rgba(255, 49, 84, 0.12);
+}
+.movie-credit-name {
+  color: #e7eef7;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.3;
+  /* Two lines, always. Clamped so one long name cannot make the row taller
+     than the rest - and RESERVED, so the role under it sits on one baseline
+     across the row whether the name took one line or two. This is the
+     opposite call from the cards, and deliberately: there the reserved line
+     left a hole inside a tall card, here six short items stand side by side
+     and a ragged baseline is the thing you see. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: calc(2 * 1.3em);
+}
+.movie-credit-role {
+  color: #8b9cb0;
+  font-size: 10.5px;
+  font-weight: 650;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.movie-credit.is-director .movie-credit-role {
+  color: #ff8497;
+}
+@media (max-width: 680px) {
+  .movie-credits-strip {
+    gap: 11px;
+  }
+  .movie-credit {
+    width: 86px;
+  }
+  .movie-credit-face {
+    width: 58px;
+    height: 58px;
+  }
+}
+
+/* 17c. The trailer overlay.
+   ------------------------
+   A panel over the page, as the owner asked - not a full-screen takeover and
+   not a new tab. The frame is created when it opens and destroyed when it
+   closes, so nothing of it survives to interfere with the movie player, which
+   this sheet still never names.
+
+   It is capped at 900px and at 86% of the viewport height, so on a large
+   screen it stays a panel rather than filling the display, and on a phone it
+   still leaves the page visible around it. */
+.movie-trailer-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(3, 6, 12, 0.82);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  animation: movie-trailer-in 0.16s ease-out;
+}
+@keyframes movie-trailer-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.movie-trailer-panel {
+  width: min(900px, 100%);
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 14px;
+  background: #05090f;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+}
+.movie-trailer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: #0b111b;
+}
+.movie-trailer-title {
+  color: #eef3f9;
+  font-size: 13.5px;
+  font-weight: 800;
+}
+.movie-trailer-close {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.05);
+  color: #dbe4ee;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+.movie-trailer-close:hover {
+  background: #ff2a4a;
+  border-color: #ff2a4a;
+  color: #fff;
+}
+.movie-trailer-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+.movie-trailer-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+@media (max-width: 680px) {
+  .movie-trailer-layer {
+    padding: 14px;
+  }
+  .movie-trailer-panel {
+    border-radius: 12px;
+  }
+}
+.movie-trailer-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+/* The way out of a video that refuses to be embedded. */
+.movie-trailer-open {
+  color: #9fb4cb;
+  font-size: 11.5px;
+  font-weight: 750;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.movie-trailer-open:hover {
+  color: #fff;
+  text-decoration: underline;
+}

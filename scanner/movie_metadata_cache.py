@@ -44,6 +44,14 @@ METADATA_FIELDS: Tuple[str, ...] = (
     "tmdb_id",
     "imdb_id",
     "release_date",
+    # The four the detail page was asked for. They ride on provider responses
+    # that were already being made, and every one of them is optional: a record
+    # without them renders exactly as it did before.
+    "overview",
+    "runtime_minutes",
+    "director",
+    "cast",
+    "trailer_key",
     "genres",
     "rating",
     "rating_source",
