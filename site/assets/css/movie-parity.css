@@ -1145,3 +1145,150 @@ body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area:hover:
   width: auto !important;
   text-align: left !important;
 }
+
+/* --------------------------------------------------------------------------
+   15. DETAIL PAGE — one container, and the five agreed changes.
+   -------------------------------------------------------------------------- */
+
+/* 15a. The page has exactly one box, and it is the title card.
+   -----------------------------------------------------------
+   `.movie-detail-inner` carried a border, a translucent ground and a 14px
+   radius, so the whole page - the Back row, the title card, and You May Also
+   Like - sat inside a second box, with an empty strip of it showing above
+   the heading. The demo has no such wrapper: the card is the only surface on
+   that page. The wrapper stays as the layout element it is and stops drawing
+   itself. */
+.movie-detail-inner.detail-section-inner,
+body.movie-detail-view .movie-detail-inner {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+/* 15b. The backdrop, which the card was always meant to carry.
+   -----------------------------------------------------------
+   The image is bound in app.js now that it survives the parser. These are
+   the demo's own numbers for the layer: 0.55 opacity, framed right, with the
+   card's ground washed back across it left to right so the copy keeps its
+   contrast. Only the values the sheet has to state - the element already
+   exists and is already positioned. */
+.movie-detail-hero .movie-detail-backdrop {
+  background-size: cover !important;
+  background-position: right 30% !important;
+  opacity: 0.5 !important;
+}
+
+/* 15c. Suggestion 1 — the poster comes back on a phone.
+   ----------------------------------------------------
+   Below 820px the poster was set to `display: none`, so the detail page
+   opened on a phone with no image at all: a pill, a heading and four rows of
+   text. The demo does drop it there, but the demo's card carries its backdrop
+   and ours - until 15b - carried nothing.
+
+   It comes back as a float rather than a grid column. A column would take
+   its width from everything under it too, and Watch Now, the server box and
+   the facts would all have been squeezed into the 230px left over. Floated,
+   the pill, the title and the meta set themselves beside the poster and
+   everything from the actions down clears it and runs the full width. That
+   needs the card's own flex and grid off for the float to be seen at all. */
+@media (max-width: 820px) {
+  body.movie-detail-view .movie-detail-hero {
+    display: block !important;
+  }
+  body.movie-detail-view .movie-detail-grid {
+    display: block !important;
+    padding: 14px !important;
+  }
+  body.movie-detail-view .movie-detail-main {
+    display: block !important;
+    min-width: 0 !important;
+  }
+  body.movie-detail-view .movie-detail-poster-wrap {
+    display: block !important;
+    float: left !important;
+    width: 104px !important;
+    min-width: 104px !important;
+    margin: 0 13px 10px 0 !important;
+  }
+  body.movie-detail-view .movie-detail-actions,
+  body.movie-detail-view .server-card-box,
+  body.movie-detail-view .movie-detail-nolink,
+  body.movie-detail-view .movie-detail-facts {
+    clear: left !important;
+  }
+}
+@media (max-width: 380px) {
+  body.movie-detail-view .movie-detail-poster-wrap {
+    width: 86px !important;
+    min-width: 86px !important;
+    margin-right: 11px !important;
+  }
+}
+
+/* 15d. Suggestion 3 — six competing badges become two.
+   ---------------------------------------------------
+   The meta row ran `2026 · Hindi · Movie` in plain type and then three
+   separate bordered chips in three colours, with a fourth row of genre pills
+   under it. Rating and quality are the two that answer a real question -
+   is it any good, and how good is the print - so they keep their colour.
+   The verification badge says the same thing the green dot in the server box
+   says; it stays, as quiet text. Genres lose their boxes and become a line
+   of small labels, which is what they are. */
+.movie-detail-meta .badge-health {
+  border-color: transparent !important;
+  background: none !important;
+  padding-inline: 0 !important;
+  font-weight: 700 !important;
+  opacity: 0.85;
+}
+.movie-detail-genres span {
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  color: #8ea0b5 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+.movie-detail-genres {
+  gap: 0 !important;
+  column-gap: 0 !important;
+}
+.movie-detail-genres span + span::before {
+  content: '·';
+  margin: 0 7px;
+  color: #4e5d70;
+}
+
+/* 15e. Suggestion 5 — Watch Now is the page, so it looks like it.
+   --------------------------------------------------------------
+   It and Bookmark were the same size, which is not what they are worth: one
+   is why the page exists, the other is a shortcut. On a phone Watch Now
+   takes the full width and Bookmark sits under it at half - both still well
+   over the 44px a finger needs. */
+.movie-detail-play {
+  min-height: 46px !important;
+  padding-inline: 26px !important;
+  font-size: 13.5px !important;
+}
+.movie-detail-play .fa-circle-notch {
+  margin-right: 2px;
+}
+.movie-detail-play.is-busy {
+  opacity: 0.85;
+  cursor: progress;
+}
+@media (max-width: 680px) {
+  body.movie-detail-view .movie-detail-actions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 8px !important;
+  }
+  body.movie-detail-view .movie-detail-play,
+  body.movie-detail-view .movie-detail-watchlist {
+    width: 100% !important;
+    justify-content: center !important;
+    min-height: 46px !important;
+  }
+}

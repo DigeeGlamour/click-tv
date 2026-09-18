@@ -5451,9 +5451,16 @@ async function openMovieDetail(item) {
       // card. A record with a real backdrop uses that; otherwise the poster
       // it already shows stands in, which is the demo's own behaviour and
       // not a substituted image. With neither, there is no layer at all.
+      // The URL is NOT written into the markup here. It used to be, as
+      // `style="background-image:url(" + JSON.stringify(url) + ")"`, and
+      // JSON.stringify puts double quotes around its result - inside an
+      // attribute already delimited by double quotes. The parser closed the
+      // attribute at the first one, every detail page computed
+      // `background-image: url("")`, and the backdrop the demo blends behind
+      // the card has been invisible the whole time. It is set as a property
+      // below, where no HTML parsing can reach it.
       (backdrop || poster
-        ? '<div class="detail-backdrop movie-detail-backdrop" style="background-image:url('
-          + JSON.stringify(backdrop || poster) + ')"></div>'
+        ? '<div class="detail-backdrop movie-detail-backdrop"></div>'
         : '') +
       '<div class="detail-inner-grid movie-detail-grid">' +
         '<div class="detail-poster-wrap movie-detail-poster-wrap">' +
@@ -5480,9 +5487,13 @@ async function openMovieDetail(item) {
             ? '<div class="movie-detail-genres">' +
               genres.map((g) => '<span>' + escapeHtml(String(g)) + '</span>').join('') + '</div>'
             : '') +
-          ((plot || movieHeroFallbackLine(resolved))
-            ? '<p class="detail-desc movie-detail-plot">'
-              + escapeHtml(plot || movieHeroFallbackLine(resolved)) + '</p>'
+          // Only a real synopsis. The stand-in line - "Hindi ক্যাটাগরির 2026
+          // সালের কনটেন্ট — Click TV তে উপভোগ করুন।" - is the same sentence on
+          // every title with the category and year swapped in. It told the
+          // viewer nothing they could not read one line above it, and it cost
+          // the page three lines of height to say it.
+          (plot
+            ? '<p class="detail-desc movie-detail-plot">' + escapeHtml(plot) + '</p>'
             : '') +
           '<div class="detail-actions-row movie-detail-actions">' +
             '<button type="button" class="btn-play-white movie-detail-play tv-focusable"' + (playable ? '' : ' disabled') + '>' +
@@ -5538,12 +5549,29 @@ async function openMovieDetail(item) {
   applyMovieDocumentMetadata(resolved);
   sendMovieAnalyticsEvent('detail_open', resolved);
 
+  const backdropLayer = qs('.movie-detail-backdrop', wrap);
+  if (backdropLayer) {
+    // A property, not an attribute: the URL never passes through the HTML
+    // parser, so a quote or a bracket in it cannot break anything.
+    backdropLayer.style.backgroundImage = 'url("' + String(backdrop || poster).replaceAll('"', '%22') + '")';
+  }
+
   qs('.movie-detail-close', wrap)?.addEventListener('click', closeMovieDetail);
-  qs('.movie-detail-play', wrap)?.addEventListener('click', () => {
-    if (!isPlayable(resolved)) return;
-    closeMovieDetail();
-    // The existing entry point. Nothing about playback is reimplemented here.
-    startPlayback(resolved, true);
+  const playButton = qs('.movie-detail-play', wrap);
+  playButton?.addEventListener('click', () => {
+    if (!isPlayable(resolved) || playButton.dataset.busy === '1') return;
+    // Resolving a stream can take a few seconds, and until now the button
+    // gave no sign it had been pressed - so it got pressed again. It says
+    // what it is doing, and it stops answering while it does it.
+    playButton.dataset.busy = '1';
+    playButton.classList.add('is-busy');
+    playButton.innerHTML = '<i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i> চালু হচ্ছে…';
+    // One frame, so the busy state is actually painted before the view swaps.
+    requestAnimationFrame(() => {
+      closeMovieDetail();
+      // The existing entry point. Nothing about playback is reimplemented here.
+      startPlayback(resolved, true);
+    });
   });
   qs('.movie-detail-watchlist', wrap)?.addEventListener('click', (event) => {
     // The existing watchlist store, not a second favourites list.
