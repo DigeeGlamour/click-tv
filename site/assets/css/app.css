@@ -6207,36 +6207,55 @@ html.movie-playback-context body:not(.movie-portal) .sidebar-section.movie-mode 
 }
 
 /* ---- The category rail's scroll handle -------------------------------
-   The demo hides the rail's native scrollbar and draws its own
-   (`.sidebar-custom-track` / `.sidebar-custom-thumb`). This port took the
-   hiding and never took the handle, so the rail scrolled with nothing on
-   screen to say so and nothing to drag. `attachMovieRailScrollHandle` in
-   app.js builds the element; these are the demo's values for it, with one
-   change: it stays visible instead of appearing on hover, because a handle
-   nobody can find is the problem being fixed. */
+   The demo hides the rail's native scrollbar and draws its own. The native
+   bar must stay hidden - showing it put a full-width Windows scrollbar,
+   arrow buttons and all, down the side of the rail.
+
+   Demo `.sidebar-custom-track`: a 4px lane on the right inside edge.
+   Demo `.sidebar-custom-thumb`: 2.5px wide, 60px tall, white at 35%,
+   invisible until the rail is hovered, red and 3.5px while dragged. Those
+   are the numbers below, unchanged. */
+body.movie-portal .desktop-category-rail,
+body.movie-detail-view .desktop-category-rail {
+  scrollbar-width: none !important;
+}
+body.movie-portal .desktop-category-rail::-webkit-scrollbar,
+body.movie-detail-view .desktop-category-rail::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
 .movie-rail-scrollbar {
   position: sticky;
   top: 0;
-  z-index: 30;
+  z-index: 25;
   height: 0;
   pointer-events: none;
 }
 .movie-rail-thumb {
   position: absolute;
   top: 0;
+  /* The demo's lane is 3px from the rail's edge. The track here is inside
+     the rail's 7px padding and 1px border, so 3px - 8px lands it there. */
   right: -5px;
-  width: 4px;
+  width: 2.5px;
+  height: 60px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.35);
   pointer-events: auto;
   cursor: grab;
-  transition: background-color 0.18s ease, width 0.18s ease, box-shadow 0.18s ease;
+  opacity: 0;
+  transition: opacity 0.22s cubic-bezier(0.2, 0.8, 0.2, 1),
+              background-color 0.18s ease,
+              width 0.18s ease,
+              box-shadow 0.18s ease;
 }
-.desktop-category-rail:hover .movie-rail-thumb { background: rgba(255, 255, 255, 0.45); }
+.desktop-category-rail:hover .movie-rail-thumb,
+.movie-rail-thumb.is-dragging { opacity: 1; }
 .movie-rail-thumb:hover,
 .movie-rail-thumb.is-dragging {
-  background: #ff2a4a;
-  width: 5px;
+  background-color: #ff2a4a;
+  width: 3.5px;
   box-shadow: 0 0 10px rgba(255, 42, 84, 0.75);
 }
 .movie-rail-thumb.is-dragging { cursor: grabbing; }

@@ -2553,7 +2553,11 @@ function attachMovieRailScrollHandle(rail) {
   track.appendChild(thumb);
   rail.insertBefore(track, rail.firstChild);
 
-  const MIN_THUMB = 46; // the demo's compact handle
+  // The demo's handle is a fixed 60px, not a proportional one, and its lane
+  // stops 14px short of the bottom.
+  const THUMB_HEIGHT = 60;
+  const TOP_INSET = 8;
+  const BOTTOM_INSET = 14;
   function sync() {
     const overflow = rail.scrollHeight - rail.clientHeight;
     if (overflow <= 4) {
@@ -2561,10 +2565,9 @@ function attachMovieRailScrollHandle(rail) {
       return;
     }
     track.hidden = false;
-    const height = Math.max(MIN_THUMB, (rail.clientHeight / rail.scrollHeight) * rail.clientHeight);
-    const travel = rail.clientHeight - height;
-    thumb.style.height = `${Math.round(height)}px`;
-    thumb.style.transform = `translateY(${Math.round((rail.scrollTop / overflow) * travel)}px)`;
+    const travel = Math.max(0, rail.clientHeight - THUMB_HEIGHT - TOP_INSET - BOTTOM_INSET);
+    const offset = TOP_INSET + (rail.scrollTop / overflow) * travel;
+    thumb.style.transform = `translateY(${Math.round(offset)}px)`;
   }
 
   rail.addEventListener('scroll', sync, { passive: true });
@@ -2580,7 +2583,7 @@ function attachMovieRailScrollHandle(rail) {
   let scrollFrom = 0;
   function onMove(event) {
     const overflow = rail.scrollHeight - rail.clientHeight;
-    const travel = rail.clientHeight - thumb.offsetHeight;
+    const travel = rail.clientHeight - THUMB_HEIGHT - TOP_INSET - BOTTOM_INSET;
     if (travel <= 0) return;
     rail.scrollTop = scrollFrom + ((event.clientY - dragFrom) / travel) * overflow;
   }

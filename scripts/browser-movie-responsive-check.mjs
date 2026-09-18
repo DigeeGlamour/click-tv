@@ -115,6 +115,17 @@ async function run(viewport) {
   // --- a real category ------------------------------------------------------
   await clickNavButton(page, nav.sub, '.final-sub-button', 'Bangla');
   await page.waitForTimeout(3500);
+  // The fixed wait above was enough while the catalogue carried no metadata;
+  // with genres, ratings and backdrops on the pages it is sometimes not, and
+  // the probe below then measured a grid that had not painted yet - which
+  // showed up as "0 chips" at a different width on every run. Wait for the
+  // thing being measured, bounded, and let the assertions stay exactly as
+  // they are: if it never arrives, they fail as before.
+  await page.waitForFunction(() => {
+    const onScreen = (n) => n.getBoundingClientRect().width > 0;
+    return [...document.querySelectorAll('.movie-genre-chip')].some(onScreen)
+      && [...document.querySelectorAll('#sidebarList .movie-card')].some(onScreen);
+  }, null, { timeout: 15000 }).catch(() => {});
 
   // --- category and genre must both be reachable ---------------------------
   //
@@ -162,6 +173,15 @@ async function run(viewport) {
     check(access.smallestCategoryHeight >= 30,
       `[${label}] category buttons are tappable`, `${access.smallestCategoryHeight}px`);
   }
+
+  // Same reason as above: a card appended in the tick before this probe has
+  // not been laid out yet and measures 0 wide, which read as a card too
+  // narrow to see. Wait until the grid has settled - bounded, so a card that
+  // really is zero wide still fails the assertion below.
+  await page.waitForFunction(() => {
+    const cards = [...document.querySelectorAll('#sidebarList .movie-card')];
+    return cards.length > 0 && cards.every((n) => n.getBoundingClientRect().width > 0);
+  }, null, { timeout: 15000 }).catch(() => {});
 
   const grid = await page.evaluate((subSelector) => {
     const cards = [...document.querySelectorAll('#sidebarList .movie-card')];
