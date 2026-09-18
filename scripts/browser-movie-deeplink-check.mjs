@@ -57,8 +57,7 @@ async function readDetail(page) {
       structured,
       playing: document.querySelector('#metaTitle')?.textContent?.trim() || '',
       videos: document.querySelectorAll('video').length,
-      url: window.location.href,
-      share: Boolean(document.querySelector('.movie-detail-share'))
+      url: window.location.href
     };
   });
 }
@@ -117,7 +116,6 @@ async function run(label, viewport, navSelector) {
       `[${label}] the description is real text`, detail.description.slice(0, 80));
     check(detail.canonical.includes(`movie=${encodeURIComponent(ids.movie.id)}`),
       `[${label}] the canonical points at the stable detail route`, detail.canonical);
-    check(detail.share, `[${label}] the detail offers Copy Link`);
     check(detail.videos === 1, `[${label}] still exactly one player element`);
 
     // A deep link must not start playback by itself.
@@ -143,12 +141,12 @@ async function run(label, viewport, navSelector) {
         `[${label}] a release date, if present, is a real date`, String(ld.datePublished));
     }
 
-    // --- 2. Copy Link produces the same link ------------------------------
-    await page.locator('.movie-detail-share').click({ force: true });
-    await page.waitForTimeout(900);
-    const copied = await page.evaluate(() => navigator.clipboard.readText().catch(() => ''));
-    check(copied.includes(`movie=${encodeURIComponent(ids.movie.id)}`),
-      `[${label}] Copy Link copies the stable route`, copied);
+    // --- 2. the shareable route ------------------------------------------
+    // The detail used to carry a Copy Link button, and this step clicked it
+    // and read the clipboard. The approved design's action row is Watch Now
+    // and Bookmark, so the button is gone. What it copied was the canonical
+    // route, and the canonical is asserted above - so the coverage moves
+    // there rather than to a control that no longer exists.
 
     // --- 3. back leaves the detail without leaving the app ----------------
     await page.goBack();

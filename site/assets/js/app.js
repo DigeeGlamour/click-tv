@@ -2524,6 +2524,87 @@ function renderMovieRail(root) {
   genres.setAttribute('aria-label', 'Browse movies by genre');
   root.appendChild(genres);
   buildMovieGenreChips(genres);
+
+  attachMovieRailScrollHandle(root.closest('.desktop-category-rail'));
+}
+
+/**
+ * The rail's scroll handle - the demo's `.sidebar-custom-thumb`.
+ *
+ * The demo hides the rail's native scrollbar and draws its own, and this
+ * port took the hiding without the handle: the rail scrolled with nothing on
+ * screen to say so, and nothing to drag. The native bar cannot be styled
+ * back into view here either - `scrollbar-color` is inherited from `html`,
+ * and once it is set Chromium ignores every `::-webkit-scrollbar` rule on
+ * the element - so this is the demo's own answer, a real element.
+ *
+ * Attached once per rail. Idempotent, because the rail is re-rendered on
+ * every navigation.
+ */
+function attachMovieRailScrollHandle(rail) {
+  if (!rail || rail.dataset.railHandle === 'on') return;
+  rail.dataset.railHandle = 'on';
+
+  const track = document.createElement('div');
+  track.className = 'movie-rail-scrollbar';
+  track.setAttribute('aria-hidden', 'true');
+  const thumb = document.createElement('div');
+  thumb.className = 'movie-rail-thumb';
+  track.appendChild(thumb);
+  rail.insertBefore(track, rail.firstChild);
+
+  const MIN_THUMB = 46; // the demo's compact handle
+  function sync() {
+    const overflow = rail.scrollHeight - rail.clientHeight;
+    if (overflow <= 4) {
+      track.hidden = true;
+      return;
+    }
+    track.hidden = false;
+    const height = Math.max(MIN_THUMB, (rail.clientHeight / rail.scrollHeight) * rail.clientHeight);
+    const travel = rail.clientHeight - height;
+    thumb.style.height = `${Math.round(height)}px`;
+    thumb.style.transform = `translateY(${Math.round((rail.scrollTop / overflow) * travel)}px)`;
+  }
+
+  rail.addEventListener('scroll', sync, { passive: true });
+  if (typeof ResizeObserver === 'function') {
+    const observer = new ResizeObserver(sync);
+    observer.observe(rail);
+    // The entries are what change height, not the rail itself.
+    Array.from(rail.children).forEach((child) => { if (child !== track) observer.observe(child); });
+  }
+  window.addEventListener('resize', sync);
+
+  let dragFrom = 0;
+  let scrollFrom = 0;
+  function onMove(event) {
+    const overflow = rail.scrollHeight - rail.clientHeight;
+    const travel = rail.clientHeight - thumb.offsetHeight;
+    if (travel <= 0) return;
+    rail.scrollTop = scrollFrom + ((event.clientY - dragFrom) / travel) * overflow;
+  }
+  function onUp() {
+    thumb.classList.remove('is-dragging');
+    document.removeEventListener('pointermove', onMove);
+    document.removeEventListener('pointerup', onUp);
+  }
+  thumb.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+    dragFrom = event.clientY;
+    scrollFrom = rail.scrollTop;
+    thumb.classList.add('is-dragging');
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+  });
+  // A click on the empty track jumps a page, as a scrollbar does.
+  track.addEventListener('pointerdown', (event) => {
+    if (event.target === thumb) return;
+    const above = event.clientY < thumb.getBoundingClientRect().top;
+    rail.scrollBy({ top: above ? -rail.clientHeight : rail.clientHeight, behavior: 'smooth' });
+  });
+
+  sync();
 }
 
 /**
@@ -2771,14 +2852,6 @@ const MOVIE_HERO_ROTATE_MS = 6500;
 const MOVIE_HERO_ROTATE_MIN_MS = 3000;
 const MOVIE_HERO_ROTATE_MAX_MS = 20000;
 const MOVIE_HERO_SWIPE_PX = 40;
-// Past this, a TRENDING badge is no longer a claim the file can support.
-// The badge is stamped at build time against a trending snapshot that was
-// fresh THEN; if the refresh job has not run for three days, "trending" has
-// stopped being true and the badge is dropped rather than left to age. The
-// slot itself stays - a good Featured pick does not expire - and so does
-// the FEATURED ON CLICK TV label, which is true whatever the source was.
-const MOVIE_HERO_TREND_CLAIM_MAX_HOURS = 72;
-
 const movieHero = {
   items: [],
   index: 0,
@@ -2839,19 +2912,6 @@ function movieHeroTimerState() {
     count: movieHero.items.length,
     rotateMs: movieHero.rotateMs
   };
-}
-
-/**
- * Is the file recent enough for its TRENDING badges to still mean anything?
- *
- * With no timestamp the answer is no: an undated file could be any age, and
- * the safe reading of "unknown" is "do not make the stronger claim".
- */
-function movieHeroTrendClaimStillHolds() {
-  const stamp = Date.parse(String(movieHero.document?.updated_at || ''));
-  if (!Number.isFinite(stamp)) return false;
-  const hours = (Date.now() - stamp) / 3600000;
-  return hours >= 0 && hours <= MOVIE_HERO_TREND_CLAIM_MAX_HOURS;
 }
 
 function movieHeroReducedMotion() {
@@ -3075,21 +3135,9 @@ function buildMovieHeroSlide(entry) {
 
   copy.append(kicker, title, meta);
 
-  // Badges come from the file, which only emits them for real states.
-  const badges = (Array.isArray(entry.badges) ? entry.badges : [])
-    .filter((badge) => badge !== 'TRENDING' || movieHeroTrendClaimStillHolds());
-  const labels = entry.custom_label ? [String(entry.custom_label), ...badges] : badges;
-  if (labels.length) {
-    const wrap = document.createElement('div');
-    wrap.className = 'movie-hero-badges';
-    labels.slice(0, 3).forEach((label) => {
-      const node = document.createElement('span');
-      node.className = 'movie-hero-badge';
-      node.textContent = String(label);
-      wrap.appendChild(node);
-    });
-    copy.appendChild(wrap);
-  }
+  // No badge row. The demo's Hero is the kicker, the title, the meta line,
+  // the synopsis and the two buttons - nothing else - and the shelf a title
+  // was featured from is not a fact about the title.
 
   // The demo's Hero always carries a description line, and its own data
   // builds that line out of the category and the year rather than storing an
@@ -4906,10 +4954,11 @@ async function openMovieDetail(item) {
           '<div class="detail-actions-row movie-detail-actions">' +
             '<button type="button" class="btn-play-white movie-detail-play tv-focusable"' + (playable ? '' : ' disabled') + '>' +
               '<i class="fas fa-play" aria-hidden="true"></i> ' + (isSeries ? 'Watch Episode 1' : 'Watch Now') + '</button>' +
+            // Watch Now and Bookmark, which is the demo's whole action row.
+            // Copy Link was ours; the address bar already holds the same
+            // route (PART 21 writes it), so nothing is lost by dropping it.
             '<button type="button" class="btn-bookmark-dark movie-detail-watchlist tv-focusable">' +
               '<i class="fas fa-star" aria-hidden="true"></i> <span>Bookmark</span></button>' +
-            '<button type="button" class="btn-bookmark-dark movie-detail-share tv-focusable">' +
-              '<i class="fas fa-link" aria-hidden="true"></i> <span>Copy Link</span></button>' +
           '</div>' +
           // The demo's server box, bound to the real link count this record
           // publishes rather than an invented list.
@@ -4961,17 +5010,6 @@ async function openMovieDetail(item) {
   qs('.movie-detail-watchlist', wrap)?.addEventListener('click', (event) => {
     // The existing watchlist store, not a second favourites list.
     toggleFavorite(resolved._uid, event);
-  });
-  qs('.movie-detail-share', wrap)?.addEventListener('click', async () => {
-    const href = movieRouteHref(resolved);
-    try {
-      await navigator.clipboard.writeText(href);
-      showToast('Link copied');
-    } catch (_) {
-      // Clipboard access is not always granted. Showing the link is a
-      // worse experience than copying it, but it is not a dead end.
-      showToast(href);
-    }
   });
   // A poster that 404s must not sit there as a broken-image icon: the card
   // keeps its shape and the designed stand-in takes the slot.

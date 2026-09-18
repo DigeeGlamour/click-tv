@@ -3039,9 +3039,7 @@ body.movie-portal .desktop-category-rail {
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 22px !important;
   overflow-y: auto !important;
-  scrollbar-width: none !important;
 }
-body.movie-portal .desktop-category-rail::-webkit-scrollbar { display: none !important; }
 .desktop-category-rail:has(#desktopSubNav.movie-rail) .category-rail-title { display: none !important; }
 #desktopSubNav.movie-rail {
   display: flex !important;
@@ -4981,26 +4979,14 @@ html.movie-playback-context body:not(.movie-portal) .movie-related-card:hover {
   color: #ffffff;
 }
 
-/* The NOW PLAYING sub-row. reference-design.css hides .meta-subtitle-row
-   site-wide with !important; the demo player has it, so it comes back for
-   movie playback only - Live TV and Live Sports keep it hidden, because the
-   rule that hides them is untouched and nothing here can match them. Demo
-   .player-meta-sub: 11.5px, muted, gap 8, 2px under the title. */
-/* Desktop only. Below 1001px the NOW PLAYING strip is a single wrapping row
-   and reference-design.css hides this line there for a reason: un-hidden at
-   390 it landed on top of the Bookmark button. The demo's phone player has
-   its own two-row meta strip; ours keeps the title and the actions, which is
-   the same information in the space there is. */
-@media (min-width: 1001px) {
-html.movie-playback-context body:not(.movie-portal) .video-meta .meta-subtitle-row {
-  display: flex !important;
-  align-items: center;
-  gap: 8px;
-  margin-top: 2px;
-  font-size: 11.5px;
-  color: #8fa3ba;
-}
-}
+/* The NOW PLAYING sub-row stays hidden while a movie plays.
+   reference-design.css hides `.meta-subtitle-row` site-wide, and this file
+   used to bring it back on desktop movie playback because the demo's
+   `.player-meta-sub` carries a category and a year. The strip reads better
+   without it: NOW PLAYING and the film's name on the left, the measured
+   resolution and Bookmark on the right, and nothing else. The category and
+   the year are on the card and on the detail, where there is room for them.
+   Nothing is added here - the site-wide rule simply stands. */
 
 /* Demo .detail-nav-bar: the view name on the left, the back pill on the
    right, 14px above the card. */
@@ -6186,4 +6172,199 @@ body.movie-portal .movie-hero .movie-hero-bg { transform: scale(1.02); }
    and Live Sports keep theirs. */
 html.movie-playback-context body:not(.movie-portal) .sidebar-section.movie-mode > .sidebar-scroll-area > .sidebar-top-bar {
   display: none !important;
+}
+
+/* ---- The scroll handle belongs on the edge of the page ----------------
+   The demo scrolls the window, so its scrollbar sits hard against the right
+   edge of the screen and no space is set aside for it. Ours scrolls
+   `.sidebar-scroll-area`, which stops 18px short of the window (the shell's
+   right padding) and, on a screen wider than the shell's 1580px cap, another
+   half of the leftover on top - so at 1656 the handle floated 56px in from
+   the edge with empty page beside it.
+
+   The shell gives up its right padding and its width cap and takes the
+   centring offset back as LEFT padding, so the left rail does not move by a
+   pixel. The scroll area then reaches the true right edge and pays the same
+   distance back as its own right padding, so the content column is exactly
+   where it was. Only the handle moves.
+
+   `!important` because the shell rules being answered - here and in
+   reference-design.css - all carry it. Desktop only, and never during
+   playback: there the right column is the side panel, a card with its own
+   inner scrollbar, which is what the demo draws too. */
+@media (min-width: 991px) {
+  html:not(.movie-playback-context) body.movie-portal .youtube-layout.final-shell:has(.sidebar-section.side-panel),
+  html:not(.movie-playback-context) body.movie-detail-view .youtube-layout.final-shell:has(.sidebar-section.side-panel) {
+    max-width: none !important;
+    margin-inline: 0 !important;
+    padding-left: calc(18px + max(0px, (100vw - 1580px) / 2)) !important;
+    padding-right: 0 !important;
+  }
+  html:not(.movie-playback-context) body.movie-portal .sidebar-section.side-panel > .sidebar-scroll-area,
+  html:not(.movie-playback-context) body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area {
+    padding-right: calc(18px + max(0px, (100vw - 1580px) / 2)) !important;
+  }
+}
+
+/* ---- The category rail's scroll handle -------------------------------
+   The demo hides the rail's native scrollbar and draws its own
+   (`.sidebar-custom-track` / `.sidebar-custom-thumb`). This port took the
+   hiding and never took the handle, so the rail scrolled with nothing on
+   screen to say so and nothing to drag. `attachMovieRailScrollHandle` in
+   app.js builds the element; these are the demo's values for it, with one
+   change: it stays visible instead of appearing on hover, because a handle
+   nobody can find is the problem being fixed. */
+.movie-rail-scrollbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  height: 0;
+  pointer-events: none;
+}
+.movie-rail-thumb {
+  position: absolute;
+  top: 0;
+  right: -5px;
+  width: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.3);
+  pointer-events: auto;
+  cursor: grab;
+  transition: background-color 0.18s ease, width 0.18s ease, box-shadow 0.18s ease;
+}
+.desktop-category-rail:hover .movie-rail-thumb { background: rgba(255, 255, 255, 0.45); }
+.movie-rail-thumb:hover,
+.movie-rail-thumb.is-dragging {
+  background: #ff2a4a;
+  width: 5px;
+  box-shadow: 0 0 10px rgba(255, 42, 84, 0.75);
+}
+.movie-rail-thumb.is-dragging { cursor: grabbing; }
+
+/* A rule under the rail's section caption, asked for on top of the demo:
+   it separates DISCOVERY & PICKS from the entries below it. Movie rail only
+   - the Live TV and Live Sports rails carry no such caption. */
+.movie-rail-caption {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  padding-bottom: 7px;
+  margin-bottom: 3px;
+}
+
+/* ==========================================================================
+   DEMO EXACT PARITY - THE CATEGORY RAIL'S OWN RHYTHM
+   ==========================================================================
+   Side by side at 1920 the site's Home showed noticeably less than the demo's
+   and read as though the page were zoomed. The page was not zoomed; the rail
+   was. Measured, demo against site:
+
+       rail padding   8px 7px 10px   ->  12px 8px
+       rail gap       6px            ->  0
+       rail radius    16px           ->  22px
+       entry height   40px           ->  50px     <- 10px x 13 entries = 130px
+       entry padding  0 10px 0 9px   ->  0 12px 0 10px
+       entry gap      10px           ->  12px
+       icon           22px / 13.5px  ->  24px / 14.5px
+       caption        10px / 1.45px  ->  11px / 1.8px
+
+   Ten pixels on every entry is why the demo's rail reaches My Watchlist on a
+   screen where ours stops at Premium. The type size is already the demo's
+   (`.cat-label` 13.5px); it is the box around it that grew.
+
+   Movie rail only - `#desktopSubNav.movie-rail` exists on no other section,
+   so the Live TV and Live Sports rails keep every value they have.
+   ------------------------------------------------------------------------ */
+body.movie-portal .desktop-category-rail,
+body.movie-detail-view .desktop-category-rail {
+  padding: 8px 7px 10px !important;
+  border-radius: 16px !important;
+  border-color: rgba(255, 255, 255, 0.067) !important;
+}
+#desktopSubNav.movie-rail {
+  gap: 6px !important;
+}
+#desktopSubNav.movie-rail .final-sub-button {
+  height: 40px !important;
+  min-height: 40px !important;
+  padding: 0 10px 0 9px !important;
+  gap: 10px !important;
+  border-radius: 0 9px 9px 0 !important;
+}
+#desktopSubNav.movie-rail .movie-rail-icon {
+  width: 22px !important;
+  height: 22px !important;
+  font-size: 13.5px !important;
+  line-height: 1 !important;
+}
+.movie-rail .movie-rail-caption {
+  /* Demo `.group-caption`, final block. `.movie-rail .movie-rail-caption`
+     is the selector the earlier rule uses, so this one has to match it. */
+  padding: 9px 10px 5px;
+  font-size: 10px;
+  letter-spacing: 1.45px;
+  line-height: 1.45;
+  margin: 0 0 3px;
+}
+/* The demo's status-card kicker is 10px on 1.35, not on the 1.45 the rest of
+   the movie surfaces inherit. */
+body.movie-portal .movie-status-card p { line-height: 1.35; }
+
+/* ---- Icons are a font too -------------------------------------------
+   The movie typeface rule reads `body.movie-portal .movie-card *` and
+   carries `!important`, so it also hit every `<i class="fas ...">` inside
+   those surfaces: the glyph kept its private-use code point but was asked
+   for in Plus Jakarta Sans, which has no such character, and the browser
+   drew the empty box. That is why Watch Now, Bookmark, Copy Link, Back to
+   Movies and the card's info control all showed a square while the rail and
+   the header - which that rule never reaches - were fine.
+
+   An icon element names its own family; nothing else may. Written for every
+   Font Awesome class in use, so a future family rule cannot take them back. */
+/* The rule being answered is `body.movie-portal .movie-card *` at (0,2,0),
+   so these have to reach at least that: `body.movie-portal [class*="fa-"]`
+   is (0,2,1). */
+body.movie-portal [class*="fa-"],
+body.movie-detail-view [class*="fa-"],
+html body [class*="fa-"] {
+  font-family: "Font Awesome 6 Free", "Font Awesome 5 Free", FontAwesome !important;
+}
+body.movie-portal .fab, body.movie-portal .fa-brands,
+body.movie-detail-view .fab, body.movie-detail-view .fa-brands,
+html body .fab, html body .fa-brands {
+  font-family: "Font Awesome 6 Brands", "Font Awesome 5 Brands" !important;
+}
+html body .fas, html body .fa-solid, html body .fa { font-weight: 900 !important; }
+html body .far, html body .fa-regular { font-weight: 400 !important; }
+
+/* ---- The header capsule ----------------------------------------------
+   Measured: demo capsule 37.5px tall with 27.5px items, ours 43 with 33.
+   Padding (7px 18px) and type (13.5px) already matched, so the six pixels
+   were line-height alone - the demo's capsule item is set solid. */
+.final-main-nav .final-main-button,
+.desktop-main-navigation .final-main-button {
+  /* 13.5px of text inside 7px of padding is the demo's 27.5px item; a
+     `min-height: 33px` was holding it 5.5px taller, and the capsule and the
+     whole header row grew with it. */
+  line-height: 1 !important;
+  min-height: 0 !important;
+  height: auto !important;
+}
+.desktop-main-navigation .final-main-nav {
+  height: auto !important;
+}
+
+/* ---- The page's own ground -------------------------------------------
+   Demo: `html { background-color: #080c14 }` and
+   `body { background: radial-gradient(circle at 55% -15%, #162232 0%,
+   #080c14 34%, #080c14 70%) }` - a dark navy page with one soft pool of
+   light above the header. Ours painted #06080d under a different two-layer
+   gradient, which is why the demo's pages read warmer and ours colder even
+   though every card, rail and panel colour already matched exactly.
+
+   Movie surfaces only. The same ground is behind Live TV and Live Sports,
+   and repainting theirs is not what was asked for. */
+body.movie-portal,
+body.movie-detail-view,
+html.movie-playback-context body {
+  background-color: #080c14 !important;
+  background-image: radial-gradient(circle at 55% -15%, #162232 0%, #080c14 34%, #080c14 70%) !important;
 }

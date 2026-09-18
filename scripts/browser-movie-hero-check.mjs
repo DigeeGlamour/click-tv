@@ -435,7 +435,7 @@ async function newPage(payload) {
   const first = await heroState(page);
   check(first.tags.length === 0 || !first.tags.some((t) => /IMDb|TMDB|\d\.\d/.test(t)),
     '[facts] a title with no rating shows no rating element', JSON.stringify(first.tags));
-  check(!first.badges.length, '[facts] a title in no special state shows no badge',
+  check(!first.badges.length, '[facts] the Hero draws no badge row',
     JSON.stringify(first.badges));
   // The rule this used to state was "no overview, no synopsis line". The
   // demo - the design source - always prints a line there, and builds it from
@@ -467,8 +467,12 @@ async function newPage(payload) {
     '[facts] a TMDB score is never relabelled as IMDb', JSON.stringify(second.tags));
   check(second.tags.includes('Full HD'),
     '[facts] the quality label is the one the file carries', JSON.stringify(second.tags));
-  check(second.badges.join(',') === 'NEW,PREMIUM',
-    '[facts] badges are exactly the ones in the file', JSON.stringify(second.badges));
+  // The approved design's Hero is the kicker, the title, the meta line, the
+  // synopsis and the two buttons. The shelf a title was featured from is not
+  // a fact about the title, and the demo prints no such pill - so a file that
+  // carries badges still draws none.
+  check(!second.badges.length,
+    '[facts] badges in the file are not drawn on the Hero', JSON.stringify(second.badges));
   check(second.desc === 'A real overview from the metadata cache.',
     '[facts] the synopsis is the real overview', second.desc);
   check(/Action, Crime/.test(second.meta), '[facts] genres come from the file', second.meta);
@@ -480,7 +484,7 @@ async function newPage(payload) {
 }
 
 // ---------------------------------------------------------------------------
-// 5b. A stale file stops claiming TRENDING (plan section 30)
+// 5b. A file's badges never reach the Hero, fresh or stale (plan section 30)
 // ---------------------------------------------------------------------------
 {
   const fresh = [slot('t', { name: 'Trending Film', badges: ['NEW', 'TRENDING'] })];
@@ -489,8 +493,8 @@ async function newPage(payload) {
   );
   await openMovieHome(page);
   await page.waitForTimeout(900);
-  check((await heroState(page)).badges.includes('TRENDING'),
-    '[stale] a fresh file may show TRENDING');
+  check(!(await heroState(page)).badges.length,
+    '[stale] a fresh file with badges still shows none on the Hero');
   await context.close();
 }
 
@@ -503,10 +507,9 @@ async function newPage(payload) {
   await openMovieHome(page);
   await page.waitForTimeout(900);
   const hero = await heroState(page);
-  check(!hero.badges.includes('TRENDING'),
-    '[stale] a five-day-old file no longer claims TRENDING', JSON.stringify(hero.badges));
-  check(hero.badges.includes('NEW'),
-    '[stale] but a badge that is still true survives', JSON.stringify(hero.badges));
+  check(!hero.badges.length,
+    '[stale] a five-day-old file claims nothing on the Hero either',
+    JSON.stringify(hero.badges));
   check(!hero.hidden && Boolean(hero.title),
     '[stale] and the slot itself stays - a good pick does not expire', hero.title);
   check(/FEATURED ON CLICK TV/i.test(hero.kicker),
@@ -679,7 +682,7 @@ async function newPage(payload) {
     check(!hero.buttons.some((t) => /^Play$/i.test(t)),
       '[series] and never a bare Play, because no episode has been chosen yet',
       JSON.stringify(hero.buttons));
-    check(hero.badges.includes('SERIES'), '[series] the SERIES badge is shown',
+    check(!hero.badges.length, '[series] the Hero still draws no badge row',
       JSON.stringify(hero.badges));
     check(/Web Series/.test(hero.meta), '[series] the meta row says it is a series', hero.meta);
 

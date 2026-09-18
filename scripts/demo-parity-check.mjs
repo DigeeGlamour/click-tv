@@ -59,6 +59,12 @@ const HOME = {
   secAll: ['.btn-see-all', '.movie-row-all'],
   secArrows: ['.carousel-arrows', '.movie-row-arrows'],
   cardsRow: ['.cards-row', '.movie-row-strip'],
+  rail: ['.sidebar-rail', '.desktop-category-rail'],
+  railCaption: ['.group-caption', '.movie-rail-caption'],
+  railItem: ['.cat-item', '#desktopSubNav.movie-rail .final-sub-button'],
+  railIcon: ['.cat-icon-box', '.movie-rail-icon'],
+  railLabel: ['.cat-label', '#desktopSubNav.movie-rail .final-sub-button'],
+  contentArea: ['.content-area', '.sidebar-scroll-area'],
 };
 
 const DETAIL = {
