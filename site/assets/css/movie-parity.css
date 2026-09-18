@@ -895,9 +895,15 @@ body.movies-section .movie-prompt-msg .movie-clear-genre {
    sub-row deliberately, to hold all three to one size - that rule still
    governs the desktop, and this restates only the phone row, matching the
    main nav size for size at each of its breakpoints. Boxes, heights,
-   padding and radius are untouched. */
+   padding and radius are untouched.
+
+   `html body` is not decoration. The rule being answered is
+   `body .mobile-sub-navigation .final-sub-button` at (0,2,1) and it carries
+   `!important` too, so when the `body.movies-section` scope came off, this
+   dropped to (0,2,0) and silently lost - measured live at 13.5px on all
+   three tabs. The prefix puts it back above the rule it has to beat. */
 @media (max-width: 768px) {
-  .mobile-sub-navigation .final-sub-button {
+  html body .mobile-sub-navigation .final-sub-button {
     font-family: var(--ref-font) !important;
     font-size: 10px !important;
     font-weight: 800 !important;
@@ -905,13 +911,20 @@ body.movies-section .movie-prompt-msg .movie-clear-genre {
     letter-spacing: normal !important;
   }
 }
+/* The active chip is set to 700 by a second app.css rule at (0,3,1), so it
+   came out a weight lighter than the rest of its own row. */
+@media (max-width: 768px) {
+  html body .mobile-sub-navigation .final-sub-button.active {
+    font-weight: 800 !important;
+  }
+}
 @media (max-width: 420px) {
-  .mobile-sub-navigation .final-sub-button {
+  html body .mobile-sub-navigation .final-sub-button {
     font-size: 9.5px !important;
   }
 }
 @media (max-width: 360px) {
-  .mobile-sub-navigation .final-sub-button {
+  html body .mobile-sub-navigation .final-sub-button {
     font-size: 8.8px !important;
   }
 }
