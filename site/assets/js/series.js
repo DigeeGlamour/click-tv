@@ -317,6 +317,24 @@
     return detailActive ? safeText(activeSeriesItem?.id) : '';
   }
 
+  /**
+   * The poster as the DETAIL card draws it.
+   *
+   * `createPosterHtml` is the catalogue card's poster and carries
+   * `.movie-poster`, which the detail card has no size for - dropped into the
+   * card it grew to the full width and painted over the title and the buttons.
+   * The detail's own class is what the card is built around.
+   */
+  function seriesDetailPosterHtml(item) {
+    const logo = safeText(item?.logo);
+    if (!logo) {
+      return '<div class="movie-detail-poster movie-detail-poster-fallback" role="img" aria-label="'
+        + escapeHtml((item?.name || 'Series') + ' poster unavailable') + '">'
+        + '<i class="fas fa-layer-group" aria-hidden="true"></i><span>Poster নেই</span></div>';
+    }
+    return `<img class="movie-detail-poster" src="${escapeHtml(logo)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer">`;
+  }
+
   function createPosterHtml(item) {
     const logo = safeText(item.logo);
     if (!logo) {
@@ -594,11 +612,9 @@
   function seriesFacts() {
     const source = activeSeriesData || activeSeriesItem || {};
     const fallback = activeSeriesItem || {};
+    // Year and Category are on the card's own facts line now, so repeating
+    // them underneath it is the clutter the movie detail was just cleared of.
     const facts = [];
-    const year = numberValue(source.year || fallback.year);
-    if (year > 0) facts.push(['Year', String(year)]);
-    const category = safeText(source.category || fallback.category);
-    if (category) facts.push(['Category', category]);
     const genres = (Array.isArray(source.genres) ? source.genres : Array.isArray(fallback.genres) ? fallback.genres : [])
       .map((genre) => safeText(genre))
       .filter(Boolean);
@@ -670,30 +686,80 @@
       ? `Continue S${twoDigits(progress.season_number)} E${twoDigits(progress.episode_number)}`
       : 'Start Series';
 
+    const source = activeSeriesData || activeSeriesItem;
+    const poster = safeText(source.logo || activeSeriesItem.logo);
+    // The description the record really carries. The old stand-in - "Season
+    // নির্বাচন করে Episode দেখুন।" - is an instruction, not a synopsis, and it
+    // printed on every series that had none.
+    const description = safeText(activeSeriesData?.description || activeSeriesItem.description);
+    const seasons = numberValue(activeSeriesData?.total_seasons || activeSeriesItem?.total_seasons || seasonList().length);
+    const episodeCount = activeEpisodes.length;
+
+    const metaBits = [];
+    const year = numberValue(source.year || activeSeriesItem.year);
+    if (year > 0) metaBits.push(String(year));
+    const category = safeText(source.category || activeSeriesItem.category);
+    if (category) metaBits.push(category);
+    metaBits.push(`Season ${numberValue(activeSeasonNumber)}`);
+    if (episodeCount) metaBits.push(`${episodeCount} Episode${episodeCount === 1 ? '' : 's'}`);
+    else if (seasons) metaBits.push(`${seasons} Season${seasons === 1 ? '' : 's'}`);
+
+    // Both labels are rendered; the stylesheet shows the pair that belongs to
+    // the state the page is actually in. The side column during playback is
+    // 390px wide and the demo draws only the episode list there, so the title
+    // card is hidden by the same rule rather than by a flag read here - this
+    // code runs before `movie-playback-context` is set, and a flag read now
+    // would answer for the state the page was in a moment ago.
     const detail = document.createElement('section');
-    detail.className = 'series-detail-shell';
+    detail.className = 'series-detail-shell movie-detail-inner detail-section-inner';
     detail.innerHTML = `
-      <div class="series-detail-head">
-        <h4 class="series-detail-head-title">S${numberValue(activeSeasonNumber)} Episodes</h4>
-        <button type="button" class="series-back-button tv-focusable"><i class="fas fa-arrow-left"></i><span>Back to Movies</span></button>
+      <div class="detail-nav-bar">
+        <span class="detail-nav-heading"><span class="detail-nav-dot" aria-hidden="true"></span><span class="series-when-browsing">Series Details</span><span class="series-when-playing">S${numberValue(activeSeasonNumber)} Episodes</span></span>
+        <button type="button" class="btn-back-pill series-back-button tv-focusable"><i class="fas fa-arrow-left" aria-hidden="true"></i> <span class="series-when-browsing">Back to Movies</span><span class="series-when-playing">Back to Series</span></button>
       </div>
-      <div class="series-detail-main">
-        <div class="series-detail-poster">${createPosterHtml(activeSeriesItem)}</div>
-        <div class="series-detail-copy">
-          <h3>${escapeHtml(activeSeriesData?.name || activeSeriesItem.name)}</h3>
-          <p class="series-detail-summary">${escapeHtml(seriesSummaryText())}</p>
-          ${seriesFactsHtml()}
-          <p class="series-detail-description">${escapeHtml(safeText(activeSeriesData?.description || activeSeriesItem.description, 'Season নির্বাচন করে Episode দেখুন।'))}</p>
-          <button type="button" class="series-continue-button tv-focusable">${escapeHtml(continueLabel)}</button>
+      <div class="detail-hero-card movie-detail-hero series-detail-hero">
+        ${poster ? '<div class="detail-backdrop movie-detail-backdrop"></div>' : ''}
+        <div class="detail-inner-grid movie-detail-grid">
+          <div class="detail-poster-wrap movie-detail-poster-wrap">${seriesDetailPosterHtml(activeSeriesItem)}</div>
+          <div class="detail-info movie-detail-main">
+            <span class="detail-type-pill movie-detail-kind"><span class="red-bullet" aria-hidden="true"></span>SERIES</span>
+            <h1 class="detail-heading movie-detail-title">${escapeHtml(source.name || activeSeriesItem.name)}</h1>
+            <div class="detail-meta-row movie-detail-meta">
+              ${metaBits.map((bit) => `<span>${escapeHtml(bit)}</span>`).join('<i class="meta-dot movie-detail-dot" aria-hidden="true">\u2022</i>')}
+            </div>
+            ${description ? `<p class="detail-desc movie-detail-plot">${escapeHtml(description)}</p>` : ''}
+            <div class="detail-actions-row movie-detail-actions">
+              <button type="button" class="btn-play-white series-continue-button tv-focusable"><i class="fas fa-play" aria-hidden="true"></i> ${escapeHtml(continueLabel)}</button>
+            </div>
+            ${seriesFactsHtml()}
+          </div>
         </div>
       </div>
-      <div class="series-season-strip" role="tablist"></div>
-      <div class="series-episode-region"></div>`;
+      <section class="movie-row series-episode-section">
+        <div class="movie-row-head series-when-browsing-block">
+          <div>
+            <h2>S${numberValue(activeSeasonNumber)} Episodes</h2>
+            <p>${escapeHtml(seriesSummaryText())}</p>
+          </div>
+        </div>
+        <div class="series-season-strip" role="tablist"></div>
+        <div class="series-episode-region"></div>
+      </section>`;
+
+    // The backdrop image is set as a property, never written into the markup:
+    // a URL inside a quoted attribute is how the movie card's backdrop stayed
+    // invisible for weeks.
+    const backdropLayer = detail.querySelector('.movie-detail-backdrop');
+    if (backdropLayer && poster) {
+      backdropLayer.style.backgroundImage = `url("${poster.replaceAll('"', '%22')}")`;
+    }
 
     detail.querySelector('.series-back-button').addEventListener('click', closeDetail);
-    detail.querySelector('.series-continue-button').addEventListener('click', () => continueSeries());
+    detail.querySelector('.series-continue-button')?.addEventListener('click', () => continueSeries());
 
     const strip = detail.querySelector('.series-season-strip');
+    // One season is not a choice. The row above already names it.
+    if (seasonList().length < 2) strip.hidden = true;
     seasonList().forEach((season) => {
       const number = numberValue(season.number);
       const button = document.createElement('button');
@@ -727,11 +793,16 @@
         row.dataset.uid = episode._uid;
         row.dataset.episodeUid = episode._uid;
         if (!playable) row.disabled = true;
+        // The demo puts a control on the right of every episode: a play glyph,
+        // and the now-playing bars on the one that is playing. Ours had an
+        // empty placeholder there, so a card did not read as pressable.
         const trailing = !playable
           ? '<em class="series-episode-state unavailable">UNAVAILABLE</em>'
-          : state.label
-            ? `<em class="series-episode-state ${state.className}">${escapeHtml(state.label)}</em>`
-            : '<span class="series-episode-state-placeholder" aria-hidden="true"></span>';
+          : state.className === 'playing'
+            ? '<i class="fas fa-chart-simple series-episode-icon is-playing" aria-hidden="true"></i>'
+            : state.label
+              ? `<em class="series-episode-state ${state.className}">${escapeHtml(state.label)}</em>`
+              : '<i class="far fa-circle-play series-episode-icon" aria-hidden="true"></i>';
         row.innerHTML = `
           <span class="series-episode-number${badge.includes('-') ? ' range' : ''}">${escapeHtml(badge || '·')}</span>
           <span class="series-episode-copy">

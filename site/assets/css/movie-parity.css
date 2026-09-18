@@ -1550,3 +1550,164 @@ body.movie-detail-view .movie-detail-inner {
   color: #fff;
   text-decoration: underline;
 }
+
+/* --------------------------------------------------------------------------
+   18. SERIES — the detail card, and episode cards you can actually read.
+
+   The series detail now renders with the movie detail's own class names, so
+   everything above this comment already applies to it: one container, the
+   backdrop, the poster, the type, the buttons, the phone layout. Only what is
+   genuinely series-only is stated here.
+   -------------------------------------------------------------------------- */
+
+/* 18a. Episode cards.
+   ------------------
+   The demo's `.side-episode-card`: a square sequence box, the title, the
+   facts under it, and a control on the right. Ours had the right parts at the
+   wrong sizes - an 11.5px title over a 9px sub-line inside a 55px-tall
+   number box - and the owner could not read it. The type goes up, the number
+   box becomes the demo's square, and the card keeps its two-column row. */
+.series-episode-card {
+  padding: 9px !important;
+  gap: 10px !important;
+  align-items: center !important;
+  /* Three tracks: the sequence box, the copy, the control. Where the card is
+     a grid it was declared with two, so the play glyph became a third item
+     and wrapped onto a second row under the title. */
+  grid-template-columns: auto minmax(0, 1fr) auto !important;
+}
+.series-episode-card .series-episode-number {
+  width: 36px !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  display: grid !important;
+  place-items: center !important;
+  border-radius: 8px !important;
+  font-size: 12.5px !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+/* A range - E01-07 - needs more room than a single number. */
+.series-episode-card .series-episode-number.range {
+  width: auto !important;
+  min-width: 36px !important;
+  padding-inline: 7px !important;
+  font-size: 11px !important;
+}
+.series-episode-card .series-episode-copy strong {
+  font-size: 13px !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  display: block !important;
+}
+.series-episode-card .series-episode-copy small {
+  font-size: 10.5px !important;
+  font-weight: 650 !important;
+  line-height: 1.3 !important;
+  color: #92a3b8 !important;
+}
+/* The control on the right: a play glyph on every card, the now-playing bars
+   on the one that is playing. */
+.series-episode-icon {
+  flex: 0 0 auto;
+  margin-left: auto;
+  color: #7c8ea6;
+  font-size: 15px;
+}
+.series-episode-card:hover .series-episode-icon {
+  color: #e6edf6;
+}
+.series-episode-icon.is-playing {
+  color: #ff2a4a;
+}
+
+/* 18b. The episode section under the card.
+   ---------------------------------------
+   It is a row like any other on these pages - open, no box of its own - so it
+   borrows the row header's type and spacing. */
+.series-episode-section {
+  margin-top: 4px;
+}
+.series-episode-section .series-season-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.series-episode-section .series-season-strip[hidden] {
+  display: none;
+}
+
+/* 18c. Phone: the same numbers, one size down. */
+@media (max-width: 680px) {
+  .series-episode-card .series-episode-copy strong {
+    font-size: 12px !important;
+  }
+  .series-episode-card .series-episode-copy small {
+    font-size: 10px !important;
+  }
+  .series-episode-card .series-episode-number {
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    font-size: 11.5px !important;
+  }
+}
+
+/* 18d. The series card's primary action reads like the movie card's.
+   -----------------------------------------------------------------
+   Start Series / Continue is the same job Watch Now does one page away, and
+   the two sat side by side in the same section looking like different kinds
+   of control. Only the skin is restated; the button, its class and its
+   handler are untouched. */
+.series-detail-hero .series-continue-button {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #0a0f18 !important;
+}
+.series-detail-hero .series-continue-button:hover {
+  background: #eef2f7 !important;
+  border-color: #eef2f7 !important;
+}
+.series-detail-hero .series-continue-button i {
+  color: #0a0f18 !important;
+}
+
+/* 18e. The series panel is two things, and the page says which.
+   ------------------------------------------------------------
+   Browsing, it is the whole page: the title card and the episodes under it.
+   Playing, the same markup lives in the player's 390px side column, where the
+   card came out as a cut-off heading over a stack of one-word lines. The demo
+   draws only the episode list there, headed "S2 Episodes" with a Back to
+   Series pill.
+
+   Driven by `movie-playback-context` on <html> rather than by a flag read at
+   build time: the panel is rendered before that class is set, and it must
+   also switch back the moment playback ends, with nothing re-rendered
+   underneath a running player. */
+.series-when-playing {
+  display: none;
+}
+html.movie-playback-context .series-when-browsing {
+  display: none;
+}
+html.movie-playback-context .series-when-playing {
+  display: inline;
+}
+html.movie-playback-context .series-detail-shell > .series-detail-hero,
+html.movie-playback-context .series-detail-shell .series-when-browsing-block {
+  display: none !important;
+}
+/* In the column the shell is the panel's own content, so it keeps none of the
+   page's outer spacing. */
+html.movie-playback-context .series-detail-shell {
+  padding: 0 !important;
+}
+html.movie-playback-context .series-detail-shell > .detail-nav-bar {
+  margin-bottom: 12px !important;
+}
