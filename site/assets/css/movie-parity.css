@@ -1292,3 +1292,164 @@ body.movie-detail-view .movie-detail-inner {
     min-height: 46px !important;
   }
 }
+
+/* --------------------------------------------------------------------------
+   16. DETAIL PAGE — TMDB's arrangement, Click TV's surface.
+
+   The owner asked for TMDB's title page: the year with the title, one line of
+   facets under it, a score ring instead of a number in a box, an Overview
+   heading over the synopsis. The card, the backdrop, the palette and the
+   type are ours and unchanged - only the order and the weight of the parts
+   moved. Nothing here renders a value the catalogue does not hold.
+   -------------------------------------------------------------------------- */
+
+/* 16a. Title and year on one line, TMDB's weights. */
+.movie-detail-hero .movie-detail-title {
+  display: block !important;
+  margin-bottom: 8px !important;
+}
+.movie-detail-year {
+  color: #9fb0c4 !important;
+  font-weight: 500 !important;
+  opacity: 0.95;
+}
+
+/* 16b. One facet line: kind, print, category, runtime, genres. */
+.movie-detail-hero .movie-detail-meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-bottom: 14px !important;
+}
+.movie-detail-facet {
+  color: #c2cedd !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+}
+/* The separator trails its own facet rather than leading the next one. As a
+   `::before` on the following item it wrapped with that item, so a line of
+   the meta row could start with a stray dot on a narrow screen. */
+.movie-detail-facet:not(:last-child)::after {
+  content: '\00b7';
+  margin-left: 8px;
+  color: #56677c;
+}
+.movie-detail-genrelist {
+  color: #97a7ba !important;
+}
+
+/* 16c. The score ring.
+   -------------------
+   `--score` is the rating out of 100, written on the element by app.js from
+   the same number the badge used to print. The ring is a conic gradient to
+   that percentage, so it cannot show a value the record did not carry - with
+   no rating app.js renders no ring at all. Colour follows the score the way
+   TMDB's does: green when it is good, amber in the middle, red when it is
+   not. */
+.movie-detail-scorerow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.movie-score-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background:
+    conic-gradient(var(--ring, #19c987) calc(var(--score, 0) * 1%), rgba(255, 255, 255, 0.11) 0);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
+.movie-score-ring-face {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #0a121d;
+  color: #f2f6fb;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+}
+.movie-score-copy {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.movie-score-copy strong {
+  color: #e8eef6;
+  font-size: 12.5px;
+  font-weight: 800;
+}
+.movie-score-copy small {
+  color: #8b9cb0;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+/* 16d. The Overview heading, which only exists when a synopsis does. */
+.movie-detail-overview-head {
+  margin: 0 0 6px !important;
+  color: #f2f6fb !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1px !important;
+}
+.movie-detail-hero .movie-detail-plot {
+  margin-bottom: 16px !important;
+  color: #c3cedb !important;
+}
+
+/* 16e. Bookmark steps back so Watch Now is the one obvious action. */
+.movie-detail-hero .movie-detail-watchlist {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* 16f. The quality pills are labels, not controls.
+   ------------------------------------------------
+   They name the prints this title can be watched in - read from each
+   source's own measured height and de-duplicated, so two 1080p links are one
+   entry. Nothing here is pressable, and it no longer pretends to be: the
+   pointer cursor and the hover lift are off. */
+.movie-detail-hero .server-pill-btn {
+  cursor: default !important;
+}
+.movie-detail-hero .server-pill-btn:hover {
+  transform: none !important;
+}
+
+/* 16g. Phone: the ring and the facets stay on the poster's line. */
+@media (max-width: 820px) {
+  body.movie-detail-view .movie-detail-hero .movie-detail-title {
+    margin-bottom: 6px !important;
+  }
+  body.movie-detail-view .movie-detail-hero .movie-detail-meta {
+    gap: 6px !important;
+    margin-bottom: 10px !important;
+  }
+  body.movie-detail-view .movie-detail-facet {
+    font-size: 11.5px !important;
+  }
+  body.movie-detail-view .movie-detail-scorerow {
+    gap: 9px;
+    margin-bottom: 12px;
+  }
+  body.movie-detail-view .movie-score-ring {
+    width: 40px;
+    height: 40px;
+  }
+  body.movie-detail-view .movie-score-ring-face {
+    width: 33px;
+    height: 33px;
+    font-size: 12px;
+  }
+}
