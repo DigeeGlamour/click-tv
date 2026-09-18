@@ -1187,6 +1187,13 @@ function renderFinalMainNavigation() {
 function renderFinalSubNavigation() {
   const items = finalSubItems();
   mobileSubNavigation?.classList.toggle('sports-subnav', state.activeMainGroup === 'sports');
+  // The one hook every movie-only rule below hangs off. `movie-portal` cannot
+  // serve: it is switched off the moment playback starts, and the section's
+  // own furniture - the phone tab bar, the page toast - has to survive that.
+  // Live Sports and Live TV never carry this class, so nothing scoped to it
+  // can reach them.
+  document.body.classList.toggle('movies-section', state.activeMainGroup === 'movies');
+  syncMovieTabBar();
   [desktopSubNav, mobileSubNav].forEach((root) => {
     if (!root) return;
     // The movies rail is grouped and carries icons; every other section
@@ -1829,6 +1836,8 @@ function syncMovieGenreChips() {
     chip.classList.toggle('active', active);
     chip.setAttribute('aria-pressed', String(active));
   });
+  // The phone control shows the same state through a different affordance.
+  syncMovieGenreDropdown();
 }
 
 function movieGenresOf(item) {
@@ -2525,6 +2534,10 @@ function renderMovieRail(root) {
   root.appendChild(genres);
   buildMovieGenreChips(genres);
 
+  // Pinned to the foot of the rail, as in the demo. Without it the rail
+  // simply stopped after the genre pills with the panel running on below.
+  root.appendChild(buildMovieRailUserCard());
+
   attachMovieRailScrollHandle(root.closest('.desktop-category-rail'));
 }
 
@@ -2720,6 +2733,16 @@ function buildMovieHomeRow(key, title, description, rows) {
       });
       arrows.appendChild(button);
     });
+
+  // The fade at the row's right edge says "there is more this way"; at the
+  // end of the row there is not, so it comes off rather than dimming the
+  // last card for no reason.
+  const syncStripEnd = () => {
+    const atEnd = strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 2;
+    strip.classList.toggle('at-end', atEnd);
+  };
+  strip.addEventListener('scroll', syncStripEnd, { passive: true });
+  requestAnimationFrame(syncStripEnd);
   controls.appendChild(arrows);
   head.appendChild(controls);
 
@@ -2739,6 +2762,404 @@ function buildMovieHomeRow(key, title, description, rows) {
 
   section.append(head, strip);
   return section;
+}
+
+// ===========================================================================
+// MOVIE PAGE FURNITURE (demo parity).
+//
+// Everything in this block is scoped to `body.movies-section`, drawn into its
+// own elements, and reaches nothing the player owns. No playback path, player
+// size, control or engine setting is touched anywhere below.
+// ===========================================================================
+
+/**
+ * A page-level toast for the movie section.
+ *
+ * `showToast` writes into `#osdToast`, which lives INSIDE `.video-container`.
+ * On Movie Home that column is hidden, so every confirmation the section
+ * raised - bookmarked, genre changed, server picked - was posted into a
+ * hidden element and the viewer saw nothing happen. This is the demo's
+ * `.app-toast`: a real element on the page, outside the player.
+ */
+let moviePageToastEl = null;
+
+function moviePageToast() {
+  if (moviePageToastEl?.isConnected) return moviePageToastEl;
+  const toast = document.createElement('div');
+  toast.className = 'movie-page-toast';
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'polite');
+  toast.innerHTML = '<i class="fas fa-circle-check" aria-hidden="true"></i><span></span>';
+  document.body.appendChild(toast);
+  moviePageToastEl = toast;
+  return toast;
+}
+
+function showMoviePageToast(message, icon = 'fa-circle-check') {
+  const text = String(message || '').trim();
+  if (!text) return;
+  const toast = moviePageToast();
+  qs('i', toast).className = `fas ${icon}`;
+  qs('span', toast).textContent = text;
+  toast.classList.add('show');
+  clearTimeout(toast._hideTimer);
+  toast._hideTimer = setTimeout(() => toast.classList.remove('show'), 2400);
+}
+
+/**
+ * The demo's phone tab bar: Home / Search / Categories / Watchlist.
+ *
+ * Built once and shown only while the movies section is open, because the
+ * bar at the foot of every other section belongs to those sections. The main
+ * Live Sports / Live TV / Movies nav stays exactly where it is - dropping it
+ * the way the movies-only demo does would leave a phone with no route back
+ * to Live TV at all.
+ */
+// Five, not the demo's four. On a phone this site already puts a bar at the
+// foot of the page - the app header, moved down there by the reference
+// design - and two stacked bars is a worse answer than either. So inside the
+// movies section this one takes that slot, and it has to carry what the bar
+// it replaces carried: the notice control comes with it. Nothing is lost by
+// the swap, and leaving Movies brings the original bar straight back.
+const MOVIE_TAB_BAR_ITEMS = Object.freeze([
+  Object.freeze(['home', 'fa-house', 'হোম']),
+  Object.freeze(['search', 'fa-magnifying-glass', 'অনুসন্ধান']),
+  Object.freeze(['categories', 'fa-layer-group', 'ক্যাটাগরি']),
+  Object.freeze(['watchlist', 'fa-bookmark', 'ওয়াচলিস্ট']),
+  Object.freeze(['notice', 'fa-bell', 'নোটিশ'])
+]);
+
+let movieTabBarEl = null;
+
+function buildMovieTabBar() {
+  if (movieTabBarEl?.isConnected) return movieTabBarEl;
+  const bar = document.createElement('nav');
+  bar.className = 'movie-tab-bar';
+  bar.setAttribute('aria-label', 'Movie navigation');
+  MOVIE_TAB_BAR_ITEMS.forEach(([key, icon, label]) => {
+    const tab = document.createElement('button');
+    tab.type = 'button';
+    tab.className = 'movie-tab tv-focusable';
+    tab.dataset.movieTab = key;
+    tab.innerHTML = `<i class="fas ${icon}" aria-hidden="true"></i>` +
+      (key === 'watchlist' ? '<span class="movie-tab-count" hidden>0</span>' : '') +
+      `<span class="movie-tab-label">${label}</span>`;
+    tab.addEventListener('click', () => handleMovieTab(key));
+    bar.appendChild(tab);
+  });
+  document.body.appendChild(bar);
+  movieTabBarEl = bar;
+  return bar;
+}
+
+function handleMovieTab(key) {
+  if (key === 'home') {
+    void selectMovieNavItem('home');
+    return;
+  }
+  if (key === 'watchlist') {
+    void selectMovieNavItem('watchlist');
+    return;
+  }
+  if (key === 'search') {
+    // The section's existing phone search box and its existing handler. No
+    // second search path is introduced here.
+    const box = $('mobileSearchBox');
+    if (box) {
+      box.style.display = 'flex';
+      mobileSearchInput?.focus();
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
+  if (key === 'categories') {
+    mobileSubNavigation?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (key === 'notice') {
+    // The same control the replaced bar carried, calling the same element.
+    $('mobileBottomNoticeBtn')?.click();
+  }
+}
+
+/** Keeps the bar's active tab and watchlist count in step with the page. */
+function syncMovieTabBar() {
+  if (state.activeMainGroup !== 'movies') return;
+  const bar = buildMovieTabBar();
+  const current = String(state.activeFinalSub || '').replace(/^movie:/, '');
+  const active = current === 'watchlist' ? 'watchlist' : (current === 'home' ? 'home' : 'categories');
+  qsa('.movie-tab', bar).forEach((tab) => {
+    tab.classList.toggle('active', tab.dataset.movieTab === active);
+  });
+  const count = favoriteIds().length;
+  const badge = qs('.movie-tab-count', bar);
+  if (badge) {
+    badge.textContent = String(count > 99 ? '99+' : count);
+    badge.hidden = count === 0;
+  }
+}
+
+/**
+ * Phone genre control: one dropdown instead of a chip strip.
+ *
+ * The chip strip stays as it is from 681px up. Below that it was a row that
+ * ran off the right edge beside the Back button, so the demo replaces it
+ * with a single "Genre: All" menu. Same state, same `selectMovieGenre` call -
+ * only the control changes.
+ */
+let movieGenreMenuEl = null;
+
+function buildMovieGenreDropdown() {
+  if (movieGenreMenuEl?.isConnected) return movieGenreMenuEl;
+  if (!movieGridHeader) return null;
+  const wrap = document.createElement('div');
+  wrap.className = 'movie-genre-drop';
+  wrap.innerHTML =
+    '<button type="button" class="movie-genre-drop-btn tv-focusable" aria-haspopup="menu" aria-expanded="false">' +
+      '<i class="fas fa-tags" aria-hidden="true"></i>' +
+      '<span class="movie-genre-drop-prefix">Genre:</span>' +
+      '<span class="movie-genre-drop-value">All</span>' +
+      '<i class="fas fa-chevron-down movie-genre-drop-caret" aria-hidden="true"></i>' +
+    '</button>' +
+    '<div class="movie-genre-drop-menu" role="menu"></div>';
+
+  const button = qs('.movie-genre-drop-btn', wrap);
+  const menu = qs('.movie-genre-drop-menu', wrap);
+  [MOVIE_GENRE_ALL, ...MOVIE_GENRES].forEach((genre) => {
+    const option = document.createElement('button');
+    option.type = 'button';
+    option.className = 'movie-genre-drop-item tv-focusable';
+    option.setAttribute('role', 'menuitemradio');
+    option.dataset.genre = genre;
+    option.innerHTML = `<span>${escapeHtml(genre === MOVIE_GENRE_ALL ? 'All Genres' : genre)}</span>` +
+      '<i class="fas fa-check" aria-hidden="true"></i>';
+    option.addEventListener('click', () => {
+      wrap.classList.remove('open');
+      button.setAttribute('aria-expanded', 'false');
+      selectMovieGenre(genre);
+    });
+    menu.appendChild(option);
+  });
+
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    const open = !wrap.classList.contains('open');
+    wrap.classList.toggle('open', open);
+    button.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.movie-genre-drop')) {
+      wrap.classList.remove('open');
+      button.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  // Before "Back to Home", so the row reads [genre] ......... [back] the way
+  // the demo's phone toolbar does.
+  movieGridHeader.insertBefore(wrap, movieGridBackBtn || null);
+  movieGenreMenuEl = wrap;
+  return wrap;
+}
+
+function syncMovieGenreDropdown() {
+  const wrap = buildMovieGenreDropdown();
+  if (!wrap) return;
+  const current = state.currentGenre || MOVIE_GENRE_ALL;
+  const label = current === MOVIE_GENRE_ALL ? 'All' : current;
+  qs('.movie-genre-drop-value', wrap).textContent = label;
+  wrap.classList.toggle('has-genre', current !== MOVIE_GENRE_ALL);
+  qsa('.movie-genre-drop-item', wrap).forEach((option) => {
+    const on = option.dataset.genre === current;
+    option.classList.toggle('active', on);
+    option.setAttribute('aria-checked', on ? 'true' : 'false');
+  });
+}
+
+/**
+ * "আরও দেখুন" at the foot of a movie grid.
+ *
+ * Scroll loading stays exactly as it is; this is the demo's explicit control
+ * on top of it, and it is the only thing on the page that says how much of a
+ * 937-title category is still unseen. It calls the same two loaders the
+ * scroll handler does - no separate fetch path.
+ */
+function movieGridRemaining() {
+  const rendered = state.renderedCount || 0;
+  const filtered = state.filteredItems?.length || 0;
+  const inList = Math.max(0, filtered - rendered);
+  if (inList > 0) return inList;
+  const pages = state.movieIndex?.pages;
+  if (!pages || state.moviePageCursor >= pages.length) return 0;
+  // Pages carry their own count where the index publishes one; otherwise the
+  // button says there is more without inventing a number.
+  return pages.slice(state.moviePageCursor)
+    .reduce((total, page) => total + (Number(page?.count) || 0), 0);
+}
+
+function renderMovieLoadMore() {
+  const existing = qs('.movie-load-more', sidebarList);
+  if (state.view !== VIEW.MOVIE || !sidebarList.classList.contains('movie-grid')) {
+    existing?.remove();
+    return;
+  }
+  const remaining = movieGridRemaining();
+  if (!remaining) {
+    existing?.remove();
+    return;
+  }
+
+  const label = remaining > 0
+    ? `আরও দেখুন (${remaining} বাকি)`
+    : 'আরও দেখুন';
+  if (existing) {
+    qs('span', existing).textContent = label;
+    sidebarList.appendChild(existing);
+    return;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'movie-load-more';
+  wrap.innerHTML = `<button type="button" class="movie-load-more-btn tv-focusable"><i class="fas fa-plus" aria-hidden="true"></i><span>${escapeHtml(label)}</span></button>`;
+  const button = qs('button', wrap);
+  button.addEventListener('click', async () => {
+    if (button.disabled) return;
+    button.disabled = true;
+    button.classList.add('loading');
+    try {
+      if (state.renderedCount < state.filteredItems.length) {
+        appendNextChunk();
+      } else {
+        await loadNextMoviePage();
+      }
+    } finally {
+      button.disabled = false;
+      button.classList.remove('loading');
+      renderMovieLoadMore();
+    }
+  });
+  sidebarList.appendChild(wrap);
+}
+
+/**
+ * The demo's predictive search drop-down.
+ *
+ * It reads the same local `search-index.json` the section already loads and
+ * the same matcher the full search uses, so a result here and a result in the
+ * grid can never disagree. Picking one opens its Detail - it starts nothing.
+ */
+let movieSearchDropEl = null;
+let movieSearchDropAnchor = null;
+
+function movieSearchDrop(anchor) {
+  if (movieSearchDropEl?.isConnected && movieSearchDropAnchor === anchor) return movieSearchDropEl;
+  movieSearchDropEl?.remove();
+  const drop = document.createElement('div');
+  drop.className = 'movie-search-drop';
+  drop.hidden = true;
+  drop.innerHTML = '<div class="movie-search-drop-list"></div><button type="button" class="movie-search-drop-all tv-focusable" hidden></button>';
+  const host = anchor?.parentElement;
+  if (!host) return null;
+  if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+  host.appendChild(drop);
+  movieSearchDropEl = drop;
+  movieSearchDropAnchor = anchor;
+  return drop;
+}
+
+function hideMovieSearchDrop() {
+  if (movieSearchDropEl) movieSearchDropEl.hidden = true;
+}
+
+async function renderMovieSearchDrop(query, anchor) {
+  if (state.activeMainGroup !== 'movies') return;
+  const drop = movieSearchDrop(anchor);
+  if (!drop) return;
+  const text = String(query || '').trim();
+  if (text.length < 2) {
+    drop.hidden = true;
+    return;
+  }
+
+  const rows = await loadMovieBrowseIndex().catch(() => []);
+  if (!Array.isArray(rows) || !rows.length) {
+    drop.hidden = true;
+    return;
+  }
+
+  const terms = movieSearchTerms(text);
+  const matches = [];
+  for (const row of rows) {
+    if (!movieMatchesQuery(row, terms)) continue;
+    matches.push(row);
+    if (matches.length >= 200) break;
+  }
+
+  const list = qs('.movie-search-drop-list', drop);
+  const all = qs('.movie-search-drop-all', drop);
+  list.replaceChildren();
+
+  if (!matches.length) {
+    const empty = document.createElement('p');
+    empty.className = 'movie-search-drop-empty';
+    empty.textContent = `"${text}" - কোনো ফলাফল পাওয়া যায়নি`;
+    list.appendChild(empty);
+    all.hidden = true;
+    drop.hidden = false;
+    return;
+  }
+
+  matches.slice(0, 6).forEach((row) => {
+    const hit = document.createElement('button');
+    hit.type = 'button';
+    hit.className = 'movie-search-hit tv-focusable';
+    const poster = String(row.poster || row.logo || '').trim();
+    const year = row.year ? String(row.year) : '';
+    const category = String(row.category || '').trim();
+    const sub = [year, category].filter(Boolean).join(' · ');
+    const kind = String(row.content_kind || '').toLowerCase() === 'series' ? 'Series' : 'Movie';
+    hit.innerHTML =
+      (poster
+        ? `<img class="movie-search-hit-art" src="${escapeHtml(poster)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+        : '<span class="movie-search-hit-art placeholder"><i class="fas fa-film" aria-hidden="true"></i></span>') +
+      '<span class="movie-search-hit-copy">' +
+        `<strong>${escapeHtml(String(row.name || 'Untitled'))}</strong>` +
+        `<small>${escapeHtml(sub)}</small>` +
+      '</span>' +
+      `<span class="movie-search-hit-kind${kind === 'Series' ? ' is-series' : ''}">${kind}</span>`;
+    qs('img', hit)?.addEventListener('error', (event) => {
+      const box = document.createElement('span');
+      box.className = 'movie-search-hit-art placeholder';
+      box.innerHTML = '<i class="fas fa-film" aria-hidden="true"></i>';
+      event.target.replaceWith(box);
+    });
+    hit.addEventListener('click', async () => {
+      drop.hidden = true;
+      const resolved = await findMovieSummaryById(row.id).catch(() => null);
+      await openMovieDetail(resolved || row);
+    });
+    list.appendChild(hit);
+  });
+
+  all.hidden = false;
+  all.textContent = `সব ফলাফল দেখুন (${matches.length}${matches.length >= 200 ? '+' : ''} টি)`;
+  all.onclick = () => {
+    drop.hidden = true;
+    void runMovieSearch();
+  };
+  drop.hidden = false;
+}
+
+/** The demo's pinned profile card, which is what finishes the rail. */
+function buildMovieRailUserCard() {
+  const card = document.createElement('div');
+  card.className = 'movie-rail-user';
+  card.innerHTML =
+    '<span class="movie-rail-user-avatar" aria-hidden="true">C</span>' +
+    '<span class="movie-rail-user-copy">' +
+      '<strong>Click TV User</strong>' +
+      '<small class="movie-rail-user-plan">Premium Plan</small>' +
+    '</span>';
+  return card;
 }
 
 /** The four discovery shortcuts above the rows. */
@@ -4691,12 +5112,21 @@ function renderContinueWatchingRow() {
     card.className = `movie-continue-card${playable ? '' : ' unavailable'}`;
     card.dataset.continueKey = entry.key;
     const remaining = continueWatchingRemaining(entry);
+    // Demo `.continue-watching-card`: the progress bar sits ON the poster, and
+    // how much is left is a pill in its corner rather than a line of copy
+    // under the title. The poster box is what carries them, so the bar can
+    // never be mistaken for a divider between two cards.
     card.innerHTML =
-      (entry.logo ? `<img class="movie-continue-poster" src="${escapeHtml(entry.logo)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : '<div class="movie-continue-poster placeholder"></div>') +
+      '<div class="movie-continue-art">' +
+        (entry.logo
+          ? `<img class="movie-continue-poster" src="${escapeHtml(entry.logo)}" alt="" loading="lazy" referrerpolicy="no-referrer">`
+          : '<div class="movie-continue-poster placeholder"></div>') +
+        (remaining ? `<span class="movie-continue-left"><i class="fas fa-clock" aria-hidden="true"></i>${escapeHtml(remaining)}</span>` : '') +
+        (playable ? '<span class="movie-continue-play" aria-hidden="true"><i class="fas fa-play"></i></span>' : '') +
+        `<span class="movie-continue-track"><i style="width:${entry.progress_percent.toFixed(1)}%"></i></span>` +
+      '</div>' +
       '<div class="movie-continue-copy">' +
         `<strong>${escapeHtml(continueWatchingLabel(entry))}</strong>` +
-        (remaining ? `<small>${escapeHtml(remaining)}</small>` : '') +
-        `<span class="movie-continue-track"><i style="width:${entry.progress_percent.toFixed(1)}%"></i></span>` +
       '</div>' +
       (playable
         ? '<button type="button" class="movie-continue-resume tv-focusable">Resume</button>'
@@ -5245,6 +5675,16 @@ function toggleFavoriteItem(item) {
 
   updateFavoriteUi();
   showToast(isFavorite ? 'Bookmark সরানো হয়েছে' : 'Bookmark যোগ করা হয়েছে');
+  // `showToast` writes into the player's own OSD, which is off screen while
+  // the movie portal is open - so the section raises its own as well, and
+  // keeps the phone tab bar's watchlist count honest.
+  if (document.body.classList.contains('movies-section')) {
+    showMoviePageToast(
+      isFavorite ? 'Watchlist থেকে সরানো হয়েছে' : 'Watchlist-এ যোগ হয়েছে',
+      isFavorite ? 'fa-circle-minus' : 'fa-circle-check'
+    );
+    syncMovieTabBar();
+  }
   if (state.view === VIEW.FAVORITE) {
     state.currentItems = getFavoriteItems();
     renderCurrentList(true);
@@ -5790,6 +6230,9 @@ function appendNextChunk(limit = null) {
   updateFavoriteUi();
   updateReminderUi();
   updateActiveCards();
+  // Always last in the grid, and re-appended rather than rebuilt so the
+  // button keeps its place after a chunk lands above it.
+  if (state.view === VIEW.MOVIE) renderMovieLoadMore();
 }
 
 function createImageHtml(item, className) {
@@ -7736,8 +8179,16 @@ function createMovieCard(item, visualIndex, options = {}) {
 
   const year = item.year || item.name.match(/\((\d{4})\)/)?.[1] || 'Movie';
   const rating = movieRatingBadgeHtml(item);
-  const newBadge = movieIsNew(item)
-    ? '<span class="movie-new-badge">NEW</span>'
+  // The demo card carries no NEW flag, and ours could not honestly carry one
+  // either: `is_new` records when the scanner first saw the file, not when the
+  // title was released, so it landed on 2013 films and appeared on 44% of a
+  // category at once. A badge that is on almost everything says nothing.
+  const newBadge = '';
+  // The demo's slanted corner ribbon, so a series reads as a series from the
+  // card face. Series records normally render through createSeriesCard; this
+  // covers the ones that reach a movie row through a category page.
+  const typeRibbon = seriesModule?.isSeriesItem?.(item)
+    ? '<span class="badge-movie-type badge-series-type"><span class="dot"></span>Series</span>'
     : '';
   // Demo `.media-card`: a square poster box, then a meta block BENEATH it -
   // title, "Category - Year", gold rule. Ours printed the title and year in
@@ -7760,8 +8211,8 @@ function createMovieCard(item, visualIndex, options = {}) {
     <div class="poster-box movie-card-poster-box">
       ${createImageHtml(item, 'movie-poster')}
       <div class="movie-hover-play"><i class="fas fa-play"></i></div>
-      <button type="button" class="movie-card-info tv-focusable" aria-label="Details"><i class="fas fa-circle-info" aria-hidden="true"></i></button>
       <button type="button" class="card-quick-bookmark movie-card-bookmark tv-focusable" data-favorite-id="${escapeHtml(String(item.id || item.url || ''))}" aria-label="Add to Watchlist" title="Add to Watchlist"><i class="far fa-star" aria-hidden="true"></i></button>
+      ${typeRibbon}
       ${rankBadge}
       ${newBadge}
       ${rating}
@@ -8041,10 +8492,21 @@ function closeDesktopSearchIfEmpty() {
 searchInput.addEventListener('input', (event) => {
   setSearchQuery(event.target.value, searchInput);
   handleSearch();
+  void renderMovieSearchDrop(event.target.value, searchInput);
 });
 mobileSearchInput.addEventListener('input', (event) => {
   setSearchQuery(event.target.value, mobileSearchInput);
   handleSearch();
+  void renderMovieSearchDrop(event.target.value, mobileSearchInput);
+});
+// The suggestion list closes the way every other transient panel here does:
+// a click outside it, or Escape.
+document.addEventListener('pointerdown', (event) => {
+  if (event.target.closest('.movie-search-drop, #searchInput, #mobileSearchInput')) return;
+  hideMovieSearchDrop();
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') hideMovieSearchDrop();
 });
 $('searchBtnSubmit').addEventListener('pointerdown', (event) => {
   if (desktopSearchWrap?.classList.contains('search-open')) return;

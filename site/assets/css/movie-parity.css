@@ -1,0 +1,841 @@
+/* ==========================================================================
+   MOVIE PARITY — the demo's remaining movie-page design, applied to the site.
+
+   Every selector in this file is reached only through `body.movies-section`,
+   `.movie-*`, or an element this sheet's own JS creates. Live Sports, Live TV
+   and the series module carry none of those, so nothing here can reach them.
+
+   The player is deliberately untouched: no rule below names `.video-container`,
+   `#videoPlayer`, `.player-controls`, `.video-container-wrap` or `.sticky-notice`,
+   and none changes the player's size, position or controls.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. CARD — one height for every card in a row.
+
+   The card grew and shrank with its title, so the gold rule sat at a
+   different height on each one and a row read as a ragged edge. Reserving
+   two lines for the title settles every card in the row on the same
+   baseline whether the title needs one line or two.
+   -------------------------------------------------------------------------- */
+.sidebar-list.movie-grid .movie-card-title,
+.movie-row-strip .movie-card-title {
+  min-height: calc(2 * 1.28em);
+}
+.movie-card .card-meta {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+.movie-card .related-gold-line {
+  margin-top: auto !important;
+}
+
+/* The demo's slanted corner ribbon, on movie cards and on the series
+   catalogue card, which was already drawing a flat rectangular badge. */
+.movie-card .badge-movie-type,
+.series-catalog-poster .series-type-badge {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  z-index: 3 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  height: 22px !important;
+  padding: 0 4px 0 8px !important;
+  border: 0 !important;
+  border-radius: 6px 0 0 0 !important;
+  background: #8b5cf6 !important;
+  color: #fff !important;
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.2px !important;
+  line-height: 1 !important;
+}
+.movie-card .badge-movie-type::after,
+.series-catalog-poster .series-type-badge::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 0;
+  height: 0;
+  border-top: 22px solid #8b5cf6;
+  border-right: 10px solid transparent;
+  pointer-events: none;
+}
+.movie-card .badge-movie-type .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+/* The bookmark star now sits alone on the poster, so it takes the corner the
+   removed info button used to share with it. */
+.movie-card .movie-card-bookmark {
+  right: 7px !important;
+  left: auto !important;
+}
+.movie-card .movie-rank-badge {
+  left: auto !important;
+  right: 6px !important;
+}
+.movie-card:has(.movie-rank-badge) .movie-card-bookmark {
+  right: 38px !important;
+}
+
+/* --------------------------------------------------------------------------
+   2. ROWS — a fade at the scrolling edge.
+
+   The last card in a row was cut in half by the panel edge, which reads as a
+   layout fault rather than as "there is more this way".
+   -------------------------------------------------------------------------- */
+.movie-row {
+  position: relative;
+}
+.movie-row .movie-row-strip {
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 46px), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 46px), transparent 100%);
+}
+.movie-row .movie-row-strip.at-end {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* Demo `.cards-row` gap and `.media-grid` gap. Written at the same weight as
+   the rules they settle, and this sheet is last, so the tie falls here. */
+.movie-row-strip {
+  gap: 12px !important;
+}
+body.movie-portal .sidebar-list.movie-grid {
+  gap: 18px 12px !important;
+}
+
+/* Tablet: four tracks of one card, not two half-width ones.
+   `reference-design.css` puts every grid in the panel on two columns below
+   990px, which is right on a phone and wrong on a tablet - at 768px it drew
+   361px cards, more than twice the width the card is designed at. The card
+   width itself decides the track count here, which is what the demo does. */
+@media (min-width: 681px) and (max-width: 990px) {
+  body.movie-portal .sidebar-section.movie-mode .sidebar-list.movie-grid {
+    grid-template-columns: repeat(auto-fill, minmax(var(--card-base-width), 1fr)) !important;
+  }
+}
+
+@media (max-width: 680px) {
+  body.movie-portal .sidebar-list.movie-grid {
+    gap: 14px 10px !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   3. HERO — the tablet band.
+
+   Desktop and phone already carry the demo's floor (390px / 272px) and run
+   taller than it only because their content is taller - the meta row wraps
+   where the demo's does not. A fixed height there would clip a real line of
+   metadata, so the floor is left to do its job.
+
+   The tablet band is a different case: between 681px and 1000px the portal
+   drops the hero's floor to 210px, and at 768px it came out at 262px against
+   the demo's 330 - a banner too short to hold the artwork it is showing.
+   -------------------------------------------------------------------------- */
+@media (min-width: 681px) and (max-width: 1000px) {
+  body.movie-portal .movie-hero { min-height: 330px !important; }
+  body.movie-portal .movie-hero-inner { min-height: 300px !important; }
+}
+
+/* --------------------------------------------------------------------------
+   4. RAIL — the pinned profile card that finishes it.
+   -------------------------------------------------------------------------- */
+.movie-rail-user {
+  /* Pinned to the foot of the rail rather than parked after the genre pills:
+     the rail's contents are taller than the rail, so appended it would only
+     be reachable by scrolling to the very end. */
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  /* Opaque, not translucent: it sits over the genre pills as the rail
+     scrolls, and a see-through card there reads as two overlapping rows. */
+  background: #0c131c;
+  box-shadow: 0 -10px 18px -6px #0c131c;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+.movie-rail-user:hover {
+  background: #101926;
+  border-color: rgba(255, 49, 84, 0.35);
+}
+.movie-rail-user-avatar {
+  display: grid;
+  place-items: center;
+  flex: 0 0 34px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff2a4a 0%, #8f7bff 60%, #4a9eee 100%);
+  box-shadow: 0 0 12px rgba(255, 49, 84, 0.35);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+}
+.movie-rail-user-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.movie-rail-user-copy strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #f7f9fc;
+  font-size: 12.5px;
+  font-weight: 750;
+}
+.movie-rail-user-plan {
+  background: linear-gradient(135deg, #ff2a4a 0%, #ffb703 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: 10.5px;
+  font-weight: 750;
+  letter-spacing: 0.3px;
+}
+
+/* --------------------------------------------------------------------------
+   5. PAGE TOAST — outside the player, so the movie page can be heard.
+
+   `#osdToast` lives inside `.video-container`. With the movie portal open
+   that column is off screen, so every confirmation the section raised was
+   posted into a hidden element.
+   -------------------------------------------------------------------------- */
+.movie-page-toast {
+  position: fixed;
+  right: 20px;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(90vw, 380px);
+  padding: 12px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(15, 24, 38, 0.96);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(60px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.movie-page-toast i { color: #19c987; }
+.movie-page-toast.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+@media (max-width: 768px) {
+  .movie-page-toast {
+    left: 50%;
+    right: auto;
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+    transform: translateX(-50%) translateY(60px) scale(0.95);
+  }
+  .movie-page-toast.show {
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. PHONE TAB BAR — the demo's floating movie navigation.
+
+   Hidden unless the movies section is open, so the bar every other section
+   already shows at the foot of the page is left alone. The main
+   Live Sports / Live TV / Movies nav is NOT hidden the way the movies-only
+   demo hides it: on this site that is the only route back to Live TV.
+   -------------------------------------------------------------------------- */
+.movie-tab-bar { display: none; }
+
+@media (max-width: 768px) {
+  /* The slot is already taken. `reference-design.css` moves the app header to
+     the foot of the page on a phone, where it shows the brand, a search icon
+     and the notice bell at z-index 1500 - so a second bar under it was simply
+     invisible, and two stacked bars would be worse than either. Inside the
+     movies section this bar takes that slot and carries all three of those
+     controls; leaving the section restores the original bar untouched. */
+  body.movies-section .app-header {
+    display: none !important;
+  }
+
+  body.movies-section .movie-tab-bar {
+    position: fixed;
+    left: 14px;
+    right: 14px;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    z-index: 1600;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 64px;
+    padding: 0 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 32px;
+    background: rgba(8, 14, 22, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7), 0 0 18px rgba(255, 42, 84, 0.12);
+  }
+  /* Playback owns the screen; the browse bar steps aside for it. */
+  body.movies-section.playback-active .movie-tab-bar,
+  html.custom-player-fullscreen body.movies-section .movie-tab-bar {
+    display: none;
+  }
+
+  .movie-tab {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: 50px;
+    padding: 5px 0;
+    border: 0;
+    border-radius: 20px;
+    background: transparent;
+    color: #8899ac;
+    font-family: inherit;
+    font-size: 10.5px;
+    font-weight: 700;
+    /* Bengali labels carry matras above and descenders below, so the line
+       box needs the room or the bar clips them. */
+    line-height: 1.55;
+    cursor: pointer;
+  }
+  .movie-tab i {
+    font-size: 16px;
+    line-height: 1;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+  .movie-tab.active { color: #fff; }
+  .movie-tab.active i {
+    color: #ff2a4a;
+    transform: scale(1.16);
+    filter: drop-shadow(0 0 8px rgba(255, 42, 84, 0.6));
+  }
+  .movie-tab-label {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .movie-tab-count {
+    position: absolute;
+    top: 2px;
+    right: 18%;
+    min-width: 15px;
+    padding: 1px 5px;
+    border-radius: 999px;
+    background: #ff2a4a;
+    box-shadow: 0 0 6px rgba(255, 42, 84, 0.5);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    text-align: center;
+  }
+
+  /* The bar floats over the page, so the last row of cards gets room to
+     clear it instead of ending underneath it. */
+  body.movies-section .sidebar-scroll-area {
+    padding-bottom: 94px;
+  }
+
+  /* "Back to Home" was down to a bare arrow below 640px - an icon with no
+     label, in a section where the arrow could as easily mean the previous
+     card. The words come back; the row has space for them now that the
+     genre chips are a single dropdown. */
+  body.movies-section .movie-grid-back span {
+    display: inline !important;
+  }
+  body.movies-section .movie-grid-back {
+    padding: 0 12px !important;
+    font-size: 11.5px !important;
+    white-space: nowrap;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   7. PHONE GENRE CONTROL — one dropdown instead of a chip strip.
+
+   From 681px up the chip bar is untouched.
+   -------------------------------------------------------------------------- */
+.movie-genre-drop { display: none; }
+
+@media (max-width: 680px) {
+  .movie-grid-header .movie-grid-filter-shell { display: none !important; }
+
+  .movie-genre-drop {
+    position: relative;
+    display: inline-flex;
+    flex: 0 0 auto;
+    margin-left: auto;
+  }
+  .movie-genre-drop-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 32px;
+    padding: 0 11px;
+    border: 1px solid #20354e;
+    border-radius: 8px;
+    background: #0b1320;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+    color: #fff;
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 750;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .movie-genre-drop-btn > .fa-tags { color: #38bdf8; font-size: 10.5px; }
+  .movie-genre-drop-prefix { color: #91a4ba; font-weight: 700; }
+  .movie-genre-drop-value {
+    max-width: 78px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 800;
+  }
+  .movie-genre-drop-caret {
+    margin-left: 1px;
+    color: #8195aa;
+    font-size: 8.5px;
+    transition: transform 0.16s ease;
+  }
+  .movie-genre-drop.open .movie-genre-drop-btn {
+    border-color: #38bdf8;
+    background: #101d2c;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.17);
+  }
+  .movie-genre-drop.has-genre .movie-genre-drop-btn {
+    border-color: rgba(255, 42, 74, 0.7);
+    background: rgba(255, 42, 74, 0.1);
+  }
+  .movie-genre-drop.open .movie-genre-drop-caret { transform: rotate(180deg); }
+
+  .movie-genre-drop-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 121;
+    display: none;
+    width: min(200px, calc(100vw - 24px));
+    max-height: min(330px, 60vh);
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 11px;
+    background: #0b131f;
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.58);
+  }
+  .movie-genre-drop.open .movie-genre-drop-menu {
+    display: grid;
+    gap: 2px;
+  }
+  .movie-genre-drop-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #c7d3e1;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+  }
+  .movie-genre-drop-item i { color: transparent; font-size: 9px; }
+  .movie-genre-drop-item.active {
+    background: rgba(255, 42, 74, 0.11);
+    color: #fff;
+  }
+  .movie-genre-drop-item.active i { color: #ff4b66; }
+
+  .movie-grid-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+  }
+  .movie-grid-header .movie-grid-back { order: -1; margin-right: auto; }
+  /* Movie Home keeps the genre control but has nothing to go back from, so
+     the control leads the row instead of hanging off the right edge with an
+     empty half-row beside it. */
+  .movie-grid-header:not(:has(.movie-grid-back:not([hidden]))) .movie-genre-drop {
+    margin-left: 0;
+  }
+}
+
+/* Five tabs, Bengali labels: the label is what gives first at the narrowest
+   widths, never the icon or the touch target. */
+@media (max-width: 400px) {
+  .movie-tab { font-size: 9.5px; }
+  .movie-tab i { font-size: 15px; }
+}
+@media (max-width: 340px) {
+  .movie-tab-label { display: none; }
+  .movie-tab i { font-size: 17px; }
+}
+
+/* The rail's BROWSE BY GENRE and the toolbar's FILTER BY GENRE are the same
+   eight chips on one desktop screen, which was worth questioning - but the
+   approved demo carries both deliberately, and taking the toolbar's away
+   leaves a bordered strip holding nothing but a Back button. The demo wins:
+   both stay. */
+
+/* --------------------------------------------------------------------------
+   8. LOAD MORE — the demo's explicit control at the foot of a grid.
+   -------------------------------------------------------------------------- */
+.movie-load-more {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 22px 0 8px;
+}
+.movie-load-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 22px;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 12px;
+  background: #151f33;
+  color: #f7f9fc;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.movie-load-more-btn:hover {
+  border-color: #ff2a4a;
+  background: #18243a;
+}
+.movie-load-more-btn.loading {
+  opacity: 0.6;
+  cursor: progress;
+}
+.movie-load-more-btn.loading i {
+  animation: movieLoadSpin 0.8s linear infinite;
+}
+@keyframes movieLoadSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------------------------
+   9. EMPTY STATE — the demo's cinematic treatment.
+
+   The recovery buttons were already there; what was missing was the weight
+   that tells a viewer this is an answer, not a blank page.
+   -------------------------------------------------------------------------- */
+body.movies-section .movie-prompt-msg {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 18px 0;
+  padding: 48px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  background: radial-gradient(circle at center, rgba(30, 41, 59, 0.4) 0%, rgba(10, 15, 23, 0.8) 100%);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+body.movies-section .movie-prompt-msg i {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(255, 42, 84, 0.3);
+  border-radius: 50%;
+  background: rgba(255, 42, 84, 0.1);
+  box-shadow: 0 0 24px rgba(255, 42, 84, 0.25);
+  color: #ff2a4a;
+  font-size: 28px;
+  animation: movieEmptyPulse 2.5s infinite ease-in-out;
+}
+body.movies-section .movie-prompt-msg > span {
+  max-width: 44ch;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+body.movies-section .movie-prompt-msg .movie-clear-genre {
+  margin-top: 18px;
+}
+@keyframes movieEmptyPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 42, 84, 0.2); }
+  50% { transform: scale(1.06); box-shadow: 0 0 32px rgba(255, 42, 84, 0.4); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.movies-section .movie-prompt-msg i { animation: none; }
+}
+
+/* --------------------------------------------------------------------------
+   10. CONTINUE WATCHING — the demo's poster card.
+
+   The progress bar and the time left move onto the artwork, where the demo
+   puts them, so the row reads as artwork rather than as a settings list.
+   -------------------------------------------------------------------------- */
+.movie-continue-card {
+  grid-template-columns: 62px minmax(0, 1fr) auto auto !important;
+}
+.movie-continue-art {
+  position: relative;
+  width: 62px;
+  height: 84px;
+  border-radius: 7px;
+  overflow: hidden;
+  background: #070c14;
+}
+.movie-continue-art .movie-continue-poster {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+.movie-continue-left {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 999px;
+  background: rgba(10, 16, 26, 0.92);
+  color: #fff;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.movie-continue-left i { color: #38bdf8; font-size: 8px; }
+.movie-continue-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 42, 84, 0.92);
+  box-shadow: 0 0 16px rgba(255, 42, 84, 0.6);
+  color: #fff;
+  font-size: 11px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.movie-continue-art .movie-continue-track {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 3;
+  height: 4px;
+  margin: 0;
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+.movie-continue-art .movie-continue-track i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #ff2a54 0%, #38bdf8 100%);
+  box-shadow: 0 0 8px rgba(255, 42, 84, 0.8);
+}
+@media (max-width: 680px) {
+  .movie-continue-card {
+    grid-template-columns: 52px minmax(0, 1fr) auto auto !important;
+  }
+  .movie-continue-art { width: 52px; height: 72px; }
+}
+
+/* --------------------------------------------------------------------------
+   11. LIVE SEARCH — the demo's predictive drop-down.
+   -------------------------------------------------------------------------- */
+.movie-search-drop {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 2000;
+  width: min(380px, calc(100vw - 24px));
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 16px;
+  background: rgba(9, 14, 22, 0.98);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.9);
+}
+.movie-search-drop[hidden] { display: none !important; }
+.movie-search-drop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-height: min(60vh, 380px);
+  overflow-y: auto;
+  padding: 6px;
+}
+.movie-search-hit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+.movie-search-hit:hover,
+.movie-search-hit:focus-visible {
+  border-color: rgba(255, 49, 84, 0.35);
+  background: rgba(255, 255, 255, 0.05);
+}
+.movie-search-hit-art {
+  flex: 0 0 38px;
+  width: 38px;
+  height: 50px;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #080c14;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+.movie-search-hit-art.placeholder {
+  display: grid;
+  place-items: center;
+  color: #ff2a4a;
+  font-size: 13px;
+}
+.movie-search-hit-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.movie-search-hit-copy strong {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+}
+.movie-search-hit-copy small {
+  color: #94a3b8;
+  font-size: 11px;
+}
+.movie-search-hit-kind {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 49, 84, 0.35);
+  border-radius: 4px;
+  background: rgba(255, 49, 84, 0.16);
+  color: #ff6b82;
+  font-size: 9px;
+  font-weight: 800;
+}
+.movie-search-hit-kind.is-series {
+  border-color: rgba(139, 92, 246, 0.38);
+  background: rgba(139, 92, 246, 0.18);
+  color: #a78bfa;
+}
+.movie-search-drop-empty {
+  margin: 0;
+  padding: 22px 14px;
+  color: #94a3b8;
+  font-size: 12.5px;
+  text-align: center;
+}
+.movie-search-drop-all {
+  display: block;
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(6, 10, 16, 0.75);
+  color: #ff2a4a;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 750;
+  text-align: center;
+  cursor: pointer;
+}
+.movie-search-drop-all[hidden] { display: none !important; }
+.movie-search-drop-all:hover {
+  background: rgba(255, 49, 84, 0.15);
+  color: #fff;
+}
+@media (max-width: 680px) {
+  .movie-search-drop {
+    right: 0;
+    left: 0;
+    width: auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   12. TOUCH TARGETS — the card's own controls on a phone.
+
+   The star sat at 28px with a second control beside it, which is under every
+   touch-target guideline. The button keeps its drawn size; the area that
+   answers a finger is what grows.
+   -------------------------------------------------------------------------- */
+@media (hover: none), (pointer: coarse) {
+  .movie-card .movie-card-bookmark {
+    position: relative;
+  }
+  .movie-card .movie-card-bookmark::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
+}
