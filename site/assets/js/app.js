@@ -5306,20 +5306,6 @@ function movieRuntimeText(minutes) {
   return bn(hours) + 'ঘ' + (rest ? ' ' + bn(rest) + 'মি' : '');
 }
 
-const MOVIE_BN_MONTHS = Object.freeze([
-  'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
-  'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'
-]);
-
-/** An ISO timestamp as "১২ আগস্ট ২০২৬", or nothing if it is not a real date. */
-function movieAddedOnText(value) {
-  const time = Date.parse(String(value || ''));
-  if (!Number.isFinite(time)) return '';
-  const date = new Date(time);
-  const bn = (n) => String(n).replace(/[0-9]/g, (d) => '০১২৩৪৫৬৭৮৯'[Number(d)]);
-  return bn(date.getDate()) + ' ' + MOVIE_BN_MONTHS[date.getMonth()] + ' ' + bn(date.getFullYear());
-}
-
 function movieDetailRows(item) {
   const rows = [];
   const add = (label, value) => {
@@ -5330,11 +5316,6 @@ function movieDetailRows(item) {
 
   add('Year', item.year);
   add('Release Date', item.release_date);
-  // Every record carries `first_seen_at` - the moment the scanner first saw
-  // the file - so this row is on every title, where Release Date is on 18% of
-  // them. It is also the question a viewer actually asks of a catalogue like
-  // this one: is this new here?
-  add('Click TV-তে যোগ হয়েছে', movieAddedOnText(item.first_seen_at));
   add('Category', item.category);
   add('Genres', movieGenresOf(item));
   // The rating and the source it came from always travel together: a TMDB

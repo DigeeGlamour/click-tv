@@ -4329,16 +4329,16 @@ body.movie-detail-view #movieGridHeader {
    context) AND to not being on Movie Home or Detail. Live TV and Live Sports
    never match either half, so their layout is untouched.
    ========================================================= */
-html.movie-playback-context body:not(.movie-portal):not(.movie-detail-view) .youtube-layout.final-shell {
-  /* THREE tracks, not two. `.youtube-layout.final-shell` is a named-area grid
-     - "rail player catalog" - shared with Live TV and Live Sports, and a
-     two-column override silently reshapes it: the rail collapsed to 3px and
-     the player took the 400px meant for the side panel, shrinking the video
-     from 779px to 398px. The rail keeps its 215px and the player keeps the
-     flexible middle; only the side panel is pinned to the demo's 400px. */
-  grid-template-columns: 215px minmax(0, 1fr) 400px !important;
-  gap: 14px !important;
-}
+/* THREE tracks, not two: `.youtube-layout.final-shell` is a named-area grid -
+   "rail player catalog" - shared with Live TV and Live Sports, and a
+   two-column override silently reshapes it, collapsing the rail to 3px and
+   handing the player the 400px meant for the side panel. That is still true,
+   and it is why nothing here states two tracks.
+
+   What this rule used to state - 215px / 1fr / 400px at a 14px gap - is gone
+   with the block below it, and for the same reason: see that comment. The
+   shell's own three-track rule governs a movie now, exactly as it governs
+   Live TV. */
 
 /* The demo's `.panel-top-header`: the title, how many there are, and one
    line saying where they came from. */
@@ -4534,10 +4534,24 @@ body.movie-portal .movie-hero-details {
    expressed as three tracks: the demo's 235px rail, the flexible player, and
    the demo's 400px side panel. Nothing outside movie-playback-context can
    match, so neither other section moves. ------------------------------- */
+/* ---- The movie player's stage is the shell's own -----------------------
+   This block used to pin the demo's 235px rail, 400px panel and 14px gap onto
+   the movie playback context. Measured against Live TV at 1440 that came out
+   at 215/779/390 there and 235/741/400 here: the movie player was 38px
+   narrower than the Live TV player on the same screen, and crossing from one
+   section to the other moved it 24px sideways as the columns resized - the
+   "jump" the owner reported.
+
+   The values are not restated with Live TV's numbers, because copying numbers
+   is how they drifted apart in the first place. The block is simply gone, so
+   a movie stands on the same three-track shell rule Live TV and Live Sports
+   stand on - at every breakpoint, and at any future change to it.
+
+   `max-width` is the one thing kept: the shell's cap is lifted here so the
+   stage can use the full window, which is what the rest of the movie surfaces
+   already do.
+   ---------------------------------------------------------------------- */
 html.movie-playback-context body:not(.movie-portal):not(.movie-detail-view) .youtube-layout.final-shell {
-  grid-template-columns: 235px minmax(0, 1fr) 400px !important;
-  gap: 14px !important;
-  padding: 12px 18px !important;
   max-width: none !important;
 }
 
