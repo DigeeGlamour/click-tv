@@ -4,6 +4,8 @@
    Every selector in this file is reached only through `body.movies-section`,
    `.movie-*`, or an element this sheet's own JS creates. Live Sports, Live TV
    and the series module carry none of those, so nothing here can reach them.
+   The single exception is `#pwaInstallBtn` in section 13b, which the owner
+   asked to have taken off the shared header; it is marked as such there.
 
    The player is deliberately untouched: no rule below names `.video-container`,
    `#videoPlayer`, `.player-controls`, `.video-container-wrap` or `.sticky-notice`,
@@ -842,4 +844,119 @@ body.movies-section .movie-prompt-msg .movie-clear-genre {
     height: 44px;
     transform: translate(-50%, -50%);
   }
+}
+
+/* --------------------------------------------------------------------------
+   13. SECOND REVIEW — the corrections asked for after the first live pass.
+   -------------------------------------------------------------------------- */
+
+/* 13a. The rail's profile card runs the full width of the rail.
+   ------------------------------------------------------------
+   `.final-sub-nav` centres its children (`align-items: center !important`),
+   which the rail's own buttons escape with `width: 100%`. The card had no
+   width of its own, so it shrank to its content and sat with 44px of rail
+   showing on either side of it - a floating pill where the demo draws a bar
+   that lines up with the entries above it. Stretching it is the whole fix -
+   the card's own 12px padding is already the rail icons' inset, so at full
+   width the avatar and the entry icons land on the same left edge (both at
+   38px, measured). */
+#desktopSubNav.movie-rail .movie-rail-user {
+  align-self: stretch !important;
+  width: auto !important;
+}
+
+/* 13b. The header's Install button.
+   --------------------------------
+   Removed at the owner's request. The element and its PWA handler stay in
+   place - app.js sets `display: inline-flex` on it inline when the browser
+   fires `beforeinstallprompt`, and an inline style is exactly what this
+   beats. Deleting the node instead would have thrown in that handler.
+   This is the one rule in this sheet that is not scoped to the movie
+   section: the header is shared, and the request was for the header. */
+#pwaInstallBtn {
+  display: none !important;
+}
+
+/* 13c. Phone: the movie category chips take the main nav's type.
+   -------------------------------------------------------------
+   Live Sports / Live TV / Movies are set in the reference stack at 800
+   weight, and the sub-row under them was in a different family at 13.5px /
+   600 - two type systems stacked on top of each other. app.css sets that
+   sub-row deliberately, to hold Live TV, Live Sports and the movie rail to
+   one size, so this does not touch that rule; it re-states the type for the
+   movie section's phone row only, matching the main nav size for size at
+   each of its breakpoints. Boxes, heights, padding and radius are untouched. */
+@media (max-width: 768px) {
+  body.movies-section .mobile-sub-navigation .final-sub-button {
+    font-family: var(--ref-font) !important;
+    font-size: 10px !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+    letter-spacing: normal !important;
+  }
+}
+@media (max-width: 420px) {
+  body.movies-section .mobile-sub-navigation .final-sub-button {
+    font-size: 9.5px !important;
+  }
+}
+@media (max-width: 360px) {
+  body.movies-section .mobile-sub-navigation .final-sub-button {
+    font-size: 8.8px !important;
+  }
+}
+
+/* 13d. The page's scroll handle: hard right, and no reflow when it shows.
+   ----------------------------------------------------------------------
+   Two separate complaints, one element.
+
+   The handle was not at the edge. app.css already gives the shell's right
+   padding back and hands the scroller the centring offset instead, so the
+   scroller does reach the window edge - but on a screen wider than the
+   1580px cap that offset is real empty page: at 1730 the content column
+   stopped at 1637 and 93px of nothing sat between it and the handle. The
+   cap is what created that band, so on the movie surfaces the cap goes and
+   both sides fall back to the shell's own 18px. The rail does not move on a
+   1440 screen, where the offset was already zero.
+
+   The page squeezed when the handle appeared. `scrollbar-width` was `none`
+   until `:hover` and `thin` after it, so pointing at the page took ~10px of
+   width away from it and every card reflowed. The width is now always
+   reserved and only the thumb's colour changes, so nothing moves. */
+@media (min-width: 991px) {
+  html:not(.movie-playback-context) body.movie-portal .youtube-layout.final-shell:has(.sidebar-section.side-panel),
+  html:not(.movie-playback-context) body.movie-detail-view .youtube-layout.final-shell:has(.sidebar-section.side-panel) {
+    padding-left: 18px !important;
+  }
+  html:not(.movie-playback-context) body.movie-portal .sidebar-section.side-panel > .sidebar-scroll-area,
+  html:not(.movie-playback-context) body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area {
+    padding-right: 18px !important;
+  }
+}
+body.movie-portal .sidebar-section.side-panel > .sidebar-scroll-area,
+body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area {
+  scrollbar-width: thin !important;
+  scrollbar-color: transparent transparent !important;
+}
+body.movie-portal .sidebar-section.side-panel > .sidebar-scroll-area:hover,
+body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area:hover {
+  scrollbar-color: #53657f transparent !important;
+}
+body.movie-portal .sidebar-section.side-panel > .sidebar-scroll-area::-webkit-scrollbar,
+body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area::-webkit-scrollbar {
+  display: block !important;
+  width: 8px !important;
+}
+body.movie-portal .sidebar-section.side-panel > .sidebar-scroll-area::-webkit-scrollbar-thumb,
+body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border-radius: 999px !important;
+}
+body.movie-portal .sidebar-section.side-panel > .sidebar-scroll-area:hover::-webkit-scrollbar,
+body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area:hover::-webkit-scrollbar {
+  width: 8px !important;
+}
+body.movie-portal .sidebar-section.side-panel > .sidebar-scroll-area:hover::-webkit-scrollbar-thumb,
+body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area:hover::-webkit-scrollbar-thumb {
+  background: #53657f !important;
 }

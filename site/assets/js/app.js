@@ -1885,6 +1885,37 @@ async function loadMovieBrowseIndex() {
 }
 
 /**
+ * "Just Added", when the scanner's own shelf comes back empty.
+ *
+ * data/movies/discovery/just-added.json is a 14-day window over
+ * `first_seen_at`. Go a fortnight without a scan that finds anything new and
+ * the file is honestly empty - and the row, the rail entry and the FRESH
+ * shortcut all vanish with it, which reads as a broken page rather than a
+ * quiet fortnight.
+ *
+ * This is the same signal without the window: the catalogue sorted by the
+ * date the scanner first saw each title, newest first. Nothing is invented
+ * and nothing is re-dated - these really are the most recent additions to
+ * Click TV. It is only ever used when the published shelf has no rows.
+ */
+async function movieRecentlyAddedRows(limit = 120) {
+  let index = [];
+  try {
+    index = await loadMovieBrowseIndex();
+  } catch (_) {
+    return [];
+  }
+  const seenAt = (row) => {
+    const value = Date.parse(row?.first_seen_at || '');
+    return Number.isFinite(value) ? value : -Infinity;
+  };
+  return (index || [])
+    .filter((row) => seenAt(row) > -Infinity)
+    .sort((a, b) => seenAt(b) - seenAt(a))
+    .slice(0, limit);
+}
+
+/**
  * A discovery/browse summary has no stream on it by design. Clicking one
  * resolves the real published record from its category pages and hands
  * that to the existing player entry point - there is no second playback
@@ -2075,6 +2106,11 @@ async function loadMovieDiscoveryRow(key) {
     // different thing and says so, with a Retry rather than a shrug.
     rows = [];
     failed = true;
+  }
+
+  // An empty published shelf is not the same as nothing to show here.
+  if (key === 'just-added' && !failed && !rows.length) {
+    rows = await movieRecentlyAddedRows();
   }
 
   // Movie Home is a set of rows, not one flat grid: the grid stays for
@@ -2412,32 +2448,22 @@ function setMoviePortalMode(on) {
   setMovieGenreBarVisible(false);
 }
 
-/** Is the desktop rail - and with it BROWSE BY GENRE - on screen right now? */
-function movieRailIsOnScreen() {
-  try {
-    return window.matchMedia('(min-width: 1001px)').matches;
-  } catch (_) {
-    return true;
-  }
-}
-
 /**
- * Movie Home shows no filter bar in the approved design - but below the rail
- * breakpoint the rail is not rendered, and that is the only other place the
- * genre pills live. Rather than lose genre filtering on a phone's Movie Home,
- * the grid header stays on there. Crossing the breakpoint re-decides it.
+ * Movie Home shows no filter bar, on any width.
+ *
+ * It used to stay on below the rail breakpoint, on the reasoning that the
+ * rail is the only other home for the genre pills and a phone would
+ * otherwise lose genre filtering on Home. In use that was the wrong trade:
+ * Home is the Hero and the rows, and a "Genre: All" control sitting above
+ * them filters nothing that is on the screen - the rows are their own
+ * shelves. Genre belongs to the grids, which is where it now lives on every
+ * width, and every grid is one tap away from Home.
  */
 function movieGridHeaderWanted(key) {
   if (key === 'watchlist') return false;
-  if (key === 'home') return !movieRailIsOnScreen();
+  if (key === 'home') return false;
   return true;
 }
-
-window.addEventListener('resize', () => {
-  if (state.activeMainGroup !== 'movies') return;
-  if (state.currentCategory !== 'home') return;
-  setMovieGenreBarVisible(movieGridHeaderWanted('home'));
-}, { passive: true });
 
 // --- the rail: DISCOVERY & PICKS / MY LIBRARY / BROWSE BY GENRE ------------
 
@@ -3214,6 +3240,12 @@ async function renderMovieHomeSections(homeDocument) {
     'just-added': home.just_added || [],
     latest: home.latest || []
   };
+  // Same fallback the Just Added grid uses, so the row on Home and the page
+  // it opens never disagree about whether there is anything to show.
+  if (!byKey['just-added'].length) {
+    byKey['just-added'] = await movieRecentlyAddedRows(MOVIE_HOME_ROW_LIMIT);
+    if (state.movieHomeToken !== token) return;
+  }
 
   // Category rows come from the browse index, which is already loaded for
   // search and genre browse - no extra request in the common case.
