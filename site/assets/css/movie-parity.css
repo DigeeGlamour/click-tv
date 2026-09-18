@@ -359,10 +359,14 @@ body.movie-portal .sidebar-list.movie-grid {
     text-align: center;
   }
 
-  /* The bar floats over the page, so the last row of cards gets room to
-     clear it instead of ending underneath it. */
+  /* The bar floats over the page, so the last row of cards - and the load
+     more button under them - gets room to clear it instead of ending
+     underneath it. The flag is needed, not decorative: `reference-design.css`
+     sets the whole padding shorthand on this element at this width with
+     `!important`, so without it the clearance was silently dropped and the
+     button rendered under the bar where it could not be tapped at all. */
   body.movies-section .sidebar-scroll-area {
-    padding-bottom: 94px;
+    padding-bottom: 94px !important;
   }
 
   /* "Back to Home" was down to a bare arrow below 640px - an icon with no
