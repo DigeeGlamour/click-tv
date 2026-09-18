@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T05:51:09.850164+00:00",
+  "generated_at": "2026-09-18T06:09:05.366594+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,8 +13,7 @@
       "fixtures": 1399,
       "unknown_statuses": [
         "132|Stumps - day 1",
-        "134|Stumps - day 3",
-        "3|90+1'"
+        "134|Stumps - day 3"
       ],
       "attempts": [
         {
@@ -61,21 +60,21 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 6,
-      "fixtures": 601,
+      "requests_ok": 4,
+      "fixtures": 547,
       "unknown_statuses": [],
       "attempts": [
         {
           "sport": "cricket",
           "date": "2026-09-17",
-          "result": "ok",
-          "fixtures": 30
+          "result": "INCONCLUSIVE",
+          "reason": "http 504"
         },
         {
           "sport": "cricket",
           "date": "2026-09-18",
-          "result": "ok",
-          "fixtures": 28
+          "result": "INCONCLUSIVE",
+          "reason": "http 504"
         },
         {
           "sport": "cricket",
@@ -87,13 +86,13 @@
           "sport": "football",
           "date": "2026-09-17",
           "result": "ok",
-          "fixtures": 105
+          "fixtures": 108
         },
         {
           "sport": "football",
           "date": "2026-09-18",
           "result": "ok",
-          "fixtures": 118
+          "fixtures": 119
         },
         {
           "sport": "football",
@@ -107,61 +106,50 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 7,
-    "upcoming": 101,
-    "fixtures": 108,
+    "upcoming": 102,
+    "fixtures": 109,
     "verdicts": {
-      "CONFLICT": 2,
       "UNVERIFIED": 36,
-      "VERIFIED": 69,
-      "PARTIAL_AUTHORITY": 1
+      "VERIFIED": 71,
+      "CONFLICT": 2
     },
-    "verified": 69,
-    "partial_authority": 1,
+    "verified": 71,
+    "partial_authority": 0,
     "unverified": 36,
     "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 59,
-        "matched": 49
+        "unmatched": 63,
+        "matched": 46
       },
       "livescore": {
-        "matched": 68,
-        "unmatched": 40
+        "unmatched": 40,
+        "matched": 69
       }
     },
-    "matched_by_two_independent_authorities": 44,
-    "authority_agreements": 43,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 1,
+    "matched_by_two_independent_authorities": 41,
+    "authority_agreements": 41,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "card says LIVE, authority says FINISHED": 1,
-      "kickoff": 3,
-      "authorities disagree": 1
+      "card says LIVE, authority says FINISHED": 2,
+      "kickoff": 1
     },
     "identity_near_misses": 22,
     "independent_authority_count_distribution": {
       "0": 36,
-      "1": 28,
-      "2": 44
+      "1": 32,
+      "2": 41
     },
     "unknown_authority_statuses": {
       "livescore": [
         "132|Stumps - day 1",
-        "134|Stumps - day 3",
-        "3|90+1'"
+        "134|Stumps - day 3"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
-    {
-      "fixture": "CD Olimpia Vs CD Luis Ángel Firpo",
-      "authority": "espn-header",
-      "authority_name": "Club Deportivo Olimpia vs Luis Ángel Firpo",
-      "agreed_side": "firpo",
-      "ours": "olimpia",
-      "theirs": "deportivo olimpia"
-    },
     {
       "fixture": "Women's Cricket India vs Japan",
       "authority": "livescore",
@@ -169,6 +157,14 @@
       "agreed_side": "japan",
       "ours": "cricket india",
       "theirs": "india"
+    },
+    {
+      "fixture": "CD Olimpia Vs CD Luis Ángel Firpo",
+      "authority": "espn-header",
+      "authority_name": "Club Deportivo Olimpia vs Luis Ángel Firpo",
+      "agreed_side": "firpo",
+      "ours": "olimpia",
+      "theirs": "deportivo olimpia"
     },
     {
       "fixture": "1899 Hoffenheim W vs VfL Wolfsburg W",
@@ -333,6 +329,248 @@
   ],
   "fixtures": [
     {
+      "fixture_id": "provider:cricket-india-vs-japan-women|women asian games 2026|2026-09-18",
+      "card_id": "womens-cricket-india-vs-japan",
+      "name": "Women's Cricket India vs Japan",
+      "competition": "Women's Asian Games 2026",
+      "kickoff": "2026-09-18T05:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "India W vs Japan Women",
+              "event_id": "1880659",
+              "agreed_side": "japan",
+              "ours": "cricket india",
+              "theirs": "india"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:japan-vs-india-women|asian games women|2026-09-18",
+      "card_id": "japan-women-vs-india-women",
+      "name": "Japan Women Vs India Women",
+      "competition": "Asian Games Women",
+      "kickoff": "2026-09-18T05:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1880659",
+          "upstream_family": "LiveScore",
+          "name": "India W vs Japan Women",
+          "home": "India W",
+          "away": "Japan Women",
+          "home_team_id": "86118",
+          "away_team_id": "413142",
+          "competition": "Women's Asian Games Twenty20",
+          "competition_id": "26250",
+          "kickoff": "2026-09-18T05:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
+          "sport": "cricket",
+          "round": "Quarter Final 4",
+          "format": "Womens Twenty20",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:u23-world-cup",
+      "card_id": "u23-world-cup-day-4-session-2",
+      "name": "U23 World Cup Day 4, Session 2",
+      "competition": "",
+      "kickoff": "2026-09-18T06:09:05+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "upstream_families": [
+        "PrimeVideo"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:western-australia-vs-south-australia|one day cup 2026 27|2026-09-18",
+      "card_id": "western-australia-vs-south-australia",
+      "name": "Western Australia vs South Australia",
+      "competition": "One Day Cup, 2026/27",
+      "kickoff": "2026-09-18T06:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1825044",
+          "upstream_family": "LiveScore",
+          "name": "Western Australia vs South Australia",
+          "home": "Western Australia",
+          "away": "South Australia",
+          "home_team_id": "86294",
+          "away_team_id": "86297",
+          "competition": "One-Day Cup",
+          "competition_id": "25773",
+          "kickoff": "2026-09-18T06:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
+          "sport": "cricket",
+          "round": "Match 1",
+          "format": "Domestic One Day",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:olimpia-vs-cd-la-firpo|2026-09-18",
+      "card_id": "olimpia-vs-cd-la-firpo",
+      "name": "Olimpia vs CD LA Firpo",
+      "competition": "",
+      "kickoff": "2026-09-18T05:51:09+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "upstream_families": [
+        "PrimeVideo"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:cd-olimpia-vs-cd-luis-ángel-firpo|concacaf central american cup|2026-09-18",
       "card_id": "cd-olimpia-vs-cd-luis-ángel-firpo",
       "name": "CD Olimpia Vs CD Luis Ángel Firpo",
@@ -403,316 +641,13 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:cricket-india-vs-japan-women|women asian games 2026|2026-09-18",
-      "card_id": "womens-cricket-india-vs-japan",
-      "name": "Women's Cricket India vs Japan",
-      "competition": "Women's Asian Games 2026",
-      "kickoff": "2026-09-18T05:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "India W vs Japan Women",
-              "event_id": "1880659",
-              "agreed_side": "japan",
-              "ours": "cricket india",
-              "theirs": "india"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:japan-vs-india-women|women asian games 2026 4th quarter final|2026-09-18",
-      "card_id": "japan-women-vs-india-women",
-      "name": "Japan Women vs India Women",
-      "competition": "Women's Asian Games 2026 - 4th Quarter-Final",
-      "kickoff": "2026-09-18T04:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-willow-event"
-      ],
-      "upstream_families": [
-        "Willow"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1550477",
-          "upstream_family": "ESPN",
-          "name": "Japan Women vs India Women",
-          "home": "Japan Women",
-          "away": "India Women",
-          "home_team_id": "2280",
-          "away_team_id": "1812",
-          "competition": "Asian Games Women's Cricket Competition",
-          "competition_id": "22546",
-          "kickoff": "2026-09-18T05:00:00+00:00",
-          "kickoff_delta_minutes": 30.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "4th Quarter-Final",
-          "format": "T20",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-09-19T23:59:00Z",
-          "authority_uid": "s:200~e:1550477~c:1550477"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1880659",
-          "upstream_family": "LiveScore",
-          "name": "India W vs Japan Women",
-          "home": "India W",
-          "away": "Japan Women",
-          "home_team_id": "86118",
-          "away_team_id": "413142",
-          "competition": "Women's Asian Games Twenty20",
-          "competition_id": "26250",
-          "kickoff": "2026-09-18T05:00:00+00:00",
-          "kickoff_delta_minutes": 30.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "Quarter Final 4",
-          "format": "Womens Twenty20",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "kickoff: ours 2026-09-18T04:30, espn-header 2026-09-18T05:00 (+30.0 min)",
-        "kickoff: ours 2026-09-18T04:30, livescore 2026-09-18T05:00 (+30.0 min)",
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:olimpia-vs-cd-la-firpo|2026-09-18",
-      "card_id": "olimpia-vs-cd-la-firpo",
-      "name": "Olimpia vs CD LA Firpo",
-      "competition": "",
-      "kickoff": "2026-09-18T05:51:09+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:u23-world-cup",
-      "card_id": "u23-world-cup-day-4-session-2",
-      "name": "U23 World Cup Day 4, Session 2",
-      "competition": "",
-      "kickoff": "2026-09-18T05:51:09+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:western-australia-vs-south-australia|one day cup 2026 27|2026-09-18",
-      "card_id": "western-australia-vs-south-australia",
-      "name": "Western Australia vs South Australia",
-      "competition": "One Day Cup, 2026/27",
-      "kickoff": "2026-09-18T06:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1544842",
-          "upstream_family": "ESPN",
-          "name": "Western Australia vs South Australia",
-          "home": "Western Australia",
-          "away": "South Australia",
-          "home_team_id": "602",
-          "away_team_id": "520",
-          "competition": "Australian Domestic One-Day Competition",
-          "competition_id": "8626",
-          "kickoff": "2026-09-18T06:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "1st Match (D/N)",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-09-19T23:59:00Z",
-          "authority_uid": "s:200~e:1544842~c:1544842"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1825044",
-          "upstream_family": "LiveScore",
-          "name": "Western Australia vs South Australia",
-          "home": "Western Australia",
-          "away": "South Australia",
-          "home_team_id": "86294",
-          "away_team_id": "86297",
-          "competition": "One-Day Cup",
-          "competition_id": "25773",
-          "kickoff": "2026-09-18T06:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "Match 1",
-          "format": "Domestic One Day",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:vanraure-hachinohe-vs-tegevajaro-miyazaki|j2 league|2026-09-18",
       "card_id": "vanraure-hachinohe-vs-tegevajaro-miyazaki",
       "name": "Vanraure Hachinohe vs Tegevajaro Miyazaki",
       "competition": "J2 League",
       "kickoff": "2026-09-18T04:00:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
@@ -743,9 +678,9 @@
           "competition_id": "25618",
           "kickoff": "2026-09-18T04:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "90+1'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "Regular Season",
           "format": "",
@@ -758,10 +693,12 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -938,8 +875,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1524,12 +1461,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "srhady-crichd-footy-live",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "srhady-crichd-footy-live"
       ],
       "upstream_families": [
         "CricHD",
@@ -2344,8 +2281,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2421,13 +2358,13 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "srhady-bingstream",
         "srhady-axsports-live",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "sm-fancode",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2595,6 +2532,65 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:consadole-sapporo-vs-oita-trinita|j2 league|2026-09-19",
+      "card_id": "consadole-sapporo-vs-oita-trinita",
+      "name": "Consadole Sapporo vs Oita Trinita",
+      "competition": "J2 League",
+      "kickoff": "2026-09-19T05:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1804040",
+          "upstream_family": "LiveScore",
+          "name": "Consadole Sapporo vs Oita Trinita",
+          "home": "Consadole Sapporo",
+          "away": "Oita Trinita",
+          "home_team_id": "7607",
+          "away_team_id": "7547",
+          "competition": "J2 League",
+          "competition_id": "25618",
+          "kickoff": "2026-09-19T05:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "7",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:dalian-huayi-vs-ningbo-professional|league one|2026-09-18",
       "card_id": "dalian-huayi-vs-ningbo-professional",
       "name": "Dalian Huayi vs Ningbo Professional",
@@ -2743,8 +2739,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -3277,8 +3273,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -4797,6 +4793,66 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:oakleigh-cannons-vs-avondale|victoria npl|2026-09-19",
+      "card_id": "oakleigh-cannons-vs-avondale",
+      "name": "Oakleigh Cannons vs Avondale",
+      "competition": "Victoria NPL",
+      "kickoff": "2026-09-19T05:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1891816",
+          "upstream_family": "LiveScore",
+          "name": "Oakleigh Cannons vs Avondale FC",
+          "home": "Oakleigh Cannons",
+          "away": "Avondale FC",
+          "home_team_id": "7354",
+          "away_team_id": "7355",
+          "competition": "NPL Victoria: Playoffs",
+          "competition_id": "26274",
+          "kickoff": "2026-09-19T05:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "final",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:paris-vs-strasbourg|french ligue 1|2026-09-19",
       "card_id": "paris-vs-strasbourg",
       "name": "Paris vs Strasbourg",
@@ -4928,68 +4984,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:philippines-u23-vs-vietnam-u23|asian games|2026-09-18",
-      "card_id": "philippines-u23-vs-vietnam-u23",
-      "name": "Philippines U23 Vs Vietnam U23",
-      "competition": "Asian Games",
-      "kickoff": "2026-09-18T06:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1874218",
-          "upstream_family": "LiveScore",
-          "name": "Philippines U23 vs Vietnam U23",
-          "home": "Philippines U23",
-          "away": "Vietnam U23",
-          "home_team_id": "7862",
-          "away_team_id": "391",
-          "competition": "Asian Games: Group C",
-          "competition_id": "26202",
-          "kickoff": "2026-09-18T06:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "2",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -5192,8 +5186,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -5776,12 +5770,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "srhady-crichd-footy-live",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "srhady-crichd-footy-live"
       ],
       "upstream_families": [
         "CricHD",
@@ -6843,8 +6837,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -6944,8 +6938,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -7072,12 +7066,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "srhady-crichd-footy-live",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "srhady-crichd-footy-live"
       ],
       "upstream_families": [
         "CricHD",
@@ -7384,34 +7378,7 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1530204",
-          "upstream_family": "ESPN",
-          "name": "Zimbabwe vs Australia",
-          "home": "Zimbabwe",
-          "away": "Australia",
-          "home_team_id": "9",
-          "away_team_id": "2",
-          "competition": "Australia tour of Zimbabwe 2026",
-          "competition_id": "24303",
-          "kickoff": "2026-09-18T07:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "2nd ODI",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-09-19T23:59:00Z",
-          "authority_uid": "s:200~e:1530204~c:1530204"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -7438,14 +7405,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -7464,13 +7430,13 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-crichd-footy-live",
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "srhady-crichd-footy-live"
       ],
       "upstream_families": [
         "CricHD",
