@@ -13,25 +13,33 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   1. CARD — one height for every card in a row.
+   1. CARD — the title's block is as tall as the title, and no taller.
 
-   The card grew and shrank with its title, so the gold rule sat at a
-   different height on each one and a row read as a ragged edge. Reserving
-   two lines for the title settles every card in the row on the same
-   baseline whether the title needs one line or two.
+   This began the other way round: two lines were reserved for every title so
+   the gold rule and the meta line sat at one height across a row. It bought
+   a straight edge and paid for it with a hole - a one-line title left a
+   blank line under it, then the rule, then "Hindi · 2026", and the card read
+   as though something had failed to load.
+
+   The owner called it, on the live page: long titles take their second line,
+   short ones close the gap. So the title keeps its two-line ceiling and
+   nothing below it is pushed anywhere - the rule and the meta follow the
+   title immediately. The card's own height is fixed elsewhere, so the row
+   still has a straight outer edge; what varies now is the quiet space under
+   the meta rather than a gap in the middle of the copy.
    -------------------------------------------------------------------------- */
-.sidebar-list.movie-grid .movie-card-title,
-.movie-row-strip .movie-card-title {
-  min-height: calc(2 * 1.28em);
-}
 .movie-card .card-meta {
   display: flex !important;
   flex-direction: column !important;
-  flex: 1 1 auto !important;
+  flex: 0 0 auto !important;
+  min-height: 0 !important;
+}
+.sidebar-list.movie-grid .movie-card-title,
+.movie-row-strip .movie-card-title {
   min-height: 0 !important;
 }
 .movie-card .related-gold-line {
-  margin-top: auto !important;
+  margin-top: 0 !important;
 }
 
 /* The demo's slanted corner ribbon, on movie cards and on the series
@@ -877,17 +885,19 @@ body.movies-section .movie-prompt-msg .movie-clear-genre {
   display: none !important;
 }
 
-/* 13c. Phone: the movie category chips take the main nav's type.
-   -------------------------------------------------------------
+/* 13c. Phone: every section's category chips take the main nav's type.
+   --------------------------------------------------------------------
    Live Sports / Live TV / Movies are set in the reference stack at 800
    weight, and the sub-row under them was in a different family at 13.5px /
-   600 - two type systems stacked on top of each other. app.css sets that
-   sub-row deliberately, to hold Live TV, Live Sports and the movie rail to
-   one size, so this does not touch that rule; it re-states the type for the
-   movie section's phone row only, matching the main nav size for size at
-   each of its breakpoints. Boxes, heights, padding and radius are untouched. */
+   600 - two type systems stacked on top of each other. This was scoped to
+   the movie section on the first pass; the owner then asked for the same
+   across Live TV and Live Sports, so the scope is gone. app.css sets that
+   sub-row deliberately, to hold all three to one size - that rule still
+   governs the desktop, and this restates only the phone row, matching the
+   main nav size for size at each of its breakpoints. Boxes, heights,
+   padding and radius are untouched. */
 @media (max-width: 768px) {
-  body.movies-section .mobile-sub-navigation .final-sub-button {
+  .mobile-sub-navigation .final-sub-button {
     font-family: var(--ref-font) !important;
     font-size: 10px !important;
     font-weight: 800 !important;
@@ -896,12 +906,12 @@ body.movies-section .movie-prompt-msg .movie-clear-genre {
   }
 }
 @media (max-width: 420px) {
-  body.movies-section .mobile-sub-navigation .final-sub-button {
+  .mobile-sub-navigation .final-sub-button {
     font-size: 9.5px !important;
   }
 }
 @media (max-width: 360px) {
-  body.movies-section .mobile-sub-navigation .final-sub-button {
+  .mobile-sub-navigation .final-sub-button {
     font-size: 8.8px !important;
   }
 }
@@ -959,4 +969,166 @@ body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area:hover:
 body.movie-portal .sidebar-section.side-panel > .sidebar-scroll-area:hover::-webkit-scrollbar-thumb,
 body.movie-detail-view .sidebar-section.side-panel > .sidebar-scroll-area:hover::-webkit-scrollbar-thumb {
   background: #53657f !important;
+}
+
+/* --------------------------------------------------------------------------
+   14. THIRD REVIEW — phone rhythm, the main nav, and the detail page.
+   -------------------------------------------------------------------------- */
+
+/* 14a. Phone: the main navigation sits in the middle.
+   ---------------------------------------------------
+   `.final-main-nav` is a five-column grid and only three buttons are built,
+   so Live Sports / Live TV / Movies filled the first three columns and two
+   empty columns - 146px of them - sat to their right. The row has no fixed
+   number of entries, so it becomes a centred flex row rather than a grid
+   with a hard-coded count; add a fourth section tomorrow and it still
+   centres. This is the shared header, not the movie section: the owner
+   asked for it on every tab. */
+@media (max-width: 768px) {
+  .mobile-main-navigation .final-main-nav {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+  .mobile-main-navigation .final-main-button {
+    flex: 0 1 98px !important;
+  }
+}
+
+/* 14b. Phone: the empty space between the chips and the page.
+   -----------------------------------------------------------
+   23px sat between the category chips and the first thing on the page, and
+   the Hero, the shortcut tiles and every row carried desktop spacing on a
+   390px screen. Nothing here changes a size or a colour - only the distance
+   between blocks, which is what pushed the first row of posters below the
+   fold. Movie section only. */
+@media (max-width: 768px) {
+  body.movies-section .mobile-sub-navigation {
+    height: 42px !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 5px !important;
+  }
+  body.movies-section .sidebar-section.side-panel {
+    margin-top: 0 !important;
+  }
+  body.movies-section .movie-hero {
+    margin-bottom: 12px !important;
+  }
+  body.movies-section .movie-hero-inner {
+    padding-top: 14px !important;
+    padding-bottom: 14px !important;
+  }
+  body.movies-section .movie-hero-title {
+    margin-bottom: 6px !important;
+  }
+  body.movies-section .movie-hero-meta {
+    margin-bottom: 8px !important;
+  }
+  body.movies-section .movie-hero-desc {
+    margin: 0 0 10px !important;
+  }
+  body.movies-section .movie-status-strip {
+    margin-bottom: 16px !important;
+  }
+  body.movies-section .movie-row {
+    margin-bottom: 16px !important;
+  }
+  body.movies-section .movie-row-head {
+    margin-bottom: 8px !important;
+  }
+}
+
+/* 14c. The detail page: one container, and the air taken out of it.
+   -----------------------------------------------------------------
+   The page had four stacked boxes - the nav bar's caption, the hero card,
+   a bordered strip holding nothing but "Release Date", then the related row
+   - and on a phone that read as clutter rather than structure. The facts
+   have moved inside the card (app.js), so this only has to stop the old
+   outer rule from drawing a box around them, and set them as a quiet meta
+   line at the foot of the card instead.
+
+   `.movie-detail-inner > .movie-detail-facts` in app.css no longer matches
+   anything, because the list is no longer a child of the inner wrapper - it
+   is left alone rather than deleted, so nothing else that may rely on it
+   changes. */
+.movie-detail-hero .movie-detail-facts {
+  margin: 14px 0 0 !important;
+  padding: 12px 0 0 !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 0 !important;
+  background: none !important;
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) !important;
+  gap: 5px 14px !important;
+  font-size: 12px !important;
+}
+.movie-detail-hero .movie-detail-fact {
+  display: contents !important;
+}
+.movie-detail-hero .movie-detail-fact dt {
+  color: #7d8ba0 !important;
+  font-weight: 700 !important;
+}
+.movie-detail-hero .movie-detail-fact dd {
+  margin: 0 !important;
+  color: #e3e9f2 !important;
+}
+
+/* The honest line where the server box would have been. */
+.movie-detail-nolink {
+  margin: 0 !important;
+  padding: 10px 12px !important;
+  border: 1px solid rgba(255, 92, 92, 0.28) !important;
+  border-radius: 12px !important;
+  background: rgba(255, 60, 60, 0.07) !important;
+  color: #ffb4b4 !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+/* 14d. Phone: the detail page's own spacing. */
+@media (max-width: 768px) {
+  body.movie-detail-view .movie-detail-inner {
+    padding-top: 0 !important;
+  }
+  body.movie-detail-view .detail-nav-bar {
+    margin-bottom: 10px !important;
+  }
+  body.movie-detail-view .detail-hero-card {
+    margin-bottom: 14px !important;
+  }
+  body.movie-detail-view .movie-detail-title {
+    margin-bottom: 6px !important;
+  }
+  body.movie-detail-view .movie-detail-meta {
+    margin-bottom: 8px !important;
+  }
+  body.movie-detail-view .movie-detail-genres {
+    margin-bottom: 8px !important;
+  }
+  body.movie-detail-view .movie-detail-plot {
+    margin-bottom: 12px !important;
+  }
+  body.movie-detail-view .movie-detail-actions {
+    margin-bottom: 12px !important;
+  }
+}
+
+/* 14e. The rail's group captions line up with its entries.
+   -------------------------------------------------------
+   Same cause as the profile card in 13a: `.final-sub-nav` centres its
+   children, the entries escape it with `width: 100%`, and the caption - a
+   plain block with no width - shrank to its text and sat in the middle of
+   the rail with its divider rule shrunk to match. Measured, DISCOVERY &
+   PICKS started at 75px while every entry under it started at 26px.
+
+   The demo's `.group-caption` is a left-aligned label flush with the
+   entries, so the caption stretches to the rail's width and its own 10px
+   padding lands it beside their 9px. The divider then runs the full width,
+   which is what it was added to do. */
+#desktopSubNav.movie-rail .movie-rail-caption {
+  align-self: stretch !important;
+  width: auto !important;
+  text-align: left !important;
 }

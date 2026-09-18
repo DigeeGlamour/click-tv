@@ -4348,6 +4348,50 @@ async function findSeriesSummaryById(id) {
 }
 
 /**
+ * Is this card a series?
+ *
+ * The series module answers for anything it loaded itself, by `_isSeries` or
+ * `content_kind`. A summary off the movie browse index carries neither - it
+ * says `type: "series"` and nothing else - so a series reaching a movie row,
+ * a discovery shelf or a `?movie=` link looked like an ordinary film. It then
+ * opened the movie detail, where a series record has no stream, and Watch Now
+ * sat there disabled with nothing to explain it. This is the one question
+ * asked in every one of those places.
+ */
+function movieItemIsSeries(item) {
+  if (!item) return false;
+  if (seriesModule?.isSeriesItem?.(item)) return true;
+  const kind = String(item.content_kind || item.type || '').trim().toLowerCase();
+  return kind === 'series';
+}
+
+/**
+ * Hand a series off to the flow that owns it.
+ *
+ * The browse summary is not the shape `openSeries` needs - it has no season
+ * list and no manifest path - so the real series summary is looked up first,
+ * exactly as the Hero's own series path does. No episode is chosen here and
+ * no playback starts: the season list is the next screen, as designed.
+ */
+async function openSeriesFromMovieItem(item) {
+  const id = String(item?.id || '').trim();
+  if (!seriesModule || !id) {
+    showMovieDetailUnavailable(item?.name || id);
+    return;
+  }
+  const series = await findSeriesSummaryById(id);
+  if (!series) {
+    // In the index but not in the series data is a real dead end, and saying
+    // so beats a detail page whose only button cannot be pressed.
+    showMovieDetailUnavailable(item?.name || id);
+    return;
+  }
+  closeMovieDetail();
+  stopMovieHeroRotation();
+  await seriesModule.openSeries(series, { season: Number(series.default_season) || 0 });
+}
+
+/**
  * Open whatever the URL asks for.
  *
  * Four outcomes, all of them explicit: a real movie opens its detail, a real
@@ -4381,6 +4425,12 @@ async function applyMovieRoute(route) {
       return true;
     }
     const summary = await findMovieSummaryById(route.id);
+    // `?movie=` is the route every card writes, and the index it reads holds
+    // series too. One shared id, two flows - the record decides which.
+    if (summary && movieItemIsSeries(summary)) {
+      await openSeriesFromMovieItem(summary);
+      return true;
+    }
     if (!summary) {
       // Withdrawn content never reaches the browse index (PART 18), so a id
       // that used to work and no longer resolves lands here - which is the
@@ -4772,7 +4822,7 @@ function buildMovieRelatedGrid(rows) {
  * two-column grid, which is the shape the narrow column beside the player
  * needs and the approved design draws there.
  */
-function buildMovieRelatedStrip(rows, heading = 'You May Also Like') {
+function buildMovieRelatedStrip(rows, heading = 'You May Also Like', kicker = 'Related catalogue items') {
   const items = movieSummariesToItems(rows);
   if (!items.length) return null;
   const section = document.createElement('section');
@@ -4784,6 +4834,13 @@ function buildMovieRelatedStrip(rows, heading = 'You May Also Like') {
   const title = document.createElement('h2');
   title.textContent = heading;
   group.appendChild(title);
+  // The demo's section header carries a kicker under the title, the way every
+  // other row on the page does.
+  if (kicker) {
+    const sub = document.createElement('p');
+    sub.textContent = kicker;
+    group.appendChild(sub);
+  }
   head.appendChild(group);
 
   const strip = document.createElement('div');
@@ -5324,6 +5381,12 @@ function closeMovieDetail() {
  */
 async function openMovieDetail(item) {
   if (!movieDetailPanel || !item) return;
+  // A series never belongs on the movie detail: its stream lives on an
+  // episode, so this page could only ever offer a dead button.
+  if (movieItemIsSeries(item)) {
+    await openSeriesFromMovieItem(item);
+    return;
+  }
   const resolved = item._summaryOnly ? (await resolveMovieSummary(item)) || item : item;
   state.movieDetailItem = resolved;
 
@@ -5362,8 +5425,13 @@ async function openMovieDetail(item) {
   // classes ride alongside them so every existing handler and test keeps its
   // selector. Only real catalogue values are bound - a field the record does
   // not carry is not rendered at all.
-  const servers = Math.max(1, Number(resolved.available_link_count
-    || (Array.isArray(resolved.backups) ? resolved.backups.length + 1 : 1)) || 1);
+  // The demo's box is bound to a real link count. Ours defaulted to 1 when the
+  // record carried no count at all, so a title with nothing to play still
+  // announced "1 VERIFIED SOURCE" above a button that could not be pressed.
+  // No playable stream means no server box.
+  const linkCount = Number(resolved.available_link_count
+    || (Array.isArray(resolved.backups) ? resolved.backups.length + 1 : 0)) || 0;
+  const servers = playable ? Math.max(1, linkCount) : 0;
   const health = String(resolved.verification_badge || '').trim();
 
   const wrap = document.createElement('div');
@@ -5427,22 +5495,27 @@ async function openMovieDetail(item) {
           '</div>' +
           // The demo's server box, bound to the real link count this record
           // publishes rather than an invented list.
-          '<div class="server-card-box">' +
-            '<div class="server-box-title">AVAILABLE SERVERS &middot; ' + servers +
-              ' VERIFIED ' + (servers > 1 ? 'SOURCES' : 'SOURCE') + '</div>' +
-            '<div class="server-pill-row">' +
-              Array.from({ length: Math.min(servers, 8) }, (_unused, index) =>
-                '<span class="server-pill-btn' + (index === 0 ? ' active' : '') + '">' +
-                  '<span class="server-green-dot" aria-hidden="true"></span> Server ' + (index + 1) + '</span>'
-              ).join('') +
-            '</div>' +
-          '</div>' +
+          (servers
+            ? '<div class="server-card-box">' +
+                '<div class="server-box-title">AVAILABLE SERVERS &middot; ' + servers +
+                  ' VERIFIED ' + (servers > 1 ? 'SOURCES' : 'SOURCE') + '</div>' +
+                '<div class="server-pill-row">' +
+                  Array.from({ length: Math.min(servers, 8) }, (_unused, index) =>
+                    '<span class="server-pill-btn' + (index === 0 ? ' active' : '') + '">' +
+                      '<span class="server-green-dot" aria-hidden="true"></span> Server ' + (index + 1) + '</span>'
+                  ).join('') +
+                '</div>' +
+              '</div>'
+            // A disabled button with no explanation is the worst of both. Say
+            // what is wrong in the same place the servers would have been.
+            : '<p class="movie-detail-nolink">এই টাইটেলের কোনো চালু সোর্স এখন নেই।</p>') +
+          // Whatever else the record really carries - release date, cast,
+          // audio. Inside the card, because the page has one container for
+          // the title and nothing is given a box of its own.
+          (factsHtml ? '<dl class="movie-detail-facts">' + factsHtml + '</dl>' : '') +
         '</div>' +
       '</div>' +
-    '</div>' +
-    // Whatever else the record really carries - cast, director, audio - below
-    // the card. Omitted entirely when there is none of it.
-    (factsHtml ? '<dl class="movie-detail-facts">' + factsHtml + '</dl>' : '');
+    '</div>';
 
   movieDetailPanel.replaceChildren(wrap);
   movieDetailPanel.hidden = false;
@@ -8219,7 +8292,7 @@ function createMovieCard(item, visualIndex, options = {}) {
   // The demo's slanted corner ribbon, so a series reads as a series from the
   // card face. Series records normally render through createSeriesCard; this
   // covers the ones that reach a movie row through a category page.
-  const typeRibbon = seriesModule?.isSeriesItem?.(item)
+  const typeRibbon = movieItemIsSeries(item)
     ? '<span class="badge-movie-type badge-series-type"><span class="dot"></span>Series</span>'
     : '';
   // Demo `.media-card`: a square poster box, then a meta block BENEATH it -
