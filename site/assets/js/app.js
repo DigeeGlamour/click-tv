@@ -5245,22 +5245,6 @@ function renderContinueWatchingRow() {
 // ===========================================================================
 
 /** Quality comes from the item's own stream metadata, never from its title. */
-/** TMDB colours its ring by the score. Same three bands, our palette. */
-function movieScoreColour(rating) {
-  const value = Number(rating) || 0;
-  if (value >= 7) return '#19c987';
-  if (value >= 5) return '#d6b13a';
-  return '#e0524f';
-}
-
-/** "Drama, Mystery, and Crime" - the way TMDB writes a genre list. */
-function movieJoinList(values) {
-  const list = (values || []).map((value) => String(value).trim()).filter(Boolean);
-  if (list.length <= 1) return list.join('');
-  if (list.length === 2) return list[0] + ' and ' + list[1];
-  return list.slice(0, -1).join(', ') + ', and ' + list[list.length - 1];
-}
-
 /** A source's measured height as the label a viewer reads. */
 function movieQualityLabel(height) {
   const value = Number(height) || 0;
@@ -5453,11 +5437,11 @@ async function openMovieDetail(item) {
 
   // Every line below is omitted when the catalogue does not really carry it.
   // Nothing here invents a rating, a genre, a runtime or a synopsis.
-  // The year now rides with the title and the kind is a chip, so what is left
-  // for the facet line is the runtime - and only when the record carries one.
-  const runtime = Number(resolved.runtime_minutes) > 0
-    ? Number(resolved.runtime_minutes) + ' min'
-    : '';
+  const metaBits = [];
+  if (resolved.year) metaBits.push(escapeHtml(String(resolved.year)));
+  if (resolved.category) metaBits.push(escapeHtml(String(resolved.category)));
+  metaBits.push(isSeries ? 'Series' : 'Movie');
+  if (resolved.runtime_minutes) metaBits.push(escapeHtml(resolved.runtime_minutes + ' min'));
 
   const quality = movieDetailQuality(resolved);
   // One decimal, as the demo's `getItemRating` does. The provider's raw
@@ -5525,61 +5509,32 @@ async function openMovieDetail(item) {
             ? '<img class="movie-detail-poster" src="' + escapeHtml(poster) + '" alt="" loading="lazy" referrerpolicy="no-referrer">'
             : movieDetailPosterFallbackHtml(resolved)) +
         '</div>' +
-        // Laid out the way TMDB lays out a title, which is the arrangement the
-        // owner asked for: the year rides with the title instead of starting a
-        // separate facts line, the kind chip, the print and the genres share
-        // one line under it, and the score becomes a ring rather than a number
-        // in a box. Every value is the same real catalogue field it was
-        // before - nothing was added to fill the shape, and a field the record
-        // does not carry still renders nothing.
         '<div class="detail-info movie-detail-main">' +
-          '<h1 class="detail-heading movie-detail-title">' + escapeHtml(resolved.name || 'Untitled') +
-            (resolved.year
-              ? ' <span class="movie-detail-year">(' + escapeHtml(String(resolved.year)) + ')</span>'
-              : '') +
-          '</h1>' +
+          '<span class="detail-type-pill movie-detail-kind"><span class="red-bullet" aria-hidden="true"></span>'
+            + (isSeries ? 'SERIES' : 'MOVIE') + '</span>' +
+          '<h1 class="detail-heading movie-detail-title">' + escapeHtml(resolved.name || 'Untitled') + '</h1>' +
           '<div class="detail-meta-row movie-detail-meta">' +
-            '<span class="detail-type-pill movie-detail-kind"><span class="red-bullet" aria-hidden="true"></span>'
-              + (isSeries ? 'SERIES' : 'MOVIE') + '</span>' +
-            // The print only rides up here when the quality box below is not
-            // already naming it - otherwise the same 1080p was stated twice on
-            // one card.
-            (!qualityOptions.length && quality
-              ? '<span class="badge-res movie-detail-quality">' + escapeHtml(quality) + '</span>'
-              : '') +
-            (resolved.category
-              ? '<span class="movie-detail-facet">' + escapeHtml(String(resolved.category)) + '</span>'
-              : '') +
-            (runtime ? '<span class="movie-detail-facet">' + escapeHtml(runtime) + '</span>' : '') +
-            (genres.length
-              ? '<span class="movie-detail-facet movie-detail-genrelist">'
-                + escapeHtml(movieJoinList(genres)) + '</span>'
-              : '') +
-          '</div>' +
-          '<div class="movie-detail-scorerow">' +
-            // TMDB's ring, carrying our own rating and still naming who issued
-            // it. A record with no rating shows no ring - it does not show an
-            // empty one, and it never borrows a number from somewhere else.
+            metaBits.map((bit) => '<span>' + bit + '</span>').join('<i class="meta-dot movie-detail-dot" aria-hidden="true">•</i>') +
+            // The rating never travels without the source that issued it.
             (ratingValue && ratingSource
-              ? '<span class="movie-score-ring" style="--score:' + Math.round(Number(ratingValue) * 10)
-                  + ';--ring:' + movieScoreColour(Number(ratingValue)) + '">' +
-                  '<span class="movie-score-ring-face"><strong>' + escapeHtml(ratingValue) + '</strong></span>' +
-                '</span>' +
-                '<span class="movie-score-copy"><strong>User Score</strong><small>'
-                  + escapeHtml(ratingSource) + '</small></span>'
+              ? '<span class="movie-detail-rating"><i class="fas fa-star" aria-hidden="true"></i>' +
+                escapeHtml(ratingValue) + '<small>' + escapeHtml(ratingSource) + '</small></span>'
               : '') +
+            (quality ? '<span class="badge-res movie-detail-quality">' + escapeHtml(quality) + '</span>' : '') +
             // Real verification state from the record, never a decoration.
             (health ? '<span class="badge-health">&#10003; ' + escapeHtml(health) + '</span>' : '') +
           '</div>' +
+          (genres.length
+            ? '<div class="movie-detail-genres">' +
+              genres.map((g) => '<span>' + escapeHtml(String(g)) + '</span>').join('') + '</div>'
+            : '') +
           // Only a real synopsis. The stand-in line - "Hindi ক্যাটাগরির 2026
           // সালের কনটেন্ট — Click TV তে উপভোগ করুন।" - is the same sentence on
           // every title with the category and year swapped in. It told the
           // viewer nothing they could not read one line above it, and it cost
           // the page three lines of height to say it.
-          // With no synopsis there is no Overview heading either.
           (plot
-            ? '<h2 class="movie-detail-overview-head">Overview</h2>' +
-              '<p class="detail-desc movie-detail-plot">' + escapeHtml(plot) + '</p>'
+            ? '<p class="detail-desc movie-detail-plot">' + escapeHtml(plot) + '</p>'
             : '') +
           '<div class="detail-actions-row movie-detail-actions">' +
             '<button type="button" class="btn-play-white movie-detail-play tv-focusable"' + (playable ? '' : ' disabled') + '>' +
