@@ -1,35 +1,39 @@
 {
-  "generated_at": "2026-09-18T18:56:22.397547+00:00",
+  "generated_at": "2026-09-18T19:06:34.629187+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
     "fixtures": 77,
     "published_fixtures": 74,
-    "fixtures_with_verified_stream": 3,
-    "fixtures_with_zero_verified": 74,
+    "fixtures_with_verified_stream": 4,
+    "fixtures_with_zero_verified": 73,
     "published_without_stream": 41,
     "fallback_available": 8,
-    "targeted_fixtures": 36,
-    "targeted_attempts": 118,
+    "targeted_fixtures": 37,
+    "targeted_attempts": 120,
     "fixtures_with_a_first_link_time": 32,
-    "candidate_routes": 61,
-    "verified_routes": 22,
-    "failed_routes": 39,
-    "fixtures_touched_by_a_route_failure": 6,
+    "candidate_routes": 83,
+    "verified_routes": 28,
+    "failed_routes": 55,
+    "fixtures_touched_by_a_route_failure": 7,
     "fixtures_left_with_nothing": 3,
-    "distinct_failure_codes": 4,
+    "distinct_failure_codes": 6,
     "unrecognised_candidate_groups": 7,
-    "unrecognised_failed_routes": 16
+    "unrecognised_failed_routes": 14
   },
   "failure_codes": {
-    "http_403": 37,
+    "http_403": 47,
     "browser_unreachable": 13,
     "verification_failed": 3,
-    "http_502": 2
+    "http_404": 3,
+    "http_502": 2,
+    "timeout": 1
   },
   "failure_code_fixtures": {
-    "http_403": 5,
+    "http_403": 6,
     "browser_unreachable": 4,
+    "http_404": 3,
     "verification_failed": 2,
+    "timeout": 1,
     "http_502": 1
   },
   "fixtures": [
@@ -44,13 +48,15 @@
         "srhady-bingstream",
         "srhady-axsports-live"
       ],
-      "candidate_stream_count": 25,
+      "candidate_stream_count": 27,
       "verified_stream_count": 10,
-      "failed_stream_count": 15,
+      "failed_stream_count": 17,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "timeout",
         "http_403",
-        "browser_unreachable"
+        "browser_unreachable",
+        "http_404"
       ],
       "fallback_available": true,
       "published": true,
@@ -73,13 +79,14 @@
         "srhady-axsports-live",
         "srhady-tapmad-bd"
       ],
-      "candidate_stream_count": 21,
-      "verified_stream_count": 7,
-      "failed_stream_count": 14,
+      "candidate_stream_count": 27,
+      "verified_stream_count": 10,
+      "failed_stream_count": 17,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_403",
-        "browser_unreachable"
+        "browser_unreachable",
+        "http_404"
       ],
       "fallback_available": true,
       "published": true,
@@ -97,16 +104,19 @@
       "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
-      "candidate_stream_count": 10,
-      "verified_stream_count": 5,
-      "failed_stream_count": 5,
+      "candidate_stream_count": 21,
+      "verified_stream_count": 7,
+      "failed_stream_count": 14,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_502",
         "http_403",
-        "browser_unreachable"
+        "browser_unreachable",
+        "http_404"
       ],
       "fallback_available": true,
       "published": true,
@@ -118,20 +128,19 @@
       "targeted": true
     },
     {
-      "fixture_id": "tennis",
-      "fixture_key": "tennis",
-      "fixture_name": "TENNIS | EVENTO",
+      "fixture_id": "horse-racing",
+      "fixture_key": "horse-racing",
+      "fixture_name": "Horse Racing",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 13,
-      "verified_stream_count": 9,
-      "failed_stream_count": 4,
+      "candidate_stream_count": 7,
+      "verified_stream_count": 4,
+      "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_502",
         "http_403",
         "browser_unreachable"
       ],
@@ -145,16 +154,16 @@
       "targeted": false
     },
     {
-      "fixture_id": "horse-racing",
-      "fixture_key": "horse-racing",
-      "fixture_name": "Horse Racing",
+      "fixture_id": "tennis",
+      "fixture_key": "tennis",
+      "fixture_name": "TENNIS | EVENTO",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 7,
-      "verified_stream_count": 4,
+      "candidate_stream_count": 13,
+      "verified_stream_count": 10,
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -204,7 +213,8 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 2,
       "verified_stream_count": 0,
@@ -213,6 +223,113 @@
       "failure_codes": [
         "verification_failed",
         "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "day-2-world-feed",
+      "fixture_key": "day-2-world-feed",
+      "fixture_name": "Day 2 World Feed",
+      "recognised_fixture": false,
+      "source_id": "sm-fancode",
+      "source_ids": [
+        "sm-fancode",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "verification_failed",
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "rcd-espanyol-vs-elche-cf",
+      "fixture_key": "rcd-espanyol-vs-elche-cf",
+      "fixture_name": "RCD Espanyol vs Elche CF",
+      "recognised_fixture": true,
+      "source_id": "sm-fancode",
+      "source_ids": [
+        "sm-fancode",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "verification_failed",
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "sportivo-trinidense-vs-club-guarani",
+      "fixture_key": "sportivo-trinidense-vs-club-guarani",
+      "fixture_name": "Sportivo Trinidense vs Club Guarani",
+      "recognised_fixture": true,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 1,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": true,
+      "target_attempt_count": 5,
+      "last_attempt_bucket": "2026-09-18T19:05Z",
+      "first_link_at": "",
+      "targeted": true
+    },
+    {
+      "fixture_id": "wakefield-trinity-vs-leigh-leopards",
+      "fixture_key": "wakefield-trinity-vs-leigh-leopards",
+      "fixture_name": "Wakefield Trinity Vs Leigh Leopards",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_502",
+        "browser_unreachable"
       ],
       "fallback_available": false,
       "published": false,
@@ -233,39 +350,11 @@
         "sm-sports-data"
       ],
       "candidate_stream_count": 4,
-      "verified_stream_count": 2,
-      "failed_stream_count": 2,
+      "verified_stream_count": 3,
+      "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_403",
         "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "day-2-world-feed",
-      "fixture_key": "day-2-world-feed",
-      "fixture_name": "Day 2 World Feed",
-      "recognised_fixture": false,
-      "source_id": "sm-fancode",
-      "source_ids": [
-        "sm-fancode",
-        "drmlive-fancode-mirror"
-      ],
-      "candidate_stream_count": 2,
-      "verified_stream_count": 0,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "verification_failed",
-        "http_403"
       ],
       "fallback_available": false,
       "published": false,
@@ -286,39 +375,11 @@
         "sm-sports-data"
       ],
       "candidate_stream_count": 4,
-      "verified_stream_count": 2,
-      "failed_stream_count": 2,
+      "verified_stream_count": 3,
+      "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_403",
         "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "rcd-espanyol-vs-elche-cf",
-      "fixture_key": "rcd-espanyol-vs-elche-cf",
-      "fixture_name": "RCD Espanyol vs Elche CF",
-      "recognised_fixture": true,
-      "source_id": "sm-fancode",
-      "source_ids": [
-        "sm-fancode",
-        "drmlive-fancode-mirror"
-      ],
-      "candidate_stream_count": 2,
-      "verified_stream_count": 0,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "verification_failed",
-        "http_403"
       ],
       "fallback_available": false,
       "published": false,
@@ -340,31 +401,6 @@
       ],
       "candidate_stream_count": 1,
       "verified_stream_count": 0,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "wakefield-trinity-vs-leigh-leopards",
-      "fixture_key": "wakefield-trinity-vs-leigh-leopards",
-      "fixture_name": "Wakefield Trinity Vs Leigh Leopards",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 2,
-      "verified_stream_count": 1,
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -1559,12 +1595,12 @@
       "failure_codes": [],
       "fallback_available": false,
       "published": true,
-      "published_tab": "upcoming",
+      "published_tab": "today",
       "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
+      "target_attempt_count": 1,
+      "last_attempt_bucket": "2026-09-18T19:05Z",
       "first_link_at": "",
-      "targeted": false
+      "targeted": true
     },
     {
       "fixture_id": "provider:san-diego-wave-w-vs-kansas-city-w|nwsl women|2026-09-19",
@@ -1665,29 +1701,6 @@
       "target_attempt_count": 3,
       "last_attempt_bucket": "2026-09-18T15:30Z",
       "first_link_at": "2026-09-18T15:30:12.624001+00:00",
-      "targeted": true
-    },
-    {
-      "fixture_id": "provider:sportivo-trinidense-vs-club-guarani|division profesional clausura|2026-09-18",
-      "fixture_key": "sportivo-trinidense-vs-club-guarani",
-      "fixture_name": "Sportivo Trinidense vs Club Guarani",
-      "recognised_fixture": true,
-      "source_id": "srhady-bingstream",
-      "source_ids": [
-        "srhady-bingstream"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": true,
-      "target_attempt_count": 4,
-      "last_attempt_bucket": "2026-09-18T18:55Z",
-      "first_link_at": "",
       "targeted": true
     },
     {
