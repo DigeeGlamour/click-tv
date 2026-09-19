@@ -89,6 +89,21 @@ RETRY_AFTER_FAILURE_DAYS = 7
 REFRESH_TTL_DAYS_STABLE = 90
 REFRESH_TTL_DAYS_RECENT = 14
 
+#: Which set of fields a cached record was resolved under.
+#:
+#: 1 - tmdb_id, imdb_id, release_date, genres, rating, backdrop
+#: 2 - the above plus overview, runtime_minutes, director, cast, trailer_key
+#:
+#: A record cached under an older schema is due for a refresh regardless of its
+#: TTL: the new fields are only ever fetched during a lookup, so without this a
+#: title enriched last month would not carry a synopsis or a cast for another
+#: three months. It is stamped current after that lookup whether or not the
+#: provider had the new fields to give, so this costs one extra lookup per
+#: record rather than a retry on every run.
+#:
+#: Raise this only when a genuinely new field is added to METADATA_FIELDS.
+METADATA_SCHEMA = 2
+
 #: How recent a release_date has to be to count as "still moving".
 RECENT_RELEASE_DAYS = 365
 
@@ -220,6 +235,14 @@ def _is_due_for_refresh(record: Dict[str, Any], now: _dt.datetime) -> bool:
     updated = _parse_stamp(record.get("metadata_updated_at"))
     if updated is None:
         return False
+    try:
+        cached_schema = int(record.get("metadata_schema") or 1)
+    except (TypeError, ValueError):
+        cached_schema = 1
+    # Cached before the current field set existed: read once more, whatever the
+    # TTL says. Everything else keeps the ordinary policy.
+    if cached_schema < METADATA_SCHEMA:
+        return True
     return (now - updated) > _dt.timedelta(days=_refresh_ttl_days(record, now))
 
 
@@ -289,6 +312,7 @@ def upsert(
         if fields.get("metadata_confidence"):
             record["metadata_confidence"] = fields["metadata_confidence"]
         record["metadata_updated_at"] = stamp
+        record["metadata_schema"] = METADATA_SCHEMA
         return record
 
     from scanner import movie_metadata_confidence as confidence_policy
@@ -319,6 +343,11 @@ def upsert(
         record["metadata_refused"] = plan["refused"]
     if plan["state"] == "applied":
         record["metadata_updated_at"] = stamp
+    # Stamped on every answered lookup, not only an applied one: the point is
+    # "this record has been read under the current field set", and a refusal
+    # answered that too. Without it a record the confidence policy declines
+    # would come back for a lookup on every single run.
+    record["metadata_schema"] = METADATA_SCHEMA
     return record
 
 
