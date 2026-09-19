@@ -60,6 +60,8 @@ RATING_SOURCE_ANILIST = "AniList"
 
 TMDB_SEARCH_MOVIE_URL = "https://api.themoviedb.org/3/search/movie"
 TMDB_MOVIE_DETAIL_URL = "https://api.themoviedb.org/3/movie/{id}"
+TMDB_SEARCH_TV_URL = "https://api.themoviedb.org/3/search/tv"
+TMDB_TV_DETAIL_URL = "https://api.themoviedb.org/3/tv/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w780"
 #: Faces are shown at ~56px. w185 is the smallest TMDB profile size that
 #: still looks right on a 2x screen, and it is a fifth of w780's weight.
@@ -237,6 +239,135 @@ def _clean_genres(values: Any) -> List[str]:
 # --------------------------------------------------------------------------
 # TMDB - PRIMARY
 # --------------------------------------------------------------------------
+
+
+def _tmdb_creators(detail: Any) -> Optional[str]:
+    """Who made the series, for the slot a film fills with its director.
+
+    Television credits a creator, not a director - a series has a different
+    one most weeks - so `created_by` is the honest answer. Up to two, because
+    the detail page gives this one line.
+    """
+    created = detail.get("created_by") if isinstance(detail, dict) else None
+    if not isinstance(created, list):
+        return None
+    names: List[str] = []
+    for person in created:
+        if not isinstance(person, dict):
+            continue
+        name = str(person.get("name") or "").strip()
+        if name and name not in names:
+            names.append(name)
+        if len(names) >= 2:
+            break
+    return ", ".join(names) or None
+
+
+def _tmdb_episode_runtime(detail: Any) -> Optional[int]:
+    """A typical episode's length, from the list TMDB returns.
+
+    `episode_run_time` is per-episode and can hold several values when a show
+    changed format. The first is the usual one; anything outside a sane range
+    is dropped by _coerce_runtime as it is for films.
+    """
+    if not isinstance(detail, dict):
+        return None
+    values = detail.get("episode_run_time")
+    if isinstance(values, list):
+        for value in values:
+            runtime = _coerce_runtime(value)
+            if runtime:
+                return runtime
+    return _coerce_runtime(detail.get("last_episode_to_air", {}).get("runtime")
+                           if isinstance(detail.get("last_episode_to_air"), dict) else None)
+
+
+def tmdb_series_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any]]:
+    """TMDB television search + detail. None without a title or an API key.
+
+    The same shape of answer as tmdb_metadata, read out of the television
+    endpoints. Kept separate from the film path rather than folded into it
+    with a flag, because almost every field is named differently.
+    """
+    title = str(title or "").strip()
+    if not title:
+        return None
+    params = {"query": title, "include_adult": "true", "language": "en-US", "page": "1"}
+    if year:
+        params["first_air_date_year"] = str(year)
+    headers = _tmdb_auth_params_and_headers(params)
+    if headers is None:
+        return None
+
+    search = _get_json(
+        "tmdb", TMDB_SEARCH_TV_URL + "?" + urllib.parse.urlencode(params), headers=headers
+    )
+    results = search.get("results") if isinstance(search.get("results"), list) else []
+    if not results:
+        return None
+
+    best: Optional[Dict[str, Any]] = None
+    best_score = 0.0
+    for candidate in results:
+        if not isinstance(candidate, dict):
+            continue
+        candidate_title = str(candidate.get("name") or candidate.get("original_name") or "")
+        score = _title_similarity(title, candidate_title)
+        candidate_year = _coerce_year((candidate.get("first_air_date") or "")[:4])
+        # A series runs for years, so the catalogue's year is often a season's
+        # year rather than the show's first. The penalty is gentler than the
+        # film path's for that reason, but it is still there: two shows with
+        # the same name a decade apart are not the same show.
+        if year and candidate_year:
+            score -= min(abs(year - candidate_year) * 0.02, 0.2)
+        if score > best_score:
+            best_score = score
+            best = candidate
+    if best is None or best_score < 0.72:
+        return None
+
+    tmdb_id = best.get("id")
+    detail_params: Dict[str, str] = {
+        "language": "en-US",
+        # external_ids as well as the two the film path asks for: a series
+        # carries no top-level imdb_id.
+        "append_to_response": "credits,videos,external_ids",
+    }
+    detail_headers = _tmdb_auth_params_and_headers(detail_params) or {}
+    detail = _get_json(
+        "tmdb",
+        TMDB_TV_DETAIL_URL.format(id=tmdb_id) + "?" + urllib.parse.urlencode(detail_params),
+        headers=detail_headers,
+    )
+
+    genres = _clean_genres(
+        [g.get("name") for g in detail.get("genres", []) if isinstance(g, dict)]
+    ) if isinstance(detail.get("genres"), list) else []
+    backdrop_path = detail.get("backdrop_path") or best.get("backdrop_path")
+    first_air = str(detail.get("first_air_date") or best.get("first_air_date") or "").strip()
+    external = detail.get("external_ids") if isinstance(detail.get("external_ids"), dict) else {}
+
+    result: Dict[str, Any] = {
+        "tmdb_id": tmdb_id,
+        "imdb_id": str(external.get("imdb_id") or "").strip() or None,
+        "overview": str(detail.get("overview") or best.get("overview") or "").strip() or None,
+        "runtime_minutes": _tmdb_episode_runtime(detail),
+        "director": _tmdb_creators(detail),
+        "cast": _tmdb_cast(detail.get("credits")) or None,
+        "trailer_key": _tmdb_trailer_key(detail.get("videos")),
+        "match_title": str(detail.get("name") or best.get("name") or "").strip() or None,
+        "match_year": _coerce_year((first_air or "")[:4]),
+        "content_kind": "series",
+        "release_date": first_air or None,
+        "genres": genres,
+        "rating": detail.get("vote_average") or best.get("vote_average"),
+        "rating_votes": detail.get("vote_count") or best.get("vote_count"),
+        "rating_source": RATING_SOURCE_TMDB,
+        "backdrop": (TMDB_IMAGE_BASE + backdrop_path) if backdrop_path else None,
+        "metadata_source": "tmdb",
+        "metadata_confidence": "high",
+    }
+    return {key: value for key, value in result.items() if value not in (None, "", [], {})}
 
 
 def _tmdb_auth_params_and_headers(params: Dict[str, str]) -> Optional[Dict[str, str]]:
@@ -793,8 +924,11 @@ def resolve_metadata(movie: Dict[str, Any], *, kind: Optional[str] = None) -> Op
             sources.append(source)
             result.setdefault("metadata_confidence", data.get("metadata_confidence"))
 
-    # 1. TMDB - primary.
-    tmdb_data = _safe_call(tmdb_metadata, title, year)
+    # 1. TMDB - primary. Television lives behind different endpoints, and
+    #    asking the film ones for a series returned either nothing or a film
+    #    with the same name, which the confidence check then discarded.
+    tmdb_lookup = tmdb_series_metadata if resolved_kind in ("series", "anime") else tmdb_metadata
+    tmdb_data = _safe_call(tmdb_lookup, title, year)
     merge(tmdb_data, "tmdb")
     if tmdb_data:
         tmdb_id = tmdb_data.get("tmdb_id") or tmdb_id

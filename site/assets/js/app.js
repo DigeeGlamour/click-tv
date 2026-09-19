@@ -14855,6 +14855,14 @@ function initializeSeriesModule() {
     renderCurrentList,
     startPlayback,
     updateFavoriteUi,
+    // The movie detail's own furniture, lent to the series detail rather than
+    // written twice. A series now resolves the same fields a film does, and
+    // the two pages should not drift apart over which of them draws a cast.
+    movieGenresOf,
+    buildMovieCreditsRow,
+    openMovieTrailer,
+    toggleFavoriteItem,
+    favoriteIds,
     rememberFullscreenDrawerScroll,
     restoreFullscreenDrawerScroll,
     fullscreenDrawerContextKey,

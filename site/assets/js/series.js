@@ -625,16 +625,21 @@
     const fallback = activeSeriesItem || {};
     // Year and Category are on the card's own facts line now, so repeating
     // them underneath it is the clutter the movie detail was just cleared of.
+    //
+    // Genres and Rating used to be the whole of this row and are gone for the
+    // same reason: they are drawn above now, as a genre row and a star badge,
+    // and printing "GENRES Sci-Fi, Fantasy, Drama" under a line that already
+    // reads "Sci-Fi - Fantasy - Drama" says it twice in two typefaces.
+    // What is left is what is stated nowhere else on the page.
     const facts = [];
-    const genres = (Array.isArray(source.genres) ? source.genres : Array.isArray(fallback.genres) ? fallback.genres : [])
-      .map((genre) => safeText(genre))
-      .filter(Boolean);
-    if (genres.length) facts.push(['Genres', genres.join(', ')]);
-    const rating = safeText(source.rating ?? fallback.rating);
-    if (rating) {
-      const ratingSource = safeText(source.rating_source || fallback.rating_source);
-      facts.push(['Rating', ratingSource ? `${rating} (${ratingSource})` : rating]);
-    }
+    const firstAired = safeText(source.release_date || fallback.release_date);
+    if (firstAired) facts.push(['First Aired', firstAired]);
+    const runtime = numberValue(source.runtime_minutes ?? fallback.runtime_minutes);
+    if (runtime > 0) facts.push(['Episode Length', `${runtime} min`]);
+    // The record stores this lower-case ("ongoing"), which reads as a typo
+    // beside the other values rather than as a state.
+    const status = safeText(source.status || fallback.status);
+    if (status) facts.push(['Status', status.charAt(0).toUpperCase() + status.slice(1)]);
     return facts;
   }
 
@@ -706,6 +711,20 @@
     const seasons = numberValue(activeSeriesData?.total_seasons || activeSeriesItem?.total_seasons || seasonList().length);
     const episodeCount = activeEpisodes.length;
 
+    // What the providers resolved for this series. All optional: before the
+    // scanner could look a series up none of it existed, and a series that
+    // still matches nothing draws exactly what it drew then.
+    const meta = activeSeriesData || {};
+    const pick = (key) => meta[key] ?? activeSeriesItem?.[key];
+    const ratingNumber = Number(pick('rating'));
+    const ratingValue = Number.isFinite(ratingNumber) && ratingNumber > 0
+      ? ratingNumber.toFixed(1)
+      : '';
+    const ratingSource = safeText(pick('rating_source'));
+    const genres = (bridge?.movieGenresOf?.(meta.genres ? meta : activeSeriesItem)
+      || (Array.isArray(pick('genres')) ? pick('genres') : [])).filter(Boolean);
+    const trailerKey = safeText(pick('trailer_key'));
+
     const metaBits = [];
     const year = numberValue(source.year || activeSeriesItem.year);
     if (year > 0) metaBits.push(String(year));
@@ -740,10 +759,20 @@
             <h1 class="detail-heading movie-detail-title">${escapeHtml(source.name || activeSeriesItem.name)}</h1>
             <div class="detail-meta-row movie-detail-meta">
               ${metaBits.map((bit) => `<span>${escapeHtml(bit)}</span>`).join('<i class="meta-dot movie-detail-dot" aria-hidden="true">\u2022</i>')}
+              ${ratingValue && ratingSource
+                ? `<span class="movie-detail-rating"><i class="fas fa-star" aria-hidden="true"></i>${escapeHtml(ratingValue)}<small>${escapeHtml(ratingSource)}</small></span>`
+                : ''}
             </div>
+            ${genres.length
+              ? `<div class="movie-detail-genres">${genres.map((g) => `<span>${escapeHtml(String(g))}</span>`).join('')}</div>`
+              : ''}
             ${description ? `<p class="detail-desc movie-detail-plot">${escapeHtml(description)}</p>` : ''}
             <div class="detail-actions-row movie-detail-actions">
               <button type="button" class="btn-play-white series-continue-button tv-focusable"><i class="fas fa-play" aria-hidden="true"></i> ${escapeHtml(continueLabel)}</button>
+              ${trailerKey
+                ? '<button type="button" class="btn-bookmark-dark series-trailer-button tv-focusable"><i class="fas fa-play" aria-hidden="true"></i> <span>\u099f\u09cd\u09b0\u09c7\u0987\u09b2\u09be\u09b0</span></button>'
+                : ''}
+              <button type="button" class="btn-bookmark-dark series-watchlist-button tv-focusable"><i class="fas fa-star" aria-hidden="true"></i> <span>Bookmark</span></button>
             </div>
             ${seriesFactsHtml()}
           </div>
@@ -770,6 +799,35 @@
 
     detail.querySelector('.series-back-button').addEventListener('click', closeDetail);
     detail.querySelector('.series-continue-button')?.addEventListener('click', () => continueSeries());
+
+    // The trailer opens in the same overlay a film's does - not a new tab.
+    detail.querySelector('.series-trailer-button')?.addEventListener('click', () => {
+      bridge?.openMovieTrailer?.(trailerKey, source.name || activeSeriesItem.name);
+    });
+
+    const watchlistButton = detail.querySelector('.series-watchlist-button');
+    if (watchlistButton) {
+      const favoriteKey = String(activeSeriesItem.id || activeSeriesItem.url || '');
+      const markFavorite = () => {
+        const on = (bridge?.favoriteIds?.() || []).includes(favoriteKey);
+        watchlistButton.classList.toggle('active', on);
+        const icon = watchlistButton.querySelector('i');
+        if (icon) icon.className = on ? 'fas fa-star' : 'far fa-star';
+      };
+      markFavorite();
+      watchlistButton.addEventListener('click', () => {
+        bridge?.toggleFavoriteItem?.(activeSeriesItem);
+        markFavorite();
+      });
+    }
+
+    // Director/creator and cast, with faces - the same strip the film detail
+    // draws, appended under the title card when there is anything to show.
+    const credits = bridge?.buildMovieCreditsRow?.({
+      director: pick('director'),
+      cast: pick('cast')
+    });
+    if (credits) detail.querySelector('.series-episode-section')?.before(credits);
 
     const strip = detail.querySelector('.series-season-strip');
     // One season is not a choice. The row above already names it.

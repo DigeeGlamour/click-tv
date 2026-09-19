@@ -566,6 +566,12 @@ def _summary(series: Mapping[str, Any]) -> Dict[str, Any]:
             "status", "default_season", "total_seasons", "total_episodes",
             "latest_episode", "updated_at", "manual_source", "manual_position",
             "verification_status", "publish_allowed", "source_revision",
+            # Resolved by _annotate_series_metadata. Every one is optional:
+            # a series that matched nothing publishes exactly what it did
+            # before, and the detail page draws only what it is given.
+            "overview", "runtime_minutes", "director", "cast", "trailer_key",
+            "genres", "rating", "rating_source", "rating_votes",
+            "tmdb_id", "imdb_id", "release_date", "metadata_source",
         )
     }
     result.update(
@@ -575,6 +581,56 @@ def _summary(series: Mapping[str, Any]) -> Dict[str, Any]:
         }
     )
     return {key: value for key, value in result.items() if value not in (None, "")}
+
+
+#: Series metadata is cached apart from the films'.
+#:
+#: Identity is title:year and carries no notion of kind, so one shared file
+#: would hand "Dune" the series whatever "Dune" the film had resolved. They
+#: would also share the per-run lookup budget, and a series has no claim on
+#: the films' allowance.
+SERIES_METADATA_CACHE = "series-metadata-cache.json"
+
+
+def _annotate_series_metadata(items: List[Dict[str, Any]], *, allow_lookup: bool) -> None:
+    """Fill in synopsis, rating, genres, cast and trailer for each series.
+
+    The same cache and the same provider chain the films use. `content_kind`
+    is stamped first because that is what steers the chain to TMDB's
+    television endpoints rather than its film ones - a series asked of
+    /search/movie matches nothing, or worse, matches a film with the same
+    name.
+
+    Wrapped whole: metadata is a decoration on a catalogue whose real job is
+    playable episodes, and a provider outage must never be what stops a
+    series from publishing.
+    """
+    if not items:
+        return
+    try:
+        from scanner import movie_metadata_cache, paths
+
+        for item in items:
+            item.setdefault("content_kind", "series")
+
+        lookup = None
+        availability = None
+        if allow_lookup:
+            from scanner import metadata_providers, provider_health
+
+            lookup = metadata_providers.resolve_metadata
+            availability = provider_health.any_metadata_provider_available
+
+        summary = movie_metadata_cache.enrich(
+            items,
+            lookup=lookup,
+            availability=availability,
+            path=paths.state_path(SERIES_METADATA_CACHE),
+        )
+        resolved = summary.get("resolved") or summary.get("applied") or 0
+        print(f"   series metadata: {resolved} resolved of {len(items)}")
+    except Exception as error:  # noqa: BLE001 - never take a publish down
+        print(f"   series metadata skipped: {error}")
 
 
 def _build_tree(
@@ -689,6 +745,9 @@ def publish_prepared_series(
     temp.mkdir(parents=True, exist_ok=False)
     generated_at = _utc_now()
     playback_collector = PlaybackProfileCollector("series", generated_at)
+    # Before the tree is built, because _build_tree is what calls _summary and
+    # a field resolved after that would be resolved into nothing.
+    _annotate_series_metadata(list(prepared.get("items") or []), allow_lookup=True)
     try:
         manifest = _build_tree(temp, prepared, generated_at, playback_collector)
         if destination.exists():
