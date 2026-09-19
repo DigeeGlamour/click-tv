@@ -1931,3 +1931,40 @@ body.movie-portal #movieHomeSections .movie-row {
     inset: -10px -8px;
   }
 }
+
+/* ===========================================================================
+   21. THE DETAIL PAGE STARTS WHERE THE CATEGORY RAIL STARTS.
+   ===========================================================================
+   "Movie Details" and its Back pill sat 30px below the top of the rail on the
+   left, so the page opened with an empty band across it and the two columns
+   plainly did not line up. The 30px was two paddings stacked on top of each
+   other and neither was doing anything: 14px on the panel, 16px on the shell
+   inside it.
+
+   4px is left, which is the difference between a heading that lines up and
+   one that looks jammed against the edge. The same shell carries the series
+   detail, so both pages are settled by this. */
+#movieDetailPanel {
+  padding-top: 0 !important;
+}
+.movie-detail-inner,
+.series-detail-shell.movie-detail-inner {
+  padding-top: 4px !important;
+}
+
+/* 21a. The panel's header sits on the same margin as its episodes.
+   ---------------------------------------------------------------
+   Playing a series, the shell becomes the player's side column and its own
+   padding is dropped so the episode grid can use the full width. The nav row
+   went with it: "S3 Episodes" started 1px from the panel's left border and
+   the Back to Series pill ended 1px from its right, while the episode cards
+   underneath were inset 12px - so the header read as falling out of the box
+   it belongs to.
+
+   The inset is put back on the nav row alone, not on the shell, because the
+   shell's padding is what the episode grid measures itself against: widening
+   that would take 24px off the cards to fix a heading. */
+.series-detail-shell.series-panel-mode > .detail-nav-bar {
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
