@@ -1678,36 +1678,196 @@ body.movie-detail-view .movie-detail-inner {
   color: #0a0f18 !important;
 }
 
-/* 18e. The series panel is two things, and the page says which.
-   ------------------------------------------------------------
+/* 18e. The series panel is two things, and the element says which.
+   ----------------------------------------------------------------
    Browsing, it is the whole page: the title card and the episodes under it.
-   Playing, the same markup lives in the player's 390px side column, where the
-   card came out as a cut-off heading over a stack of one-word lines. The demo
-   draws only the episode list there, headed "S2 Episodes" with a Back to
-   Series pill.
+   Playing, the same markup lives in the player's side column, where the card
+   came out as a cut-off heading over a stack of one-word lines. The demo draws
+   only the episode list there, headed "S2 Episodes" with a Back to Series pill.
 
-   Driven by `movie-playback-context` on <html> rather than by a flag read at
-   build time: the panel is rendered before that class is set, and it must
-   also switch back the moment playback ends, with nothing re-rendered
-   underneath a running player. */
-.series-when-playing {
-  display: none;
-}
-html.movie-playback-context .series-when-browsing {
-  display: none;
-}
-html.movie-playback-context .series-when-playing {
-  display: inline;
-}
-html.movie-playback-context .series-detail-shell > .series-detail-hero,
-html.movie-playback-context .series-detail-shell .series-when-browsing-block {
+   `.series-panel-mode` is put on the shell by series.js from its own state.
+   This used to key off `movie-playback-context` on <html>, which survives
+   playback: play an episode, come back, open another series, and the detail
+   page rendered as the player's panel. Nothing here reads a global class now. */
+.series-detail-shell.series-panel-mode > .series-detail-hero,
+.series-detail-shell.series-panel-mode .series-when-browsing-block {
   display: none !important;
 }
 /* In the column the shell is the panel's own content, so it keeps none of the
    page's outer spacing. */
-html.movie-playback-context .series-detail-shell {
+.series-detail-shell.series-panel-mode {
   padding: 0 !important;
 }
-html.movie-playback-context .series-detail-shell > .detail-nav-bar {
+.series-detail-shell.series-panel-mode > .detail-nav-bar {
   margin-bottom: 12px !important;
+}
+
+/* 18f. The panel header fits the column it is in.
+   -----------------------------------------------
+   "S1 Episodes" and the Back pill sat in a row that could not shrink, so on a
+   narrow column the pill pushed out past the panel's own edge. The heading
+   gives way first - it can ellipsis - and the pill keeps its size, because a
+   half-drawn control is worse than a shortened label. */
+.series-detail-shell .detail-nav-bar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+}
+.series-detail-shell .detail-nav-heading {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+.series-detail-shell .series-back-button {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+/* 18g. An episode title is not cut off in a narrow column.
+   -------------------------------------------------------
+   A range badge - E01-04 - is twice the width of E01, and with the title held
+   to one line what was left of a 183px card showed "Episode 0…". In the panel
+   the title takes two lines and the sequence badge stops growing, so the range
+   and the title both fit. */
+.series-detail-shell.series-panel-mode .series-episode-card .series-episode-copy strong {
+  white-space: normal !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  font-size: 12px !important;
+  line-height: 1.22 !important;
+}
+.series-detail-shell.series-panel-mode .series-episode-card .series-episode-number.range {
+  max-width: 54px !important;
+  padding-inline: 5px !important;
+  font-size: 10px !important;
+}
+.series-detail-shell.series-panel-mode .series-episode-card {
+  gap: 8px !important;
+  padding: 8px !important;
+}
+/* The copy column must be allowed to be narrower than its text. */
+.series-episode-card .series-episode-copy {
+  min-width: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   19. SERIES CARDS ARE MOVIE CARDS.
+
+   Measured side by side at 1440, a series card in the catalogue was a
+   different object from the movie card beside it: 218px tall against 283,
+   no padding against 9, a 213x127 letterbox poster against a square one, its
+   own background, its own border, its own title size and weight. In the demo
+   a series is the same card as a film with one purple ribbon on it, and in a
+   mixed row ours read as two designs on one shelf.
+
+   The shell and the poster take the movie card's numbers. Nothing the series
+   card carries is removed - the rank, the season badge, the resume button and
+   the progress track are all still there, and the resume state is the one
+   thing a series card has that a film's does not.
+   -------------------------------------------------------------------------- */
+.catalog-series-card {
+  padding: 9px !important;
+  border-radius: 11px !important;
+  background: #0d1522 !important;
+  border: 1px solid #1a283c !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.catalog-series-card:hover {
+  background: #131f31 !important;
+  border-color: #2e4466 !important;
+}
+.series-catalog-poster {
+  position: relative !important;
+  width: 100% !important;
+  aspect-ratio: 1 / 1 !important;
+  height: auto !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  margin-bottom: 7px !important;
+  background: #070c14 !important;
+}
+.series-catalog-poster img,
+.series-catalog-poster .movie-poster,
+.series-catalog-poster .movie-poster-placeholder {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+.catalog-series-card .series-catalog-copy {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  padding: 0 2px !important;
+}
+.catalog-series-card .series-catalog-copy h3 {
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+  line-height: 1.28 !important;
+  color: #f1f5f9 !important;
+  /* Two lines at most, and only as many as the name needs - the same call the
+     movie card's title got. */
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+.catalog-series-card .series-catalog-copy p {
+  font-size: 10.4px !important;
+  font-weight: 600 !important;
+  color: #8495aa !important;
+  margin: 0 !important;
+}
+/* The resume control and its track are what a series has and a film does not.
+   They stay - smaller, so they sit inside the card's new proportions. */
+.catalog-series-card .series-catalog-continue {
+  margin-top: 4px !important;
+  min-height: 26px !important;
+  font-size: 10.5px !important;
+  font-weight: 750 !important;
+  border-radius: 6px !important;
+}
+.catalog-series-card .series-progress-track {
+  margin-top: 5px !important;
+  height: 3px !important;
+}
+
+/* 19a. The series card's height comes from its content, as the film's does.
+   ------------------------------------------------------------------------
+   reference-design.css pins `.sidebar-list.movie-grid .catalog-series-card` to
+   220px, and series.css gives the poster `flex: 1 1 auto` - so the poster was
+   whatever was left after the copy, which is how a square became a 213x127
+   letterbox. Released from both, the poster takes its 1:1 and the card takes
+   the height that follows, which is the film card's 283px beside it.
+
+   `body` on the front only to outweigh the rule being answered; it carries
+   `!important` too. */
+body .sidebar-list.movie-grid .catalog-series-card,
+body .movie-row-strip .catalog-series-card {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+body .catalog-series-card .series-catalog-poster {
+  flex: 0 0 auto !important;
+}
+
+/* 19b. The resume buttons sit on one line across a row.
+   ----------------------------------------------------
+   The card's height follows its content now, so a two-line name pushed its
+   Start Series button below the ones beside it. Two lines are reserved for the
+   name here - the opposite of the call on the film card, and for the reason
+   given there: a film card's height is fixed, so a short title leaves a hole
+   inside it, while these cards size to their content and a short title leaves
+   the row's buttons on different lines. */
+.catalog-series-card .series-catalog-copy h3 {
+  min-height: calc(2 * 1.28em) !important;
 }

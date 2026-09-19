@@ -349,6 +349,15 @@
     return 'ONGOING';
   }
 
+  /**
+   * Is this panel the player's episode column, or the series page?
+   *
+   * Set when an episode starts playing, cleared when a series is opened or the
+   * detail is closed - both of which run through this module, so the answer
+   * cannot go stale the way a class left on <html> did.
+   */
+  let playerPanelMode = false;
+
   function createSeriesCard(item, visualIndex) {
     const card = document.createElement('div');
     card.className = 'catalog-series-card series-card tv-focusable';
@@ -565,6 +574,8 @@
   async function openSeries(item, options = {}) {
     if (!isSeriesItem(item)) return false;
     clearNextEpisodePrompt();
+    // Opening a series is always the page, whatever was playing a moment ago.
+    playerPanelMode = false;
     const requestId = ++detailRequestId;
     if (!detailActive) catalogSnapshot = captureCatalogSnapshot();
     detailActive = true;
@@ -711,11 +722,14 @@
     // code runs before `movie-playback-context` is set, and a flag read now
     // would answer for the state the page was in a moment ago.
     const detail = document.createElement('section');
-    detail.className = 'series-detail-shell movie-detail-inner detail-section-inner';
+    detail.className = 'series-detail-shell movie-detail-inner detail-section-inner'
+      + (playerPanelMode ? ' series-panel-mode' : '');
     detail.innerHTML = `
       <div class="detail-nav-bar">
-        <span class="detail-nav-heading"><span class="detail-nav-dot" aria-hidden="true"></span><span class="series-when-browsing">Series Details</span><span class="series-when-playing">S${numberValue(activeSeasonNumber)} Episodes</span></span>
-        <button type="button" class="btn-back-pill series-back-button tv-focusable"><i class="fas fa-arrow-left" aria-hidden="true"></i> <span class="series-when-browsing">Back to Movies</span><span class="series-when-playing">Back to Series</span></button>
+        <span class="detail-nav-heading"><span class="detail-nav-dot" aria-hidden="true"></span>${
+          playerPanelMode ? `S${numberValue(activeSeasonNumber)} Episodes` : 'Series Details'}</span>
+        <button type="button" class="btn-back-pill series-back-button tv-focusable"><i class="fas fa-arrow-left" aria-hidden="true"></i> <span>${
+          playerPanelMode ? 'Back to Series' : 'Back to Movies'}</span></button>
       </div>
       <div class="detail-hero-card movie-detail-hero series-detail-hero">
         ${poster ? '<div class="detail-backdrop movie-detail-backdrop"></div>' : ''}
@@ -825,6 +839,7 @@
 
   function closeDetail() {
     if (!detailActive) return;
+    playerPanelMode = false;
     detailActive = false;
     detailRequestId += 1;
     seasonRequestId += 1;
@@ -849,6 +864,11 @@
   function playEpisode(episode) {
     if (!episode || !bridge?.startPlayback) return Promise.resolve(false);
     clearNextEpisodePrompt();
+    // From here the panel lives in the player's side column.
+    if (!playerPanelMode) {
+      playerPanelMode = true;
+      renderSeriesDetail();
+    }
     const result = bridge.startPlayback(episode, true);
     if (bridge?.state) bridge.state.drawerRenderedForSession = -1;
     return Promise.resolve(result).finally(() => {
@@ -1196,6 +1216,7 @@
   }
 
   function resetDetail(options = {}) {
+    playerPanelMode = false;
     detailActive = false;
     detailRequestId += 1;
     seasonRequestId += 1;
