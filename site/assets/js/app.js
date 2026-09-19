@@ -2728,6 +2728,40 @@ const MOVIE_HOME_ROW_LIMIT = 14;
  * no shelf promising something later - if Latest has nothing because no
  * release date has been backfilled yet, the Latest row is not on the page.
  */
+/** How long Home may hold the thread before letting the browser back in. */
+const MOVIE_HOME_SLICE_MS = 24;
+
+const nowMs = () => (typeof performance === 'object' && performance.now
+  ? performance.now()
+  : Date.now());
+
+/**
+ * Give the browser a turn.
+ *
+ * `scheduler.yield` is the one that resumes first and keeps the work at the
+ * front of the queue; where it does not exist a short timeout does the same
+ * job a little less precisely. Not `requestIdleCallback` - a page still
+ * filling in is not idle, and the rest of the rows would be left waiting.
+ */
+function yieldToBrowser() {
+  if (typeof scheduler === 'object' && typeof scheduler?.yield === 'function') {
+    return scheduler.yield();
+  }
+  // `setTimeout(0)` is not zero: browsers hold it to about 4ms, and eight of
+  // those on a throttled phone measured as a third of a second added to the
+  // time the last row took to appear. A message port is delivered on the next
+  // turn of the event loop with no such floor, which is the pause we actually
+  // want - long enough for a tap to be handled, short enough not to be felt.
+  if (typeof MessageChannel === 'function') {
+    return new Promise((resolve) => {
+      const channel = new MessageChannel();
+      channel.port1.onmessage = () => { channel.port1.close(); resolve(); };
+      channel.port2.postMessage(0);
+    });
+  }
+  return new Promise((resolve) => { setTimeout(resolve, 0); });
+}
+
 function buildMovieHomeRow(key, title, description, rows) {
   const items = movieSummariesToItems(rows).slice(0, MOVIE_HOME_ROW_LIMIT);
   if (!items.length) return null;
@@ -3313,20 +3347,41 @@ async function renderMovieHomeSections(homeDocument) {
     }
     if (state.movieHomeToken !== token) return;
 
-    const categoryRows = (slug, wantSeries) => (index || []).filter((row) => {
-      const isSeries = row?.type === 'series';
-      if (wantSeries) return isSeries;
-      if (isSeries) return false;
-      return movieCategorySlug(row?.category) === slug;
-    });
+    // One walk of the index, not one per row. Every row used to filter the
+    // whole catalogue from end to end, so eight rows meant eight full passes
+    // over the same few thousand records to answer eight questions that a
+    // single pass answers at once.
+    const bySlug = new Map();
+    const seriesRows = [];
+    for (const row of (index || [])) {
+      if (row?.type === 'series') {
+        seriesRows.push(row);
+        continue;
+      }
+      const slug = movieCategorySlug(row?.category);
+      if (!slug) continue;
+      const bucket = bySlug.get(slug);
+      if (bucket) bucket.push(row);
+      else bySlug.set(slug, [row]);
+    }
+    const categoryRows = (slug, wantSeries) =>
+      (wantSeries ? seriesRows : bySlug.get(slug)) || [];
 
-    MOVIE_HOME_ROWS.forEach(([key, title, description]) => {
+    // Building a row is cheap; building eight without pause is not. The loop
+    // hands the thread back whenever it has held it for longer than a frame,
+    // which turns one task a tap cannot interrupt into several it can. The
+    // rows still arrive in order, into the slots reserved for them.
+    let sliceStart = nowMs();
+    for (const [key, title, description] of MOVIE_HOME_ROWS) {
       // A discovery shelf that had rows was drawn before the paint; one that
       // was empty is settled below, from this index.
-      if (key in byKey && byKey[key].length) return;
-      if (key in byKey) return;
+      if (key in byKey) continue;
       fillSlot(key, title, description, categoryRows(key, key === 'web-series'));
-    });
+      if (nowMs() - sliceStart < MOVIE_HOME_SLICE_MS) continue;
+      await yieldToBrowser();
+      if (state.movieHomeToken !== token) return;
+      sliceStart = nowMs();
+    }
 
     // Just Added has its own shelf, and when that shelf is empty the fallback
     // is read from this same index - so it is settled here rather than ahead

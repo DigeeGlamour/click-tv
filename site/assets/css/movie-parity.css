@@ -1871,3 +1871,63 @@ body .catalog-series-card .series-catalog-poster {
 .catalog-series-card .series-catalog-copy h3 {
   min-height: 0 !important;
 }
+
+/* ===========================================================================
+   20. THE PAGE ONLY DRAWS THE PART YOU ARE LOOKING AT.
+   ===========================================================================
+   Movie Home is eleven rows of fourteen cards. Two rows fit on a phone, so
+   nine of them are drawn, laid out and painted for nobody - every row the
+   same 321px whether or not it is anywhere near the screen.
+
+   `content-visibility: auto` lets the browser skip the layout and paint of a
+   row while it is off screen and do it when the row comes near. Nothing is
+   removed: every row, every card and every image is still in the page, still
+   found by Ctrl+F, still reachable by keyboard and by a screen reader, and
+   still there the instant it is scrolled to.
+
+   `contain-intrinsic-size: auto <height>` is what keeps that honest. A
+   skipped row would otherwise measure zero and the whole list would collapse,
+   so it stands in at the height a row really is - measured, not guessed: 321px
+   at phone and desktop widths, 305px in the tablet range. `auto` means that
+   once a row has been drawn the browser remembers its real height and uses
+   that instead, so the scrollbar settles exactly where it belongs.
+
+   Scoped to Home's own rows. The catalogue grid, the detail page, the player
+   and every non-movie section are untouched. */
+body.movie-portal #movieHomeSections .movie-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 321px;
+}
+@media (min-width: 701px) and (max-width: 1000px) {
+  body.movie-portal #movieHomeSections .movie-row {
+    contain-intrinsic-size: auto 305px;
+  }
+}
+
+/* 20a. VIEW ALL can be hit by a thumb.
+   ------------------------------------
+   The demo draws this as text rather than a button, and text is what it
+   should look like - but it measured 80x25 on a phone, against the 44px
+   both Apple and Google ask for. A miss here is not harmless: the row's
+   cards sit directly under it, so a thumb that falls short opens a film the
+   viewer did not choose.
+
+   The reach is widened with a pseudo-element rather than with padding, so
+   the label does not move by a pixel and the row's header keeps its
+   spacing. Only the area that answers the tap changes. */
+@media (max-width: 1000px) {
+  body.movie-portal .movie-row-all {
+    position: relative;
+    /* The card strip is the next element in the row, so it was painted over
+       the reach added below and went on catching the taps that fell short.
+       The label is transparent apart from its text, so lifting it changes
+       nothing that can be seen. */
+    z-index: 2;
+  }
+  body.movie-portal .movie-row-all::after {
+    content: '';
+    position: absolute;
+    /* 25px tall + 10px above and below = 45px. */
+    inset: -10px -8px;
+  }
+}
