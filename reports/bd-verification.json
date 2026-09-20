@@ -1,19 +1,21 @@
 {
-  "timestamp": "2026-09-20T05:43:35.221634+00:00",
+  "timestamp": "2026-09-20T05:49:55.746645+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 3,
-  "total_global_network_checked": 3,
-  "total_proxy_selected": 0,
-  "total_proxy_checked": 0,
-  "total_processed": 3,
+  "total_input_pool": 4,
+  "total_global_network_checked": 4,
+  "total_proxy_selected": 1,
+  "total_proxy_checked": 1,
+  "total_processed": 4,
   "total_publishable": 1,
-  "strict_player_hidden": 2,
-  "browser_unreachable_hidden": 0,
+  "strict_player_hidden": 1,
+  "browser_unreachable_hidden": 1,
   "unproven_hidden": 0,
   "status_counts": {
     "verified_global": 1,
-    "metadata_only": 2
+    "failed": 1,
+    "metadata_only": 1,
+    "unreachable_from_browser": 1
   },
   "groups": {
     "verified_global": [
@@ -21,8 +23,8 @@
         "id": "new-zealand-warriors-vs-newcastle-knights",
         "name": "New Zealand Warriors Vs Newcastle Knights",
         "source_id": "sm-sports-data",
-        "source_pipeline": "upcoming",
-        "url": "https://file.genoads.com/ch1.m3u8",
+        "source_pipeline": "today_match",
+        "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/awxnrqkbo5/out/v1/716529a4091947b0877e6cb80dbd6ccb/cenc.mpd",
         "verification_status": "verified_global",
         "verification_mode": "global",
         "publish_allowed": true,
@@ -31,6 +33,24 @@
         "proxy_http_status": 0,
         "verification_error": "",
         "verification_note": "",
+        "permanent_fail_count": 0
+      }
+    ],
+    "failed": [
+      {
+        "id": "western-australia-vs-tasmania",
+        "name": "Western Australia vs Tasmania",
+        "source_id": "drmlive-fancode-mirror",
+        "source_pipeline": "today_match",
+        "url": "https://in-mc-flive.fancode.com/mumbai/4249273_english_hls_e3fab9836423381_1ta-di_h264/1080p.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "same_run_player_gate",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
         "permanent_fail_count": 0
       }
     ],
@@ -50,21 +70,23 @@
         "verification_error": "",
         "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
         "permanent_fail_count": 0
-      },
+      }
+    ],
+    "unreachable_from_browser": [
       {
         "id": "new-zealand-warriors-vs-newcastle-knights",
         "name": "New Zealand Warriors Vs Newcastle Knights",
         "source_id": "sm-sports-data",
-        "source_pipeline": "upcoming",
-        "url": "",
-        "verification_status": "metadata_only",
-        "verification_mode": "none",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.50/hls/ZGGGQQ.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
         "publish_allowed": false,
         "http_status": 0,
         "proxy_name": "",
         "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.50): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
         "permanent_fail_count": 0
       }
     ]
