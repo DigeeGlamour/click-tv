@@ -10,6 +10,83 @@ history of what was changed, why, and what was proved stays in one place.
 
 ---
 
+## Master Plan Update: v3.4 → v3.5
+
+Received after Phase 4 was committed and pushed. **v3.5 does not supersede the
+work already done** — it adds one section and splits one step.
+
+The delta was established by diffing the two plans rather than by reading them
+side by side. Six hunks changed out of 1,471 lines; everything else is
+byte-identical.
+
+| Hunk | Change |
+|---|---|
+| lines 4, 14 | version and revision-count header |
+| after §4.8 | **NEW §4.9 — Dependency-aware parallel execution** (96 lines) |
+| ধারা ৭ | ধাপ ১০ split into **১০ক** (scan frequency) and **১০খ** (parallel stages) |
+| ধারা ৭ dependencies | new line: ধাপ ১০খ ← ধাপ ৭ (TTL) |
+| §9 | the "no worker DAG" exclusion narrowed to "no nine separate GitHub Actions jobs"; the principle itself is restored as §4.9 |
+| পরিশিষ্ট-গ | sixth review round recorded |
+
+### What v3.5 adds
+
+**§4.9 — "Parallel where independent, wait only where there is a real
+dependency."** One run, three stages, bounded thread pools rather than nine
+GitHub Actions jobs:
+
+```
+STAGE A  sequential   Source Fetch → Delta / Identity
+STAGE B  parallel     Stream Verify · Series Classification · Metadata
+                      · Artwork · Repair      (each its own bounded pool)
+STAGE C  sequential   Aggregator → No-Loss validation (ধারা ৪.০) → atomic publish
+```
+
+The plan is honest about the size of the win: the code's own note says 150
+lookups cost 2–3 minutes of a 40-minute budget, so running metadata beside
+verification saves **~7% today**. It becomes worth doing only after ধাপ ৭ drops
+verification from 2,475 links to ~354, and most of all during ধাপ ৫'s 600–800
+lookups. That is why it is ধাপ ১০খ and not ধাপ ১.
+
+### Status of the phases already delivered
+
+| Phase | v3.5 impact |
+|---|---|
+| ০ baseline + rollback | **unaffected** |
+| ১ No-Loss coverage gate | **unaffected** — §4.9 rule 4 protects it, does not change it |
+| ২ private source fallback | **unaffected** |
+| ৩ক shadow migration | **unaffected** |
+| ৩খ classification + migration | **unaffected** |
+| ৪ provider router | **unaffected** — §4.9 rule 3 reuses its per-provider budgets |
+
+Nothing is reopened, rewritten or redone. §4.9 is additive.
+
+### When ধাপ ১০খ is implemented
+
+After **ধাপ ৭ (link health TTL + staggered sweep)** is complete and stable, in
+the order v3.5 states: ৫ → ৬ → ৭ → ৮ → ৯ → ১০ক → **১০খ** → ১১ → ১২ → ১৩.
+
+Its four safety rules are recorded here now so they are not rediscovered later,
+and because two of them constrain work happening before ১০খ:
+
+1. **No stage mutates shared data.** Each returns a result fragment
+   (`content_id → changed fields`); one Aggregator merges them in a
+   deterministic order. This one is a live constraint on today's code:
+   `_annotate_recency`, `_annotate_metadata`, `_annotate_classification` and
+   `_annotate_provider_pending` all mutate the movie dicts in place, which is
+   correct while they run sequentially and a race the moment they do not.
+2. **Single writer.** No worker writes or pushes production JSON; only Stage C.
+3. **Bounded pool per stage, with coordinated host and API budgets.** Two
+   stages hitting one host do not each get the full `per_host_limit`.
+4. **A partial stage result is never counted as a loss.** A stage that stops on
+   its time budget reports `partial`, and the Aggregator keeps those items'
+   previous state. Without this a slow run makes the No-Loss gate BLOCK
+   wrongly — or worse, publishes partial data.
+
+Plus the deadlock rule: no worker waits on another worker's Future; all
+dependencies live in the coordinator.
+
+---
+
 ## Baseline — measured before anything changed
 
 Taken on 2026-09-20 from commit `9eda889b6d4e7eb22ba8d28e82a3dbf880f9497d`,
