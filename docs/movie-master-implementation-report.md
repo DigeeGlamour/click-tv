@@ -834,8 +834,144 @@ repository, and report zero differences both times.
    depends on the literal numbers, and the two tiers the plan counted exactly
    (16 and 26) still match exactly.
 
+### Commit / push
+
+`phase-3a: shadow migration run, and the precondition it uncovered`
+→ `3294f9fcbb8bafcc399491079ab0f9f1de5292af`, pushed to `origin/main` and
+verified by `git ls-remote`.
+
 ### Next task
 
-Phase 3খ — content classification and title parsing (D-01, S-05), carrying the
-precondition this rehearsal produced: **merge into the 15 existing series
-cards, never create a second card for them.**
+Phase 3খ — content classification and title parsing.
+
+---
+
+## PHASE 3খ (part 1) — classification cache, and making the uncertainty visible
+
+**Plan reference:** ধাপ ৩খ (D-01, S-05), ধারা ৪.২ · ৪.৬ · ৪.৭, and ধারা ৪.০'s
+category rule.
+
+### Why this phase is split
+
+ধাপ ৩খ is the one destructive step in the plan: it rewrites 390 cards. The plan
+requires every step to be independently shippable **and independently
+rollback-able**, so it is being delivered in two halves:
+
+* **part 1 (this section)** — record what is known, mark what is pending. Adds
+  only: nothing moves, nothing is hidden, nothing is dropped.
+* **part 2** — the actual regrouping of 390 cards into 114 shows, merging into
+  the 15 series that already exist.
+
+The order is not caution for its own sake. The flags part 1 adds are what
+INVARIANT ২ reads to tell "still visible, classification pending" apart from
+"gone". They have to exist *before* anything starts moving, or the first
+migration runs with the gate half blind.
+
+### Before state
+
+No classification state of any kind. `grep` for `classification_cache`,
+`classifier_version` and `normalized_show_key` returned nothing, which is
+exactly what the plan's S-05 says.
+
+### Files changed
+
+New: `scanner/movie_classification.py`, `tests/test_movie_classification.py`
+(33 tests).
+
+Changed: `scanner/movies.py` — `_annotate_classification()` and the
+`category_pending` flag in the grouping loop.
+
+### Implementation
+
+**`state/movie-classification-cache.json`**, the third and last of the three new
+state files ধারা ৪.২ allows. Provider-agnostic, per the v৩.৪ correction: the
+record carries an `external_ids` **map**, an `identity_source` naming how the
+identity was settled, and a `disambiguation_context`; `tmdb_tv_id` survives only
+as a compatibility mirror, and a record identified by TVmaze alone is a valid
+record.
+
+**Version invalidation** (ধারা ৪.৭): a record written by an older
+`classifier_version` is stale whatever its age. ধাপ ৩ changes the rules, and
+answers derived from the old ones must not sit behind a TTL pretending to be
+current. The risk this guards is the one the plan identified by reading the
+code — not a "not found" getting stuck, which this codebase already retries,
+but a **wrong match from a dirty title** cached as applied for 90 days.
+
+**Fill-only, and confidence only rises.** A provider that answers later
+strengthens a record the regex created; a provider that is unavailable leaves
+it exactly as it was. That is ধারা ৪.৭'s "all APIs down" contract applied to
+classification as well as to metadata.
+
+**`category_pending`** (ধারা ৪.০, v৩.৪ correction 2). The behaviour was already
+correct — an unknown category has always gone to Mix, so nothing was being lost
+— but nothing recorded *why* a film is in Mix. The flag is taken from the
+pre-canonical value, because reading it afterwards would flag nothing at all:
+by then every unknown category is already the string "Mix", which is known.
+
+### Tests run
+
+`tests/test_movie_classification.py` — **33 tests, 33 pass.** Provider-agnostic
+shape, fill-only behaviour, classifier-version staleness, TTL, the zero-cost
+evidence path, deduplicated unresolved shows, and — the one that matters most —
+that the annotation adds only: no card added, removed or repointed, a plain
+film left completely untouched, and a broken classifier leaving the catalogue
+exactly as the previous behaviour produced it.
+
+### Data validation — against all 1,667 published cards
+
+```
+series signals                     571
+  with an explicit episode         348
+  season-only                      223
+  still classification_pending     181
+
+shows proved at zero API cost      114
+shows still needing a provider     152
+cards that gained an episode
+  the title never stated             0     ← the rule that cannot bend
+```
+
+The plan budgeted "~২৫৫ classification lookups" (≈108 confirmed shows plus 147
+deduplicated unresolved). Measured: 114 + 152 = **266 unique shows, of which
+only 152 need a provider at all** — cheaper than the plan's estimate, because
+more shows were proved for free than it assumed.
+
+### No-Loss results
+
+Nothing moved, so INVARIANT ২ is unaffected. The part that matters for the gate
+is that `classification_pending` and `category_pending` are both already in
+`movie_coverage.PENDING_FLAGS`, so a flagged card counts as **visible pending**
+rather than as a loss — asserted by a test that reads the gate's own constant.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| §4.2 `state/movie-classification-cache.json` | **IMPLEMENTED** |
+| §4.2 provider-agnostic `external_ids` + `identity_source` | **IMPLEMENTED** |
+| §4.2 `tmdb_tv_id` as compatibility only | **IMPLEMENTED** |
+| §4.7 `classifier_version` in the invalidation key | **IMPLEMENTED** |
+| §4.0 unknown category → Mix, never dropped | **ALREADY SATISFIED** |
+| §4.0 `category_pending` flag | **IMPLEMENTED** |
+| §4.6 `classification_pending` on unproven rows | **IMPLEMENTED** |
+| §4.6 episode number never invented | **IMPLEMENTED** (0 of 1,667 on real data) |
+| A-06 observability counters | **PARTIALLY IMPLEMENTED** — `series_signal_candidates`, `confirmed_series`, `season_only_unknown_episode`, `classification_cache` counts are produced; the rest belong to ধাপ ১৩ |
+| ধাপ ৩খ regroup 390 cards into shows | **NOT YET** — part 2 |
+
+### Known limitations
+
+1. `cleaner_version` is not yet part of the metadata cache key. ধারা ৪.৭ asks
+   for `cleaner_version` **and** `classifier_version`; the classifier half is
+   done, and the cleaner half belongs with ধাপ ৩খ part 2, which is what changes
+   the cleaner.
+2. The 152 unresolved shows need the Provider Router (ধাপ ৪) before they can be
+   asked about. The list is produced and deduplicated so that step can spend a
+   budget on it; nothing asks a provider yet.
+3. The flags are written by `process_movies`, so they reach the published cards
+   on the next real movie scan, not before.
+
+### Next task
+
+Phase 3খ part 2 — regroup the 390 proven cards into 114 shows, **merging into
+the 15 series that already exist** rather than creating a second card for each,
+with the ধাপ ৩ক identity re-checked after the move.

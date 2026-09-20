@@ -706,6 +706,91 @@ def _retain_recent_dropouts(
         return movies
 
 
+def _annotate_classification(movies: List[Dict[str, Any]]) -> Dict[str, int]:
+    """ধারা ৪.৬ - say what the title proves about season and episode.
+
+    Adds only. Nothing is moved, hidden or dropped here. ধাপ ৩খ has two halves
+    and this is the first: make the uncertainty visible and record the shows
+    the catalogue already proves. Regrouping 390 cards into shows is the second
+    half, a separate change, and gated on the ধাপ ৩ক rehearsal.
+
+    Doing it in this order is not caution for its own sake. The flags this adds
+    are what INVARIANT ২ reads to tell "still visible, classification pending"
+    apart from "gone" - so they have to exist *before* anything starts moving,
+    or the first migration runs with the gate half blind.
+
+    Runs over the whole catalogue at once because ধারা ৪.৬ tier 2 is a
+    catalogue-wide question: "Peaky Blinders S01" is proved a series by
+    "Peaky Blinders S01E05" existing, and the two can be in different
+    categories.
+
+    Wrapped: classification failing must leave the catalogue exactly as the
+    previous behaviour produced it.
+    """
+    summary: Dict[str, int] = {}
+    try:
+        from scanner import movie_classification, series_signal
+
+        signals = series_signal.classify_rows(
+            [series_signal.detect(movie.get("name")) for movie in movies]
+        )
+        counts = {
+            "series_signal_candidates": 0,
+            "confirmed_series": 0,
+            "season_only_unknown_episode": 0,
+            "classification_pending": 0,
+        }
+        for movie, signal in zip(movies, signals):
+            if not isinstance(movie, dict) or not signal.get("is_series_signal"):
+                continue
+            counts["series_signal_candidates"] += 1
+            movie["series_show_key"] = signal.get("show_key") or ""
+            movie["series_evidence_tier"] = signal.get("evidence_tier") or ""
+            movie["series_detected_pattern"] = signal.get("detected_pattern") or ""
+            if signal.get("season") is not None:
+                movie["series_season_number"] = signal["season"]
+            # Written only when the title states one. A card that never had an
+            # episode number must not acquire one here - ধারা ৪.৬ forbids
+            # inventing it, and a field defaulting to 1 is how that happens.
+            if signal.get("episode") is not None:
+                movie["series_episode_number"] = signal["episode"]
+                counts["confirmed_series"] += 1
+            else:
+                counts["season_only_unknown_episode"] += 1
+            if signal.get("episode_end") is not None:
+                movie["series_episode_end_number"] = signal["episode_end"]
+            if signal.get("part") is not None:
+                movie["series_part_number"] = signal["part"]
+            if signal.get("classification_pending"):
+                movie["classification_pending"] = True
+                counts["classification_pending"] += 1
+
+        store = movie_classification.load()
+        recorded = movie_classification.remember_from_signals(store, signals)
+        unresolved = movie_classification.unresolved_show_keys(store, signals)
+        movie_classification.save(store)
+
+        summary = {
+            **counts,
+            "classification_shows_recorded": recorded["recorded"],
+            "classification_lookups_still_needed": len(unresolved),
+        }
+        print(
+            "   classification: {series_signal_candidates} series signal(s), "
+            "{confirmed_series} with an explicit episode, "
+            "{season_only_unknown_episode} season-only, "
+            "{classification_pending} still pending".format(**counts)
+        )
+        print(
+            f"   classification cache: {recorded['recorded']} show(s) proved "
+            f"at zero API cost, {len(unresolved)} still to resolve"
+        )
+        return summary
+    except Exception as error:  # noqa: BLE001 - must not fail a scan
+        print(f"   movie classification skipped: {error}")
+        return summary
+
+
 def _annotate_recency(movies: List[Dict[str, Any]]) -> Dict[str, int]:
     """Add the fields the ordering needs. Adds only - never hides or removes.
 
@@ -4400,6 +4485,11 @@ def process_movies(
             or is_player_proven(movie, "movie", proof_keys)
         ]
 
+    # ধারা ৪.৬. Runs over the whole catalogue before it is split by category,
+    # because tier-2 evidence is catalogue-wide: a season-only row is proved a
+    # series by a sibling episode that may sit in a different category.
+    _annotate_classification(merged_movies)
+
     grouped_movies: Dict[str, List[Dict[str, Any]]] = {
         category: [] for category in VALID_MOVIE_CATEGORIES
     }
@@ -4407,9 +4497,18 @@ def process_movies(
     for movie in merged_movies:
         if not isinstance(movie, dict):
             continue
-        category = _canonical_movie_category(movie.get("category"))
+        raw_category = movie.get("category")
+        category = _canonical_movie_category(raw_category)
         movie_copy = dict(movie)
         movie_copy["category"] = category
+        # ধারা ৪.০, v৩.৪ correction 2. An unknown category has always landed in
+        # Mix; what was missing is saying so. The flag is the difference
+        # between a film that belongs in Mix and one that is only there because
+        # nobody could tell - and it is what ধাপ ১১ will need to move the 937
+        # Mix entries out again. A category is never a reason to drop or hide
+        # anything, and this records the uncertainty instead.
+        if not _has_known_movie_category(raw_category):
+            movie_copy["category_pending"] = True
         # Manual primary/backup order is already compatibility-aware and trusted.
         if movie_copy.get("manual_source"):
             movie_copy["available_link_count"] = 1 + len(movie_copy.get("backups") or [])
