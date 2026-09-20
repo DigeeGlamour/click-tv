@@ -160,6 +160,39 @@ def anilist_poster_lookup(title: str) -> str:
     return str(cover.get("extraLarge") or cover.get("large") or "").strip()
 
 
+#: Which function answers for which provider name. The names are the ones
+#: `provider_router` and `provider_health` already use, so artwork lookups are
+#: counted against the same quota and the same breaker as metadata lookups to
+#: the same provider - two ledgers for one API key is how a budget gets spent
+#: twice.
+_POSTER_LOOKUPS = {
+    "fanart": lambda ctx: fanart_movie_poster_lookup(ctx["tmdb_id"]),
+    "cinemeta": lambda ctx: cinemeta_poster_lookup(
+        ctx["imdb_id"], ctx["media_kind"]),
+    "omdb": lambda ctx: omdb_poster_lookup(ctx["title"], ctx["year"]),
+    "tvmaze": lambda ctx: tvmaze_poster_lookup(ctx["title"]),
+    "anilist": lambda ctx: anilist_poster_lookup(ctx["title"]),
+}
+
+
+#: The order this module used before ধাপ ৬. Kept as the tail of the routed
+#: order so nothing that used to be asked stops being asked.
+_FIXED_CHAIN = ("fanart", "cinemeta", "omdb", "tvmaze", "anilist")
+
+#: Providers that answer from an exact external id rather than from a title.
+_ID_KEYED = frozenset({"fanart", "cinemeta"})
+
+
+def _is_available(provider: str) -> bool:
+    """Health and quota only - capability is the router's separate question."""
+    try:
+        from scanner import provider_router
+
+        return provider_router.available(provider)
+    except Exception:  # noqa: BLE001 - never let a health check cost artwork
+        return True
+
+
 def supplementary_poster_lookup(
     title: str,
     year: int = 0,
@@ -168,21 +201,68 @@ def supplementary_poster_lookup(
     imdb_id: Any = "",
     media_kind: str = "movie",
 ) -> str:
-    """The fallback chain, tried in order, first non-empty result wins.
+    """ধাপ ৬'s Artwork Router - first non-empty result wins, order not fixed.
 
-    Fanart.tv and Cinemeta only ever contribute when an id already reached
-    this call - most items never have one, so those two are frequently
-    inert, which is expected rather than a sign anything is broken.
+    The order used to be written here: Fanart, Cinemeta, OMDb, TVMaze, AniList.
+    ধারা ৪.৭ is explicit that a fixed chain is a description and not an
+    instruction, and ধাপ ৬ asks for an "Artwork Router (কোটা/হেলথ/capability
+    অনুযায়ী ... স্থির ক্রম নয়)". So the order now comes from `provider_router`,
+    which excludes a provider that is cooling down, tripped or out of budget
+    instead of walking into it, and which already knows that Fanart needs a
+    `tmdb_id` and Cinemeta an `imdb_id`.
+
+    Falls back to the original fixed order if the router cannot be consulted -
+    a routing failure should cost the ordering, not the artwork.
     """
-    for lookup in (
-        lambda: fanart_movie_poster_lookup(tmdb_id),
-        lambda: cinemeta_poster_lookup(imdb_id, media_kind),
-        lambda: omdb_poster_lookup(title, year),
-        lambda: tvmaze_poster_lookup(title),
-        lambda: anilist_poster_lookup(title),
-    ):
+    context = {
+        "title": title, "year": year, "tmdb_id": tmdb_id,
+        "imdb_id": imdb_id, "media_kind": media_kind,
+    }
+    kind = "series" if str(media_kind or "").casefold() in (
+        "series", "tv", "show") else "movie"
+
+    try:
+        from scanner import provider_router
+
+        order = provider_router.order(
+            capability=provider_router.CAPABILITY_ARTWORK,
+            kind=kind,
+            have={"tmdb_id": tmdb_id, "imdb_id": imdb_id, "title": title},
+        )
+    except Exception:  # noqa: BLE001 - routing must never cost the artwork
+        order = []
+
+    # The router decides the ORDER and skips a provider that is down or out of
+    # budget. It does not get to remove one the fixed chain would have tried:
+    # its `kinds` filter is about where a provider is *likely* to help - AniList
+    # for anime, TVMaze for television - and a long shot that used to be taken
+    # and now is not is a regression dressed up as routing. So anything the
+    # router did not rank is appended in the original order, minus whatever is
+    # currently unavailable.
+    routed = [name for name in order if name in _POSTER_LOOKUPS]
+    providers = list(routed)
+    for name in _FIXED_CHAIN:
+        if name in providers:
+            continue
+        if not _is_available(name):
+            continue
+        providers.append(name)
+
+    # An id-keyed provider always goes before a title-keyed one, whatever the
+    # router's weights say. This is not a preference, it is about what kind of
+    # answer each gives: Fanart asked for tmdb_id 27205 returns art for that
+    # exact film, while OMDb asked for "Inception" returns art for whatever it
+    # thinks that title means - and a title match against an anime-only
+    # catalogue can land on an unrelated same-named title. A stable partition,
+    # so the routed order still decides everything within each group.
+    providers.sort(key=lambda name: name not in _ID_KEYED)
+
+    for name in providers:
+        lookup = _POSTER_LOOKUPS.get(name)
+        if lookup is None:
+            continue
         try:
-            poster = lookup()
+            poster = lookup(context)
         except Exception:  # pragma: no cover - a provider must never break a scan
             poster = ""
         if poster:

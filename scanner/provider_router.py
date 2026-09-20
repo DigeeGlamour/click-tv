@@ -82,7 +82,12 @@ DEFAULT_PROVIDERS: Dict[str, Dict[str, Any]] = {
     },
     "omdb": {
         "weight": 20,
-        "capabilities": [CAPABILITY_MOVIE_METADATA, CAPABILITY_SERIES_METADATA],
+        # OMDb answers with a Poster field as well as the text fields, and
+        # `poster_providers.omdb_poster_lookup` has always used it - so leaving
+        # artwork off this list made the Artwork Router unable to reach a
+        # provider the fixed chain had been calling all along.
+        "capabilities": [CAPABILITY_MOVIE_METADATA, CAPABILITY_SERIES_METADATA,
+                         CAPABILITY_ARTWORK],
         "kinds": [KIND_MOVIE, KIND_SERIES, KIND_ANIME],
         "requires": [],
         # ধারা ৪.৭ - "OMDb: ফ্রি কোটার একটি অংশ জরুরি fallback-এর জন্য সংরক্ষিত".

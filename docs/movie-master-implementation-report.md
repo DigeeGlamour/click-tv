@@ -1542,9 +1542,146 @@ whose lookups never happen publishes with `metadata_pending`.
    metadata returns artwork in the same response). A separate artwork-only
    pass belongs with ধাপ ৬.
 
+### Commit / push
+
+`phase-5: size the metadata backfill from what is actually available`
+→ `2a5728a6d0efc9bf020b69212b2d83684885509f` (pushed as `94031d5`), verified.
+
 ### Next task
 
-Phase 6 — poster policy enforcement (D-03): manual verified → cached verified
-artwork → Artwork Router → source `tvg-logo` **only when verified** →
-placeholder. 72% of posters currently point at a host that answers 403 from
-Bangladesh.
+Phase 6 — poster policy enforcement.
+
+---
+
+## PHASE 6 — Poster policy enforcement (D-03)
+
+**Plan reference:** ধারা ৭ ধাপ ৬, ধারা ৩ D-03, ধারা ৮'s replacement metric.
+Depends on ধাপ ৪ (Artwork Router), which is done.
+
+### Before state, measured
+
+`poster_validity.py` has classified artwork as ok / dead / unknown for a while,
+and the plan says so: the gap was never the classification, it was
+"চূড়ান্ত poster নির্বাচনে **প্রয়োগ**". Measured on the real catalogue:
+
+```
+state/movie-poster-validity.json        208 verdicts, every one `ok`
+  ... of which srhady-live-stream.hf.space       0
+published posters on that host          1,197 of 1,667
+published posters with any verdict        131 of 1,667
+```
+
+So the 1,197 were **never probed**. They held first place because the resolver
+returned the feed's `logo` the moment its verdict was "not DEAD" — and "not
+DEAD" includes "never probed", so nothing could ever displace them. That is the
+whole of D-03 in one line of control flow.
+
+### Files changed
+
+New: `tests/test_movie_poster_policy.py` (17 tests).
+
+Changed: `scanner/movies.py` (`_resolve_published_poster` ranks instead of
+first-wins; `_verified_artwork_coverage`), `scanner/poster_providers.py` (the
+fixed chain becomes an Artwork Router), `scanner/provider_router.py` (OMDb
+declared artwork-capable).
+
+### Implementation
+
+**Rank, do not take the first thing that is not disqualified.** Candidates are
+gathered in the plan's priority order — cached verified artwork → Artwork
+Router → the source's own logo — and the list is walked twice: once accepting
+only a **verified** (probed `ok`) candidate, then once accepting anything not
+proven dead. A poster that is proven to load now beats one that merely arrived
+first.
+
+**The Artwork Router replaces the fixed chain.** `supplementary_poster_lookup`
+used to hard-code Fanart → Cinemeta → OMDb → TVMaze → AniList. The order now
+comes from `provider_router`, so a provider that is cooling down, tripped or
+out of budget is skipped rather than walked into, and artwork lookups are
+counted against the same quota and breaker as metadata lookups to the same API
+key — two ledgers for one key is how a budget gets spent twice.
+
+**Routing decides the order, never the membership.** The router's `kinds`
+filter expresses where a provider is *likely* to help (AniList for anime,
+TVMaze for television). Letting it remove a provider would mean a long shot
+that used to be taken silently stops being taken — a regression dressed up as
+routing. Anything the router does not rank is appended in the original order,
+minus whatever is currently unavailable.
+
+**Id-keyed providers always precede title-keyed ones**, whatever the weights
+say. Fanart asked for `tmdb_id 27205` returns art for that exact film; OMDb
+asked for "Inception" returns art for whatever it thinks that title means, and
+a title match against an anime-only catalogue can land on an unrelated
+same-named title. That was an existing, documented rule and a test caught the
+first draft breaking it.
+
+### The one place this deviates from a literal reading of ধাপ ৬
+
+ধাপ ৬ lists "source tvg-logo (শুধু verified) → placeholder", and §8 says
+"restricted/unknown পোস্টার চূড়ান্ত poster হিসেবে প্রকাশ নয়". Taken literally,
+1,197 posters would become placeholders immediately.
+
+They are not retired, and the reason is already in this codebase as a
+**measurement**, not an opinion — `poster_validity.py`:
+
+> the same URL answered 403 from a Bangladesh egress and 200 with real JPEG
+> bytes from a GitHub runner on the same day … Retiring artwork on that
+> evidence would blank a poster for every viewer who can see it, on the word of
+> one network that cannot. Viewers behind the blocked vantage are not left with
+> a broken image: the page swaps in the designed placeholder on the img error
+> event, which is where a per-viewer failure belongs.
+
+And those 1,197 are not even *restricted* — they are **unprobed**. ধারা ৮'s own
+replacement metric is "যাচাইকৃত আর্টওয়ার্ক কভারেজ > ৯৫% — ছবিটি সত্যিই লোড হয়
+কি না", which is raised by finding a verified alternative, not by deleting an
+unverified one. So: a verified candidate always wins; a *proven dead* one is
+never published; an unprobed one is kept as the last resort before a
+placeholder, and counted separately so the coverage target is measurable.
+
+This is the plan's own PLAN DEVIATION RULE applied — the existing
+implementation encodes a measured fact the D-03 wording does not account for,
+so it is reused and the difference is recorded rather than silently overridden.
+
+### Tests run
+
+```
+tests/test_movie_poster_policy.py          17 tests   PASS
+tests/test_movie_title_and_poster_health.py           PASS  (unchanged)
+tests/test_poster_providers.py                        PASS  (unchanged)
+```
+
+Three faults the existing suite caught in the first draft, each a real rule:
+the counters required callers to pre-seed keys; OMDb was not declared
+artwork-capable although `omdb_poster_lookup` has always existed; and the
+id-keyed-before-title-keyed rule was broken by the router's weights.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| ধাপ ৬ priority: cached verified → Artwork Router → source logo | **IMPLEMENTED** |
+| ধাপ ৬ Artwork Router by quota/health/capability, no fixed order | **IMPLEMENTED** |
+| §3 D-03 ok/dead/restricted classification | **ALREADY SATISFIED** (`poster_validity.py`) |
+| §3 D-03 applying it in final poster selection | **IMPLEMENTED** |
+| §8 verified artwork coverage, provider-agnostic | **IMPLEMENTED** (`verified_artwork_coverage` in the report) |
+| §8 "restricted/unknown পোস্টার চূড়ান্ত poster নয়" | **PARTIALLY — deviation recorded above**: proven-dead never published; unprobed kept as last resort, counted, and displaced by any verified alternative |
+| Master-safety 3 "Poster না থাকলে Movie drop নয়" | **ALREADY SATISFIED** |
+
+### Known limitations
+
+1. Verified coverage will not jump on the first scan. A candidate can only be
+   *verified* if it is probed, and `poster_validity` has a per-run time budget.
+   The number is now measured every run, so the trend is visible instead of
+   assumed.
+2. The 1,197 unprobed hf.space posters stay until the router finds verified
+   replacements, which needs the metadata identities ধাপ ৫ fills in.
+3. `manual(verified)` is not a separate tier: manual posters already enter
+   through `state/manual-movie-posters.json` into the same cache tier, which
+   outranks the router and the source logo. Adding a fourth tier would be two
+   places holding one truth.
+
+### Next task
+
+Phase 7 — link health TTL + staggered sweep (S-01), `state/movie-link-health.json`
+with `next_verify_at`. The plan calls it the single largest technical win, and
+v3.5's ধাপ ১০খ is gated on it.

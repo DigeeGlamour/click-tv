@@ -4200,6 +4200,29 @@ def _poster_validation_enabled() -> bool:
     }
 
 
+def _verified_artwork_coverage(counters: Dict[str, int]) -> Dict[str, Any]:
+    """ধারা ৮'s artwork metric, computed rather than asserted.
+
+    Deliberately provider-agnostic: the plan struck out "TMDB পোস্টার > ৭৫%"
+    because measuring one provider's share contradicts a provider-agnostic
+    router - a good poster from Fanart would have counted as a failure. The
+    question is whether the image loads, not who supplied it.
+    """
+    verified = int(counters.get("verified") or 0)
+    unverified = int(counters.get("unverified") or 0)
+    blank = int(counters.get("blank") or 0)
+    published = verified + unverified
+    total = published + blank
+    return {
+        "verified": verified,
+        "unverified": unverified,
+        "no_artwork": blank,
+        "published_with_artwork": published,
+        "verified_share": round(verified / published, 4) if published else 0.0,
+        "target_share": 0.95,
+    }
+
+
 def _resolve_published_poster(
     movie: Dict[str, Any],
     *,
@@ -4217,53 +4240,95 @@ def _resolve_published_poster(
     this, the feed's own ``logo`` was accepted on syntax alone and returned
     immediately, so a dead host sat permanently above every working fallback.
     """
-    current = _valid_poster_url(movie.get("logo") or movie.get("poster"))
-    if current:
-        verdict = validator.verdict(current)
-        if verdict != DEAD_POSTER:
-            # Live, or unprovable from here. An unprovable one is kept rather
-            # than dropped: our egress timing out says nothing about the art.
-            counters["kept"] += 1
-            return current
-        counters["dropped_dead"] += 1
-
     identity = _poster_identity(clean_name, year)
+    current = _valid_poster_url(movie.get("logo") or movie.get("poster"))
 
-    for source in (cache, generated_posters):
+    # ধাপ ৬ / D-03. The order below is the plan's priority - manual verified,
+    # cached verified artwork, Artwork Router, then the source's own logo - and
+    # the change that matters is that it is a *ranking* rather than
+    # first-past-the-post.
+    #
+    # It used to return the feed's `logo` immediately whenever the verdict was
+    # not DEAD, and "not DEAD" includes "never probed". Measured on the real
+    # catalogue: state/movie-poster-validity.json holds 208 verdicts, every one
+    # of them `ok`, and not a single `srhady-live-stream.hf.space` among them -
+    # while 1,197 of the 1,667 published posters point at that host. Those were
+    # never verified; they simply arrived first and nothing could ever displace
+    # them, which is precisely the "প্রয়োগ" gap ধারা ৩ describes.
+    #
+    # What is deliberately NOT done here is retiring them. `poster_validity`
+    # records a measured decision that a 403 is vantage-shaped - the same URL
+    # answers 403 from Bangladesh and 200 with real JPEG bytes from a GitHub
+    # runner - and the page already swaps in the designed placeholder per
+    # viewer on the img error event. Blanking artwork on one network's word
+    # would remove a poster from every viewer who can see it. ধারা ৮ asks for
+    # "যাচাইকৃত আর্টওয়ার্ক কভারেজ", which is raised by finding a verified
+    # alternative, not by deleting an unverified one.
+    def _verified(url: str) -> bool:
+        return bool(url) and validator.verdict(url) == "ok"
+
+    def _usable(url: str) -> bool:
+        return bool(url) and validator.verdict(url) != DEAD_POSTER
+
+    #: (url, counter_name), best first.
+    candidates: List[Tuple[str, str]] = []
+
+    for source, label in ((cache, "recovered_cache"),
+                          (generated_posters, "recovered_cache")):
         candidate = _valid_poster_url(source.get(identity))
-        # The generated map is built from the previous publish, which is full
-        # of the very URLs being retired here, so it is checked too.
-        if candidate and validator.verdict(candidate) != DEAD_POSTER:
-            cache[identity] = candidate
-            counters["recovered_cache"] += 1
-            return candidate
+        if candidate:
+            candidates.append((candidate, label))
 
-    if movie.get("poster_lookup") is False:
-        counters["blank"] += 1
-        return ""
+    if movie.get("poster_lookup") is not False:
+        # The clean title is what makes this worth doing: "Gargi 2024 Bengali
+        # Dubbed ORG" matches nothing at TMDB, "Gargi" + 2024 matches the film.
+        looked_up = _tmdb_poster_lookup(clean_name, year)
+        if looked_up:
+            candidates.append((looked_up, "recovered_tmdb"))
+        routed = supplementary_poster_lookup(
+            clean_name, year,
+            tmdb_id=movie.get("tmdb_id"),
+            imdb_id=movie.get("imdb_id"),
+            media_kind=movie.get("tmdb_media_type") or "movie",
+        )
+        if routed:
+            candidates.append((routed, "recovered_provider"))
 
-    # The clean title is what makes this worth doing: "Gargi 2024 Bengali
-    # Dubbed ORG" matches nothing at TMDB, "Gargi" + 2024 matches the film.
-    candidate = _tmdb_poster_lookup(clean_name, year)
-    if candidate and validator.verdict(candidate) != DEAD_POSTER:
-        cache[identity] = candidate
-        counters["recovered_tmdb"] += 1
-        return candidate
+    # The source's own logo ranks last among real candidates, which is the
+    # reordering ধাপ ৬ asks for.
+    if current:
+        candidates.append((current, "kept"))
 
-    candidate = supplementary_poster_lookup(
-        clean_name, year,
-        tmdb_id=movie.get("tmdb_id"),
-        imdb_id=movie.get("imdb_id"),
-        media_kind=movie.get("tmdb_media_type") or "movie",
-    )
-    if candidate and validator.verdict(candidate) != DEAD_POSTER:
-        cache[identity] = candidate
-        counters["recovered_provider"] += 1
-        return candidate
+    # Counted once, up front: a source poster proven dead has lost its place
+    # whatever replaces it, and the number that matters is how many were
+    # retired - not how many were retired and then left unreplaced.
+    if current and validator.verdict(current) == DEAD_POSTER:
+        counters["dropped_dead"] = counters.get("dropped_dead", 0) + 1
+
+    for url, label in candidates:
+        if _verified(url):
+            if label != "kept":
+                cache[identity] = url
+            counters[label] = counters.get(label, 0) + 1
+            counters["verified"] = counters.get("verified", 0) + 1
+            return url
+
+    # Nothing is provably live. An unprobed candidate is still better than a
+    # placeholder for every viewer who can load it, so the same ranking is
+    # walked again accepting "not proven dead" - and the count is recorded
+    # separately so ধারা ৮'s verified-coverage target is measurable rather
+    # than assumed.
+    for url, label in candidates:
+        if _usable(url):
+            if label != "kept":
+                cache[identity] = url
+            counters[label] = counters.get(label, 0) + 1
+            counters["unverified"] = counters.get("unverified", 0) + 1
+            return url
 
     # Nothing real was found. Empty is the honest answer: the site draws its
     # designed placeholder, which is better than a broken image.
-    counters["blank"] += 1
+    counters["blank"] = counters.get("blank", 0) + 1
     return ""
 
 
@@ -4399,6 +4464,11 @@ def _finalize_movie_presentation(
         "titles_cleaned": 0, "years_recovered": 0, "titles_kept_for_uniqueness": 0,
         "kept": 0, "dropped_dead": 0,
         "recovered_cache": 0, "recovered_tmdb": 0, "recovered_provider": 0, "blank": 0,
+        # ধারা ৮ replaced "TMDB poster > 75%" with "যাচাইকৃত আর্টওয়ার্ক কভারেজ
+        # > ৯৫% — ছবিটি সত্যিই লোড হয় কি না, কে দিয়েছে তা নয়". These two are
+        # that metric: how many published posters were proven to load, against
+        # how many were merely not proven dead.
+        "verified": 0, "unverified": 0,
     }
     try:
         from scanner.poster_validity import PosterValidator
@@ -4499,10 +4569,11 @@ def _finalize_movie_presentation(
             "years_recovered": counters["years_recovered"],
             "kept_raw_for_uniqueness": counters["titles_kept_for_uniqueness"],
         },
-        "posters": {key: counters[key] for key in (
+        "posters": {key: counters.get(key, 0) for key in (
             "kept", "dropped_dead", "recovered_cache", "recovered_tmdb",
-            "recovered_provider", "blank",
+            "recovered_provider", "blank", "verified", "unverified",
         )},
+        "verified_artwork_coverage": _verified_artwork_coverage(counters),
         "probe": dict(validator.stats),
     }
     try:
