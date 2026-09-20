@@ -469,8 +469,177 @@ passes no `movie_coverage` behaves exactly as before, and a test holds that.
    255 removals for "no decoded frame and the route did not answer", which is
    explicitly *not* a hard reason, so those are quarantine, not rejection.
 
+### Commit / push
+
+`phase-1: enforce the no-loss coverage gate on every movie publish`
+→ `a896e57cb9ff8de61523af1b0e5e341706abc465`, pushed to `origin/main` and
+verified by `git ls-remote` (remote SHA == local HEAD).
+
 ### Next task
 
-Phase 2 — private source fallback (S-03): `use_last_valid_cache`,
-`directory_sources` and a last-good snapshot, so a transient GitHub or network
-failure can never cost the 350 owner-curated `manual_trusted` items.
+Phase 2 — private source fallback (S-03).
+
+---
+
+## PHASE 2 — Private source fallback (S-03)
+
+**Plan reference:** ধারা ৭ ধাপ ২ — "কাজ কম, ঝুঁকি সবচেয়ে বেশি".
+
+### Goal
+
+A transient GitHub or network failure must never cost the owner's catalogue.
+350 of the 1,667 published films are `manual_trusted` and all of them come from
+one private repository.
+
+### Before state
+
+`manual/movie-sources.json`, exactly as the plan's S-03 evidence describes:
+
+```json
+"use_last_valid_cache": false     ← no fallback when a fetch fails
+"require_fresh": true             ← fail if not fresh
+"directory_sources": []           ← the local-checkout path is empty
+```
+
+### Root cause — and it is worse than the config suggests
+
+Two faults, and only the first is visible in the config.
+
+1. `require_fresh: true` + a failed archive fetch → `RuntimeError`, and
+   `process_movies` takes the whole movie scan down with it. Turning
+   `require_fresh` off does not fix it: the code then `continue`s and the
+   private catalogue silently contributes **nothing**.
+
+2. **The per-file cache could not have helped even if it were switched on.**
+   It is consulted per *discovered* file, and a failed archive fetch discovers
+   none — `discovered_sources` stays empty for that repository, so there is
+   nothing for the cache branch to attach to. The fallback had to be *built*,
+   not merely enabled.
+
+### Files changed
+
+* `scanner/movies.py` — the fallback chain, a cache-fallback source builder,
+  `fallback_for` / `optional` directory semantics, and
+  `degraded_repositories` in the source report.
+* `manual/movie-sources.json` — `use_last_valid_cache: true` at both levels, and
+  `working/private-movie-source` registered as an optional fallback checkout.
+* `tests/test_movie_private_source_fallback.py` — 14 tests.
+
+### Implementation
+
+The preference order is exactly the one ধাপ ২ states:
+
+```
+fresh fetch  →  local checkout  →  last-good snapshot  →  (only now) fail
+```
+
+* **Local checkout** (`directory_sources` with `fallback_for`): real content
+  someone put there on purpose, so it outranks the snapshot. It is **standby**
+  on a healthy run and contributes nothing — otherwise every private title
+  would be published twice under two source ids.
+* **Last-good snapshot**: `_repository_cache_fallback_sources` rebuilds the
+  discovered-file list from the cache with empty `content`, so the ordinary
+  flow parses nothing, falls into the cache branch that already exists, and
+  reports `status: "cached"`. The fallback runs *through* the existing code
+  rather than around it.
+* **Strict attribution**: only cache keys under the configured repository id
+  are eligible. The real cache also holds keys from two earlier spellings of
+  this source (`hopeful-research-bangla`, `hopeful-research:<hash>`), and
+  serving those would resurrect a configuration that is no longer in force.
+* **`require_fresh` keeps its name and gains its real meaning**: "never publish
+  nothing". It raises only when there is no fallback at all.
+* **An absent optional checkout reports `skipped_absent`, not `failed`.** A
+  permanent red row in the artefact whose job is to make real damage visible is
+  a report nobody reads.
+
+### Root cause found during implementation
+
+A test caught a defect in the first version: when the **checkout** served as
+the fallback, its files are attributed to the directory source, so the
+repository's own `require_any_valid_file` counter never moved and the run raised
+anyway — the fallback publishing its films and the guard then undoing it. Fixed
+by letting a checkout that stands in for a repository count as that
+repository's content, and only for the repository it is declared a fallback for.
+
+### Tests run
+
+`tests/test_movie_private_source_fallback.py` — **14 tests, 14 pass**, covering
+both fallbacks, their order, the standby rule, the strict-attribution rule, an
+empty snapshot being refused as content, two consecutive failures being as
+survivable as one, and four contract tests on the shipped config (including
+that the checkout path is one `.gitignore` already covers — pointing elsewhere
+would commit the private catalogue).
+
+### Data validation results — against the real catalogue
+
+GitHub simulated as completely unreachable, real `manual/movie-sources.json`,
+real `state/manual-movie-remote-cache.json` (copied, not mutated):
+
+```
+degraded_repositories   {'hopeful-research-latest': 'last_good_snapshot:13_file(s)'}
+recovered               694 movie items + 70 series items
+row statuses            cached 13 · degraded_fallback 1 · skipped_absent 1
+by category             South Indian 258 · Dubbed 160 · Hindi 105 · Bangla 80
+                        · English 70 · Premium 21
+cache integrity         858 items before, 858 after — a degraded run does not
+                        damage the snapshot it is reading
+```
+
+**Before this change the same conditions raised `RuntimeError` and the entire
+movie scan died.**
+
+### No-Loss results
+
+Phases 1 and 2 compose the way the plan intends:
+
+* Without Phase 2, a private-source outage means the 350 `manual_trusted` cards
+  are absent from the incoming catalogue → `unexplained_live_loss ≈ 350` →
+  Phase 1 **BLOCKs** the publish and the site keeps yesterday's pages. Safe,
+  but frozen.
+* With Phase 2, the snapshot supplies those entries → the catalogue is complete
+  → `unexplained_live_loss = 0` → the publish proceeds and the rest of the
+  scan's work still reaches the site.
+
+The gate is the safety net; the fallback is what stops it having to catch
+anything.
+
+### Regression checks
+
+Full suite: **4,576 tests** (4,562 before this phase, +14). The same 5
+pre-existing failures and no others. A healthy fetch behaves exactly as before
+— same items, all rows `fresh`, `degraded_repositories` empty — and a test
+holds that. Live TV, Sports, Today and Upcoming do not read
+`manual/movie-sources.json`.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| ধাপ ২ `use_last_valid_cache: true` | **IMPLEMENTED** (and made reachable, which it was not) |
+| ধাপ ২ local checkout | **IMPLEMENTED** (`fallback_for`, standby on healthy runs) |
+| ধাপ ২ last-good snapshot | **IMPLEMENTED** |
+| §Master-safety 11 "Private source preferred primary থাকবে" | **ALREADY SATISFIED** (`_merge_manual_over_discovered`) — unchanged |
+| §Master-safety 6 "সব API unavailable হলেও live content last-good দিয়ে থাকবে" | **IMPLEMENTED** for the private source |
+
+### Known limitations
+
+1. The snapshot is only as good as the last successful fetch. Its age is
+   recorded per row (`last_fetched_at`) and the degradation is named in
+   `degraded_repositories`, but nothing yet *alerts* on a repository that has
+   been degraded for several runs. That belongs with ধাপ ১৩ (observability).
+2. `working/private-movie-source` is empty in CI, so the checkout branch is
+   exercised by tests rather than by a real run. It is ready for an operator or
+   a workflow step to populate.
+3. Nine of the twenty private files report `skipped_unparseable` every run. All
+   nine are `history_skipped.txt`, they hold **0** cached items, and nothing is
+   being lost — the repository's `ignore_filenames` lists `history.txt` but not
+   `history_skipped.txt`. Left alone deliberately: it is report noise, not data
+   loss, and changing the ignore list is outside ধাপ ২.
+
+### Next task
+
+Phase 3ক — **Shadow Migration run** (dry-run, nothing published):
+`reports/movie-series-migration-dryrun.json`, with the stream-coverage identity
+`before_stream_count = after_movie_streams + after_series_streams +
+merged_backups + pending_visible_streams`. ধাপ ৩খ does not start until that
+sum balances.

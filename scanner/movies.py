@@ -2100,6 +2100,71 @@ def _github_repository_snapshot_files(
     }
 
 
+def _repository_cache_fallback_sources(
+    repository_id: str,
+    repository_name: str,
+    cache_sources: Dict[str, Any],
+    first_order: int,
+) -> List[Dict[str, Any]]:
+    """The last-good files of one repository, as sources that read no network.
+
+    S-03. The per-file cache already exists and already works - but only for a
+    file the run has *discovered*, and a repository whose archive fetch failed
+    discovers none. This rebuilds the discovered-file list from the cache so
+    the existing cache path can be reached at all.
+
+    Each entry carries empty `content` on purpose. The ordinary flow then
+    parses nothing, falls through to the cache branch it already has, and
+    reports `status: "cached"` - so the fallback runs through the same code as
+    every other cached file rather than around it.
+
+    Matching is strict on the configured repository id. The cache in this
+    repository also holds keys from two earlier spellings of the same source
+    (`hopeful-research-bangla`, `hopeful-research:<hash>`), and serving those
+    would resurrect content belonging to a configuration that is no longer in
+    force - a different fault from the one this fixes.
+    """
+    prefix = f"{repository_id}:"
+    rebuilt: List[Dict[str, Any]] = []
+    for source_id in sorted(cache_sources):
+        if not str(source_id).startswith(prefix):
+            continue
+        cached = cache_sources.get(source_id)
+        if not isinstance(cached, dict):
+            continue
+        if not (cached.get("items") or cached.get("series_items")):
+            continue
+        relative_path = _clean_scalar(cached.get("relative_path"))
+        extension = "." + str(cached.get("format") or "txt").lstrip(".").casefold()
+        rebuilt.append(
+            {
+                "kind": "repository_file",
+                "id": str(source_id),
+                "name": _clean_scalar(cached.get("name"))
+                or f"{repository_name} / {relative_path}",
+                "content": "",
+                "repository": _clean_scalar(cached.get("repository")),
+                "revision": _clean_scalar(cached.get("revision")),
+                "repository_source_id": repository_id,
+                "relative_path": relative_path,
+                "extension": extension,
+                "category": _canonical_movie_category(
+                    cached.get("category")
+                    or _infer_movie_category_from_path(relative_path)
+                ),
+                "force_category": True,
+                # Both forced, and neither is negotiable for a fallback: it
+                # exists precisely to be read from cache, and it must never be
+                # the thing that raises.
+                "allow_cache": True,
+                "require_parse": False,
+                "order": first_order + len(rebuilt),
+                "from_cache_fallback": True,
+            }
+        )
+    return rebuilt
+
+
 def _directory_source_files(
     source: Dict[str, Any],
 ) -> List[Tuple[Path, str]]:
@@ -2485,6 +2550,29 @@ def _remote_source_items(
     repository_require_any_valid: Dict[str, bool] = {}
     repository_valid_item_counts: Dict[str, int] = {}
     repository_names: Dict[str, str] = {}
+    directory_valid_item_counts: Dict[str, int] = {}
+    #: Which repositories fell back, and to what. Reported, never silent: a
+    #: catalogue served from yesterday's snapshot is not a failure, but it is
+    #: not a normal run either and the owner has to be able to see which.
+    repository_fallbacks: Dict[str, str] = {}
+
+    # S-03. The local checkout is scanned before the repositories, because a
+    # repository whose fetch fails has to know, at that moment, whether there
+    # is a checkout to fall back to. It is a local glob; scanning it early
+    # costs nothing.
+    directory_files_by_id: Dict[str, List[Tuple[Path, str]]] = {}
+    directory_fallback_for: Dict[str, str] = {}
+    for directory_order, directory_source in enumerate(raw_directory_sources, start=1):
+        if not isinstance(directory_source, dict) or directory_source.get("enabled") is False:
+            continue
+        directory_id = (
+            _clean_scalar(directory_source.get("id"))
+            or f"directory-source-{directory_order}"
+        )
+        directory_files_by_id[directory_id] = _directory_source_files(directory_source)
+        fallback_for = _clean_scalar(directory_source.get("fallback_for"))
+        if fallback_for:
+            directory_fallback_for[directory_id] = fallback_for
 
     for repository_order, repository_source in enumerate(raw_repository_sources, start=1):
         if not isinstance(repository_source, dict) or repository_source.get("enabled") is False:
@@ -2516,6 +2604,42 @@ def _remote_source_items(
             zipfile.BadZipFile,
         ) as error:
             message = f"{type(error).__name__}: {error}"
+
+            # S-03, ধাপ ২. This is the single highest-risk path in the movie
+            # pipeline and until now it had no fallback at all. A transient
+            # GitHub or network failure raised (require_fresh) or, with
+            # require_fresh off, quietly contributed nothing - and the per-file
+            # cache could not help either, because the cache is consulted per
+            # *discovered* file and a failed fetch discovers none. Either way
+            # the owner's 350 manual_trusted items were the thing at risk.
+            #
+            # Preference order, exactly as ধাপ ২ states it: a local checkout
+            # first, because it is real content someone put there on purpose,
+            # then the last-good snapshot. Only when neither exists is the
+            # failure allowed to stop the run.
+            fallback_kind = ""
+            checkout_id = next(
+                (
+                    directory_id
+                    for directory_id, target in directory_fallback_for.items()
+                    if target == repository_id and directory_files_by_id.get(directory_id)
+                ),
+                "",
+            )
+            if checkout_id:
+                fallback_kind = f"local_checkout:{checkout_id}"
+            else:
+                cached_files = _repository_cache_fallback_sources(
+                    repository_id=repository_id,
+                    repository_name=repository_name,
+                    cache_sources=cache_sources,
+                    first_order=global_source_order + 1,
+                )
+                if cached_files:
+                    discovered_sources.extend(cached_files)
+                    global_source_order += len(cached_files)
+                    fallback_kind = f"last_good_snapshot:{len(cached_files)}_file(s)"
+
             source_report.append(
                 {
                     "id": repository_id,
@@ -2524,17 +2648,27 @@ def _remote_source_items(
                     "repository": _clean_scalar(repository_source.get("repository")),
                     "ref": _clean_scalar(repository_source.get("ref")) or "main",
                     "root": _clean_scalar(repository_source.get("root")) or "categories",
-                    "status": "failed",
+                    "status": "degraded_fallback" if fallback_kind else "failed",
                     "format": "github_repository",
                     "item_count": 0,
                     "last_fetched_at": "",
                     "message": message,
+                    "fallback": fallback_kind,
                 }
             )
+
+            if fallback_kind:
+                repository_fallbacks[repository_id] = fallback_kind
+                print(
+                    f"   private movie source degraded: {repository_name} could "
+                    f"not be fetched ({message}); serving from {fallback_kind}"
+                )
+                continue
+
             if require_fresh:
                 raise RuntimeError(
-                    f"Required latest movie repository could not be loaded: "
-                    f"{repository_name}: {message}"
+                    f"Required latest movie repository could not be loaded and "
+                    f"no fallback was available: {repository_name}: {message}"
                 ) from error
             continue
 
@@ -2576,20 +2710,55 @@ def _remote_source_items(
             or f"directory-source-{directory_order}"
         )
         directory_name = _clean_scalar(directory_source.get("name")) or directory_id
-        files = _directory_source_files(directory_source)
+        files = directory_files_by_id.get(directory_id)
+        if files is None:
+            files = _directory_source_files(directory_source)
 
-        if not files:
+        # A checkout that exists only to catch a failed repository fetch must
+        # not contribute on a healthy run: its files are the same films under
+        # different source ids, and publishing both would put every private
+        # title in the catalogue twice.
+        fallback_for = directory_fallback_for.get(directory_id, "")
+        if fallback_for and fallback_for not in repository_fallbacks:
             source_report.append(
                 {
                     "id": directory_id,
                     "name": directory_name,
                     "category": "Mix",
                     "path": _clean_scalar(directory_source.get("path")),
-                    "status": "failed",
+                    "status": "standby",
                     "format": "directory",
                     "item_count": 0,
                     "last_fetched_at": "",
-                    "message": "directory_missing_or_no_supported_movie_files",
+                    "message": f"fallback_for:{fallback_for}_fetched_successfully",
+                    "available_files": len(files),
+                }
+            )
+            continue
+
+        if not files:
+            # An absent optional checkout is not a failure. Reporting it as one
+            # puts a permanent red row in an artefact whose whole job is to make
+            # real damage visible, and a report that cries wolf every run is a
+            # report nobody reads.
+            optional = (
+                directory_source.get("optional") is True or bool(fallback_for)
+            )
+            source_report.append(
+                {
+                    "id": directory_id,
+                    "name": directory_name,
+                    "category": "Mix",
+                    "path": _clean_scalar(directory_source.get("path")),
+                    "status": "skipped_absent" if optional else "failed",
+                    "format": "directory",
+                    "item_count": 0,
+                    "last_fetched_at": "",
+                    "message": (
+                        "optional_directory_absent"
+                        if optional
+                        else "directory_missing_or_no_supported_movie_files"
+                    ),
                 }
             )
             continue
@@ -2605,6 +2774,7 @@ def _remote_source_items(
                     "kind": "local_file",
                     "id": file_source_id,
                     "name": f"{directory_name} / {relative_path}",
+                    "directory_source_id": directory_id,
                     "path": str(file_path),
                     "relative_path": relative_path,
                     "extension": file_path.suffix.casefold(),
@@ -2755,6 +2925,13 @@ def _remote_source_items(
                 + len(parsed_items) + len(parsed_series)
             )
 
+        directory_source_id = _clean_scalar(source.get("directory_source_id"))
+        if (parsed_items or parsed_series) and directory_source_id:
+            directory_valid_item_counts[directory_source_id] = (
+                directory_valid_item_counts.get(directory_source_id, 0)
+                + len(parsed_items) + len(parsed_series)
+            )
+
         if not parsed_items and not parsed_series and require_parse:
             raise RuntimeError(
                 f"Required latest movie source file could not be parsed: "
@@ -2837,6 +3014,18 @@ def _remote_source_items(
             continue
         if repository_valid_item_counts.get(repository_id, 0) > 0:
             continue
+        # A local checkout standing in for a repository whose fetch failed IS
+        # that repository's content for this run. Without this the checkout
+        # fallback publishes its films and the run then raises anyway, because
+        # the repository's own counter never moved - which is the fallback
+        # working and the guard undoing it.
+        stand_in = sum(
+            directory_valid_item_counts.get(directory_id, 0)
+            for directory_id, target in directory_fallback_for.items()
+            if target == repository_id
+        )
+        if stand_in > 0:
+            continue
         repository_name = repository_names.get(repository_id, repository_id)
         raise RuntimeError(
             "Required latest manual repository contained no parseable Movie or Series items: "
@@ -2867,6 +3056,11 @@ def _remote_source_items(
         "series_catalog": str(series_catalog_path),
         "discovered_file_count": len(discovered_sources),
         "repository_snapshots": repository_snapshots,
+        # S-03. Empty on a healthy run. When it is not empty the private
+        # catalogue is being served from a checkout or from the last-good
+        # snapshot, which is the difference between "preserved" and "fresh" and
+        # has to be readable without re-deriving it from the rows.
+        "degraded_repositories": dict(sorted(repository_fallbacks.items())),
         "sources": source_report,
     }
 
