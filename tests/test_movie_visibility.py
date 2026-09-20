@@ -410,10 +410,10 @@ class DailyScanTests(unittest.TestCase):
         workflow = (ROOT / ".github" / "workflows" / "scan.yml").read_text(
             encoding="utf-8"
         )
-        self.assertIn('- cron: "37 4 * * *"', workflow)
+        self.assertIn('- cron: "37 4,16 * * *"', workflow)
         self.assertNotIn('"37 4 */2 * *"', workflow)
         self.assertIn(
-            'github.event.schedule }}" == "37 4 * * *"', workflow
+            'github.event.schedule }}" == "37 4,16 * * *"', workflow
         )
 
 

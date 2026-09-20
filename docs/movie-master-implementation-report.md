@@ -2048,7 +2048,159 @@ search-index-left-behind case, and five wiring tests on the ordering.
    caused it. Refusing to publish because the last run was inconsistent would
    make a transient fault permanent.
 
+### Commit / push
+
+`phase-9: stamp one generation on every movie surface a publish writes`
+→ `d783c8cb4a33d862e55d61290e34d4e02bd3d26c` (pushed as `7abdc43`), verified.
+
 ### Next task
 
-Phase 10ক — raise the movie scan frequency (A-01), now that ধাপ ৭'s TTL makes
-each run small. Then v3.5's ধাপ ১০খ.
+Phase 10ক — movie scan frequency.
+
+---
+
+## PHASE 10ক — Movie scan frequency (A-01)
+
+**Plan reference:** A-01, ধারা ৭ ধাপ ১০ক. Depends on ধাপ ৭, which is done.
+
+### Change
+
+`.github/workflows/scan.yml`: the movie cron `37 4 * * *` → `37 4,16 * * *`.
+Twice a day, 10:37 and 22:37 Dhaka, instead of once.
+
+A-01's reasoning is that this is **not a bigger budget** — it is the same
+budget spent better. ধাপ ৭'s TTL means a run verifies what is due rather than
+all 2,475 links, so a second run costs far less than the first one did, and a
+new film reaches the site in twelve hours instead of twenty-four.
+
+### The part that makes this more than a one-line edit
+
+`scan.yml` warns about it in its own comments:
+
+> Do not edit the two cron STRINGS "17 0,6,12,18 \* \* \*" or "37 4 \* \* \*"
+> without updating `concurrency.group` below - it matches on them by text.
+
+**Three places match the movie cron by text** — `on.schedule`, the mode
+selector, and the concurrency group expression — and a fourth lists it in the
+"unrecognised schedule" error message. All four were updated together, as one
+cron string rather than two schedule entries, because every extra entry is
+another place for them to drift.
+
+The file already records what drift costs:
+
+> it ran "channels" 11 times in 24 hours against a four-a-day cron while
+> "today" and "upcoming-targeted" never ran at all, and the only symptom was a
+> targeted report 115 hours stale.
+
+So `tests/test_scan_schedule_contract.py` now checks it: every declared cron has
+a selector branch, every selector branch matches a declared cron, the error
+message lists what is declared, and both catalogue crons are routed to the
+catalogue queue. The comment is now a test.
+
+### Why two and not three
+
+The plan offers "দিনে ২–৩ বার". Two is the conservative end, chosen because the
+TTL reduction has not yet been measured on a real run — going to three before
+the runs have demonstrably shrunk would triple a 40-minute job, which is the
+opposite of A-01's intent. Moving to three is a change to this one string
+(`"37 4,12,20 * * *"`), and the test allows it.
+
+### Why 16:37 UTC
+
+The catalogue concurrency group is shared with the channels scan (`17 0,6,12,18`).
+A movies run takes up to 77 minutes by this file's own measurement, so 16:37
+finishes by 17:54 — before the 18:17 channels run. 12:37 would have landed much
+closer to the 12:17 channels run.
+
+### The constant that silently meant something else
+
+Changing a cadence changes the meaning of every number counted in scans.
+`scanner/movie_retention.py` holds one:
+
+> `INACTIVE_AFTER_MISSING_SCANS = 3` — "The movie scan runs daily, so three is
+> three days - long enough to ride out a source outage over a weekend."
+
+At two scans a day, 3 is a day and a half. A source outage over a weekend —
+the exact case the grace window was written for, after 383 of 817 films
+disappeared between two scans — would have started retiring films instead of
+riding it out. **This is a No-Loss issue, not a tuning issue**: it retires live
+content on a fault.
+
+So the constant moved with the cadence, `3 → 6`, keeping the window at three
+days, and its comment now states the relationship rather than the number:
+
+```
+    one scan a day  (`37 4 * * *`)      3 scans = 3 days
+    two scans a day (`37 4,16 * * *`)   6 scans = 3 days
+```
+
+Nothing connected the cron string to that constant, so
+`TheGraceWindowFollowsTheCadence` in `tests/test_scan_schedule_contract.py` now
+does: it reads the runs-per-day out of the workflow and asserts the constant is
+`3 × runs_per_day`, with a failure message that names the arithmetic. Verified
+by reverting the constant to 3 and confirming the test fails with
+
+> the movie cron fires 2 times a day, so 3 days of grace is 6 missing scans -
+> but movie_retention.INACTIVE_AFTER_MISSING_SCANS is 3.
+
+A second test in that class is independent of the arithmetic: whatever the
+cadence, one day of silence may never retire anything.
+
+### Drift guards kept in step, not weakened
+
+The cron string is asserted by text in **six other test files**
+(`test_movie_visibility`, `test_scan_mode_selector`, `test_targeted_concurrency`,
+`test_dispatch_staleness_guard`, `test_workflow_queue_health`,
+`test_movie_discovery_refresh`). All six were updated to the new string — they
+are guards against accidental drift, and this drift was deliberate. None had
+its assertion loosened.
+
+`tests/test_movie_lifecycle.py` had three tests that failed on the constant
+change because they spelled the number out (`test_the_third_missing_scan_
+deactivates`). They were rewritten to drive `INACTIVE_AFTER_MISSING_SCANS`
+missing scans rather than three, so each now tests the **rule** — misses below
+the threshold are forgiven, the miss that reaches it retires the film — at any
+cadence. The off-by-one is still covered from both sides (one short of the
+window does not deactivate; the scan that reaches it does), and the
+broken-scan test now runs *past* the whole window, which is stronger than the
+four scans it used before. `at(day)` became an offset from the first scan so a
+longer window cannot run off the end of the month.
+
+### Tests run
+
+- `tests/test_scan_schedule_contract.py` — **10 tests, 10 pass** (8 schedule
+  and selector, 2 grace window).
+- `tests/test_movie_lifecycle.py` — **34 tests, 34 pass.**
+- Full suite: **4,890 tests**, 2 failures, both pre-existing and unrelated
+  (`test_event_channel_card_design` asset versioning and
+  `test_final_card_design_contract` stylesheet ordering — site design
+  contracts, untouched by this work). Up from 4,888 before this phase.
+
+One note on method: the negative check above (flip the constant, run, flip it
+back) was done twice within the same second, and CPython's bytecode cache
+records source mtime **truncated to seconds** — so the stale `.pyc` holding
+`3` was reused and the guard appeared to fail for a whole suite run. Caches
+cleared; the failure was the measurement, not the code.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| A-01 movie scan 2–3 times a day | **IMPLEMENTED** (2, with 3 one string away) |
+| A-01 after ধাপ ৭ (TTL) | **MET** |
+| §4.8 schedule and selector must agree | **IMPLEMENTED** — now enforced by a test |
+
+### Known limitations
+
+1. The benefit assumes the TTL gate shrinks the runs, which has not been
+   measured in production yet. If it does not, two full-length runs a day cost
+   twice the Actions minutes for the same result — visible immediately in the
+   run times, and reversible by one string.
+2. Health sweep, metadata maintenance and the weekly full audit that ধারা ৪.৮
+   also lists are unchanged: the sweep already runs inside the movies run
+   (ধাপ ৭), and the other two are not scheduled separately.
+
+### Next task
+
+Phase 10খ — **dependency-aware parallel stages** (v3.5 ধারা ৪.৯), the one new
+requirement v3.5 added, now that its precondition (ধাপ ৭) is in place.

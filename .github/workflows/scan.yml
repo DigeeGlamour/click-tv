@@ -17,7 +17,7 @@ on:
   #   "1-59/5 * * * *"     upcoming targeted, every 5 min
   #   "9 5,17 * * *"       upcoming full refresh, 11:09 and 23:09 Dhaka
   #   "17 0,6,12,18 * * *" channels, 06:17 / 12:17 / 18:17 / 00:17 Dhaka
-  #   "37 4 * * *"         movies, 10:37 Dhaka
+  #   "37 4,16 * * *"      movies, 10:37 and 22:37 Dhaka
   #
   # The two daily ones were written intending 05:09/17:09 and 04:37 DHAKA. The
   # hours are left exactly as they run today, because when a production scan
@@ -25,7 +25,7 @@ on:
   # while fixing a comment. To honour the original intent, subtract six hours:
   # 04:37 Dhaka is "37 22 * * *" UTC.
   #
-  # Do not edit the two cron STRINGS "17 0,6,12,18 * * *" or "37 4 * * *"
+  # Do not edit the two cron STRINGS "17 0,6,12,18 * * *" or "37 4,16 * * *"
   # without updating `concurrency.group` below - it matches on them by text to
   # decide which queue a run belongs to.
   schedule:
@@ -59,8 +59,23 @@ on:
     # Was "*/2" - every second calendar DATE, not every second day. A new
     # film waited up to two days to appear, and the gap stretched to three
     # across a month boundary because */2 counts days of the month. The
-    # upstream playlist changes daily, so the scan does too.
-    - cron: "37 4 * * *"
+    # upstream playlist changes daily, so the scan did too.
+    #
+    # A-01 / ধাপ ১০ক: now twice a day, 10:37 and 22:37 Dhaka. Not a bigger
+    # budget - the same budget spent better. ধাপ ৭'s link-health TTL means a
+    # run verifies what is due rather than all 2,475 links, so the second run
+    # costs far less than the first one did, and a new film reaches the site
+    # in twelve hours instead of twenty-four.
+    #
+    # ONE cron string, not two entries. The mode selector and the concurrency
+    # group below both match this string by text, so every extra entry is
+    # another place for the three to drift apart - and a schedule the selector
+    # does not recognise fails the run by design.
+    #
+    # The plan offers two to three a day. Two is the conservative end, chosen
+    # because the TTL reduction has not been measured on a real run yet; going
+    # to three is this one string ("37 4,12,20 * * *") once it has.
+    - cron: "37 4,16 * * *"
 
   workflow_dispatch:
     inputs:
@@ -147,7 +162,7 @@ concurrency:
        || inputs.mode == 'upcoming-targeted')
       && 'targeted-v1'
       || ((github.event.schedule == '17 0,6,12,18 * * *'
-           || github.event.schedule == '37 4 * * *'
+           || github.event.schedule == '37 4,16 * * *'
            || inputs.mode == 'channels'
            || inputs.mode == 'movies'
            || inputs.mode == 'all')
@@ -438,7 +453,7 @@ jobs:
             MODE="upcoming"
           elif [[ "${{ github.event.schedule }}" == "17 0,6,12,18 * * *" ]]; then
             MODE="channels"
-          elif [[ "${{ github.event.schedule }}" == "37 4 * * *" ]]; then
+          elif [[ "${{ github.event.schedule }}" == "37 4,16 * * *" ]]; then
             MODE="movies"
           elif [[ "${{ github.event_name }}" == "schedule" ]]; then
             # A scheduled trigger whose cron matches no branch above means
@@ -451,7 +466,7 @@ jobs:
             # triggered for must not write data under a guessed one - and the
             # failure reaches the owner, because the Telegram step below is
             # `if: failure()`. Silence was the whole fault.
-            echo "::error title=Unrecognised schedule::github.event.schedule was '${{ github.event.schedule }}', which no branch of this step matches. Add a branch for it, or fix on.schedule - the two must agree. Declared crons: 3,23,43 * * * * / 1-59/5 * * * * / 9 5,17 * * * / 17 0,6,12,18 * * * / 37 4 * * *"
+            echo "::error title=Unrecognised schedule::github.event.schedule was '${{ github.event.schedule }}', which no branch of this step matches. Add a branch for it, or fix on.schedule - the two must agree. Declared crons: 3,23,43 * * * * / 1-59/5 * * * * / 9 5,17 * * * / 17 0,6,12,18 * * * / 37 4,16 * * *"
             exit 1
           else
             MODE="channels"

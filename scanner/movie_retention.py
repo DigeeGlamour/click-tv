@@ -70,13 +70,22 @@ RETAINED_STATUS = "stale_last_good"
 # mean either, and a scan that half-failed must not mean anything at all.
 
 #: Consecutive *successful* scans a movie may be missing before it is marked
-#: inactive. The movie scan runs daily (scan.yml, `37 4 * * *`), so three is
-#: three days - long enough to ride out a source outage over a weekend, short
-#: enough that a withdrawn film stops being offered within the week. This is
-#: the plan's "3 consecutive successful movie scans" option, chosen over the
-#: 7-day window because the cadence is already daily and counting scans is
-#: exact where counting days has to guess at missed runs.
-INACTIVE_AFTER_MISSING_SCANS = 3
+#: inactive. This is counted in scans rather than days because counting scans
+#: is exact where counting days has to guess at missed runs - but that makes it
+#: a number about the CADENCE, so it moves when the cadence does.
+#:
+#: The window this is protecting is three days: long enough to ride out a
+#: source outage over a weekend, short enough that a withdrawn film stops being
+#: offered within the week.
+#:
+#:     one scan a day  (`37 4 * * *`)      3 scans = 3 days
+#:     two scans a day (`37 4,16 * * *`)   6 scans = 3 days
+#:
+#: A-01 / ধাপ ১০ক doubled the cadence, so this doubled with it. Left at 3 it
+#: would have silently become a day and a half, and a source outage over a
+#: weekend - the exact case it was chosen for - would have started retiring
+#: films instead of riding it out.
+INACTIVE_AFTER_MISSING_SCANS = 6
 
 #: A scan that found less than this fraction of what the category published
 #: last time is treated as a failed or partial run, not as a discovery that

@@ -258,7 +258,8 @@ class RefreshWorkflowTests(unittest.TestCase):
     def test_the_full_movie_scan_cadence_is_untouched(self):
         scan = _load_workflow(SCAN_WORKFLOW)
         crons = [entry["cron"] for entry in scan["on"]["schedule"]]
-        self.assertIn("37 4 * * *", crons, "the daily movie scan must still be scheduled")
+        self.assertIn("37 4,16 * * *", crons,
+                      "the full movie scan must still be scheduled")
 
     def test_it_has_its_own_concurrency_queue(self):
         self.assertEqual(self.workflow["concurrency"]["group"], "movie-discovery-refresh")

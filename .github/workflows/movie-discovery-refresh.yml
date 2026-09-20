@@ -2,8 +2,9 @@ name: Movie Discovery Refresh
 
 # Refreshing "what is trending internationally" costs two HTTP requests.
 # The full movie scan in scan.yml costs forty minutes, thousands of link
-# probes and the private source repository, and runs once a day at "37 4 * * *".
-# Tying the first to the second means trending is a day stale by design.
+# probes and the private source repository, and runs twice a day at
+# "37 4,16 * * *". Tying the first to the second means trending is up to
+# twelve hours stale by design.
 #
 # So this is a separate, deliberately small job. It reads the catalogue the
 # last real scan already published, refreshes the TMDB weekly trending

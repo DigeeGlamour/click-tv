@@ -255,7 +255,7 @@ class TheQueuesAreUnchanged(unittest.TestCase):
                                ("1-59/5 * * * *", "upcoming-targeted"),
                                ("9 5,17 * * *", "upcoming"),
                                ("17 0,6,12,18 * * *", "channels"),
-                               ("37 4 * * *", "movies")):
+                               ("37 4,16 * * *", "movies")):
             self.assertEqual(self._group_for(schedule=schedule),
                              self._group_for(mode=mode),
                              f"{schedule} and dispatch {mode} must share a queue")
@@ -263,7 +263,7 @@ class TheQueuesAreUnchanged(unittest.TestCase):
     def test_the_selector_is_untouched(self):
         body = str(_step("Select scan mode").get("run") or "")
         for cron in ("3,23,43 * * * *", "1-59/5 * * * *", "9 5,17 * * *",
-                     "17 0,6,12,18 * * *", "37 4 * * *"):
+                     "17 0,6,12,18 * * *", "37 4,16 * * *"):
             self.assertIn(cron, body, cron)
         self.assertIn("Unrecognised schedule", body)
 

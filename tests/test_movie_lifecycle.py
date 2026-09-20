@@ -23,8 +23,20 @@ from pathlib import Path
 from scanner import movie_retention as mrt
 
 
+#: Day 1 is the first scan. Expressed as an offset rather than a date because
+#: the grace window below is a function of the scan CADENCE - at two scans a
+#: day it is already six, and a fixed September date would run off the month.
+_FIRST_SCAN = dt.datetime(2026, 9, 1, 4, 37, tzinfo=dt.timezone.utc)
+
+#: Read from the module, never spelled out. The number is a property of the
+#: cadence (tests/test_scan_schedule_contract.py holds the two in step); what
+#: this file is about is the RULE - misses below it are forgiven, the miss that
+#: reaches it retires the film.
+GRACE = mrt.INACTIVE_AFTER_MISSING_SCANS
+
+
 def at(day):
-    return dt.datetime(2026, 9, day, 4, 37, tzinfo=dt.timezone.utc)
+    return _FIRST_SCAN + dt.timedelta(days=day - 1)
 
 
 class ScanCompleteness(unittest.TestCase):
@@ -72,19 +84,23 @@ class TheLifecycleMovesOneScanAtATime(unittest.TestCase):
         self.assertNotEqual(self.record("a").get("is_active"), False)
         self.assertEqual(self.record("a")["consecutive_missing_scans"], 1)
 
-    def test_two_missing_scans_do_not_deactivate(self):
+    def test_the_last_scan_before_the_threshold_does_not_deactivate(self):
+        """One short of the window is still inside it - the off-by-one that
+        would retire a film a whole scan early."""
         self.advance(["a"], ["a"], day=1)
-        self.advance([], ["a"], day=2)
-        self.advance([], ["a"], day=3)
+        for day in range(2, 1 + GRACE):
+            self.advance([], ["a"], day=day)
         self.assertNotEqual(self.record("a").get("is_active"), False)
-        self.assertEqual(self.record("a")["consecutive_missing_scans"], 2)
+        self.assertEqual(
+            self.record("a")["consecutive_missing_scans"], GRACE - 1)
 
-    def test_the_third_missing_scan_deactivates(self):
+    def test_the_scan_that_reaches_the_threshold_deactivates(self):
         self.advance(["a"], ["a"], day=1)
-        for day in (2, 3, 4):
+        last = 1 + GRACE
+        for day in range(2, last + 1):
             self.advance([], ["a"], day=day)
         self.assertIs(self.record("a")["is_active"], False)
-        self.assertEqual(self.record("a")["inactive_since"], at(4).isoformat())
+        self.assertEqual(self.record("a")["inactive_since"], at(last).isoformat())
         self.assertEqual(
             self.record("a")["consecutive_missing_scans"],
             mrt.INACTIVE_AFTER_MISSING_SCANS,
@@ -118,9 +134,11 @@ class AnIncompleteScanProvesNothing(unittest.TestCase):
         self.assertEqual(
             self.store["lifecycle"]["b"]["consecutive_missing_scans"], 0)
 
-    def test_three_broken_scans_still_deactivate_nothing(self):
+    def test_broken_scans_past_the_threshold_still_deactivate_nothing(self):
+        """A run of broken scans longer than the whole grace window - their
+        silence never accumulates into evidence, so nothing retires."""
         self.advance(["a", "b"], ["a", "b"], complete=True, day=1)
-        for day in (2, 3, 4, 5):
+        for day in range(2, 3 + GRACE):
             self.advance(["a"], ["a", "b"], complete=False, day=day)
         self.assertNotEqual(
             self.store["lifecycle"]["b"].get("is_active"), False)
@@ -141,21 +159,24 @@ class ComingBack(unittest.TestCase):
             scan_complete=True, now=at(day),
         )
 
+    #: A fortnight after the grace window closes, wherever that now falls.
+    RETURNS_ON = 1 + mrt.INACTIVE_AFTER_MISSING_SCANS + 14
+
     def deactivate(self):
         self.advance(["a"], ["a"], day=1)
-        for day in (2, 3, 4):
+        for day in range(2, 2 + GRACE):
             self.advance([], ["a"], day=day)
 
     def test_the_same_identity_is_reactivated(self):
         self.deactivate()
-        summary = self.advance(["a"], ["a"], day=20)
+        summary = self.advance(["a"], ["a"], day=self.RETURNS_ON)
         self.assertTrue(self.store["lifecycle"]["a"]["is_active"])
         self.assertIsNone(self.store["lifecycle"]["a"]["inactive_since"])
         self.assertEqual(summary["reactivated"], 1)
 
     def test_the_missing_count_is_cleared(self):
         self.deactivate()
-        self.advance(["a"], ["a"], day=20)
+        self.advance(["a"], ["a"], day=self.RETURNS_ON)
         self.assertEqual(
             self.store["lifecycle"]["a"]["consecutive_missing_scans"], 0)
 
@@ -163,7 +184,7 @@ class ComingBack(unittest.TestCase):
         # first_seen_at belongs to scanner/movie_recency and is never written
         # here - a film that comes back is not a new arrival.
         self.deactivate()
-        self.advance(["a"], ["a"], day=20)
+        self.advance(["a"], ["a"], day=self.RETURNS_ON)
         record = self.store["lifecycle"]["a"]
         self.assertIn("reactivated_at", record)
         self.assertNotIn("first_seen_at", record)

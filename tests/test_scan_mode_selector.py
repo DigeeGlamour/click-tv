@@ -59,7 +59,7 @@ INTENDED = {
     "1-59/5 * * * *": "upcoming-targeted",
     "9 5,17 * * *": "upcoming",
     "17 0,6,12,18 * * *": "channels",
-    "37 4 * * *": "movies",
+    "37 4,16 * * *": "movies",
 }
 
 

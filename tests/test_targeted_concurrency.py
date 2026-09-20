@@ -33,7 +33,7 @@ WORKFLOW = ROOT / ".github" / "workflows" / "scan.yml"
 TARGETED_CRON = "1-59/5 * * * *"
 TODAY_CRON = "3,23,43 * * * *"
 CHANNELS_CRON = "17 0,6,12,18 * * *"
-MOVIES_CRON = "37 4 * * *"
+MOVIES_CRON = "37 4,16 * * *"
 
 TARGETED_GROUP = "live-signal-targeted-v1"
 EVENTS_GROUP = "live-signal-events-v4"
