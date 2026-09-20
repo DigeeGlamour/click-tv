@@ -1809,8 +1809,130 @@ per link, once, and then the revision is on file.
 4. `playback_failure_reported` is read from the candidate but nothing sets it
    yet — `playback-feedback.yml` exists and connecting it belongs with ধাপ ৮.
 
+### Commit / push
+
+`phase-7: check a link when it is due, not because it exists`
+→ `f0a21156b53b81103dfe21f3f523833fec91ab80` (pushed as `522febf`), verified.
+
 ### Next task
 
-Phase 8 — repair queue + `movie-repair.yml` (S-02): P0–P3 priorities, backup
-promotion, and a workflow that reads only the queue rather than the whole
-catalogue.
+Phase 8 — repair queue and its workflow.
+
+---
+
+## PHASE 8 — Repair queue + `movie-repair.yml` (S-02)
+
+**Plan reference:** ধারা ৪.২ (the second new state file), ধারা ৪.৫, ধারা ৪.৮,
+ধারা ৭ ধাপ ৮.
+
+### Before state
+
+`grep` for `repair_queue` / `movie-repair-queue` returned nothing, which is
+S-02 exactly: a single dead link could only be fixed by running the whole
+catalogue, and that run's budget is then divided across 2,475 links — so repair
+was effectively a matter of luck.
+
+### Files changed
+
+New: `scanner/movie_repair_queue.py`, `scripts/movie-repair-run.py`,
+`.github/workflows/movie-repair.yml`, `tests/test_movie_repair_queue.py`
+(33 tests).
+
+Changed: `scanner/fast_pipeline.py` (`_refresh_repair_queue` after the ledger
+is written).
+
+### Implementation
+
+**Severity is about the viewer, not about us** (ধারা ৪.৫). P0 is "nobody can
+watch this", which is why it outranks a dead primary with a working backup —
+the second is a quality problem, the first is an outage. The queue is ordered
+severity first and age only *within* a severity; ordered by age alone it would
+spend its budget on P3s while a P0 waited.
+
+**The queue is derived, not accumulated.** `refresh_from_catalogue` re-reads the
+published cards and the Phase 7 ledger every scan, so a card that has quietly
+healed leaves the queue without anybody remembering to remove it. A repair queue
+that only grows is one nobody trusts.
+
+**An unchecked link is not a fault.** Every link starts `unknown`; treating that
+as broken would have put the entire catalogue in the repair queue on day one.
+
+**Backoff that recognises an outage.** 1h → 4h → 12h → 24h → 48h, except a P0's
+first retry, which waits 15 minutes. Re-queuing does **not** reset the attempt
+count — a link that has failed five repairs has failed five repairs, and
+resetting every scan would turn the backoff into a fixed interval. Past 12
+attempts an entry stops being offered but is **kept**: it is the only record
+that this content ever had a working link.
+
+**Being queued is not a disposition.** ধারা ৪.০'s two axes: a card stays
+`published_movie` while its link sits here as `confirmed_unavailable`. A test
+asserts the card dict is byte-identical before and after a refresh.
+
+**One writer.** `movie-repair.yml` runs every five hours in its own concurrency
+group — it must not queue behind a forty-minute catalogue scan, since running
+*between* scans is the point of it existing — and it **fails the job** if
+`data/` changed. It commits only `state/movie-repair-queue.json` and
+`state/movie-link-health.json`. The repair run promotes a live backup to
+`active_primary` and records attempts; the next scan publishes. This is ধারা
+৪.৯ rule 2 and the existing atomic-publish rule, which agree.
+
+`preferred_primary` is never touched by a repair: it is the owner's policy and
+does not change because a check failed. `active_primary` is this moment's
+reality, and the two being separate fields is what lets a private link become
+primary again by itself when it comes back (ধারা ৪.৫).
+
+### Data validation — against the real catalogue
+
+60 published cards with a synthetic ledger failing every tenth primary:
+
+```
+classified   P0 5 · P1 1
+summary      queued 6, due now 6, no_live_link 5, exhausted 0
+worst first  P0 ponman-2025-dual-audio, P0 remote-manual-bhaggyo-lokkhi-2025,
+             P0 remote-manual-lucky-2026, ... then P1
+```
+
+The one card with a live backup was correctly classified P1 and sorted below
+every P0.
+
+### Tests run
+
+`tests/test_movie_repair_queue.py` — **33 tests, 33 pass**, including the
+ordering rule, the full backoff ladder, that re-queuing does not reset it, that
+an exhausted entry is kept but not offered, that a healed card leaves by itself,
+that an unchecked link is not queued, that the card is unchanged, and six
+contract tests on the workflow itself.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| §4.2 `state/movie-repair-queue.json` with every named field | **IMPLEMENTED** |
+| §4.5 P0–P3 severities | **IMPLEMENTED** |
+| §4.5 step 2 — promote a live backup to `active_primary` | **IMPLEMENTED** |
+| §4.5 `preferred_primary` untouched by a repair | **IMPLEMENTED** |
+| §4.5 success leaves the queue, failure backs off | **IMPLEMENTED** |
+| §4.8 `movie-repair.yml` every 4–6h, reads only the queue | **IMPLEMENTED** |
+| §4.8 "worker job নিজে push করবে না; একক publisher" | **IMPLEMENTED** (job fails if `data/` changed) |
+| §4.5 steps 3–5 — find and verify new candidate URLs | **PARTIALLY** — see limitations |
+
+### Known limitations
+
+1. **Steps 3–5 of ধারা ৪.৫ are not implemented**: searching the already-fetched
+   source snapshot for new candidates by canonical identity, verifying only
+   those URLs, and adding up to five live backups. The queue, the severities,
+   the promotion and the backoff are in place; candidate discovery needs the
+   repair run to load a source snapshot, which is a network step inside a
+   workflow that currently makes none. Recorded here rather than claimed.
+2. The playback-failure trigger is not wired. Phase 7's
+   `verification_decision` already accepts `playback_failed` and gives it top
+   priority, and `playback-feedback.yml` already collects the telemetry —
+   joining them is a small follow-up, not a redesign.
+3. P3 (restricted / uncertain) is defined and classifiable but nothing
+   currently sets `restricted=True`; it needs the per-route evidence model to
+   say "restricted from our vantage", which `route_evidence` holds.
+
+### Next task
+
+Phase 9 — generation id + atomic publish (S-07), so the catalogue and the
+search index can never describe different generations of the same scan.

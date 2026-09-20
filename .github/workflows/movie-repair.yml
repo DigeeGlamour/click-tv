@@ -1,0 +1,117 @@
+name: Movie Repair Queue
+
+# ধাপ ৮ / S-02. The fault this exists for: a single dead movie link could only
+# be fixed by running the whole catalogue, and that run's budget is then split
+# across 2,475 links - so repair was effectively a matter of luck.
+#
+# This reads state/movie-repair-queue.json and works only what is due, worst
+# first. It is deliberately small and deliberately frequent; the catalogue scan
+# stays on its own schedule and is not touched here.
+#
+# Every cron below is UTC. GitHub Actions has no timezone for schedule.cron -
+# POSIX cron only, always UTC. "13 */5 * * *" is every five hours at :13,
+# inside the plan's "প্রতি ৪–৬ ঘণ্টা", and the odd minute keeps it off the
+# round-minute queue every other workflow on the platform lands on.
+
+on:
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "How many queue entries this run may work"
+        required: false
+        default: "50"
+      apply:
+        description: "Record attempts and promote live backups"
+        type: boolean
+        required: false
+        default: true
+  schedule:
+    - cron: "13 */5 * * *"
+
+# One repair run at a time, and never while one is mid-flight. Its own group,
+# separate from the scan's, because a repair run must not queue behind a
+# forty-minute catalogue scan - being able to run between scans is the whole
+# point of it existing.
+concurrency:
+  group: movie-repair
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Validate the modules this run depends on
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Named individually so a missing one says which. The same reason the
+          # scan workflow lists its required files rather than using a bare
+          # `test -f`.
+          for required in \
+            scanner/movie_repair_queue.py \
+            scanner/movie_link_health.py \
+            scripts/movie-repair-run.py
+          do
+            if [[ ! -f "$required" ]]; then
+              echo "::error title=Missing file::$required is required by the repair run"
+              exit 1
+            fi
+          done
+          python -m py_compile \
+            scanner/movie_repair_queue.py \
+            scanner/movie_link_health.py \
+            scripts/movie-repair-run.py
+
+      - name: Work the repair queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          LIMIT="${{ inputs.limit || '50' }}"
+          if [[ "${{ inputs.apply }}" == "false" ]]; then
+            python scripts/movie-repair-run.py --limit "$LIMIT"
+          else
+            python scripts/movie-repair-run.py --limit "$LIMIT" --apply
+          fi
+
+      # The repair run writes state, never a published surface. ধারা ৪.৯ rule 2
+      # and this repository's atomic-publish rule both say one writer, and that
+      # writer is the scan's publisher - so data/ is not touched here and a
+      # commit that somehow contained it would be a bug worth failing on.
+      - name: Commit the queue and the link ledger
+        shell: bash
+        run: |
+          set -euo pipefail
+          if ! git diff --quiet -- data/; then
+            echo "::error title=Published data changed::a repair run must not write data/"
+            git diff --stat -- data/
+            exit 1
+          fi
+          if git diff --quiet -- state/movie-repair-queue.json state/movie-link-health.json; then
+            echo "Nothing changed in the repair queue or the link ledger"
+            exit 0
+          fi
+          git config user.name "click-tv-bot"
+          git config user.email "click-tv-bot@users.noreply.github.com"
+          git add state/movie-repair-queue.json state/movie-link-health.json
+          git commit -m "Movie repair queue: work due entries"
+          # The scan pushes far more often than this does, so a rebase-and-retry
+          # is the ordinary case rather than an error.
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            git pull --rebase --autostash
+          done
+          echo "::error title=Push failed::could not push the repair queue after three attempts"
+          exit 1

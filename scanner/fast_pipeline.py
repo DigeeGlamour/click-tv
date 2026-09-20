@@ -1276,6 +1276,38 @@ def _partition_by_link_health(
         return items, [], None
 
 
+def _refresh_repair_queue(health_store: Dict[str, Any]) -> None:
+    """ধাপ ৮ - re-derive the repair queue from the ledger this run just wrote.
+
+    Derived rather than accumulated, so a card that has quietly healed leaves
+    the queue without anybody remembering to remove it. A repair queue that only
+    grows is one nobody trusts.
+
+    It reads the published catalogue and the link ledger, makes no request and
+    changes no card. Being in this queue is a stream-health fact, not a content
+    disposition - ধারা ৪.০'s two axes.
+    """
+    try:
+        from scanner import movie_baseline, movie_repair_queue
+
+        published = movie_baseline.published_movies(".")
+        if not published:
+            return
+        queue = movie_repair_queue.load()
+        counts = movie_repair_queue.refresh_from_catalogue(
+            queue, published, health_store)
+        movie_repair_queue.save(queue)
+        summary = movie_repair_queue.summarise(queue)
+        print(
+            f"   repair queue: {summary['queued']} entr(ies), "
+            f"{summary['due_now']} due now, "
+            f"{summary['no_live_link']} with no live link at all "
+            f"(resolved this run: {counts.get('resolved', 0)})"
+        )
+    except Exception as error:  # noqa: BLE001 - a queue must never cost a scan
+        print(f"   repair queue refresh skipped: {error}")
+
+
 def _record_link_health(
     final_results: List[Dict[str, Any]],
     carried_fresh: List[Dict[str, Any]],
@@ -1351,6 +1383,7 @@ def _record_link_health(
             f"{summary['status'][health.STATUS_HEALTHY]} healthy, "
             f"stale for budget {summary['stale_for_budget']}"
         )
+        _refresh_repair_queue(store)
     except Exception as error:  # noqa: BLE001 - never cost a scan
         print(f"   link health ledger skipped: {error}")
     return list(final_results) + list(carried_fresh)
