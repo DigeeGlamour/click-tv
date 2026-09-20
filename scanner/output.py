@@ -1727,6 +1727,20 @@ def publish_scan_outputs(
     # The movie gate's failures belong in the same place, prefixed so a reader
     # can tell which pipeline is complaining. A failing invariant that is only
     # written into a file nobody opened is the same as no check at all.
+    # ধাপ ৯ / S-07 - do the published movie surfaces all describe one scan?
+    # Reported where the numbers are read, not only in a file nobody opened.
+    movie_generation_report: Dict[str, Any] = {}
+    try:
+        from scanner import movie_generation
+
+        movie_generation_report = movie_generation.check(data_root)
+        if not movie_generation_report.get("consistent"):
+            coverage_failures.append(
+                "movie: published surfaces disagree about their generation")
+            print(f"   {movie_generation.describe(movie_generation_report)}")
+    except Exception as error:  # noqa: BLE001 - a check never fails a publish
+        print(f"   movie generation check skipped: {error}")
+
     movie_invariants = (movie_coverage or {}).get("invariants")
     if isinstance(movie_invariants, dict):
         coverage_failures.extend(
@@ -1757,6 +1771,7 @@ def publish_scan_outputs(
         "coverage_invariant_failures": coverage_failures,
         "stream_health": stream_health if isinstance(stream_health, dict) else {},
         "movie_output_preserved": movie_output_preserved,
+        "movie_generation": movie_generation_report,
         "allowed_playback_hosts": _safe_int(allowed_hosts_payload.get("count"), 0, 0),
         "catalogued_playback_sources": len(playback_collector.records),
         "total_playback_catalogue_sources": _safe_int(

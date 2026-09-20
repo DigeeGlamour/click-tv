@@ -1051,6 +1051,65 @@ def _annotate_metadata(
         return {}
 
 
+def _allocate_movie_generation(paginated: Dict[str, Any]) -> Dict[str, Any]:
+    """ধাপ ৯ - take the next generation and stamp the catalogue with it.
+
+    Stamped before publishing rather than after, so the number reaches
+    `scanner/output.py` inside the payload it is describing and cannot be
+    attached to a different one by mistake.
+
+    Wrapped: a generation is a diagnostic. Failing to allocate one must not
+    cost the catalogue it was going to describe.
+    """
+    try:
+        from scanner import movie_generation
+
+        state = movie_generation.allocate()
+        movie_generation.stamp_paginated(
+            paginated, state["generation"], state["generated_at"])
+        print(f"   movie catalogue generation {state['generation']}")
+        return state
+    except Exception as error:  # noqa: BLE001 - never fail a scan
+        print(f"   movie generation skipped: {error}")
+        return {}
+
+
+def _stamp_derived_movie_surfaces(state: Dict[str, Any]) -> None:
+    """Give the search index, discovery and the genre pages the same number.
+
+    They are written by their own modules straight to disk, so they are stamped
+    afterwards rather than in the payload. Without this they would be the
+    unstamped files the consistency check reports - which is the honest outcome
+    but not the useful one.
+    """
+    if not state:
+        return
+    try:
+        from scanner import movie_generation
+
+        generation = int(state.get("generation") or 0)
+        moment = str(state.get("generated_at") or "")
+        root = Path(DEFAULT_GENERATED_MOVIES_ROOT).parent
+        stamped = 0
+        for pattern in ("movies/search-index.json", "movies/discovery/*.json",
+                        "movies/genres/*.json"):
+            for path in sorted(root.glob(pattern)):
+                try:
+                    with open(path, "r", encoding="utf-8") as handle:
+                        payload = json.load(handle)
+                except (OSError, ValueError):
+                    continue
+                if not isinstance(payload, dict):
+                    continue
+                movie_generation.stamp(payload, generation, moment)
+                _atomic_write_json(path, payload)
+                stamped += 1
+        if stamped:
+            print(f"   movie generation stamped on {stamped} derived file(s)")
+    except Exception as error:  # noqa: BLE001 - never fail a scan
+        print(f"   movie generation stamping skipped: {error}")
+
+
 def _generate_genre_indexes(paginated: Dict[str, Any]) -> Dict[str, Any]:
     """Write data/movies/genres/*.json - PART 05. Never fails a scan."""
     try:
@@ -4816,10 +4875,19 @@ def process_movies(
         )
         return paginated
 
-    # Both are wrapped: a discovery-side failure must never cost the
+    # ধাপ ৯ / S-07. One generation for everything this publish writes, so
+    # "these files describe the same scan" stops being an assumption. Allocated
+    # here, before the derived surfaces are built, because the derived surfaces
+    # have to carry the same number as the pages they describe - which is the
+    # exact failure the discovery guard above was written for after Movie Home
+    # advertised 40 films the catalogue did not contain.
+    generation = _allocate_movie_generation(paginated)
+
+    # All three are wrapped: a discovery-side failure must never cost the
     # catalogue, which is the part people actually watch.
     _generate_genre_indexes(paginated)
     _generate_trending(paginated)
     _generate_discovery(paginated)
+    _stamp_derived_movie_surfaces(generation)
 
     return paginated

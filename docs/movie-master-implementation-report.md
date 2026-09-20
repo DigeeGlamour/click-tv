@@ -1932,7 +1932,123 @@ contract tests on the workflow itself.
    currently sets `restricted=True`; it needs the per-route evidence model to
    say "restricted from our vantage", which `route_evidence` holds.
 
+### Commit / push
+
+`phase-8: a repair queue, so fixing one link is not a catalogue scan`
+→ `2b602f1f743764f4875fcfab9026c02c14ed82d0` (pushed as `e64d0c4`), verified.
+
 ### Next task
 
-Phase 9 — generation id + atomic publish (S-07), so the catalogue and the
-search index can never describe different generations of the same scan.
+Phase 9 — generation id and atomic publish.
+
+---
+
+## PHASE 9 — Generation id + atomic publish (S-07)
+
+**Plan reference:** ধারা ২ S-07, ধারা ৭ ধাপ ৯.
+
+### Before state, and the part the plan did not know
+
+S-07 is a one-star item: "generation_id / catalog_generation / search_generation
+— নেই … বাস্তবে এখনো ধরা পড়েনি". Two findings changed how this was implemented.
+
+**The atomic publish already exists — for events.** `scanner/snapshot_publish.py`
+is a complete versioned publish: three round-robin slots, generation numbers,
+and one `os.replace` of `data/manifest.json` as the switch. It covers
+`today-match.json` and `upcoming.json`. The movie surfaces are outside it.
+
+**The failure S-07 describes has happened.** From `movies.process_movies`'s own
+comment: on the 17th the source returned 377 publishable films against 1,667
+live, the pages were rightly preserved, but "Discovery was written from the 377
+anyway, so Movie Home advertised films the catalogue did not contain — 40 of 40
+in Just Added and 4 of 5 in the Featured hero pointed at ids with no page behind
+them." That path was fixed. The class of it was not detectable.
+
+### Why the snapshot publisher was not extended
+
+Moving the movie pages under `data/snapshots/sN/` would change every published
+URL the site reads (`data/movies/dubbed/index.json` and the rest) and break the
+front end. S-07 asks for a generation id **and** an atomic publish; the atomic
+part already exists per category as `_atomic_replace_directory`. What was
+missing is the generation, so that is what this adds.
+
+### Files changed
+
+New: `scanner/movie_generation.py`, `tests/test_movie_generation.py` (21 tests).
+
+Changed: `scanner/movies.py` (allocate before the derived surfaces, stamp them
+after), `scanner/output.py` (check at publish, report in the scan summary).
+
+### Implementation
+
+One monotonic generation per publish, **persisted before anything is stamped**.
+A crash between allocating and publishing wastes a number, which costs nothing;
+reusing one would let two catalogues claim to be the same generation, which is
+the one thing this must never allow.
+
+It is stamped on **42 surfaces** — every category index, every page, the search
+index, discovery and the genre pages. Every page, not just the index, because
+the failure guarded against is a page belonging to a different scan than the
+index counting it.
+
+It is allocated **after** the preserved-output check, so a publish that writes
+nothing does not claim a new generation for files that did not move.
+
+**Three states, not two.** Surfaces that all predate the feature carry no stamp
+and are consistent *with each other*; reporting that as a disagreement would
+raise a warning on the first run after this ships, before anything has been
+stamped, and a check that cries wolf once is a check people learn to ignore. A
+*mix* of stamped and unstamped is the real fault — then something was rewritten
+and something was not.
+
+### Data validation — against the real surfaces
+
+Copied, so nothing live was touched:
+
+```
+today, nothing stamped        42 files, not_yet_stamped, consistent
+after one consistent publish  all 42 at generation 461, consistent
+search index a generation old DISAGREE - 2 generations
+                              named: movies/search-index.json
+```
+
+The third case is the exact S-07 failure, caught and with the culprit file
+named — "which file is stale" is the only part of the answer anybody can act on.
+
+### Tests run
+
+`tests/test_movie_generation.py` — **21 tests, 21 pass**: monotonic allocation,
+persistence before stamping, a damaged or unwritable state file, stamping that
+adds only, every page stamped, the three-state consistency rule, the
+search-index-left-behind case, and five wiring tests on the ordering.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| S-07 `catalog_generation` on the catalogue | **IMPLEMENTED** |
+| S-07 `search_generation` on the search index | **IMPLEMENTED** (same stamp, same field — two names for one number would be the drift it guards against) |
+| S-07 generation id | **IMPLEMENTED** |
+| S-07 atomic publish | **ALREADY SATISFIED** — `_atomic_replace_directory` per category; `snapshot_publish.py` for events |
+| S-07 detect a mixed-generation publish | **IMPLEMENTED** — reported in `scan-summary.json` and raised into `coverage_invariant_failures` |
+
+### Known limitations
+
+1. The movie surfaces are **not** behind a single pointer swap the way events
+   are. Between the first category's directory replace and the last, a reader
+   can still see a mixed catalogue for a moment. Making that impossible means
+   moving the published URLs, which is a front-end change well beyond ধাপ ৯.
+   The generation makes such a state *detectable*; it does not make it
+   impossible.
+2. `data/series/**` is not stamped. Series publish through
+   `series.publish_prepared_series` on their own path, and ধাপ ৯ names the
+   catalogue and the search index.
+3. The check reports on the *previous* state at the moment it runs, so a
+   disagreement is caught on the next scan rather than during the one that
+   caused it. Refusing to publish because the last run was inconsistent would
+   make a transient fault permanent.
+
+### Next task
+
+Phase 10ক — raise the movie scan frequency (A-01), now that ধাপ ৭'s TTL makes
+each run small. Then v3.5's ধাপ ১০খ.
