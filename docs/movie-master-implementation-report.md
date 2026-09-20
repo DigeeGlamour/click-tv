@@ -1680,8 +1680,137 @@ id-keyed-before-title-keyed rule was broken by the router's weights.
    outranks the router and the source logo. Adding a fourth tier would be two
    places holding one truth.
 
+### Commit / push
+
+`phase-6: rank posters by verification instead of by arrival`
+→ `496105721f04fb200aa29f3f133cf79d00330028` (pushed as `24e14e8`), verified.
+
 ### Next task
 
-Phase 7 — link health TTL + staggered sweep (S-01), `state/movie-link-health.json`
-with `next_verify_at`. The plan calls it the single largest technical win, and
-v3.5's ধাপ ১০খ is gated on it.
+Phase 7 — link health TTL + staggered sweep.
+
+---
+
+## PHASE 7 — Link health TTL + staggered sweep (S-01)
+
+**Plan reference:** ধারা ৪.২ · ৪.৩ · ৪.৪, ধারা ৭ ধাপ ৭. The plan calls it
+"একক বৃহত্তম গতি-লাভ", and **v3.5's ধাপ ১০খ is gated on it**.
+
+### Before state
+
+`grep` for `next_verify_at`, `last_verified_at` and `movie-link-health`
+returned exactly one hit across the whole repository — a comment in the Phase 1
+module describing the file that did not exist yet. `skip_verification` existed
+but only as a publish-side marker on manual and series items, never as a
+pipeline gate.
+
+So the measurement in the plan stands: 2,475 links re-checked every night in a
+40-minute budget, the budget runs out, and 390 of them (23%) sit in
+`stale_last_good` having never been reached. The scanner is not short of
+workers — it spends its whole budget redoing yesterday's work.
+
+### Files changed
+
+New: `scanner/movie_link_health.py`, `tests/test_movie_link_health.py`
+(49 tests).
+
+Changed: `scanner/fast_pipeline.py` (`_partition_by_link_health` in front of
+the run, `_record_link_health` after it), `config/settings.json`.
+
+### Implementation
+
+**One question in front of the existing pipeline** (ধারা ৪.৩), and everything
+below it is unchanged — what changes is how many items reach it:
+
+```
+NEW / CHANGED / DUE / REPAIR / playback failure → verify, exactly as today
+FRESH HEALTHY                                   → reuse state, zero network
+```
+
+The skip condition is all three of the plan's clauses together: `status ==
+healthy` **and** the source revision is unchanged **and** `now <
+next_verify_at`.
+
+**The TTL ladder** (ধারা ৪.৪), verified by test against the plan's own numbers:
+
+| | |
+|---|---|
+| new / changed / playback failure | immediately |
+| recently failed | 1h → 6h → 24h → 3d |
+| unstable public host | 36h (inside the plan's 24–48h) |
+| healthy public link | 5d (inside the plan's 3–7d) |
+| trusted private link | 7d |
+| tokenized URL | its own expiry, less a 2h margin |
+
+**The staggered sweep** — `hash(content_id) % 7`. Measured across 2,475 links
+the buckets come out 320–375 a night against a perfect 353, which is the
+plan's own ~354 estimate. Without it a link that stays healthy is never looked
+at again, which is the mistake ধারা ৪.৪ names outright: "সুস্থ লিংক আর কখনো
+দেখব না — এই ভুলটি এড়ানো যায়".
+
+**Stale reasons, because "stale 0%" was never the claim.** ধারা ৪.৪ corrects it
+explicitly: geo restriction, a host having a bad day and an expired token all
+produce stale entries and all of them are *correct*. Every stale entry carries
+one of `geo` / `host_down` / `token_expired` / `budget`, and only `budget` —
+stale because the run ran out of time — is the one being driven to zero. It is
+**recorded, not inferred**: a link the run never reached is a different fact
+from one that answered 403, and the whole metric depends on telling them apart.
+
+### Three safety properties, each with a test
+
+1. **The first run changes nothing.** A link with no record is always due, so
+   the first scan after this ships verifies exactly what it verifies today and
+   the ledger seeds itself from real observations. There is no moment where
+   this decides a link is healthy without having watched it be healthy.
+2. **A carried item is still published.** It leaves the *probe* queue, never
+   the run — it rejoins `final_results` before anything is written. Dropping it
+   would make the Phase 1 gate rightly BLOCK the publish, which is the silent
+   loss ধারা ৪.০ exists to prevent.
+3. **Failure degrades to today.** If anything in the gate raises, the whole
+   partition is abandoned and every item is verified.
+
+### A fault found while testing
+
+`verification_decision` required **both** revisions to be non-empty before
+calling a link changed, so a record made before revisions were tracked could
+never be marked changed. "We do not know what revision this came from" is not
+the same claim as "it has not changed". Fixed: a supplied revision that differs
+from the recorded one is a change, empty included. Costs one extra verification
+per link, once, and then the revision is on file.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| §4.2 `state/movie-link-health.json` with every named field | **IMPLEMENTED** |
+| §4.2 `next_verify_at` | **IMPLEMENTED** |
+| §4.2 `source_revision` cancels the TTL | **IMPLEMENTED** |
+| §4.2 status incl. `confirmed_unavailable` | **IMPLEMENTED** |
+| §4.3 the skip gate in front of fast_pipeline | **IMPLEMENTED** |
+| §4.4 the full TTL ladder | **IMPLEMENTED** |
+| §4.4 staggered sweep `hash % 7` | **IMPLEMENTED** |
+| §4.4 a reason on every stale entry | **IMPLEMENTED** |
+| §4.5 `preferred_primary` vs `active_primary` | **IMPLEMENTED** |
+| §4.0 repeated vantage failure is never terminal | **IMPLEMENTED** (404/410 only) |
+| ধাপ ৭ complete and stable → unblocks v3.5 ধাপ ১০খ | **code complete; stability needs real runs** |
+
+### Known limitations
+
+1. **The win is not yet measured on a real run.** The first scan verifies
+   everything and seeds the ledger; the reduction appears from the second run
+   onwards. The plan's estimate is 2,475 → ~354 checks a night.
+2. `UNSTABLE_HOST_MARKERS` is a short list of observed facts (`workers.dev`,
+   `hf.space`). Everything unlisted is treated as stable, which errs towards
+   checking *less* often; the failure ladder catches a host that turns out
+   worse than assumed.
+3. The repair queue is ধাপ ৮. `verification_decision` already accepts
+   `repair_queued` and gives it priority, so wiring it is a parameter, not a
+   redesign.
+4. `playback_failure_reported` is read from the candidate but nothing sets it
+   yet — `playback-feedback.yml` exists and connecting it belongs with ধাপ ৮.
+
+### Next task
+
+Phase 8 — repair queue + `movie-repair.yml` (S-02): P0–P3 priorities, backup
+promotion, and a workflow that reads only the queue rather than the whole
+catalogue.

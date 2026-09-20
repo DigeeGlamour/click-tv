@@ -1184,6 +1184,178 @@ def _mode_worker_profile(
     }
 
 
+def _link_health_enabled(settings: Dict[str, Any]) -> bool:
+    block = settings.get("movie_link_health")
+    if not isinstance(block, dict):
+        return True
+    return bool(block.get("enabled", True))
+
+
+def _partition_by_link_health(
+    items: List[Dict[str, Any]],
+    settings: Dict[str, Any],
+    mode: str,
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Any]:
+    """Split movie candidates into "must verify" and "fresh healthy".
+
+    Returns `(to_verify, carried_fresh, store)`. A carried item never touches
+    the network: it is re-emitted with the verification status the ledger
+    already holds, which is what ধারা ৪.৩ means by "state পুনর্ব্যবহার,
+    নেটওয়ার্ক শূন্য".
+
+    Three things keep this safe:
+
+      * only movie candidates are considered - Live TV, Today and Upcoming run
+        on their own cadence and this plan does not touch them;
+      * an item with no health record is always verified, so nothing is ever
+        carried on an assumption;
+      * a carried item is still published. It is removed from the *probe*
+        queue, not from the run - dropping it would make the no-loss gate
+        rightly block the publish.
+
+    Wrapped: if any of this fails the whole partition is abandoned and every
+    item is verified, which is exactly today's behaviour.
+    """
+    if not _link_health_enabled(settings):
+        return items, [], None
+    try:
+        from scanner import movie_link_health as health
+    except Exception:  # noqa: BLE001
+        return items, [], None
+
+    try:
+        store = health.load()
+        to_verify: List[Dict[str, Any]] = []
+        carried: List[Dict[str, Any]] = []
+        reasons: Dict[str, int] = {}
+
+        for item in items:
+            if not _is_movie_candidate(item, mode):
+                to_verify.append(item)
+                continue
+            identity = health.stream_id(
+                item.get("url"),
+                source_id=item.get("source_id"),
+                header_profile=item.get("header_profile"),
+            )
+            record = (store.get("links") or {}).get(identity)
+            must, reason = health.verification_decision(
+                record,
+                url=str(item.get("url") or ""),
+                content_id=str(item.get("id") or item.get("name") or ""),
+                source_revision=str(item.get("source_revision") or ""),
+                playback_failed=bool(item.get("playback_failure_reported")),
+            )
+            reasons[reason] = reasons.get(reason, 0) + 1
+            if must:
+                item["link_health_reason"] = reason
+                to_verify.append(item)
+                continue
+
+            carried_item = dict(item)
+            carried_item["verification_status"] = str(
+                record.get("last_verification_status")
+                or "verified_global"
+            )
+            carried_item["verified"] = True
+            carried_item["publish_allowed"] = True
+            carried_item["skip_verification"] = True
+            carried_item["verification_mode"] = "carried_fresh"
+            carried_item["link_health_reason"] = reason
+            carried_item["last_verified_at"] = record.get("last_verified_at")
+            carried.append(carried_item)
+
+        if carried:
+            print(
+                f"   link health: {len(to_verify)} to verify, "
+                f"{len(carried)} carried fresh ({reasons})"
+            )
+        return to_verify, carried, store
+    except Exception as error:  # noqa: BLE001 - never cost a scan
+        print(f"   link health gate skipped: {error}")
+        return items, [], None
+
+
+def _record_link_health(
+    final_results: List[Dict[str, Any]],
+    carried_fresh: List[Dict[str, Any]],
+    store: Any,
+    settings: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    """Fold this run's observations into the ledger and re-join carried items.
+
+    Returns the full result list - everything that was verified, plus
+    everything that was carried. The carried ones are appended rather than
+    merged because they never entered the probe queue, so nothing downstream
+    has an opinion about them yet.
+    """
+    if store is None:
+        return list(final_results) + list(carried_fresh)
+    try:
+        from scanner import movie_link_health as health
+
+        trusted_statuses = {"manual_trusted"}
+        for item in final_results:
+            if not isinstance(item, dict):
+                continue
+            if str(item.get("source_pipeline") or "").strip().casefold() != "movies":
+                continue
+            status = str(item.get("verification_status") or "")
+            record = health.record_result(
+                store,
+                identity=health.stream_id(
+                    item.get("url"),
+                    source_id=item.get("source_id"),
+                    header_profile=item.get("header_profile"),
+                ),
+                url=str(item.get("url") or ""),
+                content_id=str(item.get("id") or item.get("name") or ""),
+                source_id=str(item.get("source_id") or ""),
+                source_revision=str(item.get("source_revision") or ""),
+                verification_status=status,
+                http_status=_safe_int(item.get("http_status"), 0, 0),
+                trusted_private=status in trusted_statuses
+                or bool(item.get("manual_source")),
+                preferred_primary=bool(item.get("manual_source")),
+            )
+            # Kept so a carried item can be re-emitted with the status it
+            # actually earned rather than a generic one.
+            record["last_verification_status"] = status
+
+        # ধারা ৪.৪ - a link the run never reached is stale for `budget`, and
+        # that is the one reason the plan wants driven to zero. Recorded, not
+        # inferred: it is a different fact from a 403.
+        verified_ids = {
+            health.stream_id(
+                item.get("url"),
+                source_id=item.get("source_id"),
+                header_profile=item.get("header_profile"),
+            )
+            for item in final_results if isinstance(item, dict)
+        }
+        carried_ids = {
+            health.stream_id(
+                item.get("url"),
+                source_id=item.get("source_id"),
+                header_profile=item.get("header_profile"),
+            )
+            for item in carried_fresh if isinstance(item, dict)
+        }
+        for identity in set(store.get("links") or {}) - verified_ids - carried_ids:
+            health.mark_skipped_for_budget(store, identity)
+
+        health.save(store)
+        summary = health.summarise(store)
+        print(
+            f"   link health ledger: {summary['links']} link(s), "
+            f"{summary['status'][health.STATUS_HEALTHY]} healthy, "
+            f"stale for budget {summary['stale_for_budget']}"
+        )
+    except Exception as error:  # noqa: BLE001 - never cost a scan
+        print(f"   link health ledger skipped: {error}")
+    return list(final_results) + list(carried_fresh)
+
+
 def run_fast_verification_pipeline(
     candidates_path: str = "working/candidates.json",
     settings_path: str = "config/settings.json",
@@ -1205,6 +1377,21 @@ def run_fast_verification_pipeline(
     ]
     settings = _load_json(settings_path)
     mode = str(candidates_data.get("mode") or "all").strip().casefold()
+
+    # ধারা ৪.৩ / S-01 - the single question in front of this pipeline:
+    # "does this item need checking now?" Everything below is unchanged; what
+    # changes is how many items reach it.
+    #
+    # The measurement behind it: 2,475 links re-checked nightly in a 40-minute
+    # budget, the budget runs out, and 390 of them (23%) sit in
+    # `stale_last_good` having never been reached. The scanner is not short of
+    # workers - it spends its budget redoing yesterday's work.
+    #
+    # A link with no health record is always due, so the first run after this
+    # ships verifies exactly what it verifies today and the state seeds itself
+    # from real observations.
+    items, carried_fresh, link_health_store = _partition_by_link_health(
+        items, settings, mode)
 
     verification = settings.get("verification")
     if not isinstance(verification, dict):
@@ -2059,6 +2246,16 @@ def run_fast_verification_pipeline(
         "results": global_results,
     }
     _atomic_write_json(global_output_path, global_payload)
+
+    # ধারা ৪.৩ - the carried items rejoin here, before anything is published.
+    # They were removed from the *probe* queue, never from the run: dropping
+    # them would make the no-loss gate rightly block the publish, and would be
+    # the silent loss ধারা ৪.০ exists to prevent.
+    #
+    # This run's observations are folded back into the ledger at the same
+    # point, so the next run knows what this one learned.
+    final_results = _record_link_health(
+        final_results, carried_fresh, link_health_store, settings)
 
     publishable = [item for item in final_results if _publishable(item)]
     bd_payload: Dict[str, Any] = {
