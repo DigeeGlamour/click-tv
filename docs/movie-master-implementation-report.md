@@ -636,10 +636,206 @@ holds that. Live TV, Sports, Today and Upcoming do not read
    `history_skipped.txt`. Left alone deliberately: it is report noise, not data
    loss, and changing the ignore list is outside ধাপ ২.
 
+### Commit / push
+
+`phase-2: give the private movie source a real fallback chain`
+→ `62cffb3f9967d7358848e56fc0c84667dda87c1c`, pushed to `origin/main` and
+verified by `git ls-remote`.
+
 ### Next task
 
-Phase 3ক — **Shadow Migration run** (dry-run, nothing published):
-`reports/movie-series-migration-dryrun.json`, with the stream-coverage identity
-`before_stream_count = after_movie_streams + after_series_streams +
-merged_backups + pending_visible_streams`. ধাপ ৩খ does not start until that
-sum balances.
+Phase 3ক — Shadow Migration run.
+
+---
+
+## PHASE 3ক — Shadow Migration run (dry-run, nothing published)
+
+**Plan reference:** ধারা ৭ ধাপ ৩ক, with the classification rules of ধারা ৪.৬.
+
+### Goal
+
+Rehearse the reorganisation of 563 cards before a single one moves, and refuse
+to let ধাপ ৩খ start unless the stream-coverage identity balances.
+
+### Before state
+
+`grep` confirmed the plan's D-01 finding exactly: **there is no SxxExx regex
+anywhere in the scanner**. `scanner/content_router.py` has one `\bs\d{1,2}\s*e\d{1,3}\b`
+test, but it is used to decide *which pipeline* a row belongs to, never to
+extract a season or an episode. Series exist only where the private TXT
+catalogue states an explicit `Season:`/`Episode:` structure, so every episode
+in a public M3U goes straight into the movie pipeline as its own card.
+
+### Files changed
+
+New: `scanner/series_signal.py`, `scripts/movie-series-shadow-migration.py`,
+`tests/test_series_signal.py` (31 tests),
+`tests/test_movie_series_shadow_migration.py` (15 tests),
+`reports/movie-series-migration-dryrun.json`.
+
+Changed: none. Nothing in the publish path was touched — this phase is a
+rehearsal and writes one report.
+
+### Implementation
+
+`scanner/series_signal.py` reads season and episode from the title with regex
+and **no API call at all**, before the title cleaner runs (the cleaner strips
+exactly the kind of token the evidence lives in).
+
+Two rules are absolute, and both have dedicated tests:
+
+* **An episode number is never invented.** `S01` means the season is known and
+  the episode is not. `S1 P01` is a *Part*, and a Part is not an Episode.
+* **A series identity never contains a year.** `show_key` is built from the
+  merger's canonical title normaliser and then deliberately drops the year the
+  movie identity would append, because House of the Dragon is 2022, 2024 *and*
+  2026 in this catalogue and is one show.
+
+The three evidence tiers of ধারা ৪.৬, and what each may do:
+
+| Tier | Evidence | May move to a series card |
+|---|---|---|
+| explicit_episode | `SxxExx` in the title | yes |
+| pack_signal | "Complete / Full Season / Pack" | yes, as *Season N — Complete Season* |
+| sibling_episode | the same show has an `SxxExx` row in this catalogue | yes, at **zero API cost** |
+| no_evidence | a season marker and nothing else | **no** — stays a visible movie card with `classification_pending` |
+
+### Root causes found during implementation
+
+Both found by running the detector against real titles instead of trusting it.
+
+1. **`S01E15` was being read as "episodes 1 to 5".** The range pattern's
+   separator was optional, so `E15` matched as `1` then `5`. Left alone this
+   would have corrupted **all 348** explicit episode numbers in the catalogue
+   at once. Fixed by making the separator mandatory, and by refusing a "range"
+   whose end is a resolution (`1080`, `720`, …), a year, above 200, or not
+   greater than the start.
+
+2. **The obvious season-only pattern loses real rows.** `S\s?(\d+)\b(?!\s?E)`
+   rejects `Peaky Blinders S01 English` — because "English" starts with E. That
+   is five real season-only rows lost, including the one the plan uses as its
+   own worked example of tier 2.
+
+A third, smaller: `Newton's 3rd Law` is in this catalogue, and a pattern
+without an apostrophe guard reads `'s 3` as season 3.
+
+### Tests run
+
+```
+tests/test_series_signal.py                    31 tests   PASS
+tests/test_movie_series_shadow_migration.py    15 tests   PASS
+```
+
+Including title protection (1917, 2012, Drishyam 2, Blade Runner 2049,
+Ocean's 8, Se7en, 300, MS Dhoni), the `S01E15` regression, all three range
+spellings, Part-is-not-Episode, and a property test that the four
+stream-coverage terms are a genuine partition.
+
+### Data validation — the detector reproduces the plan's own audit
+
+`scanner/series_signal.py` was written without reference to the plan's counts,
+then measured against all 1,667 published cards:
+
+| | Plan (counted by hand) | Detector |
+|---|---|---|
+| explicit `SxxExx` rows | ৩৫০ | **348** |
+| season-marker-only rows | ২১৩ | **223** |
+| tier 1 — pack signal | ১৬ | **16** ✔ exact |
+| tier 2 — sibling-proven | ২৬ | **26** ✔ exact |
+| tier 3 — no evidence | ১৭১ | **181** |
+| Bachelor Point cards | ৩৭ | **37** ✔ exact |
+| Sultan Salahuddin Ayyubi | ২৩ | **23** ✔ exact |
+| Kurulus Osman | ১২ | **12** ✔ exact |
+| Resort | ২২ | **23** |
+
+### Data validation — `reports/movie-series-migration-dryrun.json`
+
+```
+movie cards now                1,667
+movie cards after              1,277   (of which 181 carry classification_pending)
+series shows created             114
+cards absorbed into series       390
+cards left pending as movies     181
+
+STREAM COVERAGE
+  before_stream_count          2,159
+    after_movie_streams        1,554
+    after_series_streams         390
+    merged_backups                31
+    pending_visible_streams      184
+  sum of terms                 2,159
+  BALANCED                      True      ← ধাপ ৩খ's precondition
+```
+
+Every one of the 2,159 links the site serves lands in exactly one term.
+114 new shows + 70 already published = 184 shows, against the plan's estimate
+of ~178.
+
+### The finding that changes ধাপ ৩খ
+
+**15 of the 114 proposed shows are already published as series.**
+
+```
+108 Base Hospital Uri · Bigg Boss · Brothers and Sisters ·
+Cousins and Kalyanams · Descendants of the Sun · Dirilis Ertugrul ·
+House of the Dragon · Khatron Ke Khiladi · Lanterns · Man vs Wild ·
+Pritam and Pedro · Resort · Star Trek Strange New Worlds ·
+Sultan Salahuddin Ayyubi · Thukra Ke Mera Pyaar
+```
+
+If ধাপ ৩খ created a card per proposed show, the site would end up with two
+cards for each of these — the under-merge the plan asked this rehearsal to look
+for, caught before anything moved. **ধাপ ৩খ must merge into the existing series
+card, not create a new one**, and that is now a written precondition rather
+than something to discover afterwards.
+
+Four over-merge warnings (Dirilis Ertugrul, House of the Dragon, Reacher, My
+Girlfriend is an Alien) are all the same thing: one show with several release
+years. The plan verified three of them by hand as legitimately one show, and
+the year-free identity handles them correctly — they are reported for a person,
+never acted on. One prefix warning, `show:bigg-boss` against
+`show:bigg-boss-ott`, is a false positive: those really are two shows, and the
+report says so rather than merging them.
+
+### No-Loss results
+
+The rehearsal writes no catalogue, and a test proves it: the ধাপ ০ baseline
+digests are re-verified before and after `build()` runs against the real
+repository, and report zero differences both times.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| ধাপ ৩ক dry run, nothing published | **IMPLEMENTED** |
+| ধাপ ৩ক stream-coverage identity balances | **IMPLEMENTED — balances (2,159 = 2,159)** |
+| ধাপ ৩ক over-merge warning | **IMPLEMENTED** (4, all benign, explained) |
+| ধাপ ৩ক under-merge warning | **IMPLEMENTED** (16, and 15 of them change ধাপ ৩খ) |
+| §4.6 season/episode by regex, zero API | **IMPLEMENTED** |
+| §4.6 episode number never invented | **IMPLEMENTED** |
+| §4.6 title protection (1917 / 2012 / Drishyam 2 / Blade Runner 2049) | **IMPLEMENTED** |
+| §4.6 three evidence tiers | **IMPLEMENTED** |
+| §4.6 unproven rows stay visible movie cards | **IMPLEMENTED** (181 rows, 184 links) |
+| §4.6 series identity carries no year | **IMPLEMENTED** |
+| §4.6 series identity priority 1 (external show id) | **NOT YET** — belongs to the classification cache (ধাপ ৩খ) |
+
+### Known limitations
+
+1. Series identity currently rests on priority 2 (normalised title). Priority 1
+   (external show id) and priority 3 (first-air-year, for collisions only) need
+   the classification cache, which is ধাপ ৩খ. The plan checked 262 distinct
+   base names and found no collision today, so priority 2 is sufficient for
+   this catalogue and the other two are future protection.
+2. The dry run compares against the catalogue as published. It does not model
+   what a *fresh scan* would produce, because that needs the verification
+   budget and the private token.
+3. `Resort` counts 23 here against the plan's 22, and season-only rows 223
+   against 213. The catalogue has moved since the plan was written; no rule
+   depends on the literal numbers, and the two tiers the plan counted exactly
+   (16 and 26) still match exactly.
+
+### Next task
+
+Phase 3খ — content classification and title parsing (D-01, S-05), carrying the
+precondition this rehearsal produced: **merge into the 15 existing series
+cards, never create a second card for them.**
