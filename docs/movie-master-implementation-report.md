@@ -237,6 +237,25 @@ verified by `git ls-remote` (remote SHA == local HEAD). The rollback was
 re-verified after the rebase: 192/192 files still read back from commit
 `9eda889` and matched.
 
+### Correction, made during Phase 3খ
+
+`data/manifest.json` was in the movie catalogue file set, and the drift check
+went red on it within hours — not because anything was damaged, but because the
+event scans rewrite that file every few minutes. Two things were wrong behind
+that noise:
+
+* a check that goes red on every unrelated scan is one nobody reads;
+* the restore behind it would have rolled **Today Match and Upcoming counts**
+  back to whenever the movie baseline was taken — exactly the cross-pipeline
+  damage this module's own scope note says it avoids.
+
+`data/manifest.json` is now recorded under `shared_files`: digested so the
+record stays complete, excluded from the drift check, and never written by a
+restore. The baseline is 191 catalogue files, re-anchored at `008dc5d`, and
+`data/movies` and `data/series` are byte-identical to the original `9eda889`
+anchor, so nothing about the recorded catalogue changed. Two tests hold the
+rule.
+
 ### Next task
 
 Phase 1 — **NO-LOSS COVERAGE GATE** (ধারা ৪.০).
@@ -1146,6 +1165,12 @@ publish.
    today. ধাপ ১১ (Mix redistribution) is what moves it to Bangla.
 4. Nine shows remain published under two categories. That is pre-existing, and
    consolidating it is ধাপ ১১'s question.
+
+### Commit / push
+
+`phase-3b: migrate 390 proven episode cards into the series catalogue`
+→ `008dc5d479a594764f49cb2067985db24a76ecc3`, pushed to `origin/main` and
+verified by `git ls-remote`.
 
 ### Next task
 

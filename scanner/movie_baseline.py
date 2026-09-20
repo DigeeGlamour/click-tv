@@ -65,7 +65,20 @@ CATALOGUE_DIRECTORIES: Tuple[str, ...] = (
     "data/series",
 )
 
-CATALOGUE_FILES: Tuple[str, ...] = (
+CATALOGUE_FILES: Tuple[str, ...] = ()
+
+#: Files every pipeline writes. Digested so the record is complete, and
+#: deliberately NOT restorable as part of a movie rollback.
+#:
+#: `data/manifest.json` carries the Today Match and Upcoming counts as well as
+#: the movie ones, and the event scans rewrite it every few minutes. Restoring
+#: it from a movie baseline would roll those counts back to whenever the
+#: baseline was taken - the cross-pipeline damage this module's own scope note
+#: says it avoids. It was in `CATALOGUE_FILES` until a drift check reported it
+#: as changed within hours of Phase 0, which is how the hazard surfaced: a
+#: check that goes red on every unrelated scan is one nobody reads, and behind
+#: it was a restore that would have reverted another pipeline's work.
+SHARED_FILES: Tuple[str, ...] = (
     "data/manifest.json",
 )
 
@@ -554,6 +567,15 @@ def build_baseline(
             continue
         catalogue.append(measured)
 
+    shared: List[Dict[str, Any]] = []
+    for relative in SHARED_FILES:
+        measured = measure(relative)
+        if measured is None:
+            shared.append({"path": relative, "sha256": "", "bytes": 0,
+                           "present": False})
+            continue
+        shared.append({**measured, "present": True})
+
     state: List[Dict[str, Any]] = []
     for relative in STATE_FILES:
         measured = measure(relative)
@@ -590,6 +612,8 @@ def build_baseline(
             "entries": inventory,
         },
         "catalogue_files": catalogue,
+        # Recorded, never restored. See SHARED_FILES.
+        "shared_files": shared,
         "state_files": state,
     }
 

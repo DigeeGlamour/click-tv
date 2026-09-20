@@ -137,6 +137,26 @@ class BaselineMeasurementTests(unittest.TestCase):
         for entry in self.baseline["catalogue_files"]:
             self.assertNotIn("\\", entry["path"])
 
+    def test_a_shared_file_is_recorded_but_not_a_catalogue_file(self) -> None:
+        """`data/manifest.json` carries Today Match and Upcoming counts too,
+        and the event scans rewrite it every few minutes.
+
+        Keeping it under a movie rollback meant two things, both wrong: a drift
+        check that went red within hours of Phase 0 on an unrelated scan, and a
+        restore that would have rolled another pipeline's counts back to
+        whenever the movie baseline was taken.
+        """
+        catalogue = {entry["path"] for entry in self.baseline["catalogue_files"]}
+        shared = {entry["path"] for entry in self.baseline["shared_files"]}
+        self.assertNotIn("data/manifest.json", catalogue)
+        self.assertIn("data/manifest.json", shared)
+
+    def test_a_changed_shared_file_is_not_reported_as_drift(self) -> None:
+        _write_json(self.directory / "data" / "manifest.json",
+                    {"schema_version": 1, "today_match": {"count": 99}})
+        self.assertEqual(
+            movie_baseline.verify_worktree(self.baseline, self.directory), [])
+
     def test_state_files_that_do_not_exist_are_recorded_as_absent(self) -> None:
         by_path = {entry["path"]: entry for entry in self.baseline["state_files"]}
         self.assertTrue(by_path["state/movie-metadata-cache.json"]["present"])
