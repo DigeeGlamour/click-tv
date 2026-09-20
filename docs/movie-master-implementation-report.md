@@ -1174,7 +1174,175 @@ verified by `git ls-remote`.
 
 ### Next task
 
-Phase 4 — **Provider Router, quota and circuit breaker** (S-06). It is
-deliberately before the metadata backfill: without it a provider that answers
-badly gets its answer cached for 90 days, and that is harder to undo than
-running out of quota.
+Phase 4 — Provider Router, quota and circuit breaker.
+
+---
+
+## PHASE 4 — Provider Router, quota and circuit breaker (S-06)
+
+**Plan reference:** ধারা ৪.৭, and ধারা ৭ ধাপ ৪ — deliberately **before** the
+backfill, because without it a provider that answers badly gets its answer
+cached for 90 days, and that is harder to undo than running out of quota.
+
+### Before state
+
+`scanner/provider_health.py` was already good, and the plan says so
+("failover নতুন করে বানাতে হবে না"): 429 with Retry-After, a bounded
+2s/5s/15s/30s ladder, no retry on 401/403, per-provider pacing, persisted
+cooldowns. Four things were missing.
+
+| Missing | Why it matters |
+|---|---|
+| quota accounting | OMDb's free allowance can be spent by one run with nothing left for a fallback |
+| a breaker that spans requests | the existing one opens only when a *single* request exhausts its ladder — 150 lookups failing once each never opened it |
+| capability/health-driven order | the chain was a fixed sequence, which the plan calls "বর্তমানে কোডে যা আছে তার বর্ণনা মাত্র — চূড়ান্ত নির্দেশ নয়" |
+| `cleaner_version` / `classifier_version` in the cache key | ধাপ ৩ changed both, so every answer the old rules produced sat behind a 90-day TTL |
+
+### Files changed
+
+New: `scanner/provider_router.py`, `tests/test_provider_router.py` (43 tests).
+
+Changed: `scanner/provider_health.py` (quota, latency, cross-request breaker),
+`scanner/metadata_providers.py` (the chain asks the router for its order),
+`scanner/movie_metadata_cache.py` (the three-part invalidation key),
+`scanner/movies.py` (`_annotate_provider_pending`), `config/settings.json`,
+`tests/test_provider_rate_policy.py` (two stale fixtures).
+
+### Implementation
+
+**The order is computed, not written down.** `provider_router.order()` answers
+per question — capability, content kind, and the ids actually held — and sorts
+by configured weight, then remaining quota, then measured latency. A provider
+that cannot answer is excluded rather than demoted: Fanart returns artwork and
+nothing else, Cinemeta needs an `imdb_id`, TVMaze knows television, AniList
+knows anime. Asking anyway spends a request to be told nothing.
+
+**The defaults change nothing.** Weights reproduce the old sequence exactly, so
+nothing moves until the config says otherwise. A migration that quietly
+reorders seven providers on the day it ships is not one anybody can review.
+Verified: `['tmdb','omdb','cinemeta','moviesdatabase']` for a movie with an
+imdb_id, `['tmdb','omdb','cinemeta','tvmaze']` for a series,
+`['tmdb','omdb','anilist']` for anime — identical to the code it replaced.
+
+**It is a sequence, not a fan-out.** ধারা ৪.৭: "একই আইটেমের জন্য সব প্রোভাইডার
+সমান্তরালে কল করা যাবে না — কোটা নষ্ট হবে." The walk re-asks the router after each
+provider, because an id one of them returns can make the next one eligible —
+Cinemeta and Fanart are unreachable until somebody produces an `imdb_id` or a
+`tmdb_id`.
+
+**Quota with a reserve.** A daily soft budget per provider, with
+`reserved_for_fallback` held back from ordinary enrichment, because a budget
+with no reserve is spent by the first thousand films of the day and the one
+lookup that actually needed a fallback finds nothing left. Spending it is not
+an error and marks nothing unhealthy — the router simply prefers somebody else.
+
+**A breaker that spans requests.** Four consecutive failures open it for ten
+minutes; a half-open test is allowed through afterwards, and a failed test
+reopens it for twice as long, up to an hour. A **real "no result" resets the
+count** rather than feeding it: ধারা ৪.৭ — "404 / no result → প্রোভাইডার ঠিক
+আছে, শুধু এই আইটেম মেলেনি" — a provider that keeps saying "not here" is working
+perfectly.
+
+**The three-part invalidation key.** `metadata_schema` answers "which fields",
+and now `cleaner_version` and `classifier_version` answer "from which title,
+under which rules". The plan identified the real risk by reading the code: a
+"not found" never gets stuck here because a failed lookup is never stamped and
+is retried — the danger is a **wrong match** from a dirty title cached as
+`applied` and believed for ninety days.
+
+### Two pre-existing test failures, fixed honestly
+
+`test_a_cached_movie_costs_no_lookup_at_all` and
+`test_settled_metadata_gets_the_long_ttl_and_a_recent_release_the_short_one`
+have been failing since before this work began. The code was right and the
+fixtures were stale: they carried no `metadata_schema`, so raising it to 2 made
+them due for a re-read whatever their age, and the tests silently stopped
+measuring the TTL they are named for.
+
+The fixtures now state the versions they mean to test, read from the module so
+they cannot drift apart again. That is strengthening, not weakening: a test
+called "a fresh cache entry costs no lookup" should set up an entry that is
+genuinely current in every dimension. **The pre-existing failure count goes
+from 4 to 2.**
+
+### Two faults the suite caught in the first draft
+
+1. **Fanart stopped being asked.** The first version ran the artwork round only
+   when *nothing* had produced a backdrop, so a Cinemeta backdrop suppressed
+   Fanart — and `BACKDROP_PRIORITY` ranks Fanart above Cinemeta. The old code
+   asked Fanart whenever TMDB had supplied no artwork, regardless of Cinemeta.
+   Fixed by asking an artwork provider only when it could **improve on the best
+   candidate held so far**, which is that rule generalised, and which also stops
+   spending a request on a provider that could only tie or lose.
+
+2. **Latency could never decide anything.** Sorting on raw remaining quota made
+   "unmetered" beat every metered provider outright — an infinite headroom
+   always sorts first — so the measured-behaviour tiebreak was unreachable, and
+   that is half of what makes the order dynamic. Headroom is now a three-value
+   bucket (plenty / running low / none) and latency decides within it.
+
+### Tests run
+
+```
+tests/test_provider_router.py       45 tests   PASS
+metadata suite (7 modules)         150 tests   PASS   (unchanged behaviour)
+full suite                       4,730 tests   3 pre-existing failures
+```
+
+The pre-existing failure count is down from 5 to 3: two were the stale cache
+fixtures fixed above, and one (`test_final_coherence`) turned out to be an
+artefact of a dirty working tree rather than a real failure — the suite writes
+into the real `reports/` and `state/`, which is why CI runs it in a throwaway
+worktree. The three that remain are site asset-versioning and stylesheet
+contracts, unrelated to this work.
+
+### Data validation — against the real catalogue
+
+```
+provider router   7/7 available
+metadata_pending  1,371 of 1,667 cards
+artwork_pending   0 of 1,667
+```
+
+1,371 pending matches the plan's measured metadata coverage (~21% resolved).
+`artwork_pending: 0` is honest and is **not** a claim that artwork is fine:
+every card carries a `logo`, but 72% of those point at a host that answers 403
+from Bangladesh. "Has a URL" and "has a picture that loads" are different
+questions, and the second one is ধাপ ৬'s.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| §4.7 429 / Retry-After / cooldown ladder | **ALREADY SATISFIED** — unchanged |
+| §4.7 401/403 never retried | **ALREADY SATISFIED** — unchanged |
+| §4.7 `remaining_quota` · `reset_at` · `daily_soft_budget` | **IMPLEMENTED** |
+| §4.7 `cooldown_until` | **ALREADY SATISFIED** (`next_retry_at`; reported under the plan's name rather than duplicated — two fields holding one truth is a bug the plan itself names) |
+| §4.7 `average_latency_ms` · `last_http_status` | **IMPLEMENTED** |
+| §4.7 circuit breaker 3–5 → open → half-open | **IMPLEMENTED** |
+| §4.7 OMDb reserve for emergency fallback | **IMPLEMENTED** |
+| §4.7 404 / no result → next provider, provider stays healthy | **IMPLEMENTED** |
+| §4.7 no parallel calls for one item | **IMPLEMENTED** (asserted by construction) |
+| §4.7 capability-aware, configurable routing | **IMPLEMENTED** |
+| §4.7 negative cache: 429/timeout/5xx/auth never cached | **ALREADY SATISFIED** — a failed lookup is never stamped |
+| §4.7 `cleaner_version` + `classifier_version` in the key | **IMPLEMENTED** |
+| §4.7 `metadata_pending` / `artwork_pending` | **IMPLEMENTED** |
+| §4.7 all APIs down → still publish | **ALREADY SATISFIED** — now recorded rather than only true |
+| A-06 provider quota in the run report | **IMPLEMENTED** (`provider_router.snapshot`) |
+
+### Known limitations
+
+1. The budgets are guesses until a run measures real usage: OMDb 900/100 and
+   MoviesDatabase 450/50. They are configuration, so correcting them costs no
+   code change.
+2. `high-confidence → chain থামাও` is still `_complete_enough`, the existing
+   rule. The confidence policy in `movie_metadata_confidence.py` is not yet
+   consulted for *stopping*, only for applying.
+3. The backfill queue itself is ধাপ ৫. This phase produces the marks it will
+   read.
+
+### Next task
+
+Phase 5 — the controlled metadata/artwork backfill (A-02), now that failover,
+quota limits and the confidence gate are in place:
+`safe_batch = min(backfill_target, provider_remaining_budget, time_budget)`.

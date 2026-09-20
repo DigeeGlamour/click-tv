@@ -791,6 +791,51 @@ def _annotate_classification(movies: List[Dict[str, Any]]) -> Dict[str, int]:
         return summary
 
 
+def _annotate_provider_pending(movies: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """ধারা ৪.৭ - say what a card is still waiting for, and never drop it.
+
+    The second of the plan's two unbreakable conditions: metadata enrichment is
+    not a condition of publishing. A film whose every provider is down is
+    published with its source-cleaned title, its category, its stream and a
+    placeholder - carrying `metadata_pending` / `artwork_pending` - and filled
+    in when the providers come back.
+
+    The code already behaved this way; the plan verified it and said so
+    ("movies.py: a poster lookup failure never removes the movie",
+    "enrich: Adds only - never removes/overrides"). What was missing is the
+    *record* of it, which is what makes the difference between "this film has
+    no rating" and "nobody has been able to ask yet" - and what a later
+    backfill reads to know where to start.
+
+    Runs last, after metadata and artwork have had their chance, so a mark
+    means "still missing now" rather than "was missing before we looked".
+    """
+    try:
+        from scanner import provider_router
+
+        provider_router.apply_budgets()
+        counts = provider_router.mark_all_pending(movies)
+        snapshot = provider_router.snapshot()
+        up = [row["provider"] for row in snapshot["providers"] if row["available"]]
+        print(
+            f"   provider router: {len(up)}/{len(snapshot['providers'])} "
+            f"available ({', '.join(up) if up else 'none'}); "
+            f"{counts['metadata_pending']} card(s) metadata_pending, "
+            f"{counts['artwork_pending']} artwork_pending"
+        )
+        if not snapshot["any_movie_metadata_available"]:
+            # ধারা ৪.৭'s all-down case. Stated plainly, because the catalogue
+            # still publishes and the only visible difference is the marks.
+            print(
+                "   provider router: no metadata provider is available; the "
+                "catalogue publishes unchanged with pending marks"
+            )
+        return {**counts, "providers": snapshot}
+    except Exception as error:  # noqa: BLE001 - must not fail a scan
+        print(f"   provider router annotation skipped: {error}")
+        return {}
+
+
 def _migrate_series_cards(
     movies: List[Dict[str, Any]],
     settings: Dict[str, Any],
@@ -4619,6 +4664,12 @@ def process_movies(
     # hero - is built from the result, so all of them get the clean title and
     # a poster that actually loads.
     _finalize_movie_presentation(grouped_movies)
+
+    # ধারা ৪.৭. Last, so a mark means "still missing after metadata and artwork
+    # both had their chance" rather than "was missing before we looked".
+    _annotate_provider_pending(
+        [movie for movies in grouped_movies.values() for movie in movies]
+    )
 
     paginated = {
         category: paginate_movie_list(

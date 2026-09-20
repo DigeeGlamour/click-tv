@@ -42,7 +42,7 @@ import difflib
 import os
 import re
 import urllib.parse
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 try:
     from scanner import movie_genres
@@ -84,6 +84,8 @@ ANILIST_URL = "https://graphql.anilist.co"
 
 
 # --------------------------------------------------------------------------
+from scanner import provider_router as _router
+
 # HTTP goes through scanner/provider_health.py (PART 04), which owns the
 # pacing, the 429/Retry-After handling, the bounded 2s/5s/15s/30s ladder,
 # the no-retry rule for 401/403, and the per-provider counters. These two
@@ -924,46 +926,103 @@ def resolve_metadata(movie: Dict[str, Any], *, kind: Optional[str] = None) -> Op
             sources.append(source)
             result.setdefault("metadata_confidence", data.get("metadata_confidence"))
 
-    # 1. TMDB - primary. Television lives behind different endpoints, and
-    #    asking the film ones for a series returned either nothing or a film
-    #    with the same name, which the confidence check then discarded.
-    tmdb_lookup = tmdb_series_metadata if resolved_kind in ("series", "anime") else tmdb_metadata
-    tmdb_data = _safe_call(tmdb_lookup, title, year)
-    merge(tmdb_data, "tmdb")
-    if tmdb_data:
-        tmdb_id = tmdb_data.get("tmdb_id") or tmdb_id
-        imdb_id = tmdb_data.get("imdb_id") or imdb_id
+    # ধারা ৪.৭ - the order is asked for, not written down here.
+    #
+    # `provider_router` answers with the providers that can answer THIS
+    # question (capability, content kind, and the ids we actually hold), that
+    # are up, and that still have budget - sorted by configured weight, then by
+    # remaining quota, then by measured latency. The default weights reproduce
+    # the sequence this function used to hard-code, so nothing moves until the
+    # config says otherwise.
+    #
+    # The walk stops as soon as the result is complete enough, which is what
+    # keeps this a sequence rather than the fan-out ধারা ৪.৭ forbids: "একই
+    # আইটেমের জন্য সব প্রোভাইডার সমান্তরালে কল করা যাবে না".
+    def _have() -> Dict[str, Any]:
+        return {"imdb_id": imdb_id, "tmdb_id": tmdb_id, "title": title}
 
-    # 2. OMDb - secondary metadata / imdb id+rating+release fallback.
-    if not _complete_enough(result, bool(backdrop_candidates)):
-        omdb_data = _safe_call(omdb_metadata, title, year, imdb_id)
-        merge(omdb_data, "omdb")
-        if omdb_data:
-            imdb_id = omdb_data.get("imdb_id") or imdb_id
+    def _lookup(provider: str) -> Optional[Dict[str, Any]]:
+        if provider == "tmdb":
+            return _safe_call(
+                tmdb_series_metadata if resolved_kind in ("series", "anime")
+                else tmdb_metadata,
+                title, year,
+            )
+        if provider == "omdb":
+            return _safe_call(omdb_metadata, title, year, imdb_id)
+        if provider == "cinemeta":
+            return _safe_call(cinemeta_metadata, imdb_id, resolved_kind)
+        if provider == "moviesdatabase":
+            return _safe_call(moviesdatabase_metadata, title, year)
+        if provider == "fanart":
+            return _safe_call(fanart_metadata, tmdb_id)
+        if provider == "tvmaze":
+            return _safe_call(tvmaze_metadata, title)
+        if provider == "anilist":
+            return _safe_call(anilist_metadata, title)
+        return None
 
-    # 3. Cinemeta - needs an imdb_id to be useful.
-    if imdb_id and not _complete_enough(result, bool(backdrop_candidates)):
-        merge(_safe_call(cinemeta_metadata, imdb_id, resolved_kind), "cinemeta")
+    capability = (
+        _router.CAPABILITY_SERIES_METADATA
+        if resolved_kind in ("series", "anime")
+        else _router.CAPABILITY_MOVIE_METADATA
+    )
 
-    # 4. RapidAPI MoviesDatabase - secondary/candidate metadata source.
-    if not _complete_enough(result, bool(backdrop_candidates)):
-        moviesdatabase_data = _safe_call(moviesdatabase_metadata, title, year)
-        merge(moviesdatabase_data, "moviesdatabase")
-        if moviesdatabase_data:
-            imdb_id = moviesdatabase_data.get("imdb_id") or imdb_id
+    asked: Set[str] = set()
+    # Re-asked after each provider, because an id one of them supplies can make
+    # the next one eligible: Cinemeta and Fanart are unreachable until somebody
+    # has produced an imdb_id or a tmdb_id.
+    for _round in range(len(_router.DEFAULT_PROVIDERS) + 2):
+        if _complete_enough(result, bool(backdrop_candidates)):
+            break
+        remaining = [
+            provider for provider in _router.order(
+                capability=capability, kind=resolved_kind, have=_have())
+            if provider not in asked
+        ]
+        if not remaining:
+            break
+        provider = remaining[0]
+        asked.add(provider)
+        data = _lookup(provider)
+        merge(data, provider)
+        if data:
+            tmdb_id = data.get("tmdb_id") or tmdb_id
+            imdb_id = data.get("imdb_id") or imdb_id
 
-    # 5. Fanart.tv - artwork fallback only, needs a tmdb_id. Skipped when
-    #    TMDB already supplied artwork, since TMDB outranks it anyway.
-    if tmdb_id and not backdrop_candidates.get("tmdb"):
-        merge(_safe_call(fanart_metadata, tmdb_id), "fanart")
+    # Artwork is its own question, because a result can be complete on text and
+    # still have no picture - and because a picture from a better source is
+    # worth asking for even when a worse one already answered. BACKDROP_PRIORITY
+    # decides "better", the same as it always has.
+    #
+    # So an artwork provider is asked only when it could actually improve on the
+    # best candidate held so far. That is exactly the old rule generalised: the
+    # code this replaced asked Fanart whenever TMDB had supplied no artwork,
+    # even if Cinemeta had - because Fanart outranks Cinemeta - and it now also
+    # stops spending a request on a provider that could only tie or lose.
+    def _best_backdrop_rank() -> int:
+        ranks = [
+            BACKDROP_PRIORITY.index(source)
+            for source in backdrop_candidates
+            if source in BACKDROP_PRIORITY
+        ]
+        return min(ranks) if ranks else len(BACKDROP_PRIORITY)
 
-    # 6. TVMaze - series/TV only.
-    if resolved_kind == "series" and not _complete_enough(result, bool(backdrop_candidates)):
-        merge(_safe_call(tvmaze_metadata, title), "tvmaze")
-
-    # 7. AniList - anime only.
-    if resolved_kind == "anime":
-        merge(_safe_call(anilist_metadata, title), "anilist")
+    for provider in _router.order(
+        capability=_router.CAPABILITY_ARTWORK,
+        kind=resolved_kind,
+        have=_have(),
+    ):
+        if provider in asked:
+            continue
+        rank = (
+            BACKDROP_PRIORITY.index(provider)
+            if provider in BACKDROP_PRIORITY else len(BACKDROP_PRIORITY)
+        )
+        if rank >= _best_backdrop_rank():
+            continue
+        asked.add(provider)
+        merge(_lookup(provider), provider)
 
     backdrop_source = _pick_backdrop(backdrop_candidates)
     if backdrop_source:

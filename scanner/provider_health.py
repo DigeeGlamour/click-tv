@@ -97,6 +97,7 @@ _METRIC_FIELDS = (
     "transport_errors",
     "not_found",
     "skipped_unavailable",
+    "skipped_budget",
 )
 
 #: Process-local state. A scan is one process, so this starts clean every
@@ -235,11 +236,155 @@ def _peek_record(provider: str, path: Optional[str] = None) -> Optional[Dict[str
     return record if isinstance(record, dict) else None
 
 
+#: ধারা ৪.৭ - "৩–৫ বার পরপর ব্যর্থ → ৫–১৫ মিনিট open → half-open টেস্ট".
+#:
+#: The ladder below this already opens a breaker when one *request* exhausts
+#: its retries. What it could not see is a provider that fails once per item:
+#: 150 lookups, 150 single failures, and the breaker never opened because no
+#: single request ever ran out of retries. This counter spans requests, which
+#: is the case ধারা ৪.৭ is actually describing.
+BREAKER_THRESHOLD = 4
+BREAKER_OPEN_SECONDS = 10 * 60
+#: A half-open test that fails reopens for longer rather than for the same
+#: period, so a provider that is genuinely down is asked less and less often.
+BREAKER_REOPEN_MULTIPLIER = 2
+BREAKER_MAX_OPEN_SECONDS = 60 * 60
+
+STATUS_BREAKER_OPEN = "breaker_open"
+STATUS_QUOTA_EXHAUSTED = "quota_exhausted"
+
+
+def _utc_day(moment: Optional[_dt.datetime] = None) -> str:
+    return (moment or _now()).strftime("%Y-%m-%d")
+
+
+def _roll_quota_day(record: Dict[str, Any]) -> None:
+    """Reset the daily counter when the UTC day turns.
+
+    `reset_at` is written as the next rollover so a report can say when the
+    budget comes back rather than making a reader work it out.
+    """
+    today = _utc_day()
+    if record.get("quota_day") == today:
+        return
+    record["quota_day"] = today
+    record["spent_today"] = 0
+    record["reset_at"] = _iso(
+        (_now() + _dt.timedelta(days=1)).replace(
+            hour=0, minute=0, second=0, microsecond=0)
+    )
+
+
+def daily_soft_budget(record: Dict[str, Any]) -> int:
+    try:
+        return int(record.get("daily_soft_budget") or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
+def remaining_quota(record: Dict[str, Any], *, reserved: bool = False) -> int:
+    """How many more calls this provider may take today.
+
+    `reserved=True` asks the question an *emergency fallback* asks, and it is
+    allowed to spend the part of the budget ordinary enrichment may not. ধারা
+    ৪.৭: "OMDb: ফ্রি কোটার একটি অংশ জরুরি fallback-এর জন্য সংরক্ষিত রাখা".
+    A budget with no reserve is spent by the first thousand films of the day,
+    and the one lookup that actually needed a fallback finds nothing left.
+    """
+    budget = daily_soft_budget(record)
+    if budget <= 0:
+        return -1  # unmetered
+    _roll_quota_day(record)
+    spent = int(record.get("spent_today") or 0)
+    try:
+        reserve = int(record.get("reserved_for_fallback") or 0)
+    except (TypeError, ValueError):
+        reserve = 0
+    ceiling = budget if reserved else max(0, budget - reserve)
+    return max(0, ceiling - spent)
+
+
+def note_spend(provider: str, *, path: Optional[str] = None, calls: int = 1) -> None:
+    """Count a call against today's soft budget."""
+    record = _provider_record(provider, path)
+    _roll_quota_day(record)
+    record["spent_today"] = int(record.get("spent_today") or 0) + int(calls)
+
+
+def _note_latency(record: Dict[str, Any], elapsed_ms: float) -> None:
+    """A rolling mean, so the router can prefer a provider that answers fast.
+
+    Rolling rather than exact: the exact mean needs every sample kept, and the
+    only question anyone asks of this number is "is this one slower than that
+    one".
+    """
+    value = max(0.0, float(elapsed_ms))
+    record["last_latency_ms"] = round(value, 1)
+    previous = record.get("average_latency_ms")
+    if previous in (None, ""):
+        record["average_latency_ms"] = round(value, 1)
+        return
+    try:
+        blended = (float(previous) * 0.8) + (value * 0.2)
+    except (TypeError, ValueError):
+        blended = value
+    record["average_latency_ms"] = round(blended, 1)
+
+
+def _open_breaker(record: Dict[str, Any]) -> None:
+    try:
+        previous = float(record.get("breaker_open_seconds") or 0)
+    except (TypeError, ValueError):
+        previous = 0.0
+    seconds = (
+        min(previous * BREAKER_REOPEN_MULTIPLIER, BREAKER_MAX_OPEN_SECONDS)
+        if previous else float(BREAKER_OPEN_SECONDS)
+    )
+    record["breaker_open_seconds"] = seconds
+    record["breaker_open_until"] = _iso(_now() + _dt.timedelta(seconds=seconds))
+    record["breaker_opened_at"] = _iso()
+    record["status"] = STATUS_BREAKER_OPEN
+    record["ok"] = False
+
+
+def _note_failure(record: Dict[str, Any]) -> None:
+    failures = int(record.get("consecutive_failures") or 0) + 1
+    record["consecutive_failures"] = failures
+    if record.get("breaker_half_open"):
+        # The one test call the breaker allowed has failed. Straight back to
+        # open, for longer.
+        record.pop("breaker_half_open", None)
+        _open_breaker(record)
+        return
+    if failures >= BREAKER_THRESHOLD:
+        _open_breaker(record)
+
+
+def _note_success(record: Dict[str, Any]) -> None:
+    record["consecutive_failures"] = 0
+    record.pop("breaker_half_open", None)
+    record.pop("breaker_open_until", None)
+    record["breaker_open_seconds"] = 0.0
+
+
 def is_available(provider: str, *, path: Optional[str] = None) -> bool:
-    """False while a provider is cooling down or known key-broken."""
+    """False while a provider is cooling down, key-broken, tripped or spent."""
     record = _peek_record(provider, path)
     if record is None:
         return True
+
+    open_until = _parse_stamp(record.get("breaker_open_until"))
+    if open_until is not None:
+        if _now() < open_until:
+            return False
+        # Half-open: exactly one request is allowed through to find out
+        # whether the provider has come back.
+        record.pop("breaker_open_until", None)
+        record["breaker_half_open"] = True
+        record["status"] = STATUS_HEALTHY
+        record["ok"] = True
+        return True
+
     status = str(record.get("status") or STATUS_HEALTHY)
     if status == STATUS_HEALTHY:
         return True
@@ -353,20 +498,37 @@ def request_json(
     body: Optional[Dict[str, Any]] = None,
     timeout: int = REQUEST_TIMEOUT_SECONDS,
     path: Optional[str] = None,
+    reserved: bool = False,
 ) -> Dict[str, Any]:
-    """One policy-governed request. Returns {} on any failure, never raises."""
+    """One policy-governed request. Returns {} on any failure, never raises.
+
+    `reserved=True` marks a call as an emergency fallback, which may spend the
+    slice of the daily budget ordinary enrichment may not (ধারা ৪.৭).
+    """
     record = _provider_record(provider, path)
     if not is_available(provider, path=path):
         _bump(record, "skipped_unavailable")
         return {}
 
+    if remaining_quota(record, reserved=reserved) == 0:
+        # A soft budget, so this is not an error and nothing is marked
+        # unhealthy - the provider is fine, it has simply had its share for
+        # today and the router will prefer another one.
+        _bump(record, "skipped_budget")
+        record["status"] = STATUS_QUOTA_EXHAUSTED
+        return {}
+
     for attempt in range(len(BACKOFF_LADDER_SECONDS) + 1):
         _throttle(provider)
         _bump(record, "requests")
+        note_spend(provider, path=path)
+        started = time.monotonic()
         status, payload, retry_after = _perform_request(
             url, headers=headers, body=body, timeout=timeout
         )
+        _note_latency(record, (time.monotonic() - started) * 1000.0)
         record["last_status"] = status
+        record["last_http_status"] = status
 
         if 200 <= status < 300:
             _bump(record, "successes")
@@ -375,6 +537,7 @@ def request_json(
             record["ok"] = True
             record["last_error"] = None
             record.pop("next_retry_at", None)
+            _note_success(record)
             return payload
 
         if status in _AUTH_STATUSES:
@@ -385,6 +548,7 @@ def request_json(
             record["last_auth_failure"] = _iso()
             _note_error(record, f"HTTP {status} - credential rejected")
             _mark_unavailable(record, STATUS_UNHEALTHY_AUTH, AUTH_FAILURE_COOLDOWN_SECONDS)
+            _note_failure(record)
             print(
                 f"   metadata provider {provider}: HTTP {status} - credential "
                 f"rejected. Provider disabled for this run; replace the secret. "
@@ -395,7 +559,11 @@ def request_json(
         transient = status == 429 or status in _RETRYABLE_STATUSES or status == 0
         if not transient:
             # 404 and friends are a real answer: the title is simply not there.
+            # ধারা ৪.৭ - "404 / no result → প্রোভাইডার ঠিক আছে, শুধু এই আইটেম
+            # মেলেনি → পরেরটি". So it resets the breaker rather than feeding it:
+            # a provider that keeps saying "not here" is working perfectly.
             _bump(record, "not_found")
+            _note_success(record)
             return {}
 
         if status == 429:
@@ -423,6 +591,7 @@ def request_json(
         else 60.0
     )
     _mark_unavailable(record, STATUS_COOLING_DOWN, cooldown)
+    _note_failure(record)
     return {}
 
 

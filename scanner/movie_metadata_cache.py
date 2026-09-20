@@ -104,6 +104,69 @@ REFRESH_TTL_DAYS_RECENT = 14
 #: Raise this only when a genuinely new field is added to METADATA_FIELDS.
 METADATA_SCHEMA = 2
 
+#: ধারা ৪.৭ - the other two halves of the invalidation key.
+#:
+#: METADATA_SCHEMA answers "which fields was this resolved under". It cannot
+#: answer "which *title* was it resolved from", and that is the one the plan
+#: identified by reading the code rather than guessing: a "not found" never
+#: gets stuck here, because a failed lookup is not stamped and is retried. The
+#: real risk is the opposite - a **wrong match** found from a dirty title like
+#: "Ananta Bhalobasha S01E15 Bangla Dubbed", cached as `applied`, and then
+#: believed for ninety days.
+#:
+#: ধাপ ৩ changed both the title cleaner and the classifier. Without these keys
+#: every answer the old rules produced would sit behind its TTL and the whole
+#: benefit of changing them would be invisible.
+#:
+#: Raise CLEANER_VERSION whenever `_normalize_title` / `_clean_display_title`
+#: change what a title resolves to.
+CLEANER_VERSION = 1
+
+
+def classifier_version() -> int:
+    """The movie/series classifier a record was resolved under.
+
+    Read from `series_signal` rather than duplicated, so there is one number
+    and it cannot drift from the rules it describes.
+    """
+    try:
+        from scanner.series_signal import CLASSIFIER_VERSION
+
+        return int(CLASSIFIER_VERSION)
+    except Exception:  # noqa: BLE001 - never fail a scan over a version number
+        return 0
+
+
+def _stamp_versions(record: Dict[str, Any]) -> None:
+    """Mark a record as resolved under the rules currently in force."""
+    record["metadata_schema"] = METADATA_SCHEMA
+    record["cleaner_version"] = CLEANER_VERSION
+    record["classifier_version"] = classifier_version()
+
+
+def _versions_are_current(record: Dict[str, Any]) -> bool:
+    def _as_int(value: Any, default: int) -> int:
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return default
+
+    # A record written before these keys existed carries neither. It is not
+    # treated as stale on that account alone - METADATA_SCHEMA already forces
+    # exactly one re-read for those, and making the same records due twice
+    # would spend the budget saying the same thing.
+    if _as_int(record.get("metadata_schema"), 1) < METADATA_SCHEMA:
+        return False
+    if "cleaner_version" in record and _as_int(
+        record.get("cleaner_version"), 0
+    ) != CLEANER_VERSION:
+        return False
+    if "classifier_version" in record and _as_int(
+        record.get("classifier_version"), 0
+    ) != classifier_version():
+        return False
+    return True
+
 #: How recent a release_date has to be to count as "still moving".
 RECENT_RELEASE_DAYS = 365
 
@@ -235,13 +298,10 @@ def _is_due_for_refresh(record: Dict[str, Any], now: _dt.datetime) -> bool:
     updated = _parse_stamp(record.get("metadata_updated_at"))
     if updated is None:
         return False
-    try:
-        cached_schema = int(record.get("metadata_schema") or 1)
-    except (TypeError, ValueError):
-        cached_schema = 1
-    # Cached before the current field set existed: read once more, whatever the
-    # TTL says. Everything else keeps the ordinary policy.
-    if cached_schema < METADATA_SCHEMA:
+    # Resolved under rules that are no longer in force - an older field set, an
+    # older title cleaner or an older classifier: read once more, whatever the
+    # TTL says. Everything else keeps the ordinary policy. (ধারা ৪.৭)
+    if not _versions_are_current(record):
         return True
     return (now - updated) > _dt.timedelta(days=_refresh_ttl_days(record, now))
 
@@ -312,7 +372,7 @@ def upsert(
         if fields.get("metadata_confidence"):
             record["metadata_confidence"] = fields["metadata_confidence"]
         record["metadata_updated_at"] = stamp
-        record["metadata_schema"] = METADATA_SCHEMA
+        _stamp_versions(record)
         return record
 
     from scanner import movie_metadata_confidence as confidence_policy
@@ -347,7 +407,7 @@ def upsert(
     # "this record has been read under the current field set", and a refusal
     # answered that too. Without it a record the confidence policy declines
     # would come back for a lookup on every single run.
-    record["metadata_schema"] = METADATA_SCHEMA
+    _stamp_versions(record)
     return record
 
 

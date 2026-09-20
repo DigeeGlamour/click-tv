@@ -260,6 +260,24 @@ class HealthPersistenceTests(PolicyTestCase):
         self.assertNotIn("api_key", on_disk)
 
 
+def _current_versions():
+    """The version keys a record resolved under today's rules would carry.
+
+    ধারা ৪.৭ makes a record stale when the field set, the title cleaner or the
+    classifier that produced it is no longer in force. That is deliberate, and
+    it is why these fixtures state the versions: a fixture that omits them is
+    stale by definition, so these tests silently stopped measuring the TTL the
+    moment METADATA_SCHEMA was raised to 2, and would stop again on the next
+    cleaner change. Read from the module rather than hard-coded, so they cannot
+    drift apart again.
+    """
+    return {
+        "metadata_schema": mc.METADATA_SCHEMA,
+        "cleaner_version": mc.CLEANER_VERSION,
+        "classifier_version": mc.classifier_version(),
+    }
+
+
 class CacheFirstTests(unittest.TestCase):
     """PART 04's cache-first rule, at the enrichment layer."""
 
@@ -279,6 +297,11 @@ class CacheFirstTests(unittest.TestCase):
                         "rating": 9.3,
                         "metadata_updated_at": self.now.isoformat(),
                         "release_date": "1994-09-23",
+                        # Resolved under the rules currently in force. Without
+                        # these three the record is due for a re-read whatever
+                        # its age, and this test would be measuring the version
+                        # keys rather than the cache-first rule it is named for.
+                        **_current_versions(),
                     }
                 },
             },
@@ -296,8 +319,12 @@ class CacheFirstTests(unittest.TestCase):
         self.assertEqual(summary["fetched"], 0)
 
     def test_settled_metadata_gets_the_long_ttl_and_a_recent_release_the_short_one(self):
-        stable = {"release_date": "2011-03-04", "metadata_updated_at": "2026-07-01T00:00:00+00:00"}
-        recent = {"release_date": "2026-08-01", "metadata_updated_at": "2026-07-01T00:00:00+00:00"}
+        stable = {"release_date": "2011-03-04",
+                  "metadata_updated_at": "2026-07-01T00:00:00+00:00",
+                  **_current_versions()}
+        recent = {"release_date": "2026-08-01",
+                  "metadata_updated_at": "2026-07-01T00:00:00+00:00",
+                  **_current_versions()}
         # 72 days old on 2026-09-11: past the 14-day recent TTL, inside the 90-day stable one.
         self.assertFalse(mc._is_due_for_refresh(stable, self.now))
         self.assertTrue(mc._is_due_for_refresh(recent, self.now))
