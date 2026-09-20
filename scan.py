@@ -24,7 +24,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlsplit, urlunsplit
 
 from scanner.fast_pipeline import run_fast_verification_pipeline
@@ -550,10 +550,25 @@ def run_collection_and_normalization(
         run_started_at,
     )
 
-    return _normalize_candidate_payload(
+    raw_items = collected.get("items")
+
+    normalized = _normalize_candidate_payload(
         collected,
         targeted_filter=targeted_filter,
     )
+
+    # ধারা ৪.০ INVARIANT ১ counts what the sources produced, which only exists
+    # here: `_normalize_candidate_payload` replaces `items` with the planned
+    # pool and writes that to working/candidates.json, so by the time anything
+    # downstream reads the file the raw rows are gone.
+    #
+    # Attached to the returned dict *after* the write, so 33,000 raw rows are
+    # never persisted - they are already in memory and the file is regenerated
+    # every run anyway.
+    normalized["raw_collected_items"] = (
+        raw_items if isinstance(raw_items, list) else []
+    )
+    return normalized
 
 
 def normalize_working_candidates() -> Dict[str, Any]:
@@ -1008,6 +1023,144 @@ def _process_events_for_mode(
     return event_result
 
 
+def _movie_previous_inventory() -> List[str]:
+    """Every playable movie/episode link the site is serving right now.
+
+    The "before" side of ধারা ৪.০ INVARIANT ২, read from `data/` rather than
+    from the last scan's result. The 2026-09-17 movies run finished with
+    `final_publishable: 0` and `movie_output_preserved: true` - the guard
+    correctly kept the previous pages - so that run's own output describes
+    nothing a viewer can open. The catalogue on disk does.
+
+    Wrapped: a gate that cannot read its "before" must not take a scan down.
+    It returns an empty list instead, and the gate then has nothing to claim
+    was lost, which is reported rather than hidden.
+    """
+    try:
+        from scanner import movie_baseline
+
+        return movie_baseline.stream_inventory(PROJECT_ROOT)
+    except Exception as error:  # noqa: BLE001
+        print(f"   no-loss gate: previous inventory unavailable ({error})")
+        return []
+
+
+def _build_movie_coverage(
+    raw_entries: List[Dict[str, Any]],
+    movies_data: Optional[Dict[str, Any]],
+    prepared_series: Optional[Dict[str, Any]],
+    previous_inventory: List[str],
+) -> Optional[Dict[str, Any]]:
+    """ধারা ৪.০ - the no-loss gate, built from this run's own facts.
+
+    Runs between `process_movies` and the publish, which is the only moment
+    where both sides exist: the entries the sources produced, and the
+    catalogue that is about to replace the live one.
+
+    Wrapped, but not silently: a gate that fails to build returns a report
+    saying so, and `scanner/output.py` treats an unevaluable gate as a block.
+    Failing open would defeat the point of having it.
+    """
+    try:
+        from scanner import movie_baseline, movie_coverage
+
+        movie_cards = movie_baseline.cards_from_paginated(movies_data)
+        episode_cards = movie_baseline.episodes_from_prepared_series(prepared_series)
+        if not episode_cards:
+            episode_cards = movie_baseline.published_episodes(PROJECT_ROOT)
+
+        sources = _configured_movie_sources()
+
+        # The private catalogue never passes through `collect_candidates` - it
+        # is fetched inside `movies.load_manual_movies` - so its rows have to
+        # be read from the snapshot that fetch just wrote. Without this the
+        # gate would report `raw_entries: 0` for the owner's own 350
+        # manual_trusted items and still call the accounting balanced.
+        entries = [
+            entry for entry in raw_entries
+            if isinstance(entry, dict)
+            and str(entry.get("source_pipeline") or "").strip().casefold()
+            in {"movies", "manual", ""}
+        ]
+        collected_ids = {
+            str(entry.get("source_id") or "").split(":", 1)[0]
+            for entry in entries
+        }
+        for source in sources:
+            if not source.get("enabled"):
+                continue
+            if str(source["id"]).split(":", 1)[0] in collected_ids:
+                continue
+            entries.extend(
+                movie_coverage.private_snapshot_entries(
+                    PROJECT_ROOT, source["id"])
+            )
+
+        report = movie_coverage.build_movie_coverage(
+            configured_sources=sources,
+            raw_entries=entries,
+            published_movies=movie_cards,
+            published_episodes=episode_cards,
+            previous_inventory=previous_inventory,
+            current_inventory=movie_baseline.inventory_lines(
+                movie_cards, episode_cards),
+            evidence="scan",
+        )
+        movie_coverage.write_movie_coverage(
+            report, PROJECT_ROOT / "reports" / "movie-source-coverage.json")
+        print(movie_coverage.format_movie_coverage(report))
+        return report
+    except Exception as error:  # noqa: BLE001
+        print(f"   no-loss gate: could not be built ({error})")
+        return {
+            "kind": "movie_source_coverage",
+            "evidence": "scan",
+            "invariants": {
+                "block": True,
+                "failures": ["gate_build_failed"],
+                "block_reasons": [f"the no-loss gate could not be built: {error}"],
+            },
+        }
+
+
+def _configured_movie_sources() -> List[Dict[str, Any]]:
+    """The movie sources a scan is supposed to read, public and private.
+
+    Read from the config files rather than from what already contributed
+    something, so a source that returned nothing still gets a row saying so.
+    """
+    sources: List[Dict[str, Any]] = []
+    try:
+        from scanner.source_loader import load_sources_config
+
+        merged = load_sources_config(PROJECT_ROOT / "config") or {}
+        for entry in merged.get("movies") or ():
+            if isinstance(entry, dict) and entry.get("id"):
+                sources.append({
+                    "id": str(entry["id"]),
+                    "name": str(entry.get("name") or entry["id"]),
+                    "enabled": bool(entry.get("enabled", True)),
+                })
+    except Exception as error:  # noqa: BLE001
+        print(f"   no-loss gate: movie source config unreadable ({error})")
+
+    try:
+        private = _load_required_json(PROJECT_ROOT / "manual" / "movie-sources.json")
+        private_enabled = bool(private.get("enabled", True))
+        for key in ("repository_sources", "directory_sources", "sources"):
+            for entry in private.get(key) or ():
+                if isinstance(entry, dict) and entry.get("id"):
+                    sources.append({
+                        "id": str(entry["id"]),
+                        "name": str(entry.get("name") or entry["id"]),
+                        "enabled": private_enabled and bool(entry.get("enabled", True)),
+                    })
+    except Exception as error:  # noqa: BLE001
+        print(f"   no-loss gate: private source config unreadable ({error})")
+
+    return sources
+
+
 def run_pipeline(
     mode: str = "all",
 ) -> Dict[str, Any]:
@@ -1253,6 +1406,8 @@ def run_pipeline(
     movies_data = None
     events_data = None
     prepared_series = None
+    movie_coverage_report = None
+    movie_previous_inventory: List[str] = []
 
     if mode_clean in {
         "channels",
@@ -1280,6 +1435,12 @@ def run_pipeline(
             "\n[Step 4b/5] Processing Movie VOD pagination..."
         )
 
+        # ধারা ৪.০ INVARIANT ২ needs the "was reaching viewers" side, and the
+        # only honest source for it is the catalogue on disk right now - the
+        # one the site is serving. It has to be read before `process_movies`
+        # so that nothing this run does can change the answer.
+        movie_previous_inventory = _movie_previous_inventory()
+
         from scanner.movies import (
             process_movies,
         )
@@ -1292,6 +1453,17 @@ def run_pipeline(
         print(
             f"   Series ready: {prepared_series.get('series', 0)} Series / "
             f"{prepared_series.get('episodes', 0)} Episodes"
+        )
+
+        # ধারা ৪.০ NO-LOSS COVERAGE GATE. Built here and not one line earlier:
+        # the series side has to be prepared first, or an episode this run
+        # produced would be counted as a movie stream that went missing.
+        print("\n   [Gate] No-loss coverage accounting...")
+        movie_coverage_report = _build_movie_coverage(
+            raw_entries=list(normalized.get("raw_collected_items") or []),
+            movies_data=movies_data,
+            prepared_series=prepared_series,
+            previous_inventory=movie_previous_inventory,
         )
 
     if mode_clean in {
@@ -1343,6 +1515,7 @@ def run_pipeline(
         rejected_low_quality_items=rejected_items,
         extra_quarantine_items=verifier_quarantine,
         scan_mode=mode_clean,
+        movie_coverage=movie_coverage_report,
     )
 
     # Requirement 4. Remember what this trigger achieved. A fixture that now has

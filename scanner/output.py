@@ -808,6 +808,58 @@ def _movie_drop_warning(
     }
 
 
+def _movie_coverage_block(
+    report: Optional[Dict[str, Any]],
+) -> Tuple[bool, List[str]]:
+    """ধারা ৪.০ - does the no-loss gate refuse this publish, and why?
+
+    The report is passed in by the scan that just built it rather than read
+    back off disk. A file read would have to decide whether the file on disk
+    belongs to this run, and an out-of-date coverage report either blocks a
+    publish it never examined or waves through one it never saw. Neither is a
+    gate.
+
+    `None` means no gate ran, which is the honest answer for a channels or
+    events run, and means the previous behaviour is unchanged for them.
+    """
+    if not isinstance(report, dict):
+        return False, []
+    try:
+        from scanner.movie_coverage import publish_blocked
+
+        return publish_blocked(report)
+    except Exception as error:  # noqa: BLE001
+        # A gate that crashes must not become a gate that silently passes.
+        return True, [f"the no-loss gate could not be evaluated: {error}"]
+
+
+def _movie_no_loss_warning(
+    reasons: List[str],
+    report: Optional[Dict[str, Any]],
+    timestamp: str,
+) -> Dict[str, Any]:
+    """The record of a blocked publish, with the numbers that blocked it."""
+    invariant_two = (report or {}).get("invariant_2") or {}
+    invariant_one = (report or {}).get("invariant_1") or {}
+    return {
+        "type": "movie_no_loss_gate_block",
+        "status": "previous_output_preserved",
+        "unexplained_live_loss": _safe_int(
+            invariant_two.get("unexplained_live_loss"), 0, 0),
+        "previously_live": _safe_int(invariant_two.get("previously_live"), 0, 0),
+        "total_in_scope_entries": _safe_int(
+            invariant_one.get("total_in_scope_entries"), 0, 0),
+        "identity_balanced": bool(invariant_one.get("identity_balanced")),
+        "block_reasons": list(reasons or []),
+        "report": "reports/movie-source-coverage.json",
+        "timestamp": timestamp,
+        "error": (
+            "Movie output was not replaced because the no-loss coverage gate "
+            "(ধারা ৪.০) refused it: " + "; ".join(reasons or ["unspecified"])
+        ),
+    }
+
+
 def _publish_movie_category(
     category_name: str,
     category_payload: Dict[str, Any],
@@ -1108,12 +1160,18 @@ def publish_scan_outputs(
     state_dir: str = "state",
     reports_dir: str = "reports",
     scan_mode: str = "all",
+    movie_coverage: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Publish scanner outputs and return the written scan-summary payload.
 
     channels_data, movies_data, and events_data are distinguished from None so
     an explicitly empty scan result can still update/hide its output.
+
+    movie_coverage is the ধারা ৪.০ no-loss report the movie scan just built.
+    Passed in rather than read from disk so the gate can only ever judge the
+    run it belongs to; None means no gate ran, which is the honest answer for
+    a channels or events run.
     """
     global _ACTIVE_PLAYBACK_COLLECTOR
 
@@ -1384,21 +1442,40 @@ def publish_scan_outputs(
             previous_movie_total,
             incoming_movie_total,
         )
+
+        # ধারা ৪.০ - the NO-LOSS COVERAGE GATE. Checked before the percentage
+        # guard and independently of it: the percentage guard asks whether the
+        # catalogue shrank a lot, the gate asks whether anything went missing
+        # without an explanation, and a single stream can vanish unexplained
+        # while the total barely moves. The plan replaced the threshold with
+        # this arithmetic (A-04) rather than deleting it, so both run.
+        coverage_blocked, coverage_reasons = _movie_coverage_block(movie_coverage)
+
         protect_previous_movies = bool(
-            movie_drop_protection_enabled
-            and not movie_quality_migration_active
-            and previous_movie_total >= movie_minimum_previous_count
-            and movie_drop > movie_maximum_drop_percentage
+            coverage_blocked
+            or (
+                movie_drop_protection_enabled
+                and not movie_quality_migration_active
+                and previous_movie_total >= movie_minimum_previous_count
+                and movie_drop > movie_maximum_drop_percentage
+            )
         )
 
         if protect_previous_movies:
             movie_output_preserved = True
-            warning = _movie_drop_warning(
-                previous_count=previous_movie_total,
-                incoming_count=incoming_movie_total,
-                maximum_drop_percentage=movie_maximum_drop_percentage,
-                timestamp=timestamp,
-            )
+            if coverage_blocked:
+                warning = _movie_no_loss_warning(
+                    reasons=coverage_reasons,
+                    report=movie_coverage,
+                    timestamp=timestamp,
+                )
+            else:
+                warning = _movie_drop_warning(
+                    previous_count=previous_movie_total,
+                    incoming_count=incoming_movie_total,
+                    maximum_drop_percentage=movie_maximum_drop_percentage,
+                    timestamp=timestamp,
+                )
             output_safety_items.append(warning)
             source_errors.append(warning)
         else:
@@ -1647,6 +1724,15 @@ def publish_scan_outputs(
     coverage_failures = (
         list(coverage_invariants.get("failures") or [])
         if isinstance(coverage_invariants, dict) else [])
+    # The movie gate's failures belong in the same place, prefixed so a reader
+    # can tell which pipeline is complaining. A failing invariant that is only
+    # written into a file nobody opened is the same as no check at all.
+    movie_invariants = (movie_coverage or {}).get("invariants")
+    if isinstance(movie_invariants, dict):
+        coverage_failures.extend(
+            "movie: %s" % name
+            for name in (movie_invariants.get("failures") or [])
+        )
     stream_warnings = (
         list(stream_health.get("warnings") or [])
         if isinstance(stream_health, dict) else [])

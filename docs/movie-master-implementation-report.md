@@ -229,10 +229,248 @@ because "it cannot have broken anything" is how things break.
    recorded and says the rest still differs, rather than deleting files on its
    own initiative.
 
+### Commit / push
+
+`phase-0: record the movie catalogue baseline and prove the rollback`
+→ `be5a7af58da3da2ad24339c2ba03199e781e33ed`, pushed to `origin/main` and
+verified by `git ls-remote` (remote SHA == local HEAD). The rollback was
+re-verified after the rebase: 192/192 files still read back from commit
+`9eda889` and matched.
+
 ### Next task
 
-Phase 1 — **NO-LOSS COVERAGE GATE** (ধারা ৪.০): `reports/movie-source-coverage.json`
-with INVARIANT ১ (ingestion accounting) and INVARIANT ২ (live preservation),
-and `unexplained_live_loss = 0` as a publish BLOCK condition. Phase 1 is not
-complete on compiling code — it is complete when that report proves both
-invariants on real data.
+Phase 1 — **NO-LOSS COVERAGE GATE** (ধারা ৪.০).
+
+---
+
+## PHASE 1 — No-Loss Coverage Gate
+
+**Plan reference:** ধারা ৪.০ (architecture, authoritative) and ধারা ৭ ধাপ ১.
+
+### Goal
+
+Two machine-checkable invariants, and a publish that stops when either fails:
+
+* **INVARIANT ১ — ingestion accounting.** Every candidate an enabled Movie
+  source produced reaches exactly one of five destinations.
+* **INVARIANT ২ — live preservation.** `unexplained_live_loss = 0`, or the
+  publish is BLOCKed.
+
+### Before state
+
+Nothing existed. `grep` for `unexplained_live_loss`, `movie-source-coverage`,
+`in_scope_entries` and `no_loss` across the repository returned no hits.
+
+What did exist and is reused rather than rebuilt:
+
+* `scanner/source_coverage.py` — the same idea, fully built, **for
+  `today_match`**: per-source rows, a drop-reason taxonomy, `check_invariants`,
+  and wiring into `scan-summary.json → coverage_invariant_failures`. Phase 1 is
+  that proven shape applied to movies, not a new concept.
+* `movie_failure_protection` (40% drop guard) and `movie_retention` (one scan
+  of grace). A-04 said the threshold was *replaced* by this arithmetic — the
+  plan replaced it as the primary mechanism, it did not ask for it to be
+  deleted, so both now run and a test holds that.
+* `scanner/merger.movie_identity_key` — whose own docstring says it is "the
+  canonical identity other movie subsystems should key on too, so it lives here
+  once rather than being reimplemented". The gate keys on it.
+* `scanner/content_router.classify_candidate` — the only thing asked whether an
+  entry is a movie at all.
+
+### Files changed
+
+New: `scanner/movie_coverage.py`, `scripts/movie-coverage-audit.py`,
+`tests/test_movie_coverage.py` (42 tests),
+`tests/test_movie_no_loss_gate.py` (12 tests),
+`reports/movie-source-coverage.json`.
+
+Changed: `scan.py` (capture raw entries, build the gate, pass it to publish),
+`scanner/output.py` (accept the gate, block on it, surface its failures),
+`scanner/movie_baseline.py` (inventory format shared by both sides),
+`.github/workflows/scan.yml` (the two gate modules added to `REQUIRED_FILES`,
+so a run that starts without the gate says which file is missing instead of
+publishing ungated — the same reason every other path on that list is there).
+
+No workflow change was needed to *run* the new tests: `scan.yml` already runs
+the full suite for every mode except `upcoming-targeted`, in a throwaway
+worktree. That worktree exists because the suite writes into the real `state/`
+and `reports/` — the same behaviour observed locally during this work, where a
+suite run left 22 files modified. It is why nothing produced by a test run was
+staged in either of these commits.
+
+### Implementation
+
+**Scope (ধারা ৪.০).** `out_of_scope` is exactly three things: a disabled source
+or entry, content the router says is not a movie/series, and an empty or
+invalid record. **Category is never one of them** — the v৩.৪ correction, and the
+one with a dedicated regression test, because v৩.৩ said the opposite and a real
+playing film whose only fault is a wrong feed tag would have vanished from the
+accounting. `movies._canonical_movie_category` already funnels unknown
+categories to `Mix`, so this writes down existing behaviour rather than changing
+it.
+
+**Five destinations, never six.** `confirmed_unavailable` is stream health, a
+separate axis, and a test asserts `len(DISPOSITIONS) == 5`.
+
+**Hard rejection is four reasons.** 403, 451, geo-blocks, timeouts, 5xx, expired
+tokens and repeated failure from our own vantage all route to quarantine, with
+this codebase's own evidence behind the rule (1,312 posters answer 403 from
+Bangladesh and 200 from a GitHub runner).
+
+**Where the gate runs.** Between `process_movies()` and the publish — the only
+moment both sides of the question exist. The "before" inventory is read from
+`data/` *before* `process_movies`, so nothing the run does can change what it
+claims was live. The report is **passed to** `publish_scan_outputs`, not read
+back off disk, so the gate can only ever judge the run it belongs to.
+
+**Fail closed.** A gate that cannot be built, or a report that is truncated or
+malformed, blocks. This was a real hole found by a test: the first version fell
+through to a fresh `check_invariants`, which on an empty report compared 0
+against 0, passed, and let the publish proceed.
+
+### Root causes found during implementation
+
+Three, all found by running the gate against live data rather than fixtures.
+All three would have made the gate produce confident nonsense.
+
+1. **The public source rotates its CDN host.** On 2026-09-20 the feed served
+   `https://afghbn.b-cdn.net/s3/upload/videos/2026/09/[Fibwatch.Com]Seven.Snipers...`
+   while the published card for the same film held `https://jrtyh.b-cdn.net/...`
+   — same path, different host. Host+path matching therefore recognised **0 of
+   32,983** feed rows against 1,313 published cards, and the gate reported
+   `published_movie: 0` with `identity_balanced: true`. Fixed with a layered
+   lookup — `exact_stream` → `path_rotated` → `content_only` — that records
+   *which* layer matched, so a weak match is never presented as a strong one.
+
+2. **Private catalogue entries carry their streams in `links[]`,** not a
+   top-level `url`. Read as one entry with no URL, all 858 of them were marked
+   `empty_or_invalid_record` — the most valuable part of the system reported as
+   invalid. Fixed: one entry per link, which is also what INVARIANT ১ counts.
+
+3. **Identity was being reimplemented.** A local title normaliser could not
+   match "Seven Snipers (2026) Dual 1080P" in a feed to "Seven Snipers (2026)
+   Dual" on a card. Replaced with `merger.movie_identity_key`, the canonical
+   one.
+
+A fourth, smaller: 34 of the catalogue's 2,475 inventory lines are the same
+episode published under two categories (`lingam-2026` under both `dubbed` and
+`premium`). INVARIANT ২ counts distinct streams, and both numbers are reported
+so the collapse is visible rather than silent.
+
+### Tests run
+
+```
+tests/test_movie_coverage.py        42 tests   PASS
+tests/test_movie_no_loss_gate.py    12 tests   PASS
+tests/test_movie_baseline.py        24 tests   PASS
+```
+
+Each test names the clause of ধারা ৪.০ it holds in place. The four corrections
+with the most review history behind them each have a dedicated guard: category
+never excludes; 403/geo/timeout never terminal; no sixth bucket; a quarantine
+spike warns and does not block.
+
+### Data validation results — `reports/movie-source-coverage.json`
+
+Public sources fetched live, private source from its committed snapshot,
+compared against the published catalogue:
+
+```
+INVARIANT 1 - ingestion accounting
+  raw entries                 34,578
+  out of scope                     0
+  TOTAL IN SCOPE              34,578
+    published_movie                   3,574
+    published_series_episode             19
+    merged_stream                     1,863
+    quarantined_unresolved           29,122
+    definitive_rejected                   0
+  identity balanced             True     (every source row balances)
+
+INVARIANT 2 - live preservation
+  previously live               2,441 distinct streams (2,475 lines, 34 duplicated)
+  currently visible             2,441   all at the exact_stream layer
+  merged                            0
+  visible pending                   0
+  terminal evidence                 0
+  UNEXPLAINED LIVE LOSS             0   ← Phase 1's completion condition
+  publish                     allowed
+```
+
+Per source: `sm-movie-combined` 32,983 entries (live fetch), `hopeful-research-latest`
+1,594 (cached snapshot), `bollywood-movies-collector` 1 (live fetch, and
+`state/source-health.json` independently records `raw_items: 1` for it).
+
+`quarantined_unresolved: 29,122` is large and correct: the last successful
+publish was 2026-09-17, the feed has moved since, and most feed rows have never
+passed verification. Per ধারা ৪.০ a quarantine spike is a WARNING, never a
+BLOCK, and a test holds that.
+
+`duplicate_entry_keys: 11,910` — the combined playlist repeats entries. Reported
+as a non-blocking check.
+
+### No-Loss results
+
+**INVARIANT ১: PASS** — identity balances overall and per source row.
+**INVARIANT ২: PASS — `unexplained_live_loss = 0`.**
+
+### Honest limitation on the evidence
+
+INVARIANT ২ is authoritative here: it compares two committed catalogues, and
+both are files in this repository.
+
+INVARIANT ১ is a *within-run* measurement — a feed changes between runs, so
+entries fetched today are not the entries the last publish saw. The audit script
+therefore records per source row how its evidence was obtained
+(`live_fetch` / `cached_snapshot` / `unavailable`), so a zero that means "not
+reachable" can never be read as a zero that means "nothing there". The
+authoritative INVARIANT ১ is the one `scan.py` writes during a real run, where
+the entries and the publish belong to the same moment. That path is implemented
+and unit-tested; it will produce its first real report on the next scheduled
+movies run.
+
+### Regression checks
+
+Full suite: 4,502 tests. The same 5 failures as the pre-change baseline, and no
+others — confirmed by removing the new files and reproducing all 5
+(`test_event_channel_card_design`, `test_final_card_design_contract`,
+`test_final_coherence`, `test_provider_rate_policy` ×2). All five are
+pre-existing and unrelated to movies-no-loss work.
+
+Live TV, Sports, Today, Upcoming and the player core are untouched: a run that
+passes no `movie_coverage` behaves exactly as before, and a test holds that.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| §4.0 INVARIANT ১ — ingestion accounting, five destinations | **IMPLEMENTED** |
+| §4.0 INVARIANT ২ — live preservation, `unexplained_live_loss = 0` | **IMPLEMENTED** |
+| §4.0 `reports/movie-source-coverage.json` with both invariants | **IMPLEMENTED** |
+| §4.0 publish BLOCK on real damage | **IMPLEMENTED** |
+| §4.0 quarantine spike = WARNING, not BLOCK | **IMPLEMENTED** |
+| §4.0 category never causes `out_of_scope` | **ALREADY SATISFIED → now enforced and tested** |
+| §4.0 entry identity = source + stream family + header profile + content | **IMPLEMENTED** |
+| §4.0 `definitive_rejected` limited to four hard reasons | **IMPLEMENTED** |
+| §4.0 `confirmed_unavailable` is not a sixth bucket | **IMPLEMENTED** (asserted) |
+| A-04 threshold guard | **ALREADY SATISFIED** — kept alongside, not deleted |
+
+### Known limitations
+
+1. INVARIANT ১'s in-scan report has not yet been produced by a real run (no
+   private-source token and no network verification budget locally). The audit
+   report stands in, and is explicitly labelled `evidence: audit`.
+2. `path_rotated` and `content_only` are weaker than an exact stream match. They
+   are recorded as such in `match_layers`, and INVARIANT ২ on the real catalogue
+   currently matches **2,441/2,441 at the exact layer** — the weaker layers are
+   carrying nothing today.
+3. `definitive_rejected` is 0 because no artefact in the repository records one
+   of the four hard reasons. `reports/dropped-unplayable-movies.json` records
+   255 removals for "no decoded frame and the route did not answer", which is
+   explicitly *not* a hard reason, so those are quarantine, not rejection.
+
+### Next task
+
+Phase 2 — private source fallback (S-03): `use_last_valid_cache`,
+`directory_sources` and a last-good snapshot, so a transient GitHub or network
+failure can never cost the 350 owner-curated `manual_trusted` items.

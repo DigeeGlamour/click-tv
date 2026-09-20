@@ -320,16 +320,123 @@ def stream_inventory(root: str | Path) -> List[str]:
     thing that both a digest and a diff can be taken of.
     """
     root = Path(root)
+    return inventory_lines(published_movies(root), published_episodes(root))
+
+
+def inventory_lines(
+    movies: Iterable[Tuple[str, Dict[str, Any]]],
+    episodes: Iterable[Tuple[str, Dict[str, Any]]] = (),
+) -> List[str]:
+    """The same lines, from cards held in memory rather than read from disk.
+
+    The format lives here once because both sides of INVARIANT ২ have to be
+    written by the same rule: the "before" comes off disk, the "after" comes
+    out of the payload a scan is about to publish, and two spellings of the
+    same line would make every stream look moved.
+    """
     lines: List[str] = []
-    for slug, item in published_movies(root):
+    for slug, item in movies or ():
+        if not isinstance(item, dict):
+            continue
         identity = str(item.get("id") or item.get("name") or "").strip()
         for url in _movie_stream_urls(item):
             lines.append(f"movie|{slug}|{identity}|{url}")
-    for source_path, episode in published_episodes(root):
+    for source_path, episode in episodes or ():
+        if not isinstance(episode, dict):
+            continue
         identity = str(episode.get("id") or episode.get("episode_key") or "").strip()
         for url in _movie_stream_urls(episode):
             lines.append(f"episode|{source_path}|{identity}|{url}")
     return sorted(set(lines))
+
+
+def episodes_from_prepared_series(
+    prepared: Optional[Dict[str, Any]],
+) -> List[Tuple[str, Dict[str, Any]]]:
+    """`(scope, episode)` for the series a scan is about to publish.
+
+    `scanner/series.publish_prepared_series` runs *after* the movie publish, so
+    at gate time the episodes on disk are the previous run's. Using those would
+    be accurate today and wrong exactly when it matters most: the moment ধাপ ৩
+    starts moving movie cards into series, an episode that had just arrived
+    would read as a lost stream.
+
+    The staging shape is walked defensively - seasons, then episodes, then
+    either a `url` or a `links` list - because `prepare_manual_series` hands
+    back the staging records rather than the normalised ones, and a shape
+    change here must degrade to "found nothing" rather than to a crash in a
+    publish path.
+    """
+    collected: List[Tuple[str, Dict[str, Any]]] = []
+    items = (prepared or {}).get("items")
+    if not isinstance(items, list):
+        return collected
+    for series in items:
+        if not isinstance(series, dict):
+            continue
+        series_id = str(
+            series.get("id") or series.get("name") or ""
+        ).strip()
+        scope = "prepared:%s" % (series_id or "unknown")
+        for season in series.get("seasons") or ():
+            if not isinstance(season, dict):
+                continue
+            for episode in season.get("episodes") or ():
+                if not isinstance(episode, dict):
+                    continue
+                record = dict(episode)
+                record.setdefault(
+                    "id",
+                    "%s-s%02d-%s" % (
+                        series_id,
+                        _int_or(season.get("number"), 0),
+                        str(record.get("episode_key")
+                            or record.get("episode_label") or "").strip(),
+                    ),
+                )
+                links = record.get("links")
+                if isinstance(links, list) and links:
+                    primary = links[0] if isinstance(links[0], dict) else {}
+                    record.setdefault("url", primary.get("url") or "")
+                    record["backups"] = [
+                        link for link in links[1:] if isinstance(link, dict)
+                    ]
+                collected.append((scope, record))
+    return collected
+
+
+def _int_or(value: Any, fallback: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return fallback
+
+
+def cards_from_paginated(
+    movies_data: Optional[Dict[str, Any]],
+) -> List[Tuple[str, Dict[str, Any]]]:
+    """`(category_slug, card)` for everything a scan is about to publish.
+
+    `scanner/movies.process_movies` returns the paginated payload and
+    `scanner/output.py` writes it; between those two points is the only moment
+    where "what is about to be live" exists as data, which is exactly where the
+    no-loss gate has to ask its question.
+    """
+    collected: List[Tuple[str, Dict[str, Any]]] = []
+    for category, payload in (movies_data or {}).items():
+        if not isinstance(payload, dict):
+            continue
+        pages = payload.get("page_contents")
+        if not isinstance(pages, dict):
+            continue
+        index = payload.get("index")
+        slug = str(
+            (index or {}).get("slug") if isinstance(index, dict) else ""
+        ) or str(category)
+        for _, page in sorted(pages.items()):
+            for item in _page_items(page):
+                collected.append((slug, item))
+    return collected
 
 
 def catalogue_counts(root: str | Path) -> Dict[str, Any]:

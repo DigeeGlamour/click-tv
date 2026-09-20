@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "kind": "movie_source_coverage",
+  "generated_at": "2026-09-20T04:06:47.297666+00:00",
+  "evidence": "audit",
+  "note": "ধারা ৪.০ NO-LOSS COVERAGE GATE. INVARIANT ১ accounts for every candidate an enabled Movie source produced; INVARIANT ২ asks whether what was reaching viewers still does. unexplained_live_loss must be 0 or the publish is blocked.",
+  "configured_source_count": 3,
+  "invariant_1": {
+    "name": "ingestion_accounting",
+    "raw_entries": 34578,
+    "out_of_scope": 0,
+    "out_of_scope_reasons": {},
+    "total_in_scope_entries": 34578,
+    "published_movie": 3574,
+    "published_series_episode": 19,
+    "merged_stream": 1863,
+    "quarantined_unresolved": 29122,
+    "definitive_rejected": 0,
+    "bucket_sum": 34578,
+    "identity_balanced": true,
+    "duplicate_entry_keys": 11910
+  },
+  "invariant_2": {
+    "name": "live_preservation",
+    "previously_live": 2441,
+    "previously_live_inventory_lines": 2475,
+    "duplicate_inventory_lines": 34,
+    "currently_visible": 2441,
+    "merged_stream": 0,
+    "visible_pending": 0,
+    "terminal_evidence": 0,
+    "unexplained_live_loss": 0,
+    "match_layers": {
+      "exact_stream": 2441
+    },
+    "block_reasons": [],
+    "lost_sample": []
+  },
+  "published": {
+    "movies": 1667,
+    "episodes": 316,
+    "stream_families": 2441,
+    "pending_content": 0
+  },
+  "sources": [
+    {
+      "source_id": "bollywood-movies-collector",
+      "source_name": "Bollywood Movies Collection",
+      "enabled": true,
+      "raw_entries": 1,
+      "out_of_scope": 0,
+      "out_of_scope_reasons": {},
+      "published_movie": 0,
+      "published_series_episode": 0,
+      "merged_stream": 0,
+      "quarantined_unresolved": 1,
+      "definitive_rejected": 0,
+      "definitive_rejected_reasons": {},
+      "quarantined_reasons": {
+        "no_terminal_evidence_and_not_published": 1
+      },
+      "total_in_scope_entries": 1,
+      "identity_balanced": true,
+      "bucket_sum": 1,
+      "ingestion_evidence": "live_fetch"
+    },
+    {
+      "source_id": "hopeful-research-latest",
+      "source_name": "Hopeful Research Latest Movie Categories",
+      "enabled": true,
+      "raw_entries": 1594,
+      "out_of_scope": 0,
+      "out_of_scope_reasons": {},
+      "published_movie": 465,
+      "published_series_episode": 19,
+      "merged_stream": 565,
+      "quarantined_unresolved": 545,
+      "definitive_rejected": 0,
+      "definitive_rejected_reasons": {},
+      "quarantined_reasons": {
+        "no_terminal_evidence_and_not_published": 545
+      },
+      "total_in_scope_entries": 1594,
+      "identity_balanced": true,
+      "bucket_sum": 1594,
+      "ingestion_evidence": "cached_snapshot"
+    },
+    {
+      "source_id": "sm-movie-combined",
+      "source_name": "SM Movie Combined",
+      "enabled": true,
+      "raw_entries": 32983,
+      "out_of_scope": 0,
+      "out_of_scope_reasons": {},
+      "published_movie": 3109,
+      "published_series_episode": 0,
+      "merged_stream": 1298,
+      "quarantined_unresolved": 28576,
+      "definitive_rejected": 0,
+      "definitive_rejected_reasons": {},
+      "quarantined_reasons": {
+        "no_terminal_evidence_and_not_published": 28576
+      },
+      "total_in_scope_entries": 32983,
+      "identity_balanced": true,
+      "bucket_sum": 32983,
+      "ingestion_evidence": "live_fetch"
+    }
+  ],
+  "unconfigured_sources": [],
+  "invariants": {
+    "checked_at": "2026-09-20T04:06:47.297666+00:00",
+    "passed": 8,
+    "failed": 1,
+    "failures": [
+      "no duplicate entry keys among in-scope entries"
+    ],
+    "block": false,
+    "block_reasons": [],
+    "checks": [
+      {
+        "name": "INVARIANT_1 total_in_scope_entries == sum of the five dispositions",
+        "passed": true,
+        "detail": "in scope 34578, buckets 34578",
+        "blocking": true
+      },
+      {
+        "name": "INVARIANT_1 every source row balances",
+        "passed": true,
+        "detail": "unbalanced: []",
+        "blocking": true
+      },
+      {
+        "name": "INVARIANT_1 raw_entries == out_of_scope + total_in_scope_entries",
+        "passed": true,
+        "detail": "leaking: []",
+        "blocking": true
+      },
+      {
+        "name": "INVARIANT_1 out_of_scope uses only the three sanctioned reasons",
+        "passed": true,
+        "detail": "illegal reasons: []",
+        "blocking": true
+      },
+      {
+        "name": "INVARIANT_1 definitive_rejected uses only the four hard reasons",
+        "passed": true,
+        "detail": "outside the hard list: []",
+        "blocking": true
+      },
+      {
+        "name": "INVARIANT_2 unexplained_live_loss == 0",
+        "passed": true,
+        "detail": "unexplained live loss: 0",
+        "blocking": true
+      },
+      {
+        "name": "INVARIANT_2 every previously live stream has exactly one outcome",
+        "passed": true,
+        "detail": "previously live 2441, accounted 2441",
+        "blocking": true
+      },
+      {
+        "name": "no duplicate entry keys among in-scope entries",
+        "passed": false,
+        "detail": "duplicates: 11910",
+        "blocking": false
+      },
+      {
+        "name": "an enabled source that produced nothing still has a row",
+        "passed": true,
+        "detail": "produced nothing: []",
+        "blocking": false
+      }
+    ]
+  },
+  "ingestion_evidence": {
+    "note": "INVARIANT ২ is authoritative here - it compares two committed catalogues. INVARIANT ১ is a within-run measurement; a feed moves between runs, so these rows describe the sources as they are now, not as the last publish saw them.",
+    "by_source": {
+      "sm-movie-combined": "live_fetch",
+      "bollywood-movies-collector": "live_fetch",
+      "hopeful-research-latest": "cached_snapshot"
+    },
+    "baseline_inventory_lines": 2475,
+    "current_inventory_lines": 2475
+  }
+}
