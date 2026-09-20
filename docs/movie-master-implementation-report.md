@@ -1418,8 +1418,133 @@ questions, and the second one is ধাপ ৬'s.
 3. The backfill queue itself is ধাপ ৫. This phase produces the marks it will
    read.
 
+### Commit / push
+
+`phase-4: route metadata providers by capability, quota and health`
+→ `7f24ed3e49ed73bc16158f8dd057c8c834b9366a` (pushed as `4f73bd9`), verified by
+`git ls-remote`.
+
 ### Next task
 
-Phase 5 — the controlled metadata/artwork backfill (A-02), now that failover,
-quota limits and the confidence gate are in place:
-`safe_batch = min(backfill_target, provider_remaining_budget, time_budget)`.
+Phase 5 — the controlled metadata/artwork backfill.
+
+---
+
+## PHASE 5 — Controlled metadata / artwork backfill (A-02)
+
+**Plan reference:** ধারা ৭ ধাপ ৫, A-02. Both preconditions were met before it
+started: ধাপ ৩খ (or the budget is spent on dirty titles) and ধাপ ৪ (or a
+provider that answers badly has its answer cached for ninety days — the plan
+calls that the harder damage to undo).
+
+### Goal
+
+Finish in one or two nights what the ordinary 150-lookup ceiling takes nine
+days to do, without overrunning the scan or exhausting an allowance a later run
+needs more.
+
+### Before state
+
+`movie_metadata_cache.enrich` was already doing the hard part, and none of it
+was rebuilt: cache first, never-resolved before refresh, a seven-day cooldown
+after a failed match, and an `availability` predicate that *abandons* the
+remaining lookups rather than recording them as failures when every provider is
+down. What it did not have was a budget that responds to anything —
+`DEFAULT_LOOKUP_BUDGET` is a constant.
+
+### Files changed
+
+New: `scanner/movie_backfill.py`, `tests/test_movie_backfill.py` (30 tests).
+
+Changed: `scanner/movies.py` (`_annotate_metadata` computes the budget and
+records the run), `config/settings.json`.
+
+### Implementation
+
+**The number is not the point, and the plan says so twice.** A fixed 800 is a
+promise the run cannot keep, so:
+
+```
+safe_batch = min(backfill_target, provider_remaining_budget, time_budget)
+```
+
+The **reason travels with the number**, because "we did 45" and "we did 45
+because OMDb ran out" are different facts and only the second one tells anybody
+what to change.
+
+**`provider_remaining_lookups` is the maximum across providers, not the sum.**
+One lookup is answered by one provider walking the chain until something
+replies; two providers with 100 left each do not make 200 lookups possible,
+they make the run survivable when the first one runs out. Artwork-only
+providers are not counted as metadata headroom.
+
+**A backfill never takes the whole scan.** It may have 35% of the remaining
+time budget. Verification is what the catalogue is for, and a backfill that
+pushes the run past its budget gets the run killed rather than the backfill
+trimmed.
+
+**Running out is an ordinary outcome.** "সব প্রোভাইডার শেষ → queue pause, পরের
+রানে resume": the queue records that it paused and why, the catalogue publishes
+exactly as it would have, and the next run carries on from where the cache left
+it. An ordinary run that simply spent its 150 is *not* a paused backfill, and a
+test holds that distinction.
+
+**It ships switched off.** `movie_metadata_backfill.enabled` is `false`, so the
+ordinary path is byte-for-byte unchanged and the elevated target is opt-in —
+which is what "এক বা দুই রাত চালিয়ে আবার ১৫০-এ ফেরত" means in practice.
+
+### Data validation — the arithmetic against real settings
+
+```
+backfill off                              150 lookups   (ordinary ceiling)
+on, full time and quota                   700           limited by target
+on, 30 of 40 minutes already gone         210           limited by time_budget
+on, providers have 45 left                 45           limited by provider_quota
+on, every provider exhausted                0  PAUSED   resumes next run
+on, time budget fully spent                 0  PAUSED   resumes next run
+```
+
+### Tests run
+
+`tests/test_movie_backfill.py` — **30 tests, 30 pass.** The three-way minimum
+and which limit binds; the max-not-sum rule; that an unavailable or
+artwork-only provider is not counted; pause versus an ordinary spent budget;
+state that survives a damaged file; a run log that is pruned; and that the
+shipped config has the backfill off.
+
+### No-Loss results
+
+Untouched. Nothing here drops, hides or reorders a card — it only decides how
+many provider lookups a run may make. ধারা ৪.৭'s contract still holds: a film
+whose lookups never happen publishes with `metadata_pending`.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| A-02 `safe_batch = min(target, provider_remaining, time_budget)` | **IMPLEMENTED** |
+| A-02 600–800 as a maximum target, not a fixed number | **IMPLEMENTED** (700, configurable) |
+| A-02 one provider exhausted → next provider | **ALREADY SATISFIED** (ধাপ ৪ router) |
+| A-02 all providers exhausted → pause, resume next run | **IMPLEMENTED** |
+| A-02 live content always published | **ALREADY SATISFIED** |
+| A-02 precondition ধাপ ৩খ | **MET** |
+| A-02 precondition ধাপ ৪ | **MET** |
+
+### Known limitations
+
+1. `seconds_per_lookup` is 1.0, taken from the code's own note that 150 lookups
+   cost two to three minutes. It is configuration, and the run log records
+   what actually happened so it can be corrected from evidence.
+2. The elevated run has not been executed — it needs live API keys and a real
+   scan. The machinery, its limits and its pause/resume are unit-tested; the
+   owner turns `enabled` on for a night when ready.
+3. Artwork backfill rides on the same lookups (a provider answering for
+   metadata returns artwork in the same response). A separate artwork-only
+   pass belongs with ধাপ ৬.
+
+### Next task
+
+Phase 6 — poster policy enforcement (D-03): manual verified → cached verified
+artwork → Artwork Router → source `tvg-logo` **only when verified** →
+placeholder. 72% of posters currently point at a host that answers 403 from
+Bangladesh.

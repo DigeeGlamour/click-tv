@@ -957,6 +957,23 @@ def _reconcile_first_seen(movies: List[Dict[str, Any]]) -> Dict[str, int]:
         return {}
 
 
+#: When this process started, for the backfill's time-budget arithmetic. A
+#: module import happens once per scan, so this is the run's own clock without
+#: having to thread a start time through six call sites.
+_PROCESS_STARTED_AT = time.monotonic()
+
+
+def _elapsed_scan_seconds() -> float:
+    """How long this run has been going. Used to size the metadata batch.
+
+    ধাপ ৫: a backfill that ignores the time already spent on verification
+    either overruns the scan's budget or burns an allowance a later run needed
+    more. Approximate by design - it is deciding between 40 lookups and 400,
+    not between 40 and 41.
+    """
+    return max(0.0, time.monotonic() - _PROCESS_STARTED_AT)
+
+
 def _annotate_metadata(
     movies: List[Dict[str, Any]], *, allow_lookup: bool
 ) -> Dict[str, int]:
@@ -981,9 +998,30 @@ def _annotate_metadata(
             lookup = metadata_providers.resolve_metadata
             availability = provider_health.any_metadata_provider_available
 
+        # ধাপ ৫ / A-02. The budget is computed, not fixed:
+        #   safe_batch = min(target, provider_remaining, time_budget)
+        # With the backfill switched off this is the ordinary daily ceiling,
+        # so the normal path is unchanged and the elevated target is opt-in.
+        backfill_plan = None
+        budget = None
+        if allow_lookup:
+            from scanner import movie_backfill
+
+            backfill_plan = movie_backfill.plan_run(
+                _load_optional_json("config/settings.json"),
+                elapsed_seconds=_elapsed_scan_seconds(),
+            )
+            budget = backfill_plan["lookups"]
+            print(f"   {movie_backfill.describe(backfill_plan)}")
+
         summary = movie_metadata_cache.enrich(
-            movies, lookup=lookup, availability=availability
+            movies, lookup=lookup, availability=availability, budget=budget
         )
+
+        if backfill_plan is not None:
+            from scanner import movie_backfill
+
+            movie_backfill.record_run(backfill_plan, summary)
 
         if allow_lookup:
             # PART 04 metrics: cache hits, request counts, 429s and retries
