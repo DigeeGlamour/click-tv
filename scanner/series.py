@@ -340,6 +340,13 @@ def _normalize_episode(
     for key in ("thumbnail", "logo", "duration_seconds", "duration", "release_date", "description"):
         if raw.get(key) not in (None, ""):
             episode[key] = raw[key]
+    # ধাপ ৩খ provenance. An episode that came from a movie card says so, and
+    # says whether its source actually published an episode number - so a
+    # reader can never mistake a sort position for a number somebody claimed.
+    for key in ("episode_number_stated", "migrated_from_movie_id",
+                "migrated_from_title", "series_evidence_tier"):
+        if raw.get(key) is not None:
+            episode[key] = raw[key]
     return episode
 
 
@@ -460,11 +467,52 @@ def _normalize_series(raw: Mapping[str, Any], position: int) -> Dict[str, Any]:
     }
 
 
+def _series_identity(normalized: Mapping[str, Any]) -> Tuple[str, str]:
+    """Which records are the same show - ধারা ৪.৬, and the year is not in it.
+
+    A film is `title + exact year` (King Kong 1933 is not King Kong 2005). A
+    show is not: its seasons arrive in different years, so a year in the
+    identity splits one show into one card per season-year. That is not a
+    hypothetical - it is live in this catalogue right now:
+
+        Star Trek: Strange New Worlds   4 cards (2022, 2023, 2025, 2026)
+                                        holding 2 + 2 + 2 + 6 episodes
+        Undekhi                         2 cards (2022, 2026)
+
+    Dropping the year folds those into one card each, and lets a migrated
+    episode join the show the site already publishes instead of starting a
+    second one beside it.
+
+    The category stays in the identity. Which shelf a show sits on is a
+    publishing decision, not an identity claim, and moving shows between
+    categories is ধাপ ১১'s job (Mix redistribution), not this one's. Nine shows
+    are deliberately published under two categories today - Premium is a
+    cross-cutting shelf - and this change leaves that exactly as it was.
+
+    The name is run through the same detector the movie side uses before the
+    key is taken, so release noise and a stray season marker cannot create a
+    second show either. That second part is not hypothetical: this catalogue
+    publishes a series literally named "Dirilis Ertugrul (Season 1" - a
+    truncated line from the private TXT source, unbalanced bracket and marker
+    included - and without stripping the marker it is a different show from
+    "Dirilis Ertugrul".
+    """
+    name = str(normalized.get("name") or "")
+    try:
+        from scanner.series_signal import detect, show_key
+
+        signal = detect(name)
+        key = show_key(signal.get("base_show") or name) or name.casefold()
+    except Exception:  # noqa: BLE001 - identity must never fail a scan
+        key = name.casefold()
+    return key, str(normalized.get("category") or "")
+
+
 def _merge_duplicate_series(items: Iterable[Mapping[str, Any]]) -> List[Dict[str, Any]]:
-    merged: Dict[Tuple[str, int, str], Dict[str, Any]] = {}
+    merged: Dict[Tuple[str, str], Dict[str, Any]] = {}
     for position, raw in enumerate(items, start=1):
         normalized = _normalize_series(raw, position)
-        identity = (normalized["name"].casefold(), normalized["year"], normalized["category"])
+        identity = _series_identity(normalized)
         existing = merged.get(identity)
         if existing is None:
             merged[identity] = normalized

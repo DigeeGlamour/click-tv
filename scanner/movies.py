@@ -791,6 +791,82 @@ def _annotate_classification(movies: List[Dict[str, Any]]) -> Dict[str, int]:
         return summary
 
 
+def _migrate_series_cards(
+    movies: List[Dict[str, Any]],
+    settings: Dict[str, Any],
+) -> List[Dict[str, Any]]:
+    """ধাপ ৩খ part 2 - move proven episode cards into the series catalogue.
+
+    Returns the films that stay films. Migrated cards are written into the
+    staging catalogue `scanner/series.prepare_manual_series` reads a moment
+    later, so they go through the same normalisation, ordering and merge as the
+    private catalogue's own shows - including the merge that folds a show into
+    one the site already publishes rather than creating a second card for it.
+
+    Controlled by `movie_series_migration` in config/settings.json so the step
+    can be turned off without a code change, which is what the plan means by
+    "প্রতিটি ধাপ আলাদাভাবে rollback-যোগ্য". `dry_run` runs the whole decision and
+    reports it while leaving the catalogue alone.
+
+    Wrapped, and the wrapper returns the ORIGINAL list. A migration that fails
+    halfway must publish the catalogue exactly as it would have been published
+    without this step - never a partially emptied one.
+    """
+    config = settings.get("movie_series_migration") if isinstance(settings, dict) else None
+    if not isinstance(config, dict):
+        config = {}
+    if not bool(config.get("enabled", True)):
+        return movies
+    dry_run = bool(config.get("dry_run", False))
+
+    try:
+        from scanner import series_migration, series_signal
+
+        signals = series_signal.classify_rows(
+            [series_signal.detect(movie.get("name")) for movie in movies]
+        )
+        plan = series_migration.plan_migration(
+            movies,
+            signals,
+            existing_show_categories=series_migration.published_show_categories(
+                DEFAULT_GENERATED_MOVIES_ROOT.rsplit("/", 1)[0]
+                if isinstance(DEFAULT_GENERATED_MOVIES_ROOT, str)
+                else "data"
+            ),
+        )
+        summary = plan["summary"]
+        if not plan["series_items"]:
+            return movies
+
+        if dry_run:
+            print(
+                f"   series migration (dry run): {summary['cards_migrated']} "
+                f"card(s) would become {summary['shows_created']} show(s); "
+                "the catalogue is unchanged"
+            )
+            return movies
+
+        staged = series_migration.stage_into_catalog(
+            plan["series_items"], DEFAULT_REMOTE_SERIES_STAGING_PATH)
+        print(
+            f"   series migration: {summary['cards_migrated']} card(s) and "
+            f"{summary['streams_migrated']} stream(s) moved into "
+            f"{summary['shows_created']} show(s); staging now holds {staged} "
+            "series record(s)"
+        )
+        if plan["skipped"]:
+            # Never silent. A card that could not be migrated stays a movie
+            # card, which is safe, but the reason has to be readable.
+            reasons = {}
+            for entry in plan["skipped"]:
+                reasons[entry["reason"]] = reasons.get(entry["reason"], 0) + 1
+            print(f"   series migration kept as movie cards: {reasons}")
+        return plan["staying"]
+    except Exception as error:  # noqa: BLE001 - must not fail a scan
+        print(f"   series migration skipped: {error}")
+        return movies
+
+
 def _annotate_recency(movies: List[Dict[str, Any]]) -> Dict[str, int]:
     """Add the fields the ordering needs. Adds only - never hides or removes.
 
@@ -4489,6 +4565,12 @@ def process_movies(
     # because tier-2 evidence is catalogue-wide: a season-only row is proved a
     # series by a sibling episode that may sit in a different category.
     _annotate_classification(merged_movies)
+
+    # ধাপ ৩খ part 2. Proven episode cards leave the movie catalogue here, after
+    # classification and before grouping - grouping by category is the last
+    # point at which the catalogue is still one list, and a card has to be
+    # removed from it before it is paginated.
+    merged_movies = _migrate_series_cards(merged_movies, settings)
 
     grouped_movies: Dict[str, List[Dict[str, Any]]] = {
         category: [] for category in VALID_MOVIE_CATEGORIES

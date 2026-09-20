@@ -970,8 +970,186 @@ rather than as a loss — asserted by a test that reads the gate's own constant.
 3. The flags are written by `process_movies`, so they reach the published cards
    on the next real movie scan, not before.
 
+### Commit / push
+
+`phase-3b: record what the catalogue proves, and mark what is still pending`
+→ `37068a2d2894bf434ef1a9efa111638c926e2227`, pushed to `origin/main` and
+verified by `git ls-remote`.
+
 ### Next task
 
-Phase 3খ part 2 — regroup the 390 proven cards into 114 shows, **merging into
-the 15 series that already exist** rather than creating a second card for each,
-with the ধাপ ৩ক identity re-checked after the move.
+Phase 3খ part 2 — the migration itself.
+
+---
+
+## PHASE 3খ (part 2) — the migration
+
+**Plan reference:** ধাপ ৩খ (D-01), gated on the ধাপ ৩ক rehearsal, with the
+identity rules of ধারা ৪.৬.
+
+### Goal
+
+Move the 390 proven episode cards out of the movie catalogue and into the
+series catalogue — Bachelor Point's 37 cards becoming one show with 37
+episodes — without losing a stream, inventing an episode number, or creating a
+second card for a show the site already publishes.
+
+### Files changed
+
+New: `scanner/series_migration.py`, `tests/test_series_migration.py`
+(29 tests).
+
+Changed: `scanner/movies.py` (`_migrate_series_cards`, called after
+classification and before grouping), `scanner/series.py` (`_series_identity`
+and episode provenance passthrough), `config/settings.json`
+(`movie_series_migration`).
+
+### Implementation
+
+Migrated shows are written into the **staging catalogue**
+`series.prepare_manual_series` already reads, not published directly. They
+therefore go through the same normalisation, episode ordering, quality sort,
+merge and publisher as the private catalogue's own shows. Nothing about series
+publishing is re-implemented.
+
+The step is controlled by `movie_series_migration` in `config/settings.json`
+(`enabled`, `dry_run`), so it can be turned off or rehearsed without a code
+change — which is what the plan means by every step being independently
+rollback-able. The wrapper returns the **original** list on any failure, so a
+migration that breaks publishes the catalogue exactly as it would have been
+published without this step, never a partially emptied one.
+
+### The ধারা ৪.৬ identity fix, and the live defect it repairs
+
+`series._merge_duplicate_series` keyed on `(name, year, category)`. The year in
+that key is exactly what ধারা ৪.৬ forbids, and it is not theoretical — it is
+splitting shows in production **right now**:
+
+```
+Star Trek: Strange New Worlds   4 cards (2022, 2023, 2025, 2026)  2+2+2+6 episodes
+Undekhi                         2 cards (2022, 2026)              5+1 episodes
+```
+
+The identity is now year-free. The **category stays in it**: which shelf a show
+sits on is a publishing decision, not an identity claim, and moving shows
+between categories is ধাপ ১১'s job. Nine shows are deliberately published under
+two categories today (Premium is a cross-cutting shelf) and this leaves that
+exactly as it was.
+
+### Four faults found by running it against the real catalogue
+
+Every one of these would have lost data or told a lie, and every one was found
+by measuring rather than by reading.
+
+1. **Two streams lost to an episode-key collision.** Two "Complete Season"
+   cards in one season both got `episode_key: "complete-season"`, and
+   `series._normalize_series` keeps "the first spelling" — right for a batch
+   link beside its own episodes, wrong for two different uploads. Unnumbered
+   entries now get a per-card, **digit-free** suffix. Digit-free matters:
+   `episode_number_range` reads the first digit run in a key as the episode
+   number, so `unspecified-2` would claim to be episode 2.
+
+2. **Two sources for one episode would have dropped one.** Two cards for S01E05
+   are one episode with two links, and they are now merged rather than emitted
+   as two records for the pipeline to deduplicate destructively.
+
+3. **`Resort` would have become a third card.** Its episodes are all filed
+   under Mix while the show is published under Premium/South Indian, so the
+   `(show_key, category)` merge would not have matched. A migrated show now
+   adopts the category it is already published under.
+
+4. **`Dirilis Ertugrul` would have become a second card.** The published series
+   is literally named `"Dirilis Ertugrul (Season 1"` — a truncated line from
+   the private TXT source, unbalanced bracket and season marker included — so
+   it keyed as `show:dirilis-ertugrul-season-1`. Both sides now run the name
+   through the same detector before taking the key.
+
+A fifth, caught by a test rather than by data: a `Part 01` entry's **label**
+contains a digit even when its key does not, so the parser reads it. A Part
+number *is* stated by the source, so ordering by it reads the source rather
+than inventing — but a Part is not an Episode, the label says so, and the
+record carries `episode_number_stated: false` through to the published episode
+so a sort position can never be mistaken for a number somebody claimed.
+
+### Tests run
+
+```
+tests/test_series_migration.py        29 tests   PASS
+tests/test_series_signal.py           31 tests   PASS
+tests/test_movie_classification.py    33 tests   PASS
+existing series suite (6 modules)     58 tests   PASS   (unchanged behaviour)
+```
+
+### Data validation — against the real catalogue
+
+```
+movie cards in                 1,667
+  staying as movies            1,277   (181 of them classification_pending)
+  migrated                       390
+shows created                    114
+  joining an existing series      15    ← every one the rehearsal predicted
+  genuinely new                   99
+episodes created                 390
+streams migrated                 421
+skipped                            0
+
+links before  2,159  =  staying 1,738  +  migrated 421      NO STREAM LOST
+```
+
+Through the **real** series pipeline, with stand-ins for the private records:
+
+```
+series after merge        114 cards        (not 115, not 118)
+episodes                  394             (390 migrated + 4 private)
+migrated urls preserved   421 / 421
+private urls preserved    4 / 4
+Dirilis Ertugrul          1 card           (was about to be 2)
+Resort                    1 card           (was about to be 3)
+Star Trek SNW             1 card           (is 4 in production today)
+unnumbered entries that
+  acquired a number       0
+numbered entries whose
+  number changed          0
+```
+
+### No-Loss results
+
+The split is a partition of every link, asserted as a property test and
+verified on all 2,159 real links. Nothing relies on that alone: the Phase 1
+gate runs on the same scan, and a migrated stream that failed to arrive in the
+series catalogue would show up as `unexplained_live_loss` and block the
+publish.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| ধাপ ৩খ regroup proven cards into shows | **IMPLEMENTED** |
+| ধাপ ৩খ merge into existing series, no second card | **IMPLEMENTED** (15/15) |
+| §4.6 series identity carries no year | **IMPLEMENTED** — and repairs a live 4-way split |
+| §4.6 episode number never invented | **IMPLEMENTED** (0 of 390) |
+| §4.6 season-only → Complete Season / Unspecified | **IMPLEMENTED** (16 / 26) |
+| §4.6 unproven rows stay visible movie cards | **IMPLEMENTED** (181) |
+| §8 "একই মুভি একাধিক সোর্সে → ১টি কার্ড" | **IMPLEMENTED** for episodes |
+| Master-safety 10 "Episode number invent করা যাবে না" | **IMPLEMENTED** |
+| Master-safety 1 "কোনো live stream silently drop নয়" | **IMPLEMENTED** (partition + gate) |
+
+### Known limitations
+
+1. The migration runs on the next real movie scan; the published catalogue
+   changes then, not now. Expect **1,667 → 1,277 movie cards** and
+   **70 → ~169 series**, which the plan warned about in ধারা ১০.
+2. `Dirilis Ertugrul (Season 1` keeps its malformed display name — the merge
+   takes the first record's name. Fixing the name belongs to the private
+   source, not to this step.
+3. Bachelor Point migrates into **Mix**, because all 37 of its cards are in Mix
+   today. ধাপ ১১ (Mix redistribution) is what moves it to Bangla.
+4. Nine shows remain published under two categories. That is pre-existing, and
+   consolidating it is ধাপ ১১'s question.
+
+### Next task
+
+Phase 4 — **Provider Router, quota and circuit breaker** (S-06). It is
+deliberately before the metadata backfill: without it a provider that answers
+badly gets its answer cached for 90 days, and that is harder to undo than
+running out of quota.
