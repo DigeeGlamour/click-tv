@@ -97,12 +97,74 @@ class TheTypefacesAreLoaded(unittest.TestCase):
                         "neither typeface the design is drawn in is fetched")
 
 
+#: What "reaching the event list" means, in selector terms. These are the
+#: three scopes every rule in final-match-cards.css is written against - see
+#: TheStylesheetStaysLast.test_every_rule_is_scoped_to_the_event_list below.
+EVENT_SCOPES = (
+    ".sidebar-section.event-list-mode",
+    ".sidebar-section.today-mode",
+    ".sidebar-section.upcoming-mode",
+)
+
+
 class TheStylesheetStaysLast(unittest.TestCase):
-    def test_it_is_the_final_stylesheet_in_the_page(self):
+    """"the stylesheet has to stay last or the older event rules win".
+
+    Last *among the sheets that can reach the event list* - which is the thing
+    the sentence above is about, and the thing that was being checked by proxy.
+
+    The proxy was `sheets[-1] == final-match-cards.css`, and it broke the
+    moment a movie-only sheet was appended: `movie-parity.css` ships after it
+    and carries zero event-list selectors, so it cannot win anything, yet the
+    assertion failed and took every catalogue scan down with it (scan.yml runs
+    this suite before scanning in every mode but upcoming-targeted).
+
+    So the check now reads the sheets instead of counting them. It is not
+    looser: a sheet appended after final-match-cards.css that *does* reach the
+    event list still fails, and it now fails naming the selector - where the
+    old assertion could only say the last filename was wrong.
+    """
+
+    def _sheets(self):
         sheets = re.findall(r'href="(assets/css/[^"?]+)', INDEX)
         self.assertTrue(sheets)
-        self.assertEqual(sheets[-1], "assets/css/final-match-cards.css",
-                         "the older event rules would win")
+        return sheets
+
+    def _reaches_event_list(self, sheet):
+        text = (ROOT / "site" / sheet).read_text(encoding="utf-8")
+        return [scope for scope in EVENT_SCOPES if scope in text]
+
+    def test_it_is_still_linked_by_the_page(self):
+        self.assertIn("assets/css/final-match-cards.css", self._sheets())
+
+    def test_no_later_stylesheet_can_reach_the_event_list(self):
+        sheets = self._sheets()
+        position = sheets.index("assets/css/final-match-cards.css")
+        for sheet in sheets[position + 1:]:
+            with self.subTest(sheet=sheet):
+                self.assertEqual(
+                    self._reaches_event_list(sheet), [],
+                    f"{sheet} ships after final-match-cards.css and reaches "
+                    "the event list, so the older rules win again",
+                )
+
+    def test_every_event_stylesheet_ships_before_it(self):
+        """The same invariant from the other side, so the pair cannot be
+        satisfied by simply dropping the final sheet to the bottom."""
+        sheets = self._sheets()
+        position = sheets.index("assets/css/final-match-cards.css")
+        earlier = [
+            sheet for sheet in sheets[:position] if self._reaches_event_list(sheet)
+        ]
+        self.assertTrue(
+            earlier,
+            "no earlier sheet touches the event list - then this file is "
+            "superseding nothing and the contract has lost its subject",
+        )
+        for sheet in sheets[position:]:
+            if sheet == "assets/css/final-match-cards.css":
+                continue
+            self.assertEqual(self._reaches_event_list(sheet), [], sheet)
 
     def test_every_rule_is_scoped_to_the_event_list(self):
         for line in CSS.splitlines():
