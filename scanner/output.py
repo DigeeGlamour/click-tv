@@ -1758,6 +1758,19 @@ def publish_scan_outputs(
         else "completed"
     )
 
+    # ধাপ ১৩ / A-06. Collected here, immediately before the summary that
+    # carries it, so the numbers describe the run being reported and not a
+    # later one. Wrapped: a diagnostic must never be able to stop a publish.
+    try:
+        from scanner import movie_observability
+
+        movie_observability_block = movie_observability.collect()
+        for line in movie_observability.describe(movie_observability_block):
+            print(line)
+    except Exception as error:  # noqa: BLE001 - never fail a publish
+        print(f"   A-06 observability skipped: {error}")
+        movie_observability_block = {}
+
     scan_summary: Dict[str, Any] = {
         "last_scan": timestamp,
         "status": scan_status,
@@ -1772,6 +1785,9 @@ def publish_scan_outputs(
         "stream_health": stream_health if isinstance(stream_health, dict) else {},
         "movie_output_preserved": movie_output_preserved,
         "movie_generation": movie_generation_report,
+        # ধাপ ১৩ / A-06 - the nine counters in one block, so a reader can tell
+        # whether the plan is working without reading the whole log.
+        "movie_observability": movie_observability_block,
         "allowed_playback_hosts": _safe_int(allowed_hosts_payload.get("count"), 0, 0),
         "catalogued_playback_sources": len(playback_collector.records),
         "total_playback_catalogue_sources": _safe_int(

@@ -774,7 +774,20 @@ def _annotate_classification(movies: List[Dict[str, Any]]) -> Dict[str, int]:
             **counts,
             "classification_shows_recorded": recorded["recorded"],
             "classification_lookups_still_needed": len(unresolved),
+            "classification_cache_hits": recorded.get("cache_hits", 0),
+            "classification_conflicts": recorded.get("conflicts", 0),
         }
+        # ধাপ ১৩ / A-06. Recorded where they are produced rather than
+        # recomputed later; five of the nine come from this one function.
+        from scanner import movie_observability
+
+        for key in ("series_signal_candidates", "confirmed_series",
+                    "season_only_unknown_episode"):
+            movie_observability.set_value(key, counts[key])
+        movie_observability.set_value(
+            "classification_cache_hits", recorded.get("cache_hits", 0))
+        movie_observability.set_value(
+            "classification_conflicts", recorded.get("conflicts", 0))
         print(
             "   classification: {series_signal_candidates} series signal(s), "
             "{confirmed_series} with an explicit episode, "

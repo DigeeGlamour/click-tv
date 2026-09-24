@@ -274,7 +274,16 @@ def remember_from_signals(
     by an explicit SxxExx and another 26 by a sibling, so a provider is needed
     only for the rest. A lookup not made is the cheapest kind.
     """
-    summary = {"recorded": 0, "skipped_unproven": 0, "skipped_no_key": 0}
+    # ধাপ ১৩ / A-06 asks for two more numbers from this loop, and they are the
+    # two that say whether the cache is earning its place:
+    #   cache_hits - a show this run did not have to prove again
+    #   conflicts  - a show whose stored content type disagrees with the
+    #                evidence in front of us, which is never resolved
+    #                silently (ধারা ৪.৬) and so has to be countable
+    summary = {"recorded": 0, "skipped_unproven": 0, "skipped_no_key": 0,
+               "cache_hits": 0, "conflicts": 0}
+    existing = store.get("shows") if isinstance(store, dict) else None
+    existing = existing if isinstance(existing, dict) else {}
     source_by_tier = {
         "explicit_episode": SOURCE_TITLE_PATTERN,
         "sibling_episode": SOURCE_CATALOGUE_SIBLING,
@@ -294,6 +303,12 @@ def remember_from_signals(
         if not key:
             summary["skipped_no_key"] += 1
             continue
+        known = existing.get(key)
+        if isinstance(known, dict):
+            summary["cache_hits"] += 1
+            stored_type = str(known.get("content_type") or "").strip()
+            if stored_type and stored_type != TYPE_SERIES:
+                summary["conflicts"] += 1
         remember(
             store,
             show_key=key,

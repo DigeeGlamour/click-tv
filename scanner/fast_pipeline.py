@@ -1270,6 +1270,16 @@ def _partition_by_link_health(
                 f"   link health: {len(to_verify)} to verify, "
                 f"{len(carried)} carried fresh ({reasons})"
             )
+        # ধাপ ১৩ / A-06. These two are the pair that says whether ধাপ ৭'s TTL
+        # is doing anything at all: `skipped_fresh` at zero means every link is
+        # being probed again, which is the state the TTL was written to end.
+        try:
+            from scanner import movie_observability
+
+            movie_observability.set_value("skipped_fresh", len(carried))
+            movie_observability.set_value("due_verified", len(to_verify))
+        except Exception:  # noqa: BLE001 - a counter never costs a scan
+            pass
         return to_verify, carried, store
     except Exception as error:  # noqa: BLE001 - never cost a scan
         print(f"   link health gate skipped: {error}")

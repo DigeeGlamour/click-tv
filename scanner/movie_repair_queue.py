@@ -268,6 +268,15 @@ def record_attempt(
     entry = entries.get(key)
     if not isinstance(entry, dict):
         return None
+    # ধাপ ১৩ / A-06 `repair_attempted`. Counted here, at the one place an
+    # attempt is recorded, so a repaired link and a failed one both count -
+    # "how much repair work happened" is the question, not "how much failed".
+    try:
+        from scanner import movie_observability
+
+        movie_observability.note("repair_attempted")
+    except Exception:  # noqa: BLE001 - a counter never costs a repair
+        pass
     if repaired:
         entries.pop(key, None)
         return None
