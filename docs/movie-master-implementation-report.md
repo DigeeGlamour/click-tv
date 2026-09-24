@@ -2203,7 +2203,7 @@ cleared; the failure was the measurement, not the code.
 ### Commit / push
 
 `phase-10a: run the movie scan twice a day, and move what counted on it`
-→ `350287c`. **Push blocked** — see "Push status" at the end of this report.
+→ `d849f9d`, pushed and verified on `origin/main`.
 
 ### Next task
 
@@ -2366,22 +2366,11 @@ lookups made**. No over-spend.
 
 ### Commit / push
 
-- `phase-10b: a coordinator for dependency-aware parallel stages` → `ec96912`
-- `phase-10b: run the metadata stage beside stream verification` → `7d0b916`
+- `phase-10b: a coordinator for dependency-aware parallel stages` → `a6f303e`
+- `phase-10b: run the metadata stage beside stream verification` → `42b81ff`
+- `docs: phases 10a and 10b in the cumulative report` → `ab250e1`
 
-### Push status — OPEN
-
-`git fetch` against `origin/main` succeeds; `git push` is refused:
-
-> remote: Invalid username or token. Password authentication is not supported
-> for Git operations.
-
-The credential was supplied once at the start of this work and is held nowhere
-by policy — not in source, not in state, not in this report. It is no longer
-available to this session, so `350287c`, `ec96912` and `7d0b916` are committed
-locally and verified but **not yet on `origin/main`**, which is at `c9c6992`.
-All three are rebased onto that commit and ready to push the moment the
-credential is supplied again.
+All pushed and verified on `origin/main`.
 
 ---
 
@@ -2557,12 +2546,13 @@ Nothing was routed to Dubbed or Premium.
 
 ### Commits
 
-- `phase-11: give the films in the Mix bin a category to be found in`
-- `phase-0 upkeep: re-record the movie baseline at the current commit`
+- `phase-11: give the films in the Mix bin a category to be found in` → `5c4e085`
+- `phase-0 upkeep: re-record the movie baseline at the current commit` → `27e505a`
+- `docs: phase 11 in the cumulative report` → `9dcfc18`
 
-(SHAs are not recorded: the local commits are rebased onto `origin/main` each
-time production pushes, so any SHA written here is stale within the hour. They
-will be recorded once the push succeeds — see **Push status**.)
+Pushed and verified on `origin/main`. (These SHAs are the ones that landed:
+the work was rebased onto `origin/main` several times while production kept
+scanning, so earlier drafts of this report carried SHAs that no longer exist.)
 
 ---
 
@@ -2834,30 +2824,33 @@ All thirteen phases of v3.5 are implemented, tested and committed.
                      movie_category_router · series_episode_metadata
                      movie_observability
 
-## Open item — the push
+## Push — COMPLETE
 
-`git fetch` against `origin/main` succeeds; `git push` is refused:
+All ten commits are on `origin/main`, verified by comparing the local `HEAD`
+against `git ls-remote`:
 
-> remote: Invalid username or token. Password authentication is not supported
-> for Git operations.
+    d849f9d  phase-10a: run the movie scan twice a day, and move what counted on it
+    a6f303e  phase-10b: a coordinator for dependency-aware parallel stages
+    42b81ff  phase-10b: run the metadata stage beside stream verification
+    ab250e1  docs:      phases 10a and 10b in the cumulative report
+    5c4e085  phase-11:  give the films in the Mix bin a category to be found in
+    27e505a  phase-0 upkeep: re-record the movie baseline at the current commit
+    9dcfc18  docs:      phase 11 in the cumulative report
+    440fce5  phase-12:  real episode names, air dates and stills
+    ed46063  phase-13:  the nine A-06 counters in one block, and the panel at 31 episodes
+    77434b7  docs:      phases 12 and 13, and the final completion audit
 
-The credential was supplied once at the start of this work and is held nowhere
-by policy — not in source, not in state, not in this report. It is no longer
-available to this session.
+    local HEAD  == remote main == 77434b7
+    working tree clean
 
-**Nine commits are complete, tested and rebased onto the current
-`origin/main`, ready to push the moment the credential is supplied again:**
+The push was blocked for part of this work: the credential supplied at the
+start was held nowhere by policy, and once it was no longer available to the
+session the commits waited locally rather than being worked around. A fresh
+credential was supplied and the ten commits went up in one push, rebased onto
+production's own commits — of which there were many, since the scan kept
+running throughout.
 
-    phase-10a: run the movie scan twice a day, and move what counted on it
-    phase-10b: a coordinator for dependency-aware parallel stages
-    phase-10b: run the metadata stage beside stream verification
-    docs:      phases 10a and 10b in the cumulative report
-    phase-11:  give the films in the Mix bin a category to be found in
-    phase-0 upkeep: re-record the movie baseline at the current commit
-    docs:      phase 11 in the cumulative report
-    phase-12:  real episode names, air dates and stills
-    phase-13:  the nine A-06 counters in one block, and the panel at 31 episodes
-
-Nothing on the live site has been changed by this work: every commit is local,
-and the production catalogue measured above is the one the last production
-scan published.
+**Nothing published by this work changes what viewers see yet.** The code is
+on `main`; the catalogue on the site is still the one the last production scan
+wrote. The next scheduled movie run (`37 4,16 * * *`) is the first to execute
+any of it.
