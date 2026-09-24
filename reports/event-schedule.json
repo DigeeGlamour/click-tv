@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-24T19:12:08.502321+00:00",
-  "today_match_count": 23,
+  "generated_at": "2026-09-24T19:33:31.678256+00:00",
+  "today_match_count": 18,
   "upcoming_count": 72,
   "today_missing_logo": [
     "Chicago 1a giornata"
@@ -21,11 +21,11 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 447,
-  "provider_rejected": 211,
+  "provider_fixture": 455,
+  "provider_rejected": 213,
   "provider_rejected_reasons": {
     "provider_dead_status": 67,
-    "status_neither_live_nor_upcoming": 99,
+    "status_neither_live_nor_upcoming": 101,
     "kickoff_missing_and_not_live": 9,
     "upcoming_kickoff_already_passed": 36
   },
@@ -39,8 +39,8 @@
       "total": 5
     },
     "srhady-bingstream": {
-      "status_neither_live_nor_upcoming": 99,
-      "total": 99
+      "status_neither_live_nor_upcoming": 101,
+      "total": 101
     },
     "kajju-sonyliv-backup": {
       "kickoff_missing_and_not_live": 8,
@@ -605,14 +605,14 @@
   "unverified_suppressed": 229,
   "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
-  "provider_rejected_fixtures_truncated": 68,
+  "provider_rejected_fixtures_truncated": 69,
   "streams_attached": 0,
-  "fixtures_with_stream": 14,
+  "fixtures_with_stream": 10,
   "pool_offered": 0,
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 447,
+    "total": 455,
     "discarded": 196,
     "examples": [
       {
@@ -881,7 +881,7 @@
       },
       {
         "name": "Brisbane Bullets Vs Illawarra Hawks",
-        "source": "sm-sports-data, srhady-axsports-live, srhady-bingstream",
+        "source": "sm-sports-data, srhady-bingstream, srhady-axsports-live",
         "competition": "NBL",
         "sport_type": "",
         "reason": "basketball gazetteer",
@@ -1101,8 +1101,8 @@
   "authority_status": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 1,
-    "recorded": 41,
+    "live": 6,
+    "recorded": 36,
     "conflict": 0,
     "unmatched": 39,
     "start_window": 0,
@@ -1110,8 +1110,8 @@
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 41,
-      "LIVE": 1
+      "LIVE": 6,
+      "UPCOMING": 36
     },
     "by_confidence": {
       "LOW": 11,
@@ -1123,8 +1123,8 @@
   "authority_status_carried": {
     "applied": 4,
     "pending_confirmation": 2,
-    "live": 1,
-    "recorded": 12,
+    "live": 7,
+    "recorded": 6,
     "conflict": 0,
     "unmatched": 4,
     "start_window": 0,
@@ -1132,9 +1132,9 @@
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 1,
+      "LIVE": 7,
       "FINISHED": 6,
-      "UPCOMING": 12
+      "UPCOMING": 6
     },
     "by_confidence": {
       "HIGH": 4,
@@ -1155,7 +1155,7 @@
         "authority_finished_seen_at": "2026-09-24T19:11:13.279327+00:00",
         "remove_after": "2026-09-24T19:31:13.279327+00:00",
         "was_playable": true,
-        "lifecycle_state_before": "LIVE"
+        "lifecycle_state_before": "END_PENDING"
       },
       {
         "name": "Libya Vs Botswana",
@@ -1173,7 +1173,7 @@
         "authority_finished_seen_at": "2026-09-24T19:11:13.279327+00:00",
         "remove_after": "2026-09-24T19:31:13.279327+00:00",
         "was_playable": true,
-        "lifecycle_state_before": "LIVE"
+        "lifecycle_state_before": "END_PENDING"
       },
       {
         "name": "Mauritania Vs Central African Republic",
@@ -1191,7 +1191,7 @@
         "authority_finished_seen_at": "2026-09-24T19:11:13.279327+00:00",
         "remove_after": "2026-09-24T19:31:13.279327+00:00",
         "was_playable": true,
-        "lifecycle_state_before": "LIVE"
+        "lifecycle_state_before": "END_PENDING"
       },
       {
         "name": "Andorra Vs Malta",
@@ -1255,46 +1255,83 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 8,
+    "asked": 2,
     "finished": 4,
     "unplayable": 0,
-    "cache_hits": 0,
+    "cache_hits": 4,
     "no_verdict": 4
   },
   "live_protection": {
-    "carried_forward": 15,
-    "released_ended": 0,
-    "released_ended_ids": [],
-    "retired_terminal": [],
+    "carried_forward": 10,
+    "released_ended": 4,
+    "released_ended_ids": [
+      "united-arab-emirates-vs-yemen",
+      "dr-congo-vs-equatorial-guinea",
+      "libya-vs-botswana",
+      "mauritania-vs-central-african-republic"
+    ],
+    "retired_terminal": [
+      {
+        "id": "puri-titans-vs-bhubaneshwar-tigers",
+        "name": "Puri Titans vs Bhubaneshwar Tigers",
+        "provenance": "multi_signal_confirmed",
+        "reason": "multi-signal confirmation: estimated end passed, every link dead, and 6 consecutive scans with no live signal"
+      },
+      {
+        "id": "united-arab-emirates-vs-yemen",
+        "name": "United Arab Emirates Vs Yemen",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "dr-congo-vs-equatorial-guinea",
+        "name": "DR Congo Vs Equatorial Guinea",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "libya-vs-botswana",
+        "name": "Libya Vs Botswana",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "mauritania-vs-central-african-republic",
+        "name": "Mauritania Vs Central African Republic",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      }
+    ],
     "released_listing_expired": 0,
     "released_dead_link": 0,
-    "released_stale": 0,
+    "released_stale": 1,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
     "probe_alive": 5,
     "probe_dead": 6,
     "probe_inconclusive": 0,
-    "end_pending": 7,
-    "released_confirmed": 0,
+    "end_pending": 2,
+    "released_confirmed": 1,
     "protected_playing": 0,
     "lifecycle_states": {
-      "END_PENDING": 7,
-      "LIVE": 8
+      "ENDED": 5,
+      "LIVE": 8,
+      "END_PENDING": 2
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 0,
-    "total": 186,
+    "added": 5,
+    "total": 191,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 0
+    "decided_this_scan": 5
   },
   "source_outage": {
     "sources_in_outage": [
@@ -1309,7 +1346,7 @@
   },
   "channel_names": {
     "stamped": 4,
-    "unresolved": 503,
+    "unresolved": 505,
     "names": {
       "Sky Sports": 1,
       "Fox": 1,
@@ -1324,9 +1361,9 @@
     "calls": 25,
     "cache_hits": 0,
     "errors": 0,
-    "fixtures_ingested": 243,
+    "fixtures_ingested": 246,
     "embed_streams": 36,
-    "artwork_supplied": 139
+    "artwork_supplied": 142
   },
   "streamed_enrichment": {
     "matched": 14,
@@ -1337,19 +1374,19 @@
     "matched_by_participants": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 74,
+    "attempted": 73,
     "poster_filled": 2,
-    "badge_filled": 64,
+    "badge_filled": 74,
     "badge_used_as_logo": 0,
-    "cache_hits": 32,
-    "cached_entries": 709,
+    "cache_hits": 34,
+    "cached_entries": 714,
     "provider": {
-      "requests": 22,
-      "hits": 20,
+      "requests": 32,
+      "hits": 30,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 25,
+      "skipped_rate_limited": 12,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1392,14 +1429,6 @@
           "rejected": 0,
           "published": 0
         },
-        "srhady-axsports-live": {
-          "total": 42,
-          "cricket": 1,
-          "football": 37,
-          "quarantined": 2,
-          "rejected": 2,
-          "published": 38
-        },
         "sm-fancode": {
           "total": 19,
           "cricket": 10,
@@ -1432,7 +1461,15 @@
           "rejected": 2,
           "published": 41
         },
-        "sayanpal-fancode-mirror": {
+        "srhady-axsports-live": {
+          "total": 42,
+          "cricket": 1,
+          "football": 37,
+          "quarantined": 2,
+          "rejected": 2,
+          "published": 38
+        },
+        "vk1817-fancode-mirror": {
           "total": 19,
           "cricket": 10,
           "football": 5,
@@ -1440,7 +1477,7 @@
           "rejected": 4,
           "published": 15
         },
-        "vk1817-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 19,
           "cricket": 10,
           "football": 5,
@@ -1492,7 +1529,7 @@
         },
         {
           "name": "Coastal Carolina Chanticleers Vs Liberty Flames",
-          "source": "sm-sports-data, srhady-axsports-live, srhady-bingstream",
+          "source": "sm-sports-data, srhady-bingstream, srhady-axsports-live",
           "competition": "NCAA Division FBS",
           "sport_type": "rugby",
           "reason": "rugby gazetteer",
@@ -1618,14 +1655,14 @@
           "source": "srhady-bingstream, srhady-axsports-live",
           "competition": "Asian Games",
           "sport_type": "other",
-          "reason": "fixture lookup: only one provider knows this (football)"
+          "reason": "fixture lookup: no provider answered"
         },
         {
           "name": "Melbourne Demons Vs North Melbourne",
           "source": "sm-sports-data",
           "competition": "AFL, Women",
           "sport_type": "other",
-          "reason": "fixture lookup: only one provider knows this (basketball)"
+          "reason": "fixture lookup: no provider answered"
         },
         {
           "name": "Port Adelaide Power vs Western Bulldogs",
@@ -1652,22 +1689,22 @@
       "leaks": []
     },
     "today_match": {
-      "total": 23,
-      "published": 23,
+      "total": 18,
+      "published": 18,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 20,
-        "confirmed_cricket": 3
+        "confirmed_football": 16,
+        "confirmed_cricket": 2
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 14,
+          "total": 10,
           "cricket": 1,
-          "football": 13,
+          "football": 9,
           "quarantined": 0,
           "rejected": 0,
-          "published": 14
+          "published": 10
         },
         "srhady-bingstream": {
           "total": 7,
@@ -1686,14 +1723,6 @@
           "published": 7
         },
         "sportlive-fancode-backup": {
-          "total": 1,
-          "cricket": 1,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
-        "vk1817-fancode-mirror": {
           "total": 1,
           "cricket": 1,
           "football": 0,
@@ -1723,14 +1752,6 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 22
-        },
-        "srhady-axsports-live": {
-          "total": 38,
-          "cricket": 1,
-          "football": 37,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 38
         },
         "sm-fancode": {
           "total": 15,
@@ -1764,7 +1785,15 @@
           "rejected": 0,
           "published": 41
         },
-        "sayanpal-fancode-mirror": {
+        "srhady-axsports-live": {
+          "total": 38,
+          "cricket": 1,
+          "football": 37,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 38
+        },
+        "vk1817-fancode-mirror": {
           "total": 15,
           "cricket": 10,
           "football": 5,
@@ -1772,7 +1801,7 @@
           "rejected": 0,
           "published": 15
         },
-        "vk1817-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 15,
           "cricket": 10,
           "football": 5,
@@ -1810,16 +1839,16 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 887,
+    "raw_events": 897,
     "cricket_kept": 14,
     "football_kept": 67,
     "other_discarded": 208,
     "unresolved": 12,
-    "today_final": 23,
+    "today_final": 18,
     "upcoming_final": 72,
     "published_states": {
-      "confirmed_football": 80,
-      "confirmed_cricket": 15
+      "confirmed_football": 76,
+      "confirmed_cricket": 14
     },
     "other_sport_leak": 0,
     "ball_sport_wrongly_refused": 0
@@ -1832,7 +1861,7 @@
     "future": 0,
     "newest_kickoff": "2026-08-27T23:00:00+00:00",
     "oldest_kickoff": "2026-07-21T13:45:00+00:00",
-    "days_since_newest": 27.8,
+    "days_since_newest": 27.9,
     "schedulable_now": 0
   },
   "undeliverable_routes_dropped": 0,
@@ -1845,56 +1874,56 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 7,
+      "provider_or_authority": 2,
       "estimate": 0,
       "none": 16
     }
   },
   "fixture_stream_health": {
-    "fixtures": 109,
-    "published_fixtures": 95,
-    "fixtures_with_verified_stream": 23,
-    "fixtures_with_zero_verified": 86,
-    "published_without_stream": 77,
-    "fallback_available": 8,
-    "targeted_fixtures": 21,
-    "targeted_attempts": 28,
+    "fixtures": 104,
+    "published_fixtures": 90,
+    "fixtures_with_verified_stream": 21,
+    "fixtures_with_zero_verified": 83,
+    "published_without_stream": 76,
+    "fallback_available": 7,
+    "targeted_fixtures": 18,
+    "targeted_attempts": 26,
     "fixtures_with_a_first_link_time": 18,
-    "candidate_routes": 293,
-    "verified_routes": 70,
-    "failed_routes": 223,
-    "fixtures_touched_by_a_route_failure": 75,
+    "candidate_routes": 288,
+    "verified_routes": 69,
+    "failed_routes": 219,
+    "fixtures_touched_by_a_route_failure": 71,
     "fixtures_left_with_nothing": 12,
-    "distinct_failure_codes": 5,
-    "unrecognised_candidate_groups": 65,
-    "unrecognised_failed_routes": 160
+    "distinct_failure_codes": 8,
+    "unrecognised_candidate_groups": 69,
+    "unrecognised_failed_routes": 172
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 95,
+    "fixtures": 90,
     "verified": 35,
-    "partial_authority": 4,
-    "unverified": 42,
-    "conflict": 14,
-    "matched_by_two_independent_authorities": 46,
-    "authority_agreements": 34,
+    "partial_authority": 10,
+    "unverified": 41,
+    "conflict": 4,
+    "matched_by_two_independent_authorities": 44,
+    "authority_agreements": 32,
     "authority_disagreements": 0,
-    "card_status_conflicts": 14,
+    "card_status_conflicts": 4,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 1
+    "not_published": 6
   },
   "stream_health": {
     "sources_in_outage": [
       "iptvflixbd-fancode-data",
       "srhady-tapmad-bd"
     ],
-    "published_fixtures": 95,
-    "fixtures_with_stream": 14,
+    "published_fixtures": 90,
+    "fixtures_with_stream": 10,
     "fixtures_playable_via_catalogue": 4,
     "fixtures_with_fresh_stream": 8,
-    "fixtures_with_carried_stream": 6,
-    "today_with_stream": 14,
+    "fixtures_with_carried_stream": 2,
+    "today_with_stream": 10,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
     "state": "ok",
