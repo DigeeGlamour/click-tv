@@ -74,6 +74,26 @@ MAX_SLEEP_PER_PROVIDER_SECONDS = 90.0
 RATE_LIMIT_COOLDOWN_SECONDS = 30 * 60
 AUTH_FAILURE_COOLDOWN_SECONDS = 6 * 60 * 60
 
+#: Which environment variable carries each provider's credential. Used only to
+#: fingerprint it - the value is never read for any other purpose here, never
+#: logged and never written anywhere.
+PROVIDER_CREDENTIAL_ENV: Dict[str, Tuple[str, ...]] = {
+    "tmdb": ("TMDB_API_TOKEN", "TMDB_API_KEY"),
+    "omdb": ("OMDB_API_KEY",),
+    "moviesdatabase": ("RAPIDAPI_KEY",),
+    "fanart": ("FANART_API_KEY",),
+}
+
+#: Identity of THIS process, so a record can say which run recorded a refusal.
+#:
+#: The module already tells the operator "Provider disabled **for this run**;
+#: replace the secret" - and then persisted a six-hour block that outlived the
+#: run and ignored whether the secret HAD been replaced. Measured on
+#: 2026-09-24: OMDb was refused at 06:35, the key was replaced, and the 08:04
+#: run sent it zero requests because the cooldown was keyed on the provider's
+#: name rather than on the credential or the run.
+_RUN_ID = os.urandom(8).hex()
+
 REQUEST_TIMEOUT_SECONDS = 8
 _USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -407,6 +427,8 @@ def is_available(provider: str, *, path: Optional[str] = None) -> bool:
     status = str(record.get("status") or STATUS_HEALTHY)
     if status == STATUS_HEALTHY:
         return True
+    if status == STATUS_UNHEALTHY_AUTH and _auth_may_retest(provider, record):
+        return True
     next_retry = _parse_stamp(record.get("next_retry_at"))
     if next_retry is None or _now() >= next_retry:
         record["status"] = STATUS_HEALTHY
@@ -416,10 +438,109 @@ def is_available(provider: str, *, path: Optional[str] = None) -> bool:
     return False
 
 
+def configured_credential(provider: str) -> str:
+    """The secret this provider is configured with, from the environment.
+
+    Returned only to be fingerprinted by the function below. Nothing else in
+    this module reads it, and no caller outside should: a credential that
+    travels is a credential that leaks.
+    """
+    for name in PROVIDER_CREDENTIAL_ENV.get(str(provider or ""), ()):  # noqa: B007
+        value = str(os.environ.get(name) or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def credential_fingerprint(provider: str) -> Optional[str]:
+    """A keyed digest of the provider's credential, or None.
+
+    **Keyed, never a bare hash.** `state/provider-health.json` is committed to
+    a public repository and an OMDb key is eight hex characters - a plain
+    SHA-256 of one would be a lookup table away from the key itself. This
+    reuses `scanner/route_evidence.py`'s HMAC, which refuses to produce
+    anything at all below a 16-byte secret, so the honest answer with no
+    ROUTE_IDENTITY_HMAC_KEY configured is None rather than something weak that
+    looks strong.
+
+    None therefore means "cannot tell", never "unchanged", and every caller
+    here treats it that way.
+    """
+    credential = configured_credential(provider)
+    if not credential:
+        return None
+    try:
+        from scanner import route_evidence
+
+        return route_evidence.hmac_id(
+            f"provider-credential:{provider}:{credential}",
+            route_evidence.configured_hmac_key(),
+            length=16,
+        )
+    except Exception:  # noqa: BLE001 - a fingerprint is an optimisation
+        return None
+
+
+def credential_changed(provider: str, record: Dict[str, Any]) -> bool:
+    """Is the configured secret demonstrably different from the refused one?
+
+    False whenever it cannot be proven - no key configured, no credential, or
+    nothing recorded when the refusal happened. "Cannot tell" must not read as
+    "rotated", or a genuinely suspended key would be retried on every call.
+    """
+    current = credential_fingerprint(provider)
+    stored = str((record or {}).get("credential_fingerprint") or "")
+    if not current or not stored:
+        return False
+    return current != stored
+
+
+def _clear_auth_block(record: Dict[str, Any], reason: str) -> None:
+    record["status"] = STATUS_HEALTHY
+    record["ok"] = True
+    record.pop("next_retry_at", None)
+    record["auth_retested_at"] = _iso()
+    record["auth_retest_reason"] = reason
+
+
+def _auth_may_retest(provider: str, record: Dict[str, Any]) -> bool:
+    """May a provider whose credential was rejected be tried again now?
+
+    Twice, and only twice:
+
+    1.  The secret has demonstrably changed. A cooldown belongs to the
+        credential that earned it, not to the provider's name, so a replaced
+        key waits for nothing.
+
+    2.  This is a different run. The refusal was recorded "for this run" and
+        that run has ended; one request is what finds out whether the secret
+        has been replaced in the meantime. Stamped with this run before
+        returning, so it is one request per run - with the movie scan running
+        twice a day that is two requests, which is a question, not a storm.
+
+    Anything else keeps the block. Retrying a suspended key inside the run
+    that just saw it rejected is exactly what keeps a key suspended.
+    """
+    if credential_changed(provider, record):
+        _clear_auth_block(record, "credential_rotated")
+        return True
+    if str(record.get("auth_run") or "") != _RUN_ID:
+        record["auth_run"] = _RUN_ID
+        _clear_auth_block(record, "new_run_retest")
+        return True
+    return False
+
+
 def _mark_unavailable(record: Dict[str, Any], status: str, cooldown_seconds: float) -> None:
     record["status"] = status
     record["ok"] = False
     record["next_retry_at"] = _iso(_now() + _dt.timedelta(seconds=cooldown_seconds))
+    if status == STATUS_UNHEALTHY_AUTH:
+        # Which run refused the credential, recorded with the refusal rather
+        # than by the caller: an auth block that does not know its own run
+        # cannot honour the "for this run" it prints, and every path that
+        # marks one has to carry the same meaning.
+        record["auth_run"] = _RUN_ID
 
 
 def _throttle(provider: str) -> None:
@@ -556,6 +677,15 @@ def request_json(
             record["ok"] = True
             record["last_error"] = None
             record.pop("next_retry_at", None)
+            # The credential that just worked, so a later refusal can be told
+            # apart from a refusal of a DIFFERENT credential. Written on
+            # success as well as on failure because a record that only ever
+            # learns the rejected key cannot recognise the replacement.
+            fingerprint = credential_fingerprint(provider)
+            if fingerprint:
+                record["credential_fingerprint"] = fingerprint
+            record.pop("auth_retest_reason", None)
+            record.pop("auth_run", None)
             _note_success(record)
             return payload
 
@@ -565,13 +695,21 @@ def request_json(
             # suspended. The other providers carry on without this one.
             _bump(record, "auth_failures")
             record["last_auth_failure"] = _iso()
+            # Whose credential was refused, and by which run. Both are what
+            # let a replaced secret be tried immediately instead of inheriting
+            # a block that was never about it.
+            fingerprint = credential_fingerprint(provider)
+            if fingerprint:
+                record["credential_fingerprint"] = fingerprint
+            record.pop("auth_retest_reason", None)
             _note_error(record, f"HTTP {status} - credential rejected")
             _mark_unavailable(record, STATUS_UNHEALTHY_AUTH, AUTH_FAILURE_COOLDOWN_SECONDS)
             _note_failure(record)
             print(
                 f"   metadata provider {provider}: HTTP {status} - credential "
                 f"rejected. Provider disabled for this run; replace the secret. "
-                f"No key rotation is attempted by design."
+                f"A replaced secret is tried at once, and an unchanged one "
+                f"gets one request per run. No key rotation is attempted."
             )
             return {}
 
