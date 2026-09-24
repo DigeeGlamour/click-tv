@@ -300,41 +300,51 @@ class RetentionTests(unittest.TestCase):
             incoming, "mix", root=str(self.root), path=self.store
         )
 
+    def _present(self, count=6):
+        """A scan that found most of the category, so its silence about the
+        rest is evidence.
+
+        These tests used to pass 4 of 10, which `scan_looks_complete` judges a
+        broken run - so they were exercising the incomplete-scan path while
+        claiming to pin the grace. The grace is what they are about, so the
+        fixture now says so.
+        """
+        return [dict(movie) for movie in self.previous[:count]]
+
     def test_a_movie_missing_once_is_kept(self):
-        kept, summary = self._retain([dict(m) for m in self.previous[:4]])
-        self.assertEqual(summary["retained"], 6)
+        kept, summary = self._retain(self._present())
+        self.assertEqual(summary["retained"], 4)
         self.assertEqual(len(kept), 10)
 
     def test_a_kept_movie_is_marked_stale_not_passed_off_as_verified(self):
-        kept, _summary = self._retain([dict(m) for m in self.previous[:4]])
+        kept, _summary = self._retain(self._present())
         carried = [m for m in kept if m.get("retained_after_failed_scan")]
-        self.assertEqual(len(carried), 6)
+        self.assertEqual(len(carried), 4)
         for movie in carried:
             self.assertEqual(movie["verification_status"], "stale_last_good")
             self.assertIn("transient", movie["retention_note"])
 
     def test_a_movie_missing_twice_is_still_kept(self):
-        incoming = [dict(m) for m in self.previous[:4]]
-        self._retain(incoming)
-        kept, summary = self._retain([dict(m) for m in self.previous[:4]])
-        self.assertEqual(summary["retained"], 6)
+        self._retain(self._present())
+        kept, summary = self._retain(self._present())
+        self.assertEqual(summary["retained"], 4)
         self.assertEqual(summary["dropped_after_grace"], 0)
         self.assertEqual(len(kept), 10)
 
     def test_a_movie_missing_past_the_grace_is_dropped(self):
         for _ in range(mrt.GRACE_SCANS):
-            self._retain([dict(m) for m in self.previous[:4]])
-        kept, summary = self._retain([dict(m) for m in self.previous[:4]])
+            self._retain(self._present())
+        kept, summary = self._retain(self._present())
         self.assertEqual(summary["retained"], 0)
-        self.assertEqual(summary["dropped_after_grace"], 6)
-        self.assertEqual(len(kept), 4)
+        self.assertEqual(summary["dropped_after_grace"], 4)
+        self.assertEqual(len(kept), 6)
 
     def test_a_movie_that_comes_back_has_its_counter_cleared(self):
-        self._retain([dict(m) for m in self.previous[:4]])
+        self._retain(self._present())
         self._retain([dict(m) for m in self.previous])
-        kept, summary = self._retain([dict(m) for m in self.previous[:4]])
+        kept, summary = self._retain(self._present())
         self.assertEqual(
-            summary["retained"], 6,
+            summary["retained"], 4,
             "a recovered movie must get its full grace again",
         )
 

@@ -429,9 +429,7 @@ def retain(
         summary["lifecycle_note"] = (
             f"{len(present_keys)} of {len(previous_keys)} previously published "
             "found; treated as an incomplete scan, so nothing was counted "
-            "absent in the lifecycle. The publish grace above is unchanged - "
-            "it owns whether a card is still shown, and its behaviour is "
-            "pinned by its own tests."
+            "absent - in the lifecycle OR against the publish grace."
         )
 
     retained: List[Dict[str, Any]] = []
@@ -440,12 +438,45 @@ def retain(
         if not key or key in present_keys:
             continue
         record = absent.get(key)
+
+        if not complete:
+            # PART 18's rule - "a scan which did not cover enough of a category
+            # is not evidence that anything is missing" - applied to the publish
+            # grace as well, which is where it matters most.
+            #
+            # It used to govern only the lifecycle, and the cost was measured on
+            # 2026-09-24: `mix` returned 83 of 937 published cards, which this
+            # function itself judged incomplete, and then dropped 347 of them
+            # anyway. The no-loss gate counted their streams as unexplained loss
+            # and blocked the publish - correctly, because a run that saw 9% of
+            # a category has discovered nothing about the other 91%.
+            #
+            # Nothing is counted here: not the miss, not the grace. The card is
+            # carried and the countdown resumes on the next scan that can see
+            # the category properly.
+            carried = dict(previous)
+            carried["verification_status"] = RETAINED_STATUS
+            carried["retained_after_failed_scan"] = True
+            carried["retained_scan_count"] = int((record or {}).get("misses") or 0)
+            carried["retained_through_incomplete_scan"] = True
+            carried["retention_note"] = (
+                f"Published on a previous scan. This scan found "
+                f"{len(present_keys)} of {len(previous_keys)} previously "
+                "published cards in this category, which is too few to be "
+                "evidence that anything is missing, so no grace was spent."
+            )
+            retained.append(carried)
+            summary["carried_through_incomplete_scan"] = (
+                summary.get("carried_through_incomplete_scan", 0) + 1)
+            continue
+
         misses = int((record or {}).get("misses") or 0) + 1
-        # Counted separately, and only on a scan that saw enough of this
-        # category to be believed. `misses` decides whether to keep SHOWING the
-        # card, and one scan of doubt costing a card one scan of grace is the
-        # safe direction. Removal is not the safe direction, so it is allowed
-        # to count only the scans whose silence is evidence.
+        # Counted separately from `misses` because they answer different
+        # questions: `misses` decides whether to keep SHOWING the card, and
+        # `complete_misses` is the evidence ধারা ৪.০ needs before calling the
+        # content gone. Both now only advance on a scan whose silence means
+        # something, but they are still two numbers - an older ledger carries
+        # misses that were counted under the looser rule.
         previous_complete = (record or {}).get("complete_misses")
         if previous_complete is None:
             # A ledger written before this field existed counted a miss on
@@ -454,7 +485,7 @@ def retain(
             # would tell the gate that a film the source has not listed for
             # eleven scans had only just gone missing.
             previous_complete = (record or {}).get("misses") or 0
-        complete_misses = int(previous_complete or 0) + (1 if complete else 0)
+        complete_misses = int(previous_complete or 0) + 1
         absent[key] = {
             "misses": misses,
             "complete_misses": complete_misses,
@@ -469,7 +500,7 @@ def retain(
                 "urls": _stream_urls(previous),
                 "misses": misses,
                 "complete_misses": complete_misses,
-                "scan_complete": bool(complete),
+                "scan_complete": True,
                 "dropped_at": stamp,
             }
             continue

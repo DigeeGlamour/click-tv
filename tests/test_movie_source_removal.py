@@ -299,20 +299,36 @@ class TheRetentionLedgerRemembersWhatItDropped(unittest.TestCase):
         self._scan([dict(self.card)])
         self.assertEqual(mrt.removed_entries(path=self.path), [])
 
-    def test_an_incomplete_scan_does_not_advance_the_removal_count(self):
+    def test_an_incomplete_scan_drops_nothing_at_all(self):
         """One film returned where the category published five. That is a
-        broken run, not a discovery that four films are gone."""
-        for _ in range(mrt.GRACE_SCANS + 2):
+        broken run, not a discovery that four films are gone - so no card is
+        dropped and no grace is spent, however often it repeats.
+
+        Measured: `mix` returned 83 of 937 cards and 347 were dropped anyway,
+        which is where 403 of the 506 unexplained losses came from.
+        """
+        for _ in range(mrt.GRACE_SCANS + 4):
+            kept, summary = self._scan([dict(self.others[0])])
+        self.assertEqual(mrt.removed_entries(path=self.path), [])
+        self.assertEqual(summary["dropped_after_grace"], 0)
+        self.assertFalse(summary["scan_complete"])
+        self.assertEqual(summary["carried_through_incomplete_scan"], 4)
+        self.assertIn("double-ismart-2024", [item["id"] for item in kept])
+
+    def test_nothing_is_counted_absent_on_an_incomplete_scan(self):
+        for _ in range(mrt.GRACE_SCANS + 4):
             self._scan([dict(self.others[0])])
+        self.assertEqual(self._store().get("absent"), {})
+
+    def test_the_countdown_resumes_once_the_category_is_visible_again(self):
+        """The grace is paused, not forgiven."""
+        for _ in range(mrt.GRACE_SCANS + 4):
+            self._scan([dict(self.others[0])])
+        for _ in range(mrt.GRACE_SCANS + 1):
+            self._scan([dict(item) for item in self.others])
         entries = mrt.removed_entries(path=self.path)
-        self.assertTrue(entries, "nothing was dropped, so nothing is proven")
-        for entry in entries:
-            with self.subTest(entry=entry["key"]):
-                self.assertEqual(entry["complete_misses"], 0)
-                self.assertFalse(entry["scan_complete"])
-                families, refusal = _decide(entry)
-                self.assertEqual(families, [])
-                self.assertEqual(refusal, msr.WITHIN_GRACE)
+        self.assertEqual([entry["key"] for entry in entries],
+                         ["double-ismart-2024"])
 
     def test_a_ledger_written_before_the_field_existed_inherits_its_count(self):
         """Resetting to zero would tell the gate that a film the source has

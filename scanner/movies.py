@@ -3903,11 +3903,25 @@ def _annotate_manual_movie_liveness(
                 result = {"status": "dead", "http_status": 0, "segment_verified": False, "response_time_ms": 0}
             results_by_identity[identity] = result
 
+    already_published = _published_movie_keys()
+
     published: List[Dict[str, Any]] = []
     for movie, sources in zip(checked, movie_sources):
         live_sources = [source for source in sources if results_by_identity.get(_source_identity(source), {}).get("status") == "live"]
         if strict_publish and not live_sources:
-            continue
+            # ধারা ৪.১ - this probe answers from ONE vantage, and
+            # `_probe_manual_movie_source` reports a timeout, a transport error
+            # and an unparseable response all as "dead". None of that is
+            # evidence that the film is gone, so it may stop a film from
+            # ARRIVING and it may not make one DISAPPEAR.
+            #
+            # Measured on 2026-09-24: the private catalogue still listed these
+            # films, their cards were on the site, and they were removed from
+            # the publish here. ধারা ৪.০ then counted their streams as
+            # unexplained loss - "quarantine মানে অদৃশ্য নয়" - and blocked the
+            # whole catalogue.
+            if _movie_key(movie) not in already_published:
+                continue
         selected = sorted(live_sources or sources, key=lambda source: (_browser_source_rank(source), sources.index(source)))
         if selected:
             primary = selected[0]
@@ -3927,9 +3941,49 @@ def _annotate_manual_movie_liveness(
         movie["manual_liveness_http_status"] = primary_result.get("http_status", 0)
         movie["manual_liveness_response_time_ms"] = primary_result.get("response_time_ms", 0)
         movie["segment_verified"] = bool(primary_result.get("segment_verified", False))
-        movie["verification_note"] = "Manual metadata retained; every published playback source passed media-depth verification."
+        if live_sources:
+            movie["verification_note"] = "Manual metadata retained; every published playback source passed media-depth verification."
+        else:
+            # Kept because it was already on the site, not because it answered.
+            # Saying otherwise would be the one thing worse than dropping it.
+            movie["retained_after_failed_check"] = True
+            movie["verification_note"] = (
+                "Published on a previous scan; no playback source answered this "
+                "runner today. Kept visible with its last known links - one "
+                "vantage refusing is not evidence the film is gone - and left "
+                "to the link ledger and the repair queue."
+            )
         published.append(movie)
     return published
+
+
+def _published_movie_keys() -> set:
+    """Keys of the cards the site is serving right now.
+
+    Read once per liveness pass. An empty set is the safe answer for a fresh
+    checkout with no catalogue: nothing is "already published", so the strict
+    rule behaves exactly as it did before.
+    """
+    try:
+        from scanner import movie_baseline
+
+        return {
+            _movie_key(card)
+            for _slug, card in movie_baseline.published_movies(".")
+            if isinstance(card, dict)
+        } - {""}
+    except Exception:  # noqa: BLE001 - never fail a scan over this
+        return set()
+
+
+def _movie_key(movie: Dict[str, Any]) -> str:
+    """The identity retention uses, so both sides mean the same card."""
+    try:
+        from scanner import movie_recency
+
+        return movie_recency.movie_key(movie)
+    except Exception:  # noqa: BLE001
+        return str((movie or {}).get("id") or "").strip().casefold()
 
 def _merge_manual_over_discovered(
     discovered_movies: Iterable[Dict[str, Any]],
