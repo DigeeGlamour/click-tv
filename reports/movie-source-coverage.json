@@ -1,46 +1,153 @@
 {
   "schema_version": 1,
   "kind": "movie_source_coverage",
-  "generated_at": "2026-09-20T04:06:47.297666+00:00",
-  "evidence": "audit",
+  "generated_at": "2026-09-24T06:36:11.708184+00:00",
+  "evidence": "scan",
   "note": "ধারা ৪.০ NO-LOSS COVERAGE GATE. INVARIANT ১ accounts for every candidate an enabled Movie source produced; INVARIANT ২ asks whether what was reaching viewers still does. unexplained_live_loss must be 0 or the publish is blocked.",
-  "configured_source_count": 3,
+  "configured_source_count": 4,
   "invariant_1": {
     "name": "ingestion_accounting",
-    "raw_entries": 34578,
-    "out_of_scope": 0,
-    "out_of_scope_reasons": {},
-    "total_in_scope_entries": 34578,
-    "published_movie": 3574,
+    "raw_entries": 36752,
+    "out_of_scope": 1275,
+    "out_of_scope_reasons": {
+      "not_movie_or_series_content": 1275
+    },
+    "total_in_scope_entries": 35477,
+    "published_movie": 3863,
     "published_series_episode": 19,
-    "merged_stream": 1863,
-    "quarantined_unresolved": 29122,
+    "merged_stream": 1931,
+    "quarantined_unresolved": 29664,
     "definitive_rejected": 0,
-    "bucket_sum": 34578,
+    "bucket_sum": 35477,
     "identity_balanced": true,
-    "duplicate_entry_keys": 11910
+    "duplicate_entry_keys": 12506
   },
   "invariant_2": {
     "name": "live_preservation",
     "previously_live": 2441,
     "previously_live_inventory_lines": 2475,
     "duplicate_inventory_lines": 34,
-    "currently_visible": 2441,
-    "merged_stream": 0,
-    "visible_pending": 0,
+    "currently_visible": 1598,
+    "merged_stream": 1,
+    "visible_pending": 480,
     "terminal_evidence": 0,
-    "unexplained_live_loss": 0,
+    "unexplained_live_loss": 362,
     "match_layers": {
-      "exact_stream": 2441
+      "card_id": 127,
+      "exact_stream": 1599,
+      "path_rotated": 353
     },
-    "block_reasons": [],
-    "lost_sample": []
+    "block_reasons": [
+      "362 previously live stream(s) are neither published, merged, visible-pending nor terminally explained"
+    ],
+    "lost_sample": [
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/10/[Fibwatch.Com]Ben.10.Ultimate.Alien.S01E01.20.720p.Hindi.Dubbed.mkv",
+        "inventory_line": "movie|dubbed|ben-10-ultimate-alien-s01e01-20-hindi-dubbed|https://jrtyh.b-cdn.net/s2/upload/videos/2024/10/[Fibwatch.Com]Ben.10.Ultimate.Alien.S01E01.20.720p.Hindi.Dubbed.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/10/[Fibwatch.Com]CU.Soon.(2020).Malayalam.HDRip.720p.mkv",
+        "inventory_line": "movie|south-indian|cu-soon-2020-malayalam|https://jrtyh.b-cdn.net/s2/upload/videos/2024/10/[Fibwatch.Com]CU.Soon.(2020).Malayalam.HDRip.720p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/10/[Fibwatch.Com]Double.Ismart.2024.1080p.Hindi.ORG.mkv",
+        "inventory_line": "movie|hindi|double-ismart-2024-hindi-org|https://jrtyh.b-cdn.net/s2/upload/videos/2024/10/[Fibwatch.Com]Double.Ismart.2024.1080p.Hindi.ORG.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/10/[Fibwatch.Com]Suits.S03.E01.16.720p.Hindi.English.BluRay.mkv",
+        "inventory_line": "movie|hindi|suits-s03-e01-16-hindi-english-bluray|https://jrtyh.b-cdn.net/s2/upload/videos/2024/10/[Fibwatch.Com]Suits.S03.E01.16.720p.Hindi.English.BluRay.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Bank.Under.Siege.S01.1080p.Multi.Audio.Hindi.English.Spanish.mkv",
+        "inventory_line": "movie|dubbed|bank-under-siege-s01-multi-audio-hindi-english-spanish|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Bank.Under.Siege.S01.1080p.Multi.Audio.Hindi.English.Spanish.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Devara.(2024).Hindi.NetFlix.1080p.mkv",
+        "inventory_line": "movie|hindi|devara-2024-hindi-netflix|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Devara.(2024).Hindi.NetFlix.1080p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Faadu.A.Love.Story.2022.S01.Hindi.1080p.mkv",
+        "inventory_line": "movie|hindi|faadu-a-love-story-2022-s01-hindi|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Faadu.A.Love.Story.2022.S01.Hindi.1080p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Siddharth.Roy.2024.Dual.Audio.[Hindi.HQ.Telugu].Aha.WEB.DL.1080p.mkv",
+        "inventory_line": "movie|dubbed|siddharth-roy-2024-dual-audio-aha|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Siddharth.Roy.2024.Dual.Audio.[Hindi.HQ.Telugu].Aha.WEB.DL.1080p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Silo.S01.E01.10.WebRip.720p.English.mkv",
+        "inventory_line": "movie|english|silo-s01-e01-10-english|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Silo.S01.E01.10.WebRip.720p.English.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Special.Ops.Lioness.S01E01.08.1080p.English.mp4",
+        "inventory_line": "movie|english|special-ops-lioness-s01e01-08-english|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Special.Ops.Lioness.S01E01.08.1080p.English.mp4"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Star.Wars.The.Last.Jedi.2017.1080p.Hindi.English.mkv",
+        "inventory_line": "movie|hindi|star-wars-the-last-jedi-2017-hindi-english|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]Star.Wars.The.Last.Jedi.2017.1080p.Hindi.English.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]The.Cage.S01.1080p.Hindi.English.French.mkv",
+        "inventory_line": "movie|hindi|the-cage-s01-hindi-english-french|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]The.Cage.S01.1080p.Hindi.English.French.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]The.Flash.(2014).S01.Dual.Audio.(Hindi+Eng).BluRay.720p.mkv",
+        "inventory_line": "movie|dubbed|the-flash-2014-s01-dual-audio-bluray|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]The.Flash.(2014).S01.Dual.Audio.(Hindi+Eng).BluRay.720p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]The.Vampire.Diaries.S01.English.BluRay.720p.mkv",
+        "inventory_line": "movie|english|the-vampire-diaries-s01-english-bluray|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]The.Vampire.Diaries.S01.English.BluRay.720p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]The.Vampire.Diaries.S03.English.BluRay.720p.mkv",
+        "inventory_line": "movie|english|the-vampire-diaries-s03-english-bluray|https://jrtyh.b-cdn.net/s2/upload/videos/2024/11/[Fibwatch.Com]The.Vampire.Diaries.S03.English.BluRay.720p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Anora.2024.1080p.mkv",
+        "inventory_line": "movie|dubbed|anora-2024|https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Anora.2024.1080p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Lootera.2013.WebRip.Hindi.1080p.mkv",
+        "inventory_line": "movie|hindi|lootera-2013-hindi|https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Lootera.2013.WebRip.Hindi.1080p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Love.O2O.(2016).S01.Hindi.Dubbed.WEB.DL.720p.mkv",
+        "inventory_line": "movie|dubbed|love-o2o-2016-s01-hindi-dubbed|https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Love.O2O.(2016).S01.Hindi.Dubbed.WEB.DL.720p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Manamey.(2024).HQ.Hindi.Dubbed.1080P.mkv",
+        "inventory_line": "movie|dubbed|manamey-2024-hq-hindi-dubbed|https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Manamey.(2024).HQ.Hindi.Dubbed.1080P.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]RRR.Behind.&.Beyond.(2024).English.WEB.DL.1080p.mkv",
+        "inventory_line": "movie|english|rrr-behind-beyond-2024-english|https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]RRR.Behind.&.Beyond.(2024).English.WEB.DL.1080p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Venky.Mama.(2019).UNCUT.Dual.Audio.[Hindi.Telugu].AMZN.1080p.mkv",
+        "inventory_line": "movie|dubbed|venky-mama-2019-uncut-dual-audio-amzn|https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Venky.Mama.(2019).UNCUT.Dual.Audio.[Hindi.Telugu].AMZN.1080p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Your.Fault.2024.Dual.Audio.[Hindi.English].AMZN.1080p.mkv",
+        "inventory_line": "movie|dubbed|your-fault-2024-dual-audio-amzn|https://jrtyh.b-cdn.net/s2/upload/videos/2024/12/[Fibwatch.Com]Your.Fault.2024.Dual.Audio.[Hindi.English].AMZN.1080p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2025/01/[Fibwatch.Com]Dark.Desire.(2022).S02.Dual.Audio.[Hindi.Spanish].WEB.DL.720p.mkv",
+        "inventory_line": "movie|dubbed|dark-desire-2022-s02-dual-audio|https://jrtyh.b-cdn.net/s2/upload/videos/2025/01/[Fibwatch.Com]Dark.Desire.(2022).S02.Dual.Audio.[Hindi.Spanish].WEB.DL.720p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2025/01/[Fibwatch.Com]I.Am.Kathalan.(2024).WEB.DL.Malayalam.1080p.mkv",
+        "inventory_line": "movie|south-indian|i-am-kathalan-2024-malayalam|https://jrtyh.b-cdn.net/s2/upload/videos/2025/01/[Fibwatch.Com]I.Am.Kathalan.(2024).WEB.DL.Malayalam.1080p.mkv"
+      },
+      {
+        "stream_family": "https://jrtyh.b-cdn.net/s2/upload/videos/2025/01/[Fibwatch.com]BAAGHI.3.(2020).Hindi.1080p.mkv",
+        "inventory_line": "movie|hindi|baaghi-3-2020-hindi|https://jrtyh.b-cdn.net/s2/upload/videos/2025/01/[Fibwatch.com]BAAGHI.3.(2020).Hindi.1080p.mkv"
+      }
+    ]
   },
   "published": {
-    "movies": 1667,
+    "movies": 1831,
     "episodes": 316,
-    "stream_families": 2441,
-    "pending_content": 0
+    "stream_families": 2626,
+    "pending_content": 780
   },
   "sources": [
     {
@@ -61,67 +168,109 @@
       },
       "total_in_scope_entries": 1,
       "identity_balanced": true,
-      "bucket_sum": 1,
-      "ingestion_evidence": "live_fetch"
+      "bucket_sum": 1
     },
     {
       "source_id": "hopeful-research-latest",
       "source_name": "Hopeful Research Latest Movie Categories",
       "enabled": true,
-      "raw_entries": 1594,
+      "raw_entries": 1654,
       "out_of_scope": 0,
       "out_of_scope_reasons": {},
-      "published_movie": 465,
+      "published_movie": 531,
       "published_series_episode": 19,
-      "merged_stream": 565,
-      "quarantined_unresolved": 545,
+      "merged_stream": 428,
+      "quarantined_unresolved": 676,
       "definitive_rejected": 0,
       "definitive_rejected_reasons": {},
       "quarantined_reasons": {
-        "no_terminal_evidence_and_not_published": 545
+        "no_terminal_evidence_and_not_published": 676
       },
-      "total_in_scope_entries": 1594,
+      "total_in_scope_entries": 1654,
       "identity_balanced": true,
-      "bucket_sum": 1594,
-      "ingestion_evidence": "cached_snapshot"
+      "bucket_sum": 1654
+    },
+    {
+      "source_id": "hopeful-research-local-checkout",
+      "source_name": "Hopeful Research local checkout (fallback)",
+      "enabled": true,
+      "raw_entries": 0,
+      "out_of_scope": 0,
+      "out_of_scope_reasons": {},
+      "published_movie": 0,
+      "published_series_episode": 0,
+      "merged_stream": 0,
+      "quarantined_unresolved": 0,
+      "definitive_rejected": 0,
+      "definitive_rejected_reasons": {},
+      "quarantined_reasons": {},
+      "total_in_scope_entries": 0,
+      "identity_balanced": true,
+      "bucket_sum": 0
     },
     {
       "source_id": "sm-movie-combined",
       "source_name": "SM Movie Combined",
       "enabled": true,
-      "raw_entries": 32983,
+      "raw_entries": 33820,
       "out_of_scope": 0,
       "out_of_scope_reasons": {},
-      "published_movie": 3109,
+      "published_movie": 3332,
       "published_series_episode": 0,
-      "merged_stream": 1298,
-      "quarantined_unresolved": 28576,
+      "merged_stream": 1503,
+      "quarantined_unresolved": 28985,
       "definitive_rejected": 0,
       "definitive_rejected_reasons": {},
       "quarantined_reasons": {
-        "no_terminal_evidence_and_not_published": 28576
+        "no_terminal_evidence_and_not_published": 28985
       },
-      "total_in_scope_entries": 32983,
+      "total_in_scope_entries": 33820,
       "identity_balanced": true,
-      "bucket_sum": 32983,
-      "ingestion_evidence": "live_fetch"
+      "bucket_sum": 33820
     }
   ],
-  "unconfigured_sources": [],
+  "unconfigured_sources": [
+    {
+      "source_id": "manual-playlist-1",
+      "source_name": "manual.m3u",
+      "enabled": true,
+      "raw_entries": 1277,
+      "out_of_scope": 1275,
+      "out_of_scope_reasons": {
+        "not_movie_or_series_content": 1275
+      },
+      "published_movie": 0,
+      "published_series_episode": 0,
+      "merged_stream": 0,
+      "quarantined_unresolved": 2,
+      "definitive_rejected": 0,
+      "definitive_rejected_reasons": {},
+      "quarantined_reasons": {
+        "no_terminal_evidence_and_not_published": 2
+      },
+      "total_in_scope_entries": 2,
+      "identity_balanced": true,
+      "bucket_sum": 2
+    }
+  ],
   "invariants": {
-    "checked_at": "2026-09-20T04:06:47.297666+00:00",
-    "passed": 8,
-    "failed": 1,
+    "checked_at": "2026-09-24T06:36:11.708251+00:00",
+    "passed": 7,
+    "failed": 2,
     "failures": [
+      "INVARIANT_2 unexplained_live_loss == 0",
       "no duplicate entry keys among in-scope entries"
     ],
-    "block": false,
-    "block_reasons": [],
+    "block": true,
+    "block_reasons": [
+      "INVARIANT_2 unexplained_live_loss == 0: unexplained live loss: 362",
+      "362 previously live stream(s) are neither published, merged, visible-pending nor terminally explained"
+    ],
     "checks": [
       {
         "name": "INVARIANT_1 total_in_scope_entries == sum of the five dispositions",
         "passed": true,
-        "detail": "in scope 34578, buckets 34578",
+        "detail": "in scope 35477, buckets 35477",
         "blocking": true
       },
       {
@@ -150,8 +299,8 @@
       },
       {
         "name": "INVARIANT_2 unexplained_live_loss == 0",
-        "passed": true,
-        "detail": "unexplained live loss: 0",
+        "passed": false,
+        "detail": "unexplained live loss: 362",
         "blocking": true
       },
       {
@@ -163,25 +312,15 @@
       {
         "name": "no duplicate entry keys among in-scope entries",
         "passed": false,
-        "detail": "duplicates: 11910",
+        "detail": "duplicates: 12506",
         "blocking": false
       },
       {
         "name": "an enabled source that produced nothing still has a row",
         "passed": true,
-        "detail": "produced nothing: []",
+        "detail": "produced nothing: ['hopeful-research-local-checkout']",
         "blocking": false
       }
     ]
-  },
-  "ingestion_evidence": {
-    "note": "INVARIANT ২ is authoritative here - it compares two committed catalogues. INVARIANT ১ is a within-run measurement; a feed moves between runs, so these rows describe the sources as they are now, not as the last publish saw them.",
-    "by_source": {
-      "sm-movie-combined": "live_fetch",
-      "bollywood-movies-collector": "live_fetch",
-      "hopeful-research-latest": "cached_snapshot"
-    },
-    "baseline_inventory_lines": 2475,
-    "current_inventory_lines": 2475
   }
 }

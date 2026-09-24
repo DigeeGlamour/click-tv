@@ -1,17 +1,22 @@
 {
-  "timestamp": "2026-09-17T16:47:19.342877+00:00",
+  "timestamp": "2026-09-24T06:36:11.764108+00:00",
   "mode": "movies",
   "count": 1,
   "warnings": [
     {
-      "type": "movie_output_safety_warning",
+      "type": "movie_no_loss_gate_block",
       "status": "previous_output_preserved",
-      "previous_count": 1667,
-      "incoming_count": 381,
-      "drop_percentage": 77.14,
-      "maximum_allowed_drop_percentage": 40,
-      "timestamp": "2026-09-17T16:47:19.342877+00:00",
-      "error": "Movie output was not replaced because the new publishable total fell by 77.1% (allowed: 40%)."
+      "unexplained_live_loss": 362,
+      "previously_live": 2441,
+      "total_in_scope_entries": 35477,
+      "identity_balanced": true,
+      "block_reasons": [
+        "INVARIANT_2 unexplained_live_loss == 0: unexplained live loss: 362",
+        "362 previously live stream(s) are neither published, merged, visible-pending nor terminally explained"
+      ],
+      "report": "reports/movie-source-coverage.json",
+      "timestamp": "2026-09-24T06:36:11.764108+00:00",
+      "error": "Movie output was not replaced because the no-loss coverage gate (ধারা ৪.০) refused it: INVARIANT_2 unexplained_live_loss == 0: unexplained live loss: 362; 362 previously live stream(s) are neither published, merged, visible-pending nor terminally explained"
     }
   ],
   "movie_output_preserved": true
