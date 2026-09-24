@@ -1,41 +1,39 @@
 {
-  "timestamp": "2026-09-24T09:20:21.898441+00:00",
+  "timestamp": "2026-09-24T09:30:08.032132+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 5,
-  "total_global_network_checked": 5,
-  "total_proxy_selected": 2,
-  "total_proxy_checked": 2,
-  "total_processed": 5,
+  "total_input_pool": 6,
+  "total_global_network_checked": 6,
+  "total_proxy_selected": 3,
+  "total_proxy_checked": 3,
+  "total_processed": 6,
   "total_publishable": 1,
   "strict_player_hidden": 1,
   "browser_unreachable_hidden": 0,
   "unproven_hidden": 0,
   "status_counts": {
+    "failed": 4,
     "verified_global": 1,
-    "failed": 3,
     "metadata_only": 1
   },
   "groups": {
-    "verified_global": [
-      {
-        "id": "geelong-cats-vs-hawthorn-hawks",
-        "name": "Geelong Cats Vs Hawthorn Hawks",
-        "source_id": "sm-sports-data",
-        "source_pipeline": "today_match",
-        "url": "https://file.genoads.com/ch1.m3u8",
-        "verification_status": "verified_global",
-        "verification_mode": "global",
-        "publish_allowed": true,
-        "http_status": 200,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "",
-        "permanent_fail_count": 0
-      }
-    ],
     "failed": [
+      {
+        "id": "calcutta-customs-club-vs-east-bengal-fc",
+        "name": "Calcutta Customs Club vs East Bengal FC",
+        "source_id": "drmlive-fancode-mirror",
+        "source_pipeline": "today_match",
+        "url": "https://in-mc-flive.fancode.com/mumbai/4249522_english_hls_36e3fc162559957_1ta-di_h264/1080p.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "same_run_player_gate",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+        "permanent_fail_count": 0
+      },
       {
         "id": "palestine-vs-new-zealand",
         "name": "Palestine vs New Zealand",
@@ -81,6 +79,24 @@
         "proxy_name": "default-cloudflare-worker",
         "proxy_http_status": 403,
         "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      }
+    ],
+    "verified_global": [
+      {
+        "id": "palestine-vs-new-zealand",
+        "name": "Palestine Vs New Zealand",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://file.genoads.com/ch1.m3u8",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
         "verification_note": "",
         "permanent_fail_count": 0
       }
