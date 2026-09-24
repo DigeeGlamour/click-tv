@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T08:29:30.612693+00:00",
+  "generated_at": "2026-09-24T10:30:07.472870+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -11,7 +11,11 @@
       "requests": 6,
       "requests_ok": 6,
       "fixtures": 316,
-      "unknown_statuses": [],
+      "unknown_statuses": [
+        "10|HT",
+        "220|Drinks",
+        "2|20'"
+      ],
       "attempts": [
         {
           "sport": "cricket",
@@ -102,44 +106,50 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 5,
-    "upcoming": 62,
-    "fixtures": 67,
+    "today_match": 9,
+    "upcoming": 63,
+    "fixtures": 72,
     "verdicts": {
-      "CONFLICT": 2,
-      "UNVERIFIED": 33,
-      "VERIFIED": 32
+      "CONFLICT": 3,
+      "UNVERIFIED": 38,
+      "PARTIAL_AUTHORITY": 1,
+      "VERIFIED": 30
     },
-    "verified": 32,
-    "partial_authority": 0,
-    "unverified": 33,
-    "conflict": 2,
+    "verified": 30,
+    "partial_authority": 1,
+    "unverified": 38,
+    "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
         "matched": 34,
-        "unmatched": 33
+        "unmatched": 38
       },
       "livescore": {
         "matched": 33,
-        "unmatched": 34
+        "unmatched": 39
       }
     },
     "matched_by_two_independent_authorities": 32,
-    "authority_agreements": 30,
-    "authority_disagreements": 2,
-    "card_status_conflicts": 0,
+    "authority_agreements": 28,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "authorities disagree": 2,
+      "card says LIVE, authority says UPCOMING": 2,
+      "authorities disagree": 1,
       "kickoff": 1
     },
     "identity_near_misses": 9,
     "independent_authority_count_distribution": {
-      "0": 33,
+      "0": 38,
       "1": 2,
       "2": 32
     },
     "unknown_authority_statuses": {
-      "livescore": [],
+      "livescore": [
+        "10|HT",
+        "220|Drinks",
+        "2|20'"
+      ],
       "espn-header": []
     }
   },
@@ -283,9 +293,9 @@
           "competition_id": "24643",
           "kickoff": "2026-09-24T08:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Drinks",
+          "status_code": "220",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "1st ODI",
           "format": "ODI",
@@ -300,30 +310,109 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+        "card says LIVE, authority says UPCOMING"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:hong-kong-china-vs-malaysia|asian games 2026 2nd|2026-09-24",
-      "card_id": "hong-kong-china-vs-malaysia",
-      "name": "Hong Kong, China vs Malaysia",
-      "competition": "Asian Games 2026 - 2nd Match",
-      "kickoff": "2026-09-24T04:30:00+00:00",
+      "fixture_id": "provider:calcutta-customs-club-vs-east-bengal-fc|ifa shield 2026|2026-09-24",
+      "card_id": "calcutta-customs-club-vs-east-bengal-fc",
+      "name": "Calcutta Customs Club vs East Bengal FC",
+      "competition": "IFA Shield 2026",
+      "kickoff": "2026-09-24T09:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:keonjhar-miners-vs-sambalpur-warriors|odisha t20 league 2026|2026-09-24",
+      "card_id": "keonjhar-miners-vs-sambalpur-warriors",
+      "name": "Keonjhar Miners vs Sambalpur Warriors",
+      "competition": "Odisha T20 League 2026",
+      "kickoff": "2026-09-24T09:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:laos-vs-brunei-darussalam|fifa asean cup|2026-09-24",
+      "card_id": "laos-vs-brunei-darussalam",
+      "name": "Laos vs Brunei Darussalam",
+      "competition": "FIFA Asean Cup",
+      "kickoff": "2026-09-24T09:00:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-willow-event"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
-        "Willow"
+        "AXS-Bing"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -527,13 +616,189 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:palestine-vs-new-zealand|international friendly games|2026-09-24",
+      "card_id": "palestine-vs-new-zealand",
+      "name": "Palestine Vs New Zealand",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-09-24T09:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401920058",
+          "upstream_family": "ESPN",
+          "name": "Palestine vs New Zealand",
+          "home": "Palestine",
+          "away": "New Zealand",
+          "home_team_id": "6167",
+          "away_team_id": "2666",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-09-24T09:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, September 24th at 5:30 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401920058~c:401920058"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1894387",
+          "upstream_family": "LiveScore",
+          "name": "Palestine vs New Zealand",
+          "home": "Palestine",
+          "away": "New Zealand",
+          "home_team_id": "9004",
+          "away_team_id": "9237",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-09-24T09:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "10",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "Friendlies 2",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:japan-vs-uruguay|international friendly games|2026-09-24",
+      "card_id": "japan-vs-uruguay",
+      "name": "Japan Vs Uruguay",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-09-24T10:05:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401905330",
+          "upstream_family": "ESPN",
+          "name": "Japan vs Uruguay",
+          "home": "Japan",
+          "away": "Uruguay",
+          "home_team_id": "627",
+          "away_team_id": "212",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-09-24T10:05:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, September 24th at 6:05 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401905330~c:401905330"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1894356",
+          "upstream_family": "LiveScore",
+          "name": "Japan vs Uruguay",
+          "home": "Japan",
+          "away": "Uruguay",
+          "home_team_id": "6326",
+          "away_team_id": "9101",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-09-24T10:05:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "20'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:england-vs-sri-lanka|one day international|2026-09-24",
       "card_id": "england-vs-sri-lanka",
       "name": "England Vs Sri Lanka",
       "competition": "One Day International",
       "kickoff": "2026-09-24T11:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -959,6 +1224,44 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:algeria-u20-vs-tunisia-u20|africa cup of nations u20|2026-09-24",
+      "card_id": "algeria-u20-vs-tunisia-u20",
+      "name": "Algeria U20 vs Tunisia U20",
+      "competition": "Africa Cup of Nations U20",
+      "kickoff": "2026-09-24T13:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:andorra-vs-malta|uefa nations league|2026-09-24",
       "card_id": "andorra-vs-malta",
       "name": "Andorra Vs Malta",
@@ -1145,12 +1448,15 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
+        "AXS-Bing",
         "SM-Aggregate"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -1409,8 +1715,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1500,10 +1806,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1541,8 +1847,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1862,14 +2168,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "srhady-bingstream",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
+        "srhady-axsports-live",
+        "sportlive-fancode-backup",
+        "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1928,10 +2234,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2096,10 +2402,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2187,8 +2493,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2278,8 +2584,8 @@
       "source_ids": [
         "sm-sports-data",
         "srhady-willow-event",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2321,10 +2627,10 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2562,96 +2868,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:japan-vs-uruguay|international friendly games|2026-09-24",
-      "card_id": "japan-vs-uruguay",
-      "name": "Japan Vs Uruguay",
-      "competition": "International Friendly Games",
-      "kickoff": "2026-09-24T10:05:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
-      ],
-      "upstream_families": [
-        "AXS-Bing",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401905330",
-          "upstream_family": "ESPN",
-          "name": "Japan vs Uruguay",
-          "home": "Japan",
-          "away": "Uruguay",
-          "home_team_id": "627",
-          "away_team_id": "212",
-          "competition": "International Friendly",
-          "competition_id": "3922",
-          "kickoff": "2026-09-24T10:05:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, September 24th at 6:05 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401905330~c:401905330"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1894356",
-          "upstream_family": "LiveScore",
-          "name": "Japan vs Uruguay",
-          "home": "Japan",
-          "away": "Uruguay",
-          "home_team_id": "6326",
-          "away_team_id": "9101",
-          "competition": "Friendlies",
-          "competition_id": "537",
-          "kickoff": "2026-09-24T10:05:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:japan-vs-venezuela|international friendly games|2026-09-28",
       "card_id": "japan-vs-venezuela",
       "name": "Japan Vs Venezuela",
@@ -2703,10 +2919,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3214,8 +3430,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3296,8 +3512,8 @@
       "name": "Netherlands U19 vs Belgium U19",
       "competition": "Friendlies",
       "kickoff": "2026-09-24T11:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
@@ -3430,10 +3646,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3559,10 +3775,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3587,103 +3803,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:palestine-vs-new-zealand|international friendly games|2026-09-24",
-      "card_id": "palestine-vs-new-zealand",
-      "name": "Palestine Vs New Zealand",
-      "competition": "International Friendly Games",
-      "kickoff": "2026-09-24T09:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-axsports-live",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "srhady-bingstream",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "AXS-Bing",
-        "FanCode",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 3,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401920058",
-          "upstream_family": "ESPN",
-          "name": "Palestine vs New Zealand",
-          "home": "Palestine",
-          "away": "New Zealand",
-          "home_team_id": "6167",
-          "away_team_id": "2666",
-          "competition": "International Friendly",
-          "competition_id": "3922",
-          "kickoff": "2026-09-24T09:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, September 24th at 5:30 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401920058~c:401920058"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1894387",
-          "upstream_family": "LiveScore",
-          "name": "Palestine vs New Zealand",
-          "home": "Palestine",
-          "away": "New Zealand",
-          "home_team_id": "9004",
-          "away_team_id": "9237",
-          "competition": "Friendlies",
-          "competition_id": "537",
-          "kickoff": "2026-09-24T09:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:panama-vs-new-zealand|international friendly games|2026-10-01",
       "card_id": "panama-vs-new-zealand",
       "name": "Panama Vs New Zealand",
@@ -3700,6 +3819,82 @@
       ],
       "upstream_families": [
         "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:poland-u17-vs-czechia-u17|friendlies|2026-09-25",
+      "card_id": "poland-u17-vs-czechia-u17",
+      "name": "Poland U17 vs Czechia U17",
+      "competition": "Friendlies",
+      "kickoff": "2026-09-25T09:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:poland-u19-vs-switzerland-u19|friendlies|2026-09-25",
+      "card_id": "poland-u19-vs-switzerland-u19",
+      "name": "Poland U19 vs Switzerland U19",
+      "competition": "Friendlies",
+      "kickoff": "2026-09-25T09:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -3808,6 +4003,45 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:puri-titans-vs-sambalpur-warriors|odisha t20 league 2026|2026-09-27",
+      "card_id": "puri-titans-vs-sambalpur-warriors",
+      "name": "Puri Titans vs Sambalpur Warriors",
+      "competition": "Odisha T20 League 2026",
+      "kickoff": "2026-09-27T09:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:romania-u19-vs-hungary-u19|friendlies|2026-09-24",
       "card_id": "romania-u19-vs-hungary-u19",
       "name": "Romania U19 vs Hungary U19",
@@ -3860,52 +4094,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:rourkela-superstars-vs-kataka-panthers|odisha t20 league 2026|2026-09-25",
-      "card_id": "rourkela-superstars-vs-kataka-panthers",
-      "name": "Rourkela Superstars vs Kataka Panthers",
-      "competition": "Odisha T20 League 2026",
-      "kickoff": "2026-09-25T09:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4055,27 +4247,25 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:south-korea-vs-ecuador|international friendly games|2026-09-24",
+      "fixture_id": "provider:south-korea-vs-ecuador|friendlies|2026-09-24",
       "card_id": "south-korea-vs-ecuador",
-      "name": "South Korea Vs Ecuador",
-      "competition": "International Friendly Games",
+      "name": "South Korea vs Ecuador",
+      "competition": "Friendlies",
       "kickoff": "2026-09-24T11:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
-        "AXS-Bing",
-        "SM-Aggregate"
+        "AXS-Bing"
       ],
-      "independent_witness_count": 2,
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -4196,10 +4386,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4467,14 +4657,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "sm-fancode",
-        "sportlive-fancode-backup",
         "srhady-bingstream",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
+        "srhady-axsports-live",
+        "sportlive-fancode-backup",
+        "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4565,10 +4755,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
