@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-09-24T10:45:47.233524+00:00",
+  "updated_at": "2026-09-24T10:55:10.916874+00:00",
   "count": 11,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -441,7 +441,7 @@
           "host": "livecdn-tc-iptv.rumsport10.live",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_8f27b281ebc237f85a9b4032ede6ba08",
+          "playback_id": "ctv_aebc5aa2532a924ce026f956e9465393",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -551,11 +551,11 @@
               "id": "south-africa-vs-australia--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_c7cecbb80b42b3c7d83a89b8",
+              "variant_key": "sv_47b23d8c9f08e2ae087290e5",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_8f27b281ebc237f85a9b4032ede6ba08",
+              "playback_id": "ctv_aebc5aa2532a924ce026f956e9465393",
               "resolution": "HD",
               "resolution_height": 720,
               "stream_type": "hls"
@@ -603,18 +603,17 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1525655)"
+        "ESPN espn-header=Scheduled (Scheduled, event 1525655)",
+        "LiveScore livescore=Play in progress (33, event 1742845)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "1525655"
-      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1525655); LiveScore livescore=Play in progress (33, event 1742845)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_1f7ffac5392449325931bdf093760900"
@@ -700,7 +699,7 @@
     {
       "id": "laos-vs-brunei-darussalam",
       "name": "Laos vs Brunei Darussalam",
-      "primary_stream_key": "82931ab16ca0173c7e983cac03d8a7960412d0c89c48eb6c894c376b62595fee",
+      "primary_stream_key": "1fe9fe672bfd833cc0ef5646d7438c60b4ffa46704dcd331a91f8ba51b097bd3",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://rs.maycdn.com/fixture/leagues/af/1247.png",
@@ -749,11 +748,11 @@
               "id": "laos-vs-brunei-darussalam--server-1--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_4b990ffec1ba29facf4389cd",
+              "variant_key": "sv_b90d6e6b738a4193d7c93b29",
               "provider": "srhady-bingstream",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_32f6171cd742eafac0cb298ec6cdac1d",
+              "playback_id": "ctv_b87f304abfeb4563407bef63a39fdd79",
               "stream_type": "hls"
             }
           ]
@@ -788,7 +787,7 @@
       ],
       "start_time": "2026-09-24T09:00:00+00:00",
       "start_at": "2026-09-24T09:00:00+00:00",
-      "end_time": "2026-09-24T11:30:07+00:00",
+      "end_time": "2026-09-24T11:47:14+00:00",
       "end_time_source": "assumed",
       "competition": "FIFA Asean Cup",
       "fixture_id": "provider:laos-vs-brunei-darussalam|fifa asean cup|2026-09-24",
@@ -804,7 +803,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_32f6171cd742eafac0cb298ec6cdac1d",
+      "playback_id": "ctv_b87f304abfeb4563407bef63a39fdd79",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1022,7 +1021,7 @@
       ],
       "carried_forward_misses": 1,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-24T10:30:34.821235+00:00"
+      "carried_forward_first_missed_at": "2026-09-24T10:47:39.586322+00:00"
     },
     {
       "id": "japan-vs-uruguay",
@@ -1153,7 +1152,7 @@
       ],
       "carried_forward_misses": 1,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-24T10:30:34.821235+00:00"
+      "carried_forward_first_missed_at": "2026-09-24T10:47:39.586322+00:00"
     },
     {
       "id": "netherlands-u19-vs-belgium-u19",
@@ -1169,7 +1168,7 @@
       "stream_type": "hls",
       "requires_headers": true,
       "inherit_manifest_query": false,
-      "verification_mode": "global",
+      "verification_mode": "same_run_player_gate",
       "verification_status": "metadata_only",
       "verification_badge": "",
       "verified": false,
@@ -1232,114 +1231,93 @@
     },
     {
       "id": "south-korea-vs-ecuador",
-      "name": "South Korea Vs Ecuador",
-      "primary_stream_key": "3de9832c71c2ac1a6497c880886da2e27a22873ee4a83fb200d0dd0c9cceda57",
+      "name": "South Korea vs Ecuador",
+      "primary_stream_key": "",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/4735/image",
+      "logo": "https://rs.maycdn.com/fixture/teams/af/17.png",
       "category": "today_match",
-      "url": "https://file.genoads.com/ch1.m3u8",
+      "url": "",
       "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
+      "proxy_mode": "proxy_first",
       "stream_type": "hls",
-      "requires_headers": false,
+      "requires_headers": true,
       "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
+      "verification_mode": "same_run_player_gate",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
       "publish_allowed": true,
       "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
       "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
+      "routing_reason": "schedule_status_routing",
+      "source_id": "srhady-bingstream",
+      "metadata_only": true,
+      "available_link_count": 0,
       "backups": [],
-      "channels": [
-        {
-          "id": "south-korea-vs-ecuador--stream-tv",
-          "name": "STREAM TV",
-          "normalized_name": "stream-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/4735/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "south-korea-vs-ecuador--stream-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "south-korea-vs-ecuador--stream-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_7e965fcb4ffb435c8a188ff9",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_e94590dd78ee0859c2150c051fe96224",
-              "resolution": "SD",
-              "resolution_height": 576,
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "south-korea-vs-ecuador--stream-tv",
       "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "streams_in": 3,
+        "unresolved_channel_streams": 3,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 0,
+        "variants": 0,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
       "source_provenance": [
         {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+          "source_id": "srhady-bingstream",
+          "source_name": "Bingstream Live and Upcoming",
+          "source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json"
+        },
+        {
+          "source_id": "srhady-axsports-live",
+          "source_name": "AX Sports Live Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/axsports/refs/heads/main/live_sports.json"
         }
       ],
       "source_ids": [
-        "sm-sports-data"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
-      "resolution": "SD",
-      "resolution_height": 576,
       "start_time": "2026-09-24T11:00:00+00:00",
       "start_at": "2026-09-24T11:00:00+00:00",
-      "end_time": "2026-09-24T13:30:00+00:00",
-      "end_time_source": "sport",
-      "competition": "International Friendly Games",
-      "fixture_id": "provider:south-korea-vs-ecuador|international friendly games|2026-09-24",
-      "status": "STARTING_SOON",
-      "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "end_time": "2026-09-24T15:00:00+00:00",
+      "end_time_source": "assumed",
+      "competition": "Friendlies",
+      "fixture_id": "provider:south-korea-vs-ecuador|friendlies|2026-09-24",
+      "status": "LINK_UPDATING",
+      "original_status": "UPCOMING",
+      "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "source_start_time": "2026-09-24T11:00:00+00:00",
       "time_verification": "provider_feed",
-      "source_category": "football",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401905196)",
+        "LiveScore livescore=NS (1, event 1894361)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401905196",
+        "livescore": "1894361"
+      },
+      "allow_without_stream": true,
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "STARTING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/a8nqfs1589564916.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/47wv2y1591989301.png",
-      "playback_id": "ctv_5edefe0074a3962fd22f74f9a0c73407"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/47wv2y1591989301.png"
     }
   ]
 }
