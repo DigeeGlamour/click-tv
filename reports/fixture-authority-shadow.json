@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T13:29:51.502262+00:00",
+  "generated_at": "2026-09-24T13:50:32.125731+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,8 +13,7 @@
       "fixtures": 317,
       "unknown_statuses": [
         "134|Stumps - day 3",
-        "2|26'",
-        "3|90+5'"
+        "2|45+1'"
       ],
       "attempts": [
         {
@@ -107,48 +106,46 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 11,
-    "upcoming": 64,
-    "fixtures": 75,
+    "upcoming": 63,
+    "fixtures": 74,
     "verdicts": {
-      "PARTIAL_AUTHORITY": 1,
-      "CONFLICT": 4,
-      "VERIFIED": 31,
-      "UNVERIFIED": 39
+      "CONFLICT": 3,
+      "VERIFIED": 33,
+      "UNVERIFIED": 38
     },
-    "verified": 31,
-    "partial_authority": 1,
-    "unverified": 39,
-    "conflict": 4,
+    "verified": 33,
+    "partial_authority": 0,
+    "unverified": 38,
+    "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 34,
+        "matched": 33,
         "unmatched": 41
       },
       "livescore": {
         "matched": 35,
-        "unmatched": 40
+        "unmatched": 39
       }
     },
-    "matched_by_two_independent_authorities": 32,
-    "authority_agreements": 27,
-    "authority_disagreements": 3,
+    "matched_by_two_independent_authorities": 31,
+    "authority_agreements": 28,
+    "authority_disagreements": 2,
     "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "authorities disagree": 3,
+      "authorities disagree": 2,
       "card says LIVE, authority says UPCOMING": 1,
       "kickoff": 1
     },
     "identity_near_misses": 8,
     "independent_authority_count_distribution": {
-      "0": 39,
-      "1": 4,
-      "2": 32
+      "0": 38,
+      "1": 5,
+      "2": 31
     },
     "unknown_authority_statuses": {
       "livescore": [
         "134|Stumps - day 3",
-        "2|26'",
-        "3|90+5'"
+        "2|45+1'"
       ],
       "espn-header": []
     }
@@ -255,8 +252,8 @@
           "competition_id": "3922",
           "kickoff": "2026-09-24T11:35:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "15'",
-          "status_code": "STATUS_FIRST_HALF",
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -264,8 +261,8 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "15'",
-          "espn_status_description": "First Half",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3922~e:401914222~c:401914222"
@@ -285,11 +282,11 @@
           "competition_id": "537",
           "kickoff": "2026-09-24T11:35:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "90+5'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
-          "round": "1",
+          "round": "Friendlies 1",
           "format": "",
           "gender": ""
         }
@@ -301,10 +298,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -342,17 +341,17 @@
           "competition_id": "23802",
           "kickoff": "2026-09-24T11:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
+          "status_raw": "Live",
+          "status_code": "Live",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "2nd ODI (D/N)",
           "format": "ODI",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-09-26T23:59:00Z",
           "authority_uid": "s:200~e:1496589~c:1496589"
@@ -388,12 +387,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
-      ],
-      "authority_agreement": "DISAGREE",
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -461,7 +458,7 @@
           "competition_id": "137",
           "kickoff": "2026-09-24T13:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "26'",
+          "status_raw": "45+1'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -520,8 +517,8 @@
           "competition_id": "24203",
           "kickoff": "2026-09-24T08:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
+          "status_raw": "Innings break",
+          "status_code": "Innings break",
           "status": "LIVE",
           "sport": "cricket",
           "round": "1st ODI",
@@ -530,7 +527,7 @@
           "espn_state": "in",
           "espn_status": "in",
           "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_status_description": "Innings break",
           "espn_completed": null,
           "espn_end_date_raw": "2026-09-25T23:59:00Z",
           "authority_uid": "s:200~e:1525655~c:1525655"
@@ -556,6 +553,94 @@
           "sport": "cricket",
           "round": "1st ODI",
           "format": "ODI",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:uzbekistan-vs-iran|friendlies|2026-09-24",
+      "card_id": "uzbekistan-vs-iran",
+      "name": "Uzbekistan vs Iran",
+      "competition": "Friendlies",
+      "kickoff": "2026-09-24T14:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915914",
+          "upstream_family": "ESPN",
+          "name": "Uzbekistan vs Iran",
+          "home": "Uzbekistan",
+          "away": "Iran",
+          "home_team_id": "2570",
+          "away_team_id": "469",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-09-24T14:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, September 24th at 10:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401915914~c:401915914"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1894365",
+          "upstream_family": "LiveScore",
+          "name": "Uzbekistan vs Iran",
+          "home": "Uzbekistan",
+          "away": "Iran",
+          "home_team_id": "8531",
+          "away_team_id": "9593",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-09-24T14:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
           "gender": ""
         }
       },
@@ -611,92 +696,41 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:south-korea-vs-ecuador|international friendly games|2026-09-24",
-      "card_id": "south-korea-vs-ecuador",
-      "name": "South Korea Vs Ecuador",
-      "competition": "International Friendly Games",
-      "kickoff": "2026-09-24T11:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
+      "fixture_id": "provider:romania-u19-vs-hungary-u19|friendlies|2026-09-24",
+      "card_id": "romania-u19-vs-hungary-u19",
+      "name": "Romania U19 vs Hungary U19",
+      "competition": "Friendlies",
+      "kickoff": "2026-09-24T14:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "AXS-Bing"
       ],
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401905196",
-          "upstream_family": "ESPN",
-          "name": "South Korea vs Ecuador",
-          "home": "South Korea",
-          "away": "Ecuador",
-          "home_team_id": "451",
-          "away_team_id": "209",
-          "competition": "International Friendly",
-          "competition_id": "3922",
-          "kickoff": "2026-09-24T11:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "45'+2'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "45'+2'",
-          "espn_status_description": "First Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401905196~c:401905196"
+          "result": "unmatched"
         },
         "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1894361",
-          "upstream_family": "LiveScore",
-          "name": "South Korea vs Ecuador",
-          "home": "South Korea",
-          "away": "Ecuador",
-          "home_team_id": "6325",
-          "away_team_id": "8973",
-          "competition": "Friendlies",
-          "competition_id": "537",
-          "kickoff": "2026-09-24T11:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
+          "result": "unmatched"
         }
       },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -863,11 +897,11 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:japan-vs-uruguay|international friendly games|2026-09-24",
-      "card_id": "japan-vs-uruguay",
-      "name": "Japan Vs Uruguay",
+      "fixture_id": "provider:south-korea-vs-ecuador|international friendly games|2026-09-24",
+      "card_id": "south-korea-vs-ecuador",
+      "name": "South Korea Vs Ecuador",
       "competition": "International Friendly Games",
-      "kickoff": "2026-09-24T10:05:00+00:00",
+      "kickoff": "2026-09-24T11:00:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
@@ -886,18 +920,18 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "401905330",
+          "event_id": "401905196",
           "upstream_family": "ESPN",
-          "name": "Japan vs Uruguay",
-          "home": "Japan",
-          "away": "Uruguay",
-          "home_team_id": "627",
-          "away_team_id": "212",
+          "name": "South Korea vs Ecuador",
+          "home": "South Korea",
+          "away": "Ecuador",
+          "home_team_id": "451",
+          "away_team_id": "209",
           "competition": "International Friendly",
           "competition_id": "3922",
-          "kickoff": "2026-09-24T10:05:00+00:00",
+          "kickoff": "2026-09-24T11:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "82'",
+          "status_raw": "65'",
           "status_code": "STATUS_SECOND_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -906,26 +940,26 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "82'",
+          "espn_status_detail": "65'",
           "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401905330~c:401905330"
+          "authority_uid": "s:600~l:3922~e:401905196~c:401905196"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1894356",
+          "event_id": "1894361",
           "upstream_family": "LiveScore",
-          "name": "Japan vs Uruguay",
-          "home": "Japan",
-          "away": "Uruguay",
-          "home_team_id": "6326",
-          "away_team_id": "9101",
+          "name": "South Korea vs Ecuador",
+          "home": "South Korea",
+          "away": "Ecuador",
+          "home_team_id": "6325",
+          "away_team_id": "8973",
           "competition": "Friendlies",
           "competition_id": "537",
-          "kickoff": "2026-09-24T10:05:00+00:00",
+          "kickoff": "2026-09-24T11:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
           "status_raw": "FT",
           "status_code": "6",
@@ -949,44 +983,6 @@
       "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
       "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:algeria-u20-vs-tunisia-u20|africa cup of nations u20|2026-09-24",
-      "card_id": "algeria-u20-vs-tunisia-u20",
-      "name": "Algeria U20 vs Tunisia U20",
-      "competition": "Africa Cup of Nations U20",
-      "kickoff": "2026-09-24T13:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -1314,94 +1310,6 @@
           "competition": "Qualification: Group E",
           "competition_id": "137",
           "kickoff": "2026-09-24T19:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:uzbekistan-vs-iran|friendlies|2026-09-24",
-      "card_id": "uzbekistan-vs-iran",
-      "name": "Uzbekistan vs Iran",
-      "competition": "Friendlies",
-      "kickoff": "2026-09-24T14:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401915914",
-          "upstream_family": "ESPN",
-          "name": "Uzbekistan vs Iran",
-          "home": "Uzbekistan",
-          "away": "Iran",
-          "home_team_id": "2570",
-          "away_team_id": "469",
-          "competition": "International Friendly",
-          "competition_id": "3922",
-          "kickoff": "2026-09-24T14:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, September 24th at 10:00 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401915914~c:401915914"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1894365",
-          "upstream_family": "LiveScore",
-          "name": "Uzbekistan vs Iran",
-          "home": "Uzbekistan",
-          "away": "Iran",
-          "home_team_id": "8531",
-          "away_team_id": "9593",
-          "competition": "Friendlies",
-          "competition_id": "537",
-          "kickoff": "2026-09-24T14:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
           "status_raw": "NS",
           "status_code": "1",
@@ -2042,8 +1950,8 @@
       "source_ids": [
         "sm-fancode",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2174,8 +2082,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2483,13 +2391,13 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
-        "sm-fancode",
         "srhady-bingstream",
         "srhady-axsports-live",
+        "sm-fancode",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2550,8 +2458,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2786,8 +2694,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3008,11 +2916,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3303,8 +3211,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3813,8 +3721,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3942,8 +3850,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4184,50 +4092,12 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:romania-u19-vs-hungary-u19|friendlies|2026-09-24",
-      "card_id": "romania-u19-vs-hungary-u19",
-      "name": "Romania U19 vs Hungary U19",
-      "competition": "Friendlies",
-      "kickoff": "2026-09-24T14:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -4264,8 +4134,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4468,8 +4338,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4813,6 +4683,66 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:uzbekistan-u23-vs-saudi-arabia-u23|asian games|2026-09-25",
+      "card_id": "uzbekistan-u23-vs-saudi-arabia-u23",
+      "name": "Uzbekistan U23 vs Saudi Arabia U23",
+      "competition": "Asian Games",
+      "kickoff": "2026-09-25T05:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1897781",
+          "upstream_family": "LiveScore",
+          "name": "Uzbekistan U23 vs Saudi Arabia U23",
+          "home": "Uzbekistan U23",
+          "away": "Saudi Arabia U23",
+          "home_team_id": "3474",
+          "away_team_id": "3538",
+          "competition": "Asian Games: U23 Final Stage",
+          "competition_id": "1216",
+          "kickoff": "2026-09-25T05:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "Quarter Finals",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:wuxi-wugou-vs-guangxi-hengchen|league one|2026-09-25",
       "card_id": "wuxi-wugou-vs-guangxi-hengchen",
       "name": "Wuxi Wugou vs Guangxi Hengchen",
@@ -4887,8 +4817,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
