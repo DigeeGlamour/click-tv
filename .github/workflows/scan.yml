@@ -311,6 +311,33 @@ jobs:
             git commit -m "Fold duplicate routes a merge left in the data"
           fi
 
+          # ধাপ ০ - "ফেরার পথ ছাড়া কিছু শুরু নয়". The baseline records what is
+          # published right now, and the tests verify that claim on every run,
+          # because "a claim that drifts is worse than no claim". Nothing ever
+          # re-recorded it, so every scan that published anything poisoned the
+          # NEXT run: the 08:41 movies run published 166 series / 700 episodes
+          # against a baseline recording 156 / 653, and the 09:49 run died in
+          # its test suite with the scanner never starting at all.
+          #
+          # Recorded here rather than after the publish, and that is the more
+          # faithful reading of ধাপ ০: the way back is the catalogue as it
+          # stands BEFORE this run changes anything. The tree is at HEAD at
+          # this point, so the commit the record names is the commit those
+          # files really came from.
+          #
+          # Committed, not merely written, for the same reason as the repair
+          # above: the worktree the tests read is built from HEAD. A run whose
+          # catalogue has not moved records nothing and commits nothing.
+          if python scripts/movie-baseline-backup.py --check >/dev/null 2>&1; then
+            echo "The movie baseline still describes the published catalogue."
+          else
+            echo "The published catalogue has moved since the baseline was recorded:"
+            python scripts/movie-baseline-backup.py \
+              --label "auto: re-recorded before the scan" | tail -n 30
+            git add state/movie-baseline.json
+            git commit -m "Re-record the movie baseline against the published catalogue"
+          fi
+
       - name: Validate scanner files
         shell: bash
         run: |
