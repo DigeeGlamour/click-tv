@@ -556,9 +556,70 @@ def _merge_duplicate_series(items: Iterable[Mapping[str, Any]]) -> List[Dict[str
     return list(merged.values())
 
 
+def _episodes_of(series: Mapping[str, Any]) -> List[Dict[str, Any]]:
+    payloads = series.get("episode_payloads")
+    if not isinstance(payloads, dict):
+        return []
+    found: List[Dict[str, Any]] = []
+    for episodes in payloads.values():
+        if isinstance(episodes, list):
+            found.extend(item for item in episodes if isinstance(item, dict))
+    return found
+
+
+def _annotate_episode_metadata(
+    normalized: List[Dict[str, Any]], *, allow_lookup: bool
+) -> Dict[str, Any]:
+    """ধাপ ১২ / A-05 - real episode names, air dates and stills.
+
+    Two halves, deliberately separate. The lookup half asks providers about
+    whole SHOWS (one request each, 70 of them, not 316) and is gated to the
+    real publish path exactly as `movies._annotate_metadata` is, so tests and
+    ad-hoc calls never reach the network. The apply half is cache-only and
+    always runs.
+
+    ★ The source's season/episode identity is never overwritten. That is
+    enforced in `series_episode_metadata.sanitise`, on the way in, rather than
+    relied on here.
+
+    Wrapped: an episode with no name renders exactly as it does today, which
+    is a smaller problem than a series catalogue that failed to build.
+    """
+    try:
+        from scanner import series_episode_metadata as episode_metadata
+
+        store = episode_metadata.load()
+        if allow_lookup:
+            asked = 0
+            for series in episode_metadata.due_shows(normalized, store):
+                lookup_view = dict(series)
+                lookup_view["season_numbers"] = sorted(
+                    (series.get("episode_payloads") or {}).keys())
+                episodes, provider = episode_metadata.resolve(lookup_view)
+                episode_metadata.remember(
+                    store, episode_metadata.show_key(series), episodes,
+                    provider=provider, status=str(series.get("status") or ""))
+                asked += 1
+            if asked:
+                episode_metadata.save(store)
+                print(f"   episode metadata: {asked} show(s) asked about")
+
+        summary = episode_metadata.apply_all(
+            normalized, store, episodes_of=_episodes_of)
+        line = episode_metadata.describe(summary)
+        if line:
+            print(f"   {line}")
+        return summary
+    except Exception as error:  # noqa: BLE001 - never fail a scan
+        print(f"   episode metadata skipped: {error}")
+        return {}
+
+
 def prepare_manual_series(
     project_root: str | Path | None = None,
     catalog_path: str | Path = DEFAULT_CATALOG_PATH,
+    *,
+    allow_lookup: bool = False,
 ) -> Dict[str, Any]:
     root = Path(project_root or Path.cwd()).resolve()
     source = Path(catalog_path)
@@ -580,6 +641,7 @@ def prepare_manual_series(
             _text(item.get("name")).casefold(),
         )
     )
+    _annotate_episode_metadata(normalized, allow_lookup=allow_lookup)
     return {
         "schema_version": SCHEMA_VERSION,
         "prepared_at": _utc_now(),

@@ -1512,7 +1512,11 @@ def run_pipeline(
 
         print("   Validating mixed TXT Series / Season / Episode catalogue...")
         from scanner.series import prepare_manual_series
-        prepared_series = prepare_manual_series(project_root=PROJECT_ROOT)
+        # ধাপ ১২ / A-05. The real publish path is the only caller that may
+        # reach a provider, the same gate movie metadata uses - so tests and
+        # ad-hoc calls still only ever apply what is already cached.
+        prepared_series = prepare_manual_series(
+            project_root=PROJECT_ROOT, allow_lookup=True)
         print(
             f"   Series ready: {prepared_series.get('series', 0)} Series / "
             f"{prepared_series.get('episodes', 0)} Episodes"
