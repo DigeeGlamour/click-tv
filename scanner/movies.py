@@ -4765,6 +4765,8 @@ def process_movies(
     manual_movies_path: str = DEFAULT_MANUAL_MOVIES_PATH,
     manual_movies_text_path: str = DEFAULT_MANUAL_MOVIES_TEXT_PATH,
     remote_sources_path: str = DEFAULT_REMOTE_SOURCES_PATH,
+    *,
+    defer_derived: bool = False,
 ) -> Dict[str, Dict[str, Any]]:
     candidates = _load_required_results(bd_results_path)
     settings = _load_optional_json(settings_path)
@@ -4913,16 +4915,59 @@ def process_movies(
     # catalogue did not contain - 40 of 40 in Just Added and 4 of 5 in the
     # Featured hero pointed at ids with no page behind them.
     #
+    # ধারা ৪.০. That guard is only ONE of the two reasons the pages
+    # may not be published. The other is the no-loss gate, and it cannot have
+    # answered yet: it needs this payload AND the prepared series, so it runs
+    # in scan.py after this function returns.
+    #
+    # Measured on the first real run after ধাপ ১৩: the drop guard did not trip
+    # (1,831 incoming against 1,663 live, a GROWTH), so the surfaces below were
+    # written from the new payload - and then the gate blocked the catalogue.
+    # The result was the failure this file's comment describes, one preservation
+    # path over: 35 of 39 Just Added ids and 562 of 1,887 search ids pointed at
+    # films with no page behind them.
+    #
+    # So the real caller defers them. Writing a description of a catalogue
+    # before knowing whether that catalogue is being published is the bug; the
+    # only fix that closes both paths is not to write it until the answer is in.
+    if defer_derived:
+        return paginated
+
+    publish_derived_surfaces(paginated, settings)
+    return paginated
+
+
+def publish_derived_surfaces(
+    paginated: Dict[str, Any], settings: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """Write the surfaces that DESCRIBE a catalogue which is being published.
+
+    Discovery, trending, the genre indexes and the search-index stamp. Called
+    once the publish decision is known - by `process_movies` itself for callers
+    that do not run the gate, and by `scan.py` after the gate passes.
+
+    Returns the generation state, or `{}` when nothing was written.
+    """
+    if settings is None:
+        settings = _load_optional_json("config/settings.json")
+
+    # The first of the two preservation paths: `scanner/output.py` keeps the
+    # previous movie pages when the incoming total collapses. That is what
+    # saved the catalogue on the 17th - the source returned 377 publishable
+    # films against 1,667 already live, a 77% drop, and the pages were rightly
+    # left alone. Discovery was written from the 377 anyway, so Movie Home
+    # advertised films the catalogue did not contain: 40 of 40 in Just Added
+    # and 4 of 5 in the Featured hero pointed at ids with no page behind them.
+    #
     # So the same question is asked here, before anything is written: if the
     # pages are going to be preserved, the discovery derived from them is
-    # preserved too, and the site keeps describing the catalogue it actually
-    # has.
+    # preserved too, and the site keeps describing the catalogue it has.
     if _movie_output_would_be_preserved(paginated, settings):
         print(
             "   movie discovery: previous outputs kept, because the catalogue "
             "they describe is not being republished"
         )
-        return paginated
+        return {}
 
     # ধাপ ৯ / S-07. One generation for everything this publish writes, so
     # "these files describe the same scan" stops being an assumption. Allocated
@@ -4939,4 +4984,4 @@ def process_movies(
     _generate_discovery(paginated)
     _stamp_derived_movie_surfaces(generation)
 
-    return paginated
+    return generation

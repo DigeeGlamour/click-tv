@@ -424,5 +424,94 @@ class PipelineGateTests(unittest.TestCase):
         self.assertIn("return items, [], None", window)
 
 
+class WhatTheGateMayCallTerminal(unittest.TestCase):
+    """ধারা ৪.১ - only a definitive 404/410 is terminal, and the gate has to be
+    TOLD which links those were.
+
+    It was not. `scan.py` built the coverage report without any terminal
+    evidence, so `terminal_evidence` stayed 0 and 362 links with a confirmed
+    404 were counted as unexplained loss - blocking a publish over content
+    that really had been removed.
+    """
+
+    def _store(self):
+        return {"schema_version": 1, "links": {}}
+
+    def test_a_confirmed_404_becomes_terminal_evidence(self):
+        store = self._store()
+        lh.record_result(
+            store, identity="a", url="https://cdn.example.com/gone.mkv",
+            verification_status="failed", http_status=404)
+        records = lh.terminal_records(store)
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["reason"], "confirmed_404_or_410")
+
+    def test_the_reason_is_one_the_gate_accepts(self):
+        from scanner import movie_coverage
+
+        store = self._store()
+        lh.record_result(store, identity="a", url="https://cdn/x.mkv",
+                          verification_status="failed", http_status=410)
+        self.assertIn(lh.terminal_records(store)[0]["reason"],
+                      movie_coverage.DEFINITIVE_REJECT_REASONS)
+
+    def test_a_vantage_refusal_is_never_terminal(self):
+        """403, 451, geo - the whole point of ধারা ৪.১. If any of these leaked
+        through, the gate would let real content be dropped."""
+        for status in (401, 402, 403, 407, 451):
+            with self.subTest(status=status):
+                store = self._store()
+                lh.record_result(store, identity="a", url="https://cdn/x.mkv",
+                                  verification_status="failed",
+                                  http_status=status)
+                self.assertEqual(lh.terminal_records(store), [])
+
+    def test_a_host_that_would_not_answer_is_never_terminal(self):
+        store = self._store()
+        lh.record_result(store, identity="a", url="https://cdn/x.mkv",
+                          verification_status="failed", http_status=0)
+        self.assertEqual(lh.terminal_records(store), [])
+
+    def test_repeated_failure_from_this_vantage_is_never_terminal(self):
+        store = self._store()
+        for _ in range(6):
+            lh.record_result(store, identity="a", url="https://cdn/x.mkv",
+                              verification_status="failed", http_status=0)
+        self.assertEqual(store["links"]["a"]["status"],
+                         lh.STATUS_CONFIRMED_UNAVAILABLE)
+        self.assertEqual(lh.terminal_records(store), [])
+
+    def test_a_healthy_link_is_never_terminal(self):
+        store = self._store()
+        lh.record_result(store, identity="a", url="https://cdn/x.mkv",
+                          verification_status="verified_global")
+        self.assertEqual(lh.terminal_records(store), [])
+
+    def test_the_family_is_what_the_gate_matches_on(self):
+        """Stored rather than the url: it is what the gate compares, and it
+        carries no signed token."""
+        from scanner import movie_coverage
+
+        store = self._store()
+        url = "https://cdn.example.com/a/b.mkv?token=secret&expires=99"
+        lh.record_result(store, identity="a", url=url,
+                          verification_status="failed", http_status=404)
+        family = movie_coverage.stream_family(url)
+        self.assertEqual(store["links"]["a"]["stream_family"], family)
+        self.assertEqual(lh.terminal_records(store)[0]["url"], family)
+        self.assertNotIn("secret", lh.terminal_records(store)[0]["url"])
+
+    def test_a_record_written_before_the_family_existed_is_skipped(self):
+        """It costs one run: a dead link's TTL is an hour, so it is verified
+        again and gains one. Claiming it terminal without the family would be
+        claiming it about a link we cannot name."""
+        store = {"links": {"old": {"status": lh.STATUS_DEAD}}}
+        self.assertEqual(lh.terminal_records(store), [])
+
+    def test_a_damaged_store_yields_nothing_rather_than_raising(self):
+        self.assertEqual(lh.terminal_records(None), [])
+        self.assertEqual(lh.terminal_records({"links": "not a mapping"}), [])
+
+
 if __name__ == "__main__":
     unittest.main()

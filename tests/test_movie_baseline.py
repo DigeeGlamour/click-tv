@@ -450,5 +450,72 @@ class RealRepositoryBaselineTests(unittest.TestCase):
             movie_baseline.recorded_inventory(tampered)
 
 
+class TheGateSeesThisRunsEpisodes(unittest.TestCase):
+    """`prepare_manual_series` normalises, and the normalised shape keeps its
+    episodes in `episode_payloads` rather than inside each season.
+
+    Reading only `season["episodes"]` found nothing on every real run, so the
+    caller fell back to the episodes already on disk - the PREVIOUS scan's -
+    which is precisely the reading this function exists to avoid. Measured on
+    2026-09-24: the gate counted 316 episodes while the run published 653, and
+    337 migrated streams read as lost.
+    """
+
+    def test_the_normalised_shape_is_read(self):
+        prepared = {"items": [{
+            "id": "bachelor-point-2026",
+            "seasons": [{"number": 1, "title": "Season 1", "count": 2}],
+            "episode_payloads": {1: [
+                {"episode_key": "01", "url": "https://cdn/e1.mkv"},
+                {"episode_key": "02", "url": "https://cdn/e2.mkv"},
+            ]},
+        }]}
+        found = movie_baseline.episodes_from_prepared_series(prepared)
+        self.assertEqual(len(found), 2)
+        self.assertEqual(
+            sorted(episode.get("url") for _scope, episode in found),
+            ["https://cdn/e1.mkv", "https://cdn/e2.mkv"],
+        )
+
+    def test_the_staging_shape_still_works(self):
+        """Both shapes, because a caller that hands back raw staging records
+        must not silently start returning nothing."""
+        prepared = {"items": [{
+            "id": "x",
+            "seasons": [{"number": 1, "episodes": [
+                {"episode_key": "01", "url": "https://cdn/a.mkv"}]}],
+        }]}
+        self.assertEqual(
+            len(movie_baseline.episodes_from_prepared_series(prepared)), 1)
+
+    def test_a_season_with_episodes_is_not_read_twice(self):
+        prepared = {"items": [{
+            "id": "x",
+            "seasons": [{"number": 1, "episodes": [
+                {"episode_key": "01", "url": "https://cdn/a.mkv"}]}],
+            "episode_payloads": {1: [
+                {"episode_key": "01", "url": "https://cdn/a.mkv"}]},
+        }]}
+        self.assertEqual(
+            len(movie_baseline.episodes_from_prepared_series(prepared)), 1)
+
+    def test_a_payload_for_a_season_that_is_not_listed_is_ignored(self):
+        """The seasons list is the catalogue of record; a stray payload key is
+        not a reason to invent a season nobody published."""
+        prepared = {"items": [{
+            "id": "x",
+            "seasons": [{"number": 1, "count": 0}],
+            "episode_payloads": {9: [
+                {"episode_key": "01", "url": "https://cdn/ghost.mkv"}]},
+        }]}
+        self.assertEqual(
+            movie_baseline.episodes_from_prepared_series(prepared), [])
+
+    def test_nothing_prepared_is_still_nothing(self):
+        self.assertEqual(movie_baseline.episodes_from_prepared_series(None), [])
+        self.assertEqual(
+            movie_baseline.episodes_from_prepared_series({"items": []}), [])
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -171,7 +171,13 @@ def plan(
     if remaining_quota is None:
         remaining_quota = _remaining_quota()
     allowed = policy["max_lookups"]
-    if remaining_quota is not None:
+    # `provider_health.remaining_quota` says -1 for "no daily ceiling", and
+    # that is the ordinary configuration: every provider here is unmetered
+    # unless a soft budget is set. Treating it as a number computed
+    # int(-1 * 0.4) = 0, so the stage was switched off on every real run and
+    # never printed a line to say so. `movie_observability` already read -1
+    # correctly; this is the same rule, in the place that spends the quota.
+    if remaining_quota is not None and remaining_quota >= 0:
         allowed = min(allowed, int(remaining_quota * policy["quota_share"]))
     report["budget"] = max(0, allowed)
 

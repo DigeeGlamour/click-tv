@@ -1101,6 +1101,50 @@ def _finish_movie_metadata_stage(handle) -> Dict[str, Any]:
         return {}
 
 
+def _publish_movie_derived_surfaces(
+    publish, movies_data: Optional[Dict[str, Any]], coverage: Optional[Dict[str, Any]]
+) -> None:
+    """Write discovery/trending/genres only when the catalogue goes with them.
+
+    Wrapped like every other movie-side diagnostic: failing to write a derived
+    surface must cost the surface, never the catalogue.
+    """
+    try:
+        from scanner import movie_coverage
+
+        blocked, reasons = movie_coverage.publish_blocked(coverage)
+        if blocked:
+            print(
+                "   movie discovery: previous outputs kept, because the "
+                "no-loss gate is blocking this catalogue"
+            )
+            for reason in reasons[:2]:
+                print(f"      {reason}")
+            return
+        publish(movies_data)
+    except Exception as error:  # noqa: BLE001 - never fail a scan
+        print(f"   movie derived surfaces skipped: {error}")
+
+
+def _movie_terminal_records() -> List[Dict[str, Any]]:
+    """Definitive refusals this run recorded, for the no-loss gate.
+
+    Read from the link-health ledger, which is the only thing that saw the
+    HTTP status. Wrapped: a gate with no terminal evidence is conservative -
+    it over-reports loss - and that is the safe direction to fail in.
+    """
+    try:
+        from scanner import movie_link_health
+
+        records = movie_link_health.terminal_records(movie_link_health.load())
+        if records:
+            print(f"   no-loss gate: {len(records)} confirmed 404/410 link(s)")
+        return records
+    except Exception as error:  # noqa: BLE001
+        print(f"   no-loss gate: terminal evidence unavailable ({error})")
+        return []
+
+
 def _build_movie_coverage(
     raw_entries: List[Dict[str, Any]],
     movies_data: Optional[Dict[str, Any]],
@@ -1160,6 +1204,12 @@ def _build_movie_coverage(
             previous_inventory=previous_inventory,
             current_inventory=movie_baseline.inventory_lines(
                 movie_cards, episode_cards),
+            # ধারা ৪.০/৪.১. What this run PROVED is gone - a definitive 404 or
+            # 410, and nothing else. Without it the gate had no terminal
+            # evidence at all and counted every confirmed-dead link as an
+            # unexplained loss, which blocked a publish over content that
+            # really had been removed.
+            terminal_records=_movie_terminal_records(),
             evidence="scan",
         )
         movie_coverage.write_movie_coverage(
@@ -1506,9 +1556,14 @@ def run_pipeline(
 
         from scanner.movies import (
             process_movies,
+            publish_derived_surfaces,
         )
 
-        movies_data = process_movies()
+        # ধারা ৪.০. Discovery, trending, the genre indexes and the search-index
+        # stamp describe the catalogue; they are written only once it is known
+        # that the catalogue itself is being published. See the note in
+        # `movies.publish_derived_surfaces`.
+        movies_data = process_movies(defer_derived=True)
 
         print("   Validating mixed TXT Series / Season / Episode catalogue...")
         from scanner.series import prepare_manual_series
@@ -1532,6 +1587,14 @@ def run_pipeline(
             prepared_series=prepared_series,
             previous_inventory=movie_previous_inventory,
         )
+
+        # The gate has answered, so the surfaces that describe this catalogue
+        # can now be written - or not. A blocked publish keeps the previous
+        # pages, and the previous discovery has to stay with them: a Just Added
+        # row naming films that have no page is the one failure ধাপ ৯ exists to
+        # make impossible.
+        _publish_movie_derived_surfaces(
+            publish_derived_surfaces, movies_data, movie_coverage_report)
 
     if mode_clean in {
         "today",

@@ -391,10 +391,24 @@ def episodes_from_prepared_series(
             series.get("id") or series.get("name") or ""
         ).strip()
         scope = "prepared:%s" % (series_id or "unknown")
-        for season in series.get("seasons") or ():
+        # Two shapes, because `prepare_manual_series` normalises: its seasons
+        # are `{number, title, count}` and the episodes live in a parallel
+        # `episode_payloads` map. Reading only `season["episodes"]` found
+        # nothing on every real run, so the caller fell back to the episodes
+        # ALREADY on disk - the previous scan's - which is exactly the reading
+        # this function was written to avoid. Measured on 2026-09-24: the gate
+        # counted 316 episodes while the run published 653, and 337 migrated
+        # streams read as lost.
+        payloads = series.get("episode_payloads")
+        payloads = payloads if isinstance(payloads, dict) else {}
+        seasons = list(series.get("seasons") or ())
+        for season in seasons:
             if not isinstance(season, dict):
                 continue
-            for episode in season.get("episodes") or ():
+            listed = season.get("episodes")
+            if not listed:
+                listed = payloads.get(season.get("number")) or []
+            for episode in listed or ():
                 if not isinstance(episode, dict):
                     continue
                 record = dict(episode)

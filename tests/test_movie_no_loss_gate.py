@@ -292,7 +292,10 @@ class ScanWiringTests(unittest.TestCase):
         source = (Path(__file__).resolve().parents[1] / "scan.py").read_text(
             encoding="utf-8")
         before = source.index("movie_previous_inventory = _movie_previous_inventory()")
-        after = source.index("movies_data = process_movies()")
+        after = source.index("movies_data = process_movies(")
+        # Anchored on the call, not on its arguments: ধারা ৪.০ made it
+        # `process_movies(defer_derived=True)`, and the thing being
+        # measured is the ORDER, which that change does not touch.
         self.assertLess(before, after)
 
     def test_the_gate_is_built_after_series_are_prepared(self) -> None:
@@ -302,6 +305,41 @@ class ScanWiringTests(unittest.TestCase):
         prepared = source.index("prepared_series = prepare_manual_series(")
         gate = source.index("movie_coverage_report = _build_movie_coverage(")
         self.assertLess(prepared, gate)
+
+
+class TheGateIsGivenItsEvidence(unittest.TestCase):
+    """A gate with nothing to weigh reports everything as unexplained.
+
+    On the first real movies run it did: `terminal_evidence` 0 against 362
+    "lost" streams, ~10 in every 12 of which the link-health ledger had already
+    recorded as a confirmed 404. The publish was blocked over content that
+    really was gone.
+    """
+
+    SCAN = (Path(__file__).resolve().parents[1] / "scan.py").read_text(
+        encoding="utf-8")
+
+    def test_terminal_records_reach_the_gate(self):
+        call = self.SCAN[self.SCAN.index("report = movie_coverage.build_movie_coverage("):]
+        call = call[:call.index('evidence=')]
+        self.assertIn("terminal_records=", call)
+
+    def test_they_come_from_the_link_health_ledger(self):
+        """The only thing that saw the HTTP status."""
+        helper = self.SCAN[self.SCAN.index("def _movie_terminal_records("):]
+        helper = helper[:helper.index(chr(10) + "def ", 10)]
+        self.assertIn("movie_link_health.terminal_records", helper)
+
+    def test_missing_evidence_costs_the_evidence_and_not_the_scan(self):
+        helper = self.SCAN[self.SCAN.index("def _movie_terminal_records("):]
+        helper = helper[:helper.index(chr(10) + "def ", 10)]
+        self.assertIn("except Exception", helper)
+        self.assertIn("return []", helper)
+
+    def test_the_episode_side_is_read_from_this_run(self):
+        """The other half of the same failure: the gate counted 316 episodes
+        while the run published 653."""
+        self.assertIn("episodes_from_prepared_series(prepared_series)", self.SCAN)
 
 
 if __name__ == "__main__":

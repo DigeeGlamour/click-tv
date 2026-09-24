@@ -136,6 +136,27 @@ class ThePlanChoosesWhatToWarm(unittest.TestCase):
         self.assertEqual(report["budget"], 20)  # 50 * 0.4
         self.assertEqual(len(report["identities"]), 20)
 
+    def test_an_unmetered_provider_is_not_a_spent_one(self):
+        """`provider_health.remaining_quota` says -1 for "no daily ceiling",
+        and that is the ordinary configuration - every provider here is
+        unmetered unless a soft budget is set.
+
+        Treating it as a number computed int(-1 * 0.4) = 0, so the stage was
+        switched off on every real run and never printed a line to say so.
+        Measured on 2026-09-24: 1,634 films with no metadata, budget 0,
+        reason "no lookup budget", not one log line."""
+        report = prewarm.plan([card("A")], cache_path=store_with({}), now=NOW,
+                              remaining_quota=-1)
+        self.assertEqual(report["budget"], prewarm.DEFAULT_MAX_LOOKUPS)
+        self.assertEqual(len(report["identities"]), 1)
+        self.assertEqual(report["reason"], "")
+
+    def test_a_metered_provider_still_gets_its_share(self):
+        report = prewarm.plan([card(f"F{i}") for i in range(100)],
+                              cache_path=store_with({}), now=NOW,
+                              remaining_quota=50)
+        self.assertEqual(report["budget"], 20)
+
     def test_no_quota_means_no_lookups(self):
         report = prewarm.plan([card("A")], cache_path=store_with({}), now=NOW,
                               remaining_quota=0)
@@ -379,7 +400,9 @@ class TheWiringPutsItBesideVerification(unittest.TestCase):
         """The warm cache is only worth having if it is warm before the pass
         that reads it."""
         finish = self.SCAN.index("_finish_movie_metadata_stage(movie_metadata_stage)")
-        process = self.SCAN.index("movies_data = process_movies()")
+        # The call, not its arguments: ধারা ৪.০ added `defer_derived=True`
+        # and the thing measured here is the ORDER.
+        process = self.SCAN.index("movies_data = process_movies(")
         self.assertLess(finish, process)
 
     def test_neither_half_can_fail_a_scan(self):

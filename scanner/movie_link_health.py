@@ -542,9 +542,58 @@ def record_result(
             else STALE_HOST_DOWN
         )
 
+    # ধারা ৪.০. The gate matches previously-live streams by FAMILY, and this
+    # record is the only place that knows one link got a definitive 404. The
+    # family is stored rather than the url: it is exactly what the gate
+    # compares, and it carries no signed token.
+    #
+    # Without it the gate was told nothing, `terminal_evidence` stayed 0, and
+    # 362 streams with a confirmed 404 were counted as unexplained loss - which
+    # blocked a publish over links that really were gone.
+    family = _stream_family(url)
+    if family:
+        record["stream_family"] = family
+
     schedule_next(record, url=url, trusted_private=trusted_private, now=reference)
     links[identity] = record
     return record
+
+
+def _stream_family(url: Any) -> str:
+    try:
+        from scanner.movie_coverage import stream_family
+
+        return stream_family(url)
+    except Exception:  # noqa: BLE001 - a missing family is not a scan failure
+        return ""
+
+
+def terminal_records(store: Optional[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """What the no-loss gate may treat as definitively gone.
+
+    Only `dead`, and `dead` has exactly one route into this module: an HTTP
+    status in `DEFINITIVE_REFUSALS`. Everything else - 403, geo, a host that
+    would not answer, repeated failure from this vantage - is `failing` or
+    `confirmed_unavailable`, and ধারা ৪.১ says none of those is terminal. So
+    this cannot launder a vantage problem into a reason to drop content.
+
+    A record written before the family was stored yields nothing, which costs
+    one run: its TTL is an hour, so it is re-verified and gains one.
+    """
+    found: List[Dict[str, Any]] = []
+    links = (store or {}).get("links")
+    if not isinstance(links, dict):
+        return found
+    for record in links.values():
+        if not isinstance(record, dict):
+            continue
+        if record.get("status") != STATUS_DEAD:
+            continue
+        family = str(record.get("stream_family") or "").strip()
+        if not family:
+            continue
+        found.append({"url": family, "reason": "confirmed_404_or_410"})
+    return found
 
 
 def mark_skipped_for_budget(

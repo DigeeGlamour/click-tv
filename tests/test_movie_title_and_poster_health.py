@@ -931,16 +931,34 @@ class DiscoveryFollowsTheCatalogueTests(unittest.TestCase):
         self.assertIn("maximum_drop_percentage", source)
         self.assertIn("minimum_previous_count", source)
 
-    def test_process_movies_asks_before_it_writes_discovery(self):
-        """Wired in, and wired in BEFORE the writes - the whole point."""
+    def test_the_question_is_asked_before_the_writes(self):
+        """Wired in, and wired in BEFORE the writes - the whole point.
+
+        The writes moved into `publish_derived_surfaces` when ধারা ৪.০ made
+        them wait for the no-loss gate, so this follows them rather than
+        pinning the function they used to sit in. Same invariant, one call
+        deeper.
+        """
+        import inspect
+
+        source = inspect.getsource(M.publish_derived_surfaces)
+        self.assertIn("_movie_output_would_be_preserved", source)
+        ask = source.index("_movie_output_would_be_preserved")
+        for writer in ("_generate_genre_indexes", "_generate_trending",
+                       "_generate_discovery"):
+            with self.subTest(writer=writer):
+                self.assertLess(ask, source.index(writer))
+
+    def test_process_movies_reaches_the_writes_only_through_that_door(self):
+        """And nothing writes a derived surface behind the guard's back."""
         import inspect
 
         source = inspect.getsource(M.process_movies)
-        self.assertIn("_movie_output_would_be_preserved", source)
-        ask = source.index("_movie_output_would_be_preserved")
-        for writer in ("_generate_genre_indexes", "_generate_trending", "_generate_discovery"):
+        for writer in ("_generate_genre_indexes", "_generate_trending",
+                       "_generate_discovery"):
             with self.subTest(writer=writer):
-                self.assertLess(ask, source.index(writer))
+                self.assertNotIn(writer + "(", source)
+        self.assertIn("publish_derived_surfaces(", source)
 
 
 if __name__ == "__main__":
