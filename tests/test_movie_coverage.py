@@ -286,6 +286,90 @@ class DefinitiveRejectionTests(unittest.TestCase):
         self.assertEqual(report["invariant_1"]["definitive_rejected"], 0)
 
 
+class ABackupThatStopsBeingOfferedIsAMerge(unittest.TestCase):
+    """The last matching layer, and the whole of what was left on 2026-09-24.
+
+    `remote-manual-dug-dug-2026` carried three links. Its primary is still
+    published - under a DIFFERENT card, because the id changed - and its two
+    backups are offered nowhere. Neither the stream layers nor the card-id
+    layer could see that, so two backup links on one card blocked a catalogue
+    of 1,667 films.
+
+    A link that stopped being offered while the thing it backed up kept playing
+    is what ধারা ৪.০ calls `merged_stream`: "একই কনটেন্টের Primary/Backup
+    হিসেবে merge". The layer is asked last, after terminal evidence, and it can
+    only ever answer for a card that still has a stream somewhere.
+    """
+
+    def setUp(self) -> None:
+        self.sources = [{"id": "sm-movie-combined", "name": "SM", "enabled": True}]
+        self.card = _card(backups=["https://cdn.test/movies/hawa-2022-720p.mkv",
+                                   "https://cdn.test/movies/hawa-2022-480p.mkv"])
+        self.before = _inventory(("bangla", self.card))
+
+    def _build(self, current_lines, published=(), terminal=()):
+        return mc.build_movie_coverage(
+            configured_sources=self.sources,
+            raw_entries=[],
+            published_movies=list(published),
+            previous_inventory=self.before,
+            current_inventory=list(current_lines),
+            terminal_records=list(terminal),
+        )
+
+    def _survivor(self, url):
+        """The primary, republished under a card with a different id."""
+        renamed = _card(identity="hawa-2022-remastered", url=url)
+        return [("bangla", renamed)], _inventory(("bangla", renamed))
+
+    def test_the_backups_are_merged_rather_than_lost(self):
+        published, lines = self._survivor(self.card["url"])
+        two = self._build(lines, published)["invariant_2"]
+        self.assertEqual(two["unexplained_live_loss"], 0)
+        self.assertEqual(two["merged_stream"], 2)
+        self.assertEqual(two["match_layers"].get("sibling_stream"), 2)
+
+    def test_the_publish_is_no_longer_blocked_by_them(self):
+        published, lines = self._survivor(self.card["url"])
+        report = self._build(lines, published)
+        blocked, _reasons = mc.publish_blocked(report)
+        self.assertFalse(blocked)
+
+    def test_a_card_whose_every_link_vanishes_is_still_a_loss(self):
+        """The case this must never swallow."""
+        two = self._build([], [])["invariant_2"]
+        self.assertEqual(two["unexplained_live_loss"], 3)
+        self.assertEqual(two["match_layers"].get("sibling_stream"), None)
+
+    def test_another_cards_surviving_link_does_not_save_it(self):
+        """Siblings are the streams of the SAME recorded card, never of any
+        card that happens to still be published."""
+        other = _card(identity="unrelated-2021",
+                      url="https://cdn.test/movies/unrelated.mkv")
+        two = self._build(_inventory(("bangla", other)),
+                          [("bangla", other)])["invariant_2"]
+        self.assertEqual(two["unexplained_live_loss"], 3)
+
+    def test_terminal_evidence_is_still_the_stronger_answer(self):
+        """Asked last, so a stream with a confirmed 404 is reported as gone
+        rather than dressed up as a merge."""
+        published, lines = self._survivor(self.card["url"])
+        backup = self.card["backups"][0]["url"]
+        two = self._build(lines, published,
+                          [{"url": backup, "reason": "confirmed_404_or_410"}])["invariant_2"]
+        self.assertEqual(two["terminal_evidence"], 1)
+        self.assertEqual(two["match_layers"].get("sibling_stream"), 1)
+        self.assertEqual(two["unexplained_live_loss"], 0)
+
+    def test_a_card_still_published_under_its_own_id_never_reaches_this_layer(self):
+        """The stronger card-id layer owns that case and says so."""
+        kept = _card(url="https://cdn.test/movies/hawa-2022-new.mkv")
+        two = self._build(_inventory(("bangla", kept)),
+                          [("bangla", kept)])["invariant_2"]
+        self.assertEqual(two["unexplained_live_loss"], 0)
+        self.assertIn("card_id", two["match_layers"])
+
+
 class InvariantTwoTests(unittest.TestCase):
     """ধারা ৪.০ INVARIANT ২ - unexplained_live_loss = 0, or publish BLOCKs."""
 

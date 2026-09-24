@@ -702,6 +702,14 @@ def live_preservation(
     previous = _inventory_families(previous_inventory)
     current = _inventory_families(current_inventory)
 
+    #: Every stream each previously published card carried, so the last layer
+    #: below can ask whether the card still has one that plays.
+    families_by_identity: Dict[str, List[str]] = {}
+    for family, line in previous.items():
+        identity = _inventory_identity(line)
+        if identity:
+            families_by_identity.setdefault(identity, []).append(family)
+
     currently_visible = 0
     merged = 0
     visible_pending = 0
@@ -760,6 +768,28 @@ def live_preservation(
 
         if family in terminal_families:
             terminal_evidence += 1
+            continue
+
+        # Last layer. The card this stream belonged to is not on the site under
+        # the id we recorded, and this particular link is nowhere - but ANOTHER
+        # link of the same card is still published. The content is therefore
+        # still reachable, and a backup link that stopped being offered while
+        # the thing it backed up kept playing is a merge, not a loss.
+        #
+        # Measured on the 2026-09-24 14:37 run, which is the whole of what was
+        # left: `remote-manual-dug-dug-2026` carried three links. Its primary is
+        # still published - under a different card, because the card's id
+        # changed - and its two backups are offered nowhere. Two streams, and
+        # they blocked the catalogue.
+        #
+        # This is the weakest layer on purpose and it is asked last, after every
+        # stronger answer including terminal evidence. A card whose links ALL
+        # vanish still matches nothing here and is still a loss, which is the
+        # case this must never swallow.
+        siblings = families_by_identity.get(recorded_id) or ()
+        if any(sibling != family and sibling in current for sibling in siblings):
+            match_layers["sibling_stream"] += 1
+            merged += 1
             continue
 
         lost.append({"stream_family": family, "inventory_line": line})
