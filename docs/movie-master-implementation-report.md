@@ -2383,6 +2383,187 @@ locally and verified but **not yet on `origin/main`**, which is at `c9c6992`.
 All three are rebased onto that commit and ready to push the moment the
 credential is supplied again.
 
+---
+
+## PHASE 11 — Mix category redistribution (A-03)
+
+**Plan reference:** A-03, ধাপ ১১.
+
+> ৯৩৭টি মুভি (৫৬%) "Mix"-এ — এটি ক্যাটাগরি নয়, আবর্জনার ঝুড়ি।
+> ব্যবহারকারী Bangla/Hindi/English-এ খুঁজে পাবে না।
+
+### Before state — the plan's number is exact
+
+| Category | Published films |
+|---|---|
+| **Mix** | **937 (56%)** |
+| Dubbed | 266 |
+| Hindi | 240 |
+| South Indian | 113 |
+| English | 71 |
+| **Bangla** | **29** |
+| Premium | 11 |
+| **Total** | **1,667** |
+
+A viewer opening Bangla sees 29 films while 937 sit in a bin.
+
+### Root cause
+
+Nothing in the pipeline could tell what language a film is in.
+`original_language` and `production_countries` — the two fields A-03 names —
+were collected by **no provider** and stored in **no record**. Measured before
+starting: 0 of 937 Mix films had either field, anywhere.
+
+So the phase is three parts, and the first is the one without which the other
+two do nothing.
+
+### Part 1 — collect the two fields
+
+`scanner/metadata_providers.py`: TMDB's detail response already carries
+`original_language` and `production_countries` (falling back to
+`origin_country`); OMDb carries `Language` and `Country` as names. Both ride
+on responses that were already being made, so **neither costs an extra
+request**.
+
+One subtlety worth recording: OMDb's `Language` lists *every* track on the
+release, so only the first is taken. Reading the second would file a Bengali
+film with an English dub track as English.
+
+`scanner/movie_metadata_cache.py`: both fields added to `METADATA_FIELDS`, and
+`METADATA_SCHEMA` **2 → 3**. That bump is what makes the phase start working:
+without it the 348 records resolved under the old field set would keep their
+"fresh" TTL and never be asked again, and A-03 would sit at zero for ever.
+
+### Part 2 — the router
+
+`scanner/movie_category_router.py` (new). Most of it is what it **refuses** to
+do, because the risk here is not failing to move films — it is moving the
+wrong ones. A category is what a viewer trusts to mean something.
+
+| Refusal | Why |
+|---|---|
+| Only "Mix" is reconsidered | a film a source put in Hindi is in Hindi because somebody said so. Metadata may fill a blank; it may not contradict a statement |
+| Never routes to **Dubbed** | "Dubbed" describes the audio of *this file*, not the film. A Hindi dub of a Hollywood action film has `original_language: en` — routing it to English empties the row the viewer opened to hear Hindi |
+| Never routes to **Premium** | a curation label, not a property of a film |
+| **India alone proves nothing** | India makes Hindi and South Indian films alike, so a country with no language is not evidence. This is exactly how a Tamil film would be filed under Hindi |
+| No evidence → stays in Mix | Mix is the honest answer for "we do not know" |
+
+Bangladesh *is* enough on its own, because it names one industry. Language
+always beats a country that disagrees: a Bengali-language film shot in India
+is a Bangla film.
+
+Both provider shapes normalise to one answer — TMDB's `bn` and
+`[{"iso_3166_1": "BD"}]`, OMDb's `Bengali` and `Bangladesh`, plus regional
+tags like `bn-BD`.
+
+### Part 3 — where it runs
+
+`scanner/movies.py`, **before the catalogue is split by category** and after
+classification. After grouping, a film is already on the Mix page; before
+classification, an episode card would be routed into Bangla only to be
+migrated out again.
+
+**Cache only, never a lookup.** An AST guard reads the function's calls — not
+its prose — to prove no provider is reachable from it. A second, unbudgeted
+round of requests in the middle of the publish path is the thing this must not
+become.
+
+### The no-loss risk this phase introduces
+
+The inventory line is `movie|{slug}|{identity}|{url}` — **it carries the
+category**. Moving 937 films out of Mix rewrites the slug on every one of
+them. Had INVARIANT ২ compared those lines as text, ধাপ ১১ would have reported
+the largest loss in the catalogue's history and blocked its own publish.
+
+It does not: `_inventory_families` keys on the **stream URL** and keeps the
+line only as the readable value. Verified, and now pinned by two tests — one
+on a single card, one moving a whole 50-film row — so that this cannot quietly
+become a text comparison later.
+
+### Data validation
+
+**Today, on the live catalogue:**
+
+    Mix redistribution: 937 in Mix, none placeable yet
+    (metadata has no language for them)
+    reasons: {'no_evidence': 937}
+
+Zero. That is the honest result and the expected one — no cached record
+carries a language yet. The schema bump has made **348 of 376** records due
+for refresh, so the fields begin filling from the next runs, and ধাপ ১০খ's
+stage is what fills them beside verification. The plan says the same thing:
+"ধাপ ৩ ও ৫-এর পর এমনিতেই বড় অংশ ঠিক হবে".
+
+**Simulating a filled cache** (TMDB-shaped records over the real 1,667 cards):
+
+| Measure | Before | After |
+|---|---|---|
+| Mix | 937 (56%) | **274 (16%)** |
+| Bangla | 29 | 224 |
+| Hindi | 240 | 356 |
+| South Indian | 113 | 347 |
+| English | 71 | 189 |
+| Dubbed | 266 | **266 (untouched)** |
+| Premium | 11 | **11 (untouched)** |
+| **Total cards** | **1,667** | **1,667** |
+
+663 of 937 placed; 274 stay in Mix (235 of them a language with no row on this
+site — Japanese, Korean, Spanish — which is a decision, not an absence).
+Nothing was routed to Dubbed or Premium.
+
+### Two failures found and fixed honestly
+
+1. **The ধাপ ০ baseline had gone stale.** Recorded at `008dc5d` on 2026-09-20;
+   production has kept scanning since, so 13 catalogue files no longer matched
+   and both the baseline check and the shadow-migration rehearsal guard said
+   so. They were right. **Re-recorded, not relaxed** — and re-recorded rather
+   than left alone, because a way back to 2026-09-20 would now undo four days
+   of production's own publishing. Restoring to the newest known-good
+   catalogue preserves more than restoring to an older one. Counts identical
+   across both recordings (1,667 movies / 2,159 links / 191 files), which is
+   the point: nothing was lost between them.
+2. **A test was reading production state.** `LatencyTests` asked
+   `_provider_record` for TMDB without a path, so it measured whatever latency
+   the real `state/provider-health.json` last recorded. It passed only while
+   that file happened to have none; an upstream production run gave TMDB
+   139.3ms and the test started failing. Fixed by passing the temp path —
+   tightening the isolation, not the assertion.
+
+### Tests run
+
+- `tests/test_movie_category_router.py` — **45 tests, 45 pass.**
+- Full suite: **5,011 tests**, 2 failures, both pre-existing and unrelated
+  (site asset-versioning and stylesheet ordering). Up from 4,966.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| A-03 use `original_language` + `production_countries` | **IMPLEMENTED** |
+| A-03 from the Metadata Router, TMDB not a fixed primary | **IMPLEMENTED** — TMDB and OMDb both supply them through the existing chain |
+| A-03 films become findable in Bangla/Hindi/English | **IMPLEMENTED**, effect gated on the cache refilling |
+| Master rule: an unknown category is never `out_of_scope` | **HELD** — no evidence keeps the film in Mix, visible |
+
+### Known limitations
+
+1. **The effect is zero until the cache refills.** 348 records are due and the
+   budget is 60 per prewarm plus the ordinary pass, so this arrives over
+   days, not in one run. Measurable at any time from the redistribution line
+   in the scan log.
+2. **Only two providers supply the fields.** Cinemeta and the others return
+   neither, so a film only they can answer for stays in Mix.
+3. **Urdu is routed to Hindi** by this site's convention. Recorded here
+   because it is a judgement, not a fact.
+
+### Commits
+
+- `phase-11: give the films in the Mix bin a category to be found in`
+- `phase-0 upkeep: re-record the movie baseline at the current commit`
+
+(SHAs are not recorded: the local commits are rebased onto `origin/main` each
+time production pushes, so any SHA written here is stale within the hour. They
+will be recorded once the push succeeds — see **Push status**.)
+
 ### Next task
 
-Phase 11 — Mix category redistribution (A-03).
+Phase 12 — episode-level metadata (A-05).
