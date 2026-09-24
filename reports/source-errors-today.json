@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-09-24T11:10:47.889371+00:00",
+  "timestamp": "2026-09-24T11:29:55.987010+00:00",
   "mode": "today",
-  "count": 281,
+  "count": 280,
   "errors": [
     {
       "type": "source_fetch_error",
@@ -12,7 +12,7 @@
       "http_status": 404,
       "attempts": 1,
       "error": "HTTP Error 404: Not Found",
-      "timestamp": "2026-09-24T11:08:51.153443+00:00"
+      "timestamp": "2026-09-24T11:28:26.622419+00:00"
     },
     {
       "type": "source_fetch_error",
@@ -23,7 +23,7 @@
       "http_status": 404,
       "attempts": 1,
       "error": "HTTP Error 404: Not Found",
-      "timestamp": "2026-09-24T11:08:50.932008+00:00"
+      "timestamp": "2026-09-24T11:28:26.468126+00:00"
     },
     {
       "id": "afghanistan-vs-japan",
@@ -207,7 +207,7 @@
       "verification_status": "failed",
       "verification_mode": "global",
       "http_status": 200,
-      "verification_error": "HLS media playlist has no playable segment",
+      "verification_error": "HLS response does not contain #EXTM3U",
       "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4249522/index.m3u8",
       "failure_class": "unplayable_body",
       "type": "stream_verification_error"
@@ -283,7 +283,7 @@
       "verification_status": "failed",
       "verification_mode": "global",
       "http_status": 200,
-      "verification_error": "HLS media playlist has no playable segment",
+      "verification_error": "HLS response does not contain #EXTM3U",
       "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4248545/index.m3u8",
       "failure_class": "unplayable_body",
       "type": "stream_verification_error"
@@ -481,20 +481,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "netherlands-u19-vs-belgium-u19",
-      "name": "Netherlands U19 vs Belgium U19",
-      "source_id": "srhady-bingstream",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6ab15ba97cb66c539a101fbe/index.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "new-york-liberty-vs-atlanta-dream",
       "name": "New York Liberty Vs Atlanta Dream",
       "source_id": "sm-sports-data",
@@ -635,7 +621,7 @@
       "verification_status": "failed",
       "verification_mode": "global",
       "http_status": 200,
-      "verification_error": "HLS media playlist has no playable segment",
+      "verification_error": "HLS response does not contain #EXTM3U",
       "url": "https://fancode.sm-monirul-islam-rs.workers.dev/139655/index.m3u8",
       "failure_class": "unplayable_body",
       "type": "stream_verification_error"
@@ -703,7 +689,7 @@
       "verification_status": "failed",
       "verification_mode": "global",
       "http_status": 404,
-      "verification_error": "HTTP 404: 52.156.141.241",
+      "verification_error": "HTTP 404: 40.76.117.241",
       "url": "https://lb2.strmd.st/secure/hRyfqNppRRIUlcaSQkRzMAoGoeRbteep/foxtrot/stream/real-salt-lake-v-seattle-sounders-fc-761543/1/playlist.m3u8",
       "failure_class": "permanent",
       "type": "stream_verification_error"
@@ -721,6 +707,20 @@
       "resolution_height": 720,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://edgestream6.pro/hls/ztyarueaghj71.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "south-korea-vs-ecuador",
+      "name": "South Korea vs Ecuador",
+      "source_id": "srhady-bingstream",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6ab01824eee29798ba187e7a/index.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -948,10 +948,10 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
+      "http_status": 567,
+      "verification_error": "HTTP 567: Unknown Status",
       "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/287_abr.m3u8",
-      "failure_class": "vantage_shaped",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -962,10 +962,10 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
+      "http_status": 567,
+      "verification_error": "HTTP 567: Unknown Status",
       "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/510822_abr.m3u8",
-      "failure_class": "vantage_shaped",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -1202,8 +1202,7 @@
       "source_pipeline": "upcoming",
       "category": "upcoming",
       "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "verification_mode": "global",
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6a995a47dc0bfe20cd611ba4/index.m3u8",
@@ -1246,10 +1245,10 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
+      "http_status": 567,
+      "verification_error": "HTTP 567: Unknown Status",
       "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/52441_abr.m3u8",
-      "failure_class": "vantage_shaped",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -1414,10 +1413,10 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
+      "http_status": 567,
+      "verification_error": "HTTP 567: Unknown Status",
       "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/498587_abr.m3u8",
-      "failure_class": "vantage_shaped",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -1629,10 +1628,10 @@
       "category": "today_match",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 0,
-      "verification_error": "Request timed out",
+      "http_status": 200,
+      "verification_error": "HLS response does not contain #EXTM3U",
       "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4248538/index.m3u8",
-      "failure_class": "transient",
+      "failure_class": "unplayable_body",
       "type": "stream_verification_error"
     },
     {
@@ -1732,20 +1731,6 @@
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://edgestream4.pro/hls/hfzljfahzcax29.m3u8",
       "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "netherlands-u19-vs-belgium-u19",
-      "name": "Netherlands U19 vs Belgium U19",
-      "source_id": "srhady-bingstream",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 404,
-      "verification_error": "HTTP 404: Not Found",
-      "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6ab15ba97cb66c539a101fbe/chunks.m3u8",
-      "failure_class": "permanent",
       "type": "stream_verification_error"
     },
     {
@@ -1870,7 +1855,7 @@
       "verification_status": "failed",
       "verification_mode": "global",
       "http_status": 404,
-      "verification_error": "HTTP 404: 52.156.141.241",
+      "verification_error": "HTTP 404: 40.76.117.241",
       "url": "https://lb2.strmd.st/secure/AbUyAXTJaPptPrhIbFekJfFadPTKewdW/delta/stream/live_mls_seattle-salt-lake-live-streaming-483471072/1/playlist.m3u8",
       "failure_class": "permanent",
       "type": "stream_verification_error"
@@ -2254,20 +2239,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "england-vs-sri-lanka",
-      "name": "England vs Sri Lanka",
-      "source_id": "srhady-bingstream",
-      "source_pipeline": "upcoming",
-      "category": "upcoming",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/289_abr.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "es1-cro-race-stage-3",
       "name": "ES1, CRO Race, Stage 3",
       "source_id": "srhady-bingstream",
@@ -2317,10 +2288,10 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
+      "http_status": 567,
+      "verification_error": "HTTP 567: Unknown Status",
       "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/52455_abr.m3u8",
-      "failure_class": "vantage_shaped",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -2485,8 +2456,7 @@
       "source_pipeline": "upcoming",
       "category": "upcoming",
       "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "verification_mode": "global",
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-bp-livestream.rumsport10.live/sla/1-6a995a47dc0bfe20cd611ba4/index.m3u8",
@@ -2571,10 +2541,10 @@
       "category": "upcoming",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
+      "http_status": 567,
+      "verification_error": "HTTP 567: Unknown Status",
       "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/55839_abr.m3u8",
-      "failure_class": "vantage_shaped",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -2893,8 +2863,7 @@
       "source_pipeline": "today_match",
       "category": "today_match",
       "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "verification_mode": "global",
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/510523_abr.m3u8",
@@ -3004,20 +2973,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "netherlands-u19-vs-belgium-u19",
-      "name": "Netherlands U19 vs Belgium U19",
-      "source_id": "srhady-bingstream",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://livecdn-bp-livestream.rumsport10.live/sla/1-6ab15ba97cb66c539a101fbe/index.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "south-africa-vs-australia",
       "name": "South Africa vs Australia",
       "source_id": "srhady-willow-event",
@@ -3027,6 +2982,20 @@
       "verification_mode": "same_run_cloud_second_pass",
       "verification_error": "Stream URL is empty",
       "failure_class": "unplayable_body",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "south-korea-vs-ecuador",
+      "name": "South Korea vs Ecuador",
+      "source_id": "srhady-bingstream",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://livecdn-bp-livestream.rumsport10.live/sla/1-6ab01824eee29798ba187e7a/index.m3u8",
+      "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
     {
@@ -3136,8 +3105,7 @@
       "source_pipeline": "upcoming",
       "category": "upcoming",
       "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "verification_mode": "global",
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6a959e10cfbac0cba8de38e0/index.m3u8",
@@ -3211,20 +3179,6 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-bp-livestream.rumsport10.live/sla/1-6a9fb99a5213cd25c04347fd/index.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "england-vs-sri-lanka",
-      "name": "England vs Sri Lanka",
-      "source_id": "srhady-bingstream",
-      "source_pipeline": "upcoming",
-      "category": "upcoming",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://livecdn-bp-iptv.rumsport10.live/live_abr/289_abr.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -3489,10 +3443,10 @@
       "category": "today_match",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
+      "http_status": 567,
+      "verification_error": "HTTP 567: Unknown Status",
       "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/147445_abr.m3u8",
-      "failure_class": "vantage_shaped",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -3522,6 +3476,20 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://sonydaimenew.akamaized.net/hls/live/2120302/AG_Strea2309/TEL/std_lrh-800300010.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "england-vs-sri-lanka",
+      "name": "England vs Sri Lanka",
+      "source_id": "srhady-bingstream",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/289_abr.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -3575,8 +3543,7 @@
       "source_pipeline": "upcoming",
       "category": "upcoming",
       "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "verification_mode": "global",
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-bp-livestream.rumsport10.live/sla/1-6a959e10cfbac0cba8de38e0/index.m3u8",
@@ -3661,11 +3628,24 @@
       "source_pipeline": "today_match",
       "category": "today_match",
       "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "verification_mode": "global",
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-bp-iptv.rumsport10.live/live_abr/510523_abr.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "england-vs-sri-lanka",
+      "name": "England vs Sri Lanka",
+      "source_id": "srhady-bingstream",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://livecdn-bp-iptv.rumsport10.live/live_abr/289_abr.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -3836,7 +3816,7 @@
       "verification_status": "failed",
       "verification_mode": "global",
       "http_status": 200,
-      "verification_error": "HLS media playlist has no playable segment",
+      "verification_error": "HLS response does not contain #EXTM3U",
       "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4249778/index.m3u8",
       "failure_class": "unplayable_body",
       "type": "stream_verification_error"
