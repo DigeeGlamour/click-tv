@@ -103,6 +103,20 @@ class SupplementaryChainTests(unittest.TestCase):
     match against an anime-only catalogue can coincidentally hit an
     unrelated same-named title."""
 
+    def setUp(self) -> None:
+        # ধারা ৪.৭ - the provider chain is built from provider HEALTH now, so
+        # these must not read production's. They began failing on 2026-09-24
+        # not because anything here changed, but because OMDb was genuinely in
+        # `unhealthy_auth` cooldown and the router correctly removed it from
+        # the chain. A test that depends on who is up has to own that state.
+        import tempfile as _tempfile
+        from pathlib import Path as _Path
+
+        from scanner import provider_health as _health
+
+        _health.reset(str(_Path(_tempfile.mkdtemp()) / "provider-health.json"))
+        self.addCleanup(_health.reset, None)
+
     def test_an_id_based_provider_short_circuits_the_title_based_ones(self) -> None:
         with (
             patch("scanner.poster_providers.fanart_movie_poster_lookup", return_value="https://example.test/fanart.jpg"),

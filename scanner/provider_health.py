@@ -103,6 +103,9 @@ _METRIC_FIELDS = (
 #: Process-local state. A scan is one process, so this starts clean every
 #: run and is seeded from the persisted file on first use.
 _STATE: Dict[str, Any] = {}
+#: Set only by `reset(path)`, so a test's temporary store survives the calls
+#: that do not repeat the path. None in every production run.
+_PINNED_PATH: Optional[str] = None
 _LAST_REQUEST_AT: Dict[str, float] = {}
 _SLEPT_SECONDS: Dict[str, float] = {}
 _LOADED_FROM: Optional[str] = None
@@ -181,7 +184,7 @@ def save(path: Optional[str] = None) -> bool:
 
 def _state(path: Optional[str] = None) -> Dict[str, Any]:
     global _STATE, _LOADED_FROM
-    target = path or DEFAULT_PATH
+    target = path or _PINNED_PATH or DEFAULT_PATH
     if not _STATE or _LOADED_FROM != target:
         _STATE = load(target)
         _LOADED_FROM = target
@@ -189,10 +192,26 @@ def _state(path: Optional[str] = None) -> Dict[str, Any]:
 
 
 def reset(path: Optional[str] = None) -> None:
-    """Drop process-local state. For tests and for a fresh run."""
-    global _STATE, _LOADED_FROM
+    """Drop process-local state, and with a path, read that store from now on.
+
+    The second half is load-bearing and was missing. `reset(tmp)` loaded the
+    temporary store and then the very next call that did not repeat the path -
+    `_provider_record("omdb")`, which takes one optionally - fell through to
+    DEFAULT_PATH, reloaded the REAL `state/provider-health.json`, and threw the
+    temporary store away.
+
+    So every test using this pattern was quietly measuring production state.
+    It passed for as long as that file happened to hold nothing that
+    contradicted the assertions; the first production run to record a TMDB
+    latency and a day's spending failed twenty-one of them at once, and they
+    were failing about the file, not about the code.
+
+    Production never passes a path here, so nothing outside a test changes.
+    """
+    global _STATE, _LOADED_FROM, _PINNED_PATH
     _STATE = {}
     _LOADED_FROM = None
+    _PINNED_PATH = path
     _LAST_REQUEST_AT.clear()
     _SLEPT_SECONDS.clear()
     if path is not None:
