@@ -24,7 +24,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 from urllib.parse import urlsplit, urlunsplit
 
 from scanner.fast_pipeline import run_fast_verification_pipeline
@@ -1126,23 +1126,56 @@ def _publish_movie_derived_surfaces(
         print(f"   movie derived surfaces skipped: {error}")
 
 
-def _movie_terminal_records() -> List[Dict[str, Any]]:
+def _movie_terminal_records(
+    *,
+    published_cards: Sequence[Any] = (),
+    current_inventory: Sequence[str] = (),
+    raw_entries: Sequence[Dict[str, Any]] = (),
+) -> List[Dict[str, Any]]:
     """Definitive refusals this run recorded, for the no-loss gate.
 
-    Read from the link-health ledger, which is the only thing that saw the
-    HTTP status. Wrapped: a gate with no terminal evidence is conservative -
-    it over-reports loss - and that is the safe direction to fail in.
+    Two independent kinds, wrapped separately so a failure in one cannot cost
+    the other. A gate with no terminal evidence is conservative - it
+    over-reports loss - and that is the safe direction to fail in.
+
+        ধারা ৪.১   a confirmed 404/410, from the link ledger, which is the only
+                   thing that saw the HTTP status
+        ধারা ৪.০   a card the source itself withdrew, past the retention grace,
+                   with no stream, card, live link or other source left
+
+    Nothing else. 403, geo, timeout, 5xx and repeated failure from our own
+    vantage reach neither path.
     """
+    records: List[Dict[str, Any]] = []
+    health_store: Optional[Dict[str, Any]] = None
     try:
         from scanner import movie_link_health
 
-        records = movie_link_health.terminal_records(movie_link_health.load())
-        if records:
-            print(f"   no-loss gate: {len(records)} confirmed 404/410 link(s)")
-        return records
+        health_store = movie_link_health.load()
+        confirmed = movie_link_health.terminal_records(health_store)
+        if confirmed:
+            print(f"   no-loss gate: {len(confirmed)} confirmed 404/410 link(s)")
+        records.extend(confirmed)
     except Exception as error:  # noqa: BLE001
         print(f"   no-loss gate: terminal evidence unavailable ({error})")
-        return []
+
+    try:
+        from scanner import movie_source_removal
+
+        removed, summary = movie_source_removal.collect(
+            published_cards=published_cards,
+            current_inventory=current_inventory,
+            raw_entries=raw_entries,
+            health_store=health_store,
+        )
+        line = movie_source_removal.describe(summary)
+        if line:
+            print(line)
+        records.extend(removed)
+    except Exception as error:  # noqa: BLE001
+        print(f"   no-loss gate: source-removal evidence unavailable ({error})")
+
+    return records
 
 
 def _build_movie_coverage(
@@ -1196,20 +1229,26 @@ def _build_movie_coverage(
                     PROJECT_ROOT, source["id"])
             )
 
+        current_inventory = movie_baseline.inventory_lines(
+            movie_cards, episode_cards)
+
         report = movie_coverage.build_movie_coverage(
             configured_sources=sources,
             raw_entries=entries,
             published_movies=movie_cards,
             published_episodes=episode_cards,
             previous_inventory=previous_inventory,
-            current_inventory=movie_baseline.inventory_lines(
-                movie_cards, episode_cards),
+            current_inventory=current_inventory,
             # ধারা ৪.০/৪.১. What this run PROVED is gone - a definitive 404 or
             # 410, and nothing else. Without it the gate had no terminal
             # evidence at all and counted every confirmed-dead link as an
             # unexplained loss, which blocked a publish over content that
             # really had been removed.
-            terminal_records=_movie_terminal_records(),
+            terminal_records=_movie_terminal_records(
+                published_cards=list(movie_cards) + list(episode_cards),
+                current_inventory=current_inventory,
+                raw_entries=entries,
+            ),
             evidence="scan",
         )
         movie_coverage.write_movie_coverage(

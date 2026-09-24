@@ -116,6 +116,8 @@ def _load(path: Optional[str] = None) -> Dict[str, Any]:
         payload["absent"] = {}
     if not isinstance(payload.get("lifecycle"), dict):
         payload["lifecycle"] = {}
+    if not isinstance(payload.get("removed"), dict):
+        payload["removed"] = {}
     payload.setdefault("version", 1)
     return payload
 
@@ -142,6 +144,56 @@ def _item_key(movie: Dict[str, Any]) -> str:
     from scanner import movie_recency
 
     return movie_recency.movie_key(movie)
+
+
+def _stream_urls(item: Dict[str, Any]) -> List[str]:
+    """Primary plus backups, in published order.
+
+    Spelled out here rather than imported so the retention ledger does not
+    depend on the baseline module; the two are read by different phases and a
+    cycle between them would be paid for at import time on every run.
+    """
+    urls: List[str] = []
+    primary = str((item or {}).get("url") or "").strip()
+    if primary:
+        urls.append(primary)
+    for backup in (item or {}).get("backups") or ():
+        candidate = (
+            str(backup.get("url") or "").strip() if isinstance(backup, dict)
+            else str(backup or "").strip()
+        )
+        if candidate and candidate not in urls:
+            urls.append(candidate)
+    return urls
+
+
+def removed_entries(
+    store: Optional[Dict[str, Any]] = None, path: Optional[str] = None
+) -> List[Dict[str, Any]]:
+    """Cards this policy has stopped re-publishing, with their streams.
+
+    ধারা ৪.০'s fourth definitive reason needs three things about a card the
+    source has withdrawn - which streams it carried, how many *complete* scans
+    have missed it, and what it was called - and none of them survives once the
+    card is simply dropped. So the drop is recorded instead of being forgotten,
+    and `scanner/movie_source_removal.py` decides what it is worth.
+
+    Reading only. The entry is removed again by `retain` the moment the source
+    lists the card once more, so a film that comes back stops being evidence of
+    anything on that same scan.
+    """
+    payload = store if isinstance(store, dict) else _load(path)
+    removed = payload.get("removed")
+    if not isinstance(removed, dict):
+        return []
+    entries: List[Dict[str, Any]] = []
+    for key, record in sorted(removed.items()):
+        if not isinstance(record, dict):
+            continue
+        entry = dict(record)
+        entry["key"] = key
+        entries.append(entry)
+    return entries
 
 
 def previously_published(
@@ -340,9 +392,21 @@ def retain(
     present_keys = {_item_key(movie) for movie in incoming}
     present_keys.discard("")
 
+    removed = store.setdefault("removed", {})
+    if not isinstance(removed, dict):
+        removed = {}
+        store["removed"] = removed
+
     for key in list(absent):
         if key in present_keys:
             absent.pop(key, None)
+    # A film that is listed again is not a removal any more, and saying so on
+    # the same scan matters: ধারা ৪.০'s fourth reason is the one bucket an
+    # entry cannot come back from, so nothing may sit in here on the strength
+    # of a scan that has already been contradicted.
+    for key in list(removed):
+        if key in present_keys:
+            removed.pop(key, None)
 
     previous_items = previously_published(category_slug, root)
     previous_keys = {_item_key(item) for item in previous_items}
@@ -377,11 +441,38 @@ def retain(
             continue
         record = absent.get(key)
         misses = int((record or {}).get("misses") or 0) + 1
+        # Counted separately, and only on a scan that saw enough of this
+        # category to be believed. `misses` decides whether to keep SHOWING the
+        # card, and one scan of doubt costing a card one scan of grace is the
+        # safe direction. Removal is not the safe direction, so it is allowed
+        # to count only the scans whose silence is evidence.
+        previous_complete = (record or {}).get("complete_misses")
+        if previous_complete is None:
+            # A ledger written before this field existed counted a miss on
+            # every scan, complete or not. Those counts cannot be re-derived,
+            # so they are inherited once rather than reset to zero - resetting
+            # would tell the gate that a film the source has not listed for
+            # eleven scans had only just gone missing.
+            previous_complete = (record or {}).get("misses") or 0
+        complete_misses = int(previous_complete or 0) + (1 if complete else 0)
+        absent[key] = {
+            "misses": misses,
+            "complete_misses": complete_misses,
+            "last_missing_at": stamp,
+        }
         if misses > GRACE_SCANS:
-            absent[key] = {"misses": misses, "last_missing_at": stamp}
             summary["dropped_after_grace"] += 1
+            removed[key] = {
+                "content_id": str(previous.get("id") or "").strip(),
+                "name": str(previous.get("name") or previous.get("title") or ""),
+                "category": category_slug,
+                "urls": _stream_urls(previous),
+                "misses": misses,
+                "complete_misses": complete_misses,
+                "scan_complete": bool(complete),
+                "dropped_at": stamp,
+            }
             continue
-        absent[key] = {"misses": misses, "last_missing_at": stamp}
         carried = dict(previous)
         carried["verification_status"] = RETAINED_STATUS
         carried["retained_after_failed_scan"] = True
@@ -394,8 +485,34 @@ def retain(
         )
         retained.append(carried)
 
+    # A removal is re-recorded on every scan for as long as the card is still
+    # on the site, so an entry that stops being refreshed is one the catalogue
+    # has genuinely let go of - nothing asks about it any more, and keeping its
+    # streams as evidence for ever would only grow the file.
+    _forget_stale_removals(removed, reference)
+
     if persist:
         _write(store, path)
 
     summary["retained"] = len(retained)
+    summary["removed_tracked"] = len(removed)
     return incoming + retained, summary
+
+
+def _forget_stale_removals(
+    removed: Dict[str, Any], now: _dt.datetime
+) -> int:
+    cutoff = now - _dt.timedelta(days=GC_AFTER_INACTIVE_DAYS)
+    dropped = 0
+    for key, record in list(removed.items()):
+        stamp = (record or {}).get("dropped_at") if isinstance(record, dict) else None
+        try:
+            when = _dt.datetime.fromisoformat(str(stamp))
+        except (TypeError, ValueError):
+            continue
+        if when.tzinfo is None:
+            when = when.replace(tzinfo=_dt.timezone.utc)
+        if when < cutoff:
+            removed.pop(key, None)
+            dropped += 1
+    return dropped

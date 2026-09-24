@@ -331,10 +331,15 @@ class TheGateIsGivenItsEvidence(unittest.TestCase):
         self.assertIn("movie_link_health.terminal_records", helper)
 
     def test_missing_evidence_costs_the_evidence_and_not_the_scan(self):
+        """Two kinds of evidence now, each wrapped on its own: ধারা ৪.১'s
+        confirmed 404/410 and ধারা ৪.০'s source removal. A failure in one may
+        cost that one and nothing else, so what is returned is whatever was
+        gathered - never an exception, and never the other kind thrown away."""
         helper = self.SCAN[self.SCAN.index("def _movie_terminal_records("):]
         helper = helper[:helper.index(chr(10) + "def ", 10)]
-        self.assertIn("except Exception", helper)
-        self.assertIn("return []", helper)
+        self.assertEqual(helper.count("except Exception"), 2)
+        self.assertNotIn("raise", helper)
+        self.assertIn("return records", helper)
 
     def test_the_episode_side_is_read_from_this_run(self):
         """The other half of the same failure: the gate counted 316 episodes
