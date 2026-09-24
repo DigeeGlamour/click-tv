@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T23:11:29.566870+00:00",
+  "generated_at": "2026-09-24T23:30:32.505376+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,8 +13,7 @@
       "fixtures": 320,
       "unknown_statuses": [
         "132|Stumps - day 1",
-        "134|Stumps - day 3",
-        "3|83'"
+        "134|Stumps - day 3"
       ],
       "attempts": [
         {
@@ -111,13 +110,13 @@
     "fixtures": 91,
     "verdicts": {
       "UNVERIFIED": 44,
-      "PARTIAL_AUTHORITY": 1,
+      "CONFLICT": 1,
       "VERIFIED": 46
     },
     "verified": 46,
-    "partial_authority": 1,
+    "partial_authority": 0,
     "unverified": 44,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 47,
@@ -131,8 +130,9 @@
     "matched_by_two_independent_authorities": 35,
     "authority_agreements": 35,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says FINISHED": 1,
       "kickoff": 2
     },
     "identity_near_misses": 9,
@@ -144,8 +144,7 @@
     "unknown_authority_statuses": {
       "livescore": [
         "132|Stumps - day 1",
-        "134|Stumps - day 3",
-        "3|83'"
+        "134|Stumps - day 3"
       ],
       "espn-header": []
     }
@@ -300,9 +299,9 @@
           "competition_id": "26136",
           "kickoff": "2026-09-24T21:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "83'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "1/8",
           "format": "",
@@ -315,10 +314,12 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -326,7 +327,7 @@
       "card_id": "stony-brook-vs-elon-womens-soccer",
       "name": "Stony Brook vs Elon Women's Soccer",
       "competition": "",
-      "kickoff": "2026-09-24T23:11:29+00:00",
+      "kickoff": "2026-09-24T23:30:32+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -641,14 +642,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
+        "srhady-axsports-live",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "srhady-bingstream",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -903,8 +904,8 @@
       "name": "Atlético Nacional Vs Millonarios",
       "competition": "Primera A",
       "kickoff": "2026-09-25T00:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -998,8 +999,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1126,14 +1127,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
+        "srhady-axsports-live",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "srhady-bingstream",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1175,9 +1176,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1214,12 +1215,15 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
+        "AXS-Bing",
         "SM-Aggregate"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -1380,9 +1384,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1420,8 +1424,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1667,9 +1671,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2187,8 +2191,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2277,14 +2281,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
+        "srhady-axsports-live",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "srhady-bingstream",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2374,8 +2378,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2456,8 +2460,8 @@
       "name": "Haiti Vs Trinidad and Tobago",
       "competition": "CONCACAF Nations League",
       "kickoff": "2026-09-25T00:20:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -2617,8 +2621,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2707,14 +2711,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
+        "srhady-axsports-live",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "srhady-bingstream",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3043,9 +3047,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3374,9 +3378,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3664,8 +3668,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3929,8 +3933,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4109,9 +4113,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4238,9 +4242,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4347,9 +4351,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4579,9 +4583,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4619,8 +4623,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "srhady-bingstream"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -4711,9 +4715,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5038,9 +5042,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -5835,9 +5839,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -5937,9 +5941,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6051,61 +6055,6 @@
       "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED"
-    },
-    {
-      "fixture_id": "provider:kosovo-vs-rep-of-ireland|uefa nations league|2026-09-24",
-      "card_id": "kosovo-vs-rep-of-ireland",
-      "name": "Kosovo vs Rep Of Ireland",
-      "competition": "UEFA Nations League",
-      "kickoff": "2026-09-24T18:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Kosovo vs Republic of Ireland",
-              "event_id": "401861045",
-              "agreed_side": "kosovo",
-              "ours": "rep of ireland",
-              "theirs": "republic of ireland"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Kosovo vs Ireland",
-              "event_id": "1738269",
-              "agreed_side": "kosovo",
-              "ours": "rep of ireland",
-              "theirs": "ireland"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
     }
   ]
 }
