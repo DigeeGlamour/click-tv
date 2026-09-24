@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T15:49:40.878079+00:00",
+  "generated_at": "2026-09-24T16:10:16.059263+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,9 +12,12 @@
       "requests_ok": 6,
       "fixtures": 320,
       "unknown_statuses": [
+        "10|HT",
         "134|Stumps - day 3",
-        "2|44'",
-        "3|90'"
+        "2|10'",
+        "2|4'",
+        "2|6'",
+        "2|9'"
       ],
       "attempts": [
         {
@@ -106,48 +109,52 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 14,
-    "upcoming": 64,
-    "fixtures": 78,
+    "today_match": 13,
+    "upcoming": 66,
+    "fixtures": 79,
     "verdicts": {
-      "VERIFIED": 34,
-      "UNVERIFIED": 41,
+      "CONFLICT": 6,
       "PARTIAL_AUTHORITY": 1,
-      "CONFLICT": 2
+      "VERIFIED": 31,
+      "UNVERIFIED": 41
     },
-    "verified": 34,
+    "verified": 31,
     "partial_authority": 1,
     "unverified": 41,
-    "conflict": 2,
+    "conflict": 6,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 44,
-        "matched": 34
+        "matched": 35,
+        "unmatched": 44
       },
       "livescore": {
-        "matched": 35,
+        "matched": 36,
         "unmatched": 43
       }
     },
-    "matched_by_two_independent_authorities": 31,
-    "authority_agreements": 30,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 2,
+    "matched_by_two_independent_authorities": 32,
+    "authority_agreements": 27,
+    "authority_disagreements": 2,
+    "card_status_conflicts": 4,
     "conflict_reason_counts": {
-      "kickoff": 1,
-      "card says LIVE, authority says FINISHED": 2
+      "card says LIVE, authority says UPCOMING": 4,
+      "authorities disagree": 2,
+      "kickoff": 1
     },
     "identity_near_misses": 7,
     "independent_authority_count_distribution": {
       "0": 41,
       "1": 6,
-      "2": 31
+      "2": 32
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "134|Stumps - day 3",
-        "2|44'",
-        "3|90'"
+        "2|10'",
+        "2|4'",
+        "2|6'",
+        "2|9'"
       ],
       "espn-header": []
     }
@@ -212,14 +219,103 @@
   ],
   "fixtures": [
     {
+      "fixture_id": "provider:andorra-vs-malta|uefa nations league|2026-09-24",
+      "card_id": "andorra-vs-malta",
+      "name": "Andorra Vs Malta",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-09-24T16:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861047",
+          "upstream_family": "ESPN",
+          "name": "Andorra vs Malta",
+          "home": "Andorra",
+          "away": "Malta",
+          "home_team_id": "587",
+          "away_team_id": "453",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-09-24T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, September 24th at 12:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861047~c:401861047"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738357",
+          "upstream_family": "LiveScore",
+          "name": "Andorra vs Malta",
+          "home": "Andorra",
+          "away": "Malta",
+          "home_team_id": "9135",
+          "away_team_id": "9203",
+          "competition": "League D: Group 1",
+          "competition_id": "523",
+          "kickoff": "2026-09-24T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "9'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "League D Group 1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:dr-congo-vs-equatorial-guinea|africa cup of nations qual|2026-09-24",
       "card_id": "dr-congo-vs-equatorial-guinea",
       "name": "DR Congo Vs Equatorial Guinea",
       "competition": "Africa Cup of Nations Qual.",
       "kickoff": "2026-09-24T16:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -258,9 +354,9 @@
           "competition_id": "137",
           "kickoff": "2026-09-24T16:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "6'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "1",
           "format": "",
@@ -274,9 +370,9 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -372,9 +468,9 @@
       "name": "Libya Vs Botswana",
       "competition": "Africa Cup of Nations Qual.",
       "kickoff": "2026-09-24T16:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -431,9 +527,9 @@
           "competition_id": "137",
           "kickoff": "2026-09-24T16:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "4'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "1",
           "format": "",
@@ -447,10 +543,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -459,9 +557,9 @@
       "name": "Mauritania Vs Central African Republic",
       "competition": "Africa Cup of Nations Qual.",
       "kickoff": "2026-09-24T16:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -518,9 +616,9 @@
           "competition_id": "137",
           "kickoff": "2026-09-24T16:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "10'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "1",
           "format": "",
@@ -534,10 +632,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -605,9 +705,9 @@
           "competition_id": "24643",
           "kickoff": "2026-09-24T08:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "cricket",
           "round": "1st ODI",
           "format": "ODI",
@@ -621,10 +721,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -705,269 +807,14 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:uzbekistan-vs-iran|international friendly games|2026-09-24",
-      "card_id": "uzbekistan-vs-iran",
-      "name": "Uzbekistan Vs Iran",
-      "competition": "International Friendly Games",
-      "kickoff": "2026-09-24T14:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401915914",
-          "upstream_family": "ESPN",
-          "name": "Uzbekistan vs Iran",
-          "home": "Uzbekistan",
-          "away": "Iran",
-          "home_team_id": "2570",
-          "away_team_id": "469",
-          "competition": "International Friendly",
-          "competition_id": "3922",
-          "kickoff": "2026-09-24T14:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "50'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "50'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401915914~c:401915914"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1894365",
-          "upstream_family": "LiveScore",
-          "name": "Uzbekistan vs Iran",
-          "home": "Uzbekistan",
-          "away": "Iran",
-          "home_team_id": "8531",
-          "away_team_id": "9593",
-          "competition": "Friendlies",
-          "competition_id": "537",
-          "kickoff": "2026-09-24T14:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "90'",
-          "status_code": "3",
-          "status": "UNKNOWN",
-          "sport": "football",
-          "round": "Friendlies 1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:andorra-vs-malta|uefa nations league|2026-09-24",
-      "card_id": "andorra-vs-malta",
-      "name": "Andorra vs Malta",
-      "competition": "UEFA Nations League",
-      "kickoff": "2026-09-24T16:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401861047",
-          "upstream_family": "ESPN",
-          "name": "Andorra vs Malta",
-          "home": "Andorra",
-          "away": "Malta",
-          "home_team_id": "587",
-          "away_team_id": "453",
-          "competition": "UEFA Nations League",
-          "competition_id": "2395",
-          "kickoff": "2026-09-24T16:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, September 24th at 12:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:2395~e:401861047~c:401861047"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1738357",
-          "upstream_family": "LiveScore",
-          "name": "Andorra vs Malta",
-          "home": "Andorra",
-          "away": "Malta",
-          "home_team_id": "9135",
-          "away_team_id": "9203",
-          "competition": "League D: Group 1",
-          "competition_id": "523",
-          "kickoff": "2026-09-24T16:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:gulf-giants-development-vs-desert-vipers-development|dp world ilt20 development tournament 2026|2026-09-24",
-      "card_id": "gulf-giants-development-vs-desert-vipers-development",
-      "name": "Gulf Giants Development vs Desert Vipers Development",
-      "competition": "DP World ILT20 Development Tournament 2026",
-      "kickoff": "2026-09-24T15:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:puri-titans-vs-bhubaneshwar-tigers|odisha t20 league 2026|2026-09-24",
-      "card_id": "puri-titans-vs-bhubaneshwar-tigers",
-      "name": "Puri Titans vs Bhubaneshwar Tigers",
-      "competition": "Odisha T20 League 2026",
-      "kickoff": "2026-09-24T14:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:congo-dr-vs-equatorial-guinea|africa cup of nations qualification|2026-09-24",
       "card_id": "congo-dr-vs-equatorial-guinea",
       "name": "Congo DR vs Equatorial Guinea",
       "competition": "Africa Cup of Nations - Qualification",
       "kickoff": "2026-09-24T16:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
@@ -1029,109 +876,139 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:zimbabwe-vs-west-indies-women|one day international women|2026-09-24",
-      "card_id": "zimbabwe-women-vs-west-indies-women",
-      "name": "Zimbabwe Women Vs West Indies Women",
-      "competition": "One Day International Women",
-      "kickoff": "2026-09-24T07:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1554975",
-          "upstream_family": "ESPN",
-          "name": "Zimbabwe Women vs West Indies Women",
-          "home": "Zimbabwe Women",
-          "away": "West Indies Women",
-          "home_team_id": "271866",
-          "away_team_id": "3816",
-          "competition": "West Indies Women tour of Zimbabwe 2026",
-          "competition_id": "24796",
-          "kickoff": "2026-09-24T07:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "1st ODI",
-          "format": "ODI",
-          "gender": "women",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-09-25T23:59:00Z",
-          "authority_uid": "s:200~e:1554975~c:1554975"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1895600",
-          "upstream_family": "LiveScore",
-          "name": "Zimbabwe W vs West Indies W",
-          "home": "Zimbabwe W",
-          "away": "West Indies W",
-          "home_team_id": "192201",
-          "away_team_id": "86173",
-          "competition": "Zimbabwe Women v West Indies Women ODI Series",
-          "competition_id": "26414",
-          "kickoff": "2026-09-24T07:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "1st ODI",
-          "format": "Womens ODI",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
+        "card says LIVE, authority says UPCOMING"
       ],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:namibia-vs-congo-republic|africa cup of nations qual|2026-09-24",
-      "card_id": "namibia-vs-congo-republic",
-      "name": "Namibia Vs Congo Republic",
-      "competition": "Africa Cup of Nations Qual.",
-      "kickoff": "2026-09-24T13:00:00+00:00",
+      "fixture_id": "provider:gulf-giants-development-vs-desert-vipers-development|dp world ilt20 development tournament 2026|2026-09-24",
+      "card_id": "gulf-giants-development-vs-desert-vipers-development",
+      "name": "Gulf Giants Development vs Desert Vipers Development",
+      "competition": "DP World ILT20 Development Tournament 2026",
+      "kickoff": "2026-09-24T15:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:puri-titans-vs-bhubaneshwar-tigers|odisha t20 league 2026|2026-09-24",
+      "card_id": "puri-titans-vs-bhubaneshwar-tigers",
+      "name": "Puri Titans vs Bhubaneshwar Tigers",
+      "competition": "Odisha T20 League 2026",
+      "kickoff": "2026-09-24T14:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:chicago-1a-giornata|2026 presidents cup|2026-09-24",
+      "card_id": "chicago-1a-giornata",
+      "name": "Chicago 1a giornata",
+      "competition": "2026 Presidents Cup",
+      "kickoff": "2026-09-24T16:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:uzbekistan-vs-iran|international friendly games|2026-09-24",
+      "card_id": "uzbekistan-vs-iran",
+      "name": "Uzbekistan Vs Iran",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-09-24T14:00:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1148,52 +1025,52 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "401920057",
+          "event_id": "401915914",
           "upstream_family": "ESPN",
-          "name": "Namibia vs Congo",
-          "home": "Namibia",
-          "away": "Congo",
-          "home_team_id": "6725",
-          "away_team_id": "4276",
-          "competition": "Africa Cup of Nations Qualifying",
-          "competition_id": "8315",
-          "kickoff": "2026-09-24T13:00:00+00:00",
+          "name": "Uzbekistan vs Iran",
+          "home": "Uzbekistan",
+          "away": "Iran",
+          "home_team_id": "2570",
+          "away_team_id": "469",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-09-24T14:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, September 24th at 10:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
           "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:8315~e:401920057~c:401920057"
+          "authority_uid": "s:600~l:3922~e:401915914~c:401915914"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1873059",
+          "event_id": "1894365",
           "upstream_family": "LiveScore",
-          "name": "Namibia vs Congo",
-          "home": "Namibia",
-          "away": "Congo",
-          "home_team_id": "9256",
-          "away_team_id": "9205",
-          "competition": "Qualification: Group G",
-          "competition_id": "137",
-          "kickoff": "2026-09-24T13:00:00+00:00",
+          "name": "Uzbekistan vs Iran",
+          "home": "Uzbekistan",
+          "away": "Iran",
+          "home_team_id": "8531",
+          "away_team_id": "9593",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-09-24T14:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
           "status_raw": "FT",
           "status_code": "6",
           "status": "FINISHED",
           "sport": "football",
-          "round": "1",
+          "round": "Friendlies 1",
           "format": "",
           "gender": ""
         }
@@ -1206,10 +1083,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
       ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -1614,9 +1491,10 @@
       "source_ids": [
         "sm-sports-data",
         "srhady-willow-event",
+        "sm-fancode",
+        "drmlive-fancode-mirror",
         "srhady-bingstream",
-        "srhady-axsports-live",
-        "drmlive-fancode-mirror"
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1688,6 +1566,94 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:armenia-vs-latvia|uefa nations league|2026-09-25",
+      "card_id": "armenia-vs-latvia",
+      "name": "Armenia vs Latvia",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-09-25T16:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861050",
+          "upstream_family": "ESPN",
+          "name": "Armenia vs Latvia",
+          "home": "Armenia",
+          "away": "Latvia",
+          "home_team_id": "579",
+          "away_team_id": "456",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-09-25T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, September 25th at 12:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861050~c:401861050"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738396",
+          "upstream_family": "LiveScore",
+          "name": "Armenia vs Latvia",
+          "home": "Armenia",
+          "away": "Latvia",
+          "home_team_id": "9099",
+          "away_team_id": "9160",
+          "competition": "League C: Group 2",
+          "competition_id": "523",
+          "kickoff": "2026-09-25T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2083,10 +2049,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2215,10 +2181,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2243,61 +2209,22 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:chicago-1a-giornata|2026 presidents cup|2026-09-24",
-      "card_id": "chicago-1a-giornata",
-      "name": "Chicago 1a giornata",
-      "competition": "2026 Presidents Cup",
-      "kickoff": "2026-09-24T16:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:costa-rica-vs-curaçao|concacaf nations league|2026-09-25",
       "card_id": "costa-rica-vs-curaçao",
-      "name": "Costa Rica vs Curaçao",
+      "name": "Costa Rica Vs Curaçao",
       "competition": "CONCACAF Nations League",
       "kickoff": "2026-09-25T02:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "AXS-Bing"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -2451,10 +2378,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2605,6 +2532,94 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:georgia-vs-northern-ireland|uefa nations league|2026-09-25",
+      "card_id": "georgia-vs-northern-ireland",
+      "name": "Georgia vs Northern Ireland",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-09-25T16:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861049",
+          "upstream_family": "ESPN",
+          "name": "Georgia vs Northern Ireland",
+          "home": "Georgia",
+          "away": "Northern Ireland",
+          "home_team_id": "584",
+          "away_team_id": "586",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-09-25T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, September 25th at 12:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861049~c:401861049"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738328",
+          "upstream_family": "LiveScore",
+          "name": "Georgia vs Northern Ireland",
+          "home": "Georgia",
+          "away": "Northern Ireland",
+          "home_team_id": "9139",
+          "away_team_id": "9017",
+          "competition": "League B: Group 2",
+          "competition_id": "523",
+          "kickoff": "2026-09-25T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:girona-fc-vs-albacete|laliga hypermotion 2026 27|2026-09-25",
       "card_id": "girona-fc-vs-albacete",
       "name": "Girona FC vs Albacete",
@@ -2619,10 +2634,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2797,14 +2812,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-bingstream",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "srhady-axsports-live",
+        "drmlive-fancode-mirror",
+        "srhady-bingstream",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "srhady-axsports-live",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3132,10 +3147,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3681,10 +3696,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3721,15 +3736,12 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "AXS-Bing",
         "SM-Aggregate"
       ],
-      "independent_witness_count": 2,
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -3900,10 +3912,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4128,6 +4140,94 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:puerto-rico-vs-guyana|concacaf nations league|2026-09-24",
+      "card_id": "puerto-rico-vs-guyana",
+      "name": "Puerto Rico vs Guyana",
+      "competition": "CONCACAF Nations League",
+      "kickoff": "2026-09-24T19:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401900635",
+          "upstream_family": "ESPN",
+          "name": "Puerto Rico vs Guyana",
+          "home": "Puerto Rico",
+          "away": "Guyana",
+          "home_team_id": "11766",
+          "away_team_id": "2653",
+          "competition": "Concacaf Nations League",
+          "competition_id": "19267",
+          "kickoff": "2026-09-24T19:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, September 24th at 3:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:19267~e:401900635~c:401900635"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1856568",
+          "upstream_family": "LiveScore",
+          "name": "Puerto Rico vs Guyana",
+          "home": "Puerto Rico",
+          "away": "Guyana",
+          "home_team_id": "8999",
+          "away_team_id": "9155",
+          "competition": "League B: Group 1",
+          "competition_id": "57",
+          "kickoff": "2026-09-24T19:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:puri-titans-vs-sambalpur-warriors|odisha t20 league 2026|2026-09-27",
       "card_id": "puri-titans-vs-sambalpur-warriors",
       "name": "Puri Titans vs Sambalpur Warriors",
@@ -4142,10 +4242,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4221,10 +4321,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4501,8 +4601,8 @@
       "provider_identity": "",
       "source_ids": [
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4977,10 +5077,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5003,6 +5103,96 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "upcoming"
+    }
+  ],
+  "retired_or_unpublished": [
+    {
+      "fixture_id": "provider:namibia-vs-congo-republic|africa cup of nations qual|2026-09-24",
+      "card_id": "namibia-vs-congo-republic",
+      "name": "Namibia Vs Congo Republic",
+      "competition": "Africa Cup of Nations Qual.",
+      "kickoff": "2026-09-24T13:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401920057",
+          "upstream_family": "ESPN",
+          "name": "Namibia vs Congo",
+          "home": "Namibia",
+          "away": "Congo",
+          "home_team_id": "6725",
+          "away_team_id": "4276",
+          "competition": "Africa Cup of Nations Qualifying",
+          "competition_id": "8315",
+          "kickoff": "2026-09-24T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "45'+1'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "45'+1'",
+          "espn_status_description": "First Half",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8315~e:401920057~c:401920057"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1873059",
+          "upstream_family": "LiveScore",
+          "name": "Namibia vs Congo",
+          "home": "Namibia",
+          "away": "Congo",
+          "home_team_id": "9256",
+          "away_team_id": "9205",
+          "competition": "Qualification: Group G",
+          "competition_id": "137",
+          "kickoff": "2026-09-24T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT"
     }
   ]
 }
