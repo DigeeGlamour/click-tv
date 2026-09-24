@@ -1051,6 +1051,37 @@ def _annotate_metadata(
         return {}
 
 
+def _redistribute_mix(movies: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """ধাপ ১১ / A-03 - place the films sitting in the Mix bin.
+
+    Runs on the whole catalogue before it is split by category, because that
+    split is what this is trying to change - after grouping, a film is already
+    on the Mix page.
+
+    **Cache only, never a lookup.** The language it reads was resolved by an
+    earlier run (or by ধাপ ১০খ's stage, beside verification); asking a
+    provider here would put a second, unbudgeted round of requests in the
+    middle of the publish path.
+
+    Wrapped: a film in the wrong row is a smaller problem than no catalogue.
+    """
+    try:
+        from scanner import movie_category_router
+        from scanner import movie_metadata_cache
+
+        store = movie_metadata_cache.load()
+        records = store.get("movies") if isinstance(store, dict) else None
+        summary = movie_category_router.redistribute(
+            movies, records if isinstance(records, dict) else {})
+        line = movie_category_router.describe(summary)
+        if line:
+            print(f"   {line}")
+        return summary
+    except Exception as error:  # noqa: BLE001 - never fail a scan
+        print(f"   Mix redistribution skipped: {error}")
+        return {}
+
+
 def _allocate_movie_generation(paginated: Dict[str, Any]) -> Dict[str, Any]:
     """ধাপ ৯ - take the next generation and stamp the catalogue with it.
 
@@ -4778,6 +4809,11 @@ def process_movies(
     # because tier-2 evidence is catalogue-wide: a season-only row is proved a
     # series by a sibling episode that may sit in a different category.
     _annotate_classification(merged_movies)
+
+    # ধাপ ১১ / A-03. Before grouping, for the same reason classification is:
+    # grouping by category is the last moment the catalogue is one list, and
+    # this is the step that decides which group a film lands in.
+    _redistribute_mix(merged_movies)
 
     # ধাপ ৩খ part 2. Proven episode cards leave the movie catalogue here, after
     # classification and before grouping - grouping by category is the last

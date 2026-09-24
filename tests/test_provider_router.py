@@ -315,7 +315,12 @@ class LatencyTests(unittest.TestCase):
         self.addCleanup(ph.reset, None)
 
     def test_latency_is_a_rolling_mean(self) -> None:
-        record = ph._provider_record("tmdb")
+        # The path matters: `_provider_record` with no path reads process
+        # state, and process state reloads from the REAL state/ file - so
+        # without this the test measures whatever latency production last
+        # recorded for TMDB. It passed for as long as that file happened to
+        # have none.
+        record = ph._provider_record("tmdb", self.path)
         ph._note_latency(record, 100.0)
         self.assertEqual(record["average_latency_ms"], 100.0)
         ph._note_latency(record, 200.0)

@@ -227,6 +227,41 @@ def _tmdb_trailer_key(videos: Any) -> Optional[str]:
     return pick("trailer", True) or pick("trailer", False) or pick("teaser", False)
 
 
+def _tmdb_countries(detail):
+    """TMDB sends `production_countries` on the detail record and, for some
+    titles, only `origin_country`. Either answers the question."""
+    countries = detail.get("production_countries")
+    codes = []
+    if isinstance(countries, list):
+        for entry in countries:
+            if isinstance(entry, dict):
+                code = str(entry.get("iso_3166_1") or "").strip().upper()
+                if code:
+                    codes.append(code)
+    if not codes and isinstance(detail.get("origin_country"), list):
+        codes = [str(code).strip().upper()
+                 for code in detail["origin_country"] if str(code).strip()]
+    return codes
+
+
+def _omdb_first(value):
+    """OMDb's `Language` is every track on the release, comma separated. The
+    first is the original; the rest are dubs, and reading one of those as the
+    original language is how a Bengali film would be filed as English."""
+    for part in str(value or "").split(","):
+        text = part.strip()
+        if text and text.upper() != "N/A":
+            return text
+    return None
+
+
+def _omdb_list(value):
+    return [
+        part.strip() for part in str(value or "").split(",")
+        if part.strip() and part.strip().upper() != "N/A"
+    ]
+
+
 def _clean_genres(values: Any) -> List[str]:
     """Provider genres -> canonical spellings (PART 05).
 
@@ -462,6 +497,12 @@ def tmdb_metadata(title: str, year: int = 0) -> Optional[Dict[str, Any]]:
         "content_kind": "movie",
         "release_date": release_date or None,
         "genres": genres,
+        # ধাপ ১১ / A-03. Both ride on the detail response that was already
+        # being made, so they cost no extra request.
+        "original_language": str(
+            detail.get("original_language")
+            or best.get("original_language") or "").strip() or None,
+        "production_countries": _tmdb_countries(detail) or None,
         "rating": detail.get("vote_average") or best.get("vote_average"),
         "rating_votes": detail.get("vote_count") or best.get("vote_count"),
         "rating_source": RATING_SOURCE_TMDB,
@@ -540,6 +581,12 @@ def omdb_metadata(title: str, year: int = 0, imdb_id: Optional[str] = None) -> O
         "content_kind": "series" if str(payload.get("Type") or "").casefold() in ("series", "episode") else "movie",
         "release_date": _parse_omdb_date(payload.get("Released")),
         "genres": _clean_genres(str(payload.get("Genre") or "").split(",")),
+        # ধাপ ১১ / A-03. OMDb sends names ("Bengali", "Bangladesh") where
+        # TMDB sends codes; the router normalises both. Only the FIRST
+        # language is taken - OMDb lists every dub track, and the second
+        # entry is not the original language.
+        "original_language": _omdb_first(payload.get("Language")),
+        "production_countries": _omdb_list(payload.get("Country")) or None,
         "rating": rating,
         "rating_votes": votes,
         "rating_source": RATING_SOURCE_IMDB if rating is not None else None,

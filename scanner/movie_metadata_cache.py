@@ -53,6 +53,11 @@ METADATA_FIELDS: Tuple[str, ...] = (
     "cast",
     "trailer_key",
     "genres",
+    # ধাপ ১১ / A-03. The two fields that tell a film in "Mix" where it
+    # belongs. Optional like the rest: a record without them routes nowhere
+    # and the film stays in Mix, which is what it does today.
+    "original_language",
+    "production_countries",
     "rating",
     "rating_source",
     "rating_votes",
@@ -102,7 +107,7 @@ REFRESH_TTL_DAYS_RECENT = 14
 #: record rather than a retry on every run.
 #:
 #: Raise this only when a genuinely new field is added to METADATA_FIELDS.
-METADATA_SCHEMA = 2
+METADATA_SCHEMA = 3
 
 #: ধারা ৪.৭ - the other two halves of the invalidation key.
 #:
