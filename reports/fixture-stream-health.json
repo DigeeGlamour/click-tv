@@ -1,43 +1,77 @@
 {
-  "generated_at": "2026-09-24T16:29:56.917161+00:00",
+  "generated_at": "2026-09-24T17:31:19.302403+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
-    "fixtures": 92,
-    "published_fixtures": 79,
-    "fixtures_with_verified_stream": 24,
-    "fixtures_with_zero_verified": 68,
-    "published_without_stream": 69,
-    "fallback_available": 6,
+    "fixtures": 100,
+    "published_fixtures": 86,
+    "fixtures_with_verified_stream": 23,
+    "fixtures_with_zero_verified": 77,
+    "published_without_stream": 76,
+    "fallback_available": 7,
     "targeted_fixtures": 9,
     "targeted_attempts": 14,
     "fixtures_with_a_first_link_time": 8,
-    "candidate_routes": 199,
-    "verified_routes": 71,
-    "failed_routes": 128,
-    "fixtures_touched_by_a_route_failure": 58,
-    "fixtures_left_with_nothing": 9,
+    "candidate_routes": 235,
+    "verified_routes": 72,
+    "failed_routes": 163,
+    "fixtures_touched_by_a_route_failure": 66,
+    "fixtures_left_with_nothing": 11,
     "distinct_failure_codes": 6,
-    "unrecognised_candidate_groups": 60,
-    "unrecognised_failed_routes": 135
+    "unrecognised_candidate_groups": 59,
+    "unrecognised_failed_routes": 138
   },
   "failure_codes": {
-    "http_403": 180,
-    "http_404": 22,
-    "browser_unreachable": 22,
-    "timeout": 20,
-    "http_567": 10,
-    "verification_failed": 5,
-    "dns": 4
+    "http_403": 210,
+    "browser_unreachable": 38,
+    "http_404": 27,
+    "timeout": 14,
+    "http_452": 5,
+    "dns": 4,
+    "verification_failed": 2,
+    "connection": 1
   },
   "failure_code_fixtures": {
-    "http_403": 55,
-    "browser_unreachable": 7,
-    "verification_failed": 5,
-    "timeout": 3,
-    "http_404": 2,
-    "http_567": 2
+    "http_403": 62,
+    "browser_unreachable": 19,
+    "http_404": 3,
+    "verification_failed": 2,
+    "http_452": 2,
+    "connection": 1
   },
   "fixtures": [
+    {
+      "fixture_id": "andorra-vs-malta",
+      "fixture_key": "andorra-vs-malta",
+      "fixture_name": "Andorra Vs Malta",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "kajju-sonyliv-backup",
+        "srhady-bingstream",
+        "srhady-axsports-live",
+        "0matbank-trysports-football-live",
+        "drmlive-sonyliv-backup"
+      ],
+      "candidate_stream_count": 28,
+      "verified_stream_count": 8,
+      "failed_stream_count": 20,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403",
+        "connection",
+        "http_404",
+        "browser_unreachable"
+      ],
+      "fallback_available": true,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 2,
+      "last_attempt_bucket": "2026-09-24T16:00Z",
+      "first_link_at": "2026-09-24T16:04:57.160342+00:00",
+      "targeted": true
+    },
     {
       "fixture_id": "smackdown",
       "fixture_key": "smackdown",
@@ -65,37 +99,6 @@
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
-    },
-    {
-      "fixture_id": "andorra-vs-malta",
-      "fixture_key": "andorra-vs-malta",
-      "fixture_name": "Andorra Vs Malta",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "kajju-sonyliv-backup",
-        "srhady-bingstream",
-        "srhady-axsports-live",
-        "drmlive-sonyliv-backup"
-      ],
-      "candidate_stream_count": 15,
-      "verified_stream_count": 3,
-      "failed_stream_count": 12,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403",
-        "timeout",
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 2,
-      "last_attempt_bucket": "2026-09-24T16:00Z",
-      "first_link_at": "2026-09-24T16:04:57.160342+00:00",
-      "targeted": true
     },
     {
       "fixture_id": "wwe-raw",
@@ -135,12 +138,11 @@
         "srhady-bingstream",
         "srhady-axsports-live"
       ],
-      "candidate_stream_count": 5,
-      "verified_stream_count": 0,
+      "candidate_stream_count": 6,
+      "verified_stream_count": 1,
       "failed_stream_count": 5,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_404",
         "http_403",
         "browser_unreachable"
       ],
@@ -188,9 +190,7 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 4,
       "verified_stream_count": 0,
@@ -203,6 +203,35 @@
       "published": false,
       "published_tab": "",
       "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "haiti-vs-trinidad-and-tobago",
+      "fixture_key": "haiti-vs-trinidad-and-tobago",
+      "fixture_name": "Haiti Vs Trinidad and Tobago",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 0,
+      "failed_stream_count": 4,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_452",
+        "browser_unreachable",
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -222,7 +251,35 @@
       "failed_stream_count": 4,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "timeout",
+        "http_452",
+        "http_403",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "kansas-city-royals-vs-chicago-white-sox",
+      "fixture_key": "kansas-city-royals-vs-chicago-white-sox",
+      "fixture_name": "Kansas City Royals Vs Chicago White Sox",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 0,
+      "failed_stream_count": 4,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
         "http_403",
         "browser_unreachable"
       ],
@@ -265,9 +322,9 @@
       "targeted": true
     },
     {
-      "fixture_id": "qatar-vs-bahrain",
-      "fixture_key": "qatar-vs-bahrain",
-      "fixture_name": "Qatar Vs Bahrain",
+      "fixture_id": "liechtenstein-vs-lithuania",
+      "fixture_key": "liechtenstein-vs-lithuania",
+      "fixture_name": "Liechtenstein Vs Lithuania",
       "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
@@ -280,9 +337,120 @@
       "failed_stream_count": 4,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "verification_failed",
-        "browser_unreachable",
-        "http_403"
+        "http_403",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "netherlands-vs-germany",
+      "fixture_key": "netherlands-vs-germany",
+      "fixture_name": "Netherlands Vs Germany",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 6,
+      "verified_stream_count": 2,
+      "failed_stream_count": 4,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "norway-vs-denmark",
+      "fixture_key": "norway-vs-denmark",
+      "fixture_name": "Norway Vs Denmark",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 6,
+      "verified_stream_count": 2,
+      "failed_stream_count": 4,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "portugal-vs-wales",
+      "fixture_key": "portugal-vs-wales",
+      "fixture_name": "Portugal Vs Wales",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 5,
+      "verified_stream_count": 1,
+      "failed_stream_count": 4,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "serbia-vs-greece",
+      "fixture_key": "serbia-vs-greece",
+      "fixture_name": "Serbia Vs Greece",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 0,
+      "failed_stream_count": 4,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403",
+        "browser_unreachable"
       ],
       "fallback_available": false,
       "published": true,
@@ -307,7 +475,7 @@
       "failed_stream_count": 4,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "timeout",
+        "http_452",
         "browser_unreachable"
       ],
       "fallback_available": false,
@@ -348,6 +516,90 @@
       "targeted": false
     },
     {
+      "fixture_id": "austria-vs-israel",
+      "fixture_key": "austria-vs-israel",
+      "fixture_name": "Austria Vs Israel",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 1,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable",
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "cameroon-vs-comoros",
+      "fixture_key": "cameroon-vs-comoros",
+      "fixture_name": "Cameroon Vs Comoros",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 1,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable",
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "costa-rica-vs-curacao",
+      "fixture_key": "costa-rica-vs-curacao",
+      "fixture_name": "Costa Rica Vs Curaçao",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 1,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable",
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "england-vs-sri-lanka",
       "fixture_key": "england-vs-sri-lanka",
       "fixture_name": "England Vs Sri Lanka",
@@ -364,7 +616,7 @@
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "timeout",
+        "http_452",
         "http_403"
       ],
       "fallback_available": true,
@@ -375,34 +627,6 @@
       "last_attempt_bucket": "2026-09-24T11:15Z",
       "first_link_at": "2026-09-24T11:18:44.740718+00:00",
       "targeted": true
-    },
-    {
-      "fixture_id": "fedex-open-de-france-day-1",
-      "fixture_key": "fedex-open-de-france-day-1",
-      "fixture_name": "FedEx Open de France Day 1 24 Sep 2026",
-      "recognised_fixture": false,
-      "source_id": "drmlive-sonyliv-backup",
-      "source_ids": [
-        "drmlive-sonyliv-backup",
-        "kajju-sonyliv-backup",
-        "sportlive-sonyliv-backup",
-        "sayanpal-sonyliv-backup"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 0,
-      "failed_stream_count": 3,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
     },
     {
       "fixture_id": "formula-1-vs-formula",
@@ -418,7 +642,7 @@
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "timeout",
+        "http_452",
         "http_403",
         "browser_unreachable"
       ],
@@ -460,34 +684,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "haiti-vs-trinidad-and-tobago",
-      "fixture_key": "haiti-vs-trinidad-and-tobago",
-      "fixture_name": "Haiti Vs Trinidad and Tobago",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 0,
-      "failed_stream_count": 3,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "timeout",
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "mauritania-vs-central-african-republic",
       "fixture_key": "mauritania-vs-central-african-republic",
       "fixture_name": "Mauritania Vs Central African Republic",
@@ -498,8 +694,8 @@
         "srhady-bingstream",
         "srhady-axsports-live"
       ],
-      "candidate_stream_count": 7,
-      "verified_stream_count": 4,
+      "candidate_stream_count": 8,
+      "verified_stream_count": 5,
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -514,6 +710,62 @@
       "last_attempt_bucket": "2026-09-24T15:35Z",
       "first_link_at": "2026-09-24T15:35:00.026790+00:00",
       "targeted": true
+    },
+    {
+      "fixture_id": "sierra-leone-vs-zimbabwe",
+      "fixture_key": "sierra-leone-vs-zimbabwe",
+      "fixture_name": "Sierra Leone Vs Zimbabwe",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 1,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable",
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "tunisia-vs-uganda",
+      "fixture_key": "tunisia-vs-uganda",
+      "fixture_name": "Tunisia Vs Uganda",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 0,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable",
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
     },
     {
       "fixture_id": "alebrijes-de-oaxaca-vs-ca-la-paz",
@@ -634,7 +886,6 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -700,27 +951,26 @@
       "targeted": false
     },
     {
-      "fixture_id": "austria-vs-israel",
-      "fixture_key": "austria-vs-israel",
-      "fixture_name": "Austria Vs Israel",
-      "recognised_fixture": true,
+      "fixture_id": "bc-dubai-vs-real-madrid",
+      "fixture_key": "bc-dubai-vs-real-madrid",
+      "fixture_name": "BC Dubai Vs Real Madrid",
+      "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "sm-sports-data"
       ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 1,
+      "candidate_stream_count": 5,
+      "verified_stream_count": 3,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_403"
+        "http_403",
+        "browser_unreachable"
       ],
       "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -799,33 +1049,6 @@
       "published": false,
       "published_tab": "",
       "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "cameroon-vs-comoros",
-      "fixture_key": "cameroon-vs-comoros",
-      "fixture_name": "Cameroon Vs Comoros",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 1,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -1041,33 +1264,6 @@
       "targeted": true
     },
     {
-      "fixture_id": "costa-rica-vs-curacao",
-      "fixture_key": "costa-rica-vs-curacao",
-      "fixture_name": "Costa Rica Vs Curaçao",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 1,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "crvena-zvezda-meridianbet-belgrade-vs-zalgiris-kaunas",
       "fixture_key": "crvena-zvezda-meridianbet-belgrade-vs-zalgiris-kaunas",
       "fixture_name": "Crvena Zvezda Meridianbet Belgrade vs Zalgiris Kaunas",
@@ -1082,7 +1278,6 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1151,10 +1346,12 @@
       "fixture_key": "dominican-republic-vs-nicaragua",
       "fixture_name": "Dominican Republic vs Nicaragua",
       "recognised_fixture": true,
-      "source_id": "srhady-bingstream",
+      "source_id": "sm-sports-data",
       "source_ids": [
         "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-axsports-live",
+        "sm-sports-data",
+        "srhady-willow-event"
       ],
       "candidate_stream_count": 2,
       "verified_stream_count": 0,
@@ -1187,7 +1384,6 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1278,6 +1474,32 @@
       "targeted": false
     },
     {
+      "fixture_id": "gambia-vs-somalia",
+      "fixture_key": "gambia-vs-somalia",
+      "fixture_name": "Gambia vs Somalia",
+      "recognised_fixture": true,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "georgia-vs-northern-ireland",
       "fixture_key": "georgia-vs-northern-ireland",
       "fixture_name": "Georgia vs Northern Ireland",
@@ -1338,10 +1560,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 2,
       "verified_stream_count": 0,
@@ -1375,7 +1597,6 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1397,12 +1618,12 @@
         "srhady-bingstream",
         "srhady-axsports-live",
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 2,
       "verified_stream_count": 0,
@@ -1473,21 +1694,21 @@
       "targeted": false
     },
     {
-      "fixture_id": "kansas-city-royals-vs-chicago-white-sox",
-      "fixture_key": "kansas-city-royals-vs-chicago-white-sox",
-      "fixture_name": "Kansas City Royals vs Chicago White Sox",
+      "fixture_id": "kk-crvena-zvezda-vs-kauno-zalgiris",
+      "fixture_key": "kk-crvena-zvezda-vs-kauno-zalgiris",
+      "fixture_name": "KK Crvena zvezda Vs Kauno Žalgiris",
       "recognised_fixture": false,
-      "source_id": "srhady-bingstream",
+      "source_id": "sm-sports-data",
       "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "sm-sports-data"
       ],
       "candidate_stream_count": 2,
       "verified_stream_count": 0,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_403"
+        "http_404",
+        "browser_unreachable"
       ],
       "fallback_available": false,
       "published": false,
@@ -1550,6 +1771,32 @@
       "targeted": false
     },
     {
+      "fixture_id": "kosovo-vs-ireland",
+      "fixture_key": "kosovo-vs-ireland",
+      "fixture_name": "Kosovo Vs Ireland",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "kosovo-vs-rep-of-ireland",
       "fixture_key": "kosovo-vs-rep-of-ireland",
       "fixture_name": "Kosovo vs Rep Of Ireland",
@@ -1576,14 +1823,13 @@
       "targeted": false
     },
     {
-      "fixture_id": "libya-u20-vs-egypt-u20",
-      "fixture_key": "libya-u20-vs-egypt-u20",
-      "fixture_name": "Libya U20 vs Egypt U20",
+      "fixture_id": "kapa-vs-haka",
+      "fixture_key": "kapa-vs-haka",
+      "fixture_name": "KäPa vs Haka",
       "recognised_fixture": true,
       "source_id": "srhady-bingstream",
       "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
+        "srhady-bingstream"
       ],
       "candidate_stream_count": 2,
       "verified_stream_count": 0,
@@ -1593,36 +1839,9 @@
         "http_403"
       ],
       "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "liechtenstein-vs-lithuania",
-      "fixture_key": "liechtenstein-vs-lithuania",
-      "fixture_name": "Liechtenstein Vs Lithuania",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 2,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -1655,9 +1874,35 @@
       "targeted": false
     },
     {
-      "fixture_id": "men-s-junior-rr",
-      "fixture_key": "men-s-junior-rr",
-      "fixture_name": "Men's Junior RR",
+      "fixture_id": "malawi-vs-south-sudan",
+      "fixture_key": "malawi-vs-south-sudan",
+      "fixture_name": "Malawi vs South Sudan",
+      "recognised_fixture": true,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "men-s-u23-rr",
+      "fixture_key": "men-s-u23-rr",
+      "fixture_name": "Men's U23 RR",
       "recognised_fixture": false,
       "source_id": "srhady-bingstream",
       "source_ids": [
@@ -1727,33 +1972,6 @@
       "published": false,
       "published_tab": "",
       "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "netherlands-vs-germany",
-      "fixture_key": "netherlands-vs-germany",
-      "fixture_name": "Netherlands Vs Germany",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 2,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -1838,18 +2056,17 @@
       "targeted": false
     },
     {
-      "fixture_id": "norway-vs-denmark",
-      "fixture_key": "norway-vs-denmark",
-      "fixture_name": "Norway Vs Denmark",
+      "fixture_id": "nigeria-vs-madagascar",
+      "fixture_key": "nigeria-vs-madagascar",
+      "fixture_name": "Nigeria vs Madagascar",
       "recognised_fixture": true,
-      "source_id": "sm-sports-data",
+      "source_id": "srhady-bingstream",
       "source_ids": [
-        "sm-sports-data",
         "srhady-bingstream",
         "srhady-axsports-live"
       ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 1,
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -1880,6 +2097,32 @@
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "panathinaikos-bc-vs-paris-basketball",
+      "fixture_key": "panathinaikos-bc-vs-paris-basketball",
+      "fixture_name": "Panathinaikos BC Vs Paris Basketball",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "browser_unreachable"
       ],
       "fallback_available": false,
       "published": false,
@@ -2009,40 +2252,12 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_567",
         "http_403"
       ],
       "fallback_available": false,
       "published": false,
       "published_tab": "",
       "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "portugal-vs-wales",
-      "fixture_key": "portugal-vs-wales",
-      "fixture_name": "Portugal Vs Wales",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 1,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -2075,30 +2290,52 @@
       "targeted": false
     },
     {
-      "fixture_id": "puri-titans-vs-bhubaneshwar-tigers",
-      "fixture_key": "puri-titans-vs-bhubaneshwar-tigers",
-      "fixture_name": "Puri Titans vs Bhubaneshwar Tigers",
+      "fixture_id": "qatar-vs-bahrain",
+      "fixture_key": "qatar-vs-bahrain",
+      "fixture_name": "Qatar Vs Bahrain",
       "recognised_fixture": true,
-      "source_id": "sayanpal-fancode-mirror",
+      "source_id": "sm-sports-data",
       "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sm-sports-data",
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 1,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "rwanda-vs-liberia",
+      "fixture_key": "rwanda-vs-liberia",
+      "fixture_name": "Rwanda vs Liberia",
+      "recognised_fixture": true,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "candidate_stream_count": 2,
       "verified_stream_count": 0,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "verification_failed",
         "http_403"
       ],
       "fallback_available": false,
       "published": true,
-      "published_tab": "today",
+      "published_tab": "upcoming",
       "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
@@ -2146,7 +2383,6 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2185,91 +2421,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "serbia-vs-greece",
-      "fixture_key": "serbia-vs-greece",
-      "fixture_name": "Serbia vs Greece",
-      "recognised_fixture": true,
-      "source_id": "srhady-bingstream",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "candidate_stream_count": 2,
-      "verified_stream_count": 0,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "sierra-leone-vs-zimbabwe",
-      "fixture_key": "sierra-leone-vs-zimbabwe",
-      "fixture_name": "Sierra Leone Vs Zimbabwe",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 1,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "south-africa-vs-australia",
-      "fixture_key": "south-africa-vs-australia",
-      "fixture_name": "South Africa Vs Australia",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "candidate_stream_count": 17,
-      "verified_stream_count": 15,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "verification_failed",
-        "http_403"
-      ],
-      "fallback_available": true,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 1,
-      "last_attempt_bucket": "2026-09-24T07:40Z",
-      "first_link_at": "2026-09-24T07:40:04.027885+00:00",
-      "targeted": true
-    },
-    {
       "fixture_id": "st-louis-blues-vs-chicago-blackhawks",
       "fixture_key": "st-louis-blues-vs-chicago-blackhawks",
       "fixture_name": "St Louis Blues vs Chicago Blackhawks",
@@ -2284,13 +2435,38 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_567",
         "http_403"
       ],
       "fallback_available": false,
       "published": false,
       "published_tab": "",
       "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "sudan-vs-ethiopia",
+      "fixture_key": "sudan-vs-ethiopia",
+      "fixture_name": "Sudan vs Ethiopia",
+      "recognised_fixture": true,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -2363,7 +2539,6 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2376,36 +2551,9 @@
       "targeted": false
     },
     {
-      "fixture_id": "toronto-tempo-vs-connecticut-sun",
-      "fixture_key": "toronto-tempo-vs-connecticut-sun",
-      "fixture_name": "Toronto Tempo vs Connecticut Sun",
-      "recognised_fixture": false,
-      "source_id": "srhady-bingstream",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "candidate_stream_count": 2,
-      "verified_stream_count": 0,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_567",
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "tunisia-vs-uganda",
-      "fixture_key": "tunisia-vs-uganda",
-      "fixture_name": "Tunisia vs Uganda",
+      "fixture_id": "togo-vs-burundi",
+      "fixture_key": "togo-vs-burundi",
+      "fixture_name": "Togo vs Burundi",
       "recognised_fixture": true,
       "source_id": "srhady-bingstream",
       "source_ids": [
@@ -2429,6 +2577,32 @@
       "targeted": false
     },
     {
+      "fixture_id": "toronto-tempo-vs-connecticut-sun",
+      "fixture_key": "toronto-tempo-vs-connecticut-sun",
+      "fixture_name": "Toronto Tempo vs Connecticut Sun",
+      "recognised_fixture": false,
+      "source_id": "srhady-bingstream",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "ufc-bjj-11-musumeci-vs-mitchell",
       "fixture_key": "ufc-bjj-11-musumeci-vs-mitchell",
       "fixture_name": "UFC BJJ 11 MUSUMECI vs MITCHELL",
@@ -2443,7 +2617,6 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2464,8 +2637,8 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "candidate_stream_count": 6,
-      "verified_stream_count": 4,
+      "candidate_stream_count": 5,
+      "verified_stream_count": 3,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -2663,31 +2836,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "bc-dubai-vs-real-madrid",
-      "fixture_key": "bc-dubai-vs-real-madrid",
-      "fixture_name": "BC Dubai Vs Real Madrid",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 3,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "barbados-tridents-vs-guyana-amazon-warriors-women",
       "fixture_key": "barbados-tridents-vs-guyana-amazon-warriors-women",
       "fixture_name": "Barbados Tridents Women vs Guyana Amazon Warriors Women",
@@ -2763,6 +2911,31 @@
       "targeted": false
     },
     {
+      "fixture_id": "cote-d-ivoire-vs-ghana",
+      "fixture_key": "cote-d-ivoire-vs-ghana",
+      "fixture_name": "Côte d'Ivoire Vs Ghana",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 1,
+      "verified_stream_count": 0,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "dr-congo-vs-equatorial-guinea",
       "fixture_key": "dr-congo-vs-equatorial-guinea",
       "fixture_name": "DR Congo Vs Equatorial Guinea",
@@ -2781,6 +2954,32 @@
       "fallback_available": true,
       "published": true,
       "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "fedex-open-de-france-day-1",
+      "fixture_key": "fedex-open-de-france-day-1",
+      "fixture_name": "FedEx Open de France Day 1 24 Sep 2026",
+      "recognised_fixture": false,
+      "source_id": "sportlive-sonyliv-backup",
+      "source_ids": [
+        "sportlive-sonyliv-backup",
+        "sayanpal-sonyliv-backup"
+      ],
+      "candidate_stream_count": 1,
+      "verified_stream_count": 0,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
       "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
@@ -2827,31 +3026,6 @@
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_403"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "kk-crvena-zvezda-vs-kauno-zalgiris",
-      "fixture_key": "kk-crvena-zvezda-vs-kauno-zalgiris",
-      "fixture_name": "KK Crvena zvezda Vs Kauno Žalgiris",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404"
       ],
       "fallback_available": false,
       "published": false,
@@ -2939,40 +3113,13 @@
       "targeted": false
     },
     {
-      "fixture_id": "panathinaikos-bc-vs-paris-basketball",
-      "fixture_key": "panathinaikos-bc-vs-paris-basketball",
-      "fixture_name": "Panathinaikos BC Vs Paris Basketball",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "practice-2",
       "fixture_key": "practice-2",
       "fixture_name": "Practice 2",
       "recognised_fixture": false,
-      "source_id": "sayanpal-fancode-mirror",
+      "source_id": "vk1817-fancode-mirror",
       "source_ids": [
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 1,
       "verified_stream_count": 0,
@@ -2985,6 +3132,32 @@
       "published": false,
       "published_tab": "",
       "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "puri-titans-vs-bhubaneshwar-tigers",
+      "fixture_key": "puri-titans-vs-bhubaneshwar-tigers",
+      "fixture_name": "Puri Titans vs Bhubaneshwar Tigers",
+      "recognised_fixture": true,
+      "source_id": "vk1817-fancode-mirror",
+      "source_ids": [
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror"
+      ],
+      "candidate_stream_count": 1,
+      "verified_stream_count": 0,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -3014,6 +3187,34 @@
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
+    },
+    {
+      "fixture_id": "south-africa-vs-australia",
+      "fixture_key": "south-africa-vs-australia",
+      "fixture_name": "South Africa Vs Australia",
+      "recognised_fixture": true,
+      "source_id": "srhady-willow-event",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-willow-event",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror"
+      ],
+      "candidate_stream_count": 16,
+      "verified_stream_count": 15,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": true,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 1,
+      "last_attempt_bucket": "2026-09-24T07:40Z",
+      "first_link_at": "2026-09-24T07:40:04.027885+00:00",
+      "targeted": true
     },
     {
       "fixture_id": "tenerife-vs-leganes",
@@ -3077,8 +3278,10 @@
         "srhady-willow-event",
         "sm-fancode",
         "srhady-axsports-live",
-        "srhady-bingstream",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "srhady-bingstream"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3125,7 +3328,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3173,10 +3378,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3224,10 +3429,33 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
+      ],
+      "candidate_stream_count": 0,
+      "verified_stream_count": 0,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "provider:côte-d-ivoire-vs-ghana|africa cup of nations qual|2026-09-24",
+      "fixture_key": "cote-divoire-vs-ghana",
+      "fixture_name": "Côte d'Ivoire Vs Ghana",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3252,10 +3480,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3326,10 +3554,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3423,10 +3651,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3496,7 +3724,9 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3567,10 +3797,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3618,10 +3848,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3669,10 +3899,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3720,10 +3950,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3748,7 +3978,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3861,11 +4093,9 @@
       "fixture_key": "sreenidi-deccan-fc-vs-northeast-united-fc",
       "fixture_name": "Sreenidi Deccan FC vs NorthEast United FC",
       "recognised_fixture": true,
-      "source_id": "sayanpal-fancode-mirror",
+      "source_id": "vk1817-fancode-mirror",
       "source_ids": [
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -3876,52 +4106,6 @@
       "published": true,
       "published_tab": "upcoming",
       "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "tennis-today-singapore-wta-seoul-wta-chengdu-atp-hangzhou-atp-early-rounds",
-      "fixture_key": "tennis-today-singapore-wta-seoul-wta-chengdu-atp-hangzhou-atp-early-rounds",
-      "fixture_name": "Tennis Today Live Singapore WTA, Seoul WTA, Chengdu ATP Hangzhou ATP Early Rounds",
-      "recognised_fixture": false,
-      "source_id": "srhady-primevideo-sports",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 4,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "the-morning-drive",
-      "fixture_key": "the-morning-drive",
-      "fixture_name": "The Morning Drive",
-      "recognised_fixture": true,
-      "source_id": "srhady-primevideo-sports",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 4,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -3982,10 +4166,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
