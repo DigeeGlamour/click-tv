@@ -306,6 +306,36 @@ def _is_due_for_refresh(record: Dict[str, Any], now: _dt.datetime) -> bool:
     return (now - updated) > _dt.timedelta(days=_refresh_ttl_days(record, now))
 
 
+#: What `enrich` would decide about one record, named. ধাপ ১০খ needs the same
+#: decision from outside the loop - a stage running beside verification has to
+#: know what is worth looking up before it starts looking anything up - and two
+#: copies of this rule would drift.
+LOOKUP_MISSING = "missing"
+LOOKUP_DUE = "due"
+LOOKUP_FRESH = "fresh"
+LOOKUP_COOLDOWN = "cooldown"
+
+
+def lookup_state(
+    record: Optional[Dict[str, Any]], now: Optional[_dt.datetime] = None
+) -> str:
+    """Would this record cost a lookup, and why - `enrich`'s pass one, exposed.
+
+    `cooldown` is the one that matters: a record that failed recently must not
+    be retried, and must not be counted as missing either. Asking again puts a
+    seven-day cooldown on a film nobody managed to resolve.
+    """
+    reference = _now(now)
+    has_data = isinstance(record, dict) and any(
+        record.get(field) for field in METADATA_FIELDS
+    )
+    if has_data:
+        return LOOKUP_DUE if _is_due_for_refresh(record, reference) else LOOKUP_FRESH
+    if isinstance(record, dict) and _should_skip_after_failure(record, reference):
+        return LOOKUP_COOLDOWN
+    return LOOKUP_MISSING
+
+
 def _load_manual(manual_path: Optional[str] = None) -> Dict[str, Any]:
     """Admin-asserted metadata. A missing file is simply no overrides."""
     try:

@@ -227,6 +227,7 @@ class StageContext:
         deadline: Optional[float] = None,
         depends_on: Optional[Dict[str, StageResult]] = None,
         payload: Any = None,
+        halt: Optional[threading.Event] = None,
     ) -> None:
         self.name = str(name)
         self.workers = max(1, int(workers))
@@ -234,14 +235,24 @@ class StageContext:
         self.deadline = deadline
         self.depends_on = dict(depends_on or {})
         self.payload = payload
+        #: Cooperative stop. A stage running beside something else finishes
+        #: when that something else does, rather than holding the run open -
+        #: and stopping early is a PARTIAL, which rule 4 already makes safe.
+        self.halt = halt
         self._started = time.monotonic()
 
     def out_of_time(self) -> bool:
+        if self.halt is not None and self.halt.is_set():
+            return True
         return self.deadline is not None and time.monotonic() >= self.deadline
 
     def remaining_seconds(self) -> Optional[float]:
+        if self.halt is not None and self.halt.is_set():
+            return 0.0
         if self.deadline is None:
-            return None
+            # Still bounded: a stage asked to stop must notice reasonably
+            # soon, so waits are never allowed to be indefinite.
+            return None if self.halt is None else 0.25
         return max(0.0, self.deadline - time.monotonic())
 
     def map(
@@ -339,6 +350,7 @@ def run_stages(
     budget: Optional[HostBudget] = None,
     deadline: Optional[float] = None,
     max_concurrent: Optional[int] = None,
+    halt: Optional[threading.Event] = None,
 ) -> Dict[str, StageResult]:
     """Run the graph: everything whose dependencies are met starts at once.
 
@@ -372,6 +384,7 @@ def run_stages(
                 name: results[name] for name in stage.needs if name in results
             },
             payload=stage.payload,
+            halt=halt,
         )
         started = time.monotonic()
         try:

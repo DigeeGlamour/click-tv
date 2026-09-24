@@ -1045,6 +1045,62 @@ def _movie_previous_inventory() -> List[str]:
         return []
 
 
+def _start_movie_metadata_stage(mode: str):
+    """ধাপ ১০খ / ধারা ৪.৯ - begin the metadata stage beside verification.
+
+    The plan's own example of what the structure is for: metadata lookups need
+    a title and a year, which Stage A has already produced, so they have
+    nothing to wait for while links are being verified.
+
+    It warms the films already on the site whose cached metadata is missing or
+    past its TTL - not this scan's new discoveries, whose identity is only
+    settled once verification has run. Those keep the ordinary path, which now
+    finds part of its work already done.
+
+    Wrapped, and bounded: a warm-up is an optimisation. Failing to start one
+    must cost nothing but the optimisation.
+    """
+    if mode not in {"movies", "all"}:
+        return None
+    try:
+        from scanner import movie_prewarm
+
+        handle = movie_prewarm.start(
+            movie_prewarm.published_cards(PROJECT_ROOT))
+        planned = len(handle.plan.get("identities") or ())
+        if planned:
+            print(
+                f"   movie metadata stage: warming {planned} record(s) "
+                "alongside verification"
+            )
+        return handle
+    except Exception as error:  # noqa: BLE001 - never fail a scan
+        print(f"   movie metadata stage skipped: {error}")
+        return None
+
+
+def _finish_movie_metadata_stage(handle) -> Dict[str, Any]:
+    """Stop it, and write what it managed. The only writer, on this thread.
+
+    Whatever it did not reach keeps exactly the metadata it had (ধারা ৪.৯
+    rule 4): an unrefreshed film is a film with slightly older metadata, never
+    a missing film, and never a film the no-loss gate should hear about.
+    """
+    if handle is None:
+        return {}
+    try:
+        from scanner import movie_prewarm
+
+        summary = movie_prewarm.finish(handle)
+        line = movie_prewarm.describe(summary)
+        if line and summary.get("ran"):
+            print(f"   {line}")
+        return summary
+    except Exception as error:  # noqa: BLE001 - never fail a scan
+        print(f"   movie metadata stage did not complete: {error}")
+        return {}
+
+
 def _build_movie_coverage(
     raw_entries: List[Dict[str, Any]],
     movies_data: Optional[Dict[str, Any]],
@@ -1381,7 +1437,14 @@ def run_pipeline(
         "while remaining Global checks continue."
     )
 
+    # ধাপ ১০খ. Started before the blocking call, joined straight after it -
+    # so the coordinator owns the one dependency here, and nothing inside a
+    # worker ever waits on another worker (ধারা ৪.৯ / scanner doc ৩৪.৩).
+    movie_metadata_stage = _start_movie_metadata_stage(mode_clean)
+
     bd_summary = run_fast_verification_pipeline()
+
+    _finish_movie_metadata_stage(movie_metadata_stage)
     _write_scan_progress(
         mode_clean,
         "processing",
