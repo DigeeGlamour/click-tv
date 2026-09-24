@@ -83,6 +83,60 @@ class TheBaselineIsReRecordedByTheRunItself(unittest.TestCase):
         )
 
 
+class TheRehearsalIsKeptCurrentTheSameWay(unittest.TestCase):
+    """ধাপ ৩ক's dry run is the second record of the same catalogue, and it went
+    stale for the same reason.
+
+    Its worth is one identity - every link the site serves is in exactly one of
+    four terms - so a report counting 2,159 links against a site serving 2,463
+    is not a weaker gate but a gate for a catalogue that no longer exists. The
+    16:30 movies publish grew the catalogue; the 16:43 run died in its test
+    suite on `2159 != 2463`, and with it every scan behind it.
+    """
+
+    SCRIPT = "scripts/movie-series-shadow-migration.py"
+
+    def test_the_workflow_re_runs_the_rehearsal(self):
+        self.assertIn(self.SCRIPT, WORKFLOW)
+
+    def test_it_is_re_run_only_when_it_has_drifted(self):
+        self.assertIn("before_stream_count", WORKFLOW)
+        self.assertIn("movie_links_total", WORKFLOW)
+
+    def test_the_report_is_committed(self):
+        self.assertIn("git add reports/movie-series-migration-dryrun.json",
+                      WORKFLOW)
+
+    def test_it_happens_before_the_suite_that_verifies_it(self):
+        self.assertLess(WORKFLOW.index(self.SCRIPT),
+                        _step_index("Run the full test suite"))
+
+    def test_the_identity_is_still_required_to_balance(self):
+        """Regenerating it must not become a way to paper over an unbalanced
+        rehearsal: the generator is asked to fail instead."""
+        self.assertIn(self.SCRIPT + " --require-balanced", WORKFLOW)
+
+    def test_the_rehearsal_stays_read_only(self):
+        self.assertTrue((ROOT / self.SCRIPT).is_file())
+        source = (ROOT / self.SCRIPT).read_text(encoding="utf-8")
+        self.assertIn("Read-only", source)
+
+    def test_the_committed_report_describes_this_catalogue(self):
+        """The invariant itself, measured against what is on disk now."""
+        import json
+
+        from scanner import movie_baseline
+
+        path = ROOT / "reports" / "movie-series-migration-dryrun.json"
+        if not path.is_file():
+            self.skipTest("no rehearsal report in this checkout")
+        report = json.loads(path.read_text(encoding="utf-8"))
+        self.assertEqual(
+            report["stream_coverage"]["before_stream_count"],
+            movie_baseline.catalogue_counts(ROOT)["movie_links_total"],
+        )
+
+
 class TheScriptStillSupportsWhatTheWorkflowAsksOfIt(unittest.TestCase):
     """The workflow calls this script in a specific shape. If the script's
     arguments move, the step fails at 02:37 in the morning."""

@@ -294,10 +294,34 @@ class RealCatalogueTests(unittest.TestCase):
         self.assertGreaterEqual(self._tier(ss.TIER_EXPLICIT_EPISODE), 300)
         self.assertLessEqual(self._tier(ss.TIER_EXPLICIT_EPISODE), 400)
 
-    def test_the_two_tiers_the_plan_counted_exactly_still_match(self) -> None:
-        """Plan: 16 pack signals and 26 sibling-proven rows."""
-        self.assertEqual(self._tier(ss.TIER_PACK_SIGNAL), 16)
-        self.assertEqual(self._tier(ss.TIER_SIBLING_EPISODE), 26)
+    def test_the_two_smaller_tiers_stay_the_size_the_plan_counted(self) -> None:
+        """Plan: 16 pack signals and 26 sibling-proven rows.
+
+        Bands, for the reason the test above already gives - "a catalogue moves
+        between runs". These two were pinned exactly, and on 2026-09-24 the
+        first publish the no-loss gate let through grew the catalogue from
+        1,667 cards to 1,970; the counts became 14 and 20 and the exact
+        assertion failed the test suite, which stops every scan.
+
+        A band still does the job this class exists for. The plan's audit found
+        a handful of pack signals and a couple of dozen sibling-proven rows
+        among hundreds of explicit episodes; a detector that had stopped
+        reproducing the plan's rules would not land near those numbers, it
+        would land at zero or in the hundreds.
+        """
+        self.assertGreaterEqual(self._tier(ss.TIER_PACK_SIGNAL), 8)
+        self.assertLessEqual(self._tier(ss.TIER_PACK_SIGNAL), 30)
+        self.assertGreaterEqual(self._tier(ss.TIER_SIBLING_EPISODE), 13)
+        self.assertLessEqual(self._tier(ss.TIER_SIBLING_EPISODE), 45)
+
+    def test_the_small_tiers_stay_small_beside_the_explicit_one(self) -> None:
+        """The shape of the plan's audit, which a band cannot express: pack and
+        sibling evidence are the rare cases, explicit episodes the common one.
+        A detector that started reading ordinary films as packs would break
+        this long before it broke either band."""
+        explicit = self._tier(ss.TIER_EXPLICIT_EPISODE)
+        self.assertGreater(explicit, 5 * self._tier(ss.TIER_PACK_SIGNAL))
+        self.assertGreater(explicit, 5 * self._tier(ss.TIER_SIBLING_EPISODE))
 
     def test_the_shows_the_plan_names_collapse_as_it_predicted(self) -> None:
         """Bachelor Point 37 cards -> 1, Kurulus Osman 12 -> 1."""

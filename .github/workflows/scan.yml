@@ -338,6 +338,41 @@ jobs:
             git commit -m "Re-record the movie baseline against the published catalogue"
           fi
 
+          # ধাপ ৩ক's rehearsal is the second record of the same catalogue, and
+          # it went stale the same way. Its whole worth is the stream-coverage
+          # identity - every link the site serves is in exactly one of four
+          # terms - so a report counting 2,159 links against a site serving
+          # 2,463 is not a weaker gate, it is a gate for a catalogue that no
+          # longer exists. Measured: the 16:30 movies publish grew the
+          # catalogue, and the 16:43 run then died in its test suite on
+          # `2159 != 2463`, which stops every scan.
+          #
+          # Read-only by construction - it writes one report and touches no
+          # card - and regenerated only when it has drifted, so an ordinary
+          # run commits nothing here either.
+          if python - <<'PY'
+          import json, sys
+          sys.path.insert(0, ".")
+          from scanner import movie_baseline
+          try:
+              report = json.load(open("reports/movie-series-migration-dryrun.json",
+                                      encoding="utf-8"))
+              recorded = report["stream_coverage"]["before_stream_count"]
+          except Exception:
+              sys.exit(1)
+          sys.exit(0 if recorded == movie_baseline.catalogue_counts(".")["movie_links_total"]
+                   else 1)
+          PY
+          then
+            echo "The ধাপ ৩ক rehearsal still describes the published catalogue."
+          else
+            echo "Re-running the ধাপ ৩ক rehearsal against the published catalogue:"
+            python scripts/movie-series-shadow-migration.py --require-balanced \
+              | tail -n 5
+            git add reports/movie-series-migration-dryrun.json
+            git commit -m "Re-run the series-migration rehearsal against the published catalogue"
+          fi
+
       - name: Validate scanner files
         shell: bash
         run: |
