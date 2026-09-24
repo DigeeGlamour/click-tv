@@ -2200,7 +2200,189 @@ cleared; the failure was the measurement, not the code.
    also lists are unchanged: the sweep already runs inside the movies run
    (ধাপ ৭), and the other two are not scheduled separately.
 
+### Commit / push
+
+`phase-10a: run the movie scan twice a day, and move what counted on it`
+→ `350287c`. **Push blocked** — see "Push status" at the end of this report.
+
 ### Next task
 
-Phase 10খ — **dependency-aware parallel stages** (v3.5 ধারা ৪.৯), the one new
-requirement v3.5 added, now that its precondition (ধাপ ৭) is in place.
+Phase 10খ — dependency-aware parallel stages (v3.5 ধারা ৪.৯).
+
+---
+
+## PHASE 10খ — Dependency-aware parallel stages (v3.5 ধারা ৪.৯)
+
+**Plan reference:** v3.5 ধারা ৪.৯ and ধাপ ১০খ. The one requirement v3.5 added,
+gated on ধাপ ৭ being complete — which it is.
+
+    "Parallel where independent, wait only where there is a real dependency."
+
+v2.0 dropped the nine-worker DAG. v3.5 says that was right about **nine GitHub
+Actions jobs** and wrong about the idea underneath it: inside one run, work
+with no dependency on other work has no reason to queue.
+
+### Part 1 — the coordinator
+
+**`scanner/movie_stages.py`** (new). Not the stages: the machinery, because
+the four safety rules are the whole difficulty of the feature, and rules
+enforced in one place are rules that hold.
+
+| Rule (ধারা ৪.৯) | How it is enforced |
+|---|---|
+| 1. no stage touches shared data | a stage returns a **fragment** (`content_id` → changed fields); `aggregate()` merges alone, fill-only, in **declared stage order** — so two stages racing cannot decide the catalogue between them |
+| 2. one writer | `apply_fragments()` is the only path from a fragment to an item, and it runs after every stage has finished |
+| 3. bounded pool per stage, joint host limits | `HostBudget` is held by the coordinator and passed to every stage, so two stages on one host share one ceiling instead of each getting one |
+| 4. ★ a partial stage is not a loss | a stage names what it never reached, and those items keep exactly what they had |
+
+Plus the deadlock rule (scanner doc ধারা ৩৪.৩): **a stage is never handed a
+future.** The coordinator resolves every dependency and passes *finished*
+results in, so a stage cannot wait on a stage. That is tested directly — the
+graph `a → b → c` completes at `max_concurrent=1`, where a design that waited
+inside a worker would hang for ever.
+
+**Rule 3, measured rather than asserted.** Three stages of eight workers each,
+all hitting one host:
+
+| Host limit | Peak concurrent requests |
+|---|---|
+| joint limit of 2 | **2** |
+| wide limit (99) | **18** |
+
+The second row is a test of its own, because without it the first row passes
+just as well on a coordinator that never runs anything at once.
+
+### Part 2 — the metadata stage
+
+**`scanner/movie_prewarm.py`** (new) plus the `scan.py` wiring. The plan's own
+example of what the structure is for:
+
+> Metadata worker stream verification শেষ হওয়ার জন্য বসে থাকবে না, কারণ
+> মেটাডাটা লুকআপের জন্য দরকার টাইটেল ও বছর, যা Stage A-তেই তৈরি।
+
+Started before `run_fast_verification_pipeline()`, joined straight after it —
+so the coordinator owns the one dependency, and no worker waits on a worker.
+
+**What it warms, and what it deliberately does not.** The films already on the
+site whose cached metadata is missing or past its TTL. *Not* this scan's newly
+discovered films: their identity is only settled after verification, and a
+lookup on a title that turns out not to match spends quota on nothing. Those
+keep the ordinary path in `movie_metadata_cache.enrich`, which now finds part
+of its work already done.
+
+### Data validation — the live catalogue
+
+| Measure | Count |
+|---|---|
+| Published movie cards read from `data/` | 1,667 |
+| With a usable identity | 1,657 |
+| No metadata at all | 1,634 |
+| Past TTL, due for refresh | 1 |
+| Fresh | 8 |
+| **On a failure cooldown — correctly left alone** | **14** |
+| Warmed this run (default cap) | 60 |
+| Deferred to the ordinary pass | 1,597 |
+
+End-to-end against the real catalogue with a stub provider and a temporary
+cache: 60 planned → 60 resolved → 60 written, 0 not reached, **exactly 60
+lookups made**. No over-spend.
+
+### The defects found while building it
+
+1. **A provider exception was being read as a provider outage.** `ctx.map`
+   returns `None` for an item whose work raised, and the stage was treating
+   that as "no provider available" — so a film that *was* reached and answered
+   nothing joined the *unattempted* list. The two facts must not merge: one
+   means "never tried", which rule 4 protects; the other means the attempt
+   happened and the retry cooldown starts from it. Fixed, and both directions
+   are now tested.
+2. **A card with no title was still being looked up.** `canonical_identity({})`
+   answers `fallback::0`, which is truthy, so an untitled row earned a real
+   provider request. The stage's whole premise is that a lookup needs a title
+   and a year; it now requires one.
+3. **`tmdb_id` would not persist from a plausible-looking answer.** Not a bug —
+   PART 19 refuses to write an identity field on anything below a
+   high-confidence match, and a provider answer carrying no title cannot earn
+   one. The test was unrealistic, not the policy; it now uses an answer the
+   real `resolve_metadata` would produce.
+
+### Safety choices worth recording
+
+- **One worker, not four.** `provider_health`'s pacing is per-provider state
+  with no lock; two threads could both pass the same minimum-interval check
+  and double the request rate — exactly the failure rule 3 is written about.
+  The point here is to overlap metadata with *verification*, not to make
+  metadata itself concurrent. Raising `workers` needs that lock first, and a
+  settings test asserts it stays at 1 until then.
+- **A slice of the quota, not all of it.** 60 records, capped again at 40% of
+  the remaining provider quota. A newly discovered film with no metadata at
+  all is worth more than a refresh of one that already reads correctly, and
+  those are found later in the run.
+- **Designed to be interrupted.** `finish()` halts the stage the moment
+  verification is done. Everything unreached keeps its metadata — an
+  unrefreshed film is a film with slightly older metadata, never a missing
+  film, and never something the No-Loss gate hears about.
+- **A provider that never answers cannot hold the publish.** The join has its
+  own timeout; past it the run continues and simply writes less.
+
+### Tests run
+
+- `tests/test_movie_stages.py` — **37 tests, 37 pass** (one class per rule).
+- `tests/test_movie_prewarm.py` — **39 tests, 39 pass**, including an AST guard
+  that reads the module's *calls* rather than its prose to prove
+  `movie_metadata_cache.save` is the only write in it.
+- Full suite: **4,966 tests**, 2 failures, both pre-existing and unrelated
+  (site asset-versioning and stylesheet ordering). Up from 4,890.
+
+### Requirement status
+
+| Plan requirement | Status |
+|---|---|
+| ধারা ৪.৯ Stage A → Stage B (parallel) → Stage C | **IMPLEMENTED** — coordinator in place, one Stage B unit wired |
+| Rule 1 — fragments, deterministic merge by the aggregator alone | **IMPLEMENTED** |
+| Rule 2 — single writer, no worker writes production JSON | **IMPLEMENTED** |
+| Rule 3 — bounded pool per stage, joint host/API budget | **IMPLEMENTED** |
+| Rule 4 — ★ partial results never counted missing | **IMPLEMENTED** |
+| Deadlock rule — no worker waits on a worker's future | **IMPLEMENTED** — tested at pool width 1 |
+| ✗ nine separate Actions jobs | **OUT OF SCOPE** by the plan |
+| ✗ matrix sharding | **OUT OF SCOPE** by the plan |
+
+### Known limitations
+
+1. **One of the five Stage B units is wired.** ধারা ৪.৯ names five — stream
+   verify, series classification, metadata, artwork, repair. Stream verify and
+   repair already run inside `fast_pipeline` with their own pools; series
+   classification is local and costs milliseconds; artwork rides on the
+   metadata provider responses rather than being a separate pass. Metadata is
+   the one with a real, measurable wait to remove, and the plan's own
+   accounting says so. The coordinator takes further stages without changes.
+2. **The saving has not been measured on a production run.** The plan's
+   estimate is ~3 minutes today and proportionally much more after ধাপ ৭'s TTL
+   reduction. What is measured here is that the work now happens beside
+   verification rather than after it, and that it costs the same number of
+   lookups.
+3. **`workers: 1` caps the stage's own throughput.** Lifting it is a
+   `provider_health` locking change, deliberately not bundled into this phase.
+
+### Commit / push
+
+- `phase-10b: a coordinator for dependency-aware parallel stages` → `ec96912`
+- `phase-10b: run the metadata stage beside stream verification` → `7d0b916`
+
+### Push status — OPEN
+
+`git fetch` against `origin/main` succeeds; `git push` is refused:
+
+> remote: Invalid username or token. Password authentication is not supported
+> for Git operations.
+
+The credential was supplied once at the start of this work and is held nowhere
+by policy — not in source, not in state, not in this report. It is no longer
+available to this session, so `350287c`, `ec96912` and `7d0b916` are committed
+locally and verified but **not yet on `origin/main`**, which is at `c9c6992`.
+All three are rebased onto that commit and ready to push the moment the
+credential is supplied again.
+
+### Next task
+
+Phase 11 — Mix category redistribution (A-03).
