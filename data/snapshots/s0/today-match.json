@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-09-25T11:40:52.578762+00:00",
+  "updated_at": "2026-09-25T12:05:22.226818+00:00",
   "count": 7,
-  "filtered_stale": 2,
+  "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -526,7 +526,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_739ff85654c7d95e19d1c9886640eec7",
       "protected_source": true,
       "requires_credentials": true,
@@ -535,15 +535,19 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live",
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-25T09:10:26.375562+00:00"
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-25T09:10:26.375562+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 9,
+      "ended_seen_at": "2026-09-25T11:51:03.699265+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "rourkela-superstars-vs-kataka-panthers",
@@ -729,19 +733,22 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ga08v71597850819.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/opqzci1597866541.png",
       "playback_id": "ctv_5edefe0074a3962fd22f74f9a0c73407",
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live",
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 6,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-25T09:50:14.456899+00:00"
+      "carried_forward_misses": 7,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-25T09:50:14.456899+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-25T11:51:03.699265+00:00"
     },
     {
       "id": "south-africa-u20-vs-zambia-u20",
@@ -833,8 +840,8 @@
       "resolution_height": 576,
       "start_time": "2026-09-25T10:00:00+00:00",
       "start_at": "2026-09-25T10:00:00+00:00",
-      "end_time": "2026-09-25T12:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-09-25T12:50:30+00:00",
+      "end_time_source": "assumed",
       "competition": "COSAFA U20 Championship",
       "fixture_id": "provider:south-africa-u20-vs-zambia-u20|cosafa u20 championship|2026-09-25",
       "status": "LIVE_NOW",
@@ -877,9 +884,73 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "hls",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "live.dyrur1.com",
+          "resolution": "SD",
+          "resolution_height": 540,
+          "playback_id": "ctv_d529933f0f4583ce344e7e670af4b1e4",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [
+              "auth_key"
+            ],
+            "drm": false
+          }
+        }
+      ],
       "channels": [
+        {
+          "id": "australia-vs-brazil--quality",
+          "name": "QUALITY",
+          "normalized_name": "quality",
+          "logo": "https://img.sofascore.com/api/v1/team/4741/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "australia-vs-brazil--quality--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "australia-vs-brazil--quality--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_3879d7a3bf4dd2ceb383d023",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_d529933f0f4583ce344e7e670af4b1e4",
+              "resolution": "SD",
+              "resolution_height": 540,
+              "stream_type": "hls"
+            }
+          ]
+        },
         {
           "id": "australia-vs-brazil--server-1",
           "name": "Server-1",
@@ -917,14 +988,14 @@
           ]
         }
       ],
-      "channel_count": 1,
+      "channel_count": 2,
       "default_channel_id": "australia-vs-brazil--server-1",
       "channel_stats": {
-        "streams_in": 1,
+        "streams_in": 2,
         "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 1
       },
@@ -942,8 +1013,8 @@
       "resolution_height": 1080,
       "start_time": "2026-09-25T10:00:00+00:00",
       "start_at": "2026-09-25T10:00:00+00:00",
-      "end_time": "2026-09-25T12:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-09-25T12:50:30+00:00",
+      "end_time_source": "assumed",
       "competition": "International Friendly Games",
       "fixture_id": "provider:australia-vs-brazil|international friendly games|2026-09-25",
       "status": "LIVE_NOW",
@@ -957,18 +1028,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401881899)"
+        "ESPN espn-header=40' (STATUS_FIRST_HALF, event 401881899)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401881899"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/eylq8x1781926138.png",
@@ -978,7 +1050,7 @@
     {
       "id": "football-men-quarterfinal",
       "name": "Football Men, Quarterfinal",
-      "primary_stream_key": "25be169e97a5daf0dea571aee917cf93fc56a675dc2f01b33e69fa669dcb3be7",
+      "primary_stream_key": "d59f26c8ba7d67bad507e0a410d8bc4e96f39ec40f9a4db9e77b66c1cde2aa2a",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T2/images/S/le-target-images-prod/amzn1.dv.gti.bf0cb871-21c1-4f97-be00-4551596b1d40/5/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpg",
@@ -1003,6 +1075,35 @@
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_583ff3269a06d1b07a5bbe3cbfc38e9c",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1031,7 +1132,7 @@
           }
         },
         {
-          "name": "Backup-2",
+          "name": "Backup-3",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1051,35 +1152,6 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_23206c3529b2c5ce3b85997a4679a2d6",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_9bf4a668b2fa8e962dd094bc1f7aff30",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1115,6 +1187,19 @@
               "id": "football-men-quarterfinal--prime-video--1",
               "role": "primary",
               "playback_type": "native",
+              "variant_key": "sv_2dfcc2fee3a27c43d05757ff",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_9bf4a668b2fa8e962dd094bc1f7aff30",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "football-men-quarterfinal--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_e0cf251038ebfe1482d81f4d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -1125,7 +1210,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "football-men-quarterfinal--prime-video--2",
+              "id": "football-men-quarterfinal--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_0c9736d153aa0797d7021cd6",
@@ -1138,7 +1223,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "football-men-quarterfinal--prime-video--3",
+              "id": "football-men-quarterfinal--prime-video--4",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_f2b993b7e8d5ad50a9706cbe",
@@ -1146,19 +1231,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_23206c3529b2c5ce3b85997a4679a2d6",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "football-men-quarterfinal--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_2dfcc2fee3a27c43d05757ff",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_9bf4a668b2fa8e962dd094bc1f7aff30",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1193,9 +1265,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-09-25T11:29:30+00:00",
-      "start_at": "2026-09-25T11:29:30+00:00",
-      "end_time": "2026-09-25T13:59:30+00:00",
+      "start_time": "2026-09-25T11:50:30+00:00",
+      "start_at": "2026-09-25T11:50:30+00:00",
+      "end_time": "2026-09-25T14:20:30+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:football-men-quarterfinal|2026-09-25",
       "status": "LIVE_NOW",
@@ -1209,7 +1281,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_583ff3269a06d1b07a5bbe3cbfc38e9c",
+      "playback_id": "ctv_9bf4a668b2fa8e962dd094bc1f7aff30",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
