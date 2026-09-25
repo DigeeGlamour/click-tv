@@ -1,30 +1,133 @@
 {
-  "last_scan": "2026-09-25T03:54:56.242081+00:00",
-  "status": "completed_no_target",
-  "mode": "upcoming-targeted",
-  "preserved_existing_output": true,
-  "preservation_reason": "No Upcoming fixture is inside the 25-minute targeted window, or every fixture in it has already had its one targeted scan",
-  "targeted_scan": {
-    "window_minutes": 25,
-    "after_kickoff_minutes": 10,
-    "retry_interval_minutes": 5,
-    "targets": 0,
-    "target_names": [],
-    "already_attempted_skipped": 0,
-    "resolved_skipped": 2,
-    "reopened_dead_link": 0,
-    "refresh_candidates_considered": 5,
-    "refresh_healthy_left_alone": 2,
-    "refresh_never_resolved_skipped": 3,
-    "same_bucket_skipped": 0,
-    "outside_window_skipped": 92,
-    "fixtures_considered": 92,
-    "candidate_match_keys": 0
+  "last_scan": "2026-09-25T04:00:57.202527+00:00",
+  "status": "completed_with_warnings",
+  "mode": "upcoming",
+  "source_errors": 5,
+  "quarantined_channels": 0,
+  "quarantined_movies": 0,
+  "rejected_low_quality": 0,
+  "output_safety_warnings": 0,
+  "stream_warnings": [],
+  "coverage_invariant_failures": [
+    "movie: published surfaces disagree about their generation"
+  ],
+  "stream_health": {
+    "sources_in_outage": [],
+    "published_fixtures": 97,
+    "fixtures_with_stream": 2,
+    "fixtures_playable_via_catalogue": 3,
+    "fixtures_with_fresh_stream": 2,
+    "fixtures_with_carried_stream": 0,
+    "today_with_stream": 2,
+    "upcoming_with_stream": 0,
+    "streams_attached": 0,
+    "state": "ok",
+    "warnings": []
   },
-  "raw_candidate_count": 0,
-  "normalized_candidate_count": 0,
-  "planned_candidate_count": 0,
-  "source_errors": 0,
+  "movie_output_preserved": false,
+  "movie_generation": {
+    "checked_at": "2026-09-25T04:00:59.093066+00:00",
+    "generations": {
+      "2": 31,
+      "unstamped": 13
+    },
+    "distinct_generations": 1,
+    "current_generation": 2,
+    "unstamped_files": 13,
+    "not_yet_stamped": false,
+    "consistent": false,
+    "sample_mismatch": [
+      "movies/discovery/featured.json",
+      "movies/discovery/home.json",
+      "movies/discovery/just-added.json",
+      "movies/discovery/latest.json",
+      "movies/discovery/trending.json",
+      "movies/genres/action.json",
+      "movies/genres/animation.json",
+      "movies/genres/comedy.json",
+      "movies/genres/crime.json",
+      "movies/genres/horror.json",
+      "movies/genres/romance.json",
+      "movies/genres/sci-fi.json",
+      "movies/genres/thriller.json"
+    ]
+  },
+  "movie_observability": {
+    "skipped_fresh": 0,
+    "due_verified": 8,
+    "repair_attempted": null,
+    "series_signal_candidates": null,
+    "classification_cache_hits": null,
+    "confirmed_series": null,
+    "classification_conflicts": null,
+    "season_only_unknown_episode": null,
+    "provider_quota_remaining": {
+      "anilist": "unmetered",
+      "cinemeta": "unmetered",
+      "fanart": "unmetered",
+      "moviesdatabase": 400,
+      "omdb": 800,
+      "tmdb": "unmetered",
+      "tvmaze": "unmetered"
+    }
+  },
+  "allowed_playback_hosts": 650,
+  "catalogued_playback_sources": 2,
+  "total_playback_catalogue_sources": 49254,
+  "movie_verification_status_counts": {
+    "verified_global": 3,
+    "failed": 3,
+    "metadata_only": 2
+  },
+  "pipeline_performance": {
+    "timestamp": "2026-09-25T04:00:15.989262+00:00",
+    "mode": "upcoming-targeted",
+    "elapsed_seconds": 11,
+    "candidate_pool": 8,
+    "global_network_checked": 8,
+    "global_completed": 8,
+    "bd_proxy_selected": 3,
+    "bd_proxy_submitted": 3,
+    "bd_proxy_completed": 3,
+    "final_processed": 8,
+    "final_publishable": 3,
+    "adaptive_skipped": 0,
+    "budget_fallbacks": 0,
+    "strict_player_hidden": 2,
+    "browser_unreachable_hidden": 0,
+    "unproven_hidden": 0,
+    "budget_exhausted": false,
+    "host_circuits_opened": 0,
+    "host_circuit_skips": 0,
+    "host_sample_deferred": 0,
+    "circuit_deferred": 0,
+    "cloud_inconclusive_hosts": 0,
+    "path_404_quarantined": 0,
+    "path_404_groups": 0,
+    "priority_forced_verification": 0,
+    "final_global_inflight_limit": 20,
+    "workers": {
+      "global_pool_count": 1,
+      "global_workers_per_pool": 20,
+      "global_total_max": 20,
+      "global_minimum_inflight": 12,
+      "bd_pool_count": 1,
+      "bd_workers_per_pool": 6,
+      "bd_total_max": 6,
+      "shared_total_inflight_limit": 26,
+      "bd_reserved_inflight_slots": 6,
+      "global_per_host": 4,
+      "bd_per_host": 6,
+      "combined_per_host": 10,
+      "tail_per_host": 6,
+      "host_sample_size": 5,
+      "host_sample_uncertain_threshold": 4,
+      "host_second_pass_sample_size": 8,
+      "path_404_sample_size": 5,
+      "path_404_threshold": 4,
+      "path_group_depth": 3
+    }
+  },
   "totals": {
     "channels": 430,
     "movies": 1970,
@@ -36,12 +139,12 @@
     "today_match": {
       "count": 6,
       "visible": true,
-      "url": "data/snapshots/s2/today-match.json"
+      "url": "data/today-match.json"
     },
     "upcoming": {
       "count": 91,
       "visible": true,
-      "url": "data/snapshots/s2/upcoming.json"
+      "url": "data/upcoming.json"
     },
     "channels": {
       "Bangla": {
@@ -145,17 +248,18 @@
         "index": "data/movies/premium/index.json"
       }
     },
-    "updated_at": "2026-09-25T03:31:58.160595+00:00",
+    "updated_at": "2026-09-25T04:00:57.202527+00:00",
     "snapshot": {
-      "slot": "s2",
-      "generation": 1545,
-      "id": "s2-1545",
-      "directory": "data/snapshots/s2",
-      "published_at": "2026-09-25T03:31:58.160595+00:00",
+      "slot": "s0",
+      "generation": 1546,
+      "id": "s0-1546",
+      "directory": "data/snapshots/s0",
+      "published_at": "2026-09-25T03:50:49.827698+00:00",
       "switch": "one os.replace() of data/manifest.json",
       "mirrored_flat_paths": true
     },
-    "allowed_hosts_url": "data/snapshots/s2/allowed-hosts.json",
-    "playback_catalog_url": "data/snapshots/s2/playback-sources.json"
-  }
+    "allowed_hosts_url": "data/snapshots/s0/allowed-hosts.json",
+    "playback_catalog_url": "data/snapshots/s0/playback-sources.json"
+  },
+  "telegram_sent": false
 }
