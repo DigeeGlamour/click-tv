@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-09-25T17:41:04.163921+00:00",
-  "count": 14,
-  "filtered_stale": 2,
+  "updated_at": "2026-09-25T18:10:08.366431+00:00",
+  "count": 16,
+  "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -69,7 +69,14 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-09-25T17:53:39.856741+00:00"
     },
     {
       "id": "niger-vs-lesotho",
@@ -172,34 +179,41 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=68' (STATUS_SECOND_HALF, event 401920043)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401920043)",
         "LiveScore livescore=FT (6, event 1872911)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401920043"
+        "espn-header": "401920043",
+        "livescore": "1872911"
       },
-      "authority_status": "LIVE",
+      "authority_status": "FINISHED",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/9pmaes1553349468.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/dp8xjj1553372349.png",
       "playback_id": "ctv_d28d821b321a57860af05ce3591a8aa7",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_misses": 4,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-09-25T17:10:45.818867+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=68' (STATUS_SECOND_HALF, event 401920043); LiveScore livescore=FT (6, event 1872911)"
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-25T18:09:26.485582+00:00",
+      "authority_remove_after": "2026-09-25T18:29:26.485582+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "ended_seen_at": "2026-09-25T18:09:53.708246+00:00"
     },
     {
       "id": "bulgaria-u21-vs-portugal-u21",
@@ -291,7 +305,7 @@
       "resolution_height": 576,
       "start_time": "2026-09-25T15:30:00+00:00",
       "start_at": "2026-09-25T15:30:00+00:00",
-      "end_time": "2026-09-25T18:31:02+00:00",
+      "end_time": "2026-09-25T18:52:49+00:00",
       "end_time_source": "assumed",
       "competition": "U21 Euro Qualification",
       "fixture_id": "provider:bulgaria-u21-vs-portugal-u21|u21 euro qualification|2026-09-25",
@@ -313,15 +327,23 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 732419)",
+        "ESPN espn-header=90'+4' (STATUS_SECOND_HALF, event 732419)",
         "LiveScore livescore=FT (6, event 1660565)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 732419); LiveScore livescore=FT (6, event 1660565)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rw7m721602253336.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/q8df5e1599576053.png",
-      "playback_id": "ctv_5edefe0074a3962fd22f74f9a0c73407"
+      "playback_id": "ctv_5edefe0074a3962fd22f74f9a0c73407",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90'+4' (STATUS_SECOND_HALF, event 732419); LiveScore livescore=FT (6, event 1660565)",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-09-25T18:09:53.708246+00:00"
     },
     {
       "id": "finals-semifinal-spain-vs-czechia",
@@ -571,7 +593,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-09-25T15:52:13.294216+00:00"
     },
@@ -661,7 +683,7 @@
       ],
       "start_time": "2026-09-25T16:00:00+00:00",
       "start_at": "2026-09-25T16:00:00+00:00",
-      "end_time": "2026-09-25T18:31:02+00:00",
+      "end_time": "2026-09-25T18:52:49+00:00",
       "end_time_source": "assumed",
       "competition": "Africa Cup of Nations Qual.",
       "fixture_id": "provider:gambia-vs-somalia|africa cup of nations qual|2026-09-25",
@@ -676,13 +698,15 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=28' (STATUS_FIRST_HALF, event 401920045)"
+        "ESPN espn-header=59' (STATUS_SECOND_HALF, event 401920045)",
+        "LiveScore livescore=FT (6, event 1872935)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -693,7 +717,15 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/1mjbil1742102551.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/y6z9fn1598647934.png",
-      "playback_id": "ctv_a5b4ed360162775c15a2c4553c427cf8"
+      "playback_id": "ctv_a5b4ed360162775c15a2c4553c427cf8",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=59' (STATUS_SECOND_HALF, event 401920045); LiveScore livescore=FT (6, event 1872935)",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-09-25T18:09:53.708246+00:00"
     },
     {
       "id": "malawi-vs-south-sudan",
@@ -796,13 +828,15 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=31' (STATUS_FIRST_HALF, event 401920042)"
+        "ESPN espn-header=64' (STATUS_SECOND_HALF, event 401920042)",
+        "LiveScore livescore=FT (6, event 1872923)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -818,9 +852,10 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-09-25T17:31:39.151429+00:00"
+      "carried_forward_first_missed_at": "2026-09-25T17:31:39.151429+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=64' (STATUS_SECOND_HALF, event 401920042); LiveScore livescore=FT (6, event 1872923)"
     },
     {
       "id": "nigeria-vs-madagascar",
@@ -908,7 +943,7 @@
       ],
       "start_time": "2026-09-25T16:00:00+00:00",
       "start_at": "2026-09-25T16:00:00+00:00",
-      "end_time": "2026-09-25T18:31:02+00:00",
+      "end_time": "2026-09-25T18:52:49+00:00",
       "end_time_source": "assumed",
       "competition": "Africa Cup of Nations Qual.",
       "fixture_id": "provider:nigeria-vs-madagascar|africa cup of nations qual|2026-09-25",
@@ -923,13 +958,15 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=31' (STATUS_FIRST_HALF, event 401920047)"
+        "ESPN espn-header=62' (STATUS_SECOND_HALF, event 401920047)",
+        "LiveScore livescore=FT (6, event 1873047)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -940,7 +977,15 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/qruyxr1455466056.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ucdnf21718412893.png",
-      "playback_id": "ctv_18587474ab10034e44bcfe4662623992"
+      "playback_id": "ctv_18587474ab10034e44bcfe4662623992",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=62' (STATUS_SECOND_HALF, event 401920047); LiveScore livescore=FT (6, event 1873047)",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-09-25T18:09:53.708246+00:00"
     },
     {
       "id": "rwanda-vs-liberia",
@@ -1028,7 +1073,7 @@
       ],
       "start_time": "2026-09-25T16:00:00+00:00",
       "start_at": "2026-09-25T16:00:00+00:00",
-      "end_time": "2026-09-25T18:31:02+00:00",
+      "end_time": "2026-09-25T18:52:49+00:00",
       "end_time_source": "assumed",
       "competition": "Africa Cup of Nations Qual.",
       "fixture_id": "provider:rwanda-vs-liberia|africa cup of nations qual|2026-09-25",
@@ -1043,13 +1088,15 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=27' (STATUS_IN_PROGRESS, event 401920046)"
+        "ESPN espn-header=53' (STATUS_SECOND_HALF, event 401920046)",
+        "LiveScore livescore=FT (6, event 1873035)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1060,7 +1107,15 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vevw681553350238.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/53c4011645302407.png",
-      "playback_id": "ctv_39437eedd05d532d8381af2bb1b86f2c"
+      "playback_id": "ctv_39437eedd05d532d8381af2bb1b86f2c",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=53' (STATUS_SECOND_HALF, event 401920046); LiveScore livescore=FT (6, event 1873035)",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-09-25T18:09:53.708246+00:00"
     },
     {
       "id": "togo-vs-burundi",
@@ -1087,26 +1142,8 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "url": "https://www.rtmpcdn.com/live/bef5a372-e37b-4aa0-b5cd-0f58950f73d4.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "www.rtmpcdn.com",
-          "playback_id": "ctv_fa51e3cff42045d470c27a38317d3724"
-        }
-      ],
+      "available_link_count": 1,
+      "backups": [],
       "channels": [
         {
           "id": "togo-vs-burundi--bein-sports-xtra",
@@ -1143,50 +1180,16 @@
               "stream_type": "hls"
             }
           ]
-        },
-        {
-          "id": "togo-vs-burundi--quality4",
-          "name": "QUALITY4",
-          "normalized_name": "quality4",
-          "logo": "https://img.sofascore.com/api/v1/team/4836/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "togo-vs-burundi--quality4--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "togo-vs-burundi--quality4--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_24ebf03b8e0f21a03b1ae01c",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_d66ed97982784406873fc8b38896f72b",
-              "stream_type": "hls"
-            }
-          ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 1,
       "default_channel_id": "togo-vs-burundi--bein-sports-xtra",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 1,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 1,
+        "variants": 1,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1204,7 +1207,7 @@
       "resolution_height": 1080,
       "start_time": "2026-09-25T16:00:00+00:00",
       "start_at": "2026-09-25T16:00:00+00:00",
-      "end_time": "2026-09-25T18:31:02+00:00",
+      "end_time": "2026-09-25T19:09:26+00:00",
       "end_time_source": "assumed",
       "competition": "Africa Cup of Nations Qual.",
       "fixture_id": "provider:togo-vs-burundi|africa cup of nations qual|2026-09-25",
@@ -1219,24 +1222,22 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=29' (STATUS_FIRST_HALF, event 401920044)"
+        "ESPN espn-header=58' (STATUS_SECOND_HALF, event 401920044)",
+        "LiveScore livescore=FT (6, event 1873010)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401920044"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=58' (STATUS_SECOND_HALF, event 401920044); LiveScore livescore=FT (6, event 1873010)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/0jke8x1553368727.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/gru5fp1593280015.png",
-      "playback_id": "ctv_5c574e9a0a7a212abf75048699732608"
+      "playback_id": "ctv_9d4a3d7cb3ba2138fb8813bfaad7ceb7"
     },
     {
       "id": "namibia-u20-vs-mozambique-u20",
@@ -1352,19 +1353,19 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-09-25T15:52:13.294216+00:00"
     },
     {
       "id": "armenia-vs-latvia",
       "name": "Armenia Vs Latvia",
-      "primary_stream_key": "db5d8e8e7ffb0d59ada3f4b151748d4fdd1e8c600c123c25d0f32396df7df57e",
+      "primary_stream_key": "ec99de07403820abc7eb5aacf8931bc930b4a943d7c5c1b782082c927ac6be0d",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/4740/image",
       "category": "today_match",
-      "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/xtkswns2yn/out/v1/9c348c1bc962495a9420f01ac0964a86/cenc.mpd",
+      "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/ghwcl6hv68/out/v1/83536910d8034e9b9895a20fbe1c1687/cenc.mpd",
       "header_profile": "android_chrome",
       "proxy_mode": "direct_first",
       "stream_type": "dash",
@@ -1400,27 +1401,10 @@
           "host": "otte.live.fly.ww.aiv-cdn.net",
           "resolution": "SD",
           "resolution_height": 576,
-          "playback_id": "ctv_057a25b95b375e0efd730df78f531296"
+          "playback_id": "ctv_31c5d0f760f42872eb784f7594d36764"
         },
         {
           "name": "Backup-2",
-          "url": "https://www.rtmpcdn.com/live/f845cdb3-29e7-4146-b62e-9258b171f954.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "www.rtmpcdn.com",
-          "playback_id": "ctv_94a56dd2a80b200569355256f659fa63"
-        },
-        {
-          "name": "Backup-3",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1449,7 +1433,7 @@
           }
         },
         {
-          "name": "Backup-4",
+          "name": "Backup-3",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1478,7 +1462,7 @@
           }
         },
         {
-          "name": "Backup-5",
+          "name": "Backup-4",
           "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/orhlovwjv8/out/v1/3fbdf8c3ec6743d085d32dace1764176/cenc.mpd",
           "header_profile": "android_chrome",
           "proxy_mode": "direct_first",
@@ -1494,14 +1478,33 @@
           "host": "otte.cache.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_2f4c6912dd8bab1fdc688d35a4fa8227"
+          "playback_id": "ctv_c0130e5e62e195ba7f47971e550bf4a2"
+        },
+        {
+          "name": "Backup-5",
+          "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/xtkswns2yn/out/v1/9c348c1bc962495a9420f01ac0964a86/cenc.mpd",
+          "header_profile": "android_chrome",
+          "proxy_mode": "direct_first",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_f37b62f6e8e9c29f8c8af6887f1596cd"
         }
       ],
       "channels": [
         {
-          "id": "armenia-vs-latvia--fubo-sports",
-          "name": "FUBO SPORTS",
-          "normalized_name": "fubo-sports",
+          "id": "armenia-vs-latvia--bein1-sportsfhd",
+          "name": "BeIN1 SPORTSFHD",
+          "normalized_name": "bein1-sportsfhd",
           "logo": "https://img.sofascore.com/api/v1/team/4740/image",
           "name_confidence": "explicit",
           "name_source": "channel_name",
@@ -1509,7 +1512,7 @@
           "source_ids": [
             "sm-sports-data"
           ],
-          "primary_stream_id": "armenia-vs-latvia--fubo-sports--1",
+          "primary_stream_id": "armenia-vs-latvia--bein1-sportsfhd--1",
           "stream_count": 1,
           "backup_count": 0,
           "verified": true,
@@ -1520,14 +1523,14 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "armenia-vs-latvia--fubo-sports--1",
+              "id": "armenia-vs-latvia--bein1-sportsfhd--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_6050d4da3bbc9716d78d8289",
+              "variant_key": "sv_b5ecc76c53ee441b256f6a26",
               "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_f37b62f6e8e9c29f8c8af6887f1596cd",
+              "playback_id": "ctv_8a86e37685ea4a6ee9ccd37a76c210ff",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1559,19 +1562,6 @@
               "id": "armenia-vs-latvia--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_05777cf74dee7767586451cf",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_162817ba824ac64338c80b2ba60a85af",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "armenia-vs-latvia--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_f06a5c09d7b2ca1f018d5372",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -1582,7 +1572,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "armenia-vs-latvia--prime-video--3",
+              "id": "armenia-vs-latvia--prime-video--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_dc3d5a7b3d305b1e1a2f2b18",
@@ -1595,7 +1585,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "armenia-vs-latvia--prime-video--4",
+              "id": "armenia-vs-latvia--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_65cf9ecade95ec53d07add0f",
@@ -1603,6 +1593,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_72fc94d3280bb5032453aca739216fab",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "armenia-vs-latvia--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_05777cf74dee7767586451cf",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_162817ba824ac64338c80b2ba60a85af",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1646,9 +1649,9 @@
           ]
         },
         {
-          "id": "armenia-vs-latvia--bein1-sportsfhd",
-          "name": "BeIN1 SPORTSFHD",
-          "normalized_name": "bein1-sportsfhd",
+          "id": "armenia-vs-latvia--fubo-sports",
+          "name": "FUBO SPORTS",
+          "normalized_name": "fubo-sports",
           "logo": "https://img.sofascore.com/api/v1/team/4740/image",
           "name_confidence": "explicit",
           "name_source": "channel_name",
@@ -1656,7 +1659,7 @@
           "source_ids": [
             "sm-sports-data"
           ],
-          "primary_stream_id": "armenia-vs-latvia--bein1-sportsfhd--1",
+          "primary_stream_id": "armenia-vs-latvia--fubo-sports--1",
           "stream_count": 1,
           "backup_count": 0,
           "verified": true,
@@ -1667,14 +1670,14 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "armenia-vs-latvia--bein1-sportsfhd--1",
+              "id": "armenia-vs-latvia--fubo-sports--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_b5ecc76c53ee441b256f6a26",
+              "variant_key": "sv_6050d4da3bbc9716d78d8289",
               "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_8a86e37685ea4a6ee9ccd37a76c210ff",
+              "playback_id": "ctv_f37b62f6e8e9c29f8c8af6887f1596cd",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1716,79 +1719,23 @@
               "stream_type": "dash"
             }
           ]
-        },
-        {
-          "id": "armenia-vs-latvia--quality48",
-          "name": "QUALITY48",
-          "normalized_name": "quality48",
-          "logo": "https://img.sofascore.com/api/v1/team/4740/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "armenia-vs-latvia--quality48--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "armenia-vs-latvia--quality48--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_3035aa3a1a2b09eac7ebe6d5",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ed3d508cc5f1d83e8856eb410aa613e1",
-              "stream_type": "hls"
-            }
-          ]
         }
       ],
-      "channel_count": 6,
-      "default_channel_id": "armenia-vs-latvia--fubo-sports",
+      "channel_count": 5,
+      "default_channel_id": "armenia-vs-latvia--bein1-sportsfhd",
       "channel_stats": {
-        "streams_in": 9,
+        "streams_in": 8,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 6,
-        "variants": 9,
+        "channels": 5,
+        "variants": 8,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
-      "standby_link_count": 3,
+      "standby_link_count": 2,
       "standby": [
         {
           "name": "Standby-1",
-          "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/ghwcl6hv68/out/v1/83536910d8034e9b9895a20fbe1c1687/cenc.mpd",
-          "drm": {},
-          "header_profile": "android_chrome",
-          "proxy_mode": "direct_first",
-          "requires_headers": false,
-          "verification_status": "verified_global",
-          "verified": true,
-          "source_id": "sm-sports-data",
-          "source_provenance": [
-            {
-              "source_id": "sm-sports-data",
-              "source_name": "SM Live and Upcoming Sports Data",
-              "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-            }
-          ],
-          "host": "otte.cache.aiv-cdn.net",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_644351de961b6c63351d40b94fdf7151"
-        },
-        {
-          "name": "Standby-2",
           "drm": {
             "type": "clearkey",
             "protected": true
@@ -1819,7 +1766,7 @@
           }
         },
         {
-          "name": "Standby-3",
+          "name": "Standby-2",
           "drm": {
             "type": "clearkey",
             "protected": true
@@ -1864,7 +1811,7 @@
       "resolution_height": 1080,
       "start_time": "2026-09-25T16:00:00+00:00",
       "start_at": "2026-09-25T16:00:00+00:00",
-      "end_time": "2026-09-25T18:31:02+00:00",
+      "end_time": "2026-09-25T19:09:26+00:00",
       "end_time_source": "assumed",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:armenia-vs-latvia|uefa nations league|2026-09-25",
@@ -1879,19 +1826,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=30' (STATUS_FIRST_HALF, event 401861050)"
+        "ESPN espn-header=63' (STATUS_SECOND_HALF, event 401861050)",
+        "LiveScore livescore=FT (6, event 1738396)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401861050"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=63' (STATUS_SECOND_HALF, event 401861050); LiveScore livescore=FT (6, event 1738396)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1905,7 +1850,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhAh+zMGRyruIPiBggSIFCAghdAExCI+BCkztdN5evNEpgTWmE1jREEA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhDwwSSmBTAAJsAAMIbiB0gUuEyD5nL5lAQpM+2tmDJr680dqa0wbsVEIIA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_a7afc5baa3178a2c4bfa97501759ca7c"
+      "playback_id": "ctv_8a86e37685ea4a6ee9ccd37a76c210ff"
     },
     {
       "id": "georgia-vs-northern-ireland",
@@ -2049,7 +1994,7 @@
       "resolution_height": 1080,
       "start_time": "2026-09-25T16:00:00+00:00",
       "start_at": "2026-09-25T16:00:00+00:00",
-      "end_time": "2026-09-25T18:31:02+00:00",
+      "end_time": "2026-09-25T18:52:49+00:00",
       "end_time_source": "assumed",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:georgia-vs-northern-ireland|uefa nations league|2026-09-25",
@@ -2064,13 +2009,15 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=29' (STATUS_FIRST_HALF, event 401861049)"
+        "ESPN espn-header=60' (STATUS_SECOND_HALF, event 401861049)",
+        "LiveScore livescore=FT (6, event 1738328)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2079,7 +2026,140 @@
       "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_efaf6b32a87a3c8a84c26c9875e95a38"
+      "playback_id": "ctv_efaf6b32a87a3c8a84c26c9875e95a38",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=60' (STATUS_SECOND_HALF, event 401861049); LiveScore livescore=FT (6, event 1738328)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-09-25T18:09:53.708246+00:00"
+    },
+    {
+      "id": "switzerland-u21-vs-luxembourg-u21",
+      "name": "Switzerland U21 Vs Luxembourg U21",
+      "primary_stream_key": "3de9832c71c2ac1a6497c880886da2e27a22873ee4a83fb200d0dd0c9cceda57",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/4876/image",
+      "category": "today_match",
+      "url": "https://file.genoads.com/ch1.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "switzerland-u21-vs-luxembourg-u21--stream-tv",
+          "name": "STREAM TV",
+          "normalized_name": "stream-tv",
+          "logo": "https://img.sofascore.com/api/v1/team/4876/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "switzerland-u21-vs-luxembourg-u21--stream-tv--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "switzerland-u21-vs-luxembourg-u21--stream-tv--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_7e965fcb4ffb435c8a188ff9",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_e94590dd78ee0859c2150c051fe96224",
+              "resolution": "SD",
+              "resolution_height": 576,
+              "stream_type": "hls"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "switzerland-u21-vs-luxembourg-u21--stream-tv",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "resolution": "SD",
+      "resolution_height": 576,
+      "start_time": "2026-09-25T17:30:00+00:00",
+      "start_at": "2026-09-25T17:30:00+00:00",
+      "end_time": "2026-09-25T20:00:00+00:00",
+      "end_time_source": "sport",
+      "competition": "U21 Euro Qualification",
+      "fixture_id": "provider:switzerland-u21-vs-luxembourg-u21|u21 euro qualification|2026-09-25",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-09-25T17:30:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 732411)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "732411"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ih9xvn1602252862.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/81lyzb1713725402.png",
+      "playback_id": "ctv_e94590dd78ee0859c2150c051fe96224"
     },
     {
       "id": "england-u19-vs-republic-of-ireland-u19",
@@ -2152,15 +2232,143 @@
       "allow_without_stream": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-09-25T17:53:39.856741+00:00"
     },
     {
       "id": "corinthians-u20-vs-xv-de-jaú-u20",
       "name": "Corinthians U20 vs XV de Jaú U20",
-      "primary_stream_key": "",
+      "primary_stream_key": "5e19fec4f476497301740e6256729ab66ea475305e3971a8fe4f956ff5a20350",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://rs.maycdn.com/fixture/teams/af/12998.png",
+      "category": "today_match",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_only",
+      "stream_type": "hls",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-bingstream",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "corinthians-u20-vs-xv-de-ja-u20--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://rs.maycdn.com/fixture/teams/af/12998.png",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "srhady-bingstream",
+          "source_ids": [
+            "srhady-bingstream"
+          ],
+          "primary_stream_id": "corinthians-u20-vs-xv-de-ja-u20--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "corinthians-u20-vs-xv-de-ja-u20--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_ff6944913c1919984c737048",
+              "provider": "srhady-bingstream",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_5e7bf246c343942e7b0b3a2c4ba5011e",
+              "stream_type": "hls"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "corinthians-u20-vs-xv-de-ja-u20--server-1",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 1,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 1
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-bingstream",
+          "source_name": "Bingstream Live and Upcoming",
+          "source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-bingstream"
+      ],
+      "start_time": "2026-09-25T18:00:00+00:00",
+      "start_at": "2026-09-25T18:00:00+00:00",
+      "end_time": "2026-09-25T20:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Paulista - U20",
+      "fixture_id": "provider:corinthians-u20-vs-xv-de-jaú-u20|paulista u20|2026-09-25",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "source_start_time": "2026-09-25T18:00:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "sport_type_from_source": "other",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_5e7bf246c343942e7b0b3a2c4ba5011e",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [
+          "token"
+        ],
+        "drm": false
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-09-25T17:53:39.856741+00:00"
+    },
+    {
+      "id": "girona-vs-albacete",
+      "name": "Girona vs Albacete",
+      "primary_stream_key": "",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://rs.maycdn.com/fixture/teams/af/547.png",
       "category": "today_match",
       "url": "",
       "header_profile": "android_tv",
@@ -2182,8 +2390,8 @@
       "available_link_count": 0,
       "backups": [],
       "channel_stats": {
-        "streams_in": 2,
-        "unresolved_channel_streams": 2,
+        "streams_in": 3,
+        "unresolved_channel_streams": 3,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -2195,32 +2403,54 @@
           "source_id": "srhady-bingstream",
           "source_name": "Bingstream Live and Upcoming",
           "source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json"
+        },
+        {
+          "source_id": "srhady-axsports-live",
+          "source_name": "AX Sports Live Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/axsports/refs/heads/main/live_sports.json"
         }
       ],
       "source_ids": [
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
-      "start_time": "2026-09-25T18:00:00+00:00",
-      "start_at": "2026-09-25T18:00:00+00:00",
-      "end_time": "2026-09-25T20:30:00+00:00",
-      "end_time_source": "sport",
-      "competition": "Paulista - U20",
-      "fixture_id": "provider:corinthians-u20-vs-xv-de-jaú-u20|paulista u20|2026-09-25",
-      "status": "LINK_UPDATING",
+      "start_time": "2026-09-25T18:30:00+00:00",
+      "start_at": "2026-09-25T18:30:00+00:00",
+      "end_time": "2026-09-25T22:30:00+00:00",
+      "end_time_source": "assumed",
+      "competition": "Segunda División",
+      "fixture_id": "provider:girona-vs-albacete|segunda divisi n|2026-09-25",
+      "status": "STARTING_SOON",
       "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
+      "schedule_status": "STARTING_SOON",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "source_start_time": "2026-09-25T18:00:00+00:00",
+      "source_start_time": "2026-09-25T18:30:00+00:00",
       "time_verification": "provider_feed",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "sport_type_from_source": "other",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401883200)",
+        "LiveScore livescore=NS (1, event 1811042)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401883200",
+        "livescore": "1811042"
+      },
       "allow_without_stream": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "STARTING",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kfu7zu1659897499.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/17oqja1616436316.png"
     }
   ]
 }
