@@ -1,18 +1,20 @@
 {
-  "timestamp": "2026-09-25T15:00:56.079928+00:00",
+  "timestamp": "2026-09-25T15:05:21.254909+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 1,
-  "total_global_network_checked": 1,
-  "total_proxy_selected": 0,
-  "total_proxy_checked": 0,
-  "total_processed": 1,
+  "total_input_pool": 4,
+  "total_global_network_checked": 4,
+  "total_proxy_selected": 2,
+  "total_proxy_checked": 2,
+  "total_processed": 4,
   "total_publishable": 0,
-  "strict_player_hidden": 0,
+  "strict_player_hidden": 1,
   "browser_unreachable_hidden": 1,
   "unproven_hidden": 0,
   "status_counts": {
-    "unreachable_from_browser": 1
+    "unreachable_from_browser": 1,
+    "failed": 2,
+    "metadata_only": 1
   },
   "groups": {
     "unreachable_from_browser": [
@@ -30,6 +32,58 @@
         "proxy_http_status": 0,
         "verification_error": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
         "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      }
+    ],
+    "failed": [
+      {
+        "id": "kooteepee-vs-mp",
+        "name": "Kooteepee vs MP",
+        "source_id": "srhady-bingstream",
+        "source_pipeline": "upcoming",
+        "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6a959e10cfbac0cba8de38f7/index.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "global",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "kooteepee-vs-mp",
+        "name": "Kooteepee vs MP",
+        "source_id": "srhady-bingstream",
+        "source_pipeline": "upcoming",
+        "url": "https://livecdn-bp-livestream.rumsport10.live/sla/1-6a959e10cfbac0cba8de38f7/index.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "global",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      }
+    ],
+    "metadata_only": [
+      {
+        "id": "kooteepee-vs-mp",
+        "name": "Kooteepee vs MP",
+        "source_id": "srhady-bingstream",
+        "source_pipeline": "upcoming",
+        "url": "",
+        "verification_status": "metadata_only",
+        "verification_mode": "none",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
         "permanent_fail_count": 0
       }
     ]
