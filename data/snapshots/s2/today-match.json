@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-09-25T12:50:23.124372+00:00",
+  "updated_at": "2026-09-25T13:28:56.179453+00:00",
   "count": 7,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -69,7 +69,14 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-09-25T13:10:12.803763+00:00"
     },
     {
       "id": "south-africa-u20-vs-zambia-u20",
@@ -184,7 +191,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-09-25T12:07:13.776283+00:00"
     },
@@ -300,23 +307,35 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=90'+5' (STATUS_IN_PROGRESS, event 401881899)",
+        "ESPN espn-header=57' (STATUS_SECOND_HALF, event 401881899)",
         "LiveScore livescore=FT (6, event 1832896)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/eylq8x1781926138.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/jl6dip1726167280.png",
       "playback_id": "ctv_da75acf2796ec4d9f4aaa0cbf9c9a5e1",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90'+5' (STATUS_IN_PROGRESS, event 401881899); LiveScore livescore=FT (6, event 1832896)",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-25T12:50:18.672233+00:00"
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-25T12:50:18.672233+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401881899",
+        "livescore": "1832896"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-25T13:09:49.751368+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-25T13:29:49.751368+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-25T13:10:12.803763+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=57' (STATUS_SECOND_HALF, event 401881899); LiveScore livescore=FT (6, event 1832896)"
     },
     {
       "id": "football-men-quarterfinal",
@@ -559,7 +578,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-09-25T13:10:12.803763+00:00"
     },
     {
       "id": "senegal-vs-mozambique",
@@ -632,26 +659,29 @@
       "previous_event_id": "mozambique-vs-senegal",
       "promoted_card": true,
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401920048)",
-        "LiveScore livescore=NS (1, event 1873030)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401920048)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "401920048",
-        "livescore": "1873030"
+        "espn-header": "401920048"
       },
       "allow_without_stream": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/jpbvy51742102860.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/slayb01780546342.png"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/slayb01780546342.png",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 2,
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-09-25T13:10:12.803763+00:00"
     },
     {
       "id": "tanzania-vs-guinea-bissau",
@@ -759,25 +789,30 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401920049)",
-        "LiveScore livescore=NS (1, event 1873046)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401920049)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "401920049",
-        "livescore": "1873046"
+        "espn-header": "401920049"
       },
       "start_window_claimed": "LIVE_NOW",
       "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 10 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_9b40f411b039f0ef521bb43a21702e0f"
+      "playback_id": "ctv_cde69ce56554ce36ae5100b095cedc94",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-09-25T13:10:12.803763+00:00"
     },
     {
       "id": "indonesia-vs-singapore",
@@ -850,9 +885,15 @@
       "allow_without_stream": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hkg0st1656933330.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/cpctsg1597743506.png"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/cpctsg1597743506.png",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 2,
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-09-25T13:10:12.803763+00:00"
     }
   ]
 }
