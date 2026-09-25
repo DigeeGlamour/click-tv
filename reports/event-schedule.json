@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-25T17:21:30.808012+00:00",
+  "generated_at": "2026-09-25T17:32:16.336180+00:00",
   "today_match_count": 14,
   "upcoming_count": 113,
   "today_missing_logo": [],
@@ -21,7 +21,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 526,
+  "provider_fixture": 531,
   "provider_rejected": 94,
   "provider_rejected_reasons": {
     "provider_dead_status": 54,
@@ -567,7 +567,7 @@
     }
   ],
   "ambiguous_suppressed": 0,
-  "unverified_suppressed": 235,
+  "unverified_suppressed": 242,
   "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
   "streams_attached": 0,
@@ -576,8 +576,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 526,
-    "discarded": 148,
+    "total": 531,
+    "discarded": 151,
     "examples": [
       {
         "name": "TENNIS | EVENTO",
@@ -605,11 +605,19 @@
       },
       {
         "name": "Day 1 Session 1 25 Sep 2026",
-        "source": "sportlive-sonyliv-backup, sayanpal-sonyliv-backup",
+        "source": "sayanpal-sonyliv-backup",
         "competition": "Laver Cup 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
         "evidence": "tennis"
+      },
+      {
+        "name": "Day 2 World Feed",
+        "source": "drmlive-fancode-mirror",
+        "competition": "Presidents Cup 2026",
+        "sport_type": "",
+        "reason": "golf gazetteer",
+        "evidence": "golf"
       },
       {
         "name": "Day 3",
@@ -645,7 +653,7 @@
       },
       {
         "name": "Qualifying",
-        "source": "sayanpal-fancode-mirror, dartv-fancode-mirror",
+        "source": "dartv-fancode-mirror",
         "competition": "F1 QATAR AIRWAYS AZERBAIJAN GRAND PRIX 2026",
         "sport_type": "",
         "reason": "league map: motorsport",
@@ -693,7 +701,7 @@
       },
       {
         "name": "ATP 250 Chengdu Open 2026 vs Chengdu, China",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, sportlive-fancode-backup, dartv-fancode-mirror, ",
         "competition": "ATP 250 - Chengdu Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -733,7 +741,7 @@
       },
       {
         "name": "Buffalo Bills Vs Los Angeles Chargers",
-        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, drmliv",
+        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, dartv-",
         "competition": "NFL",
         "sport_type": "",
         "reason": "league map: gridiron",
@@ -925,7 +933,7 @@
       },
       {
         "name": "Perth Wildcats Vs New Zealand Breakers",
-        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, drmliv",
+        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, dartv-",
         "competition": "NBL",
         "sport_type": "",
         "reason": "basketball gazetteer",
@@ -1045,19 +1053,11 @@
       },
       {
         "name": "World Feed vs Chicago, Illinois (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, sportlive-fancode-backup, dartv-fancode-mirror, ",
         "competition": "Presidents Cup 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
         "evidence": "golf"
-      },
-      {
-        "name": "Boston Red Sox Vs Chicago Cubs",
-        "source": "sm-sports-data",
-        "competition": "MLB",
-        "sport_type": "",
-        "reason": "league map: baseball",
-        "evidence": "MLB"
       }
     ]
   },
@@ -1065,49 +1065,70 @@
   "authority_status": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 1,
-    "recorded": 77,
-    "conflict": 0,
+    "live": 6,
+    "recorded": 71,
+    "conflict": 1,
     "unmatched": 44,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 77,
-      "LIVE": 1
+      "LIVE": 6,
+      "UPCOMING": 71
     },
     "by_confidence": {
-      "LOW": 35,
+      "LOW": 34,
+      "CONFLICT": 1,
       "HIGH": 43
     },
     "applied_fixtures": [],
-    "conflicts": []
+    "conflicts": [
+      {
+        "name": "Bulgaria U21 Vs Portugal U21",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 732419); LiveScore livescore=FT (6, event 1660565)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "authority_status_carried": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 1,
-    "recorded": 7,
-    "conflict": 1,
+    "live": 7,
+    "recorded": 0,
+    "conflict": 2,
     "unmatched": 6,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 1,
-      "UPCOMING": 7
+      "LIVE": 7
     },
     "by_confidence": {
-      "CONFLICT": 1,
-      "LOW": 8
+      "CONFLICT": 2,
+      "LOW": 7
     },
     "applied_fixtures": [],
     "conflicts": [
       {
         "name": "Niger Vs Lesotho",
-        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401920043); LiveScore livescore=FT (6, event 1872911)",
+        "reason": "independent authorities disagree: ESPN espn-header=68' (STATUS_SECOND_HALF, event 401920043); LiveScore livescore=FT (6, event 1872911)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Bulgaria U21 Vs Portugal U21",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 732419); LiveScore livescore=FT (6, event 1660565)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1173,7 +1194,7 @@
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 537,
+    "unresolved": 545,
     "names": {
       "Sky Sports": 1,
       "Fox": 1,
@@ -1187,16 +1208,16 @@
     "calls": 13,
     "cache_hits": 0,
     "errors": 0,
-    "fixtures_ingested": 238,
+    "fixtures_ingested": 245,
     "embed_streams": 11,
-    "artwork_supplied": 162
+    "artwork_supplied": 163
   },
   "streamed_enrichment": {
     "matched": 14,
     "artwork": 14,
     "embed_backups": 0,
     "embed_channels": 0,
-    "unmatched": 185,
+    "unmatched": 192,
     "matched_by_participants": 2
   },
   "sports_poster_enrichment": {
@@ -1267,14 +1288,6 @@
           "rejected": 2,
           "published": 0
         },
-        "sayanpal-fancode-mirror": {
-          "total": 19,
-          "cricket": 10,
-          "football": 8,
-          "quarantined": 0,
-          "rejected": 1,
-          "published": 18
-        },
         "dartv-fancode-mirror": {
           "total": 19,
           "cricket": 10,
@@ -1331,6 +1344,14 @@
           "rejected": 1,
           "published": 19
         },
+        "sayanpal-fancode-mirror": {
+          "total": 20,
+          "cricket": 11,
+          "football": 8,
+          "quarantined": 0,
+          "rejected": 1,
+          "published": 19
+        },
         "srhady-willow-event": {
           "total": 2,
           "cricket": 2,
@@ -1359,7 +1380,7 @@
         },
         {
           "name": "Akron Zips Vs UNLV Rebels",
-          "source": "sm-sports-data, srhady-axsports-live, sm-fancode, sportlive-",
+          "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, srhady",
           "competition": "NCAA Division FBS",
           "sport_type": "rugby",
           "reason": "rugby gazetteer",
@@ -1565,14 +1586,6 @@
           "rejected": 0,
           "published": 10
         },
-        "sayanpal-fancode-mirror": {
-          "total": 1,
-          "cricket": 1,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
         "dartv-fancode-mirror": {
           "total": 1,
           "cricket": 1,
@@ -1660,6 +1673,14 @@
           "rejected": 0,
           "published": 18
         },
+        "dartv-fancode-mirror": {
+          "total": 17,
+          "cricket": 9,
+          "football": 8,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 17
+        },
         "drmlive-fancode-mirror": {
           "total": 19,
           "cricket": 11,
@@ -1667,14 +1688,6 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 19
-        },
-        "sayanpal-fancode-mirror": {
-          "total": 17,
-          "cricket": 9,
-          "football": 8,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 17
         },
         "vk1817-fancode-mirror": {
           "total": 19,
@@ -1684,13 +1697,13 @@
           "rejected": 0,
           "published": 19
         },
-        "dartv-fancode-mirror": {
-          "total": 17,
-          "cricket": 9,
+        "sayanpal-fancode-mirror": {
+          "total": 19,
+          "cricket": 11,
           "football": 8,
           "quarantined": 0,
           "rejected": 0,
-          "published": 17
+          "published": 19
         },
         "srhady-willow-event": {
           "total": 2,
@@ -1714,10 +1727,10 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 855,
+    "raw_events": 867,
     "cricket_kept": 15,
     "football_kept": 107,
-    "other_discarded": 160,
+    "other_discarded": 163,
     "unresolved": 15,
     "today_final": 14,
     "upcoming_final": 113,
@@ -1762,28 +1775,28 @@
     "published_without_stream": 116,
     "fallback_available": 4,
     "targeted_fixtures": 12,
-    "targeted_attempts": 30,
+    "targeted_attempts": 32,
     "fixtures_with_a_first_link_time": 8,
-    "candidate_routes": 316,
+    "candidate_routes": 318,
     "verified_routes": 37,
-    "failed_routes": 279,
+    "failed_routes": 281,
     "fixtures_touched_by_a_route_failure": 116,
     "fixtures_left_with_nothing": 26,
     "distinct_failure_codes": 7,
-    "unrecognised_candidate_groups": 50,
-    "unrecognised_failed_routes": 120
+    "unrecognised_candidate_groups": 51,
+    "unrecognised_failed_routes": 122
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 127,
     "verified": 70,
-    "partial_authority": 2,
+    "partial_authority": 8,
     "unverified": 47,
-    "conflict": 8,
+    "conflict": 2,
     "matched_by_two_independent_authorities": 51,
     "authority_agreements": 42,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 7,
+    "authority_disagreements": 2,
+    "card_status_conflicts": 0,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 2
