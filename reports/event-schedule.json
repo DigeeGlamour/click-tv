@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-26T21:12:59.588931+00:00",
-  "today_match_count": 45,
+  "generated_at": "2026-09-26T21:35:46.911563+00:00",
+  "today_match_count": 22,
   "upcoming_count": 137,
   "today_missing_logo": [],
   "upcoming_missing_logo": [
@@ -25,11 +25,11 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 786,
-  "provider_rejected": 266,
+  "provider_fixture": 771,
+  "provider_rejected": 275,
   "provider_rejected_reasons": {
     "provider_dead_status": 186,
-    "status_neither_live_nor_upcoming": 42,
+    "status_neither_live_nor_upcoming": 51,
     "kickoff_missing_and_not_live": 2,
     "upcoming_kickoff_already_passed": 36
   },
@@ -43,8 +43,8 @@
       "total": 5
     },
     "srhady-bingstream": {
-      "status_neither_live_nor_upcoming": 42,
-      "total": 42
+      "status_neither_live_nor_upcoming": 51,
+      "total": 51
     },
     "iptvflixbd-fancode-data": {
       "upcoming_kickoff_already_passed": 23,
@@ -186,7 +186,7 @@
       "competition": "Serie C",
       "sport": "football",
       "source_id": "srhady-bingstream",
-      "status": "HT",
+      "status": "2H",
       "reason": "status_neither_live_nor_upcoming",
       "start_time": "2026-09-26T20:00:00+00:00"
     },
@@ -312,7 +312,7 @@
       "competition": "Canadian Premier League",
       "sport": "football",
       "source_id": "srhady-bingstream",
-      "status": "HT",
+      "status": "2H",
       "reason": "status_neither_live_nor_upcoming",
       "start_time": "2026-09-26T20:00:00+00:00"
     },
@@ -497,6 +497,15 @@
       "start_time": "2026-09-26T14:00:00+00:00"
     },
     {
+      "name": "Portland Hearts of Pine vs Sarasota Paradise",
+      "competition": "USL League One",
+      "sport": "football",
+      "source_id": "srhady-bingstream",
+      "status": "1H",
+      "reason": "status_neither_live_nor_upcoming",
+      "start_time": "2026-09-26T21:00:00+00:00"
+    },
+    {
       "name": "Progreso Vs Racing de Montevideo",
       "competition": "Liga AUF Uruguaya",
       "sport": "football",
@@ -594,30 +603,21 @@
       "status": "ENDED",
       "reason": "provider_dead_status",
       "start_time": "2026-09-26T16:00:00+00:00"
-    },
-    {
-      "name": "Tranmere Rovers Vs Walsall",
-      "competition": "League Two",
-      "sport": "football",
-      "source_id": "sm-sports-data",
-      "status": "ENDED",
-      "reason": "provider_dead_status",
-      "start_time": "2026-09-26T14:00:00+00:00"
     }
   ],
   "ambiguous_suppressed": 0,
-  "unverified_suppressed": 338,
-  "direct_channel_kept": 5,
+  "unverified_suppressed": 312,
+  "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
-  "provider_rejected_fixtures_truncated": 124,
+  "provider_rejected_fixtures_truncated": 127,
   "streams_attached": 0,
-  "fixtures_with_stream": 17,
+  "fixtures_with_stream": 12,
   "pool_offered": 0,
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 791,
-    "discarded": 227,
+    "total": 771,
+    "discarded": 218,
     "examples": [
       {
         "name": "Buffalo Sabres Vs Pittsburgh Penguins",
@@ -941,7 +941,7 @@
       },
       {
         "name": "Dallas Cowboys Vs Baltimore Ravens",
-        "source": "sm-sports-data, srhady-bingstream, srhady-axsports-live",
+        "source": "sm-sports-data, srhady-axsports-live, srhady-bingstream",
         "competition": "NFL",
         "sport_type": "",
         "reason": "league map: gridiron",
@@ -1103,32 +1103,69 @@
   },
   "reused_event_ids": 1,
   "authority_status": {
-    "applied": 0,
+    "applied": 2,
     "pending_confirmation": 0,
-    "live": 1,
-    "recorded": 92,
-    "conflict": 2,
+    "live": 0,
+    "recorded": 91,
+    "conflict": 1,
     "unmatched": 54,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 92,
-      "LIVE": 1
+      "FINISHED": 2,
+      "UPCOMING": 91
     },
     "by_confidence": {
-      "CONFLICT": 2,
-      "LOW": 22,
-      "HIGH": 71
+      "HIGH": 73,
+      "LOW": 20,
+      "CONFLICT": 1
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "Czechia Vs Croatia",
+        "fixture_id": "provider:czechia-vs-croatia|uefa nations league|2026-09-26",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861063)",
+          "LiveScore livescore=FT (6, event 1738304)"
+        ],
+        "authority_finished_seen_at": "2026-09-26T21:33:23.967266+00:00",
+        "remove_after": "2026-09-26T21:53:23.967266+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": ""
+      },
+      {
+        "name": "England Vs Spain",
+        "fixture_id": "provider:england-vs-spain|uefa nations league|2026-09-26",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861066)",
+          "LiveScore livescore=FT (6, event 1738302)"
+        ],
+        "authority_finished_seen_at": "2026-09-26T21:33:23.967266+00:00",
+        "remove_after": "2026-09-26T21:53:23.967266+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": ""
+      }
+    ],
     "conflicts": [
       {
         "name": "Czechia Vs Croatia",
-        "reason": "independent authorities disagree: ESPN espn-header=87' (STATUS_SECOND_HALF, event 401861063); LiveScore livescore=FT (6, event 1738304)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1136,7 +1173,17 @@
       },
       {
         "name": "England Vs Spain",
-        "reason": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401861066); LiveScore livescore=FT (6, event 1738302)",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Estudiantes de La Plata Vs Rosario Central",
+        "reason": "independent authorities disagree: ESPN espn-header=74' (STATUS_SECOND_HALF, event 401906041); LiveScore livescore=FT (6, event 1887688)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1147,25 +1194,25 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 17,
-    "pending_confirmation": 5,
-    "live": 3,
-    "recorded": 2,
-    "conflict": 6,
-    "unmatched": 11,
+    "applied": 25,
+    "pending_confirmation": 3,
+    "live": 1,
+    "recorded": 3,
+    "conflict": 3,
+    "unmatched": 10,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "FINISHED": 22,
-      "LIVE": 3,
-      "UPCOMING": 2
+      "FINISHED": 28,
+      "LIVE": 1,
+      "UPCOMING": 3
     },
     "by_confidence": {
-      "HIGH": 15,
+      "HIGH": 20,
       "LOW": 12,
-      "CONFLICT": 6
+      "CONFLICT": 3
     },
     "applied_fixtures": [
       {
@@ -1421,6 +1468,22 @@
         "lifecycle_state_before": "END_PENDING"
       },
       {
+        "name": "Central Cordoba vs Claypole",
+        "fixture_id": "provider:central-cordoba-vs-claypole|primera c|2026-09-26",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
+          "LiveScore"
+        ],
+        "evidence": [
+          "LiveScore livescore=FT (6, event 1715629)"
+        ],
+        "authority_finished_seen_at": "2026-09-26T21:33:23.967266+00:00",
+        "remove_after": "2026-09-26T21:53:23.967266+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
+      },
+      {
         "name": "Deportivo Español vs Central Ballester",
         "fixture_id": "provider:deportivo-español-vs-central-ballester|primera c|2026-09-26",
         "status": "FINISHED",
@@ -1469,6 +1532,128 @@
         "remove_after": "2026-09-26T21:11:27.455323+00:00",
         "was_playable": true,
         "lifecycle_state_before": "END_PENDING"
+      },
+      {
+        "name": "Querétaro W vs Atlas W",
+        "fixture_id": "provider:querétaro-w-vs-atlas-w|liga mx femenil|2026-09-26",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
+          "LiveScore"
+        ],
+        "evidence": [
+          "LiveScore livescore=FT (6, event 1849327)"
+        ],
+        "authority_finished_seen_at": "2026-09-26T21:33:23.967266+00:00",
+        "remove_after": "2026-09-26T21:53:23.967266+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
+      },
+      {
+        "name": "Cittadella vs Lecco",
+        "fixture_id": "provider:cittadella-vs-lecco|serie c girone a|2026-09-26",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
+          "LiveScore"
+        ],
+        "evidence": [
+          "LiveScore livescore=FT (6, event 1855304)"
+        ],
+        "authority_finished_seen_at": "2026-09-26T21:33:23.967266+00:00",
+        "remove_after": "2026-09-26T21:53:23.967266+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": "END_PENDING"
+      },
+      {
+        "name": "Albania Vs Belarus",
+        "fixture_id": "provider:albania-vs-belarus|uefa nations league|2026-09-26",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861062)",
+          "LiveScore livescore=FT (6, event 1738316)"
+        ],
+        "authority_finished_seen_at": "2026-09-26T21:33:23.967266+00:00",
+        "remove_after": "2026-09-26T21:53:23.967266+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Czechia Vs Croatia",
+        "fixture_id": "provider:czechia-vs-croatia|uefa nations league|2026-09-26",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861063)",
+          "LiveScore livescore=FT (6, event 1738304)"
+        ],
+        "authority_finished_seen_at": "2026-09-26T21:33:23.967266+00:00",
+        "remove_after": "2026-09-26T21:53:23.967266+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "England Vs Spain",
+        "fixture_id": "provider:england-vs-spain|uefa nations league|2026-09-26",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861066)",
+          "LiveScore livescore=FT (6, event 1738302)"
+        ],
+        "authority_finished_seen_at": "2026-09-26T21:33:23.967266+00:00",
+        "remove_after": "2026-09-26T21:53:23.967266+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "North Macedonia Vs Switzerland",
+        "fixture_id": "provider:north-macedonia-vs-switzerland|uefa nations league|2026-09-26",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861065)",
+          "LiveScore livescore=FT (6, event 1738259)"
+        ],
+        "authority_finished_seen_at": "2026-09-26T21:33:23.967266+00:00",
+        "remove_after": "2026-09-26T21:53:23.967266+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Slovakia Vs Moldova",
+        "fixture_id": "provider:slovakia-vs-moldova|uefa nations league|2026-09-26",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861064)",
+          "LiveScore livescore=FT (6, event 1738398)"
+        ],
+        "authority_finished_seen_at": "2026-09-26T21:33:23.967266+00:00",
+        "remove_after": "2026-09-26T21:53:23.967266+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
       }
     ],
     "conflicts": [
@@ -1573,6 +1758,15 @@
         ]
       },
       {
+        "name": "Central Cordoba vs Claypole",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
+          "LiveScore"
+        ]
+      },
+      {
         "name": "Deportivo Español vs Central Ballester",
         "reason": "authority says FINISHED while the card still carries a route",
         "status": "FINISHED",
@@ -1601,10 +1795,19 @@
         ]
       },
       {
+        "name": "Querétaro W vs Atlas W",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
+          "LiveScore"
+        ]
+      },
+      {
         "name": "Albania Vs Belarus",
-        "reason": "independent authorities disagree: ESPN espn-header=82' (STATUS_SECOND_HALF, event 401861062); LiveScore livescore=FT (6, event 1738316)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1612,9 +1815,9 @@
       },
       {
         "name": "Czechia Vs Croatia",
-        "reason": "independent authorities disagree: ESPN espn-header=87' (STATUS_SECOND_HALF, event 401861063); LiveScore livescore=FT (6, event 1738304)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1622,9 +1825,9 @@
       },
       {
         "name": "England Vs Spain",
-        "reason": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401861066); LiveScore livescore=FT (6, event 1738302)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1632,9 +1835,9 @@
       },
       {
         "name": "North Macedonia Vs Switzerland",
-        "reason": "independent authorities disagree: ESPN espn-header=84' (STATUS_SECOND_HALF, event 401861065); LiveScore livescore=FT (6, event 1738259)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1642,7 +1845,17 @@
       },
       {
         "name": "Slovakia Vs Moldova",
-        "reason": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401861064); LiveScore livescore=FT (6, event 1738398)",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Ciudad de Bolívar vs Chaco For Ever",
+        "reason": "independent authorities disagree: ESPN espn-header=90'+6' (STATUS_SECOND_HALF, event 401844158); LiveScore livescore=FT (6, event 1713441)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1651,8 +1864,18 @@
         ]
       },
       {
-        "name": "Ciudad de Bolívar vs Chaco For Ever",
-        "reason": "independent authorities disagree: ESPN espn-header=74' (STATUS_SECOND_HALF, event 401844158); LiveScore livescore=FT (6, event 1713441)",
+        "name": "Estudiantes de La Plata Vs Rosario Central",
+        "reason": "independent authorities disagree: ESPN espn-header=74' (STATUS_SECOND_HALF, event 401906041); LiveScore livescore=FT (6, event 1887688)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Rubio NU vs 2 de Mayo",
+        "reason": "independent authorities disagree: ESPN espn-header=59' (STATUS_SECOND_HALF, event 401888587); LiveScore livescore=FT (6, event 1876566)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1663,46 +1886,195 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 22,
+    "asked": 12,
     "finished": 9,
     "unplayable": 0,
-    "cache_hits": 3,
-    "no_verdict": 16
+    "cache_hits": 9,
+    "no_verdict": 18
   },
   "live_protection": {
-    "carried_forward": 35,
-    "released_ended": 0,
-    "released_ended_ids": [],
-    "retired_terminal": [],
-    "released_listing_expired": 0,
+    "carried_forward": 13,
+    "released_ended": 20,
+    "released_ended_ids": [
+      "bulgaria-vs-luxembourg",
+      "faroe-islands-vs-kazakhstan",
+      "iceland-vs-estonia",
+      "san-marino-vs-finland",
+      "klubi-04-vs-jäps",
+      "oldham-vs-salford-city",
+      "kansas-city-w-vs-denver-summit-w",
+      "tenerife-vs-cadiz",
+      "emmen-vs-fc-oss",
+      "fc-volendam-vs-vvv-venlo",
+      "mvv-vs-helmond-sport",
+      "roda-vs-waalwijk",
+      "oman-vs-saudi-arabia",
+      "cruz-azul-hidalgo-vs-leones-negros-udg",
+      "deportivo-español-vs-central-ballester",
+      "deportivo-paraguayo-vs-lugano",
+      "charlotte-independence-vs-fort-wayne",
+      "cittadella-vs-lecco",
+      "ciudad-de-bolívar-vs-chaco-for-ever",
+      "rubio-nu-vs-2-de-mayo"
+    ],
+    "retired_terminal": [
+      {
+        "id": "rourkela-superstars-vs-bhubaneshwar-tigers",
+        "name": "Rourkela Superstars vs Bhubaneshwar Tigers",
+        "provenance": "multi_signal_confirmed",
+        "reason": "multi-signal confirmation: estimated end passed, every link dead, and 8 consecutive scans with no live signal"
+      },
+      {
+        "id": "bulgaria-vs-luxembourg",
+        "name": "Bulgaria Vs Luxembourg",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "faroe-islands-vs-kazakhstan",
+        "name": "Faroe Islands Vs Kazakhstan",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "iceland-vs-estonia",
+        "name": "Iceland Vs Estonia",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "san-marino-vs-finland",
+        "name": "San Marino Vs Finland",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "klubi-04-vs-jäps",
+        "name": "Klubi 04 vs JäPS",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "oldham-vs-salford-city",
+        "name": "Oldham vs Salford City",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "kansas-city-w-vs-denver-summit-w",
+        "name": "Kansas City W vs Denver Summit W",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "tenerife-vs-cadiz",
+        "name": "Tenerife vs Cadiz",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "emmen-vs-fc-oss",
+        "name": "Emmen vs FC OSS",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "fc-volendam-vs-vvv-venlo",
+        "name": "FC Volendam vs VVV Venlo",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "mvv-vs-helmond-sport",
+        "name": "MVV vs Helmond Sport",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "roda-vs-waalwijk",
+        "name": "Roda vs Waalwijk",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "oman-vs-saudi-arabia",
+        "name": "Oman Vs Saudi Arabia",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "cruz-azul-hidalgo-vs-leones-negros-udg",
+        "name": "Cruz Azul Hidalgo vs Leones Negros UDG",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "deportivo-español-vs-central-ballester",
+        "name": "Deportivo Español vs Central Ballester",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "deportivo-paraguayo-vs-lugano",
+        "name": "Deportivo Paraguayo vs Lugano",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "charlotte-independence-vs-fort-wayne",
+        "name": "Charlotte Independence vs Fort Wayne",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "cittadella-vs-lecco",
+        "name": "Cittadella vs Lecco",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "ciudad-de-bolívar-vs-chaco-for-ever",
+        "name": "Ciudad de Bolívar vs Chaco For Ever",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "rubio-nu-vs-2-de-mayo",
+        "name": "Rubio NU vs 2 de Mayo",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      }
+    ],
+    "released_listing_expired": 2,
     "released_dead_link": 0,
-    "released_stale": 0,
+    "released_stale": 3,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 2,
-    "probe_dead": 16,
+    "probe_alive": 3,
+    "probe_dead": 10,
     "probe_inconclusive": 0,
-    "end_pending": 30,
-    "released_confirmed": 0,
+    "end_pending": 9,
+    "released_confirmed": 3,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 5,
-      "END_PENDING": 30
+      "ENDED": 23,
+      "END_PENDING": 9,
+      "LIVE": 4
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 0,
-    "total": 279,
+    "added": 21,
+    "total": 300,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
-    "absence_only_refused": 0,
+    "absence_only_refused": 2,
     "never_archived_statuses": [],
-    "decided_this_scan": 0
+    "decided_this_scan": 21
   },
   "source_outage": {
     "sources_in_outage": [
@@ -1717,7 +2089,7 @@
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 746,
+    "unresolved": 720,
     "names": {
       "Sky Sports": 1,
       "Fox": 1,
@@ -1728,35 +2100,35 @@
     "provider": "streamed",
     "available": true,
     "reason": "",
-    "calls": 149,
+    "calls": 124,
     "cache_hits": 1,
     "errors": 0,
-    "fixtures_ingested": 463,
-    "embed_streams": 110,
-    "artwork_supplied": 274
+    "fixtures_ingested": 422,
+    "embed_streams": 100,
+    "artwork_supplied": 264
   },
   "streamed_enrichment": {
-    "matched": 29,
-    "artwork": 29,
+    "matched": 24,
+    "artwork": 24,
     "embed_backups": 0,
     "embed_channels": 0,
-    "unmatched": 306,
+    "unmatched": 285,
     "matched_by_participants": 8
   },
   "sports_poster_enrichment": {
-    "attempted": 139,
+    "attempted": 131,
     "poster_filled": 0,
-    "badge_filled": 38,
+    "badge_filled": 36,
     "badge_used_as_logo": 0,
-    "cache_hits": 20,
+    "cache_hits": 19,
     "cached_entries": 820,
     "provider": {
-      "requests": 10,
-      "hits": 8,
+      "requests": 2,
+      "hits": 0,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 124,
+      "skipped_rate_limited": 125,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1790,32 +2162,32 @@
   "competition_labels_clarified": [],
   "sport_filter": {
     "at_merge": {
-      "total": 186,
-      "published": 149,
-      "rejected": 28,
-      "quarantined": 9,
+      "total": 185,
+      "published": 148,
+      "rejected": 29,
+      "quarantined": 8,
       "states": {
-        "confirmed_football": 127,
+        "confirmed_football": 126,
         "confirmed_cricket": 22,
-        "unknown": 9,
-        "confirmed_other": 28
+        "confirmed_other": 29,
+        "unknown": 8
       },
       "by_source": {
         "sm-sports-data": {
           "total": 76,
           "cricket": 4,
           "football": 44,
-          "quarantined": 3,
-          "rejected": 25,
+          "quarantined": 2,
+          "rejected": 26,
           "published": 48
         },
         "srhady-bingstream": {
-          "total": 96,
+          "total": 95,
           "cricket": 1,
-          "football": 89,
+          "football": 88,
           "quarantined": 4,
           "rejected": 2,
-          "published": 90
+          "published": 89
         },
         "srhady-primevideo-sports": {
           "total": 4,
@@ -1857,6 +2229,14 @@
           "rejected": 0,
           "published": 19
         },
+        "vk1817-fancode-mirror": {
+          "total": 20,
+          "cricket": 15,
+          "football": 4,
+          "quarantined": 1,
+          "rejected": 0,
+          "published": 19
+        },
         "sayanpal-fancode-mirror": {
           "total": 20,
           "cricket": 16,
@@ -1864,14 +2244,6 @@
           "quarantined": 1,
           "rejected": 0,
           "published": 19
-        },
-        "vk1817-fancode-mirror": {
-          "total": 17,
-          "cricket": 13,
-          "football": 3,
-          "quarantined": 1,
-          "rejected": 0,
-          "published": 16
         },
         "srhady-axsports-live": {
           "total": 64,
@@ -1883,6 +2255,14 @@
         }
       },
       "rejected_examples": [
+        {
+          "name": "Sydney Swans Vs Brisbane Lions",
+          "source": "sm-sports-data",
+          "competition": "AFL, Women",
+          "sport_type": "other",
+          "reason": "fixture lookup: australian rules",
+          "evidence": "2 providers agree on australian rules"
+        },
         {
           "name": "QMJHL Hockey Cape Breton Eagles vs Saint John Sea Dogs",
           "source": "srhady-primevideo-sports",
@@ -2110,13 +2490,6 @@
       ],
       "quarantined_events": [
         {
-          "name": "Sydney Swans Vs Brisbane Lions",
-          "source": "sm-sports-data",
-          "competition": "AFL, Women",
-          "sport_type": "other",
-          "reason": "fixture lookup: only one provider knows this (australian rules)"
-        },
-        {
           "name": "FloWrestling Who’s Number One presented by Cliff Keen Women's Event",
           "source": "srhady-primevideo-sports",
           "competition": "",
@@ -2139,7 +2512,7 @@
         },
         {
           "name": "Collingwood Magpies Vs GWS Giants",
-          "source": "sm-sports-data, srhady-bingstream, srhady-axsports-live",
+          "source": "sm-sports-data, srhady-axsports-live, srhady-bingstream",
           "competition": "AFL, Women",
           "sport_type": "other",
           "reason": "fixture lookup: providers disagree: australian rules, netball"
@@ -2160,7 +2533,7 @@
         },
         {
           "name": "Hawke's Bay vs Taranaki",
-          "source": "srhady-bingstream, sm-fancode, sportlive-fancode-backup, say",
+          "source": "srhady-bingstream, srhady-axsports-live, sm-fancode, sportli",
           "competition": "NPC",
           "sport_type": "other",
           "reason": "fixture lookup: only one provider knows this (rugby)"
@@ -2176,86 +2549,37 @@
       "leaks": []
     },
     "today_match": {
-      "total": 45,
-      "published": 45,
+      "total": 22,
+      "published": 22,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 44,
-        "confirmed_cricket": 1
+        "confirmed_football": 22
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 15,
+          "total": 10,
           "cricket": 0,
-          "football": 15,
+          "football": 10,
           "quarantined": 0,
           "rejected": 0,
-          "published": 15
+          "published": 10
         },
         "srhady-bingstream": {
-          "total": 27,
+          "total": 12,
           "cricket": 0,
-          "football": 27,
+          "football": 12,
           "quarantined": 0,
           "rejected": 0,
-          "published": 27
-        },
-        "sayanpal-fancode-mirror": {
-          "total": 2,
-          "cricket": 1,
-          "football": 1,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 2
-        },
-        "srhady-primevideo-sports": {
-          "total": 2,
-          "cricket": 0,
-          "football": 2,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 2
+          "published": 12
         },
         "srhady-axsports-live": {
-          "total": 7,
+          "total": 3,
           "cricket": 0,
-          "football": 7,
+          "football": 3,
           "quarantined": 0,
           "rejected": 0,
-          "published": 7
-        },
-        "sm-fancode": {
-          "total": 1,
-          "cricket": 0,
-          "football": 1,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
-        "sportlive-fancode-backup": {
-          "total": 1,
-          "cricket": 0,
-          "football": 1,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
-        "vk1817-fancode-mirror": {
-          "total": 1,
-          "cricket": 0,
-          "football": 1,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
-        "dartv-fancode-mirror": {
-          "total": 1,
-          "cricket": 0,
-          "football": 1,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
+          "published": 3
         }
       },
       "rejected_examples": [],
@@ -2312,6 +2636,14 @@
           "rejected": 0,
           "published": 19
         },
+        "vk1817-fancode-mirror": {
+          "total": 19,
+          "cricket": 15,
+          "football": 4,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
+        },
         "srhady-bingstream": {
           "total": 86,
           "cricket": 1,
@@ -2327,14 +2659,6 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 19
-        },
-        "vk1817-fancode-mirror": {
-          "total": 16,
-          "cricket": 13,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 16
         },
         "srhady-axsports-live": {
           "total": 57,
@@ -2354,20 +2678,20 @@
   "sport_quarantined": [],
   "sport_leaks": [],
   "sport_never_dropped": {
-    "refused": 88,
+    "refused": 89,
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 1395,
+    "raw_events": 1358,
     "cricket_kept": 22,
-    "football_kept": 127,
-    "other_discarded": 255,
-    "unresolved": 9,
-    "today_final": 45,
+    "football_kept": 126,
+    "other_discarded": 247,
+    "unresolved": 8,
+    "today_final": 22,
     "upcoming_final": 137,
     "published_states": {
-      "confirmed_football": 159,
-      "confirmed_cricket": 23
+      "confirmed_football": 137,
+      "confirmed_cricket": 22
     },
     "other_sport_leak": 0,
     "ball_sport_wrongly_refused": 0
@@ -2393,56 +2717,56 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 28,
-      "estimate": 2,
-      "none": 15
+      "provider_or_authority": 11,
+      "estimate": 0,
+      "none": 11
     }
   },
   "fixture_stream_health": {
-    "fixtures": 270,
-    "published_fixtures": 182,
-    "fixtures_with_verified_stream": 29,
-    "fixtures_with_zero_verified": 241,
-    "published_without_stream": 150,
-    "fallback_available": 16,
-    "targeted_fixtures": 9,
-    "targeted_attempts": 10,
-    "fixtures_with_a_first_link_time": 5,
-    "candidate_routes": 525,
-    "verified_routes": 58,
-    "failed_routes": 467,
-    "fixtures_touched_by_a_route_failure": 207,
-    "fixtures_left_with_nothing": 82,
+    "fixtures": 246,
+    "published_fixtures": 159,
+    "fixtures_with_verified_stream": 28,
+    "fixtures_with_zero_verified": 218,
+    "published_without_stream": 141,
+    "fallback_available": 5,
+    "targeted_fixtures": 5,
+    "targeted_attempts": 5,
+    "fixtures_with_a_first_link_time": 4,
+    "candidate_routes": 508,
+    "verified_routes": 55,
+    "failed_routes": 453,
+    "fixtures_touched_by_a_route_failure": 197,
+    "fixtures_left_with_nothing": 79,
     "distinct_failure_codes": 6,
-    "unrecognised_candidate_groups": 126,
-    "unrecognised_failed_routes": 323
+    "unrecognised_candidate_groups": 129,
+    "unrecognised_failed_routes": 329
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 182,
-    "verified": 90,
-    "partial_authority": 3,
-    "unverified": 59,
-    "conflict": 30,
-    "matched_by_two_independent_authorities": 94,
-    "authority_agreements": 84,
-    "authority_disagreements": 6,
-    "card_status_conflicts": 24,
+    "fixtures": 159,
+    "verified": 88,
+    "partial_authority": 1,
+    "unverified": 55,
+    "conflict": 15,
+    "matched_by_two_independent_authorities": 78,
+    "authority_agreements": 75,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 14,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 2
+    "not_published": 25
   },
   "stream_health": {
     "sources_in_outage": [
       "iptvflixbd-fancode-data",
       "srhady-tapmad-bd"
     ],
-    "published_fixtures": 182,
-    "fixtures_with_stream": 17,
-    "fixtures_playable_via_catalogue": 15,
+    "published_fixtures": 159,
+    "fixtures_with_stream": 12,
+    "fixtures_playable_via_catalogue": 6,
     "fixtures_with_fresh_stream": 9,
-    "fixtures_with_carried_stream": 8,
-    "today_with_stream": 17,
+    "fixtures_with_carried_stream": 3,
+    "today_with_stream": 12,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
     "state": "ok",
