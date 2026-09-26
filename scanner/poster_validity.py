@@ -162,9 +162,13 @@ class PosterValidator:
         #: host -> [refusals, successes]
         self._host_scores: Dict[str, list] = {}
         self._dead_hosts: set[str] = set()
+        #: host -> [vantage refusals, answers]. Separate from the scores above
+        #: because a 403 must never reach the "dead" side of that ledger.
+        self._refusal_scores: Dict[str, list] = {}
+        self._refusing_hosts: set[str] = set()
         self.stats: Dict[str, int] = {
             "probed": 0, "cache_hits": 0, "ok": 0, "dead": 0,
-            "unknown": 0, "host_short_circuits": 0,
+            "unknown": 0, "host_short_circuits": 0, "hosts_refusing_all": 0,
         }
         self._load()
 
@@ -236,9 +240,42 @@ class PosterValidator:
 
     # --------------------------------------------------------------- probing
 
+    def _note_refusal(self, host: str) -> None:
+        """A vantage-shaped refusal, counted per host and nowhere else.
+
+        The image is NOT dead - 403 says something about this runner, and that
+        rule does not move. But a host that answers 403 for every URL we try,
+        and 200 for none, is a host from which we cannot prove a single image
+        loads. ধারা ৮ measures exactly that: "ছবিটি সত্যিই লোড হয় কি না".
+
+        Measured on 2026-09-26: `srhady-live-stream.hf.space` served 1,005
+        published posters and refused every probe, from two continents and
+        through the site's own Cloudflare worker; so did 135 more behind an
+        image proxy whose own error read "Failed to fetch image. Status: 403".
+        Every one of those cards shows the placeholder to every viewer.
+
+        Kept apart from `_dead_hosts` on purpose. Nothing here retires
+        artwork; it only lets a caller prefer a poster it CAN prove over one
+        it cannot.
+        """
+        if not host:
+            return
+        score = self._refusal_scores.setdefault(host, [0, 0])
+        score[0] += 1
+        if score[1] == 0 and score[0] >= HOST_BREAKER_TRIPS:
+            self._refusing_hosts.add(host)
+
+    def refuses_everything(self, url: str) -> bool:
+        """Has this URL's host refused every probe and answered none?"""
+        return _host_of(str(url or "")) in self._refusing_hosts
+
     def _note_host(self, host: str, refused: bool) -> None:
         if not host:
             return
+        # A host that answers at all is not a host that refuses everything.
+        if not refused:
+            self._refusal_scores.setdefault(host, [0, 0])[1] += 1
+            self._refusing_hosts.discard(host)
         score = self._host_scores.setdefault(host, [0, 0])
         if refused:
             score[0] += 1
@@ -325,6 +362,13 @@ class PosterValidator:
         if result in (OK, DEAD):
             self._note_host(host, refused=(result == DEAD))
             self._remember(url, result, status)
+        elif status in VANTAGE_SHAPED_REFUSALS:
+            # Unknown, and stays unknown - but counted, so a host that answers
+            # nothing at all can be told from one that simply was not asked.
+            before = len(self._refusing_hosts)
+            self._note_refusal(host)
+            if len(self._refusing_hosts) > before:
+                self.stats["hosts_refusing_all"] += 1
         return result
 
     def is_dead(self, url: str) -> bool:

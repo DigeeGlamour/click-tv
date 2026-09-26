@@ -4674,13 +4674,32 @@ def _resolve_published_poster(
     # walked again accepting "not proven dead" - and the count is recorded
     # separately so ধারা ৮'s verified-coverage target is measurable rather
     # than assumed.
-    for url, label in candidates:
-        if _usable(url):
-            if label != "kept":
-                cache[identity] = url
-            counters[label] = counters.get(label, 0) + 1
-            counters["unverified"] = counters.get("unverified", 0) + 1
-            return url
+    # Two sweeps, and the order between them is the whole point. A host that
+    # has refused every probe and answered none is one we cannot prove a single
+    # image from - `srhady-live-stream.hf.space` served 1,005 published posters
+    # on 2026-09-26 and refused from two continents and through the site's own
+    # worker. The image is still not called dead, and the URL is still used if
+    # it is all there is; it simply stops outranking a candidate from a host
+    # that does answer. Without this, the cache re-selects the same unprovable
+    # poster every run for ever, which is exactly what it had been doing.
+    def _refusing(url: str) -> bool:
+        try:
+            return bool(validator.refuses_everything(url))
+        except Exception:  # noqa: BLE001 - an older validator has no opinion
+            return False
+
+    for sweep in (False, True):
+        for url, label in candidates:
+            if _refusing(url) is not sweep:
+                continue
+            if _usable(url):
+                if label != "kept":
+                    cache[identity] = url
+                counters[label] = counters.get(label, 0) + 1
+                counters["unverified"] = counters.get("unverified", 0) + 1
+                if sweep:
+                    counters["unprovable_host"] = counters.get("unprovable_host", 0) + 1
+                return url
 
     # Nothing real was found. Empty is the honest answer: the site draws its
     # designed placeholder, which is better than a broken image.
@@ -4820,6 +4839,9 @@ def _finalize_movie_presentation(
         "titles_cleaned": 0, "years_recovered": 0, "titles_kept_for_uniqueness": 0,
         "kept": 0, "dropped_dead": 0,
         "recovered_cache": 0, "recovered_tmdb": 0, "recovered_provider": 0, "blank": 0,
+        # How many cards ended up on a host that refused every probe: the
+        # number ধারা ৮ needs to tell "unverified" from "unprovable".
+        "unprovable_host": 0,
         # ধারা ৮ replaced "TMDB poster > 75%" with "যাচাইকৃত আর্টওয়ার্ক কভারেজ
         # > ৯৫% — ছবিটি সত্যিই লোড হয় কি না, কে দিয়েছে তা নয়". These two are
         # that metric: how many published posters were proven to load, against
@@ -4912,7 +4934,8 @@ def _finalize_movie_presentation(
     print(
         "   movie posters: {kept} kept, {dropped_dead} dead dropped, "
         "{recovered_cache} from cache, {recovered_tmdb} from TMDB, "
-        "{recovered_provider} from other providers, {blank} left blank".format(**counters)
+        "{recovered_provider} from other providers, {blank} left blank, "
+        "{unprovable_host} on a host that answers nothing".format(**counters)
     )
     print(f"   poster reachability: {validator.summary_line()}")
 
@@ -4927,7 +4950,7 @@ def _finalize_movie_presentation(
         },
         "posters": {key: counters.get(key, 0) for key in (
             "kept", "dropped_dead", "recovered_cache", "recovered_tmdb",
-            "recovered_provider", "blank", "verified", "unverified",
+            "recovered_provider", "blank", "verified", "unverified", "unprovable_host",
         )},
         "verified_artwork_coverage": _verified_artwork_coverage(counters),
         "probe": dict(validator.stats),

@@ -108,13 +108,39 @@ class PlanRunTests(unittest.TestCase):
         self.assertFalse(plan["enabled"])
         self.assertEqual(plan["lookups"], plan["normal_budget"])
 
-    def test_the_shipped_config_has_it_switched_off(self) -> None:
+    def test_the_shipped_config_never_has_it_on_by_accident(self) -> None:
         """"এক বা দুই রাত চালিয়ে আবার ১৫০-এ ফেরত" - a backfill that ships on
-        by default is one nobody chose to run."""
+        by default is one nobody chose to run.
+
+        Off is still the resting state. When it IS on, the choice has to be
+        written down - why, and when to look at it again - which is what tells
+        a deliberate night's backfill apart from one left running because
+        nobody noticed. On 2026-09-26 it was switched on with 1,024 of 1,970
+        cards holding no metadata at all; that sentence is the difference.
+        """
         settings = json.loads(
             (ROOT / "config" / "settings.json").read_text(encoding="utf-8"))
         self.assertIn("movie_metadata_backfill", settings)
-        self.assertFalse(settings["movie_metadata_backfill"]["enabled"])
+        block = settings["movie_metadata_backfill"]
+        if not block["enabled"]:
+            return
+        reason = str(block.get("enabled_reason") or "")
+        self.assertGreater(
+            len(reason), 40,
+            msg="a backfill that is on has to say why, in the config",
+        )
+        review = str(block.get("review_after") or "")
+        self.assertRegex(
+            review, r"^\d{4}-\d{2}-\d{2}$",
+            msg="a backfill that is on has to say when to look at it again",
+        )
+
+    def test_a_backfill_left_on_is_still_bounded_by_the_run(self) -> None:
+        """The reason it is safe to leave on at all: the ceiling is the
+        smallest of the target, what the providers have left and what the run
+        can afford - never the target on its own."""
+        plan = mb.plan_run(self._settings(enabled=True), provider_remaining=12)
+        self.assertEqual(plan["lookups"], 12)
 
     def test_switching_it_on_raises_the_ceiling(self) -> None:
         plan = mb.plan_run(self._settings(enabled=True), provider_remaining=-1)
