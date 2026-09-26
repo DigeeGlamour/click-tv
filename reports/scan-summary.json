@@ -1,35 +1,37 @@
 {
-  "last_scan": "2026-09-26T20:32:16.605053+00:00",
+  "last_scan": "2026-09-26T20:45:05.444527+00:00",
   "status": "completed_with_warnings",
-  "mode": "today",
-  "source_errors": 734,
+  "mode": "movies",
+  "source_errors": 901,
   "quarantined_channels": 0,
   "quarantined_movies": 0,
-  "rejected_low_quality": 0,
-  "output_safety_warnings": 0,
+  "rejected_low_quality": 1,
+  "output_safety_warnings": 1,
   "stream_warnings": [],
   "coverage_invariant_failures": [
-    "movie: published surfaces disagree about their generation"
+    "movie: published surfaces disagree about their generation",
+    "movie: INVARIANT_2 unexplained_live_loss == 0",
+    "movie: no duplicate entry keys among in-scope entries"
   ],
   "stream_health": {
     "sources_in_outage": [
       "iptvflixbd-fancode-data",
       "srhady-tapmad-bd"
     ],
-    "published_fixtures": 184,
-    "fixtures_with_stream": 18,
-    "fixtures_playable_via_catalogue": 12,
-    "fixtures_with_fresh_stream": 11,
+    "published_fixtures": 175,
+    "fixtures_with_stream": 20,
+    "fixtures_playable_via_catalogue": 15,
+    "fixtures_with_fresh_stream": 13,
     "fixtures_with_carried_stream": 7,
-    "today_with_stream": 18,
+    "today_with_stream": 20,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
     "state": "ok",
     "warnings": []
   },
-  "movie_output_preserved": false,
+  "movie_output_preserved": true,
   "movie_generation": {
-    "checked_at": "2026-09-26T20:32:20.372072+00:00",
+    "checked_at": "2026-09-26T20:45:08.142074+00:00",
     "generations": {
       "2": 31,
       "unstamped": 13
@@ -57,73 +59,72 @@
   },
   "movie_observability": {
     "skipped_fresh": 0,
-    "due_verified": 1106,
+    "due_verified": 21729,
     "repair_attempted": null,
-    "series_signal_candidates": null,
-    "classification_cache_hits": null,
-    "confirmed_series": null,
-    "classification_conflicts": null,
-    "season_only_unknown_episode": null,
+    "series_signal_candidates": 0,
+    "classification_cache_hits": 0,
+    "confirmed_series": 0,
+    "classification_conflicts": 0,
+    "season_only_unknown_episode": 0,
     "provider_quota_remaining": {
       "anilist": "unmetered",
       "cinemeta": "unmetered",
       "fanart": "unmetered",
-      "moviesdatabase": 103,
-      "omdb": 703,
+      "moviesdatabase": 14,
+      "omdb": 700,
       "tmdb": "unmetered",
       "tvmaze": "unmetered"
     }
   },
   "allowed_playback_hosts": 654,
-  "catalogued_playback_sources": 37,
-  "total_playback_catalogue_sources": 50283,
+  "catalogued_playback_sources": 0,
+  "total_playback_catalogue_sources": 50261,
   "movie_verification_status_counts": {
-    "verified_global": 127,
-    "failed": 732,
-    "unreachable_from_browser": 101,
-    "metadata_only": 146
+    "geo_pending": 20828,
+    "failed": 900,
+    "rejected_low_quality": 1
   },
   "pipeline_performance": {
-    "timestamp": "2026-09-26T20:29:27.705898+00:00",
-    "mode": "today",
-    "elapsed_seconds": 100,
-    "candidate_pool": 1106,
-    "global_network_checked": 1106,
-    "global_completed": 1106,
-    "bd_proxy_selected": 562,
-    "bd_proxy_submitted": 562,
-    "bd_proxy_completed": 562,
-    "final_processed": 1106,
-    "final_publishable": 127,
+    "timestamp": "2026-09-26T20:34:55.949227+00:00",
+    "mode": "movies",
+    "elapsed_seconds": 4199,
+    "candidate_pool": 21729,
+    "global_network_checked": 21729,
+    "global_completed": 21729,
+    "bd_proxy_selected": 21518,
+    "bd_proxy_submitted": 21518,
+    "bd_proxy_completed": 21518,
+    "final_processed": 21729,
+    "final_publishable": 0,
     "adaptive_skipped": 0,
     "budget_fallbacks": 0,
-    "strict_player_hidden": 146,
-    "browser_unreachable_hidden": 101,
+    "strict_player_hidden": 0,
+    "browser_unreachable_hidden": 0,
     "unproven_hidden": 0,
     "budget_exhausted": false,
-    "host_circuits_opened": 5,
+    "host_circuits_opened": 2,
     "host_circuit_skips": 0,
     "host_sample_deferred": 0,
     "circuit_deferred": 0,
-    "cloud_inconclusive_hosts": 0,
+    "cloud_inconclusive_hosts": 1,
     "path_404_quarantined": 0,
     "path_404_groups": 0,
     "priority_forced_verification": 0,
-    "final_global_inflight_limit": 20,
+    "final_global_inflight_limit": 100,
     "workers": {
-      "global_pool_count": 1,
+      "global_pool_count": 5,
       "global_workers_per_pool": 20,
-      "global_total_max": 20,
-      "global_minimum_inflight": 12,
-      "bd_pool_count": 1,
-      "bd_workers_per_pool": 4,
-      "bd_total_max": 4,
-      "shared_total_inflight_limit": 24,
-      "bd_reserved_inflight_slots": 4,
-      "global_per_host": 4,
-      "bd_per_host": 4,
-      "combined_per_host": 8,
-      "tail_per_host": 6,
+      "global_total_max": 100,
+      "global_minimum_inflight": 80,
+      "bd_pool_count": 5,
+      "bd_workers_per_pool": 8,
+      "bd_total_max": 40,
+      "shared_total_inflight_limit": 120,
+      "bd_reserved_inflight_slots": 20,
+      "global_per_host": 24,
+      "bd_per_host": 8,
+      "combined_per_host": 32,
+      "tail_per_host": 32,
       "host_sample_size": 5,
       "host_sample_uncertain_threshold": 4,
       "host_second_pass_sample_size": 8,
@@ -135,20 +136,20 @@
   "totals": {
     "channels": 415,
     "movies": 1970,
-    "today_match": 44,
-    "upcoming": 140
+    "today_match": 49,
+    "upcoming": 126
   },
   "manifest_summary": {
     "schema_version": 1,
     "today_match": {
-      "count": 44,
+      "count": 49,
       "visible": true,
-      "url": "data/today-match.json"
+      "url": "data/snapshots/s0/today-match.json"
     },
     "upcoming": {
-      "count": 140,
+      "count": 126,
       "visible": true,
-      "url": "data/upcoming.json"
+      "url": "data/snapshots/s0/upcoming.json"
     },
     "channels": {
       "Bangla": {
@@ -252,18 +253,18 @@
         "index": "data/movies/premium/index.json"
       }
     },
-    "updated_at": "2026-09-26T20:32:16.605053+00:00",
+    "updated_at": "2026-09-26T20:45:05.444527+00:00",
     "snapshot": {
-      "slot": "s1",
-      "generation": 1673,
-      "id": "s1-1673",
-      "directory": "data/snapshots/s1",
-      "published_at": "2026-09-26T19:32:20.314778+00:00",
+      "slot": "s0",
+      "generation": 1672,
+      "id": "s0-1672",
+      "directory": "data/snapshots/s0",
+      "published_at": "2026-09-26T18:43:40.066539+00:00",
       "switch": "one os.replace() of data/manifest.json",
       "mirrored_flat_paths": true
     },
-    "allowed_hosts_url": "data/snapshots/s1/allowed-hosts.json",
-    "playback_catalog_url": "data/snapshots/s1/playback-sources.json"
+    "allowed_hosts_url": "data/snapshots/s0/allowed-hosts.json",
+    "playback_catalog_url": "data/snapshots/s0/playback-sources.json"
   },
   "telegram_sent": false
 }
