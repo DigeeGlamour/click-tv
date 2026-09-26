@@ -126,6 +126,56 @@ def _stream_identity_key(stream: Dict[str, Any]) -> str:
     return hashlib.sha256(_canonical_json(payload).encode("utf-8")).hexdigest()
 
 
+#: How many fixtures may honestly share one playable setup. Two sometimes do -
+#: GT World Challenge and GT3 Revival Series ran off one URL, and that is one
+#: broadcast under two names. Six unrelated matches do not.
+SHARED_PRIMARY_KEY_LIMIT = 4
+
+
+def _retire_shared_primary_keys(items: List[Dict[str, Any]]) -> int:
+    """Blank a `primary_stream_key` that too many unrelated fixtures claim.
+
+    The same rule `_stream_identity_key` already applies to the empty payload,
+    applied to the other way a key stops identifying anything. Measured on
+    2026-09-26: `https://file.genoads.com/ch1.m3u8` - the provider's generic
+    "channel 1" - was the primary of six simultaneous fixtures, from Namibia
+    U20 to Seattle Reign.
+
+    Only the KEY goes. The card keeps its url, its backups and its place on the
+    page, because one of those six may genuinely be what that channel is
+    showing and this cannot tell which - dropping all six would hide a fixture
+    on a guess. What the key is for is stickiness: `load_previous_primary_keys`
+    maps event name to it so a healthy primary keeps its slot next scan, and
+    six events claiming one key is a comparison that can only give wrong
+    answers. Returning nothing says what is true.
+    """
+    counts: Dict[str, int] = {}
+    for item in items or ():
+        if not isinstance(item, dict):
+            continue
+        key = str(item.get("primary_stream_key") or "").strip()
+        if key:
+            counts[key] = counts.get(key, 0) + 1
+    crowded = {key for key, count in counts.items()
+               if count > SHARED_PRIMARY_KEY_LIMIT}
+    if not crowded:
+        return 0
+    retired = 0
+    for item in items or ():
+        if not isinstance(item, dict):
+            continue
+        if str(item.get("primary_stream_key") or "").strip() in crowded:
+            item["primary_stream_key"] = ""
+            item["primary_stream_key_retired"] = "shared_by_unrelated_fixtures"
+            retired += 1
+    print(
+        f"   shared primary streams: {len(crowded)} setup(s) claimed by more "
+        f"than {SHARED_PRIMARY_KEY_LIMIT} fixtures; {retired} card(s) keep "
+        "their links and lose an identity that identified nothing"
+    )
+    return retired
+
+
 def _source_provenance(stream: Dict[str, Any]) -> List[Dict[str, str]]:
     records: List[Dict[str, str]] = []
     existing = stream.get("source_provenance")
@@ -2753,5 +2803,6 @@ def merge_candidates(
             merged_results[original_position] = ordered_cards[card_index]
 
     _drop_cards_the_pages_validator_would_refuse(merged_results, settings)
+    _retire_shared_primary_keys(merged_results)
 
     return merged_results

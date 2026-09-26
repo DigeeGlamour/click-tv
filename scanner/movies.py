@@ -693,17 +693,166 @@ def _retain_recent_dropouts(
     try:
         from scanner import movie_retention
 
-        kept, summary = movie_retention.retain(movies, category_slug)
+        kept, summary = movie_retention.retain(
+            movies, category_slug,
+            # ধাপ ৩খ. Told, never inferred: these left the movie catalogue on
+            # purpose and must not be carried back into it.
+            moved_cards=_MIGRATED_CARD_IDS,
+            moved_streams=_MIGRATED_STREAM_URLS,
+        )
+        if summary.get("moved_to_series"):
+            print(
+                f"   {category_slug}: {summary['moved_to_series']} card(s) "
+                "moved into the series catalogue, not counted as missing"
+            )
         if summary.get("retained") or summary.get("dropped_after_grace"):
             print(
                 f"   {category_slug}: carried {summary['retained']} movie(s) "
                 f"through a failed check, dropped "
                 f"{summary['dropped_after_grace']} past the grace scan"
             )
+        cleaned = _clean_carried_titles(kept)
+        if cleaned:
+            print(
+                f"   {category_slug}: {cleaned} carried title(s) cleaned on "
+                "the way back in"
+            )
         return kept
     except Exception as error:  # noqa: BLE001 - retention must not fail a scan
         print(f"   movie retention skipped for {category_slug}: {error}")
         return movies
+
+
+#: The link ledger, read once per run. 21,000 records, seven categories.
+_LINK_LEDGER_CACHE: Dict[str, str] = {}
+_LINK_LEDGER_LOADED = [False]
+
+#: What the badge says when the ledger has seen this link refuse. Already the
+#: wording `scanner/deliverability.py` uses for the same idea, so every consumer
+#: that understands one understands the other.
+UNPROVEN_BADGE = "Playback Unproven"
+
+
+def _link_ledger_families() -> Dict[str, str]:
+    """`stream family -> the worst status the ledger has for it`."""
+    if _LINK_LEDGER_LOADED[0]:
+        return _LINK_LEDGER_CACHE
+    _LINK_LEDGER_LOADED[0] = True
+    try:
+        from scanner import movie_link_health
+
+        rank = {
+            movie_link_health.STATUS_HEALTHY: 0,
+            movie_link_health.STATUS_FAILING: 1,
+            movie_link_health.STATUS_CONFIRMED_UNAVAILABLE: 2,
+            movie_link_health.STATUS_DEAD: 3,
+        }
+        for record in (movie_link_health.load().get("links") or {}).values():
+            if not isinstance(record, dict):
+                continue
+            family = str(record.get("stream_family") or "").strip()
+            status = str(record.get("status") or "")
+            if not family or status not in rank:
+                continue
+            held = _LINK_LEDGER_CACHE.get(family)
+            if held is None or rank[status] > rank.get(held, -1):
+                _LINK_LEDGER_CACHE[family] = status
+    except Exception as error:  # noqa: BLE001 - a badge is never worth a scan
+        print(f"   link ledger unavailable for badges: {error}")
+    return _LINK_LEDGER_CACHE
+
+
+def _mark_unplayable_links(movies: List[Dict[str, Any]]) -> int:
+    """ধারা ৪.১ - the card stays; the badge stops claiming it plays.
+
+    The two axes again. A link the ledger has seen refuse does not change where
+    the content goes - it stays published, `publish_allowed` is untouched and
+    no stream is removed - but it must not be shown to a viewer under a badge
+    that says "Verified".
+
+    Measured on 2026-09-26, which is what a viewer had been reporting: 1,521 of
+    1,970 cards carried `verification_badge: "Verified"` while the ledger held
+    20,155 `confirmed_unavailable` and 2,020 `dead` records for the very hosts
+    they point at. Every one of those cards opened to nothing.
+
+    `scanner/merger.py` has done exactly this for channels since Star Jalsha
+    shipped four "Verified" routes a browser could not play. Movies were never
+    given the same treatment.
+    """
+    ledger = _link_ledger_families()
+    if not ledger:
+        return 0
+    try:
+        from scanner.movie_coverage import stream_family
+        from scanner.movie_link_health import (
+            STATUS_CONFIRMED_UNAVAILABLE, STATUS_DEAD)
+    except Exception:  # noqa: BLE001
+        return 0
+
+    refused = {STATUS_CONFIRMED_UNAVAILABLE, STATUS_DEAD}
+    marked = 0
+    for movie in movies or ():
+        if not isinstance(movie, dict):
+            continue
+        if str(movie.get("verification_badge") or "") == UNPROVEN_BADGE:
+            continue
+        urls = [movie.get("url")] + [
+            backup.get("url") for backup in (movie.get("backups") or ())
+            if isinstance(backup, dict)
+        ]
+        seen = [ledger.get(stream_family(url)) for url in urls if url]
+        seen = [status for status in seen if status]
+        if not seen or any(status not in refused for status in seen):
+            # Nothing known, or at least one link the ledger has not seen
+            # refuse: the card keeps the badge it earned.
+            continue
+        movie["verification_badge"] = UNPROVEN_BADGE
+        movie["playback_unproven"] = True
+        movie["playback_unproven_reason"] = (
+            "every published link for this card has been recorded refusing "
+            "from the scanner's vantage"
+        )
+        marked += 1
+    return marked
+
+
+def _clean_carried_titles(movies: List[Dict[str, Any]]) -> int:
+    """Give a carried card the same title pass every fresh card gets.
+
+    `_finalize_movie_presentation` runs on the list the scan built. Retention
+    runs afterwards and adds cards read straight off the previous pages, so a
+    film that has been carried since before the title pass existed keeps its
+    scene name for ever - and a third of this catalogue is carried on any given
+    run. Measured on 2026-09-26: 97 cards still published titles like "Kalinga
+    2024 Bengali ORG" and "Tron Ares (2025) AMZN ESub", and 82 of them were
+    carried cards that the cleaner had simply never been shown.
+
+    The id is not touched, so nothing that identifies this card moves - not
+    retention's own ledger, not the no-loss gate, not a viewer's watchlist.
+    Only what is displayed changes, and `_resolve_presentation_collisions` runs
+    immediately after this to undo any rename that would make two cards in one
+    category indistinguishable.
+    """
+    cleaned = 0
+    for movie in movies or ():
+        if not isinstance(movie, dict) or not movie.get("retained_after_failed_scan"):
+            continue
+        raw = _display_title(movie.get("name") or movie.get("title"))
+        if not raw:
+            continue
+        tidy = _clean_display_title(raw) or raw
+        if tidy == raw:
+            continue
+        # A year the cleaned name just lost is recovered rather than dropped:
+        # the release label is where a scene title keeps it.
+        if not _parse_year(movie.get("year")):
+            recovered = _parse_year(raw)
+            if recovered:
+                movie["year"] = recovered
+        movie["name"] = tidy
+        movie["title_cleaned_on_carry"] = True
+        cleaned += 1
+    return cleaned
 
 
 def _annotate_classification(movies: List[Dict[str, Any]]) -> Dict[str, int]:
@@ -849,6 +998,45 @@ def _annotate_provider_pending(movies: List[Dict[str, Any]]) -> Dict[str, Any]:
         return {}
 
 
+#: What ধাপ ৩খ moved out of the movie catalogue on this run: the card ids it
+#: recorded, and the streams that went with them. Read by
+#: `_retain_recent_dropouts`, because a card that MOVED is not a card that went
+#: missing - and retention, unable to tell them apart, was publishing every
+#: migrated episode straight back as a movie card on the same run.
+_MIGRATED_CARD_IDS: set = set()
+_MIGRATED_STREAM_URLS: set = set()
+
+
+def _remember_series_migration(series_items: List[Dict[str, Any]]) -> None:
+    """Record what the migration took, from the records it wrote.
+
+    Read out of the staged episodes rather than diffed against the input list:
+    the episode carries `migrated_from_movie_id`, which is the published card's
+    own id, and its links, which are the streams the gate matches on. Both,
+    because either alone can miss - an id can be rebuilt between runs, and a
+    card can be migrated after its links were replaced.
+    """
+    _MIGRATED_CARD_IDS.clear()
+    _MIGRATED_STREAM_URLS.clear()
+    for show in series_items or ():
+        for season in (show or {}).get("seasons") or ():
+            for episode in (season or {}).get("episodes") or ():
+                if not isinstance(episode, dict):
+                    continue
+                for field in ("migrated_from_movie_id",):
+                    value = str(episode.get(field) or "").strip()
+                    if value:
+                        _MIGRATED_CARD_IDS.add(value.casefold())
+                for merged in episode.get("merged_from_movie_ids") or ():
+                    value = str(merged or "").strip()
+                    if value:
+                        _MIGRATED_CARD_IDS.add(value.casefold())
+                for link in episode.get("links") or ():
+                    url = str((link or {}).get("url") or "").strip()
+                    if url:
+                        _MIGRATED_STREAM_URLS.add(url)
+
+
 def _migrate_series_cards(
     movies: List[Dict[str, Any]],
     settings: Dict[str, Any],
@@ -904,6 +1092,7 @@ def _migrate_series_cards(
             )
             return movies
 
+        _remember_series_migration(plan["series_items"])
         staged = series_migration.stage_into_catalog(
             plan["series_items"], DEFAULT_REMOTE_SERIES_STAGING_PATH)
         print(
@@ -4150,6 +4339,16 @@ def paginate_movie_list(
         print(
             f"   {category_slug}: {_collisions['reverted_for_uniqueness']} "
             "title(s) kept their raw name so two cards stay distinguishable"
+        )
+    # After retention, because a carried card carries the badge it was
+    # published with - and a card that has been carried for weeks is exactly
+    # the one whose links the ledger has watched refuse.
+    _unplayable = _mark_unplayable_links(prepared)
+    if _unplayable:
+        print(
+            f"   {category_slug}: {_unplayable} card(s) badged "
+            f"\"{UNPROVEN_BADGE}\" - every link recorded refusing; the cards "
+            "stay published"
         )
     # Year, first_seen_at and is_new are filled in HERE, before the sort and
     # therefore before pagination. Doing it after would order the catalogue on

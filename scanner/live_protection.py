@@ -585,7 +585,25 @@ def _absorb_carried_card(
         if len(merged) >= MAX_PUBLISHED_BACKUPS:
             break
     canonical["backups"] = merged
-    canonical["available_link_count"] = 1 + len(merged)
+
+    # A metadata-only canonical card has NO primary to protect, and the streams
+    # that just arrived were proven playable. Leaving them as backups behind an
+    # empty `url` publishes a fixture that cannot be opened while holding a
+    # route that works - and then says `available_link_count: 1` beside
+    # `metadata_only: true`, which is the contradiction test_audit_findings
+    # catches. Measured on 2026-09-26: "Girona FC vs Albacete", one absorbed
+    # backup, verified_global, resolving to an active playback record.
+    #
+    # The guarantee this routine states - "the canonical primary is not
+    # touched" - is about not demoting a WORKING primary. There is none here,
+    # so the first proven-playable arrival becomes it.
+    if canonical.get("metadata_only") is True and merged:
+        _promote_backup_to_primary(canonical, merged)
+
+    canonical["available_link_count"] = (
+        (0 if canonical.get("metadata_only") is True else 1)
+        + len(canonical.get("backups") or [])
+    )
 
     carried_channels = [c for c in (carried.get("channels") or []) if isinstance(c, dict)]
     if carried_channels:
@@ -657,6 +675,40 @@ def _absorb_carried_card(
     canonical["absorbed_event_ids"] = absorbed
     canonical["reconciled_duplicate_count"] = len(absorbed)
     return len(incoming)
+
+
+#: What a promoted backup carries up to the card. Route first, then the fields
+#: that decide how it is fetched, then how it was verified. Anything the backup
+#: does not carry is left exactly as the card had it.
+_PROMOTED_FIELDS = (
+    "url", "playback_id", "stream_type", "headers", "header_profile",
+    "proxy_mode", "requires_headers", "inherit_manifest_query", "drm",
+    "verification_status", "verified", "verification_mode", "verification_badge",
+    "source_id", "resolution", "resolution_height",
+)
+
+
+def _promote_backup_to_primary(
+    canonical: Dict[str, Any], merged: List[Dict[str, Any]]
+) -> None:
+    """Make the first absorbed stream the card's primary. Adds only.
+
+    The card stops being metadata-only because it stopped being metadata-only:
+    it now has a route. The remaining backups keep their order and are simply
+    renumbered, so nothing is lost and nothing is reordered.
+    """
+    promoted = merged[0]
+    for field in _PROMOTED_FIELDS:
+        if field in promoted and promoted.get(field) not in (None, ""):
+            canonical[field] = promoted[field]
+    canonical["metadata_only"] = False
+    canonical["promoted_from_absorbed_backup"] = True
+    rest: List[Dict[str, Any]] = []
+    for index, entry in enumerate(merged[1:]):
+        copy = dict(entry)
+        copy["name"] = f"Backup-{index + 1}"
+        rest.append(copy)
+    canonical["backups"] = rest
 
 
 def _rebuild_card_channels(card: Dict[str, Any], layer: Dict[str, Any]) -> int:

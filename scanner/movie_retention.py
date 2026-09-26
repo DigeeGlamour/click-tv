@@ -167,6 +167,53 @@ def _stream_urls(item: Dict[str, Any]) -> List[str]:
     return urls
 
 
+def _moved_keys(
+    previous_items: List[Dict[str, Any]],
+    moved_cards: Optional[Any],
+    moved_streams: Optional[Any],
+) -> set:
+    """Keys of previously published cards that LEFT on purpose.
+
+    "Moved" is never inferred here - it is told, by whoever moved them. This
+    only translates that into the keys this function works in.
+    """
+    ids = {str(key or "").strip().casefold() for key in (moved_cards or ())}
+    ids.discard("")
+    families = set()
+    for url in (moved_streams or ()):
+        family = _stream_family(url)
+        if family:
+            families.add(family)
+    if not ids and not families:
+        return set()
+
+    found = set()
+    for item in previous_items:
+        if not isinstance(item, dict):
+            continue
+        key = _item_key(item)
+        if not key:
+            continue
+        if str(item.get("id") or "").strip().casefold() in ids or key in ids:
+            found.add(key)
+            continue
+        if families and any(
+            _stream_family(url) in families for url in _stream_urls(item)
+        ):
+            found.add(key)
+    return found
+
+
+def _stream_family(url: Any) -> str:
+    """The gate's own notion of "the same stream", never a second opinion."""
+    try:
+        from scanner.movie_coverage import stream_family
+
+        return stream_family(url)
+    except Exception:  # noqa: BLE001 - one url, never the run
+        return ""
+
+
 def removed_entries(
     store: Optional[Dict[str, Any]] = None, path: Optional[str] = None
 ) -> List[Dict[str, Any]]:
@@ -364,6 +411,8 @@ def retain(
     path: Optional[str] = None,
     now: Optional[_dt.datetime] = None,
     persist: bool = True,
+    moved_cards: Optional[Any] = None,
+    moved_streams: Optional[Any] = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """(list to publish, summary). Adds back recent drop-outs, adds only.
 
@@ -392,6 +441,24 @@ def retain(
     present_keys = {_item_key(movie) for movie in incoming}
     present_keys.discard("")
 
+    previous_items = previously_published(category_slug, root)
+
+    # ধাপ ৩খ moves proven episode cards out of the movie catalogue on purpose.
+    # They are not missing, they are somewhere better - and this function could
+    # not tell the difference, so it carried every one of them straight back as
+    # `stale_last_good`. Measured on 2026-09-24: the migration moved 336 cards
+    # into 110 shows, and all 313 episode-titled cards were published as movie
+    # cards again on the same run, which is exactly the duplication ধাপ ৩খ
+    # exists to end. It also made `mix` look like a broken scan - 184 of 937 -
+    # which froze the whole category.
+    #
+    # Matched on the card id the migration recorded AND on the streams it took,
+    # because either one alone can miss: an id can be rebuilt between runs, and
+    # a card can be migrated after its links were replaced.
+    moved = _moved_keys(previous_items, moved_cards, moved_streams)
+    present_keys |= moved
+    summary["moved_to_series"] = len(moved)
+
     removed = store.setdefault("removed", {})
     if not isinstance(removed, dict):
         removed = {}
@@ -408,7 +475,6 @@ def retain(
         if key in present_keys:
             removed.pop(key, None)
 
-    previous_items = previously_published(category_slug, root)
     previous_keys = {_item_key(item) for item in previous_items}
     previous_keys.discard("")
 

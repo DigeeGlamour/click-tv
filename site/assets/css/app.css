@@ -4421,6 +4421,23 @@ body.movie-detail-view .youtube-layout.final-shell:has(.sidebar-section.side-pan
   padding: 14px 18px 24px !important;
 }
 
+/* The cap above is the demo's, measured at 1440. On a 2K display it leaves
+   about 490px of empty page on either side - and because the player view
+   lifts the cap entirely (`max-width: none`, below), coming back from a movie
+   collapses the page from the full window to 1580px, which reads as the page
+   being squeezed rather than as a return.
+
+   Lifted only where the waste is real. Below 1800px nothing changes at all,
+   so every proportion the design was measured at is exactly as it was; above
+   it the browse shell uses the window the same way the player already does.
+   The columns, gap and padding are untouched - only the ceiling moves. */
+@media (min-width: 1800px) {
+  body.movie-portal .youtube-layout.final-shell:has(.sidebar-section.side-panel),
+  body.movie-detail-view .youtube-layout.final-shell:has(.sidebar-section.side-panel) {
+    max-width: min(2040px, calc(100vw - 96px)) !important;
+  }
+}
+
 /* ---- Hero: demo .hero-showcase ---------------------------------------- */
 body.movie-portal .movie-hero {
   min-height: 390px;
