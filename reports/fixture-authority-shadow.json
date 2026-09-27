@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-27T05:51:41.783501+00:00",
+  "generated_at": "2026-09-27T06:02:37.030914+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -14,8 +14,6 @@
       "unknown_statuses": [
         "12|Int.",
         "134|Stumps - day 3",
-        "3|90+2'",
-        "3|90+3'",
         "44|ToFi"
       ],
       "attempts": [
@@ -112,15 +110,14 @@
     "upcoming": 117,
     "fixtures": 127,
     "verdicts": {
-      "CONFLICT": 3,
+      "CONFLICT": 4,
       "UNVERIFIED": 63,
-      "PARTIAL_AUTHORITY": 1,
       "VERIFIED": 60
     },
     "verified": 60,
-    "partial_authority": 1,
+    "partial_authority": 0,
     "unverified": 63,
-    "conflict": 3,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
         "matched": 59,
@@ -132,12 +129,12 @@
       }
     },
     "matched_by_two_independent_authorities": 53,
-    "authority_agreements": 49,
+    "authority_agreements": 51,
     "authority_disagreements": 2,
-    "card_status_conflicts": 1,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1,
       "authorities disagree": 2,
+      "card says LIVE, authority says FINISHED": 2,
       "kickoff": 5
     },
     "identity_near_misses": 27,
@@ -150,8 +147,6 @@
       "livescore": [
         "12|Int.",
         "134|Stumps - day 3",
-        "3|90+2'",
-        "3|90+3'",
         "44|ToFi"
       ],
       "espn-header": []
@@ -441,9 +436,9 @@
           "competition_id": "537",
           "kickoff": "2026-09-27T04:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "90+3'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "1",
           "format": "",
@@ -458,10 +453,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
       ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -475,13 +470,12 @@
       "lifecycle_state": "STARTING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -660,7 +654,7 @@
       "competition": "Liga MX, Apertura",
       "kickoff": "2026-09-27T03:10:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -688,18 +682,18 @@
           "competition_id": "760",
           "kickoff": "2026-09-27T03:10:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Sat, September 26th at 11:10 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:760~e:401876960~c:401876960"
         },
@@ -735,10 +729,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+        "card says LIVE, authority says FINISHED"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -778,18 +772,18 @@
           "competition_id": "760",
           "kickoff": "2026-09-27T03:05:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Sat, September 26th at 11:05 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:760~e:401876961~c:401876961"
         },
@@ -825,10 +819,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+        "card says LIVE, authority says FINISHED"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -898,9 +892,9 @@
           "competition_id": "537",
           "kickoff": "2026-09-27T04:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "90+2'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "1",
           "format": "",
@@ -914,10 +908,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -1355,10 +1351,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1633,10 +1629,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2631,8 +2627,8 @@
       "name": "Cambodia vs Myanmar",
       "competition": "FIFA Asean Cup",
       "kickoff": "2026-09-27T07:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
@@ -2678,10 +2674,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3337,10 +3333,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3607,14 +3603,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "srhady-bingstream",
         "srhady-axsports-live",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -3831,10 +3827,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3990,8 +3986,8 @@
       "name": "Fiji vs Papua New Guinea",
       "competition": "Friendlies",
       "kickoff": "2026-09-27T07:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
@@ -4635,10 +4631,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4823,12 +4819,12 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -5270,10 +5266,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -5978,10 +5974,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6132,10 +6128,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6196,10 +6192,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6238,10 +6234,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -7116,14 +7112,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "srhady-bingstream",
         "srhady-axsports-live",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -7348,10 +7344,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -7390,10 +7386,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -7470,10 +7466,10 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -7783,10 +7779,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -7950,25 +7946,23 @@
     {
       "fixture_id": "provider:trinidad-and-tobago-vs-dominican-republic|concacaf nations league|2026-09-28",
       "card_id": "trinidad-and-tobago-vs-dominican-republic",
-      "name": "Trinidad and Tobago Vs Dominican Republic",
+      "name": "Trinidad and Tobago vs Dominican Republic",
       "competition": "CONCACAF Nations League",
       "kickoff": "2026-09-28T01:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data",
         "srhady-bingstream",
         "srhady-axsports-live"
       ],
       "upstream_families": [
-        "AXS-Bing",
-        "SM-Aggregate"
+        "AXS-Bing"
       ],
-      "independent_witness_count": 2,
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -8228,27 +8222,25 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:utah-royals-fc-vs-north-carolina-courage|nwsl|2026-09-27",
-      "card_id": "utah-royals-fc-vs-north-carolina-courage",
-      "name": "Utah Royals FC Vs North Carolina Courage",
-      "competition": "NWSL",
+      "fixture_id": "provider:utah-royals-w-vs-north-carolina-courage-w|nwsl women|2026-09-27",
+      "card_id": "utah-royals-w-vs-north-carolina-courage-w",
+      "name": "Utah Royals W vs North Carolina Courage W",
+      "competition": "NWSL Women",
       "kickoff": "2026-09-27T23:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data",
         "srhady-bingstream",
         "srhady-axsports-live"
       ],
       "upstream_families": [
-        "AXS-Bing",
-        "SM-Aggregate"
+        "AXS-Bing"
       ],
-      "independent_witness_count": 2,
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -8443,10 +8435,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -8485,10 +8477,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -8527,10 +8519,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -8592,18 +8584,18 @@
           "competition_id": "4002",
           "kickoff": "2026-09-27T02:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Sat, September 26th at 10:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:4002~e:401842253~c:401842253"
         },
@@ -8639,10 +8631,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+        "card says LIVE, authority says FINISHED"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT"
     }
   ]
