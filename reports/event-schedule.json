@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T11:10:54.697031+00:00",
+  "generated_at": "2026-09-28T11:21:49.643867+00:00",
   "today_match_count": 9,
   "upcoming_count": 48,
   "today_missing_logo": [
@@ -30,7 +30,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 1,
+  "provider_fixture": 5,
   "provider_rejected": 0,
   "provider_rejected_reasons": {
     "provider_dead_status": 0,
@@ -41,7 +41,7 @@
   "provider_rejected_by_source": {},
   "provider_rejected_fixtures": [],
   "ambiguous_suppressed": 0,
-  "unverified_suppressed": 97,
+  "unverified_suppressed": 98,
   "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
   "streams_attached": 0,
@@ -50,7 +50,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 1,
+    "total": 5,
     "discarded": 0,
     "examples": []
   },
@@ -65,7 +65,7 @@
   "targeted_carried_published_cards": 48,
   "targeted_keys_supplied": 1,
   "targeted_resolved_now": 0,
-  "targeted_promoted_to_today": 1,
+  "targeted_promoted_to_today": 0,
   "targeted_promoted_without_link": 0,
   "live_protection": {
     "skipped": "targeted scan"
@@ -83,7 +83,7 @@
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 94,
+    "unresolved": 96,
     "names": {
       "Sky Sports": 1,
       "Fox": 1,
@@ -97,7 +97,7 @@
     "calls": 12,
     "cache_hits": 0,
     "errors": 0,
-    "fixtures_ingested": 97,
+    "fixtures_ingested": 98,
     "embed_streams": 8,
     "artwork_supplied": 66
   },
@@ -106,23 +106,23 @@
     "artwork": 7,
     "embed_backups": 0,
     "embed_channels": 0,
-    "unmatched": 87,
+    "unmatched": 88,
     "matched_by_participants": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 31,
+    "attempted": 30,
     "poster_filled": 0,
-    "badge_filled": 2,
+    "badge_filled": 0,
     "badge_used_as_logo": 0,
-    "cache_hits": 2,
+    "cache_hits": 1,
     "cached_entries": 895,
     "provider": {
-      "requests": 29,
-      "hits": 29,
+      "requests": 28,
+      "hits": 26,
       "empty": 0,
-      "rate_limited": 0,
+      "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 0,
+      "skipped_rate_limited": 1,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -137,12 +137,13 @@
   "competition_labels_clarified": [],
   "sport_filter": {
     "at_merge": {
-      "total": 1,
+      "total": 2,
       "published": 1,
       "rejected": 0,
-      "quarantined": 0,
+      "quarantined": 1,
       "states": {
-        "confirmed_cricket": 1
+        "confirmed_cricket": 1,
+        "unknown": 1
       },
       "by_source": {
         "sm-fancode": {
@@ -161,7 +162,7 @@
           "rejected": 0,
           "published": 1
         },
-        "drmlive-fancode-mirror": {
+        "dartv-fancode-mirror": {
           "total": 1,
           "cricket": 1,
           "football": 0,
@@ -185,17 +186,33 @@
           "rejected": 0,
           "published": 1
         },
-        "dartv-fancode-mirror": {
+        "srhady-bingstream": {
           "total": 1,
-          "cricket": 1,
+          "cricket": 0,
           "football": 0,
-          "quarantined": 0,
+          "quarantined": 1,
           "rejected": 0,
-          "published": 1
+          "published": 0
+        },
+        "srhady-axsports-live": {
+          "total": 1,
+          "cricket": 0,
+          "football": 0,
+          "quarantined": 1,
+          "rejected": 0,
+          "published": 0
         }
       },
       "rejected_examples": [],
-      "quarantined_events": [],
+      "quarantined_events": [
+        {
+          "name": "Ireland vs Japan",
+          "source": "srhady-bingstream, srhady-axsports-live",
+          "competition": "WXV",
+          "sport_type": "other",
+          "reason": "fixture lookup: only one provider knows this (football)"
+        }
+      ],
       "leaks": []
     },
     "today_match": {
@@ -240,6 +257,22 @@
           "rejected": 0,
           "published": 2
         },
+        "sm-fancode": {
+          "total": 1,
+          "cricket": 1,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
+        },
+        "sportlive-fancode-backup": {
+          "total": 1,
+          "cricket": 1,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
+        },
         "sm-sports-data": {
           "total": 3,
           "cricket": 0,
@@ -260,30 +293,6 @@
           "total": 1,
           "cricket": 0,
           "football": 1,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
-        "sm-fancode": {
-          "total": 1,
-          "cricket": 1,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
-        "sportlive-fancode-backup": {
-          "total": 1,
-          "cricket": 1,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
-        "drmlive-fancode-mirror": {
-          "total": 1,
-          "cricket": 1,
-          "football": 0,
           "quarantined": 0,
           "rejected": 0,
           "published": 1
@@ -397,11 +406,11 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 98,
+    "raw_events": 103,
     "cricket_kept": 1,
     "football_kept": 0,
     "other_discarded": 0,
-    "unresolved": 0,
+    "unresolved": 1,
     "today_final": 9,
     "upcoming_final": 48,
     "published_states": {
@@ -438,21 +447,21 @@
     }
   },
   "fixture_stream_health": {
-    "fixtures": 57,
+    "fixtures": 58,
     "published_fixtures": 57,
     "fixtures_with_verified_stream": 0,
-    "fixtures_with_zero_verified": 57,
+    "fixtures_with_zero_verified": 58,
     "published_without_stream": 53,
     "fallback_available": 3,
-    "targeted_fixtures": 5,
-    "targeted_attempts": 8,
+    "targeted_fixtures": 6,
+    "targeted_attempts": 9,
     "fixtures_with_a_first_link_time": 3,
-    "candidate_routes": 0,
+    "candidate_routes": 3,
     "verified_routes": 0,
-    "failed_routes": 0,
-    "fixtures_touched_by_a_route_failure": 0,
-    "fixtures_left_with_nothing": 0,
-    "distinct_failure_codes": 0,
+    "failed_routes": 3,
+    "fixtures_touched_by_a_route_failure": 2,
+    "fixtures_left_with_nothing": 1,
+    "distinct_failure_codes": 1,
     "unrecognised_candidate_groups": 0,
     "unrecognised_failed_routes": 0
   },
