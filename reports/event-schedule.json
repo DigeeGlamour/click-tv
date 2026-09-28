@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-28T19:27:58.866433+00:00",
-  "today_match_count": 23,
+  "generated_at": "2026-09-28T19:42:02.292648+00:00",
+  "today_match_count": 22,
   "upcoming_count": 76,
   "today_missing_logo": [],
   "upcoming_missing_logo": [
@@ -25,13 +25,13 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 377,
-  "provider_rejected": 88,
+  "provider_fixture": 395,
+  "provider_rejected": 87,
   "provider_rejected_reasons": {
     "provider_dead_status": 22,
     "status_neither_live_nor_upcoming": 0,
     "kickoff_missing_and_not_live": 6,
-    "upcoming_kickoff_already_passed": 60
+    "upcoming_kickoff_already_passed": 59
   },
   "provider_rejected_by_source": {
     "sm-sports-data": {
@@ -45,10 +45,6 @@
     "iptvflixbd-fancode-data": {
       "upcoming_kickoff_already_passed": 23,
       "total": 23
-    },
-    "sayanpal-fancode-mirror": {
-      "upcoming_kickoff_already_passed": 1,
-      "total": 1
     },
     "srhady-bingstream": {
       "upcoming_kickoff_already_passed": 23,
@@ -139,15 +135,6 @@
       "status": "UPCOMING",
       "reason": "upcoming_kickoff_already_passed",
       "start_time": "2026-09-15T14:00:00+00:00"
-    },
-    {
-      "name": "Ajman vs Fujairah",
-      "competition": "Emirates D10, 2026",
-      "sport": "cricket",
-      "source_id": "sayanpal-fancode-mirror",
-      "status": "UPCOMING",
-      "reason": "upcoming_kickoff_already_passed",
-      "start_time": "2026-09-28T13:15:00+00:00"
     },
     {
       "name": "Al Ahli Saudi FC vs Pakhtakor Tashkent",
@@ -592,8 +579,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 382,
-    "discarded": 81,
+    "total": 400,
+    "discarded": 80,
     "examples": [
       {
         "name": "TENNIS | EVENTO",
@@ -636,20 +623,20 @@
         "evidence": "darts"
       },
       {
-        "name": "Day 6",
-        "source": "sayanpal-fancode-mirror",
-        "competition": "ATP 250 - Hangzhou Open 2026",
-        "sport_type": "",
-        "reason": "tennis gazetteer",
-        "evidence": "tennis"
-      },
-      {
         "name": "Secondo turno",
         "source": "srhady-bingstream, srhady-axsports-live",
         "competition": "World Snooker Tour",
         "sport_type": "",
         "reason": "other gazetteer",
         "evidence": "snooker"
+      },
+      {
+        "name": "Sep 28 PTT Ithaca",
+        "source": "srhady-primevideo-sports",
+        "competition": "",
+        "sport_type": "",
+        "reason": "table tennis / pickleball gazetteer",
+        "evidence": "ptt"
       },
       {
         "name": "Sep 28 PTT Lincoln",
@@ -770,14 +757,6 @@
         "sport_type": "",
         "reason": "tennis gazetteer",
         "evidence": "atp"
-      },
-      {
-        "name": "Day 6",
-        "source": "sayanpal-fancode-mirror",
-        "competition": "ATP 250 - Chengdu Open 2026",
-        "sport_type": "",
-        "reason": "tennis gazetteer",
-        "evidence": "tennis"
       },
       {
         "name": "Secondo turno",
@@ -1074,52 +1053,78 @@
         "sport_type": "",
         "reason": "wrestling / mma / boxing gazetteer",
         "evidence": "boxing"
+      },
+      {
+        "name": "WWE RAW",
+        "source": "sm-sports-data",
+        "competition": "Monday Night RAW",
+        "sport_type": "",
+        "reason": "wrestling / mma / boxing gazetteer",
+        "evidence": "boxing"
       }
     ]
   },
   "reused_event_ids": 1,
   "authority_status": {
-    "applied": 0,
+    "applied": 2,
     "pending_confirmation": 0,
     "live": 1,
     "recorded": 53,
-    "conflict": 3,
-    "unmatched": 34,
+    "conflict": 1,
+    "unmatched": 33,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
       "UPCOMING": 53,
+      "FINISHED": 2,
       "LIVE": 1
     },
     "by_confidence": {
       "LOW": 34,
-      "HIGH": 20,
-      "CONFLICT": 3
+      "HIGH": 22,
+      "CONFLICT": 1
     },
-    "applied_fixtures": [],
-    "conflicts": [
+    "applied_fixtures": [
       {
         "name": "Central African Republic vs Burkina Faso",
-        "reason": "independent authorities disagree: ESPN espn-header=70' (STATUS_SECOND_HALF, event 401920032); LiveScore livescore=FT (6, event 1872990)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "fixture_id": "provider:central-african-republic-vs-burkina-faso|africa cup of nations qualification|2026-09-28",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
-        ]
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401920032)",
+          "LiveScore livescore=FT (6, event 1872990)"
+        ],
+        "authority_finished_seen_at": "2026-09-28T19:40:37.134740+00:00",
+        "remove_after": "2026-09-28T20:00:37.134740+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": ""
       },
       {
         "name": "Equatorial Guinea vs Sierra Leone",
-        "reason": "independent authorities disagree: ESPN espn-header=72' (STATUS_SECOND_HALF, event 401920033); LiveScore livescore=FT (6, event 1872960)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "fixture_id": "provider:equatorial-guinea-vs-sierra-leone|africa cup of nations qualification|2026-09-28",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
-        ]
-      },
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401920033)",
+          "LiveScore livescore=FT (6, event 1872960)"
+        ],
+        "authority_finished_seen_at": "2026-09-28T19:40:37.134740+00:00",
+        "remove_after": "2026-09-28T20:00:37.134740+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": ""
+      }
+    ],
+    "conflicts": [
       {
         "name": "Western Australia Women vs Tasmania Women",
         "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1545776); LiveScore livescore=NS (1, event 1834674)",
@@ -1133,32 +1138,123 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 5,
     "pending_confirmation": 2,
     "live": 1,
     "recorded": 8,
-    "conflict": 5,
+    "conflict": 0,
     "unmatched": 7,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "FINISHED": 2,
+      "FINISHED": 7,
       "LIVE": 1,
       "UPCOMING": 8
     },
     "by_confidence": {
       "LOW": 11,
-      "CONFLICT": 5
+      "HIGH": 5
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "Central African Republic Vs Burkina Faso",
+        "fixture_id": "provider:central-african-republic-vs-burkina-faso|africa cup of nations qual|2026-09-28",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401920032)",
+          "LiveScore livescore=FT (6, event 1872990)"
+        ],
+        "authority_finished_seen_at": "2026-09-28T19:40:37.134740+00:00",
+        "remove_after": "2026-09-28T20:00:37.134740+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Equatorial Guinea Vs Sierra Leone",
+        "fixture_id": "provider:equatorial-guinea-vs-sierra-leone|africa cup of nations qual|2026-09-28",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401920033)",
+          "LiveScore livescore=FT (6, event 1872960)"
+        ],
+        "authority_finished_seen_at": "2026-09-28T19:40:37.134740+00:00",
+        "remove_after": "2026-09-28T20:00:37.134740+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Armenia Vs Montenegro",
+        "fixture_id": "provider:armenia-vs-montenegro|uefa nations league|2026-09-28",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861076)",
+          "LiveScore livescore=FT (6, event 1738384)"
+        ],
+        "authority_finished_seen_at": "2026-09-28T19:40:37.134740+00:00",
+        "remove_after": "2026-09-28T20:00:37.134740+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Georgia Vs Ukraine",
+        "fixture_id": "provider:georgia-vs-ukraine|uefa nations league|2026-09-28",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861075)",
+          "LiveScore livescore=FT (6, event 1738321)"
+        ],
+        "authority_finished_seen_at": "2026-09-28T19:40:37.134740+00:00",
+        "remove_after": "2026-09-28T20:00:37.134740+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Latvia Vs Cyprus",
+        "fixture_id": "provider:latvia-vs-cyprus|uefa nations league|2026-09-28",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861082)",
+          "LiveScore livescore=FT (6, event 1738383)"
+        ],
+        "authority_finished_seen_at": "2026-09-28T19:40:37.134740+00:00",
+        "remove_after": "2026-09-28T20:00:37.134740+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
     "conflicts": [
       {
         "name": "Central African Republic Vs Burkina Faso",
-        "reason": "independent authorities disagree: ESPN espn-header=70' (STATUS_SECOND_HALF, event 401920032); LiveScore livescore=FT (6, event 1872990)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1166,9 +1262,9 @@
       },
       {
         "name": "Equatorial Guinea Vs Sierra Leone",
-        "reason": "independent authorities disagree: ESPN espn-header=72' (STATUS_SECOND_HALF, event 401920033); LiveScore livescore=FT (6, event 1872960)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1176,9 +1272,9 @@
       },
       {
         "name": "Armenia Vs Montenegro",
-        "reason": "independent authorities disagree: ESPN espn-header=74' (STATUS_SECOND_HALF, event 401861076); LiveScore livescore=FT (6, event 1738384)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1186,9 +1282,9 @@
       },
       {
         "name": "Georgia Vs Ukraine",
-        "reason": "independent authorities disagree: ESPN espn-header=68' (STATUS_SECOND_HALF, event 401861075); LiveScore livescore=FT (6, event 1738321)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1196,9 +1292,9 @@
       },
       {
         "name": "Latvia Vs Cyprus",
-        "reason": "independent authorities disagree: ESPN espn-header=74' (STATUS_SECOND_HALF, event 401861082); LiveScore livescore=FT (6, event 1738383)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1207,17 +1303,23 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 7,
+    "asked": 8,
     "finished": 5,
     "unplayable": 0,
     "cache_hits": 2,
-    "no_verdict": 4
+    "no_verdict": 5
   },
   "live_protection": {
     "carried_forward": 9,
     "released_ended": 0,
     "released_ended_ids": [],
     "retired_terminal": [
+      {
+        "id": "puri-titans-vs-bhubaneshwar-tigers",
+        "name": "Puri Titans vs Bhubaneshwar Tigers",
+        "provenance": "multi_signal_confirmed",
+        "reason": "multi-signal confirmation: estimated end passed, every link dead, and 5 consecutive scans with no live signal"
+      },
       {
         "id": "england-u17-vs-israel-u17",
         "name": "England U17 vs Israel U17",
@@ -1233,34 +1335,34 @@
     ],
     "released_listing_expired": 0,
     "released_dead_link": 0,
-    "released_stale": 2,
+    "released_stale": 3,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 2,
+    "probe_alive": 0,
     "probe_dead": 9,
     "probe_inconclusive": 0,
     "end_pending": 4,
-    "released_confirmed": 2,
+    "released_confirmed": 3,
     "protected_playing": 0,
     "lifecycle_states": {
+      "ENDED": 3,
       "LIVE": 5,
-      "END_PENDING": 4,
-      "ENDED": 2
+      "END_PENDING": 4
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 2,
-    "total": 373,
+    "added": 3,
+    "total": 374,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 2
+    "decided_this_scan": 3
   },
   "source_outage": {
     "sources_in_outage": [
@@ -1277,7 +1379,7 @@
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 334,
+    "unresolved": 345,
     "names": {
       "Sky Sports": 1,
       "Fox": 1,
@@ -1304,19 +1406,19 @@
     "matched_by_participants": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 87,
+    "attempted": 86,
     "poster_filled": 2,
     "badge_filled": 78,
     "badge_used_as_logo": 1,
     "cache_hits": 38,
     "cached_entries": 924,
     "provider": {
-      "requests": 25,
-      "hits": 23,
+      "requests": 43,
+      "hits": 41,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 26,
+      "skipped_rate_limited": 7,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1337,13 +1439,13 @@
   "competition_labels_clarified": [],
   "sport_filter": {
     "at_merge": {
-      "total": 91,
-      "published": 91,
+      "total": 90,
+      "published": 90,
       "rejected": 0,
       "quarantined": 0,
       "states": {
         "confirmed_football": 69,
-        "confirmed_cricket": 22
+        "confirmed_cricket": 21
       },
       "by_source": {
         "sm-sports-data": {
@@ -1386,14 +1488,6 @@
           "rejected": 0,
           "published": 20
         },
-        "sayanpal-fancode-mirror": {
-          "total": 16,
-          "cricket": 14,
-          "football": 2,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 16
-        },
         "dartv-fancode-mirror": {
           "total": 20,
           "cricket": 16,
@@ -1417,6 +1511,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 20
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 20,
+          "cricket": 16,
+          "football": 4,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 20
         }
       },
       "rejected_examples": [],
@@ -1424,13 +1526,13 @@
       "leaks": []
     },
     "today_match": {
-      "total": 23,
-      "published": 23,
+      "total": 22,
+      "published": 22,
       "rejected": 0,
       "quarantined": 0,
       "states": {
         "confirmed_football": 18,
-        "confirmed_cricket": 5
+        "confirmed_cricket": 4
       },
       "by_source": {
         "sm-sports-data": {
@@ -1458,36 +1560,36 @@
           "published": 7
         },
         "sportlive-fancode-backup": {
-          "total": 3,
-          "cricket": 3,
+          "total": 2,
+          "cricket": 2,
           "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 3
+          "published": 2
         },
         "vk1817-fancode-mirror": {
-          "total": 3,
-          "cricket": 3,
+          "total": 2,
+          "cricket": 2,
           "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 3
-        },
-        "sayanpal-fancode-mirror": {
-          "total": 3,
-          "cricket": 3,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 3
+          "published": 2
         },
         "dartv-fancode-mirror": {
-          "total": 3,
-          "cricket": 3,
+          "total": 2,
+          "cricket": 2,
           "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 3
+          "published": 2
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 2,
+          "cricket": 2,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 2
         }
       },
       "rejected_examples": [],
@@ -1545,12 +1647,12 @@
           "published": 18
         },
         "sayanpal-fancode-mirror": {
-          "total": 14,
-          "cricket": 12,
-          "football": 2,
+          "total": 19,
+          "cricket": 15,
+          "football": 4,
           "quarantined": 0,
           "rejected": 0,
-          "published": 14
+          "published": 19
         },
         "dartv-fancode-mirror": {
           "total": 18,
@@ -1590,16 +1692,16 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 583,
-    "cricket_kept": 22,
+    "raw_events": 600,
+    "cricket_kept": 21,
     "football_kept": 69,
-    "other_discarded": 81,
+    "other_discarded": 80,
     "unresolved": 0,
-    "today_final": 23,
+    "today_final": 22,
     "upcoming_final": 76,
     "published_states": {
       "confirmed_football": 75,
-      "confirmed_cricket": 24
+      "confirmed_cricket": 23
     },
     "other_sport_leak": 0,
     "ball_sport_wrongly_refused": 0
@@ -1625,51 +1727,51 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 4,
+      "provider_or_authority": 6,
       "estimate": 0,
-      "none": 19
+      "none": 16
     }
   },
   "fixture_stream_health": {
-    "fixtures": 115,
-    "published_fixtures": 99,
+    "fixtures": 113,
+    "published_fixtures": 98,
     "fixtures_with_verified_stream": 11,
-    "fixtures_with_zero_verified": 104,
-    "published_without_stream": 89,
+    "fixtures_with_zero_verified": 102,
+    "published_without_stream": 88,
     "fallback_available": 7,
     "targeted_fixtures": 17,
     "targeted_attempts": 28,
     "fixtures_with_a_first_link_time": 5,
-    "candidate_routes": 256,
+    "candidate_routes": 276,
     "verified_routes": 27,
-    "failed_routes": 229,
-    "fixtures_touched_by_a_route_failure": 83,
-    "fixtures_left_with_nothing": 16,
+    "failed_routes": 249,
+    "fixtures_touched_by_a_route_failure": 81,
+    "fixtures_left_with_nothing": 15,
     "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 27,
-    "unrecognised_failed_routes": 67
+    "unrecognised_failed_routes": 65
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 99,
-    "verified": 44,
+    "fixtures": 98,
+    "verified": 46,
     "partial_authority": 2,
-    "unverified": 37,
-    "conflict": 16,
+    "unverified": 36,
+    "conflict": 14,
     "matched_by_two_independent_authorities": 33,
-    "authority_agreements": 20,
-    "authority_disagreements": 6,
-    "card_status_conflicts": 7,
+    "authority_agreements": 25,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 10,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 6
+    "not_published": 7
   },
   "stream_health": {
     "sources_in_outage": [
       "iptvflixbd-fancode-data",
       "srhady-tapmad-bd"
     ],
-    "published_fixtures": 99,
+    "published_fixtures": 98,
     "fixtures_with_stream": 10,
     "fixtures_playable_via_catalogue": 0,
     "fixtures_with_fresh_stream": 6,
