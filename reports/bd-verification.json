@@ -1,18 +1,19 @@
 {
-  "timestamp": "2026-09-28T12:10:16.729440+00:00",
+  "timestamp": "2026-09-28T12:21:11.396264+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 1,
-  "total_global_network_checked": 1,
-  "total_proxy_selected": 0,
-  "total_proxy_checked": 0,
-  "total_processed": 1,
+  "total_input_pool": 3,
+  "total_global_network_checked": 3,
+  "total_proxy_selected": 2,
+  "total_proxy_checked": 2,
+  "total_processed": 3,
   "total_publishable": 0,
   "strict_player_hidden": 0,
   "browser_unreachable_hidden": 1,
   "unproven_hidden": 0,
   "status_counts": {
-    "unreachable_from_browser": 1
+    "unreachable_from_browser": 1,
+    "failed": 2
   },
   "groups": {
     "unreachable_from_browser": [
@@ -30,6 +31,40 @@
         "proxy_http_status": 0,
         "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.55): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
         "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      }
+    ],
+    "failed": [
+      {
+        "id": "malaysia-vs-indonesia",
+        "name": "Malaysia vs Indonesia",
+        "source_id": "srhady-bingstream",
+        "source_pipeline": "today_match",
+        "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6a999283018287f1cead524b/index.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "same_run_player_gate",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "malaysia-vs-indonesia",
+        "name": "Malaysia vs Indonesia",
+        "source_id": "srhady-bingstream",
+        "source_pipeline": "today_match",
+        "url": "https://livecdn-bp-livestream.rumsport10.live/sla/1-6a999283018287f1cead524b/index.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "same_run_player_gate",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
         "permanent_fail_count": 0
       }
     ]
