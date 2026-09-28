@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T05:52:25.706908+00:00",
+  "generated_at": "2026-09-28T06:10:02.275830+00:00",
   "today_match_count": 4,
   "upcoming_count": 53,
   "today_missing_logo": [
@@ -7,6 +7,7 @@
   ],
   "upcoming_missing_logo": [
     "Yamuna Warriors vs Capital Cruisers",
+    "Kolhan King vs Jagannathpur Tigers",
     "Delhi Dynamos vs Noida Ninjas",
     "Ajman vs Fujairah",
     "Sharjah vs Emirates Blues",
@@ -32,7 +33,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 228,
+  "provider_fixture": 229,
   "provider_rejected": 237,
   "provider_rejected_reasons": {
     "provider_dead_status": 39,
@@ -620,8 +621,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 228,
-    "discarded": 81,
+    "total": 229,
+    "discarded": 82,
     "examples": [
       {
         "name": "Chicago | Day 4",
@@ -641,7 +642,7 @@
       },
       {
         "name": "India In Action Shooting 28 Sep 2026",
-        "source": "drmlive-sonyliv-backup, sportlive-sonyliv-backup",
+        "source": "drmlive-sonyliv-backup",
         "competition": "20th Asian Games Aichi-Nagoya 2026",
         "sport_type": "",
         "reason": "other gazetteer",
@@ -721,7 +722,7 @@
       },
       {
         "name": "New York Yankees Vs Boston Red Sox",
-        "source": "sm-sports-data, drmlive-fancode-mirror, sportlive-fancode-ba",
+        "source": "sm-sports-data, sportlive-fancode-backup, sm-fancode, drmliv",
         "competition": "MLB",
         "sport_type": "",
         "reason": "league map: baseball",
@@ -782,6 +783,14 @@
         "sport_type": "",
         "reason": "league map: gridiron",
         "evidence": "NFL"
+      },
+      {
+        "name": "India In Action Shooting 28 Sep 2026",
+        "source": "sportlive-sonyliv-backup",
+        "competition": "20th Asian Games Aichi-Nagoya 2026",
+        "sport_type": "",
+        "reason": "other gazetteer",
+        "evidence": "shooting"
       },
       {
         "name": "TBA vs TBA",
@@ -1094,14 +1103,6 @@
         "sport_type": "",
         "reason": "wrestling / mma / boxing gazetteer",
         "evidence": "boxing"
-      },
-      {
-        "name": "Denver Broncos Vs Los Angeles Rams",
-        "source": "sm-sports-data",
-        "competition": "NFL",
-        "sport_type": "",
-        "reason": "league map: gridiron",
-        "evidence": "NFL"
       }
     ]
   },
@@ -1151,27 +1152,48 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 0,
-    "conflict": 1,
+    "conflict": 0,
     "unmatched": 3,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
-    "by_status": {},
-    "by_confidence": {
-      "CONFLICT": 1
+    "by_status": {
+      "FINISHED": 1
     },
-    "applied_fixtures": [],
+    "by_confidence": {
+      "HIGH": 1
+    },
+    "applied_fixtures": [
+      {
+        "name": "Club Necaxa Vs Club América",
+        "fixture_id": "provider:club-necaxa-vs-club-américa|liga mx apertura|2026-09-28",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876956)",
+          "LiveScore livescore=FT (6, event 1799023)"
+        ],
+        "authority_finished_seen_at": "2026-09-28T06:09:41.920027+00:00",
+        "remove_after": "2026-09-28T06:29:41.920027+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
     "conflicts": [
       {
         "name": "Club Necaxa Vs Club América",
-        "reason": "independent authorities disagree: ESPN espn-header=90'+3' (STATUS_SECOND_HALF, event 401876956); LiveScore livescore=FT (6, event 1799023)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1196,14 +1218,14 @@
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 1,
+    "probe_alive": 0,
     "probe_dead": 0,
     "probe_inconclusive": 0,
-    "end_pending": 0,
+    "end_pending": 1,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 1
+      "END_PENDING": 1
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -1233,7 +1255,7 @@
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 328,
+    "unresolved": 327,
     "names": {
       "Sky Sports": 1,
       "Fox": 1,
@@ -1267,12 +1289,12 @@
     "cache_hits": 20,
     "cached_entries": 893,
     "provider": {
-      "requests": 29,
-      "hits": 29,
+      "requests": 2,
+      "hits": 0,
       "empty": 0,
-      "rate_limited": 0,
+      "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 0,
+      "skipped_rate_limited": 27,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1344,12 +1366,12 @@
           "published": 26
         },
         "sm-fancode": {
-          "total": 26,
-          "cricket": 22,
+          "total": 27,
+          "cricket": 23,
           "football": 4,
           "quarantined": 0,
           "rejected": 0,
-          "published": 26
+          "published": 27
         },
         "drmlive-fancode-mirror": {
           "total": 27,
@@ -1509,12 +1531,12 @@
           "published": 19
         },
         "sm-fancode": {
-          "total": 26,
-          "cricket": 22,
+          "total": 27,
+          "cricket": 23,
           "football": 4,
           "quarantined": 0,
           "rejected": 0,
-          "published": 26
+          "published": 27
         },
         "sportlive-fancode-backup": {
           "total": 25,
@@ -1532,14 +1554,6 @@
           "rejected": 0,
           "published": 27
         },
-        "sayanpal-fancode-mirror": {
-          "total": 27,
-          "cricket": 23,
-          "football": 4,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 27
-        },
         "vk1817-fancode-mirror": {
           "total": 25,
           "cricket": 22,
@@ -1547,6 +1561,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 25
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 27,
+          "cricket": 23,
+          "football": 4,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 27
         },
         "dartv-fancode-mirror": {
           "total": 25,
@@ -1594,10 +1616,10 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 563,
+    "raw_events": 564,
     "cricket_kept": 29,
     "football_kept": 27,
-    "other_discarded": 82,
+    "other_discarded": 83,
     "unresolved": 3,
     "today_final": 4,
     "upcoming_final": 53,
@@ -1629,9 +1651,9 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 0,
+      "provider_or_authority": 1,
       "estimate": 0,
-      "none": 4
+      "none": 3
     }
   },
   "fixture_stream_health": {
@@ -1651,7 +1673,7 @@
     "fixtures_left_with_nothing": 9,
     "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 71,
-    "unrecognised_failed_routes": 221
+    "unrecognised_failed_routes": 222
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
@@ -1661,9 +1683,9 @@
     "unverified": 34,
     "conflict": 4,
     "matched_by_two_independent_authorities": 20,
-    "authority_agreements": 19,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 0,
+    "authority_agreements": 20,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 0
