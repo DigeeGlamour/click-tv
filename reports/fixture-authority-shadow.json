@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-28T10:12:55.017280+00:00",
+  "generated_at": "2026-09-28T10:53:23.594849+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,7 +12,8 @@
       "requests_ok": 6,
       "fixtures": 759,
       "unknown_statuses": [
-        "181|Tea - day 2"
+        "181|Tea - day 2",
+        "2|25'"
       ],
       "attempts": [
         {
@@ -104,18 +105,18 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 7,
-    "upcoming": 50,
+    "today_match": 8,
+    "upcoming": 49,
     "fixtures": 57,
     "verdicts": {
       "UNVERIFIED": 34,
-      "VERIFIED": 20,
-      "CONFLICT": 3
+      "CONFLICT": 4,
+      "VERIFIED": 19
     },
-    "verified": 20,
+    "verified": 19,
     "partial_authority": 0,
     "unverified": 34,
-    "conflict": 3,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 35,
@@ -127,11 +128,12 @@
       }
     },
     "matched_by_two_independent_authorities": 19,
-    "authority_agreements": 19,
+    "authority_agreements": 18,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "kickoff": 4
+      "kickoff": 4,
+      "card says LIVE, authority says UPCOMING": 1
     },
     "identity_near_misses": 2,
     "independent_authority_count_distribution": {
@@ -141,7 +143,8 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "181|Tea - day 2"
+        "181|Tea - day 2",
+        "2|25'"
       ],
       "espn-header": []
     }
@@ -227,11 +230,11 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:singapore-vs-bangladesh|asean cup|2026-09-28",
-      "card_id": "singapore-vs-bangladesh",
-      "name": "Singapore Vs Bangladesh",
-      "competition": "ASEAN Cup",
-      "kickoff": "2026-09-28T09:00:00+00:00",
+      "fixture_id": "provider:japan-vs-venezuela|international friendly games|2026-09-28",
+      "card_id": "japan-vs-venezuela",
+      "name": "Japan Vs Venezuela",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-09-28T10:25:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -243,44 +246,6 @@
       ],
       "upstream_families": [
         "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:japan-vs-venezuela|friendlies|2026-09-28",
-      "card_id": "japan-vs-venezuela",
-      "name": "Japan vs Venezuela",
-      "competition": "Friendlies",
-      "kickoff": "2026-09-28T10:25:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -329,9 +294,9 @@
           "competition_id": "537",
           "kickoff": "2026-09-28T10:25:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "25'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "1",
           "format": "",
@@ -345,10 +310,49 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:singapore-vs-bangladesh|asean cup|2026-09-28",
+      "card_id": "singapore-vs-bangladesh",
+      "name": "Singapore Vs Bangladesh",
+      "competition": "ASEAN Cup",
+      "kickoff": "2026-09-28T09:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -387,6 +391,94 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:south-korea-vs-uruguay|friendlies|2026-09-28",
+      "card_id": "south-korea-vs-uruguay",
+      "name": "South Korea vs Uruguay",
+      "competition": "Friendlies",
+      "kickoff": "2026-09-28T11:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-bingstream",
+        "srhady-axsports-live"
+      ],
+      "upstream_families": [
+        "AXS-Bing"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401905195",
+          "upstream_family": "ESPN",
+          "name": "South Korea vs Uruguay",
+          "home": "South Korea",
+          "away": "Uruguay",
+          "home_team_id": "451",
+          "away_team_id": "212",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-09-28T11:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Mon, September 28th at 7:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401905195~c:401905195"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1890048",
+          "upstream_family": "LiveScore",
+          "name": "South Korea vs Uruguay",
+          "home": "South Korea",
+          "away": "Uruguay",
+          "home_team_id": "6325",
+          "away_team_id": "9101",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-09-28T11:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -538,94 +630,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:south-korea-vs-uruguay|friendlies|2026-09-28",
-      "card_id": "south-korea-vs-uruguay",
-      "name": "South Korea vs Uruguay",
-      "competition": "Friendlies",
-      "kickoff": "2026-09-28T11:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-bingstream",
-        "srhady-axsports-live"
-      ],
-      "upstream_families": [
-        "AXS-Bing"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401905195",
-          "upstream_family": "ESPN",
-          "name": "South Korea vs Uruguay",
-          "home": "South Korea",
-          "away": "Uruguay",
-          "home_team_id": "451",
-          "away_team_id": "212",
-          "competition": "International Friendly",
-          "competition_id": "3922",
-          "kickoff": "2026-09-28T11:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Mon, September 28th at 7:00 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3922~e:401905195~c:401905195"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1890048",
-          "upstream_family": "LiveScore",
-          "name": "South Korea vs Uruguay",
-          "home": "South Korea",
-          "away": "Uruguay",
-          "home_team_id": "6325",
-          "away_team_id": "9101",
-          "competition": "Friendlies",
-          "competition_id": "537",
-          "kickoff": "2026-09-28T11:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:abu-dhabi-vs-ajman|emirates d10 2026|2026-09-29",
       "card_id": "abu-dhabi-vs-ajman",
       "name": "Abu Dhabi vs Ajman",
@@ -641,8 +645,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -683,8 +687,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -725,8 +729,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -767,8 +771,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -931,8 +935,8 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "srhady-axsports-live",
-        "srhady-bingstream"
+        "srhady-bingstream",
+        "srhady-axsports-live"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -1275,8 +1279,8 @@
       "name": "Delhi Dynamos vs Noida Ninjas",
       "competition": "NCR T20 League, 2026",
       "kickoff": "2026-09-28T11:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -1285,8 +1289,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1327,8 +1331,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1369,8 +1373,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1711,8 +1715,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1790,8 +1794,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1867,14 +1871,14 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "srhady-bingstream",
         "srhady-axsports-live",
         "sportlive-fancode-backup",
-        "srhady-bingstream",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sm-fancode",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sm-fancode"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "AXS-Bing",
@@ -2130,7 +2134,7 @@
     {
       "fixture_id": "provider:malaysia-vs-indonesia|asean cup|2026-09-28",
       "card_id": "malaysia-vs-indonesia",
-      "name": "Malaysia Vs Indonesia",
+      "name": "Indonesia vs Malaysia",
       "competition": "ASEAN Cup",
       "kickoff": "2026-09-28T12:30:00+00:00",
       "schedule_status": "UPCOMING",
@@ -2180,8 +2184,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2222,8 +2226,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2264,8 +2268,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2306,8 +2310,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2608,8 +2612,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2650,8 +2654,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2993,8 +2997,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -3072,8 +3076,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -3202,8 +3206,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -3296,8 +3300,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -3390,8 +3394,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -3506,12 +3510,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sm-fancode"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
