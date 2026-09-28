@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-09-28T06:10:02.275830+00:00",
-  "today_match_count": 4,
+  "generated_at": "2026-09-28T06:31:40.689783+00:00",
+  "today_match_count": 3,
   "upcoming_count": 53,
   "today_missing_logo": [
     "India vs TBA"
@@ -59,13 +59,13 @@
       "upcoming_kickoff_already_passed": 23,
       "total": 23
     },
-    "srhady-tapmad-bd": {
-      "upcoming_kickoff_already_passed": 8,
-      "total": 8
-    },
     "kajju-sonyliv-backup": {
       "kickoff_missing_and_not_live": 2,
       "total": 2
+    },
+    "srhady-tapmad-bd": {
+      "upcoming_kickoff_already_passed": 8,
+      "total": 8
     }
   },
   "provider_rejected_fixtures": [
@@ -616,13 +616,13 @@
   "direct_channel_unusable": 0,
   "provider_rejected_fixtures_truncated": 76,
   "streams_attached": 0,
-  "fixtures_with_stream": 2,
+  "fixtures_with_stream": 1,
   "pool_offered": 0,
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
     "total": 229,
-    "discarded": 82,
+    "discarded": 81,
     "examples": [
       {
         "name": "Chicago | Day 4",
@@ -642,7 +642,7 @@
       },
       {
         "name": "India In Action Shooting 28 Sep 2026",
-        "source": "drmlive-sonyliv-backup",
+        "source": "sportlive-sonyliv-backup",
         "competition": "20th Asian Games Aichi-Nagoya 2026",
         "sport_type": "",
         "reason": "other gazetteer",
@@ -682,7 +682,7 @@
       },
       {
         "name": "ATP 250 Chengdu Open 2026 vs Chengdu, China",
-        "source": "sportlive-fancode-backup, vk1817-fancode-mirror, dartv-fanco",
+        "source": "sportlive-fancode-backup, dartv-fancode-mirror, vk1817-fanco",
         "competition": "ATP 250 - Chengdu Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -785,14 +785,6 @@
         "evidence": "NFL"
       },
       {
-        "name": "India In Action Shooting 28 Sep 2026",
-        "source": "sportlive-sonyliv-backup",
-        "competition": "20th Asian Games Aichi-Nagoya 2026",
-        "sport_type": "",
-        "reason": "other gazetteer",
-        "evidence": "shooting"
-      },
-      {
         "name": "TBA vs TBA",
         "source": "srhady-bingstream, srhady-axsports-live",
         "competition": "WNBA",
@@ -1103,6 +1095,14 @@
         "sport_type": "",
         "reason": "wrestling / mma / boxing gazetteer",
         "evidence": "boxing"
+      },
+      {
+        "name": "Denver Broncos Vs Los Angeles Rams",
+        "source": "sm-sports-data",
+        "competition": "NFL",
+        "sport_type": "",
+        "reason": "league map: gridiron",
+        "evidence": "NFL"
       }
     ]
   },
@@ -1152,48 +1152,27 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 1,
+    "applied": 0,
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 0,
-    "conflict": 0,
+    "conflict": 1,
     "unmatched": 3,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
-    "by_status": {
-      "FINISHED": 1
-    },
+    "by_status": {},
     "by_confidence": {
-      "HIGH": 1
+      "CONFLICT": 1
     },
-    "applied_fixtures": [
-      {
-        "name": "Club Necaxa Vs Club América",
-        "fixture_id": "provider:club-necaxa-vs-club-américa|liga mx apertura|2026-09-28",
-        "status": "FINISHED",
-        "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ],
-        "evidence": [
-          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876956)",
-          "LiveScore livescore=FT (6, event 1799023)"
-        ],
-        "authority_finished_seen_at": "2026-09-28T06:09:41.920027+00:00",
-        "remove_after": "2026-09-28T06:29:41.920027+00:00",
-        "was_playable": true,
-        "lifecycle_state_before": "LIVE"
-      }
-    ],
+    "applied_fixtures": [],
     "conflicts": [
       {
         "name": "Club Necaxa Vs Club América",
-        "reason": "authority says FINISHED while the card still carries a route",
-        "status": "FINISHED",
-        "confidence": "HIGH",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401876956); LiveScore livescore=FT (6, event 1799023)",
+        "status": "",
+        "confidence": "CONFLICT",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1209,10 +1188,19 @@
     "no_verdict": 2
   },
   "live_protection": {
-    "carried_forward": 1,
-    "released_ended": 0,
-    "released_ended_ids": [],
-    "retired_terminal": [],
+    "carried_forward": 0,
+    "released_ended": 1,
+    "released_ended_ids": [
+      "club-necaxa-vs-club-américa"
+    ],
+    "retired_terminal": [
+      {
+        "id": "club-necaxa-vs-club-américa",
+        "name": "Club Necaxa Vs Club América",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      }
+    ],
     "released_listing_expired": 0,
     "released_dead_link": 0,
     "released_stale": 0,
@@ -1221,26 +1209,26 @@
     "probe_alive": 0,
     "probe_dead": 0,
     "probe_inconclusive": 0,
-    "end_pending": 1,
+    "end_pending": 0,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "END_PENDING": 1
+      "ENDED": 1
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 0,
-    "total": 363,
+    "added": 1,
+    "total": 364,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 0
+    "decided_this_scan": 1
   },
   "source_outage": {
     "sources_in_outage": [
@@ -1349,7 +1337,7 @@
           "rejected": 0,
           "published": 26
         },
-        "vk1817-fancode-mirror": {
+        "dartv-fancode-mirror": {
           "total": 26,
           "cricket": 23,
           "football": 3,
@@ -1357,7 +1345,7 @@
           "rejected": 0,
           "published": 26
         },
-        "dartv-fancode-mirror": {
+        "vk1817-fancode-mirror": {
           "total": 26,
           "cricket": 23,
           "football": 3,
@@ -1397,7 +1385,7 @@
           "rejected": 0,
           "published": 1
         },
-        "srhady-bingstream": {
+        "srhady-axsports-live": {
           "total": 17,
           "cricket": 1,
           "football": 15,
@@ -1405,7 +1393,7 @@
           "rejected": 0,
           "published": 16
         },
-        "srhady-axsports-live": {
+        "srhady-bingstream": {
           "total": 17,
           "cricket": 1,
           "football": 15,
@@ -1450,22 +1438,21 @@
       "leaks": []
     },
     "today_match": {
-      "total": 4,
-      "published": 4,
+      "total": 3,
+      "published": 3,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_cricket": 3,
-        "confirmed_football": 1
+        "confirmed_cricket": 3
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 2,
+          "total": 1,
           "cricket": 1,
-          "football": 1,
+          "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 2
+          "published": 1
         },
         "sportlive-fancode-backup": {
           "total": 1,
@@ -1475,7 +1462,7 @@
           "rejected": 0,
           "published": 1
         },
-        "vk1817-fancode-mirror": {
+        "dartv-fancode-mirror": {
           "total": 1,
           "cricket": 1,
           "football": 0,
@@ -1483,7 +1470,7 @@
           "rejected": 0,
           "published": 1
         },
-        "dartv-fancode-mirror": {
+        "vk1817-fancode-mirror": {
           "total": 1,
           "cricket": 1,
           "football": 0,
@@ -1554,7 +1541,7 @@
           "rejected": 0,
           "published": 27
         },
-        "vk1817-fancode-mirror": {
+        "dartv-fancode-mirror": {
           "total": 25,
           "cricket": 22,
           "football": 3,
@@ -1570,7 +1557,7 @@
           "rejected": 0,
           "published": 27
         },
-        "dartv-fancode-mirror": {
+        "vk1817-fancode-mirror": {
           "total": 25,
           "cricket": 22,
           "football": 3,
@@ -1586,7 +1573,7 @@
           "rejected": 0,
           "published": 1
         },
-        "srhady-bingstream": {
+        "srhady-axsports-live": {
           "total": 15,
           "cricket": 0,
           "football": 15,
@@ -1594,7 +1581,7 @@
           "rejected": 0,
           "published": 15
         },
-        "srhady-axsports-live": {
+        "srhady-bingstream": {
           "total": 15,
           "cricket": 0,
           "football": 15,
@@ -1619,13 +1606,13 @@
     "raw_events": 564,
     "cricket_kept": 29,
     "football_kept": 27,
-    "other_discarded": 83,
+    "other_discarded": 82,
     "unresolved": 3,
-    "today_final": 4,
+    "today_final": 3,
     "upcoming_final": 53,
     "published_states": {
       "confirmed_cricket": 29,
-      "confirmed_football": 28
+      "confirmed_football": 27
     },
     "other_sport_leak": 0,
     "ball_sport_wrongly_refused": 0
@@ -1651,56 +1638,56 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 1,
+      "provider_or_authority": 0,
       "estimate": 0,
       "none": 3
     }
   },
   "fixture_stream_health": {
     "fixtures": 69,
-    "published_fixtures": 57,
-    "fixtures_with_verified_stream": 11,
-    "fixtures_with_zero_verified": 58,
+    "published_fixtures": 56,
+    "fixtures_with_verified_stream": 10,
+    "fixtures_with_zero_verified": 59,
     "published_without_stream": 55,
     "fallback_available": 1,
-    "targeted_fixtures": 4,
-    "targeted_attempts": 7,
-    "fixtures_with_a_first_link_time": 1,
+    "targeted_fixtures": 3,
+    "targeted_attempts": 6,
+    "fixtures_with_a_first_link_time": 0,
     "candidate_routes": 98,
-    "verified_routes": 33,
-    "failed_routes": 65,
+    "verified_routes": 32,
+    "failed_routes": 66,
     "fixtures_touched_by_a_route_failure": 33,
-    "fixtures_left_with_nothing": 9,
-    "distinct_failure_codes": 4,
-    "unrecognised_candidate_groups": 71,
-    "unrecognised_failed_routes": 222
+    "fixtures_left_with_nothing": 10,
+    "distinct_failure_codes": 5,
+    "unrecognised_candidate_groups": 72,
+    "unrecognised_failed_routes": 223
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 57,
+    "fixtures": 56,
     "verified": 19,
     "partial_authority": 0,
     "unverified": 34,
-    "conflict": 4,
-    "matched_by_two_independent_authorities": 20,
-    "authority_agreements": 20,
+    "conflict": 3,
+    "matched_by_two_independent_authorities": 19,
+    "authority_agreements": 19,
     "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "card_status_conflicts": 0,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 0
+    "not_published": 1
   },
   "stream_health": {
     "sources_in_outage": [
       "iptvflixbd-fancode-data",
       "srhady-tapmad-bd"
     ],
-    "published_fixtures": 57,
-    "fixtures_with_stream": 2,
+    "published_fixtures": 56,
+    "fixtures_with_stream": 1,
     "fixtures_playable_via_catalogue": 0,
     "fixtures_with_fresh_stream": 1,
-    "fixtures_with_carried_stream": 1,
-    "today_with_stream": 2,
+    "fixtures_with_carried_stream": 0,
+    "today_with_stream": 1,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
     "state": "ok",
