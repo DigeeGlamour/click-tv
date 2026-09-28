@@ -1,68 +1,10 @@
 {
   "type": "today_match",
-  "updated_at": "2026-09-28T02:51:12.930010+00:00",
-  "count": 18,
-  "filtered_stale": 15,
-  "filtered_unplayable": 3,
+  "updated_at": "2026-09-28T03:11:53.000288+00:00",
+  "count": 17,
+  "filtered_stale": 0,
+  "filtered_unplayable": 0,
   "items": [
-    {
-      "id": "pakistan-vs-hong-kong-c",
-      "name": "Pakistan Vs Hong Kong C",
-      "sport_type": "cricket",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/187754/image",
-      "category": "today_match",
-      "verification_status": "metadata_only",
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-sports-data",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "channel_stats": {
-        "streams_in": 2,
-        "unresolved_channel_streams": 1,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "start_time": "2026-09-28T00:00:00+00:00",
-      "start_at": "2026-09-28T00:00:00+00:00",
-      "end_time": "2026-09-28T05:00:00+00:00",
-      "end_time_source": "sport",
-      "competition": "Asian Games",
-      "fixture_id": "provider:pakistan-vs-hong-kong-c|asian games|2026-09-28",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-09-28T00:00:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_cricket",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "cricket",
-      "event_type": "today_match",
-      "link_held_until_window": true,
-      "lifecycle_state": "STARTING",
-      "allow_without_stream": true,
-      "route_failed_while_live": true,
-      "routing_changed_from": "upcoming"
-    },
     {
       "id": "pakistan-vs-tba",
       "name": "Pakistan vs TBA",
@@ -129,11 +71,11 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "event_type": "today_match",
-      "lifecycle_state": "STARTING",
       "allow_without_stream": true,
       "route_failed_while_live": true,
-      "routing_changed_from": "upcoming"
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "STARTING"
     },
     {
       "id": "yemen-vs-qatar",
@@ -205,7 +147,39 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "authority_near_misses": [
+        {
+          "authority": "livescore",
+          "matched_by": "kickoff_lifted",
+          "event_id": "1873806",
+          "upstream_family": "LiveScore",
+          "name": "Yemen vs Qatar",
+          "competition": "Gulf Cup: Group B",
+          "kickoff": "2026-09-27T15:55:00+00:00",
+          "kickoff_delta_minutes": 55.0,
+          "status": "FINISHED"
+        }
+      ],
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401922495)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401922495"
+      },
+      "authority_finished_confirmations": 1,
+      "lifecycle_reason": "END_PENDING, not ENDED: only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "spain-u20-vs-north-korea-u20",
@@ -425,7 +399,28 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_35d10935bed9bac6a51e804e8bd9f9d2"
+      "playback_id": "ctv_35d10935bed9bac6a51e804e8bd9f9d2",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "LiveScore livescore=AP (13, event 1808877)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "livescore": "1808877"
+      },
+      "authority_finished_confirmations": 1,
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "austria-vs-kosovo",
@@ -533,7 +528,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "austria-vs-kosovo-2442762",
       "artwork_candidates": [
@@ -545,7 +540,34 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhCq+IKDBAATEIm47cqkOpwGIILTAIUmfFFzBl4ReaIdNaYJ2NEQgA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxQh4YPmG4g+IEiG27EMNSBMQQF-XwIUmNrmDLr680SmBNaYJ2NEQgA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_d2ca07408f0f9e0a7756ebd65e68e0d0"
+      "playback_id": "ctv_d2ca07408f0f9e0a7756ebd65e68e0d0",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861071)",
+        "LiveScore livescore=FT (6, event 1738272)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861071",
+        "livescore": "1738272"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:46.044098+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "denmark-vs-wales",
@@ -896,7 +918,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "denmark-vs-wales-2442761",
       "artwork_candidates": [
@@ -908,7 +930,34 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxIhuIWt2zAkakHz0HEAExCrTOeAQpM+KLmDLwi80faa0wjsaIhA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphhjuYFMHy4Q3ECRApdhkKcQ4LBCkz6a2YMvCLzRmprTAOxoiEA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_a0a12310fded0506b89059391f913d94"
+      "playback_id": "ctv_a0a12310fded0506b89059391f913d94",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861070)",
+        "LiveScore livescore=FT (6, event 1738349)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861070",
+        "livescore": "1738349"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:46.044098+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "gibraltar-vs-andorra",
@@ -1012,7 +1061,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "gibraltar-vs-andorra-2475290",
       "artwork_candidates": [
@@ -1024,7 +1073,34 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhzAhR6sABNgABhDcQmtcZyI+IRCTUEKTPii5gy8IvNEOmtME7GiIQA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhzAgy3cjGD4Q3NfpwgQEEHxCISIACYEKTPii5gy8IvNGOmtMM7GiIQA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_c1c9d46c23e70666463a780b1b527bd1"
+      "playback_id": "ctv_c1c9d46c23e70666463a780b1b527bd1",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861069)",
+        "LiveScore livescore=FT (6, event 1738359)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861069",
+        "livescore": "1738359"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:46.044098+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "serbia-vs-netherlands",
@@ -1349,7 +1425,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "serbia-vs-netherlands-2442760",
       "artwork_candidates": [
@@ -1361,7 +1437,34 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhyrgAJmBTAmObiDUhDKEHuMkQ5xCAIUmfLWzBl4ReaK1NaYJ2NEQgA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhDdYIGKGwgIqkCRAoQiPiDOnuemAQpM+KLmDLwi80Q6a0wTsaIhA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_efaf6b32a87a3c8a84c26c9875e95a38"
+      "playback_id": "ctv_efaf6b32a87a3c8a84c26c9875e95a38",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861068)",
+        "LiveScore livescore=FT (6, event 1738283)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861068",
+        "livescore": "1738283"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:46.044098+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "germany-vs-greece",
@@ -1525,7 +1628,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "germany-vs-greece-2442763",
       "artwork_candidates": [
@@ -1537,7 +1640,34 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhDcw4FAnYgSqkH1wgAJnpMHuO3AQpM+KLmDLwi80faa0wjsaIhA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpnBRVNENxAQQJXdpAATfcZiaCFJnxRcwZeEXmibTWmDtjREIA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_038f852436ffcd4ab676e757ecedea2c"
+      "playback_id": "ctv_038f852436ffcd4ab676e757ecedea2c",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861074)",
+        "LiveScore livescore=FT (6, event 1738284)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861074",
+        "livescore": "1738284"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:46.044098+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "norway-vs-portugal",
@@ -1811,7 +1941,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "norway-vs-portugal-2442764",
       "artwork_candidates": [
@@ -1823,7 +1953,34 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhz5gUwACbB8IXdxD6SIFAeMg+IRIZDLCMbf3VswZeEXmj1TWmBdjREEA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpnhg+YbmAAmsMChDcQEECRNGQWiyBghb8AhSZ8UXMGVX15ol01pg3YqIQQA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_efaf6b32a87a3c8a84c26c9875e95a38"
+      "playback_id": "ctv_efaf6b32a87a3c8a84c26c9875e95a38",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401861073)",
+        "LiveScore livescore=FT (6, event 1738350)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401861073",
+        "livescore": "1738350"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:46.044098+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "bolivia-vs-paraguay",
@@ -1931,10 +2088,37 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/4q6qfm1736571383.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/khgav41553419195.png",
-      "playback_id": "ctv_d54cdc9bfade5b2a27fdcb705fc49cb8"
+      "playback_id": "ctv_d54cdc9bfade5b2a27fdcb705fc49cb8",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401913269)",
+        "LiveScore livescore=FT (6, event 1894382)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401913269",
+        "livescore": "1894382"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:46.044098+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "haiti-vs-costa-rica",
@@ -2042,10 +2226,37 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/gml8wx1598135302.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bss90a1637840151.png",
-      "playback_id": "ctv_144492ebed00e0ebe37491b058639859"
+      "playback_id": "ctv_144492ebed00e0ebe37491b058639859",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401900619)",
+        "LiveScore livescore=FT (6, event 1856566)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401900619",
+        "livescore": "1856566"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:46.044098+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "utah-royals-fc-vs-north-carolina-courage",
@@ -2153,10 +2364,37 @@
       "sport_class_reason": "league map",
       "sport_class_evidence": "NWSL",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/3zosf11700302357.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/8cc1sp1552136867.png",
-      "playback_id": "ctv_8423924f09bfc805643e0acc8b60a63f"
+      "playback_id": "ctv_8423924f09bfc805643e0acc8b60a63f",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401854014)",
+        "LiveScore livescore=FT (6, event 1731808)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401854014",
+        "livescore": "1731808"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:46.044098+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "gimnasia-jujuy-vs-san-martin-tucuman",
@@ -2184,8 +2422,8 @@
       "metadata_only": true,
       "available_link_count": 0,
       "channel_stats": {
-        "streams_in": 2,
-        "unresolved_channel_streams": 2,
+        "streams_in": 3,
+        "unresolved_channel_streams": 3,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -2218,26 +2456,26 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "STARTING",
       "allow_without_stream": true,
       "route_failed_while_live": true,
-      "routing_changed_from": "upcoming"
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "STARTING"
     },
     {
       "id": "trinidad-and-tobago-vs-dominican-republic",
-      "name": "Trinidad and Tobago Vs Dominican Republic",
+      "name": "Trinidad and Tobago vs Dominican Republic",
       "primary_stream_key": "",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/5162/image",
+      "logo": "https://rs.maycdn.com/fixture/teams/af/5168.png",
       "category": "today_match",
       "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": true,
       "inherit_manifest_query": false,
-      "verification_mode": "none",
+      "verification_mode": "global",
       "verification_status": "metadata_only",
       "verification_badge": "",
       "verified": false,
@@ -2246,12 +2484,12 @@
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
-      "source_id": "sm-sports-data",
+      "source_id": "srhady-bingstream",
       "metadata_only": true,
       "available_link_count": 0,
       "channel_stats": {
-        "streams_in": 3,
-        "unresolved_channel_streams": 3,
+        "streams_in": 2,
+        "unresolved_channel_streams": 2,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -2259,11 +2497,6 @@
         "generic_server_channels": 0
       },
       "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        },
         {
           "source_id": "srhady-bingstream",
           "source_name": "Bingstream Live and Upcoming",
@@ -2276,7 +2509,6 @@
         }
       ],
       "source_ids": [
-        "sm-sports-data",
         "srhady-bingstream",
         "srhady-axsports-live"
       ],
@@ -2290,34 +2522,42 @@
       "original_status": "UPCOMING",
       "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/bingstream/refs/heads/main/playlist.json",
       "source_start_time": "2026-09-28T01:00:00+00:00",
       "time_verification": "provider_feed",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401900617)",
-        "LiveScore livescore=NS (1, event 1856567)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401900617)",
+        "LiveScore livescore=FT (6, event 1856567)"
       ],
       "authority_independent_count": 2,
       "authority_event_ids": {
         "espn-header": "401900617",
         "livescore": "1856567"
       },
-      "event_type": "today_match",
-      "lifecycle_state": "STARTING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/x0uq8u1598135774.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tnvu6e1774758597.png",
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:14.366276+00:00",
       "allow_without_stream": true,
       "route_failed_while_live": true,
-      "routing_changed_from": "upcoming"
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/x0uq8u1598135774.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tnvu6e1774758597.png"
     },
     {
       "id": "leon-vs-fc-juarez",
@@ -2345,8 +2585,8 @@
       "metadata_only": true,
       "available_link_count": 0,
       "channel_stats": {
-        "streams_in": 4,
-        "unresolved_channel_streams": 4,
+        "streams_in": 5,
+        "unresolved_channel_streams": 5,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -2387,23 +2627,34 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876957)",
-        "LiveScore livescore=NS (1, event 1799022)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876957)",
+        "LiveScore livescore=FT (6, event 1799022)"
       ],
       "authority_independent_count": 2,
       "authority_event_ids": {
         "espn-header": "401876957",
         "livescore": "1799022"
       },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-28T03:31:14.366276+00:00",
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-28T03:11:14.366276+00:00",
+      "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
-      "lifecycle_state": "STARTING",
+      "routing_changed_from": "upcoming",
       "provider_enriched": "streamed",
       "provider_event_id": "le-n-vs-ju-rez-2487540",
       "artwork_candidates": [
@@ -2414,10 +2665,7 @@
       "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8rUPDAywPfiG4g+IYxBCmYIEiAtT9BYEgp9hs+ijAqUXD+XpZZXky0YB5iohBAA.webp",
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphjMQKftkohuIPiBK4QiFMZAQzKAhSZ8NbMGXhF5ojU1phHY0RCA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxz0qKEDBB8Q3ECRAATbSAimjIRIkMEKTPii5gy8IvNGOmtMM7GiIQA.webp",
-      "provider_routing_hint": "live",
-      "allow_without_stream": true,
-      "route_failed_while_live": true,
-      "routing_changed_from": "upcoming"
+      "provider_routing_hint": "live"
     },
     {
       "id": "deportivo-cali-vs-rionegro-águilas-doradas",
@@ -2480,10 +2728,17 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
-      "routing_changed_from": "upcoming"
+      "routing_changed_from": "upcoming",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-09-28T03:11:46.044098+00:00"
     },
     {
       "id": "club-necaxa-vs-club-américa",
@@ -2590,19 +2845,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=1' (STATUS_IN_PROGRESS, event 401876956)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401876956"
+      },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "provider_enriched": "streamed",
-      "provider_event_id": "necaxa-vs-am-rica-2487541",
-      "artwork_candidates": [
-        "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8rQljBSQIfsxDcQfHSAimQMECQshtEpkgp9hs+ijAqUXD+XpZZXky0YB5iohBAA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpLC96ABhApSIbiD76thgzgghEjCkz7a2YMvCLzR2prTD2xoiEA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxlgUIbmHCJuIEiAO6D+viETrGFJnxRcwZeEXmjbTWmHtjREIA.webp"
-      ],
-      "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8rQljBSQIfsxDcQfHSAimQMECQshtEpkgp9hs+ijAqUXD+XpZZXky0YB5iohBAA.webp",
-      "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpLC96ABhApSIbiD76thgzgghEjCkz7a2YMvCLzR2prTD2xoiEA.webp",
-      "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxlgUIbmHCJuIEiAO6D+viETrGFJnxRcwZeEXmjbTWmHtjREIA.webp",
-      "provider_routing_hint": "scheduled",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tqdk9e1779772432.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/amy1xs1581857392.png",
       "playback_id": "ctv_74744c15dc684b0e29493e09698d3eed"
     }
   ]
