@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T23:12:36.367399+00:00",
+  "generated_at": "2026-09-29T23:32:21.082670+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
     "fixtures": 74,
@@ -12,28 +12,31 @@
     "targeted_attempts": 1,
     "fixtures_with_a_first_link_time": 0,
     "candidate_routes": 156,
-    "verified_routes": 45,
-    "failed_routes": 111,
-    "fixtures_touched_by_a_route_failure": 21,
+    "verified_routes": 41,
+    "failed_routes": 115,
+    "fixtures_touched_by_a_route_failure": 22,
     "fixtures_left_with_nothing": 7,
-    "distinct_failure_codes": 5,
+    "distinct_failure_codes": 6,
     "unrecognised_candidate_groups": 111,
     "unrecognised_failed_routes": 271
   },
   "failure_codes": {
-    "http_403": 252,
+    "http_403": 233,
     "browser_unreachable": 54,
     "http_404": 42,
     "timeout": 29,
+    "http_567": 16,
+    "http_503": 6,
     "dns": 4,
-    "verification_failed": 1
+    "verification_failed": 2
   },
   "failure_code_fixtures": {
     "http_403": 15,
     "http_404": 12,
     "browser_unreachable": 11,
+    "http_503": 5,
     "timeout": 3,
-    "verification_failed": 1
+    "verification_failed": 2
   },
   "fixtures": [
     {
@@ -53,6 +56,7 @@
       "failure_codes": [
         "http_404",
         "http_403",
+        "http_503",
         "browser_unreachable"
       ],
       "fallback_available": true,
@@ -104,12 +108,70 @@
         "0matbank-trysports-football-live"
       ],
       "candidate_stream_count": 14,
-      "verified_stream_count": 2,
+      "verified_stream_count": 1,
+      "failed_stream_count": 13,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "http_403",
+        "http_503",
+        "browser_unreachable"
+      ],
+      "fallback_available": true,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "slovakia-vs-kazakhstan",
+      "fixture_key": "slovakia-vs-kazakhstan",
+      "fixture_name": "Slovakia Vs Kazakhstan",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "0matbank-trysports-football-live"
+      ],
+      "candidate_stream_count": 14,
+      "verified_stream_count": 1,
+      "failed_stream_count": 13,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "http_403",
+        "browser_unreachable"
+      ],
+      "fallback_available": true,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "san-marino-vs-albania",
+      "fixture_key": "san-marino-vs-albania",
+      "fixture_name": "San Marino Vs Albania",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "0matbank-trysports-football-live"
+      ],
+      "candidate_stream_count": 13,
+      "verified_stream_count": 1,
       "failed_stream_count": 12,
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_404",
         "http_403",
+        "timeout",
         "browser_unreachable"
       ],
       "fallback_available": true,
@@ -139,63 +201,7 @@
       "failure_codes": [
         "http_404",
         "http_403",
-        "browser_unreachable"
-      ],
-      "fallback_available": true,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "slovakia-vs-kazakhstan",
-      "fixture_key": "slovakia-vs-kazakhstan",
-      "fixture_name": "Slovakia Vs Kazakhstan",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "0matbank-trysports-football-live"
-      ],
-      "candidate_stream_count": 14,
-      "verified_stream_count": 2,
-      "failed_stream_count": 12,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404",
-        "http_403",
-        "browser_unreachable"
-      ],
-      "fallback_available": true,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "san-marino-vs-albania",
-      "fixture_key": "san-marino-vs-albania",
-      "fixture_name": "San Marino Vs Albania",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "0matbank-trysports-football-live"
-      ],
-      "candidate_stream_count": 13,
-      "verified_stream_count": 2,
-      "failed_stream_count": 11,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404",
-        "http_403",
-        "timeout",
+        "http_503",
         "browser_unreachable"
       ],
       "fallback_available": true,
@@ -280,6 +286,7 @@
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_404",
+        "http_503",
         "http_403",
         "browser_unreachable"
       ],
@@ -334,7 +341,7 @@
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_404",
-        "http_403",
+        "http_503",
         "timeout",
         "browser_unreachable"
       ],
@@ -363,6 +370,7 @@
       "failure_codes": [
         "http_404",
         "http_403",
+        "http_503",
         "timeout",
         "browser_unreachable"
       ],
@@ -497,8 +505,8 @@
       "failed_stream_count": 5,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_404",
         "http_403",
+        "http_404",
         "timeout",
         "browser_unreachable"
       ],
@@ -686,7 +694,8 @@
       "failed_stream_count": 4,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_403"
+        "http_403",
+        "http_567"
       ],
       "fallback_available": false,
       "published": false,
@@ -738,6 +747,7 @@
       "failed_stream_count": 4,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -764,7 +774,8 @@
       "failed_stream_count": 4,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_403"
+        "http_403",
+        "http_567"
       ],
       "fallback_available": false,
       "published": false,
@@ -1285,6 +1296,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1545,6 +1557,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1571,6 +1584,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1597,6 +1611,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1753,6 +1768,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1909,6 +1925,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -1986,6 +2003,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2038,6 +2056,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2090,6 +2109,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2246,6 +2266,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2298,6 +2319,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2324,6 +2346,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2687,6 +2710,7 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_567",
         "http_403"
       ],
       "fallback_available": false,
@@ -2747,6 +2771,31 @@
       "last_attempt_bucket": "2026-09-29T17:55Z",
       "first_link_at": "",
       "targeted": true
+    },
+    {
+      "fixture_id": "bahrain-vs-yemen",
+      "fixture_key": "bahrain-vs-yemen",
+      "fixture_name": "Bahrain Vs Yemen",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 3,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "verification_failed"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
     },
     {
       "fixture_id": "barbados-tridents-vs-guyana-amazon-warriors-women",
@@ -3619,29 +3668,6 @@
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "bahrain-vs-yemen",
-      "fixture_key": "bahrain-vs-yemen",
-      "fixture_name": "Bahrain Vs Yemen",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 4,
       "failed_stream_count": 0,
       "unchecked_stream_count": 0,
       "failure_codes": [],
