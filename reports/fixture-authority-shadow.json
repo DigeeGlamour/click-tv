@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T15:51:33.336584+00:00",
+  "generated_at": "2026-09-30T16:16:20.522089+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,13 +10,16 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 340,
+      "fixtures": 341,
       "unknown_statuses": [
-        "10|HT",
         "133|Stumps - day 2",
-        "2|45+2'",
-        "2|45+3'",
-        "2|45+6'"
+        "2|13'",
+        "2|14'",
+        "2|16'",
+        "2|17'",
+        "3|52'",
+        "3|55'",
+        "3|60'"
       ],
       "attempts": [
         {
@@ -53,7 +56,7 @@
           "sport": "football",
           "date": "2026-10-01",
           "result": "ok",
-          "fixtures": 63
+          "fixtures": 64
         }
       ]
     },
@@ -109,48 +112,52 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 10,
-    "upcoming": 58,
-    "fixtures": 68,
+    "upcoming": 57,
+    "fixtures": 67,
     "verdicts": {
-      "VERIFIED": 23,
-      "UNVERIFIED": 42,
-      "CONFLICT": 3
+      "CONFLICT": 4,
+      "VERIFIED": 21,
+      "UNVERIFIED": 42
     },
-    "verified": 23,
+    "verified": 21,
     "partial_authority": 0,
     "unverified": 42,
-    "conflict": 3,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
         "matched": 22,
-        "unmatched": 46
+        "unmatched": 45
       },
       "livescore": {
-        "matched": 24,
+        "matched": 23,
         "unmatched": 44
       }
     },
     "matched_by_two_independent_authorities": 19,
-    "authority_agreements": 18,
+    "authority_agreements": 17,
     "authority_disagreements": 1,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
       "kickoff": 3,
       "authorities disagree": 1
     },
     "identity_near_misses": 11,
     "independent_authority_count_distribution": {
       "0": 42,
-      "1": 7,
+      "1": 6,
       "2": 19
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "133|Stumps - day 2",
-        "2|45+2'",
-        "2|45+3'",
-        "2|45+6'"
+        "2|13'",
+        "2|14'",
+        "2|16'",
+        "2|17'",
+        "3|52'",
+        "3|55'",
+        "3|60'"
       ],
       "espn-header": []
     }
@@ -252,9 +259,9 @@
       "name": "Eritrea Vs South Africa",
       "competition": "Africa Cup of Nations Qual.",
       "kickoff": "2026-09-30T16:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -311,9 +318,9 @@
           "competition_id": "137",
           "kickoff": "2026-09-30T16:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "14'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "2",
           "format": "",
@@ -327,10 +334,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -554,13 +563,12 @@
       "lifecycle_state": "STARTING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -861,6 +869,100 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:roma-vs-barcelona-women|uefa women champions league 2026 27|2026-09-30",
+      "card_id": "roma-women-vs-barcelona-women",
+      "name": "Roma Women vs Barcelona Women",
+      "competition": "UEFA Women's Champions League 2026-27",
+      "kickoff": "2026-09-30T16:45:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "FanCode",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401917009",
+          "upstream_family": "ESPN",
+          "name": "Roma vs Barcelona",
+          "home": "Roma",
+          "away": "Barcelona",
+          "home_team_id": "21685",
+          "away_team_id": "20091",
+          "competition": "UEFA Women's Champions League",
+          "competition_id": "19483",
+          "kickoff": "2026-09-30T16:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, September 30th at 12:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:19483~e:401917009~c:401917009"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1887707",
+          "upstream_family": "LiveScore",
+          "name": "Roma W vs Barcelona W",
+          "home": "Roma W",
+          "away": "Barcelona W",
+          "home_team_id": "101071",
+          "away_team_id": "3391",
+          "competition": "Final Stage",
+          "competition_id": "104",
+          "kickoff": "2026-09-30T16:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "2",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:pakistan-champions-vs-bangladesh-champions-2-match|world championship of legends 2026|2026-10-03",
       "card_id": "2nd-match-pakistan-champions-vs-bangladesh-champions",
       "name": "2nd Match Pakistan Champions vs Bangladesh Champions",
@@ -911,11 +1013,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -953,11 +1055,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1032,11 +1134,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1074,11 +1176,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1172,93 +1274,6 @@
           "status": "UPCOMING",
           "sport": "football",
           "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:as-roma-vs-fútbol-club-barcelona|uefa women champions league|2026-09-30",
-      "card_id": "as-roma-vs-fútbol-club-barcelona",
-      "name": "AS Roma Vs Fútbol Club Barcelona",
-      "competition": "UEFA Women's Champions League",
-      "kickoff": "2026-09-30T16:45:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401917009",
-          "upstream_family": "ESPN",
-          "name": "Roma vs Barcelona",
-          "home": "Roma",
-          "away": "Barcelona",
-          "home_team_id": "21685",
-          "away_team_id": "20091",
-          "competition": "UEFA Women's Champions League",
-          "competition_id": "19483",
-          "kickoff": "2026-09-30T16:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, September 30th at 12:45 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:19483~e:401917009~c:401917009"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1887707",
-          "upstream_family": "LiveScore",
-          "name": "Roma W vs Barcelona W",
-          "home": "Roma W",
-          "away": "Barcelona W",
-          "home_team_id": "101071",
-          "away_team_id": "3391",
-          "competition": "Final Stage",
-          "competition_id": "104",
-          "kickoff": "2026-09-30T16:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "2",
           "format": "",
           "gender": ""
         }
@@ -1419,65 +1434,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:atlético-ottawa-vs-cavalry-fc|canadian premier league|2026-09-30",
-      "card_id": "atlético-ottawa-vs-cavalry-fc",
-      "name": "Atlético Ottawa Vs Cavalry FC",
-      "competition": "Canadian Premier League",
-      "kickoff": "2026-09-30T23:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1735779",
-          "upstream_family": "LiveScore",
-          "name": "Atletico Ottawa vs Cavalry FC",
-          "home": "Atletico Ottawa",
-          "away": "Cavalry FC",
-          "home_team_id": "86827",
-          "away_team_id": "9959",
-          "competition": "Premier League",
-          "competition_id": "24524",
-          "kickoff": "2026-09-30T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:australia-champions-vs-pakistan-champions|world championship of legends 2026 5th|2026-10-05",
       "card_id": "australia-champions-vs-pakistan-champions",
       "name": "Australia Champions vs Pakistan Champions",
@@ -1528,11 +1484,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2069,10 +2025,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2190,6 +2146,93 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:cook-islands-vs-tahiti|international friendly games|2026-10-01",
+      "card_id": "cook-islands-vs-tahiti",
+      "name": "Cook Islands Vs Tahiti",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-10-01T02:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401924629",
+          "upstream_family": "ESPN",
+          "name": "Cook Islands vs Tahiti",
+          "home": "Cook Islands",
+          "away": "Tahiti",
+          "home_team_id": "4884",
+          "away_team_id": "4863",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-10-01T02:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, September 30th at 10:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401924629~c:401924629"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1894360",
+          "upstream_family": "LiveScore",
+          "name": "Cook Islands vs Tahiti",
+          "home": "Cook Islands",
+          "away": "Tahiti",
+          "home_team_id": "205785",
+          "away_team_id": "11572",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-10-01T02:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2348,11 +2391,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2514,11 +2557,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2809,11 +2852,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2852,10 +2895,10 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2977,12 +3020,13 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3314,93 +3358,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:paris-fc-vs-arsenal|uefa women champions league|2026-09-30",
-      "card_id": "paris-fc-vs-arsenal",
-      "name": "Paris FC Vs Arsenal",
-      "competition": "UEFA Women's Champions League",
-      "kickoff": "2026-09-30T16:45:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401917007",
-          "upstream_family": "ESPN",
-          "name": "Paris FC vs Arsenal",
-          "home": "Paris FC",
-          "away": "Arsenal",
-          "home_team_id": "21640",
-          "away_team_id": "19973",
-          "competition": "UEFA Women's Champions League",
-          "competition_id": "19483",
-          "kickoff": "2026-09-30T16:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, September 30th at 12:45 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:19483~e:401917007~c:401917007"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1887712",
-          "upstream_family": "LiveScore",
-          "name": "Paris FC W vs Arsenal W",
-          "home": "Paris FC W",
-          "away": "Arsenal W",
-          "home_team_id": "4646",
-          "away_team_id": "3935",
-          "competition": "Final Stage",
-          "competition_id": "104",
-          "kickoff": "2026-09-30T16:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "2",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:sharjah-vs-abu-dhabi|emirates d10 2026|2026-10-01",
       "card_id": "sharjah-vs-abu-dhabi",
       "name": "Sharjah vs Abu Dhabi",
@@ -3414,11 +3371,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3493,11 +3450,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3535,10 +3492,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3651,10 +3608,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3692,11 +3649,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3734,10 +3691,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3775,11 +3732,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3957,11 +3914,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4051,11 +4008,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4115,6 +4072,94 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "upcoming"
+    }
+  ],
+  "retired_or_unpublished": [
+    {
+      "fixture_id": "provider:as-roma-vs-fútbol-club-barcelona|uefa women champions league|2026-09-30",
+      "card_id": "as-roma-vs-fútbol-club-barcelona",
+      "name": "AS Roma Vs Fútbol Club Barcelona",
+      "competition": "UEFA Women's Champions League",
+      "kickoff": "2026-09-30T16:45:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401917009",
+          "upstream_family": "ESPN",
+          "name": "Roma vs Barcelona",
+          "home": "Roma",
+          "away": "Barcelona",
+          "home_team_id": "21685",
+          "away_team_id": "20091",
+          "competition": "UEFA Women's Champions League",
+          "competition_id": "19483",
+          "kickoff": "2026-09-30T16:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, September 30th at 12:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:19483~e:401917009~c:401917009"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1887707",
+          "upstream_family": "LiveScore",
+          "name": "Roma W vs Barcelona W",
+          "home": "Roma W",
+          "away": "Barcelona W",
+          "home_team_id": "101071",
+          "away_team_id": "3391",
+          "competition": "Final Stage",
+          "competition_id": "104",
+          "kickoff": "2026-09-30T16:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "2",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED"
     }
   ]
 }
