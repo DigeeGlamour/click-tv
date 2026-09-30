@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-09-30T19:18:50.623388+00:00",
+  "updated_at": "2026-09-30T19:32:16.768371+00:00",
   "count": 20,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -238,7 +238,7 @@
       "resolution_height": 1080,
       "start_time": "2026-09-30T11:30:00+00:00",
       "start_at": "2026-09-30T11:30:00+00:00",
-      "end_time": "2026-09-30T20:18:00+00:00",
+      "end_time": "2026-09-30T20:31:50+00:00",
       "end_time_source": "assumed",
       "competition": "One Day International",
       "fixture_id": "provider:south-africa-vs-australia|one day international|2026-09-30",
@@ -253,19 +253,17 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1525657)"
+        "ESPN espn-header=Live (Live, event 1525657)",
+        "LiveScore livescore=FT (6, event 1742847)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "1525657"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Live (Live, event 1525657); LiveScore livescore=FT (6, event 1742847)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_f19109aa5bf9cfbbf477155b46aaca69"
@@ -337,8 +335,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 3,
-      "carried_forward_misses": 3,
+      "end_pending_confirmations": 4,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-09-30T17:24:43.383303+00:00"
     },
@@ -411,7 +409,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-09-30T17:24:43.383303+00:00"
     },
@@ -522,20 +520,20 @@
           "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
         },
         {
-          "source_id": "dartv-fancode-mirror",
-          "source_name": "FanCode Live API (dartv-ajaz)",
-          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
-        },
-        {
           "source_id": "sayanpal-fancode-mirror",
           "source_name": "FanCode Auto Updated (sayanpal)",
           "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
+        },
+        {
+          "source_id": "dartv-fancode-mirror",
+          "source_name": "FanCode Live API (dartv-ajaz)",
+          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "start_time": "2026-09-30T17:45:00+00:00",
       "start_at": "2026-09-30T17:45:00+00:00",
@@ -664,14 +662,14 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=90'+2' (STATUS_SECOND_HALF, event 401919991)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401919991)",
         "LiveScore livescore=FT (6, event 1872946)"
       ],
       "event_type": "today_match",
@@ -679,16 +677,24 @@
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ryolcd1598647196.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xjz9j91553368824.png",
       "playback_id": "ctv_efaf6b32a87a3c8a84c26c9875e95a38",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90'+2' (STATUS_SECOND_HALF, event 401919991); LiveScore livescore=FT (6, event 1872946)",
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
       "lifecycle_protections": [
-        "authority_live",
-        "primary_playable",
-        "backup_playable"
+        "authority_live"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-30T19:18:32.522744+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_first_missed_at": "2026-09-30T19:18:32.522744+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401919991",
+        "livescore": "1872946"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-30T19:31:50.753984+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-30T19:51:50.753984+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "contradicted_end_confirmations": 1
     },
     {
       "id": "lithuania-vs-andorra",
@@ -819,15 +825,15 @@
       "authority_finished_seen_at": "2026-09-30T19:18:00.927767+00:00",
       "authority_status": "FINISHED",
       "authority_remove_after": "2026-09-30T19:38:00.927767+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
       "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
-      "contradicted_end_confirmations": 1,
+      "contradicted_end_confirmations": 2,
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
-      "carried_forward_first_missed_at": "2026-09-30T19:18:32.522744+00:00"
+      "carried_forward_first_missed_at": "2026-09-30T19:18:32.522744+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "as-roma-vs-fútbol-club-barcelona",
@@ -992,28 +998,40 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=52' (STATUS_SECOND_HALF, event 401917009)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401917009)",
         "LiveScore livescore=FT (6, event 1887707)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_f2a1fb60e3ca13040ba538567f83a540",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=52' (STATUS_SECOND_HALF, event 401917009); LiveScore livescore=FT (6, event 1887707)",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-30T19:18:32.522744+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-30T19:18:32.522744+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401917009",
+        "livescore": "1887707"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-30T19:31:50.753984+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-30T19:51:50.753984+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-30T19:32:08.572329+00:00"
     },
     {
       "id": "bk-häcken-ff-vs-juventus",
@@ -1120,13 +1138,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=50' (STATUS_SECOND_HALF, event 401917008)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401917008)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1141,9 +1159,10 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-30T19:18:32.522744+00:00"
+      "carried_forward_first_missed_at": "2026-09-30T19:18:32.522744+00:00",
+      "authority_finished_confirmations": 1
     },
     {
       "id": "paris-fc-vs-arsenal",
@@ -1250,28 +1269,40 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=51' (STATUS_SECOND_HALF, event 401917007)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401917007)",
         "LiveScore livescore=FT (6, event 1887712)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_a30308e24a51167f6190969a6cfb851a",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=51' (STATUS_SECOND_HALF, event 401917007); LiveScore livescore=FT (6, event 1887712)",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-09-30T19:18:32.522744+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-09-30T19:18:32.522744+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401917007",
+        "livescore": "1887712"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-09-30T19:31:50.753984+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-09-30T19:51:50.753984+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-09-30T19:32:08.572329+00:00"
     },
     {
       "id": "bahrain-vs-yemen",
@@ -1363,7 +1394,7 @@
       "resolution_height": 720,
       "start_time": "2026-09-30T17:30:00+00:00",
       "start_at": "2026-09-30T17:30:00+00:00",
-      "end_time": "2026-09-30T20:18:00+00:00",
+      "end_time": "2026-09-30T20:31:50+00:00",
       "end_time_source": "assumed",
       "competition": "Gulf Cup",
       "fixture_id": "provider:bahrain-vs-yemen|gulf cup|2026-09-30",
@@ -1378,18 +1409,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401922499)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401922499)",
+        "LiveScore livescore=FT (6, event 1873805)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401922499"
-      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401922499); LiveScore livescore=FT (6, event 1873805)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/gk0x9c1597850499.png",
@@ -1542,7 +1572,7 @@
       "resolution_height": 1080,
       "start_time": "2026-09-30T17:30:00+00:00",
       "start_at": "2026-09-30T17:30:00+00:00",
-      "end_time": "2026-09-30T20:18:00+00:00",
+      "end_time": "2026-09-30T20:31:50+00:00",
       "end_time_source": "assumed",
       "competition": "Gulf Cup",
       "fixture_id": "provider:united-arab-emirates-vs-qatar|gulf cup|2026-09-30",
@@ -1688,7 +1718,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-09-30T18:40:26.245704+00:00"
     },
@@ -1967,7 +1997,6 @@
       "sport_type_derived": true,
       "logo": "",
       "category": "today_match",
-      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "proxy_first",
       "stream_type": "hls",
@@ -1985,7 +2014,6 @@
       "source_id": "srhady-bingstream",
       "metadata_only": true,
       "available_link_count": 0,
-      "backups": [],
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 2,
@@ -2028,6 +2056,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING"
@@ -2040,7 +2069,6 @@
       "sport_type_derived": true,
       "logo": "https://rs.maycdn.com/fixture/teams/af/1674.png",
       "category": "today_match",
-      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "proxy_first",
       "stream_type": "hls",
@@ -2058,7 +2086,6 @@
       "source_id": "srhady-bingstream",
       "metadata_only": true,
       "available_link_count": 0,
-      "backups": [],
       "channel_stats": {
         "streams_in": 3,
         "unresolved_channel_streams": 3,
@@ -2101,6 +2128,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING"
@@ -2113,7 +2141,6 @@
       "sport_type_derived": true,
       "logo": "https://rs.maycdn.com/fixture/teams/af/15495.png",
       "category": "today_match",
-      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "proxy_first",
       "stream_type": "hls",
@@ -2131,7 +2158,6 @@
       "source_id": "srhady-bingstream",
       "metadata_only": true,
       "available_link_count": 0,
-      "backups": [],
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 2,
@@ -2186,6 +2212,7 @@
         "espn-header": "401917005"
       },
       "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING"
@@ -2278,14 +2305,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+          "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2307,14 +2334,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2415,19 +2442,6 @@
               "id": "ol-lyonnes-vs-chelsea-fc--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_0e638de706138f746f0f4bb0",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "ol-lyonnes-vs-chelsea-fc--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_c2976ef28b75526dffdfcc0a",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -2438,14 +2452,27 @@
               "stream_type": "dash"
             },
             {
-              "id": "ol-lyonnes-vs-chelsea-fc--prime-video--3",
+              "id": "ol-lyonnes-vs-chelsea-fc--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_b9a4754dd8779c45821c460d",
+              "variant_key": "sv_0e638de706138f746f0f4bb0",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+              "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "ol-lyonnes-vs-chelsea-fc--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_5458cc437e60a57ab38df02d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2454,11 +2481,11 @@
               "id": "ol-lyonnes-vs-chelsea-fc--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_5458cc437e60a57ab38df02d",
+              "variant_key": "sv_b9a4754dd8779c45821c460d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
