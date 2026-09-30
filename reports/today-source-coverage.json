@@ -1,25 +1,25 @@
 {
-  "generated_at": "2026-09-30T09:36:40.166915+00:00",
+  "generated_at": "2026-09-30T10:06:09.487164+00:00",
   "configured_source_count": 22,
   "content_states": {
     "FRESH": 8,
-    "STALE": 10,
-    "EMPTY": 3,
+    "STALE": 9,
+    "EMPTY": 4,
     "UNREACHABLE": 1
   },
   "source_count": 22,
   "unconfigured_source_count": 1,
   "totals": {
-    "raw_items": 1074,
-    "parsed_events": 469,
-    "sport_allowed_events": 117,
+    "raw_items": 1051,
+    "parsed_events": 467,
+    "sport_allowed_events": 116,
     "deduped_events": 152,
     "published_unique_fixtures": 156,
     "published_today": 13,
     "published_upcoming": 143,
     "dropped_count": 0,
     "verified_streams": 72,
-    "failed_streams": 267
+    "failed_streams": 265
   },
   "unconfigured_totals": {
     "raw_items": 141,
@@ -203,30 +203,30 @@
       "source_id": "sm-sports-data",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 304,
-      "raw_items": 224,
-      "parsed_events": 160,
-      "sport_allowed_events": 44,
+      "http_status": 200,
+      "raw_items": 226,
+      "parsed_events": 162,
+      "sport_allowed_events": 46,
       "deduped_events": 18,
       "published_unique_fixtures": 18,
       "published_today": 2,
       "published_upcoming": 16,
       "dropped_count": 0,
       "drop_reasons": [
-        "44 cricket/football candidate route(s) became 18 published card(s); the rest were folded into them or into cards another source leads"
+        "46 cricket/football candidate route(s) became 18 published card(s); the rest were folded into them or into cards another source leads"
       ],
       "newest_fixture_start": "2026-10-04T08:30:00+00:00",
       "future_fixture_count": 60,
       "content_state": "FRESH",
       "verified_streams": 50,
-      "failed_streams": 74,
+      "failed_streams": 76,
       "registry": "today_match"
     },
     {
       "source_id": "sm-fancode",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 304,
+      "http_status": 200,
       "raw_items": 40,
       "parsed_events": 25,
       "sport_allowed_events": 21,
@@ -342,8 +342,8 @@
       "configured": true,
       "fetch_status": "success",
       "http_status": 200,
-      "raw_items": 23,
-      "parsed_events": 4,
+      "raw_items": 17,
+      "parsed_events": 1,
       "sport_allowed_events": 0,
       "deduped_events": 0,
       "published_unique_fixtures": 0,
@@ -358,31 +358,30 @@
       "future_fixture_count": 0,
       "content_state": "STALE",
       "verified_streams": 0,
-      "failed_streams": 4,
+      "failed_streams": 1,
       "registry": "today_match"
     },
     {
       "source_id": "drmlive-sonyliv-backup",
       "configured": true,
-      "fetch_status": "success",
+      "fetch_status": "success_empty",
       "http_status": 200,
-      "raw_items": 19,
-      "parsed_events": 4,
-      "sport_allowed_events": 4,
+      "raw_items": 0,
+      "parsed_events": 0,
+      "sport_allowed_events": 0,
       "deduped_events": 0,
       "published_unique_fixtures": 0,
       "published_today": 0,
       "published_upcoming": 0,
       "dropped_count": 0,
       "drop_reasons": [
-        "every fixture this source carries has already kicked off",
-        "reached verification and no link passed"
+        "nothing fetched from this source"
       ],
       "newest_fixture_start": "",
       "future_fixture_count": 0,
-      "content_state": "STALE",
+      "content_state": "EMPTY",
       "verified_streams": 0,
-      "failed_streams": 4,
+      "failed_streams": 0,
       "registry": "today_match"
     },
     {
@@ -415,8 +414,8 @@
       "fetch_status": "success",
       "http_status": 200,
       "raw_items": 40,
-      "parsed_events": 1,
-      "sport_allowed_events": 1,
+      "parsed_events": 4,
+      "sport_allowed_events": 2,
       "deduped_events": 20,
       "published_unique_fixtures": 20,
       "published_today": 0,
@@ -427,7 +426,7 @@
       "future_fixture_count": 20,
       "content_state": "FRESH",
       "verified_streams": 0,
-      "failed_streams": 1,
+      "failed_streams": 4,
       "registry": "today_match"
     },
     {
@@ -579,7 +578,7 @@
     }
   ],
   "invariants": {
-    "checked_at": "2026-09-30T09:36:40.169458+00:00",
+    "checked_at": "2026-09-30T10:06:09.489791+00:00",
     "passed": 10,
     "failed": 0,
     "failures": [],
@@ -602,7 +601,7 @@
       {
         "name": "a fetched configured source has a row even at raw_items 0",
         "passed": true,
-        "detail": "4 row(s) at zero, 0 without a reason"
+        "detail": "5 row(s) at zero, 0 without a reason"
       },
       {
         "name": "a candidate that is not published has an explicit drop reason",
