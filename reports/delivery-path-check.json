@@ -1,12 +1,12 @@
 {
  "mode": "delivery_path_check",
  "note": "Asked the live playback proxies for every published route, with the site origin, exactly as the player does. Only a permanent refusal is recorded; a timeout, 429 or 5xx is left alone.",
- "checked": 640,
+ "checked": 642,
  "served": 501,
- "refused": 13,
- "refused_but_single_use": 2,
+ "refused": 15,
+ "refused_but_single_use": 1,
  "no_verdict": 126,
- "recorded": 11,
+ "recorded": 14,
  "cleared": 0,
  "refusals": [
   {
@@ -18,6 +18,11 @@
    "name": "DTV USA",
    "where": "primary",
    "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too"
+  },
+  {
+   "name": "Nagorik TV",
+   "where": "backup2",
+   "detail": "the playback proxy refuses this route: error code: 1003"
   },
   {
    "name": "R TV",
@@ -57,10 +62,20 @@
   {
    "name": "Star Sports 1",
    "where": "primary",
-   "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it"
+   "detail": "the playback proxy refuses this route: error code: 1003"
   },
   {
    "name": "Star Sports Select 1",
+   "where": "backup1",
+   "detail": "the playback proxy refuses this route: error code: 1003"
+  },
+  {
+   "name": "Malaysia Vs Singapore",
+   "where": "primary",
+   "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it"
+  },
+  {
+   "name": "Malaysia Vs Singapore",
    "where": "backup1",
    "detail": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it"
   }
