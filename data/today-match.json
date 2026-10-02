@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-02T15:17:59.974539+00:00",
+  "updated_at": "2026-10-02T15:30:56.795083+00:00",
   "count": 10,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -74,7 +74,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-02T12:23:33.283342+00:00"
     },
@@ -208,7 +208,13 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-10-02T15:30:54.422916+00:00"
     },
     {
       "id": "emirates-red-vs-fujairah",
@@ -324,16 +330,6 @@
           "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
         },
         {
-          "source_id": "drmlive-fancode-mirror",
-          "source_name": "FanCode Live Events (drmlive)",
-          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        },
-        {
           "source_id": "sayanpal-fancode-mirror",
           "source_name": "FanCode Auto Updated (sayanpal)",
           "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
@@ -342,15 +338,19 @@
           "source_id": "dartv-fancode-mirror",
           "source_name": "FanCode Live API (dartv-ajaz)",
           "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
+        },
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "start_time": "2026-10-02T15:30:00+00:00",
       "start_at": "2026-10-02T15:30:00+00:00",
@@ -488,7 +488,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-02T12:23:33.283342+00:00",
       "end_pending": true,
@@ -610,7 +610,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-02T12:23:33.283342+00:00",
       "end_pending": true,
@@ -718,19 +718,20 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=76' (STATUS_SECOND_HALF, event 401902634)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401902634)",
         "LiveScore livescore=FT (6, event 1894371)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401902634"
+        "espn-header": "401902634",
+        "livescore": "1894371"
       },
       "event_type": "today_match",
       "lifecycle_state": "END_PENDING",
@@ -740,11 +741,15 @@
       "lifecycle_reason": "finished, holding for the post-match grace",
       "end_pending": true,
       "end_pending_confirmations": 0,
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-02T13:49:41.953475+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=76' (STATUS_SECOND_HALF, event 401902634); LiveScore livescore=FT (6, event 1894371)",
-      "ended_seen_at": "2026-10-02T15:17:34.972744+00:00"
+      "ended_seen_at": "2026-10-02T15:17:34.972744+00:00",
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-02T15:30:34.883665+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-02T15:50:34.883665+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "china-vs-palestine",
@@ -850,19 +855,20 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401914141)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401914141)",
         "LiveScore livescore=FT (6, event 1894370)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401914141"
+        "espn-header": "401914141",
+        "livescore": "1894370"
       },
       "event_type": "today_match",
       "lifecycle_state": "END_PENDING",
@@ -882,13 +888,17 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-02T13:49:41.953475+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401914141); LiveScore livescore=FT (6, event 1894370)",
       "end_pending": true,
       "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-10-02T15:17:34.972744+00:00"
+      "ended_seen_at": "2026-10-02T15:17:34.972744+00:00",
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-02T15:30:34.883665+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-02T15:50:34.883665+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "kazakhstan-vs-moldova",
@@ -1032,8 +1042,8 @@
       "resolution_height": 720,
       "start_time": "2026-10-02T14:00:00+00:00",
       "start_at": "2026-10-02T14:00:00+00:00",
-      "end_time": "2026-10-02T16:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-10-02T16:30:34+00:00",
+      "end_time_source": "assumed",
       "competition": "UEFA Nations League",
       "fixture_id": "provider:kazakhstan-vs-moldova|uefa nations league|2026-10-02",
       "status": "LIVE_NOW",

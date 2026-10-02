@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T15:18:16.858906+00:00",
+  "generated_at": "2026-10-02T15:31:08.630577+00:00",
   "today_match_count": 10,
   "upcoming_count": 47,
   "today_missing_logo": [
@@ -24,12 +24,12 @@
   "corrected": 0,
   "catalogue": 0,
   "provider_fixture": 238,
-  "provider_rejected": 87,
+  "provider_rejected": 88,
   "provider_rejected_reasons": {
     "provider_dead_status": 46,
     "status_neither_live_nor_upcoming": 0,
     "kickoff_missing_and_not_live": 5,
-    "upcoming_kickoff_already_passed": 36
+    "upcoming_kickoff_already_passed": 37
   },
   "provider_rejected_by_source": {
     "sm-sports-data": {
@@ -51,6 +51,10 @@
     "srhady-tapmad-bd": {
       "upcoming_kickoff_already_passed": 8,
       "total": 8
+    },
+    "dartv-fancode-mirror": {
+      "upcoming_kickoff_already_passed": 1,
+      "total": 1
     }
   },
   "provider_rejected_fixtures": [
@@ -359,6 +363,15 @@
       "status": "UPCOMING",
       "reason": "upcoming_kickoff_already_passed",
       "start_time": "2026-09-14T10:30:00+00:00"
+    },
+    {
+      "name": "Yamuna Warriors vs Aravali Avengers",
+      "competition": "NCR T20 League, 2026",
+      "sport": "cricket",
+      "source_id": "dartv-fancode-mirror",
+      "status": "UPCOMING",
+      "reason": "upcoming_kickoff_already_passed",
+      "start_time": "2026-10-02T11:30:00+00:00"
     },
     {
       "name": "Zimbabwe vs Australia",
@@ -819,7 +832,7 @@
       },
       {
         "name": "Featured Group Day 2",
-        "source": "drmlive-fancode-mirror, vk1817-fancode-mirror, sayanpal-fanc",
+        "source": "drmlive-fancode-mirror, sayanpal-fancode-mirror, vk1817-fanc",
         "competition": "Bank of Utah Championship 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
@@ -843,7 +856,7 @@
       },
       {
         "name": "World Feed 2",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, sayanpal-f",
         "competition": "ATP 500 - China Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -962,7 +975,7 @@
     "live": 0,
     "recorded": 17,
     "conflict": 0,
-    "unmatched": 35,
+    "unmatched": 34,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
@@ -978,27 +991,68 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 2,
     "pending_confirmation": 0,
     "live": 0,
-    "recorded": 0,
-    "conflict": 2,
-    "unmatched": 6,
+    "recorded": 1,
+    "conflict": 0,
+    "unmatched": 7,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
-    "by_status": {},
-    "by_confidence": {
-      "CONFLICT": 2
+    "by_status": {
+      "FINISHED": 2,
+      "UPCOMING": 1
     },
-    "applied_fixtures": [],
+    "by_confidence": {
+      "HIGH": 2,
+      "LOW": 1
+    },
+    "applied_fixtures": [
+      {
+        "name": "South Korea Vs Venezuela",
+        "fixture_id": "provider:south-korea-vs-venezuela|international friendly games|2026-10-02",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401902634)",
+          "LiveScore livescore=FT (6, event 1894371)"
+        ],
+        "authority_finished_seen_at": "2026-10-02T15:30:34.883665+00:00",
+        "remove_after": "2026-10-02T15:50:34.883665+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
+      },
+      {
+        "name": "China Vs Palestine",
+        "fixture_id": "provider:china-vs-palestine|international friendly games|2026-10-02",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401914141)",
+          "LiveScore livescore=FT (6, event 1894370)"
+        ],
+        "authority_finished_seen_at": "2026-10-02T15:30:34.883665+00:00",
+        "remove_after": "2026-10-02T15:50:34.883665+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
+      }
+    ],
     "conflicts": [
       {
         "name": "South Korea Vs Venezuela",
-        "reason": "independent authorities disagree: ESPN espn-header=76' (STATUS_SECOND_HALF, event 401902634); LiveScore livescore=FT (6, event 1894371)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1006,9 +1060,9 @@
       },
       {
         "name": "China Vs Palestine",
-        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401914141); LiveScore livescore=FT (6, event 1894370)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1017,14 +1071,14 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 6,
+    "asked": 2,
     "finished": 4,
     "unplayable": 0,
-    "cache_hits": 0,
-    "no_verdict": 2
+    "cache_hits": 4,
+    "no_verdict": 3
   },
   "live_protection": {
-    "carried_forward": 5,
+    "carried_forward": 6,
     "released_ended": 0,
     "released_ended_ids": [],
     "retired_terminal": [],
@@ -1033,15 +1087,15 @@
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 0,
+    "probe_alive": 2,
     "probe_dead": 2,
-    "probe_inconclusive": 3,
-    "end_pending": 4,
+    "probe_inconclusive": 0,
+    "end_pending": 5,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
       "LIVE": 1,
-      "END_PENDING": 4
+      "END_PENDING": 5
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -1067,10 +1121,8 @@
     ],
     "held": 0,
     "held_names": [],
-    "considered": 2,
-    "refused": {
-      "authority productive this scan": 2
-    },
+    "considered": 0,
+    "refused": {},
     "hold_expired": 0
   },
   "channel_names": {
@@ -1084,13 +1136,13 @@
   },
   "streamed_provider": {
     "provider": "streamed",
-    "available": false,
-    "reason": "URLError: <urlopen error _ssl.c:993: The handshake operation timed out>",
+    "available": true,
+    "reason": "",
     "calls": 14,
     "cache_hits": 0,
-    "errors": 1,
+    "errors": 0,
     "fixtures_ingested": 228,
-    "embed_streams": 9,
+    "embed_streams": 10,
     "artwork_supplied": 134
   },
   "streamed_enrichment": {
@@ -1109,12 +1161,12 @@
     "cache_hits": 6,
     "cached_entries": 999,
     "provider": {
-      "requests": 26,
-      "hits": 24,
+      "requests": 2,
+      "hits": 0,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 18,
+      "skipped_rate_limited": 42,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1134,13 +1186,13 @@
   "competition_labels_clarified": [],
   "sport_filter": {
     "at_merge": {
-      "total": 88,
-      "published": 52,
+      "total": 87,
+      "published": 51,
       "rejected": 28,
       "quarantined": 8,
       "states": {
         "confirmed_football": 20,
-        "confirmed_cricket": 32,
+        "confirmed_cricket": 31,
         "unknown": 8,
         "confirmed_other": 28
       },
@@ -1153,13 +1205,45 @@
           "rejected": 27,
           "published": 24
         },
-        "dartv-fancode-mirror": {
-          "total": 19,
+        "sm-fancode": {
+          "total": 21,
           "cricket": 16,
           "football": 3,
           "quarantined": 0,
-          "rejected": 0,
+          "rejected": 2,
           "published": 19
+        },
+        "sportlive-fancode-backup": {
+          "total": 21,
+          "cricket": 16,
+          "football": 3,
+          "quarantined": 0,
+          "rejected": 2,
+          "published": 19
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 21,
+          "cricket": 16,
+          "football": 3,
+          "quarantined": 0,
+          "rejected": 2,
+          "published": 19
+        },
+        "dartv-fancode-mirror": {
+          "total": 18,
+          "cricket": 15,
+          "football": 3,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 18
+        },
+        "vk1817-fancode-mirror": {
+          "total": 22,
+          "cricket": 17,
+          "football": 3,
+          "quarantined": 0,
+          "rejected": 2,
+          "published": 20
         },
         "srhady-primevideo-sports": {
           "total": 4,
@@ -1177,39 +1261,7 @@
           "rejected": 0,
           "published": 12
         },
-        "sportlive-fancode-backup": {
-          "total": 21,
-          "cricket": 16,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 2,
-          "published": 19
-        },
         "drmlive-fancode-mirror": {
-          "total": 22,
-          "cricket": 17,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 2,
-          "published": 20
-        },
-        "sm-fancode": {
-          "total": 21,
-          "cricket": 16,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 2,
-          "published": 19
-        },
-        "vk1817-fancode-mirror": {
-          "total": 22,
-          "cricket": 17,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 2,
-          "published": 20
-        },
-        "sayanpal-fancode-mirror": {
           "total": 21,
           "cricket": 16,
           "football": 3,
@@ -1510,18 +1562,10 @@
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_cricket": 5,
-        "confirmed_football": 5
+        "confirmed_football": 5,
+        "confirmed_cricket": 5
       },
       "by_source": {
-        "dartv-fancode-mirror": {
-          "total": 4,
-          "cricket": 4,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 4
-        },
         "sm-sports-data": {
           "total": 5,
           "cricket": 0,
@@ -1546,23 +1590,23 @@
           "rejected": 0,
           "published": 2
         },
-        "drmlive-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 1,
           "cricket": 1,
           "football": 0,
           "quarantined": 0,
           "rejected": 0,
           "published": 1
+        },
+        "dartv-fancode-mirror": {
+          "total": 4,
+          "cricket": 4,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 4
         },
         "vk1817-fancode-mirror": {
-          "total": 1,
-          "cricket": 1,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
-        "sayanpal-fancode-mirror": {
           "total": 1,
           "cricket": 1,
           "football": 0,
@@ -1601,6 +1645,14 @@
           "rejected": 0,
           "published": 12
         },
+        "sm-fancode": {
+          "total": 18,
+          "cricket": 15,
+          "football": 3,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 18
+        },
         "sportlive-fancode-backup": {
           "total": 18,
           "cricket": 15,
@@ -1610,22 +1662,6 @@
           "published": 18
         },
         "drmlive-fancode-mirror": {
-          "total": 19,
-          "cricket": 16,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
-        },
-        "sm-fancode": {
-          "total": 18,
-          "cricket": 15,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
-        },
-        "vk1817-fancode-mirror": {
           "total": 19,
           "cricket": 16,
           "football": 3,
@@ -1648,6 +1684,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 15
+        },
+        "vk1817-fancode-mirror": {
+          "total": 19,
+          "cricket": 16,
+          "football": 3,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
         }
       },
       "rejected_examples": [],
@@ -1670,16 +1714,16 @@
     ]
   },
   "sport_pipeline": {
-    "raw_events": 548,
-    "cricket_kept": 32,
+    "raw_events": 549,
+    "cricket_kept": 31,
     "football_kept": 20,
     "other_discarded": 121,
     "unresolved": 8,
     "today_final": 10,
     "upcoming_final": 47,
     "published_states": {
-      "confirmed_cricket": 33,
-      "confirmed_football": 24
+      "confirmed_football": 24,
+      "confirmed_cricket": 33
     },
     "other_sport_leak": 0,
     "ball_sport_wrongly_refused": 1
@@ -1705,29 +1749,29 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 4,
+      "provider_or_authority": 5,
       "estimate": 0,
-      "none": 6
+      "none": 5
     }
   },
   "fixture_stream_health": {
-    "fixtures": 76,
+    "fixtures": 77,
     "published_fixtures": 57,
     "fixtures_with_verified_stream": 11,
-    "fixtures_with_zero_verified": 65,
+    "fixtures_with_zero_verified": 66,
     "published_without_stream": 52,
     "fallback_available": 1,
     "targeted_fixtures": 5,
     "targeted_attempts": 7,
     "fixtures_with_a_first_link_time": 3,
-    "candidate_routes": 77,
+    "candidate_routes": 78,
     "verified_routes": 26,
-    "failed_routes": 51,
-    "fixtures_touched_by_a_route_failure": 30,
-    "fixtures_left_with_nothing": 15,
+    "failed_routes": 52,
+    "fixtures_touched_by_a_route_failure": 31,
+    "fixtures_left_with_nothing": 16,
     "distinct_failure_codes": 5,
     "unrecognised_candidate_groups": 35,
-    "unrecognised_failed_routes": 69
+    "unrecognised_failed_routes": 68
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
@@ -1737,9 +1781,9 @@
     "unverified": 38,
     "conflict": 3,
     "matched_by_two_independent_authorities": 13,
-    "authority_agreements": 10,
-    "authority_disagreements": 2,
-    "card_status_conflicts": 1,
+    "authority_agreements": 12,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 3,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 0
