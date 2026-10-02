@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T15:51:59.174526+00:00",
+  "generated_at": "2026-10-02T17:54:34.178476+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,10 +13,11 @@
       "fixtures": 997,
       "unknown_statuses": [
         "10|HT",
-        "211|0'",
-        "2|20'",
-        "3|90+3'",
-        "3|90+5'"
+        "2|23'",
+        "2|24'",
+        "3|58'",
+        "3|90+4'",
+        "3|90+8'"
       ],
       "attempts": [
         {
@@ -63,8 +64,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 5,
-      "fixtures": 353,
+      "requests_ok": 6,
+      "fixtures": 662,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -77,7 +78,7 @@
           "sport": "cricket",
           "date": "2026-10-02",
           "result": "ok",
-          "fixtures": 12
+          "fixtures": 13
         },
         {
           "sport": "cricket",
@@ -95,13 +96,13 @@
           "sport": "football",
           "date": "2026-10-02",
           "result": "ok",
-          "fixtures": 188
+          "fixtures": 196
         },
         {
           "sport": "football",
           "date": "2026-10-03",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 300
         }
       ]
     }
@@ -109,53 +110,62 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 7,
-    "upcoming": 46,
-    "fixtures": 53,
+    "upcoming": 65,
+    "fixtures": 72,
     "verdicts": {
-      "CONFLICT": 1,
-      "VERIFIED": 17,
-      "UNVERIFIED": 35
+      "CONFLICT": 3,
+      "UNVERIFIED": 34,
+      "VERIFIED": 35
     },
-    "verified": 17,
+    "verified": 35,
     "partial_authority": 0,
-    "unverified": 35,
-    "conflict": 1,
+    "unverified": 34,
+    "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 17,
-        "unmatched": 36
+        "matched": 37,
+        "unmatched": 35
       },
       "livescore": {
-        "matched": 15,
-        "unmatched": 38
+        "matched": 29,
+        "unmatched": 43
       }
     },
-    "matched_by_two_independent_authorities": 11,
-    "authority_agreements": 10,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "matched_by_two_independent_authorities": 24,
+    "authority_agreements": 21,
+    "authority_disagreements": 3,
+    "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1,
-      "kickoff": 3
+      "authorities disagree": 3,
+      "kickoff": 4
     },
-    "identity_near_misses": 9,
+    "identity_near_misses": 14,
     "independent_authority_count_distribution": {
-      "0": 35,
-      "1": 7,
-      "2": 11
+      "0": 34,
+      "1": 14,
+      "2": 24
     },
     "unknown_authority_statuses": {
       "livescore": [
         "10|HT",
-        "211|0'",
-        "2|20'",
-        "3|90+3'",
-        "3|90+5'"
+        "2|23'",
+        "2|24'",
+        "3|58'",
+        "3|90+4'",
+        "3|90+8'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Atlético Mineiro Vs Red Bull Bragantino",
+      "authority": "espn-header",
+      "authority_name": "Atlético-MG vs Red Bull Bragantino",
+      "agreed_side": "red bull bragantino",
+      "ours": "atletico mineiro",
+      "theirs": "atletico mg"
+    },
     {
       "fixture": "Boca Juniors Vs Club Atlético Unión de Santa Fe",
       "authority": "espn-header",
@@ -205,12 +215,28 @@
       "theirs": "abb"
     },
     {
+      "fixture": "Deportes Tolima Vs Boyacá Chicó FC",
+      "authority": "livescore",
+      "authority_name": "Tolima vs Chico FC",
+      "agreed_side": "tolima",
+      "ours": "boyaca chico",
+      "theirs": "chico"
+    },
+    {
       "fixture": "Pakistan Vs India",
       "authority": "espn-header",
       "authority_name": "Pakistan Women Under-19s vs Sri Lanka Women Under-19s",
       "agreed_side": "pakistan",
       "ours": "india",
       "theirs": "sri lanka under 19s"
+    },
+    {
+      "fixture": "Russia Vs Namibia",
+      "authority": "livescore",
+      "authority_name": "United Arab Emirates vs Namibia",
+      "agreed_side": "namibia",
+      "ours": "russia",
+      "theirs": "united arab emirates"
     },
     {
       "fixture": "Saint Kitts and Nevis Vs Cuba",
@@ -227,194 +253,34 @@
       "agreed_side": "cuba",
       "ours": "saint kitts and nevis",
       "theirs": "st kitts and nevis"
+    },
+    {
+      "fixture": "Sint Maarten Vs Saint Vincent and the Grenadines",
+      "authority": "espn-header",
+      "authority_name": "Sint Maarten vs St. Vincent and the Grenadines",
+      "agreed_side": "sint maarten",
+      "ours": "saint vincent and the grenadines",
+      "theirs": "st vincent and the grenadines"
+    },
+    {
+      "fixture": "United Arab Emirates Vs Oman",
+      "authority": "livescore",
+      "authority_name": "UAE vs Oman",
+      "agreed_side": "oman",
+      "ours": "united arab emirates",
+      "theirs": "uae"
     }
   ],
   "fixtures": [
-    {
-      "fixture_id": "provider:kazakhstan-vs-moldova|uefa nations league|2026-10-02",
-      "card_id": "kazakhstan-vs-moldova",
-      "name": "Kazakhstan Vs Moldova",
-      "competition": "UEFA Nations League",
-      "kickoff": "2026-10-02T14:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401861101",
-          "upstream_family": "ESPN",
-          "name": "Kazakhstan vs Moldova",
-          "home": "Kazakhstan",
-          "away": "Moldova",
-          "home_team_id": "2619",
-          "away_team_id": "483",
-          "competition": "UEFA Nations League",
-          "competition_id": "2395",
-          "kickoff": "2026-10-02T14:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, October 2nd at 10:00 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:2395~e:401861101~c:401861101"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1738395",
-          "upstream_family": "LiveScore",
-          "name": "Kazakhstan vs Moldova",
-          "home": "Kazakhstan",
-          "away": "Moldova",
-          "home_team_id": "9030",
-          "away_team_id": "3369",
-          "competition": "League C: Group 3",
-          "competition_id": "523",
-          "kickoff": "2026-10-02T14:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "90+3'",
-          "status_code": "3",
-          "status": "UNKNOWN",
-          "sport": "football",
-          "round": "League C Group 3",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:latvia-vs-montenegro|uefa nations league|2026-10-02",
-      "card_id": "latvia-vs-montenegro",
-      "name": "Latvia Vs Montenegro",
-      "competition": "UEFA Nations League",
-      "kickoff": "2026-10-02T16:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401861105",
-          "upstream_family": "ESPN",
-          "name": "Latvia vs Montenegro",
-          "home": "Latvia",
-          "away": "Montenegro",
-          "home_team_id": "456",
-          "away_team_id": "6775",
-          "competition": "UEFA Nations League",
-          "competition_id": "2395",
-          "kickoff": "2026-10-02T16:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, October 2nd at 12:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:2395~e:401861105~c:401861105"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1738388",
-          "upstream_family": "LiveScore",
-          "name": "Latvia vs Montenegro",
-          "home": "Latvia",
-          "away": "Montenegro",
-          "home_team_id": "9160",
-          "away_team_id": "9097",
-          "competition": "League C: Group 2",
-          "competition_id": "523",
-          "kickoff": "2026-10-02T16:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "3",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
     {
       "fixture_id": "provider:cyprus-vs-armenia|uefa nations league|2026-10-02",
       "card_id": "cyprus-vs-armenia",
       "name": "Cyprus Vs Armenia",
       "competition": "UEFA Nations League",
       "kickoff": "2026-10-02T16:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -471,9 +337,9 @@
           "competition_id": "523",
           "kickoff": "2026-10-02T16:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "3",
           "format": "",
@@ -487,10 +353,101 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:latvia-vs-montenegro|uefa nations league|2026-10-02",
+      "card_id": "latvia-vs-montenegro",
+      "name": "Latvia Vs Montenegro",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-10-02T16:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861105",
+          "upstream_family": "ESPN",
+          "name": "Latvia vs Montenegro",
+          "home": "Latvia",
+          "away": "Montenegro",
+          "home_team_id": "456",
+          "away_team_id": "6775",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-10-02T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 12:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861105~c:401861105"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738388",
+          "upstream_family": "LiveScore",
+          "name": "Latvia vs Montenegro",
+          "home": "Latvia",
+          "away": "Montenegro",
+          "home_team_id": "9160",
+          "away_team_id": "9097",
+          "competition": "League C: Group 2",
+          "competition_id": "523",
+          "kickoff": "2026-10-02T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -503,10 +460,9 @@
       "lifecycle_state": "STARTING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
@@ -531,6 +487,136 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:sharjah-vs-fujairah|emirates d10 2026|2026-10-02",
+      "card_id": "sharjah-vs-fujairah",
+      "name": "Sharjah vs Fujairah",
+      "competition": "Emirates D10, 2026",
+      "kickoff": "2026-10-02T17:45:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:kazakhstan-vs-moldova|uefa nations league|2026-10-02",
+      "card_id": "kazakhstan-vs-moldova",
+      "name": "Kazakhstan Vs Moldova",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-10-02T14:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861101",
+          "upstream_family": "ESPN",
+          "name": "Kazakhstan vs Moldova",
+          "home": "Kazakhstan",
+          "away": "Moldova",
+          "home_team_id": "2619",
+          "away_team_id": "483",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-10-02T14:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "58'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "58'",
+          "espn_status_description": "Second Half",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861101~c:401861101"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738395",
+          "upstream_family": "LiveScore",
+          "name": "Kazakhstan vs Moldova",
+          "home": "Kazakhstan",
+          "away": "Moldova",
+          "home_team_id": "9030",
+          "away_team_id": "3369",
+          "competition": "League C: Group 3",
+          "competition_id": "523",
+          "kickoff": "2026-10-02T14:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -608,43 +694,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:yamuna-warriors-vs-aravali-avengers|ncr t20 league 2026|2026-10-02",
-      "card_id": "yamuna-warriors-vs-aravali-avengers",
-      "name": "Yamuna Warriors vs Aravali Avengers",
-      "competition": "NCR T20 League, 2026",
-      "kickoff": "2026-10-02T11:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
-      "provider_identity": "",
-      "source_ids": [
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-09",
       "card_id": "south-africa-vs-australia",
       "name": "South Africa Vs Australia",
@@ -682,6 +731,98 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:eldense-vs-real-oviedo|laliga hypermotion 2026 27|2026-10-02",
+      "card_id": "eldense-vs-real-oviedo",
+      "name": "Eldense vs Real Oviedo",
+      "competition": "LALIGA Hypermotion 2026-27",
+      "kickoff": "2026-10-02T18:30:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401883193",
+          "upstream_family": "ESPN",
+          "name": "Eldense vs Real Oviedo",
+          "home": "Eldense",
+          "away": "Real Oviedo",
+          "home_team_id": "7320",
+          "away_team_id": "92",
+          "competition": "Spanish LALIGA 2",
+          "competition_id": "3921",
+          "kickoff": "2026-10-02T18:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 2:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3921~e:401883193~c:401883193"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1811100",
+          "upstream_family": "LiveScore",
+          "name": "CD Eldense vs Real Oviedo",
+          "home": "CD Eldense",
+          "away": "Real Oviedo",
+          "home_team_id": "82774",
+          "away_team_id": "4456",
+          "competition": "LaLiga 2",
+          "competition_id": "406",
+          "kickoff": "2026-10-02T18:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "8",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:pakistan-champions-vs-bangladesh-champions-2-match|world championship of legends 2026|2026-10-03",
       "card_id": "2nd-match-pakistan-champions-vs-bangladesh-champions",
       "name": "2nd Match Pakistan Champions vs Bangladesh Champions",
@@ -695,8 +836,8 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
@@ -747,6 +888,139 @@
       "authorities": {
         "espn-header": {
           "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:almería-vs-burgos-club-de-fútbol|laliga 2|2026-10-03",
+      "card_id": "almería-vs-burgos-club-de-fútbol",
+      "name": "Almería Vs Burgos Club de Fútbol",
+      "competition": "LaLiga 2",
+      "kickoff": "2026-10-03T14:15:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401883195",
+          "upstream_family": "ESPN",
+          "name": "Almería vs Burgos",
+          "home": "Almería",
+          "away": "Burgos",
+          "home_team_id": "6832",
+          "away_team_id": "12597",
+          "competition": "Spanish LALIGA 2",
+          "competition_id": "3921",
+          "kickoff": "2026-10-03T14:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 10:15 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3921~e:401883195~c:401883195"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1811095",
+          "upstream_family": "LiveScore",
+          "name": "Almeria vs Burgos CF",
+          "home": "Almeria",
+          "away": "Burgos CF",
+          "home_team_id": "4518",
+          "away_team_id": "4182",
+          "competition": "LaLiga 2",
+          "competition_id": "406",
+          "kickoff": "2026-10-03T14:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "8",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:atlético-mineiro-vs-red-bull-bragantino|campeonato brasileiro s rie a|2026-10-03",
+      "card_id": "atlético-mineiro-vs-red-bull-bragantino",
+      "name": "Atlético Mineiro Vs Red Bull Bragantino",
+      "competition": "Campeonato Brasileiro Série A",
+      "kickoff": "2026-10-03T21:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Atlético-MG vs Red Bull Bragantino",
+              "event_id": "401841168",
+              "agreed_side": "red bull bragantino",
+              "ours": "atletico mineiro",
+              "theirs": "atletico mg"
+            }
+          ]
         },
         "livescore": {
           "result": "unmatched"
@@ -916,8 +1190,8 @@
       "name": "Belgium Vs Türkiye",
       "competition": "UEFA Nations League",
       "kickoff": "2026-10-02T18:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -998,6 +1272,79 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:belize-vs-french-guiana|concacaf nations league|2026-10-04",
+      "card_id": "belize-vs-french-guiana",
+      "name": "Belize Vs French Guiana",
+      "competition": "CONCACAF Nations League",
+      "kickoff": "2026-10-04T02:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401900589",
+          "upstream_family": "ESPN",
+          "name": "Belize vs French Guiana",
+          "home": "Belize",
+          "away": "French Guiana",
+          "home_team_id": "2641",
+          "away_team_id": "10532",
+          "competition": "Concacaf Nations League",
+          "competition_id": "19267",
+          "kickoff": "2026-10-04T02:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 10:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:19267~e:401900589~c:401900589"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:boca-juniors-vs-club-atlético-unión-de-santa-fe|liga profesional de f tbol|2026-10-03",
       "card_id": "boca-juniors-vs-club-atlético-unión-de-santa-fe",
       "name": "Boca Juniors Vs Club Atlético Unión de Santa Fe",
@@ -1058,8 +1405,8 @@
       "name": "Bosnia Herzegovina Vs Sweden",
       "competition": "UEFA Nations League",
       "kickoff": "2026-10-02T18:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1325,100 +1672,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:cd-eldense-vs-real-oviedo|laliga 2|2026-10-02",
-      "card_id": "cd-eldense-vs-real-oviedo",
-      "name": "CD Eldense Vs Real Oviedo",
-      "competition": "LaLiga 2",
-      "kickoff": "2026-10-02T18:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401883193",
-          "upstream_family": "ESPN",
-          "name": "Eldense vs Real Oviedo",
-          "home": "Eldense",
-          "away": "Real Oviedo",
-          "home_team_id": "7320",
-          "away_team_id": "92",
-          "competition": "Spanish LALIGA 2",
-          "competition_id": "3921",
-          "kickoff": "2026-10-02T18:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, October 2nd at 2:30 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3921~e:401883193~c:401883193"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1811100",
-          "upstream_family": "LiveScore",
-          "name": "CD Eldense vs Real Oviedo",
-          "home": "CD Eldense",
-          "away": "Real Oviedo",
-          "home_team_id": "82774",
-          "away_team_id": "4456",
-          "competition": "LaLiga 2",
-          "competition_id": "406",
-          "kickoff": "2026-10-02T18:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "8",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:cd-san-antonio-vs-academia-de-balompié-boliviano|copa bolivia|2026-10-02",
       "card_id": "cd-san-antonio-vs-academia-de-balompié-boliviano",
       "name": "CD San Antonio Vs Academia de Balompié Boliviano",
@@ -1507,6 +1760,102 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:chesterfield-vs-tranmere-rovers|league two|2026-10-03",
+      "card_id": "chesterfield-vs-tranmere-rovers",
+      "name": "Chesterfield Vs Tranmere Rovers",
+      "competition": "League Two",
+      "kickoff": "2026-10-03T11:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-willow-event",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode",
+        "SM-Aggregate",
+        "Willow"
+      ],
+      "independent_witness_count": 3,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401881346",
+          "upstream_family": "ESPN",
+          "name": "Chesterfield vs Tranmere Rovers",
+          "home": "Chesterfield",
+          "away": "Tranmere Rovers",
+          "home_team_id": "343",
+          "away_team_id": "345",
+          "competition": "English League Two",
+          "competition_id": "3916",
+          "kickoff": "2026-10-03T11:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 7:30 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3916~e:401881346~c:401881346"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1803558",
+          "upstream_family": "LiveScore",
+          "name": "Chesterfield vs Tranmere Rovers",
+          "home": "Chesterfield",
+          "away": "Tranmere Rovers",
+          "home_team_id": "4535",
+          "away_team_id": "2827",
+          "competition": "League 2",
+          "competition_id": "72",
+          "kickoff": "2026-10-03T11:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "9",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:coastal-union-vs-azam-fc|tanzanian premier league|2026-10-08",
       "card_id": "coastal-union-vs-azam-fc",
       "name": "Coastal Union Vs Azam FC",
@@ -1541,6 +1890,408 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:defensa-y-justicia-vs-san-lorenzo|liga profesional de f tbol|2026-10-03",
+      "card_id": "defensa-y-justicia-vs-san-lorenzo",
+      "name": "Defensa y Justicia Vs San Lorenzo",
+      "competition": "Liga Profesional de Fútbol",
+      "kickoff": "2026-10-03T17:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401841593",
+          "upstream_family": "ESPN",
+          "name": "Defensa y Justicia vs San Lorenzo",
+          "home": "Defensa y Justicia",
+          "away": "San Lorenzo",
+          "home_team_id": "8950",
+          "away_team_id": "18",
+          "competition": "Argentine Liga Profesional de Fútbol",
+          "competition_id": "745",
+          "kickoff": "2026-10-03T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 1:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:745~e:401841593~c:401841593"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1715135",
+          "upstream_family": "LiveScore",
+          "name": "Defensa y Justicia vs San Lorenzo de Almagro",
+          "home": "Defensa y Justicia",
+          "away": "San Lorenzo de Almagro",
+          "home_team_id": "5190",
+          "away_team_id": "3507",
+          "competition": "Liga Profesional: Clausura",
+          "competition_id": "24270",
+          "kickoff": "2026-10-03T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "11",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:deportes-tolima-vs-boyacá-chicó-fc|primera a|2026-10-03",
+      "card_id": "deportes-tolima-vs-boyacá-chicó-fc",
+      "name": "Deportes Tolima Vs Boyacá Chicó FC",
+      "competition": "Primera A",
+      "kickoff": "2026-10-03T21:05:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401877904",
+          "upstream_family": "ESPN",
+          "name": "Deportes Tolima vs Boyacá Chicó FC",
+          "home": "Deportes Tolima",
+          "away": "Boyacá Chicó FC",
+          "home_team_id": "5489",
+          "away_team_id": "5480",
+          "competition": "Colombian Primera A",
+          "competition_id": "650",
+          "kickoff": "2026-10-03T21:05:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 5:05 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:650~e:401877904~c:401877904"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Tolima vs Chico FC",
+              "event_id": "1806376",
+              "agreed_side": "tolima",
+              "ours": "boyaca chico",
+              "theirs": "chico"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:deportivo-cali-vs-alianza-valledupar-fc|primera a|2026-10-03",
+      "card_id": "deportivo-cali-vs-alianza-valledupar-fc",
+      "name": "Deportivo Cali Vs Alianza Valledupar FC",
+      "competition": "Primera A",
+      "kickoff": "2026-10-03T00:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401878069",
+          "upstream_family": "ESPN",
+          "name": "Deportivo Cali vs Alianza FC",
+          "home": "Deportivo Cali",
+          "away": "Alianza FC",
+          "home_team_id": "2672",
+          "away_team_id": "9761",
+          "competition": "Colombian Primera A",
+          "competition_id": "650",
+          "kickoff": "2026-10-03T00:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 8:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:650~e:401878069~c:401878069"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1806365",
+          "upstream_family": "LiveScore",
+          "name": "Deportivo Cali vs Alianza FC Valledupar",
+          "home": "Deportivo Cali",
+          "away": "Alianza FC Valledupar",
+          "home_team_id": "7162",
+          "away_team_id": "285146",
+          "competition": "Primera A: Clausura",
+          "competition_id": "667",
+          "kickoff": "2026-10-03T00:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "13",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:eintracht-frankfurt-vs-fc-bayern-münchen|frauen bundesliga|2026-10-03",
+      "card_id": "eintracht-frankfurt-vs-fc-bayern-münchen",
+      "name": "Eintracht Frankfurt Vs FC Bayern München",
+      "competition": "Frauen-Bundesliga",
+      "kickoff": "2026-10-03T15:55:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1834754",
+          "upstream_family": "LiveScore",
+          "name": "Eintracht Frankfurt W vs Bayern Munich W",
+          "home": "Eintracht Frankfurt W",
+          "away": "Bayern Munich W",
+          "home_team_id": "6722",
+          "away_team_id": "6723",
+          "competition": "Frauen-Bundesliga",
+          "competition_id": "25826",
+          "kickoff": "2026-10-03T15:55:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "6",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:el-salvador-vs-jamaica|concacaf nations league|2026-10-03",
+      "card_id": "el-salvador-vs-jamaica",
+      "name": "El Salvador Vs Jamaica",
+      "competition": "CONCACAF Nations League",
+      "kickoff": "2026-10-03T02:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401900602",
+          "upstream_family": "ESPN",
+          "name": "El Salvador vs Jamaica",
+          "home": "El Salvador",
+          "away": "Jamaica",
+          "home_team_id": "2650",
+          "away_team_id": "1038",
+          "competition": "Concacaf Nations League",
+          "competition_id": "19267",
+          "kickoff": "2026-10-03T02:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 10:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:19267~e:401900602~c:401900602"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1856618",
+          "upstream_family": "LiveScore",
+          "name": "El Salvador vs Jamaica",
+          "home": "El Salvador",
+          "away": "Jamaica",
+          "home_team_id": "4873",
+          "away_team_id": "9154",
+          "competition": "League A: Group 2",
+          "competition_id": "57",
+          "kickoff": "2026-10-03T02:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1591,8 +2342,8 @@
       "name": "Faroe Islands Vs Slovakia",
       "competition": "UEFA Nations League",
       "kickoff": "2026-10-02T18:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1673,6 +2424,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:finland-vs-albania|uefa nations league|2026-10-03",
+      "card_id": "finland-vs-albania",
+      "name": "Finland Vs Albania",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-10-03T13:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861111",
+          "upstream_family": "ESPN",
+          "name": "Finland vs Albania",
+          "home": "Finland",
+          "away": "Albania",
+          "home_team_id": "458",
+          "away_team_id": "585",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-10-03T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 9:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861111~c:401861111"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738313",
+          "upstream_family": "LiveScore",
+          "name": "Finland vs Albania",
+          "home": "Finland",
+          "away": "Albania",
+          "home_team_id": "9228",
+          "away_team_id": "9178",
+          "competition": "League C: Group 1",
+          "competition_id": "523",
+          "kickoff": "2026-10-03T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:fountain-gate-vs-jkt-tanzania|tanzanian premier league|2026-10-09",
       "card_id": "fountain-gate-vs-jkt-tanzania",
       "name": "Fountain Gate Vs JKT Tanzania",
@@ -1715,8 +2553,8 @@
       "name": "France Vs Italy",
       "competition": "UEFA Nations League",
       "kickoff": "2026-10-02T18:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1844,8 +2682,8 @@
       "name": "Hungary Vs Georgia",
       "competition": "UEFA Nations League",
       "kickoff": "2026-10-02T18:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -1926,50 +2764,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:india-champions-vs-australia-champions|world championship of legends 2026 1st|2026-10-03",
-      "card_id": "india-champions-vs-australia-champions",
-      "name": "India Champions vs Australia Champions",
-      "competition": "World Championship of Legends 2026 - 1st Match",
-      "kickoff": "2026-10-03T11:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-willow-event",
-        "sportlive-fancode-backup",
-        "sm-fancode",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode",
-        "Willow"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:india-champions-vs-england-champions|world championship of legends 2026 4th|2026-10-04",
       "card_id": "india-champions-vs-england-champions",
       "name": "India Champions vs England Champions",
@@ -2041,6 +2835,93 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:india-vs-brazil|international friendly games|2026-10-03",
+      "card_id": "india-vs-brazil",
+      "name": "India Vs Brazil",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-10-03T14:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401903233",
+          "upstream_family": "ESPN",
+          "name": "India vs Brazil",
+          "home": "India",
+          "away": "Brazil",
+          "home_team_id": "4385",
+          "away_team_id": "205",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-10-03T14:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 10:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401903233~c:401903233"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1851440",
+          "upstream_family": "LiveScore",
+          "name": "India vs Brazil",
+          "home": "India",
+          "away": "Brazil",
+          "home_team_id": "9035",
+          "away_team_id": "9010",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-10-03T14:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2142,9 +3023,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
@@ -2169,6 +3051,100 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:kansas-city-current-vs-bay-fc|nwsl|2026-10-03",
+      "card_id": "kansas-city-current-vs-bay-fc",
+      "name": "Kansas City Current Vs Bay FC",
+      "competition": "NWSL",
+      "kickoff": "2026-10-03T22:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401854018",
+          "upstream_family": "ESPN",
+          "name": "Kansas City Current vs Bay FC",
+          "home": "Kansas City Current",
+          "away": "Bay FC",
+          "home_team_id": "20907",
+          "away_team_id": "22187",
+          "competition": "NWSL",
+          "competition_id": "8301",
+          "kickoff": "2026-10-03T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 6:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8301~e:401854018~c:401854018"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1731854",
+          "upstream_family": "LiveScore",
+          "name": "Kansas City Current vs Bay FC",
+          "home": "Kansas City Current",
+          "away": "Bay FC",
+          "home_team_id": "148228",
+          "away_team_id": "285718",
+          "competition": "National Women's Soccer League",
+          "competition_id": "24463",
+          "kickoff": "2026-10-03T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2214,18 +3190,19 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:manchester-united-vs-liverpool-women|barclays women super league 2026 27|2026-10-03",
-      "card_id": "manchester-united-women-vs-liverpool-women",
-      "name": "Manchester United Women vs Liverpool Women",
-      "competition": "Barclays Women's Super League 2026-27",
+      "fixture_id": "provider:manchester-united-vs-liverpool-fc|women super league|2026-10-03",
+      "card_id": "manchester-united-vs-liverpool-fc",
+      "name": "Manchester United Vs Liverpool FC",
+      "competition": "Women's Super League",
       "kickoff": "2026-10-03T12:30:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
@@ -2234,12 +3211,40 @@
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
-        "FanCode"
+        "FanCode",
+        "SM-Aggregate"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401902899",
+          "upstream_family": "ESPN",
+          "name": "Manchester United vs Liverpool",
+          "home": "Manchester United",
+          "away": "Liverpool",
+          "home_team_id": "20061",
+          "away_team_id": "19971",
+          "competition": "English Women's Super League",
+          "competition_id": "8097",
+          "kickoff": "2026-10-03T12:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 8:30 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8097~e:401902899~c:401902899"
         },
         "livescore": {
           "result": "matched",
@@ -2266,13 +3271,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2386,70 +3392,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:namibia-vs-united-arab-emirates|icc cwc league 2 usa 2026|2026-10-03",
-      "card_id": "namibia-vs-united-arab-emirates",
-      "name": "Namibia vs United Arab Emirates",
-      "competition": "ICC CWC League 2 USA, 2026",
-      "kickoff": "2026-10-03T15:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1894953",
-          "upstream_family": "LiveScore",
-          "name": "United Arab Emirates vs Namibia",
-          "home": "United Arab Emirates",
-          "away": "Namibia",
-          "home_team_id": "86127",
-          "away_team_id": "86165",
-          "competition": "World Cup League 2",
-          "competition_id": "16821",
-          "kickoff": "2026-10-03T15:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "Match 127",
-          "format": "ODI",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:namungo-fc-vs-tra-united-sc|tanzanian premier league|2026-10-08",
       "card_id": "namungo-fc-vs-tra-united-sc",
       "name": "Namungo FC Vs TRA United SC",
@@ -2484,6 +3426,93 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:north-macedonia-vs-scotland|uefa nations league|2026-10-03",
+      "card_id": "north-macedonia-vs-scotland",
+      "name": "North Macedonia Vs Scotland",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-10-03T18:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861116",
+          "upstream_family": "ESPN",
+          "name": "North Macedonia vs Scotland",
+          "home": "North Macedonia",
+          "away": "Scotland",
+          "home_team_id": "463",
+          "away_team_id": "580",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-10-03T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 2:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861116~c:401861116"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738260",
+          "upstream_family": "LiveScore",
+          "name": "North Macedonia vs Scotland",
+          "home": "North Macedonia",
+          "away": "Scotland",
+          "home_team_id": "9133",
+          "away_team_id": "9029",
+          "competition": "League B: Group 1",
+          "competition_id": "523",
+          "kickoff": "2026-10-03T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2538,8 +3567,8 @@
       "source_ids": [
         "sm-sports-data",
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "sm-fancode",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
@@ -2579,13 +3608,50 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:parma-vs-ternana|serie a women|2026-10-03",
+      "card_id": "parma-vs-ternana",
+      "name": "Parma Vs Ternana",
+      "competition": "Serie A Women",
+      "kickoff": "2026-10-03T10:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:poland-vs-romania|uefa nations league|2026-10-02",
       "card_id": "poland-vs-romania",
       "name": "Poland Vs Romania",
       "competition": "UEFA Nations League",
       "kickoff": "2026-10-02T18:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -2666,11 +3732,173 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:saint-kitts-and-nevis-vs-cuba|concacaf nations league|2026-10-02",
-      "card_id": "saint-kitts-and-nevis-vs-cuba",
-      "name": "Saint Kitts and Nevis Vs Cuba",
-      "competition": "CONCACAF Nations League",
-      "kickoff": "2026-10-02T21:00:00+00:00",
+      "fixture_id": "provider:portland-thorns-fc-vs-boston-legacy-fc|nwsl|2026-10-04",
+      "card_id": "portland-thorns-fc-vs-boston-legacy-fc",
+      "name": "Portland Thorns FC Vs Boston Legacy FC",
+      "competition": "NWSL",
+      "kickoff": "2026-10-04T00:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401854089",
+          "upstream_family": "ESPN",
+          "name": "Portland Thorns FC vs Boston Legacy FC",
+          "home": "Portland Thorns FC",
+          "away": "Boston Legacy FC",
+          "home_team_id": "15362",
+          "away_team_id": "131562",
+          "competition": "NWSL",
+          "competition_id": "8301",
+          "kickoff": "2026-10-04T00:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 8:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:8301~e:401854089~c:401854089"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:pumas-unam-vs-tigres-uanl|liga mx women apertura|2026-10-03",
+      "card_id": "pumas-unam-vs-tigres-uanl",
+      "name": "Pumas UNAM Vs Tigres UANL",
+      "competition": "Liga MX, Women, Apertura",
+      "kickoff": "2026-10-03T01:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1849365",
+          "upstream_family": "LiveScore",
+          "name": "Pumas W vs Tigres W",
+          "home": "Pumas W",
+          "away": "Tigres W",
+          "home_team_id": "12733",
+          "away_team_id": "12757",
+          "competition": "Women's Liga MX: Apertura",
+          "competition_id": "25962",
+          "kickoff": "2026-10-03T01:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "10",
+          "format": "",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:rionegro-águilas-doradas-vs-fortaleza-fc|primera a|2026-10-02",
+      "card_id": "rionegro-águilas-doradas-vs-fortaleza-fc",
+      "name": "Rionegro Águilas Doradas Vs Fortaleza FC",
+      "competition": "Primera A",
+      "kickoff": "2026-10-02T20:05:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:russia-vs-namibia|international friendly games|2026-10-03",
+      "card_id": "russia-vs-namibia",
+      "name": "Russia Vs Namibia",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-10-03T15:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
@@ -2691,6 +3919,81 @@
         "SM-Aggregate"
       ],
       "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401917862",
+          "upstream_family": "ESPN",
+          "name": "Russia vs Namibia",
+          "home": "Russia",
+          "away": "Namibia",
+          "home_team_id": "454",
+          "away_team_id": "6725",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-10-03T15:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 11:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401917862~c:401917862"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "United Arab Emirates vs Namibia",
+              "event_id": "1894953",
+              "agreed_side": "namibia",
+              "ours": "russia",
+              "theirs": "united arab emirates"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:saint-kitts-and-nevis-vs-cuba|concacaf nations league|2026-10-02",
+      "card_id": "saint-kitts-and-nevis-vs-cuba",
+      "name": "Saint Kitts and Nevis Vs Cuba",
+      "competition": "CONCACAF Nations League",
+      "kickoff": "2026-10-02T21:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "unmatched",
@@ -2728,18 +4031,19 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:sharjah-vs-dubai|emirates d10 2026|2026-10-03",
-      "card_id": "sharjah-vs-dubai",
-      "name": "Sharjah vs Dubai",
-      "competition": "Emirates D10, 2026",
-      "kickoff": "2026-10-03T17:45:00+00:00",
+      "fixture_id": "provider:sint-maarten-vs-saint-vincent-and-the-grenadines|concacaf nations league|2026-10-03",
+      "card_id": "sint-maarten-vs-saint-vincent-and-the-grenadines",
+      "name": "Sint Maarten Vs Saint Vincent and the Grenadines",
+      "competition": "CONCACAF Nations League",
+      "kickoff": "2026-10-03T21:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
@@ -2748,67 +4052,57 @@
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
-        "FanCode"
+        "FanCode",
+        "SM-Aggregate"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Sint Maarten vs St. Vincent and the Grenadines",
+              "event_id": "401900588",
+              "agreed_side": "sint maarten",
+              "ours": "saint vincent and the grenadines",
+              "theirs": "st vincent and the grenadines"
+            }
+          ]
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1856599",
+          "upstream_family": "LiveScore",
+          "name": "Sint Maarten vs Saint Vincent and The Grenadines",
+          "home": "Sint Maarten",
+          "away": "Saint Vincent and The Grenadines",
+          "home_team_id": "9580",
+          "away_team_id": "9045",
+          "competition": "League B: Group 4",
+          "competition_id": "57",
+          "kickoff": "2026-10-03T21:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:sharjah-vs-fujairah|emirates d10 2026|2026-10-02",
-      "card_id": "sharjah-vs-fujairah",
-      "name": "Sharjah vs Fujairah",
-      "competition": "Emirates D10, 2026",
-      "kickoff": "2026-10-02T17:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2869,7 +4163,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "kickoff_lifted",
+          "verified": false,
+          "event_id": "401912238",
+          "upstream_family": "ESPN",
+          "name": "Sri Lanka vs Djibouti",
+          "home": "Sri Lanka",
+          "away": "Djibouti",
+          "home_team_id": "5782",
+          "away_team_id": "5775",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-10-03T18:00:00+00:00",
+          "kickoff_delta_minutes": 360.0,
+          "status_raw": "TBD",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "TBD",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401912238~c:401912238"
         },
         "livescore": {
           "result": "matched",
@@ -2898,10 +4219,12 @@
       "authority_upstreams": [],
       "independent_authority_count": 0,
       "near_miss_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 1,
+      "near_miss_count": 2,
       "conflict_reasons": [
+        "kickoff: ours 2026-10-03T12:00, espn-header 2026-10-03T18:00 (+360.0 min)",
         "kickoff: ours 2026-10-03T12:00, livescore 2026-10-03T10:00 (-120.0 min)"
       ],
       "authority_agreement": "NONE",
@@ -2910,9 +4233,270 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:tbc|canada super 60 women 2026|2026-10-02",
-      "card_id": "tbc",
-      "name": "Canada Super 60 Women, 2026",
+      "fixture_id": "provider:suriname-vs-guatemala|concacaf nations league|2026-10-02",
+      "card_id": "suriname-vs-guatemala",
+      "name": "Suriname Vs Guatemala",
+      "competition": "CONCACAF Nations League",
+      "kickoff": "2026-10-02T22:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401900603",
+          "upstream_family": "ESPN",
+          "name": "Suriname vs Guatemala",
+          "home": "Suriname",
+          "away": "Guatemala",
+          "home_team_id": "2664",
+          "away_team_id": "2652",
+          "competition": "Concacaf Nations League",
+          "competition_id": "19267",
+          "kickoff": "2026-10-02T22:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 6:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:19267~e:401900603~c:401900603"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1856621",
+          "upstream_family": "LiveScore",
+          "name": "Suriname vs Guatemala",
+          "home": "Suriname",
+          "away": "Guatemala",
+          "home_team_id": "9169",
+          "away_team_id": "8870",
+          "competition": "League A: Group 2",
+          "competition_id": "57",
+          "kickoff": "2026-10-02T22:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:são-bernardo-vs-crb|brasileir o s rie b|2026-10-02",
+      "card_id": "são-bernardo-vs-crb",
+      "name": "São Bernardo Vs CRB",
+      "competition": "Brasileirão Série B",
+      "kickoff": "2026-10-02T22:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401860364",
+          "upstream_family": "ESPN",
+          "name": "São Bernardo vs CRB",
+          "home": "São Bernardo",
+          "away": "CRB",
+          "home_team_id": "11268",
+          "away_team_id": "9970",
+          "competition": "Brazilian Serie B",
+          "competition_id": "4007",
+          "kickoff": "2026-10-02T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 6:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:4007~e:401860364~c:401860364"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1741199",
+          "upstream_family": "LiveScore",
+          "name": "Sao Bernardo vs CRB",
+          "home": "Sao Bernardo",
+          "away": "CRB",
+          "home_team_id": "4956",
+          "away_team_id": "4847",
+          "competition": "Serie B",
+          "competition_id": "630",
+          "kickoff": "2026-10-02T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "31",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:são-paulo-vs-santos|campeonato brasileiro s rie a|2026-10-02",
+      "card_id": "são-paulo-vs-santos",
+      "name": "São Paulo Vs Santos",
+      "competition": "Campeonato Brasileiro Série A",
+      "kickoff": "2026-10-02T23:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401841169",
+          "upstream_family": "ESPN",
+          "name": "São Paulo vs Santos",
+          "home": "São Paulo",
+          "away": "Santos",
+          "home_team_id": "2026",
+          "away_team_id": "2674",
+          "competition": "Brazilian Serie A",
+          "competition_id": "630",
+          "kickoff": "2026-10-02T23:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 7:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:630~e:401841169~c:401841169"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1708597",
+          "upstream_family": "LiveScore",
+          "name": "Sao Paulo vs Santos FC",
+          "home": "Sao Paulo",
+          "away": "Santos FC",
+          "home_team_id": "4949",
+          "away_team_id": "5041",
+          "competition": "Serie A",
+          "competition_id": "155",
+          "kickoff": "2026-10-02T23:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "21",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:toronto-sixers-vs-vancouver-anchors-women|canada super 60 women 2026|2026-10-02",
+      "card_id": "toronto-sixers-women-vs-vancouver-anchors-women",
+      "name": "Toronto Sixers Women vs Vancouver Anchors Women",
       "competition": "Canada Super 60 Women, 2026",
       "kickoff": "2026-10-02T20:30:00+00:00",
       "schedule_status": "UPCOMING",
@@ -2935,20 +4519,49 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1556879",
+          "upstream_family": "ESPN",
+          "name": "Vancouver Anchors Women vs Toronto Sixers Women",
+          "home": "Vancouver Anchors Women",
+          "away": "Toronto Sixers Women",
+          "home_team_id": "1556875",
+          "away_team_id": "1506241",
+          "competition": "Canada Super60 Women 2026/27",
+          "competition_id": "1556872",
+          "kickoff": "2026-10-02T20:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Eliminator",
+          "format": "ODI",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-04T23:59:00Z",
+          "authority_uid": "s:200~e:1556879~c:1556879"
         },
         "livescore": {
           "result": "unmatched"
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2957,8 +4570,8 @@
       "name": "Ukraine Vs Northern Ireland",
       "competition": "UEFA Nations League",
       "kickoff": "2026-10-02T18:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -3034,6 +4647,81 @@
       "near_miss_count": 0,
       "conflict_reasons": [],
       "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:united-arab-emirates-vs-oman|gulf cup|2026-10-03",
+      "card_id": "united-arab-emirates-vs-oman",
+      "name": "United Arab Emirates Vs Oman",
+      "competition": "Gulf Cup",
+      "kickoff": "2026-10-03T18:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401927873",
+          "upstream_family": "ESPN",
+          "name": "United Arab Emirates vs Oman",
+          "home": "United Arab Emirates",
+          "away": "Oman",
+          "home_team_id": "4397",
+          "away_team_id": "2841",
+          "competition": "Arabian Gulf Cup",
+          "competition_id": "23107",
+          "kickoff": "2026-10-03T18:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 3rd at 2:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:23107~e:401927873~c:401927873"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "UAE vs Oman",
+              "event_id": "1873816",
+              "agreed_side": "oman",
+              "ours": "united arab emirates",
+              "theirs": "uae"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -3202,19 +4890,19 @@
   ],
   "retired_or_unpublished": [
     {
-      "fixture_id": "provider:delhi-dynamos-vs-gurugram-gladiators|ncr t20 league 2026|2026-10-02",
-      "card_id": "delhi-dynamos-vs-gurugram-gladiators",
-      "name": "Delhi Dynamos vs Gurugram Gladiators",
+      "fixture_id": "provider:yamuna-warriors-vs-aravali-avengers|ncr t20 league 2026|2026-10-02",
+      "card_id": "yamuna-warriors-vs-aravali-avengers",
+      "name": "Yamuna Warriors vs Aravali Avengers",
       "competition": "NCR T20 League, 2026",
-      "kickoff": "2026-10-02T07:30:00+00:00",
+      "kickoff": "2026-10-02T11:30:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
       "provider_identity": "",
       "source_ids": [
-        "sportlive-fancode-backup"
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
