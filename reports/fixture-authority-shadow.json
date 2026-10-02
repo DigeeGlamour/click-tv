@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T09:22:12.253848+00:00",
+  "generated_at": "2026-10-02T12:23:09.170379+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,8 +10,14 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 996,
-      "unknown_statuses": [],
+      "fixtures": 997,
+      "unknown_statuses": [
+        "211|0'",
+        "2|22'",
+        "2|45+2'",
+        "3|65'",
+        "3|66'"
+      ],
       "attempts": [
         {
           "sport": "cricket",
@@ -41,7 +47,7 @@
           "sport": "football",
           "date": "2026-10-02",
           "result": "ok",
-          "fixtures": 173
+          "fixtures": 174
         },
         {
           "sport": "football",
@@ -57,15 +63,15 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 4,
-      "fixtures": 326,
+      "requests_ok": 5,
+      "fixtures": 352,
       "unknown_statuses": [],
       "attempts": [
         {
           "sport": "cricket",
           "date": "2026-10-01",
           "result": "ok",
-          "fixtures": 16
+          "fixtures": 17
         },
         {
           "sport": "cricket",
@@ -76,8 +82,8 @@
         {
           "sport": "cricket",
           "date": "2026-10-03",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 23
         },
         {
           "sport": "football",
@@ -89,7 +95,7 @@
           "sport": "football",
           "date": "2026-10-02",
           "result": "ok",
-          "fixtures": 184
+          "fixtures": 186
         },
         {
           "sport": "football",
@@ -102,42 +108,50 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 5,
-    "upcoming": 43,
-    "fixtures": 48,
+    "today_match": 8,
+    "upcoming": 49,
+    "fixtures": 57,
     "verdicts": {
       "UNVERIFIED": 36,
-      "VERIFIED": 12
+      "CONFLICT": 2,
+      "VERIFIED": 19
     },
-    "verified": 12,
+    "verified": 19,
     "partial_authority": 0,
     "unverified": 36,
-    "conflict": 0,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 40,
-        "matched": 8
+        "unmatched": 38,
+        "matched": 19
       },
       "livescore": {
-        "unmatched": 39,
-        "matched": 9
+        "unmatched": 40,
+        "matched": 17
       }
     },
-    "matched_by_two_independent_authorities": 4,
-    "authority_agreements": 4,
+    "matched_by_two_independent_authorities": 13,
+    "authority_agreements": 11,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "kickoff": 1
+      "card says LIVE, authority says UPCOMING": 2,
+      "kickoff": 2
     },
-    "identity_near_misses": 7,
+    "identity_near_misses": 8,
     "independent_authority_count_distribution": {
       "0": 36,
       "1": 8,
-      "2": 4
+      "2": 13
     },
     "unknown_authority_statuses": {
-      "livescore": [],
+      "livescore": [
+        "211|0'",
+        "2|22'",
+        "2|45+2'",
+        "3|65'",
+        "3|66'"
+      ],
       "espn-header": []
     }
   },
@@ -183,6 +197,14 @@
       "theirs": "abb"
     },
     {
+      "fixture": "Pakistan Vs India",
+      "authority": "espn-header",
+      "authority_name": "Pakistan Women Under-19s vs Sri Lanka Women Under-19s",
+      "agreed_side": "pakistan",
+      "ours": "india",
+      "theirs": "sri lanka under 19s"
+    },
+    {
       "fixture": "Saint Kitts and Nevis Vs Cuba",
       "authority": "espn-header",
       "authority_name": "St. Kitts and Nevis vs Cuba",
@@ -201,48 +223,11 @@
   ],
   "fixtures": [
     {
-      "fixture_id": "provider:thailand-vs-philippines|asean cup|2026-10-02",
-      "card_id": "thailand-vs-philippines",
-      "name": "Thailand Vs Philippines",
-      "competition": "ASEAN Cup",
-      "kickoff": "2026-10-02T09:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:delhi-dynamos-vs-gurugram-gladiators|ncr t20 league 2026|2026-10-02",
-      "card_id": "delhi-dynamos-vs-gurugram-gladiators",
-      "name": "Delhi Dynamos vs Gurugram Gladiators",
-      "competition": "NCR T20 League, 2026",
-      "kickoff": "2026-10-02T07:30:00+00:00",
+      "fixture_id": "provider:abu-dhabi-vs-ajman|emirates d10 2026|2026-10-02",
+      "card_id": "abu-dhabi-vs-ajman",
+      "name": "Abu Dhabi vs Ajman",
+      "competition": "Emirates D10, 2026",
+      "kickoff": "2026-10-02T11:00:00+00:00",
       "schedule_status": "LINK_UPDATING",
       "lifecycle_state": "STARTING",
       "card_status_normalized": "AWAITING_LINK",
@@ -250,7 +235,10 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
-        "sportlive-fancode-backup"
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -272,6 +260,224 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:yamuna-warriors-vs-aravali-avengers|ncr t20 league 2026|2026-10-02",
+      "card_id": "yamuna-warriors-vs-aravali-avengers",
+      "name": "Yamuna Warriors vs Aravali Avengers",
+      "competition": "NCR T20 League, 2026",
+      "kickoff": "2026-10-02T11:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:china-vs-palestine|international friendly games|2026-10-02",
+      "card_id": "china-vs-palestine",
+      "name": "China Vs Palestine",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-10-02T11:35:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401914141",
+          "upstream_family": "ESPN",
+          "name": "China vs Palestine",
+          "home": "China",
+          "away": "Palestine",
+          "home_team_id": "658",
+          "away_team_id": "6167",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-10-02T11:35:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 7:35 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401914141~c:401914141"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1894370",
+          "upstream_family": "LiveScore",
+          "name": "China vs Palestine",
+          "home": "China",
+          "away": "Palestine",
+          "home_team_id": "6341",
+          "away_team_id": "9004",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-10-02T11:35:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "45+2'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:south-korea-vs-venezuela|international friendly games|2026-10-02",
+      "card_id": "south-korea-vs-venezuela",
+      "name": "South Korea Vs Venezuela",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-10-02T11:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401902634",
+          "upstream_family": "ESPN",
+          "name": "South Korea vs Venezuela",
+          "home": "South Korea",
+          "away": "Venezuela",
+          "home_team_id": "451",
+          "away_team_id": "213",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-10-02T11:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 7:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401902634~c:401902634"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1894371",
+          "upstream_family": "LiveScore",
+          "name": "South Korea vs Venezuela",
+          "home": "South Korea",
+          "away": "Venezuela",
+          "home_team_id": "6325",
+          "away_team_id": "9103",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-10-02T11:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "65'",
+          "status_code": "3",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "Friendlies 1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -311,17 +517,17 @@
           "competition_id": "24139",
           "kickoff": "2026-10-02T05:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
+          "status_raw": "Live",
+          "status_code": "Live",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "9th Match (D/N)",
           "format": "ODI",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-10-03T23:59:00Z",
           "authority_uid": "s:200~e:1556693~c:1556693"
@@ -343,13 +549,13 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:toronto-sixers-vs-white-rock-warriors|canada super 60 2026|2026-10-02",
-      "card_id": "toronto-sixers-vs-white-rock-warriors",
-      "name": "Toronto Sixers vs White Rock Warriors",
-      "competition": "Canada Super 60, 2026",
-      "kickoff": "2026-10-02T01:45:00+00:00",
+      "fixture_id": "provider:delhi-dynamos-vs-gurugram-gladiators|ncr t20 league 2026|2026-10-02",
+      "card_id": "delhi-dynamos-vs-gurugram-gladiators",
+      "name": "Delhi Dynamos vs Gurugram Gladiators",
+      "competition": "NCR T20 League, 2026",
+      "kickoff": "2026-10-02T07:30:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
@@ -363,71 +569,39 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1556692",
-          "upstream_family": "ESPN",
-          "name": "Toronto Sixers vs White Rock Warriors",
-          "home": "Toronto Sixers",
-          "away": "White Rock Warriors",
-          "home_team_id": "1506169",
-          "away_team_id": "1506167",
-          "competition": "Canada Super60",
-          "competition_id": "24139",
-          "kickoff": "2026-10-02T01:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "8th Match",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-03T23:59:00Z",
-          "authority_uid": "s:200~e:1556692~c:1556692"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "unmatched"
         }
       },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:chaibasa-challengers-vs-manoharpur-lions|west singhbhum t20 league 2026|2026-10-02",
-      "card_id": "chaibasa-challengers-vs-manoharpur-lions",
-      "name": "Chaibasa Challengers vs Manoharpur Lions",
-      "competition": "West Singhbhum T20 League 2026",
-      "kickoff": "2026-10-02T03:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "fixture_id": "provider:thailand-vs-philippines|asean cup|2026-10-02",
+      "card_id": "thailand-vs-philippines",
+      "name": "Thailand Vs Philippines",
+      "competition": "ASEAN Cup",
+      "kickoff": "2026-10-02T09:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "FanCode"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -454,8 +628,8 @@
       "name": "North Korea Vs Japan",
       "competition": "Asian Games, Women",
       "kickoff": "2026-10-02T10:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -483,6 +657,93 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:mauritius-vs-sri-lanka|international friendly games|2026-10-02",
+      "card_id": "mauritius-vs-sri-lanka",
+      "name": "Mauritius Vs Sri Lanka",
+      "competition": "International Friendly Games",
+      "kickoff": "2026-10-02T15:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401923178",
+          "upstream_family": "ESPN",
+          "name": "Mauritius vs Sri Lanka",
+          "home": "Mauritius",
+          "away": "Sri Lanka",
+          "home_team_id": "5534",
+          "away_team_id": "5782",
+          "competition": "International Friendly",
+          "competition_id": "3922",
+          "kickoff": "2026-10-02T15:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 11:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3922~e:401923178~c:401923178"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1901287",
+          "upstream_family": "LiveScore",
+          "name": "Mauritius vs Sri Lanka",
+          "home": "Mauritius",
+          "away": "Sri Lanka",
+          "home_team_id": "10811",
+          "away_team_id": "9194",
+          "competition": "Friendlies",
+          "competition_id": "537",
+          "kickoff": "2026-10-02T15:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -536,60 +797,18 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
         "sportlive-fancode-backup",
+        "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
         "Willow"
       ],
       "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:abu-dhabi-vs-ajman|emirates d10 2026|2026-10-02",
-      "card_id": "abu-dhabi-vs-ajman",
-      "name": "Abu Dhabi vs Ajman",
-      "competition": "Emirates D10, 2026",
-      "kickoff": "2026-10-02T11:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -624,9 +843,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -895,6 +1114,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:belgium-vs-türkiye|uefa nations league|2026-10-02",
+      "card_id": "belgium-vs-türkiye",
+      "name": "Belgium Vs Türkiye",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-10-02T18:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861109",
+          "upstream_family": "ESPN",
+          "name": "Belgium vs Türkiye",
+          "home": "Belgium",
+          "away": "Türkiye",
+          "home_team_id": "459",
+          "away_team_id": "465",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-10-02T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 2:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861109~c:401861109"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738333",
+          "upstream_family": "LiveScore",
+          "name": "Belgium vs Turkiye",
+          "home": "Belgium",
+          "away": "Turkiye",
+          "home_team_id": "9109",
+          "away_team_id": "9136",
+          "competition": "League A: Group 1",
+          "competition_id": "523",
+          "kickoff": "2026-10-02T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:boca-juniors-vs-club-atlético-unión-de-santa-fe|liga profesional de f tbol|2026-10-03",
       "card_id": "boca-juniors-vs-club-atlético-unión-de-santa-fe",
       "name": "Boca Juniors Vs Club Atlético Unión de Santa Fe",
@@ -965,9 +1271,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1003,6 +1309,72 @@
           "espn_completed": null,
           "espn_end_date_raw": "2026-10-04T23:59:00Z",
           "authority_uid": "s:200~e:1556696~c:1556696"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:brampton-blitz-vs-montreal-royal-tigers|canada super 60 2026|2026-10-04",
+      "card_id": "brampton-blitz-vs-montreal-royal-tigers",
+      "name": "Brampton Blitz vs Montreal Royal Tigers",
+      "competition": "Canada Super 60, 2026",
+      "kickoff": "2026-10-04T05:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "drmlive-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1556699",
+          "upstream_family": "ESPN",
+          "name": "Brampton Blitz vs Montreal Royal Tigers",
+          "home": "Brampton Blitz",
+          "away": "Montreal Royal Tigers",
+          "home_team_id": "1506163",
+          "away_team_id": "1506164",
+          "competition": "Canada Super60",
+          "competition_id": "24139",
+          "kickoff": "2026-10-04T05:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "15th Match (D/N)",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-05T23:59:00Z",
+          "authority_uid": "s:200~e:1556699~c:1556699"
         },
         "livescore": {
           "result": "unmatched"
@@ -1089,12 +1461,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
+        "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1231,9 +1603,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1295,11 +1667,11 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:el-salvador-vs-jamaica|concacaf nations league|2026-10-03",
-      "card_id": "el-salvador-vs-jamaica",
-      "name": "El Salvador Vs Jamaica",
-      "competition": "CONCACAF Nations League",
-      "kickoff": "2026-10-03T02:00:00+00:00",
+      "fixture_id": "provider:cyprus-vs-armenia|uefa nations league|2026-10-02",
+      "card_id": "cyprus-vs-armenia",
+      "name": "Cyprus Vs Armenia",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-10-02T16:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
@@ -1318,16 +1690,16 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "401900602",
+          "event_id": "401861104",
           "upstream_family": "ESPN",
-          "name": "El Salvador vs Jamaica",
-          "home": "El Salvador",
-          "away": "Jamaica",
-          "home_team_id": "2650",
-          "away_team_id": "1038",
-          "competition": "Concacaf Nations League",
-          "competition_id": "19267",
-          "kickoff": "2026-10-03T02:00:00+00:00",
+          "name": "Cyprus vs Armenia",
+          "home": "Cyprus",
+          "away": "Armenia",
+          "home_team_id": "445",
+          "away_team_id": "579",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-10-02T16:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
           "status_raw": "Scheduled",
           "status_code": "STATUS_SCHEDULED",
@@ -1338,26 +1710,26 @@
           "gender": "",
           "espn_state": "pre",
           "espn_status": "pre",
-          "espn_status_detail": "Fri, October 2nd at 10:00 PM EDT",
+          "espn_status_detail": "Fri, October 2nd at 12:00 PM EDT",
           "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:19267~e:401900602~c:401900602"
+          "authority_uid": "s:600~l:2395~e:401861104~c:401861104"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1856618",
+          "event_id": "1738386",
           "upstream_family": "LiveScore",
-          "name": "El Salvador vs Jamaica",
-          "home": "El Salvador",
-          "away": "Jamaica",
-          "home_team_id": "4873",
-          "away_team_id": "9154",
-          "competition": "League A: Group 2",
-          "competition_id": "57",
-          "kickoff": "2026-10-03T02:00:00+00:00",
+          "name": "Cyprus vs Armenia",
+          "home": "Cyprus",
+          "away": "Armenia",
+          "home_team_id": "9110",
+          "away_team_id": "9099",
+          "competition": "League C: Group 2",
+          "competition_id": "523",
+          "kickoff": "2026-10-02T16:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
           "status_raw": "NS",
           "status_code": "1",
@@ -1397,9 +1769,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1429,8 +1801,8 @@
       "name": "Emirates Red vs Fujairah",
       "competition": "Emirates D10, 2026",
       "kickoff": "2026-10-02T13:15:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -1439,9 +1811,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1463,6 +1835,93 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:faroe-islands-vs-slovakia|uefa nations league|2026-10-02",
+      "card_id": "faroe-islands-vs-slovakia",
+      "name": "Faroe Islands Vs Slovakia",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-10-02T18:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861110",
+          "upstream_family": "ESPN",
+          "name": "Faroe Islands vs Slovakia",
+          "home": "Faroe Islands",
+          "away": "Slovakia",
+          "home_team_id": "447",
+          "away_team_id": "468",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-10-02T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 2:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861110~c:401861110"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738389",
+          "upstream_family": "LiveScore",
+          "name": "Faroe Islands vs Slovakia",
+          "home": "Faroe Islands",
+          "away": "Slovakia",
+          "home_team_id": "9039",
+          "away_team_id": "9011",
+          "competition": "League C: Group 3",
+          "competition_id": "523",
+          "kickoff": "2026-10-02T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1503,6 +1962,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:france-vs-italy|uefa nations league|2026-10-02",
+      "card_id": "france-vs-italy",
+      "name": "France Vs Italy",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-10-02T18:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861103",
+          "upstream_family": "ESPN",
+          "name": "France vs Italy",
+          "home": "France",
+          "away": "Italy",
+          "home_team_id": "478",
+          "away_team_id": "162",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-10-02T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 2:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861103~c:401861103"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738334",
+          "upstream_family": "LiveScore",
+          "name": "France vs Italy",
+          "home": "France",
+          "away": "Italy",
+          "home_team_id": "9179",
+          "away_team_id": "9098",
+          "competition": "League A: Group 1",
+          "competition_id": "523",
+          "kickoff": "2026-10-02T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:fujairah-vs-dubai|emirates d10 2026|2026-10-03",
       "card_id": "fujairah-vs-dubai",
       "name": "Fujairah vs Dubai",
@@ -1518,9 +2064,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1558,12 +2104,12 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
         "sportlive-fancode-backup",
+        "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1685,7 +2231,34 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1529229",
+          "upstream_family": "ESPN",
+          "name": "India vs West Indies",
+          "home": "India",
+          "away": "West Indies",
+          "home_team_id": "6",
+          "away_team_id": "4",
+          "competition": "West Indies tour of India 2026/27",
+          "competition_id": "24289",
+          "kickoff": "2026-10-03T08:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "3rd ODI (D/N)",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-04T23:59:00Z",
+          "authority_uid": "s:200~e:1529229~c:1529229"
         },
         "livescore": {
           "result": "matched",
@@ -1712,13 +2285,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1736,19 +2310,12 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "FanCode",
         "SM-Aggregate"
       ],
-      "independent_witness_count": 2,
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -1815,6 +2382,43 @@
       "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:kolhan-king-vs-chakradharpur-royals|west singhbhum t20 league 2026|2026-10-04",
+      "card_id": "kolhan-king-vs-chakradharpur-royals",
+      "name": "Kolhan King vs Chakradharpur Royals",
+      "competition": "West Singhbhum T20 League 2026",
+      "kickoff": "2026-10-04T03:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "drmlive-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1920,9 +2524,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2021,9 +2625,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2092,9 +2696,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2229,12 +2833,12 @@
       "source_ids": [
         "sm-sports-data",
         "srhady-willow-event",
-        "sm-fancode",
         "sportlive-fancode-backup",
+        "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2244,7 +2848,16 @@
       "independent_witness_count": 3,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Pakistan Women Under-19s vs Sri Lanka Women Under-19s",
+              "event_id": "1554708",
+              "agreed_side": "pakistan",
+              "ours": "india",
+              "theirs": "sri lanka under 19s"
+            }
+          ]
         },
         "livescore": {
           "result": "unmatched"
@@ -2261,6 +2874,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:poland-vs-romania|uefa nations league|2026-10-02",
+      "card_id": "poland-vs-romania",
+      "name": "Poland Vs Romania",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-10-02T18:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861108",
+          "upstream_family": "ESPN",
+          "name": "Poland vs Romania",
+          "home": "Poland",
+          "away": "Romania",
+          "home_team_id": "471",
+          "away_team_id": "473",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-10-02T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 2:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861108~c:401861108"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738364",
+          "upstream_family": "LiveScore",
+          "name": "Poland vs Romania",
+          "home": "Poland",
+          "away": "Romania",
+          "home_team_id": "8993",
+          "away_team_id": "9183",
+          "competition": "League B: Group 4",
+          "competition_id": "523",
+          "kickoff": "2026-10-02T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:saint-kitts-and-nevis-vs-cuba|concacaf nations league|2026-10-02",
       "card_id": "saint-kitts-and-nevis-vs-cuba",
       "name": "Saint Kitts and Nevis Vs Cuba",
@@ -2274,12 +2974,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
         "sportlive-fancode-backup",
+        "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2337,9 +3037,9 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2379,9 +3079,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2458,9 +3158,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2485,6 +3185,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:ukraine-vs-northern-ireland|uefa nations league|2026-10-02",
+      "card_id": "ukraine-vs-northern-ireland",
+      "name": "Ukraine Vs Northern Ireland",
+      "competition": "UEFA Nations League",
+      "kickoff": "2026-10-02T18:45:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401861106",
+          "upstream_family": "ESPN",
+          "name": "Ukraine vs Northern Ireland",
+          "home": "Ukraine",
+          "away": "Northern Ireland",
+          "home_team_id": "457",
+          "away_team_id": "586",
+          "competition": "UEFA Nations League",
+          "competition_id": "2395",
+          "kickoff": "2026-10-02T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 2nd at 2:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2395~e:401861106~c:401861106"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1738323",
+          "upstream_family": "LiveScore",
+          "name": "Ukraine vs Northern Ireland",
+          "home": "Ukraine",
+          "away": "Northern Ireland",
+          "home_team_id": "9245",
+          "away_team_id": "9017",
+          "competition": "League B: Group 2",
+          "competition_id": "523",
+          "kickoff": "2026-10-02T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:white-rock-warriors-vs-vancouver-anchors|canada super 60 2026|2026-10-03",
       "card_id": "white-rock-warriors-vs-vancouver-anchors",
       "name": "White Rock Warriors vs Vancouver Anchors",
@@ -2494,9 +3281,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2505,20 +3293,49 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1556697",
+          "upstream_family": "ESPN",
+          "name": "Vancouver Anchors vs White Rock Warriors",
+          "home": "Vancouver Anchors",
+          "away": "White Rock Warriors",
+          "home_team_id": "1506166",
+          "away_team_id": "1506167",
+          "competition": "Canada Super60",
+          "competition_id": "24139",
+          "kickoff": "2026-10-03T20:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "13th Match",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-05T23:59:00Z",
+          "authority_uid": "s:200~e:1556697~c:1556697"
         },
         "livescore": {
           "result": "unmatched"
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2542,7 +3359,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "kickoff_lifted",
+          "verified": false,
+          "event_id": "1554978",
+          "upstream_family": "ESPN",
+          "name": "Zimbabwe Women vs West Indies Women",
+          "home": "Zimbabwe Women",
+          "away": "West Indies Women",
+          "home_team_id": "271866",
+          "away_team_id": "3816",
+          "competition": "West Indies Women tour of Zimbabwe 2026",
+          "competition_id": "24796",
+          "kickoff": "2026-10-03T11:00:00+00:00",
+          "kickoff_delta_minutes": 60.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "1st T20I",
+          "format": "T20",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-04T23:59:00Z",
+          "authority_uid": "s:200~e:1554978~c:1554978"
         },
         "livescore": {
           "result": "matched",
@@ -2571,16 +3415,124 @@
       "authority_upstreams": [],
       "independent_authority_count": 0,
       "near_miss_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 1,
+      "near_miss_count": 2,
       "conflict_reasons": [
+        "kickoff: ours 2026-10-03T10:00, espn-header 2026-10-03T11:00 (+60.0 min)",
         "kickoff: ours 2026-10-03T10:00, livescore 2026-10-03T11:00 (+60.0 min)"
       ],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "upcoming"
+    }
+  ],
+  "retired_or_unpublished": [
+    {
+      "fixture_id": "provider:toronto-sixers-vs-white-rock-warriors|canada super 60 2026|2026-10-02",
+      "card_id": "toronto-sixers-vs-white-rock-warriors",
+      "name": "Toronto Sixers vs White Rock Warriors",
+      "competition": "Canada Super 60, 2026",
+      "kickoff": "2026-10-02T01:45:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sportlive-fancode-backup"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1556692",
+          "upstream_family": "ESPN",
+          "name": "Toronto Sixers vs White Rock Warriors",
+          "home": "Toronto Sixers",
+          "away": "White Rock Warriors",
+          "home_team_id": "1506169",
+          "away_team_id": "1506167",
+          "competition": "Canada Super60",
+          "competition_id": "24139",
+          "kickoff": "2026-10-02T01:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Result",
+          "status_code": "Result",
+          "status": "FINISHED",
+          "sport": "cricket",
+          "round": "8th Match",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "Final",
+          "espn_status_description": "Result",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-03T23:59:00Z",
+          "authority_uid": "s:200~e:1556692~c:1556692"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED"
+    },
+    {
+      "fixture_id": "provider:chaibasa-challengers-vs-manoharpur-lions|west singhbhum t20 league 2026|2026-10-02",
+      "card_id": "chaibasa-challengers-vs-manoharpur-lions",
+      "name": "Chaibasa Challengers vs Manoharpur Lions",
+      "competition": "West Singhbhum T20 League 2026",
+      "kickoff": "2026-10-02T03:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED"
     }
   ]
 }
