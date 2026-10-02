@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-02T22:21:45.987568+00:00",
+  "updated_at": "2026-10-02T22:32:48.563274+00:00",
   "count": 14,
-  "filtered_stale": 4,
+  "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -76,11 +76,11 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "END_PENDING",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: only 2 of 3 confirming scans",
       "end_pending": true,
-      "end_pending_confirmations": 1,
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending_confirmations": 2,
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "END_PENDING, not ENDED: only 2 of 3 confirming scans",
       "carried_forward_first_missed_at": "2026-10-02T21:36:56.511836+00:00"
     },
     {
@@ -164,7 +164,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-02T21:36:56.511836+00:00"
     },
@@ -209,11 +209,6 @@
           "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
         },
         {
-          "source_id": "dartv-fancode-mirror",
-          "source_name": "FanCode Live API (dartv-ajaz)",
-          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
@@ -222,13 +217,18 @@
           "source_id": "sayanpal-fancode-mirror",
           "source_name": "FanCode Auto Updated (sayanpal)",
           "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
+        },
+        {
+          "source_id": "dartv-fancode-mirror",
+          "source_name": "FanCode Live API (dartv-ajaz)",
+          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "start_time": "2026-10-02T20:30:00+00:00",
       "start_at": "2026-10-02T20:30:00+00:00",
@@ -349,7 +349,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=25' (STATUS_FIRST_HALF, event 401883193)",
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401883193)",
         "LiveScore livescore=FT (6, event 1811100)"
       ],
       "authority_independent_count": 1,
@@ -364,14 +364,14 @@
       "provider_poster_url": "https://r2.thesportsdb.com/images/media/team/badge/asdjgc1733549950.png",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/asdjgc1733549950.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yuwqus1447590681.png",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=25' (STATUS_FIRST_HALF, event 401883193); LiveScore livescore=FT (6, event 1811100)",
       "lifecycle_reason": "still live: authority_live",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-10-02T21:36:56.511836+00:00"
+      "carried_forward_first_missed_at": "2026-10-02T21:36:56.511836+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401883193); LiveScore livescore=FT (6, event 1811100)"
     },
     {
       "id": "belgium-vs-türkiye",
@@ -706,13 +706,22 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=8' (STATUS_FIRST_HALF, event 401861109)",
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861109)",
         "LiveScore livescore=FT (6, event 1738333)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=8' (STATUS_FIRST_HALF, event 401861109); LiveScore livescore=FT (6, event 1738333)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_a7afc5baa3178a2c4bfa97501759ca7c"
+      "playback_id": "ctv_a7afc5baa3178a2c4bfa97501759ca7c",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861109); LiveScore livescore=FT (6, event 1738333)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-02T22:32:39.085537+00:00"
     },
     {
       "id": "bosnia-herzegovina-vs-sweden",
@@ -875,13 +884,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "UPCOMING",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=9' (STATUS_FIRST_HALF, event 401861107)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861107)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -901,7 +910,16 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpj7RuYdfEghuICCBIG9IACYhEunDAIUmfFFzBkt9eaIdNaYJ2NEQgA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxAhpdMEn4huakCh37VhviFOMKTPii5gy8IvNE2mtMHbGiIQA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_a0a12310fded0506b89059391f913d94"
+      "playback_id": "ctv_a0a12310fded0506b89059391f913d94",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-02T22:32:39.085537+00:00"
     },
     {
       "id": "faroe-islands-vs-slovakia",
@@ -1071,10 +1089,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=9' (STATUS_FIRST_HALF, event 401861110)",
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861110)",
         "LiveScore livescore=FT (6, event 1738389)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=9' (STATUS_FIRST_HALF, event 401861110); LiveScore livescore=FT (6, event 1738389)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1088,7 +1105,17 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphjAkCEKpSUQ3ECX24QKEIgAmhiCAgEKTPtrZgy8IvNHamtMM7GiIQA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhyZIGYPiBDB8IbiE37NiACYgSIM4hAEKTPii5gy8IvNGOmtMM7GiIQA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_19c3a33e6b6a2a0b30538a0425b899ed"
+      "playback_id": "ctv_19c3a33e6b6a2a0b30538a0425b899ed",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861110); LiveScore livescore=FT (6, event 1738389)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-02T22:32:39.085537+00:00"
     },
     {
       "id": "france-vs-italy",
@@ -1368,10 +1395,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=7' (STATUS_FIRST_HALF, event 401861103)",
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861103)",
         "LiveScore livescore=FT (6, event 1738334)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=7' (STATUS_FIRST_HALF, event 401861103); LiveScore livescore=FT (6, event 1738334)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1385,7 +1411,17 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkh1FIwIEGSQ8Q3EHw2G9KQyYi6CFJnxRcwZeEXmjbTWmHtjREIA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhwAmYEJyTNYIbiD64QK3Uf0gYIRMsIxgTPii5gy8IvNGOmtMM7GiIQA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_ac1c6d30eeb75da4fea14c8d9d08c35b"
+      "playback_id": "ctv_ac1c6d30eeb75da4fea14c8d9d08c35b",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861103); LiveScore livescore=FT (6, event 1738334)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-02T22:32:39.085537+00:00"
     },
     {
       "id": "hungary-vs-georgia",
@@ -1555,10 +1591,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=9' (STATUS_FIRST_HALF, event 401861102)",
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861102)",
         "LiveScore livescore=FT (6, event 1738322)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=9' (STATUS_FIRST_HALF, event 401861102); LiveScore livescore=FT (6, event 1738322)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1572,7 +1607,17 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxTFerFJBDcQfbbpCIAJiBIGdKAhSZ9VbMGXhF5o1U1pgHY0RCA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkh3ngBVekhDcQAExAkQEXCBgHTekHwIUm1rmDLwi80SmBNaYR2NEQgA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_f1c2483238a5c477ff2cd07afbdda9f8"
+      "playback_id": "ctv_f1c2483238a5c477ff2cd07afbdda9f8",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861102); LiveScore livescore=FT (6, event 1738322)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-02T22:32:39.085537+00:00"
     },
     {
       "id": "poland-vs-romania",
@@ -1742,10 +1787,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=9' (STATUS_FIRST_HALF, event 401861108)",
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861108)",
         "LiveScore livescore=FT (6, event 1738364)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=9' (STATUS_FIRST_HALF, event 401861108); LiveScore livescore=FT (6, event 1738364)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1759,7 +1803,17 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpOgATauBQhuICCBL7dIVcZAwQfYwQpM+KLmDLwi80faa0wjsaIhA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpj4gUIGCHhgBObiAAmIY+v3rjiTTAIUmfFFzBlt9eaIdNaYJ2NEQgA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_de796d4746186d94f79ef136419608f5"
+      "playback_id": "ctv_de796d4746186d94f79ef136419608f5",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861108); LiveScore livescore=FT (6, event 1738364)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-02T22:32:39.085537+00:00"
     },
     {
       "id": "ukraine-vs-northern-ireland",
@@ -1929,13 +1983,21 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=10' (STATUS_FIRST_HALF, event 401861106)",
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861106)",
         "LiveScore livescore=FT (6, event 1738323)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=10' (STATUS_FIRST_HALF, event 401861106); LiveScore livescore=FT (6, event 1738323)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_ef0ea50a8e9788809b96a49eed24fe32"
+      "playback_id": "ctv_ef0ea50a8e9788809b96a49eed24fe32",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401861106); LiveScore livescore=FT (6, event 1738323)",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-02T22:32:39.085537+00:00"
     },
     {
       "id": "cd-san-antonio-vs-academia-de-balompié-boliviano",
@@ -2044,7 +2106,15 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_5edefe0074a3962fd22f74f9a0c73407"
+      "playback_id": "ctv_5edefe0074a3962fd22f74f9a0c73407",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-02T22:32:39.085537+00:00"
     },
     {
       "id": "ca-independiente-vs-instituto-de-córdoba",
@@ -2260,6 +2330,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401860364)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401860364"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/0kt1ah1688106304.png",
