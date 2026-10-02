@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T05:21:23.063395+00:00",
+  "generated_at": "2026-10-02T06:23:42.423952+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,8 +10,10 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 991,
-      "unknown_statuses": [],
+      "fixtures": 994,
+      "unknown_statuses": [
+        "173|Lunch - day 4"
+      ],
       "attempts": [
         {
           "sport": "cricket",
@@ -35,19 +37,19 @@
           "sport": "football",
           "date": "2026-10-01",
           "result": "ok",
-          "fixtures": 66
+          "fixtures": 65
         },
         {
           "sport": "football",
           "date": "2026-10-02",
           "result": "ok",
-          "fixtures": 163
+          "fixtures": 166
         },
         {
           "sport": "football",
           "date": "2026-10-03",
           "result": "ok",
-          "fixtures": 746
+          "fixtures": 747
         }
       ]
     },
@@ -57,8 +59,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 5,
-      "fixtures": 629,
+      "requests_ok": 4,
+      "fixtures": 326,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -83,76 +85,67 @@
           "sport": "football",
           "date": "2026-10-01",
           "result": "ok",
-          "fixtures": 113
+          "fixtures": 114
         },
         {
           "sport": "football",
           "date": "2026-10-02",
           "result": "ok",
-          "fixtures": 188
+          "fixtures": 184
         },
         {
           "sport": "football",
           "date": "2026-10-03",
-          "result": "ok",
-          "fixtures": 300
+          "result": "INCONCLUSIVE",
+          "reason": "http 502"
         }
       ]
     }
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 7,
-    "upcoming": 35,
-    "fixtures": 42,
+    "today_match": 4,
+    "upcoming": 36,
+    "fixtures": 40,
     "verdicts": {
-      "UNVERIFIED": 33,
-      "VERIFIED": 7,
-      "CONFLICT": 2
+      "UNVERIFIED": 32,
+      "VERIFIED": 8
     },
-    "verified": 7,
+    "verified": 8,
     "partial_authority": 0,
-    "unverified": 33,
-    "conflict": 2,
+    "unverified": 32,
+    "conflict": 0,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 36,
-        "matched": 6
+        "unmatched": 35,
+        "matched": 5
       },
       "livescore": {
-        "unmatched": 36,
-        "matched": 6
+        "unmatched": 35,
+        "matched": 5
       }
     },
-    "matched_by_two_independent_authorities": 2,
+    "matched_by_two_independent_authorities": 1,
     "authority_agreements": 1,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 1,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "card says LIVE, authority says POSTPONED": 1,
-      "authorities disagree": 1,
       "kickoff": 1
     },
-    "identity_near_misses": 2,
+    "identity_near_misses": 1,
     "independent_authority_count_distribution": {
-      "0": 33,
+      "0": 32,
       "1": 7,
-      "2": 2
+      "2": 1
     },
     "unknown_authority_statuses": {
-      "livescore": [],
+      "livescore": [
+        "173|Lunch - day 4"
+      ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
-    {
-      "fixture": "Vancouver Anchors vs Brampton Blitz",
-      "authority": "espn-header",
-      "authority_name": "Vancouver Kings vs Brampton Blitz",
-      "agreed_side": "brampton blitz",
-      "ours": "vancouver anchors",
-      "theirs": "vancouver kings"
-    },
     {
       "fixture": "CD San Antonio Vs Academia de Balompié Boliviano",
       "authority": "espn-header",
@@ -204,87 +197,19 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:toronto-sixers-vs-white-rock-warriors|canada super 60 2026|2026-10-02",
-      "card_id": "toronto-sixers-vs-white-rock-warriors",
-      "name": "Toronto Sixers vs White Rock Warriors",
-      "competition": "Canada Super 60, 2026",
-      "kickoff": "2026-10-02T01:45:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sportlive-fancode-backup"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1556692",
-          "upstream_family": "ESPN",
-          "name": "Toronto Sixers vs White Rock Warriors",
-          "home": "Toronto Sixers",
-          "away": "White Rock Warriors",
-          "home_team_id": "1506169",
-          "away_team_id": "1506167",
-          "competition": "Canada Super60",
-          "competition_id": "24139",
-          "kickoff": "2026-10-02T01:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "8th Match",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-03T23:59:00Z",
-          "authority_uid": "s:200~e:1556692~c:1556692"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:montreal-royal-tigers-vs-mississauga-masters|canada super 60 2026|2026-10-02",
       "card_id": "montreal-royal-tigers-vs-mississauga-masters",
       "name": "Montreal Royal Tigers vs Mississauga Masters",
       "competition": "Canada Super 60, 2026",
       "kickoff": "2026-10-02T05:45:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LINK_UPDATING",
       "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
@@ -341,6 +266,72 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:toronto-sixers-vs-white-rock-warriors|canada super 60 2026|2026-10-02",
+      "card_id": "toronto-sixers-vs-white-rock-warriors",
+      "name": "Toronto Sixers vs White Rock Warriors",
+      "competition": "Canada Super 60, 2026",
+      "kickoff": "2026-10-02T01:45:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sportlive-fancode-backup"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1556692",
+          "upstream_family": "ESPN",
+          "name": "Toronto Sixers vs White Rock Warriors",
+          "home": "Toronto Sixers",
+          "away": "White Rock Warriors",
+          "home_team_id": "1506169",
+          "away_team_id": "1506167",
+          "competition": "Canada Super60",
+          "competition_id": "24139",
+          "kickoff": "2026-10-02T01:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "8th Match",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-03T23:59:00Z",
+          "authority_uid": "s:200~e:1556692~c:1556692"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:cruz-azul-vs-américa|club friendly|2026-10-02",
       "card_id": "cruz-azul-vs-américa",
       "name": "Cruz Azul Vs América",
@@ -375,202 +366,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:vancouver-anchors-vs-brampton-blitz|canada super 60 2026|2026-10-01",
-      "card_id": "vancouver-anchors-vs-brampton-blitz",
-      "name": "Vancouver Anchors vs Brampton Blitz",
-      "competition": "Canada Super 60, 2026",
-      "kickoff": "2026-10-01T23:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sportlive-fancode-backup"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Vancouver Kings vs Brampton Blitz",
-              "event_id": "1556691",
-              "agreed_side": "brampton blitz",
-              "ours": "vancouver anchors",
-              "theirs": "vancouver kings"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:internacional-de-bogotá-vs-once-caldas|primera a|2026-10-02",
-      "card_id": "internacional-de-bogotá-vs-once-caldas",
-      "name": "Internacional de Bogotá Vs Once Caldas",
-      "competition": "Primera A",
-      "kickoff": "2026-10-02T01:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1806401",
-          "upstream_family": "LiveScore",
-          "name": "Internacional de Bogota vs Once Caldas",
-          "home": "Internacional de Bogota",
-          "away": "Once Caldas",
-          "home_team_id": "10101",
-          "away_team_id": "10094",
-          "competition": "Primera A: Clausura",
-          "competition_id": "667",
-          "kickoff": "2026-10-02T01:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Postp.",
-          "status_code": "5",
-          "status": "POSTPONED",
-          "sport": "football",
-          "round": "17",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says POSTPONED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:seattle-sounders-fc-vs-sporting-kansas-city|mls|2026-10-02",
-      "card_id": "seattle-sounders-fc-vs-sporting-kansas-city",
-      "name": "Seattle Sounders FC Vs Sporting Kansas City",
-      "competition": "MLS",
-      "kickoff": "2026-10-02T01:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "761798",
-          "upstream_family": "ESPN",
-          "name": "Seattle Sounders FC vs Sporting Kansas City",
-          "home": "Seattle Sounders FC",
-          "away": "Sporting Kansas City",
-          "home_team_id": "9726",
-          "away_team_id": "186",
-          "competition": "MLS",
-          "competition_id": "770",
-          "kickoff": "2026-10-02T01:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "82'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "82'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:770~e:761798~c:761798"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1696607",
-          "upstream_family": "LiveScore",
-          "name": "Seattle Sounders FC vs Sporting Kansas City",
-          "home": "Seattle Sounders FC",
-          "away": "Sporting Kansas City",
-          "home_team_id": "8301",
-          "away_team_id": "8921",
-          "competition": "MLS",
-          "competition_id": "145",
-          "kickoff": "2026-10-02T01:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "24",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -1593,6 +1388,65 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:manchester-united-vs-liverpool-women|barclays women super league 2026 27|2026-10-03",
+      "card_id": "manchester-united-women-vs-liverpool-women",
+      "name": "Manchester United Women vs Liverpool Women",
+      "competition": "Barclays Women's Super League 2026-27",
+      "kickoff": "2026-10-03T12:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "drmlive-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1850279",
+          "upstream_family": "LiveScore",
+          "name": "Manchester United W vs Liverpool W",
+          "home": "Manchester United W",
+          "away": "Liverpool W",
+          "home_team_id": "202112",
+          "away_team_id": "3744",
+          "competition": "FA Women’s Super League",
+          "competition_id": "103",
+          "kickoff": "2026-10-03T12:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "5",
+          "format": "",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:mbeya-city-fc-vs-kagera-sugar-fc|tanzanian premier league|2026-10-09",
       "card_id": "mbeya-city-fc-vs-kagera-sugar-fc",
       "name": "Mbeya City FC Vs Kagera Sugar FC",
@@ -1815,8 +1669,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "drmlive-fancode-mirror"
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode",
@@ -1892,12 +1745,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
-        "srhady-willow-event",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2146,40 +1999,180 @@
   ],
   "retired_or_unpublished": [
     {
-      "fixture_id": "provider:motoplayground-race-at-ponca-city|2026-10-01",
-      "card_id": "motoplayground-race-at-ponca-city",
-      "name": "MotoPlayGround Race at Ponca City",
-      "competition": "",
-      "kickoff": "2026-10-01T22:34:14+00:00",
+      "fixture_id": "provider:internacional-de-bogotá-vs-once-caldas|primera a|2026-10-02",
+      "card_id": "internacional-de-bogotá-vs-once-caldas",
+      "name": "Internacional de Bogotá Vs Once Caldas",
+      "competition": "Primera A",
+      "kickoff": "2026-10-02T01:00:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-primevideo-sports"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "PrimeVideo"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401877909",
+          "upstream_family": "ESPN",
+          "name": "Internacional de Bogotá vs Once Caldas",
+          "home": "Internacional de Bogotá",
+          "away": "Once Caldas",
+          "home_team_id": "7445",
+          "away_team_id": "2919",
+          "competition": "Colombian Primera A",
+          "competition_id": "650",
+          "kickoff": "2026-10-02T01:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, October 1st at 9:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:650~e:401877909~c:401877909"
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1806401",
+          "upstream_family": "LiveScore",
+          "name": "Internacional de Bogota vs Once Caldas",
+          "home": "Internacional de Bogota",
+          "away": "Once Caldas",
+          "home_team_id": "10101",
+          "away_team_id": "10094",
+          "competition": "Primera A: Clausura",
+          "competition_id": "667",
+          "kickoff": "2026-10-02T01:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Postp.",
+          "status_code": "5",
+          "status": "POSTPONED",
+          "sport": "football",
+          "round": "17",
+          "format": "",
+          "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=POSTPONED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
+      "verdict": "CONFLICT"
+    },
+    {
+      "fixture_id": "provider:seattle-sounders-fc-vs-sporting-kansas-city|mls|2026-10-02",
+      "card_id": "seattle-sounders-fc-vs-sporting-kansas-city",
+      "name": "Seattle Sounders FC Vs Sporting Kansas City",
+      "competition": "MLS",
+      "kickoff": "2026-10-02T01:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "761798",
+          "upstream_family": "ESPN",
+          "name": "Seattle Sounders FC vs Sporting Kansas City",
+          "home": "Seattle Sounders FC",
+          "away": "Sporting Kansas City",
+          "home_team_id": "9726",
+          "away_team_id": "186",
+          "competition": "MLS",
+          "competition_id": "770",
+          "kickoff": "2026-10-02T01:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, October 1st at 9:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:770~e:761798~c:761798"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1696607",
+          "upstream_family": "LiveScore",
+          "name": "Seattle Sounders FC vs Sporting Kansas City",
+          "home": "Seattle Sounders FC",
+          "away": "Sporting Kansas City",
+          "home_team_id": "8301",
+          "away_team_id": "8921",
+          "competition": "MLS",
+          "competition_id": "145",
+          "kickoff": "2026-10-02T01:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "24",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT"
     }
   ]
 }
