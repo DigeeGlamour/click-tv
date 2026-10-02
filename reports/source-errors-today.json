@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-10-02T01:59:15.676041+00:00",
+  "timestamp": "2026-10-02T02:38:32.144717+00:00",
   "mode": "today",
-  "count": 250,
+  "count": 254,
   "errors": [
     {
       "type": "source_fetch_error",
@@ -12,7 +12,7 @@
       "http_status": 404,
       "attempts": 1,
       "error": "HTTP Error 404: Not Found",
-      "timestamp": "2026-10-02T01:57:18.944838+00:00"
+      "timestamp": "2026-10-02T02:36:20.874990+00:00"
     },
     {
       "type": "source_fetch_error",
@@ -23,7 +23,7 @@
       "http_status": 404,
       "attempts": 1,
       "error": "HTTP Error 404: Not Found",
-      "timestamp": "2026-10-02T01:57:18.954897+00:00"
+      "timestamp": "2026-10-02T02:36:20.885906+00:00"
     },
     {
       "type": "source_fetch_error",
@@ -34,7 +34,7 @@
       "http_status": 404,
       "attempts": 1,
       "error": "HTTP Error 404: Not Found",
-      "timestamp": "2026-10-02T01:57:18.741180+00:00"
+      "timestamp": "2026-10-02T02:36:20.626432+00:00"
     },
     {
       "type": "source_fetch_error",
@@ -45,7 +45,7 @@
       "http_status": 404,
       "attempts": 1,
       "error": "HTTP Error 404: Not Found",
-      "timestamp": "2026-10-02T01:57:18.739008+00:00"
+      "timestamp": "2026-10-02T02:36:20.619785+00:00"
     },
     {
       "id": "american-football",
@@ -143,15 +143,18 @@
     {
       "id": "brampton-blitz-vs-vancouver-anchors",
       "name": "Brampton Blitz vs Vancouver Anchors",
-      "source_id": "sm-fancode",
+      "source_id": "sportlive-fancode-backup",
       "source_pipeline": "today_match",
       "category": "today_match",
       "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 200,
-      "verification_error": "HLS media playlist has no playable segment",
-      "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4249817/index.m3u8",
-      "failure_class": "unplayable_body",
+      "verification_mode": "same_run_player_gate",
+      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "http_status": 403,
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://in-mc-flive.fancode.com/mumbai/4249817_english_hls_5aa43ca1d480706_1ta-di_h264/1080p.m3u8",
+      "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
     {
@@ -212,18 +215,29 @@
     {
       "id": "day-3-world-feed",
       "name": "Day 3 World Feed",
-      "source_id": "drmlive-fancode-mirror",
+      "source_id": "sm-fancode",
       "source_pipeline": "today_match",
       "category": "today_match",
       "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
-      "http_status": 403,
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://in-mc-flive.fancode.com/mumbai/4248574_english_hls_016dc4793325823_1ta-di_h264/1080p.m3u8",
-      "failure_class": "vantage_shaped",
+      "verification_mode": "global",
+      "http_status": 200,
+      "verification_error": "HLS media playlist has no playable segment",
+      "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4248574/index.m3u8",
+      "failure_class": "unplayable_body",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "denmark-vs-portugal",
+      "name": "Denmark Vs Portugal",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 404,
+      "verification_error": "HTTP 404: Not Found",
+      "url": "https://vcdn.mn10.entel.bo/Content/DASH/Live/Channel(8757cb0a-3584-40cd-901e-8937c7deba83)/master.mpd",
+      "failure_class": "permanent",
       "type": "stream_verification_error"
     },
     {
@@ -237,23 +251,6 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6a9fe3b95c0020a997ffc995/index.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "featured-group-day-1",
-      "name": "Featured Group Day 1",
-      "source_id": "sayanpal-fancode-mirror",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
-      "http_status": 403,
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://in-mc-flive.fancode.com/mumbai/4249701_english_hls_3cb7ebbb4319718_1ta-di_h264/1080p.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -296,6 +293,22 @@
       "resolution_height": 720,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://tmaxapp.site/8wirwjs76erftg/bein4ar.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "guinea-vs-kenya",
+      "name": "Guinea Vs Kenya",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 403,
+      "resolution": "HD",
+      "resolution_height": 720,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://tmaxapp.site/8wirwjs76erftg/bein3ar.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -451,22 +464,6 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-tc-livestream.rumsport10.live/sla/1-6abcba88bce67a6a434ba13a/index.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "las-vegas-aces-vs-indiana-fever",
-      "name": "Las Vegas Aces Vs Indiana Fever",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 403,
-      "resolution": "HD",
-      "resolution_height": 720,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://edgestream5.pro/hls/cwxvbnfghq60.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -718,17 +715,17 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "san-jose-sharks-vs-florida-panthers",
-      "name": "San Jose Sharks Vs Florida Panthers",
-      "source_id": "sm-sports-data",
+      "id": "seattle-sounders-vs-sporting-kansas-city",
+      "name": "Seattle Sounders vs Sporting Kansas City",
+      "source_id": "0matbank-trysports-football-live",
       "source_pipeline": "today_match",
       "category": "today_match",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 200,
-      "verification_error": "HLS media playlist has no playable segment",
-      "url": "https://live.kinescopecdn.net/on-air/5bf2c07e-3604-42cf-959a-67ed8914ffd5/7c574a5a-1238-4526-a67c-f7f778fc116e/master.m3u8",
-      "failure_class": "unplayable_body",
+      "http_status": 404,
+      "verification_error": "HTTP 404: 20.106.191.58",
+      "url": "https://lb5.strmd.st/secure/nuqXSUKDiQMhPsoPGgfzQuOCsBadoCXe/delta/stream/live_mls_seattle-kansas-city-live-streaming-627041520/1/playlist.m3u8",
+      "failure_class": "permanent",
       "type": "stream_verification_error"
     },
     {
@@ -777,20 +774,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "vancouver-canucks-vs-edmonton-oilers",
-      "name": "Vancouver Canucks Vs Edmonton Oilers",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 200,
-      "verification_error": "HLS media playlist has no playable segment",
-      "url": "https://live.kinescopecdn.net/on-air/5bf2c07e-3604-42cf-959a-67ed8914ffd5/5a84b6fc-6b27-42ca-bc8f-511d4f86e25a/master.m3u8",
-      "failure_class": "unplayable_body",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "virtus-bologna-vs-olympiacos-bc",
       "name": "Virtus Bologna Vs Olympiacos BC",
       "source_id": "sm-sports-data",
@@ -823,18 +806,15 @@
     {
       "id": "white-rock-warriors-vs-toronto-sixers",
       "name": "White Rock Warriors vs Toronto Sixers",
-      "source_id": "drmlive-fancode-mirror",
+      "source_id": "sm-fancode",
       "source_pipeline": "today_match",
       "category": "today_match",
       "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
-      "http_status": 403,
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://in-mc-flive.fancode.com/mumbai/4249818_english_hls_2af768aecf14433_1ta-di_h264/1080p.m3u8",
-      "failure_class": "vantage_shaped",
+      "verification_mode": "global",
+      "http_status": 200,
+      "verification_error": "HLS media playlist has no playable segment",
+      "url": "https://fancode.sm-monirul-islam-rs.workers.dev/4249818/index.m3u8",
+      "failure_class": "unplayable_body",
       "type": "stream_verification_error"
     },
     {
@@ -844,28 +824,10 @@
       "source_pipeline": "today_match",
       "category": "today_match",
       "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "verification_mode": "global",
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://sonydaimenew.akamaized.net/hls/live/2022315/ag_strea0110/ENG/std_lrh-800300010.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "world-feed-day-1",
-      "name": "World Feed Day 1",
-      "source_id": "sayanpal-fancode-mirror",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
-      "http_status": 403,
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://in-mc-flive.fancode.com/mumbai/4249698_english_hls_866b021b7738513_1ta-di_h264/1080p.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -1024,6 +986,21 @@
       "type": "stream_verification_error"
     },
     {
+      "id": "day-14-2-oct-2026",
+      "name": "Day 14 2 Oct 2026",
+      "source_id": "kajju-sonyliv-backup",
+      "source_pipeline": "upcoming",
+      "category": "upcoming",
+      "verification_status": "failed",
+      "verification_mode": "same_run_player_gate",
+      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "http_status": 403,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://sonydaimenew.akamaized.net/hls/live/2022315/ag_strea0110/ENG/std_lrh-800300010.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
       "id": "day-3-leicester",
       "name": "Day 3 Leicester",
       "source_id": "srhady-bingstream",
@@ -1160,21 +1137,6 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-tc-iptv.rumsport10.live/live_abr/450_abr.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "india-in-action-archery-2-oct-2026",
-      "name": "India In Action Archery 2 Oct 2026",
-      "source_id": "kajju-sonyliv-backup",
-      "source_pipeline": "upcoming",
-      "category": "upcoming",
-      "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://sonydaimenew.akamaized.net/hls/live/2022315/ag_strea0110/ENG/std_lrh-800300010.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -1671,6 +1633,20 @@
       "type": "stream_verification_error"
     },
     {
+      "id": "aew-night-dynamite",
+      "name": "AEW Night Dynamite",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 404,
+      "verification_error": "HTTP 404: Not Found",
+      "url": "https://chatgpt.hereisman.net/playlist/54227/load-playlist",
+      "failure_class": "permanent",
+      "type": "stream_verification_error"
+    },
+    {
       "id": "azerbaijan-vs-liechtenstein",
       "name": "Azerbaijan Vs Liechtenstein",
       "source_id": "sm-sports-data",
@@ -1695,23 +1671,6 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-bp-iptv.rumsport10.live/live_abr/68892_abr.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "brampton-blitz-vs-vancouver-anchors",
-      "name": "Brampton Blitz vs Vancouver Anchors",
-      "source_id": "sportlive-fancode-backup",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "same_run_player_gate",
-      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
-      "http_status": 403,
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://in-mc-flive.fancode.com/mumbai/4249817_english_hls_5aa43ca1d480706_1ta-di_h264/1080p.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -1762,6 +1721,23 @@
       "type": "stream_verification_error"
     },
     {
+      "id": "day-3-world-feed",
+      "name": "Day 3 World Feed",
+      "source_id": "drmlive-fancode-mirror",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "same_run_player_gate",
+      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "http_status": 403,
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://in-mc-flive.fancode.com/mumbai/4248574_english_hls_016dc4793325823_1ta-di_h264/1080p.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
       "id": "denmark-vs-portugal",
       "name": "Denmark Vs Portugal",
       "source_id": "sm-sports-data",
@@ -1769,10 +1745,12 @@
       "category": "today_match",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 404,
-      "verification_error": "HTTP 404: Not Found",
-      "url": "https://vcdn.mn10.entel.bo/Content/DASH/Live/Channel(8757cb0a-3584-40cd-901e-8937c7deba83)/master.mpd",
-      "failure_class": "permanent",
+      "http_status": 403,
+      "resolution": "HD",
+      "resolution_height": 720,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://tmaxapp.site/8wirwjs76erftg/bein1ar.m3u8",
+      "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
     {
@@ -1811,12 +1789,10 @@
       "category": "today_match",
       "verification_status": "failed",
       "verification_mode": "global",
-      "http_status": 403,
-      "resolution": "HD",
-      "resolution_height": 720,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://tmaxapp.site/8wirwjs76erftg/bein3ar.m3u8",
-      "failure_class": "vantage_shaped",
+      "http_status": 0,
+      "verification_error": "Request timed out",
+      "url": "https://live2.dyrur1.com/live/74372502_75f10151b0cff6bb8b0780c5b0c923bb_1080p.m3u8",
+      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -1916,6 +1892,22 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-bp-livestream.rumsport10.live/sla/1-6abcba88bce67a6a434ba13a/index.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "las-vegas-aces-vs-indiana-fever",
+      "name": "Las Vegas Aces Vs Indiana Fever",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 403,
+      "resolution": "HD",
+      "resolution_height": 720,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://edgestream5.pro/hls/cwxvbnfghq60.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -2080,6 +2072,20 @@
       "type": "stream_verification_error"
     },
     {
+      "id": "seattle-sounders-vs-sporting-kansas-city",
+      "name": "Seattle Sounders vs Sporting Kansas City",
+      "source_id": "0matbank-trysports-football-live",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 404,
+      "verification_error": "HTTP 404: 20.106.191.58",
+      "url": "https://lb5.strmd.st/secure/EAYtilbBCNhuBQTiFOtRkFTMNUOrlKdn/rtmp/stream/3Ex5WflU6gg2zCFnQ5ZQhBmWdAajPAu5sT2m4mxnetJjwt7Hg0Yj9Sa5fSGRJQzzLznvyTKnsXTX/1/playlist.m3u8",
+      "failure_class": "permanent",
+      "type": "stream_verification_error"
+    },
+    {
       "id": "utah-mammoth-vs-chicago-blackhawks",
       "name": "Utah Mammoth Vs Chicago Blackhawks",
       "source_id": "sm-sports-data",
@@ -2122,6 +2128,23 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://edgestream2.pro/hls/eJmauBDCIf.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "white-rock-warriors-vs-toronto-sixers",
+      "name": "White Rock Warriors vs Toronto Sixers",
+      "source_id": "drmlive-fancode-mirror",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "same_run_player_gate",
+      "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+      "http_status": 403,
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://in-mc-flive.fancode.com/mumbai/4249818_english_hls_2af768aecf14433_1ta-di_h264/1080p.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -2520,6 +2543,20 @@
       "type": "stream_verification_error"
     },
     {
+      "id": "one-friday-fights",
+      "name": "One Friday Fights",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "upcoming",
+      "category": "upcoming",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 0,
+      "verification_error": "Unhandled global verifier exception: IncompleteRead(12286 bytes read)",
+      "url": "https://tglmp02.akamaized.net/out/v1/3170252e3fb0453085f2f4b0f8401a6b/manifest.mpd",
+      "failure_class": "unknown",
+      "type": "stream_verification_error"
+    },
+    {
       "id": "otago-vs-auckland",
       "name": "Otago vs Auckland",
       "source_id": "srhady-bingstream",
@@ -2856,20 +2893,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "aew-night-dynamite",
-      "name": "AEW Night Dynamite",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 404,
-      "verification_error": "HTTP 404: Not Found",
-      "url": "https://chatgpt.hereisman.net/playlist/54227/load-playlist",
-      "failure_class": "permanent",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "azerbaijan-vs-liechtenstein",
       "name": "Azerbaijan Vs Liechtenstein",
       "source_id": "sm-sports-data",
@@ -2886,6 +2909,20 @@
       "type": "stream_verification_error"
     },
     {
+      "id": "columbus-blue-jackets-vs-buffalo-sabres",
+      "name": "Columbus Blue Jackets Vs Buffalo Sabres",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 404,
+      "verification_error": "HTTP 404: Not Found",
+      "url": "https://chatgpt.hereisman.net/playlist/57409/load-playlist",
+      "failure_class": "permanent",
+      "type": "stream_verification_error"
+    },
+    {
       "id": "denmark-vs-portugal",
       "name": "Denmark Vs Portugal",
       "source_id": "sm-sports-data",
@@ -2894,25 +2931,9 @@
       "verification_status": "failed",
       "verification_mode": "global",
       "http_status": 403,
-      "resolution": "HD",
-      "resolution_height": 720,
       "verification_error": "HTTP 403: Forbidden",
-      "url": "https://tmaxapp.site/8wirwjs76erftg/bein1ar.m3u8",
+      "url": "https://edgestream2.pro/hls/griogoehvn2.m3u8",
       "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "guinea-vs-kenya",
-      "name": "Guinea Vs Kenya",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 0,
-      "verification_error": "Request timed out",
-      "url": "https://live2.dyrur1.com/live/74372502_75f10151b0cff6bb8b0780c5b0c923bb_1080p.m3u8",
-      "failure_class": "transient",
       "type": "stream_verification_error"
     },
     {
@@ -2924,7 +2945,7 @@
       "verification_status": "failed",
       "verification_mode": "global",
       "http_status": 0,
-      "verification_error": "Request timed out",
+      "verification_error": "Connection error: Remote end closed connection without response",
       "url": "https://live.dyrur1.com/live/73262978_6e762b42d56455becc07de8272548744_1080p.m3u8",
       "failure_class": "transient",
       "type": "stream_verification_error"
@@ -2995,11 +3016,23 @@
       "verification_status": "failed",
       "verification_mode": "global",
       "http_status": 403,
-      "resolution": "HD",
-      "resolution_height": 720,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://edgestream4.pro/hls/hjksgdfauzy51.m3u8",
       "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "new-york-rangers-vs-tampa-bay-lightning",
+      "name": "New York Rangers Vs Tampa Bay Lightning",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 404,
+      "verification_error": "HTTP 404: Not Found",
+      "url": "https://chatgpt.hereisman.net/playlist/57407/load-playlist",
+      "failure_class": "permanent",
       "type": "stream_verification_error"
     },
     {
@@ -3027,6 +3060,36 @@
       "http_status": 403,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://livecdn-bp-livestream.rumsport10.live/sla/1-6aaa2965f23cddb5aff4bb65/index.m3u8",
+      "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "seattle-sounders-vs-sporting-kansas-city",
+      "name": "Seattle Sounders vs Sporting Kansas City",
+      "source_id": "0matbank-trysports-football-live",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 404,
+      "verification_error": "HTTP 404: 20.106.191.58",
+      "url": "https://lb5.strmd.st/secure/APYytbPCliYsiBQlcgheRVrUQncLJpDo/rtmp/stream/AZkH8vSU1Wo8BHT45Gicdqqjdc-EFqWPF1U7fwxfCxXprQhSvNb-NeEOgtaAzxkc7MobKfGIwDTceA0etw/1/playlist.m3u8",
+      "failure_class": "permanent",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "tennis-evento",
+      "name": "TENNIS | EVENTO",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 403,
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://tmaxapp.site/8wirwjs76erftg/skysportstennis.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -3087,22 +3150,6 @@
       "type": "stream_verification_error"
     },
     {
-      "id": "tennis-evento",
-      "name": "TENNIS | EVENTO",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "upcoming",
-      "category": "upcoming",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 403,
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://tmaxapp.site/8wirwjs76erftg/skysportstennis.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
       "id": "atlanta-braves-vs-philadelphia-phillies",
       "name": "Atlanta Braves Vs Philadelphia Phillies",
       "source_id": "sm-sports-data",
@@ -3131,20 +3178,6 @@
       "resolution_height": 1080,
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://sonymtmnew-akamaized.pages.dev/hls/live/2018457/Footlive0110/ENG/master.m3u8",
-      "failure_class": "vantage_shaped",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "denmark-vs-portugal",
-      "name": "Denmark Vs Portugal",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 403,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://edgestream2.pro/hls/griogoehvn2.m3u8",
       "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
@@ -3202,6 +3235,20 @@
       "verification_error": "HTTP 403: Forbidden",
       "url": "https://d8j84o343a5m2.cloudfront.net/live/testtapmad2/master.m3u8",
       "failure_class": "vantage_shaped",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "new-jersey-devils-vs-philadelphia-flyers",
+      "name": "New Jersey Devils Vs Philadelphia Flyers",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 404,
+      "verification_error": "HTTP 404: Not Found",
+      "url": "https://chatgpt.hereisman.net/playlist/57408/load-playlist",
+      "failure_class": "permanent",
       "type": "stream_verification_error"
     },
     {
@@ -3286,6 +3333,22 @@
       "verification_error": "dns: [Errno -2] Name or service not known",
       "url": "https://serendipity.loreofeldenring.site/dailymotion/live/playlist/5.m3u8",
       "failure_class": "transient",
+      "type": "stream_verification_error"
+    },
+    {
+      "id": "cleveland-browns-vs-pittsburgh-steelers",
+      "name": "Cleveland Browns Vs Pittsburgh Steelers",
+      "source_id": "sm-sports-data",
+      "source_pipeline": "today_match",
+      "category": "today_match",
+      "verification_status": "failed",
+      "verification_mode": "global",
+      "http_status": 403,
+      "resolution": "HD",
+      "resolution_height": 720,
+      "verification_error": "HTTP 403: Forbidden",
+      "url": "https://edgestream2.pro/hls/JHDAJBDnjdna30.m3u8",
+      "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
     {
@@ -3400,22 +3463,6 @@
       "verification_error": "HTTP 404: Not Found",
       "url": "https://chatgpt.hereisman.net/playlist/57393/load-playlist",
       "failure_class": "permanent",
-      "type": "stream_verification_error"
-    },
-    {
-      "id": "cleveland-browns-vs-pittsburgh-steelers",
-      "name": "Cleveland Browns Vs Pittsburgh Steelers",
-      "source_id": "sm-sports-data",
-      "source_pipeline": "today_match",
-      "category": "today_match",
-      "verification_status": "failed",
-      "verification_mode": "global",
-      "http_status": 403,
-      "resolution": "HD",
-      "resolution_height": 720,
-      "verification_error": "HTTP 403: Forbidden",
-      "url": "https://edgestream2.pro/hls/JHDAJBDnjdna30.m3u8",
-      "failure_class": "vantage_shaped",
       "type": "stream_verification_error"
     },
     {
