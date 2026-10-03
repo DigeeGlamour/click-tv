@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-03T04:31:48.057125+00:00",
-  "count": 9,
-  "filtered_stale": 0,
+  "updated_at": "2026-10-03T04:54:44.573160+00:00",
+  "count": 8,
+  "filtered_stale": 1,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -77,19 +77,22 @@
       "authority_event_ids": {
         "espn-header": "1556694"
       },
-      "authority_status": "LIVE",
+      "authority_status": "FINISHED",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "END_PENDING",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "end_pending": true,
-      "end_pending_confirmations": 9,
-      "carried_forward_misses": 9,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "end_pending_confirmations": 0,
+      "carried_forward_misses": 10,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-03T01:52:47.564471+00:00",
-      "authority_finished_confirmations": 2
+      "authority_finished_confirmations": 3,
+      "authority_finished_seen_at": "2026-10-03T04:53:49.740659+00:00",
+      "authority_remove_after": "2026-10-03T05:13:49.740659+00:00",
+      "ended_seen_at": "2026-10-03T04:54:35.424045+00:00"
     },
     {
       "id": "3rd-place-play-off-bangladesh-vs-sri-lanka",
@@ -620,7 +623,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-03T04:54:35.424045+00:00"
     },
     {
       "id": "bangladesh-vs-sri-lanka",
@@ -666,7 +677,7 @@
           "host": "abfjk4haaaaaaaamkitc5445rybm6.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_929a1eaee6d3ac4186074cc3aae3a1c9"
+          "playback_id": "ctv_9bc845f84e17269a2f6c3374996e3b0d"
         },
         {
           "name": "Backup-2",
@@ -685,7 +696,7 @@
           "host": "stream.ottplus.live",
           "resolution": "SD",
           "resolution_height": 480,
-          "playback_id": "ctv_391323798478c2e6001f3a3e758b1ca5"
+          "playback_id": "ctv_84c3938bbd1848bfc30681f851e05759"
         }
       ],
       "channels": [
@@ -817,7 +828,15 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_0cf762ce68fa56a05a84b328bfd8aac6"
+      "playback_id": "ctv_b7f9afdc6c151dc6a8e7dadf9b1994a8",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-03T04:54:35.424045+00:00"
     },
     {
       "id": "montreal-royal-tigers-vs-white-rock-warriors",
@@ -858,16 +877,10 @@
           "source_id": "sportlive-fancode-backup",
           "source_name": "SportLive18 FanCode Backup",
           "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
-        },
-        {
-          "source_id": "dartv-fancode-mirror",
-          "source_name": "FanCode Live API (dartv-ajaz)",
-          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
-        "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "sportlive-fancode-backup"
       ],
       "start_time": "2026-10-03T01:45:00+00:00",
       "start_at": "2026-10-03T01:45:00+00:00",
@@ -950,11 +963,6 @@
           "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
         },
         {
-          "source_id": "dartv-fancode-mirror",
-          "source_name": "FanCode Live API (dartv-ajaz)",
-          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
@@ -963,7 +971,6 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "start_time": "2026-10-03T03:30:00+00:00",
@@ -1095,146 +1102,23 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_5b8cd7b6a62c6153eaccaeef405c6f52"
-    },
-    {
-      "id": "real-potosí-vs-club-aurora",
-      "name": "Real Potosí Vs Club Aurora",
-      "primary_stream_key": "3de9832c71c2ac1a6497c880886da2e27a22873ee4a83fb200d0dd0c9cceda57",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/7060/image",
-      "category": "today_match",
-      "url": "https://file.genoads.com/ch1.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "real-potos-vs-club-aurora--stream-tv",
-          "name": "STREAM TV",
-          "normalized_name": "stream-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/7060/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "real-potos-vs-club-aurora--stream-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "real-potos-vs-club-aurora--stream-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_7e965fcb4ffb435c8a188ff9",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_e94590dd78ee0859c2150c051fe96224",
-              "resolution": "SD",
-              "resolution_height": 576,
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "real-potos-vs-club-aurora--stream-tv",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "resolution": "SD",
-      "resolution_height": 576,
-      "start_time": "2026-10-03T00:00:00+00:00",
-      "start_at": "2026-10-03T00:00:00+00:00",
-      "end_time": "2026-10-03T02:30:00+00:00",
-      "end_time_source": "sport",
-      "competition": "Copa Bolivia",
-      "fixture_id": "provider:real-potosí-vs-club-aurora|copa bolivia|2026-10-03",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-10-03T00:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/v976og1579799083.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/9jmurg1579798447.png",
-      "playback_id": "ctv_5edefe0074a3962fd22f74f9a0c73407",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401907804)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401907804"
-      },
-      "lifecycle_reason": "finished, holding for the post-match grace",
+      "playback_id": "ctv_10458bb8eae844c4729900327a638698",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
       "lifecycle_protections": [
+        "authority_live",
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 10,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-10-03T01:14:31.448394+00:00",
-      "authority_status": "FINISHED",
-      "authority_finished_confirmations": 4,
-      "authority_finished_seen_at": "2026-10-03T04:12:05.034669+00:00",
-      "authority_remove_after": "2026-10-03T04:32:05.034669+00:00",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-10-03T04:12:44.419849+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-03T04:54:35.424045+00:00",
+      "provider_enriched": "streamed",
+      "provider_event_id": "india-vs-pakistan",
+      "artwork_candidates": [
+        "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzuAUxDFBWERAExC2AmGAOHmDSvRAE4QImYRinXOIRwAgIYgROZugTAADGBQJY9MM2jwUVeMuq0Z2SOrABjJc2BgKB-r3xouZEIba4iZGkkWH1VMFgWVT5Or4OmA+FNgUQA.webp"
+      ],
+      "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzuAUxDFBWERAExC2AmGAOHmDSvRAE4QImYRinXOIRwAgIYgROZugTAADGBQJY9MM2jwUVeMuq0Z2SOrABjJc2BgKB-r3xouZEIba4iZGkkWH1VMFgWVT5Or4OmA+FNgUQA.webp",
+      "provider_routing_hint": "live"
     },
     {
       "id": "boca-juniors-vs-club-atlético-unión-de-santa-fe",
@@ -1405,7 +1289,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-03T03:13:26.645413+00:00"
     },
@@ -1499,7 +1383,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-03T03:00:00+00:00",
       "start_at": "2026-10-03T03:00:00+00:00",
-      "end_time": "2026-10-03T05:30:58+00:00",
+      "end_time": "2026-10-03T05:53:49+00:00",
       "end_time_source": "assumed",
       "competition": "Liga MX, Women, Apertura",
       "fixture_id": "provider:monterrey-vs-club-américa|liga mx women apertura|2026-10-03",
