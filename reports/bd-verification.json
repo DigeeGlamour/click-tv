@@ -1,89 +1,73 @@
 {
-  "timestamp": "2026-10-04T02:20:27.403328+00:00",
+  "timestamp": "2026-10-04T03:23:22.004206+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 4,
-  "total_global_network_checked": 4,
-  "total_proxy_selected": 2,
-  "total_proxy_checked": 2,
-  "total_processed": 4,
-  "total_publishable": 1,
-  "strict_player_hidden": 0,
+  "total_input_pool": 3,
+  "total_global_network_checked": 3,
+  "total_proxy_selected": 1,
+  "total_proxy_checked": 1,
+  "total_processed": 3,
+  "total_publishable": 0,
+  "strict_player_hidden": 1,
   "browser_unreachable_hidden": 1,
   "unproven_hidden": 0,
   "status_counts": {
-    "failed": 2,
-    "verified_global": 1,
-    "unreachable_from_browser": 1
+    "unreachable_from_browser": 1,
+    "failed": 1,
+    "metadata_only": 1
   },
   "groups": {
-    "failed": [
-      {
-        "id": "arizona-state-sun-devils-vs-baylor-bears",
-        "name": "Arizona State Sun Devils Vs Baylor Bears",
-        "source_id": "sm-sports-data",
-        "source_pipeline": "today_match",
-        "url": "https://edgestream7.pro/hls/qsdnajbq32.m3u8",
-        "verification_status": "failed",
-        "verification_mode": "global",
-        "publish_allowed": false,
-        "http_status": 403,
-        "proxy_name": "default-cloudflare-worker",
-        "proxy_http_status": 403,
-        "verification_error": "HTTP 403: Forbidden",
-        "verification_note": "",
-        "permanent_fail_count": 0
-      },
-      {
-        "id": "san-diego-state-aztecs-vs-texas-state-bobcats",
-        "name": "San Diego State Aztecs Vs Texas State Bobcats",
-        "source_id": "sm-sports-data",
-        "source_pipeline": "today_match",
-        "url": "https://edgestream5.pro/hls/oipozuezeji33-.m3u8",
-        "verification_status": "failed",
-        "verification_mode": "global",
-        "publish_allowed": false,
-        "http_status": 403,
-        "proxy_name": "default-cloudflare-worker",
-        "proxy_http_status": 403,
-        "verification_error": "HTTP 403: Forbidden",
-        "verification_note": "",
-        "permanent_fail_count": 0
-      }
-    ],
-    "verified_global": [
-      {
-        "id": "las-vegas-lights-vs-san-antonio-fc",
-        "name": "Las Vegas Lights Vs San Antonio FC",
-        "source_id": "sm-sports-data",
-        "source_pipeline": "today_match",
-        "url": "https://otte.cache.aiv-cdn.net/iad-nitro/live/clients/dash/enc/5qz8wmdome/out/v1/b9323e853dce427eac214b77bd48a204/cenc.mpd",
-        "verification_status": "verified_global",
-        "verification_mode": "global",
-        "publish_allowed": true,
-        "http_status": 200,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "",
-        "permanent_fail_count": 0
-      }
-    ],
     "unreachable_from_browser": [
       {
-        "id": "las-vegas-lights-vs-san-antonio-fc",
-        "name": "Las Vegas Lights Vs San Antonio FC",
+        "id": "bay-of-plenty-vs-north-harbour",
+        "name": "Bay of Plenty Vs North Harbour",
         "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
-        "url": "http://162.251.160.53:8089/7890/index.m3u8",
+        "url": "http://193.47.62.41/hls/GNNNNaq.m3u8",
         "verification_status": "unreachable_from_browser",
         "verification_mode": "undeliverable_bare_ip",
         "publish_allowed": false,
         "http_status": 0,
         "proxy_name": "",
         "proxy_http_status": 0,
-        "verification_error": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.41): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
         "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      }
+    ],
+    "failed": [
+      {
+        "id": "kolhan-king-vs-chakradharpur-royals",
+        "name": "Kolhan King vs Chakradharpur Royals",
+        "source_id": "drmlive-fancode-mirror",
+        "source_pipeline": "today_match",
+        "url": "https://in-mc-flive.fancode.com/mumbai/4250049_english_hls_0821ca1c7e71924_1ta-di_h264/1080p.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "same_run_player_gate",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+        "permanent_fail_count": 0
+      }
+    ],
+    "metadata_only": [
+      {
+        "id": "kolhan-king-vs-chakradharpur-royals",
+        "name": "Kolhan King vs Chakradharpur Royals",
+        "source_id": "sm-fancode",
+        "source_pipeline": "upcoming",
+        "url": "",
+        "verification_status": "metadata_only",
+        "verification_mode": "none",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
         "permanent_fail_count": 0
       }
     ]
