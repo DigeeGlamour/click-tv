@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-17T22:12:15.561728+00:00",
+  "updated_at": "2026-10-17T22:34:05.980879+00:00",
   "count": 14,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -78,8 +78,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 5,
-      "carried_forward_misses": 5,
+      "end_pending_confirmations": 6,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-17T20:36:13.151465+00:00"
     },
@@ -337,7 +337,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-17T19:15:54.574299+00:00",
       "authority_near_misses": [
@@ -619,7 +619,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-17T21:36:43.336196+00:00",
       "authority_near_misses": [
@@ -894,7 +894,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 12,
+      "carried_forward_misses": 13,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-17T18:11:48.476075+00:00"
     },
@@ -1003,22 +1003,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "MLS",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=58' (STATUS_SECOND_HALF, event 761875)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 761875)",
         "LiveScore livescore=FT (6, event 1696661)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "761875"
+        "espn-header": "761875",
+        "livescore": "1696661"
       },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "philadelphia-union-vs-charlotte-fc-2407143",
       "artwork_candidates": [
@@ -1031,14 +1032,21 @@
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxwATWCChkkIbiBIgU+zSEQQQME3wIUm1rmDLwi80SmBNaYR2NEQgA.webp",
       "provider_routing_hint": "live",
       "playback_id": "ctv_ea179dd1576cf9a11447fae6d54da0aa",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_misses": 5,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-17T21:01:46.487571+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=58' (STATUS_SECOND_HALF, event 761875); LiveScore livescore=FT (6, event 1696661)"
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-17T22:33:17.010562+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-17T22:53:17.010562+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-17T22:33:58.276412+00:00"
     },
     {
       "id": "as-roma-vs-genoa",
@@ -1455,22 +1463,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=54' (STATUS_SECOND_HALF, event 401874935)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401874935)",
         "LiveScore livescore=FT (6, event 1785374)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401874935"
+        "espn-header": "401874935",
+        "livescore": "1785374"
       },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "roma-vs-genoa-2482201",
       "artwork_candidates": [
@@ -1484,15 +1493,22 @@
       "provider_routing_hint": "live",
       "competition_from_source": "Serie A",
       "playback_id": "ctv_038f852436ffcd4ab676e757ecedea2c",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 4,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-17T21:36:43.336196+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=54' (STATUS_SECOND_HALF, event 401874935); LiveScore livescore=FT (6, event 1785374)"
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-17T22:33:17.010562+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-17T22:53:17.010562+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-17T22:33:58.276412+00:00"
     },
     {
       "id": "lille-vs-stade-brestois",
@@ -1600,8 +1616,8 @@
       "playback_id": "ctv_ad9ac0a3c086286fa2b02ad426135d6a",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 4,
-      "carried_forward_misses": 4,
+      "end_pending_confirmations": 5,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-17T21:01:46.487571+00:00"
     },
@@ -1706,19 +1722,20 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "Ligue 1",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=50' (STATUS_SECOND_HALF, event 401876431)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876431)",
         "LiveScore livescore=FT (6, event 1794710)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401876431"
+        "espn-header": "401876431",
+        "livescore": "1794710"
       },
       "event_type": "today_match",
       "lifecycle_state": "END_PENDING",
@@ -1734,13 +1751,18 @@
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhDxYYEJTCjQ3ECRAoQxvoZCm9R5YRjAmfFF23l680Y6a0w2saIhA.webp",
       "provider_routing_hint": "live",
       "playback_id": "ctv_8c2eeb11fb40edd7adf8ba5df6c450ee",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "end_pending": true,
-      "end_pending_confirmations": 4,
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "end_pending_confirmations": 0,
+      "carried_forward_misses": 5,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-17T21:01:46.487571+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=50' (STATUS_SECOND_HALF, event 401876431); LiveScore livescore=FT (6, event 1794710)"
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-17T22:33:17.010562+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-17T22:53:17.010562+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "ended_seen_at": "2026-10-17T22:33:58.276412+00:00"
     },
     {
       "id": "valencia-vs-athletic-club",
@@ -1903,34 +1925,42 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401882838)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401882838)",
         "LiveScore livescore=FT (6, event 1810735)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401882838"
+        "espn-header": "401882838",
+        "livescore": "1810735"
       },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/dm8l6o1655594864.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/68w7fe1639408210.png",
       "playback_id": "ctv_efaf6b32a87a3c8a84c26c9875e95a38",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 4,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-17T21:36:43.336196+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401882838); LiveScore livescore=FT (6, event 1810735)"
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-17T22:33:17.010562+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-17T22:53:17.010562+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-17T22:33:58.276412+00:00"
     },
     {
       "id": "dundee-fc-vs-rangers",
@@ -2093,34 +2123,42 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "Scottish Premiership",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401878366)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401878366)",
         "LiveScore livescore=FT (6, event 1792844)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401878366"
+        "espn-header": "401878366",
+        "livescore": "1792844"
       },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/51lnyw1626202870.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ti24j61614290048.png",
       "playback_id": "ctv_02be69950155b76a5ce4b16234561147",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 4,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-17T21:36:43.336196+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401878366); LiveScore livescore=FT (6, event 1792844)"
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-17T22:33:17.010562+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-17T22:53:17.010562+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-17T22:33:58.276412+00:00"
     },
     {
       "id": "ferris-state-vs-grand-valley-state-football",
@@ -2369,7 +2407,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-17T20:13:49.307838+00:00"
     },
@@ -2620,7 +2658,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-17T20:13:49.307838+00:00"
     },
@@ -2714,8 +2752,8 @@
       "resolution_height": 1080,
       "start_time": "2026-10-17T21:00:00+00:00",
       "start_at": "2026-10-17T21:00:00+00:00",
-      "end_time": "2026-10-17T23:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-10-17T23:33:17+00:00",
+      "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:botafogo-vs-chapecoense|campeonato brasileiro s rie a|2026-10-17",
       "status": "LIVE_NOW",
@@ -2729,18 +2767,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841268)"
+        "ESPN espn-header=23' (STATUS_FIRST_HALF, event 401841268)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401841268"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bs5mbw1733004596.png",
