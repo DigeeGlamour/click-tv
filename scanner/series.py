@@ -631,7 +631,32 @@ def prepare_manual_series(
         payload = json.load(handle)
     if not isinstance(payload, dict) or not isinstance(payload.get("items"), list):
         raise ValueError("Manual Series staging catalogue must contain an items list")
-    normalized = _merge_duplicate_series(item for item in payload["items"] if isinstance(item, dict))
+    staged = [item for item in payload["items"] if isinstance(item, dict)]
+    # ধারা ৪.০. An episode that was reaching viewers is not dropped in
+    # silence. `publish_prepared_series` rebuilds the whole tree from this
+    # payload, so a show that did not come back through staging this run used
+    # to stop existing - and what reaches staging depends on which movie
+    # cards retention happened to carry, which moves between runs. Measured
+    # on 2026-10-17: 181 Series / 772 Episodes at 06:12, 175 / 738 at 07:42,
+    # and every one of the 119 streams the no-loss gate then refused to
+    # publish over was one of those episodes, on the CURRENT host.
+    #
+    # Carried BEFORE the merge below, so a show that DID come back absorbs
+    # its missing episodes through the same deduplication on `episode_key`
+    # that already folds duplicate staging records together.
+    #
+    # Wrapped: without this the payload is exactly what it was, which is the
+    # behaviour that shipped for months - worse, but not broken.
+    try:
+        from scanner import series_retention
+
+        _carried = series_retention.carry(staged, root=root)
+        _said = series_retention.describe(_carried)
+        if _said:
+            print(f"   {_said}")
+    except Exception as _error:  # noqa: BLE001 - never cost a scan
+        print(f"   series retention skipped: {_error}")
+    normalized = _merge_duplicate_series(staged)
     normalized.sort(
         key=lambda item: (
             1 if _int(item.get("year"), 0) == 0 else 0,
