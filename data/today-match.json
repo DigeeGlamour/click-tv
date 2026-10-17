@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-17T07:32:47.179231+00:00",
+  "updated_at": "2026-10-17T07:52:16.496945+00:00",
   "count": 6,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -87,13 +87,13 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
       "carried_forward_first_missed_at": "2026-10-17T06:06:15.450775+00:00",
-      "authority_finished_confirmations": 3,
+      "authority_finished_confirmations": 4,
       "authority_finished_seen_at": "2026-10-17T07:32:12.238707+00:00",
       "authority_remove_after": "2026-10-17T07:52:12.238707+00:00",
-      "contradicted_end_confirmations": 1
+      "contradicted_end_confirmations": 2
     },
     {
       "id": "canada-vs-nepal",
@@ -161,24 +161,11 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "LiveScore livescore=Play in progress (33, event 1860480)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "livescore": "1860480"
-      },
-      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE"
+      "lifecycle_state": "STARTING"
     },
     {
       "id": "koln-cc-vs-ica-berlin",
@@ -364,6 +351,35 @@
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_e8edd5484788c477cd7f17f933c22c13",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -392,7 +408,7 @@
           }
         },
         {
-          "name": "Backup-2",
+          "name": "Backup-3",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -412,35 +428,6 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_0cab11fbaf518cb8df9d756670a401a4",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_e8edd5484788c477cd7f17f933c22c13",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -489,6 +476,19 @@
               "id": "2nd-test-australia-v-new-zealand--prime-video--2",
               "role": "backup",
               "playback_type": "native",
+              "variant_key": "sv_4741f30e16cf3c5bf4151eb8",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_e8edd5484788c477cd7f17f933c22c13",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "2nd-test-australia-v-new-zealand--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_f6ea33c4f8bd123f8b5e9f92",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -499,7 +499,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "2nd-test-australia-v-new-zealand--prime-video--3",
+              "id": "2nd-test-australia-v-new-zealand--prime-video--4",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_f4230328126680c46793ff99",
@@ -507,19 +507,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_0cab11fbaf518cb8df9d756670a401a4",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "2nd-test-australia-v-new-zealand--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_4741f30e16cf3c5bf4151eb8",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_e8edd5484788c477cd7f17f933c22c13",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -554,9 +541,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-17T07:32:12+00:00",
-      "start_at": "2026-10-17T07:32:12+00:00",
-      "end_time": "2026-10-17T11:32:12+00:00",
+      "start_time": "2026-10-17T07:51:51+00:00",
+      "start_at": "2026-10-17T07:51:51+00:00",
+      "end_time": "2026-10-17T11:51:51+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:australia-vs-new-zealand-2-test",
       "status": "LIVE_NOW",
@@ -651,23 +638,26 @@
       "authority_event_ids": {
         "livescore": "1843484"
       },
-      "authority_finished_confirmations": 4,
+      "authority_finished_confirmations": 5,
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
-      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_misses": 4,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-17T06:57:50.032252+00:00",
       "authority_finished_seen_at": "2026-10-17T07:09:26.178448+00:00",
       "authority_status": "FINISHED",
       "authority_remove_after": "2026-10-17T07:29:26.178448+00:00",
-      "contradicted_end_confirmations": 2
+      "contradicted_end_confirmations": 3,
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-17T07:52:14.949164+00:00"
     }
   ]
 }
