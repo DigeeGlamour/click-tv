@@ -1443,6 +1443,23 @@ def _record_link_health(
         for identity in set(store.get("links") or {}) - verified_ids - carried_ids:
             health.mark_skipped_for_budget(store, identity)
 
+        # The ledger is a committed file and GitHub refuses one over 100 MB.
+        # Nothing here ever removed a record, so on 2026-10-17 the first
+        # movies scan in thirteen days did all of its work and was rejected at
+        # the push: 110,879 records, 109.27 MB, every record but one stale for
+        # budget and last touched in September. The links this run actually
+        # verified or carried are protected; the rest are bounded by age and
+        # by count. See `movie_link_health.prune`.
+        pruned = health.prune(store, keep=verified_ids | carried_ids)
+        if pruned["expired"] or pruned["trimmed"]:
+            print(
+                f"   link health ledger pruned: {pruned['before']} -> "
+                f"{pruned['after']} record(s) "
+                f"({pruned['expired']} older than "
+                f"{health.FORGET_AFTER_DAYS} days, {pruned['trimmed']} over "
+                f"the {health.MAX_RECORDS} cap); every link this run reached "
+                "is kept"
+            )
         health.save(store)
         summary = health.summarise(store)
         print(

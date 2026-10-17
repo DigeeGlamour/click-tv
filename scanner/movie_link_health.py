@@ -132,6 +132,39 @@ TOKEN_EXPIRY_SAFETY_SECONDS = 2 * HOUR
 SWEEP_BUCKETS = 7
 
 # ---------------------------------------------------------------------------
+# bounding the ledger - it is a committed file, and a committed file has a size
+# ---------------------------------------------------------------------------
+
+#: The ledger is written into the repository on every scan, and GitHub refuses
+#: any file over 100 MB at the pre-receive hook. Nothing here ever removed a
+#: record, so it only grew.
+#:
+#: Measured on 2026-10-17, when the first movies scan in thirteen days did all
+#: of its work and was then rejected at the push:
+#:
+#:     remote: error: File state/movie-link-health.json is 109.27 MB;
+#:     this exceeds GitHub's file size limit of 100.00 MB
+#:     ! [remote rejected] HEAD -> main (pre-receive hook declined)
+#:
+#:     records  110,879        catalogue cards  ~1,900
+#:     bytes per record  890
+#:     stale_reason=budget  110,878   (every record but one)
+#:     newest timestamp in September  110,878
+#:
+#: The driver is the CDN rotation this round also fixes: `sm-movie-combined`
+#: offers ~38,000 URLs and renames its host roughly weekly, and every rename
+#: mints a fresh `stream_id` for all of them. Six host generations is a
+#: quarter of a million records for one source, none of which the site can
+#: still reach.
+#:
+#: A cap and an age, and a record this run cares about is never dropped.
+MAX_RECORDS = 40_000
+#: Untouched for this long and not referenced by the run: nothing asks about
+#: it any more. Longer than the longest TTL (7 days) by a wide margin, so a
+#: link simply waiting its turn in the sweep is never forgotten.
+FORGET_AFTER_DAYS = 30
+
+# ---------------------------------------------------------------------------
 # stale reasons - ধারা ৪.৪, "প্রতিটি stale-এর সঙ্গে একটি কারণ থাকবে"
 # ---------------------------------------------------------------------------
 
@@ -293,6 +326,83 @@ def load(path: Optional[str | Path] = None) -> Dict[str, Any]:
         "schema_version": SCHEMA_VERSION,
         "updated_at": payload.get("updated_at") or "",
         "links": links if isinstance(links, dict) else {},
+    }
+
+
+def _touched_at(record: Dict[str, Any]) -> str:
+    """The most recent thing that happened to this record, as an ISO string.
+
+    Compared as text on purpose: these are all UTC ISO-8601 from `_iso`, which
+    sorts correctly as a string, and a record with no timestamp at all sorts
+    to the front, which is where something unidentifiable belongs.
+    """
+    if not isinstance(record, dict):
+        return ""
+    return max(
+        str(record.get("last_verified_at") or ""),
+        str(record.get("last_healthy_at") or ""),
+        str(record.get("first_seen_at") or ""),
+    )
+
+
+def prune(
+    store: Dict[str, Any],
+    *,
+    keep: Iterable[str] = (),
+    now: Optional[datetime] = None,
+    limit: int = MAX_RECORDS,
+    forget_after_days: int = FORGET_AFTER_DAYS,
+) -> Dict[str, int]:
+    """Bound the ledger so it stays a file GitHub will accept.
+
+    Two rules, in order, and `keep` overrides both:
+
+      1. a record untouched for `forget_after_days` is forgotten - nothing has
+         asked about it for longer than any TTL in the ladder;
+      2. if the ledger is still over `limit`, the least recently touched go
+         until it is not.
+
+    `keep` is what this run verified or carried - the links the site is
+    actually serving. Those are never dropped, at any size, because they are
+    the records the TTL ladder, the repair queue and ধারা ৪.০'s terminal
+    evidence all read. Forgetting one would re-verify a link the run already
+    answered, or lose the 404 that justified retiring a card.
+
+    Returns a tally, so a scan can say what it forgot rather than quietly
+    shrinking its own evidence.
+    """
+    links = store.get("links")
+    if not isinstance(links, dict):
+        return {"before": 0, "expired": 0, "trimmed": 0, "after": 0}
+
+    before = len(links)
+    protected = {str(identity) for identity in keep if identity}
+    cutoff = _iso(_now(now) - timedelta(days=max(0, int(forget_after_days))))
+
+    expired = 0
+    for identity in [
+        identity for identity, record in links.items()
+        if identity not in protected and _touched_at(record) < cutoff
+    ]:
+        del links[identity]
+        expired += 1
+
+    trimmed = 0
+    if len(links) > limit:
+        droppable = sorted(
+            (identity for identity in links if identity not in protected),
+            key=lambda identity: _touched_at(links[identity]),
+        )
+        for identity in droppable[:max(0, len(links) - limit)]:
+            del links[identity]
+            trimmed += 1
+
+    return {
+        "before": before,
+        "expired": expired,
+        "trimmed": trimmed,
+        "after": len(links),
+        "protected": len(protected & set(links)),
     }
 
 
