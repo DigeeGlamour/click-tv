@@ -23,6 +23,25 @@ from scanner import merger  # noqa: E402
 APP = (ROOT / "site" / "assets" / "js" / "app.js").read_text(encoding="utf-8")
 
 
+def _routes(item):
+    """How many playable routes a card actually carries.
+
+    One definition, read by the published-file check and by the unit cases
+    below, so the two cannot drift apart the way they did on 2026-10-17.
+    A route is a url or a playback_id - the player accepts either.
+    """
+    routes = 0 if item.get("metadata_only") is True else int(bool(
+        str(item.get("url") or "").strip()
+        or str(item.get("playback_id") or "").strip()))
+    for backup in item.get("backups") or []:
+        if not isinstance(backup, dict):
+            continue
+        if (str(backup.get("url") or "").strip()
+                or str(backup.get("playback_id") or "").strip()):
+            routes += 1
+    return routes
+
+
 class ReturningViewersGetTheCodeThatWasShippedTests(unittest.TestCase):
     """The audit's CRITICAL-1, and the most serious thing in it.
 
@@ -172,10 +191,27 @@ class ALinkCountCountsLinksTests(unittest.TestCase):
         The fault this was written for is still caught, and over-counting is
         caught now too - but the test used to read `metadata_only is True`
         alone as the offence, and that is not what the flag means.
-        `metadata_only` says the card has no PRIMARY url; `merger.py` writes
-        the count as `(0 if is_metadata_only else 1) + len(backups)`, so a
-        card with real backups and no primary is both metadata_only and
+        `metadata_only` says the card has no PRIMARY route; `merger.py`
+        writes the count as `(0 if is_metadata_only else 1) + len(backups)`,
+        so a card with real backups and no primary is both metadata_only and
         honestly countable.
+
+        A route is a url OR a playback_id, for the primary exactly as for a
+        backup. An earlier version counted only `url` on the primary while
+        counting either on a backup, and that inconsistency failed the suite
+        - which gates every scan - on a card that was telling the truth:
+
+            Powerball Cup, Round 3
+              metadata_only         False
+              url                   null
+              playback_id           ctv_697b0a44...   verified
+              backups               3   each with a playback_id, verified
+              available_link_count  4
+
+        Four real routes, counted as four. The url is withheld on purpose:
+        `collectPlaybackSources` in app.js admits a source on
+        `sourceUrl || playbackId` and sends an id-only source through the
+        id-aware proxy, so a playback_id is a route a viewer can watch.
 
         It fired on the published catalogue of 2026-10-17 12:53 and failed
         the suite, which gates every catalogue scan:
@@ -198,15 +234,7 @@ class ALinkCountCountsLinksTests(unittest.TestCase):
                 continue
             for item in json.loads(path.read_text(encoding="utf-8")).get("items") or []:
                 claimed = int(item.get("available_link_count") or 0)
-                routes = 0 if item.get("metadata_only") is True else bool(
-                    str(item.get("url") or "").strip())
-                for backup in item.get("backups") or []:
-                    if not isinstance(backup, dict):
-                        continue
-                    if str(backup.get("url") or "").strip() or str(
-                        backup.get("playback_id") or ""
-                    ).strip():
-                        routes += 1
+                routes = _routes(item)
                 if claimed > routes:
                     offenders.append(
                         f"{item.get('name')} claims {claimed} of {routes}")
@@ -216,10 +244,31 @@ class ALinkCountCountsLinksTests(unittest.TestCase):
         """The original HIGH-2 shape: `available_link_count: 1` beside
         `metadata_only: true` and nothing to play."""
         item = {"name": "Nothing", "metadata_only": True,
-                "available_link_count": 1, "url": "", "backups": []}
-        claimed = int(item["available_link_count"])
-        routes = 0 if item["metadata_only"] is True else bool(item["url"])
-        self.assertGreater(claimed, routes)
+                "available_link_count": 1, "url": "", "playback_id": "",
+                "backups": []}
+        self.assertEqual(0, _routes(item))
+        self.assertGreater(int(item["available_link_count"]), _routes(item))
+
+    def test_a_hidden_url_primary_counts_as_the_route_it_is(self):
+        """The Powerball shape: no url, a verified playback_id, and three
+        backups of the same kind. Four routes - and refusing it stops every
+        scan, which is the cost this project has already paid twice for a
+        test stricter than the thing it describes."""
+        item = {"name": "Powerball Cup, Round 3", "metadata_only": False,
+                "available_link_count": 4, "url": None,
+                "playback_id": "ctv_697b0a444f2a5e45587837413248c3da",
+                "backups": [{"playback_id": "ctv_5072a733"},
+                            {"playback_id": "ctv_fb7f3477"},
+                            {"playback_id": "ctv_e5a70720"}]}
+        self.assertEqual(4, _routes(item))
+
+    def test_a_backup_carrying_neither_is_not_a_route(self):
+        """Over-counting is still the offence it was."""
+        item = {"name": "Half empty", "metadata_only": False,
+                "available_link_count": 2, "url": "https://a.example/x.m3u8",
+                "backups": [{"name": "Backup-1"}]}
+        self.assertEqual(1, _routes(item))
+        self.assertGreater(int(item["available_link_count"]), _routes(item))
 
     def test_a_real_card_still_counts_its_primary(self):
         source = (ROOT / "scanner" / "merger.py").read_text(encoding="utf-8")
