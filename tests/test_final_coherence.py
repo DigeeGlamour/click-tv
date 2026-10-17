@@ -536,12 +536,71 @@ class TheFinalCompletionGateIsMeasurable(unittest.TestCase):
             [i.get("name") for i in self.items if not (i.get("source_ids") or [])], [])
 
     def test_no_today_card_is_badged_upcoming_after_its_kickoff(self):
-        stamp = str(self.today.get("updated_at") or "")
-        late = [i.get("name") for i in self.today.get("items") or []
-                if str(i.get("schedule_status")) == "UPCOMING"
-                and str(i.get("start_time") or "")
-                and str(i.get("start_time")) < stamp]
+        """Stale, not merely late - and the difference deadlocked the scanner.
+
+        `schedule_status` stays UPCOMING until an authority says otherwise,
+        on purpose: `scanner/authority_status.py` exists to stop the
+        catalogue claiming LIVE from the clock alone. A fixture is routed
+        onto Today Match up to `DEFAULT_TODAY_ROUTING_MINUTES` BEFORE
+        kickoff, so a card sitting there still badged UPCOMING a moment
+        after kickoff is the designed state, not a fault.
+
+        Compared with zero tolerance it was a fault, and on 2026-10-17 that
+        froze the whole scanner:
+
+            data/today-match.json  updated_at  13:30:15.951732
+            four Bundesliga 2 fixtures          start 13:30:00
+
+        Fifteen seconds. The statuses were decided during the scan and the
+        file was written after it, so any fixture kicking off while a scan
+        runs fails this. And because the suite gates every scan, the only
+        thing that could have moved those four cards to LIVE could never
+        run: every run after 13:30 failed here, the file stayed frozen at
+        13:30:15, and the failure re-armed itself for ever. That is the same
+        shape as the 4 October deadlock this project has already paid for.
+
+        So the question it asks is now whether the status is STALE: still
+        UPCOMING long enough past kickoff that the lifecycle has plainly
+        stopped updating it. The bound is the project's own
+        `DEFAULT_TODAY_ROUTING_MINUTES`, the constant that already defines
+        how wide the kickoff neighbourhood is, rather than a number invented
+        here.
+        """
+        from datetime import timedelta  # noqa: PLC0415
+
+        from scanner.event_lifecycle import (  # noqa: PLC0415
+            DEFAULT_TODAY_ROUTING_MINUTES,
+            parse_time,
+        )
+
+        written = parse_time(self.today.get("updated_at"))
+        if written is None:
+            self.skipTest("today-match.json carries no usable updated_at")
+        cutoff = written - timedelta(minutes=DEFAULT_TODAY_ROUTING_MINUTES)
+        late = []
+        for item in self.today.get("items") or []:
+            if str(item.get("schedule_status")) != "UPCOMING":
+                continue
+            started = parse_time(item.get("start_time"))
+            if started is not None and started < cutoff:
+                late.append(
+                    f"{item.get('name')} kicked off {int((written - started).total_seconds() // 60)}"
+                    " minute(s) before this file was written")
         self.assertEqual(late, [])
+
+    def test_a_card_hours_past_kickoff_is_still_a_fault(self):
+        """The staleness this is really guarding against."""
+        from datetime import datetime, timedelta, timezone  # noqa: PLC0415
+
+        from scanner.event_lifecycle import (  # noqa: PLC0415
+            DEFAULT_TODAY_ROUTING_MINUTES,
+        )
+
+        written = datetime(2026, 10, 17, 18, 0, tzinfo=timezone.utc)
+        cutoff = written - timedelta(minutes=DEFAULT_TODAY_ROUTING_MINUTES)
+        self.assertLess(written - timedelta(hours=4), cutoff)
+        # ...and the few seconds that froze the scanner is not one.
+        self.assertGreater(written - timedelta(seconds=15), cutoff)
 
     def test_the_coverage_report_credits_every_published_card(self):
         coverage = json.loads((ROOT / "reports" / "today-source-coverage.json")
