@@ -362,6 +362,34 @@ def _supply_scan_evidence(items: List[Dict[str, Any]]) -> int:
     return supplied
 
 
+def _has_durable_playback_proof(item: Dict[str, Any]) -> bool:
+    """Is there a sustained-playback proof on file for this card?
+
+    The ledger, not the card: two independent real browser sessions each
+    played it for a full 120 s to the PASS floor, and that record is kept
+    outside the card precisely so a scan rebuilding the card cannot erase it.
+
+    The kind comes from the pipeline, not from `content_kind`. The ledger is
+    keyed `kind|name` over the two words the other callers pass - they say
+    `"channel"` and `"movie"` literally - while a card's own `content_kind` is
+    a richer vocabulary: Desh TV carries `live_tv`, and asking the ledger for
+    `live_tv|desh tv` finds nothing while `channel|desh tv` is right there.
+
+    Imported here rather than at module scope to keep the import graph this
+    module already has, and wrapped because a missing or unreadable ledger
+    must mean "no proof", never a failed scan.
+    """
+    try:
+        from scanner import sustained_proof
+        from scanner.player_compatibility import normalized_kind_for_proof
+
+        pipeline = str(item.get("source_pipeline") or "").strip().casefold()
+        kind = "movie" if pipeline == "movies" else "channel"
+        return bool(sustained_proof.has_proof(item, normalized_kind_for_proof(kind)))
+    except Exception:  # noqa: BLE001 - no proof is the safe answer
+        return False
+
+
 def _apply_strict_player_visibility(
     items: List[Dict[str, Any]],
     settings: Dict[str, Any],
@@ -382,6 +410,35 @@ def _apply_strict_player_visibility(
         # next scan hid all seven channels Phase 1 had just cleared, undoing the
         # restoration with the proof still sitting in the report.
         if str(item.get("verification_status") or "") in PROVEN_LIVE_STATUSES:
+            continue
+        # ...and the same proof when the card no longer carries the status.
+        #
+        # The status above survives only until a scan rebuilds the card, which
+        # `scanner/player_compatibility.is_player_proven` already documents and
+        # already answers by reading the durable ledger instead. This path got
+        # half of that lesson: it learned to honour the status and not where
+        # the status comes from.
+        #
+        # Measured on the published catalogue of 2026-10-04, which is the tree
+        # that turned the suite red and stopped every catalogue scan for
+        # thirteen days. Desh TV - one of the restored channels, with a
+        # sustained-playback proof on file - came back from a scan as
+        # `retryable_pending`, so the status test above no longer matched:
+        #
+        #     sustained_proof.has_proof        True
+        #     is_player_proven                 True
+        #     item_is_proven_live              True
+        #     mark_confirmed_player_failures   hides 0
+        #     mark_unproven_player_items       hides 0
+        #     mark_unproven_items              hides 0
+        #     _apply_strict_player_visibility  hides 1   <- only this one
+        #
+        # Three of the four hide paths kept it and this one did not, which is
+        # exactly what `test_no_hide_path_can_undo_the_restoration` exists to
+        # refuse. Nothing is loosened: a card with no proof anywhere is still
+        # hidden, which `test_a_genuinely_unproven_card_is_still_hidden`
+        # continues to check.
+        if _has_durable_playback_proof(item):
             continue
         if item.get("publish_allowed") is True:
             allowed, why = model_permits_hide(
