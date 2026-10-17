@@ -167,17 +167,59 @@ class ALinkCountCountsLinksTests(unittest.TestCase):
     that does not exist."""
 
     def test_the_published_files_do_not_claim_a_link_they_lack(self):
+        """Counted against the routes that exist, not against `metadata_only`.
+
+        The fault this was written for is still caught, and over-counting is
+        caught now too - but the test used to read `metadata_only is True`
+        alone as the offence, and that is not what the flag means.
+        `metadata_only` says the card has no PRIMARY url; `merger.py` writes
+        the count as `(0 if is_metadata_only else 1) + len(backups)`, so a
+        card with real backups and no primary is both metadata_only and
+        honestly countable.
+
+        It fired on the published catalogue of 2026-10-17 12:53 and failed
+        the suite, which gates every catalogue scan:
+
+            RCD Espanyol vs Atletico de Madrid
+              metadata_only         True
+              url                   ''
+              backups               4   each with a playback_id, verified
+              channels              4
+              available_link_count  4
+
+        Four real routes, counted as four. Refusing that publishes nothing
+        and stops the scanner, which is the cost this project has already
+        paid once for a test that was stricter than the thing it described.
+        """
         offenders = []
         for name in ("today-match.json", "upcoming.json"):
             path = ROOT / "data" / name
             if not path.is_file():
                 continue
             for item in json.loads(path.read_text(encoding="utf-8")).get("items") or []:
-                if item.get("metadata_only") is True and int(
-                    item.get("available_link_count") or 0
-                ) > 0:
-                    offenders.append(item.get("name"))
+                claimed = int(item.get("available_link_count") or 0)
+                routes = 0 if item.get("metadata_only") is True else bool(
+                    str(item.get("url") or "").strip())
+                for backup in item.get("backups") or []:
+                    if not isinstance(backup, dict):
+                        continue
+                    if str(backup.get("url") or "").strip() or str(
+                        backup.get("playback_id") or ""
+                    ).strip():
+                        routes += 1
+                if claimed > routes:
+                    offenders.append(
+                        f"{item.get('name')} claims {claimed} of {routes}")
         self.assertEqual([], offenders[:10])
+
+    def test_a_card_with_nothing_at_all_still_fails_it(self):
+        """The original HIGH-2 shape: `available_link_count: 1` beside
+        `metadata_only: true` and nothing to play."""
+        item = {"name": "Nothing", "metadata_only": True,
+                "available_link_count": 1, "url": "", "backups": []}
+        claimed = int(item["available_link_count"])
+        routes = 0 if item["metadata_only"] is True else bool(item["url"])
+        self.assertGreater(claimed, routes)
 
     def test_a_real_card_still_counts_its_primary(self):
         source = (ROOT / "scanner" / "merger.py").read_text(encoding="utf-8")
