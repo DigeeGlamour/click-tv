@@ -2854,3 +2854,189 @@ running throughout.
 on `main`; the catalogue on the site is still the one the last production scan
 wrote. The next scheduled movie run (`37 4,16 * * *`) is the first to execute
 any of it.
+
+---
+
+# 2026-10-17 — Why the scanner stopped, and what a viewer was seeing
+
+Everything below was measured against the live repository and the live
+feeds on 2026-10-17, not inferred from the code.
+
+## The scanner did not fail. It was switched off.
+
+`Live Signal Scanner` last ran on **2026-10-04**. The GitHub API reports the
+workflow's state as `disabled_manually`, and four others with it:
+
+    active              Authority Reachability Probe
+    disabled_manually   Live Signal Scanner          .github/workflows/scan.yml
+    disabled_manually   Movie Discovery Refresh
+    disabled_manually   Movie Repair Queue
+    disabled_manually   Click TV Site Check
+    disabled_manually   Playback Feedback Report
+
+Nothing has run since 2026-10-15 15:01, when the last two were switched off.
+Re-enabling them is the one step in this report that cannot be done from the
+code: it needs repository access.
+
+## Before they were switched off, they were failing — for one reason
+
+Every failed run on 3 and 4 October — 29 and 11 of them — died at the same
+step, **"Run the full test suite"**, which gates every catalogue scan. The
+rest of each burst is `cancelled`, which is the concurrency group evicting
+pending runs, not a separate fault.
+
+The failure was reproduced exactly by downloading the published tree of the
+last failing run (`c68c7be3`) and running the suite against it:
+
+    FAIL  test_promote_proven_channels.RestoredStateTests
+            .test_no_hide_path_can_undo_the_restoration
+    FAIL  test_promote_proven_channels.RestoredStateTests
+            .test_every_hide_path_keeps_the_restored_channels
+          strict_player_visibility would hide the restored channels
+
+**Desh TV.** One of the restored channels, with a sustained-playback proof on
+file — two independent real browser sessions, each playing it for a full
+120 s to the PASS floor. A scan brought it back as `retryable_pending`, and
+on that tree:
+
+    sustained_proof.has_proof        True
+    is_player_proven                 True
+    item_is_proven_live              True
+    mark_confirmed_player_failures   hides 0
+    mark_unproven_player_items       hides 0
+    mark_unproven_items              hides 0
+    _apply_strict_player_visibility  hides 1    <- only this one
+
+`player_compatibility.is_player_proven` already carries the lesson in a
+comment: the status "survives only until the next scan rebuilds the card…
+The durable record lives outside the card." `_apply_strict_player_visibility`
+had learned to honour the status but not where the status comes from. One
+scan rebuilding one card was enough to turn the suite red and stop every
+catalogue scan for thirteen days.
+
+Fixed by having that path read the same ledger the other three read, with the
+kind taken from the pipeline (`channel`/`movie`) rather than from the card's
+own `content_kind` — Desh TV carries `live_tv`, and `live_tv|desh tv` is not
+a key the ledger has. The suite is green on that same tree afterwards.
+
+Nothing was loosened: a card with no proof anywhere is still hidden.
+
+## The links: the source moves house, the catalogue never followed
+
+`sm-movie-combined` serves every file from a CDN hostname it rotates roughly
+weekly. `movie_coverage.path_family` already knew — it was added so the
+no-loss gate would accept the rotation — but nothing moved the **card**.
+
+    published movie cards                     1,917
+      exact URL still offered by its source       0
+      same path on a host the feed offers     1,487
+      path not offered at all                   430
+
+Every retired zone answers, from two vantages and for invented paths too,
+with BunnyCDN's own page: *"Domain suspended or not configured."* All 1,487
+were badged **Verified**.
+
+The rotation observed so far:
+
+    qfdghnb / jrtyh / urtgh / wrtyg  ->  idfgbn  ->  dertg
+
+The catalogue still holds the first set, so this was never a one-off repair
+to make by hand — it is the missing half of a mechanism. `movie_host_rotation`
+moves a card only on unambiguous evidence and keeps the retired link as a
+backup, so INVARIANT 2 stays whole on the run that repairs it.
+
+## The posters: the same defect wearing a different hat
+
+1,112 of 1,917 cards carried an image-proxy URL wrapping one of the retired
+zones, so the 403 a viewer got was that suspended-domain page passed through
+and **58% of the catalogue showed the placeholder**. Rewriting the hostname
+inside the proxy's query restored 30 of 30 sampled images as real JPEG bytes.
+The proxy is kept: fetched directly the live zone refuses, because the proxy
+is what supplies the `Referer`.
+
+## The series: a carried card was invisible to the step that would move it
+
+Classification and the series migration run over the catalogue while it is
+still one list; retention runs later and is what puts a carried card back. So
+the step that moves an episode into the series catalogue had never seen a
+carried card — and a card is carried precisely when its link could not be
+reached.
+
+    movie cards whose title states S..E..       313
+      classified                                  0
+    movie cards that were classified            117   every one of them fresh
+
+Carried cards are now lent to the pass and taken back before grouping, so
+retention stays the only owner of a carried card and no grace is spent. The
+migration plans **347 cards into 91 shows, 0 skipped**.
+
+## The Web Series tab showed 28 of 67 shows
+
+`mergeCategoryItems` replaces the series in the list rather than adding to
+them — correct for its other caller, which browses one category at a time.
+Called once per category inside a loop, each category discarded the one
+before it:
+
+    data/series/manifest.json   total_series 67
+      Bangla 1, Hindi 1, English 1, Dubbed 23, South Indian 13, Premium 28
+    Web Series tab rendered     28   <- exactly Premium, the last in the loop
+
+39 of 67 shows — 58% of the series catalogue — could not be reached by a
+viewer at all. Collected first and merged once: 67 rendered, 67 distinct.
+
+## The private source's Bangla films: a gate the configuration had switched off
+
+`channels.py` has always required two flags together and
+`player_compatibility.py` documents the same — *"This gate is currently off
+(bangla_requires_player_proof = false)"*. `movies.py` read only the first, so
+the gate ran anyway, against a 45-proof ledger, on one category:
+
+    Dubbed 97/97   Hindi 82/82   South Indian 142/142
+    English 79/79  Premium 25/25        Bangla 0/0    of 94 offered
+
+A confirmed browser failure is a separate, evidence-based gate a few lines
+earlier and still removes those films. What stops is demanding positive proof
+that almost nothing can have.
+
+## The 2K squeeze after "Back to Movies"
+
+`html.movie-playback-context` was set from a predicate that is true for the
+whole Movie section, browse included, and only the player ever set it — so in
+practice it meant "a movie has played at some point this session". The browse
+shell drops its width cap behind `html:not(.movie-playback-context)`, so
+pressing Back left the cap on. Measured in Chromium:
+
+    viewport   browse   playback   after Back
+      1440      1440      1440       1440    (cap wider than the window)
+      1920      1920      1920       1824    (-96)
+      2560      2560      2560       2040    (-520)
+
+1440 hid it completely, which is why every desktop check passed. The flag now
+asks whether the player owns the page, and all three widths return exactly to
+the browse width.
+
+## What is still wrong, and is not ours to fix
+
+**The upstream movie feed is mostly empty.** Of 30 URLs taken straight from
+today's `sm-movie-combined` feed and fetched as a player would, 1 returned
+video bytes; 21 were 404 and 8 were 403. Checked from two vantages — this
+machine and the site's own Cloudflare worker — a sample of the 404s is 404
+from both. The repair still matters: it points every card at the host the
+source actually serves instead of a suspended one, and it turns the rest into
+honest 404s, which the no-loss gate can act on. But the files themselves are
+not there to be played.
+
+**The private source's links are `r2.dev` public endpoints.** Cloudflare rate
+limits those; they are not production delivery URLs. Sampled early in the day
+19 of 40 returned video bytes, and later the same buckets returned 403 to
+every request including through the worker. Viewers will see this as a film
+that plays sometimes and not others.
+
+## State of this work
+
+Two commits are on the local branch and **not yet pushed** — the stored
+credential is rejected by both the API and `git push`
+("Invalid username or token"). Nothing in this report is on the site yet, and
+nothing will be until the workflows are switched back on and a full movies
+scan runs: the last `Auto update: movies` was 2026-09-26 10:08, so none of
+the movie fixes written since have ever executed against the real catalogue.
