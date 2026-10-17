@@ -66,6 +66,9 @@ STREAM_STILL_PUBLISHED = "stream_still_published"
 CARD_STILL_PUBLISHED = "card_still_published"
 LINK_STILL_HEALTHY = "link_still_healthy"
 ANOTHER_SOURCE_HAS_IT = "another_source_still_lists_it"
+#: The same file, offered by a source under a different hostname. Separate
+#: from the line above so the report can say which of the two happened.
+SOURCE_MOVED_IT = "a_source_offers_the_same_file_on_another_host"
 NO_STREAM_RECORDED = "no_stream_recorded"
 
 
@@ -77,6 +80,45 @@ def _family(url: Any) -> str:
         return stream_family(url)
     except Exception:  # noqa: BLE001 - one url, never the run
         return ""
+
+
+def _path(url: Any) -> str:
+    """The filename part, for recognising a file that only changed hostname.
+
+    `source_removed_with_no_alternative` is one of the four DEFINITIVE reject
+    reasons, so emitting it when a source is still offering the file is the
+    one mistake this module must not make. Host+path alone makes exactly that
+    mistake against `sm-movie-combined`, which renames its CDN host roughly
+    weekly: on 2026-10-17 the published catalogue sat on `jrtyh.b-cdn.net`
+    while the feed served every one of those files from `dertg.b-cdn.net`.
+
+    Measured on that run: 576 removals were called terminal and the no-loss
+    gate still reported 393 previously live streams as unexplained. Every one
+    sampled was a retired host - and every one was still listed by the feed,
+    on the new host, under exactly this path.
+
+    Only a path that names a file counts, which is the same rule
+    `scanner/movie_host_rotation` applies, because `/live` or `/index.m3u8`
+    is served by thousands of unrelated hosts and would make this match
+    meaningless.
+    """
+    try:
+        from scanner.movie_coverage import path_family
+        from scanner.movie_host_rotation import _specific
+
+        path = path_family(url)
+        return path if path and _specific(path) else ""
+    except Exception:  # noqa: BLE001 - one url, never the run
+        return ""
+
+
+def paths_of(urls: Iterable[Any]) -> List[str]:
+    found: List[str] = []
+    for url in urls or ():
+        path = _path(url)
+        if path and path not in found:
+            found.append(path)
+    return found
 
 
 def families_of(urls: Iterable[Any]) -> List[str]:
@@ -154,6 +196,7 @@ def decide(
     live_families: Set[str],
     source_families: Set[str],
     grace_scans: int,
+    source_paths: Optional[Set[str]] = None,
 ) -> Tuple[List[str], str]:
     """`(families that are terminal, refusal reason)`.
 
@@ -186,6 +229,14 @@ def decide(
         if family in source_families:
             return [], ANOTHER_SOURCE_HAS_IT
 
+    # The same file under a new hostname. Checked after every exact test
+    # above, and deliberately last: a path match is weaker evidence than a
+    # host+path match, and it is used here only to REFUSE a definitive
+    # reject, never to justify one. The conservative direction.
+    for path in paths_of(entry.get("urls") or ()):
+        if path in (source_paths or ()):
+            return [], SOURCE_MOVED_IT
+
     return families, ""
 
 
@@ -197,6 +248,7 @@ def terminal_records(
     live_families: Optional[Set[str]] = None,
     source_families: Optional[Set[str]] = None,
     grace_scans: Optional[int] = None,
+    source_paths: Optional[Set[str]] = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """`(records for the gate, summary)`.
 
@@ -217,6 +269,7 @@ def terminal_records(
     published_card_ids = set(published_card_ids or ())
     live_families = set(live_families or ())
     source_families = set(source_families or ())
+    source_paths = set(source_paths or ())
 
     records: List[Dict[str, Any]] = []
     seen: Set[str] = set()
@@ -233,6 +286,7 @@ def terminal_records(
             live_families=live_families,
             source_families=source_families,
             grace_scans=int(grace_scans),
+            source_paths=source_paths,
         )
         if refusal:
             refused[refusal] = refused.get(refusal, 0) + 1
@@ -290,6 +344,13 @@ def collect(
                 for entry in raw_entries or ()
                 if isinstance(entry, dict)
             ) if family
+        },
+        source_paths={
+            path for path in (
+                _path(entry.get("url"))
+                for entry in raw_entries or ()
+                if isinstance(entry, dict)
+            ) if path
         },
         grace_scans=movie_retention.GRACE_SCANS,
     )

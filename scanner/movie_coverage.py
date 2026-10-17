@@ -462,6 +462,52 @@ def published_index(
     }
 
 
+#: Filenames that identify nothing. Every HLS origin on the internet serves
+#: `index.m3u8`, so two hosts agreeing on one says only that both speak HLS.
+#: A path ending in one of these is never treated as the same file.
+GENERIC_BASENAMES = frozenset({
+    "index.m3u8", "playlist.m3u8", "master.m3u8", "chunks.m3u8",
+    "stream.m3u8", "live.m3u8", "index.mpd", "manifest.mpd", "stream.mpd",
+    "index.ts", "video.mp4", "index.html",
+})
+
+
+def _specific_path(path: str) -> bool:
+    """Does this path name a file, or could any host be serving anything here?
+
+    The same rule `scanner/movie_host_rotation` applies, kept here so the gate
+    does not depend on that module to answer a question about itself.
+    """
+    if not path or len(path) < 12:
+        return False
+    tail = path.rsplit("/", 1)[-1]
+    if tail.casefold() in GENERIC_BASENAMES:
+        return False
+    return "." in tail and len(tail) > 4
+
+
+def _terminal_by_path(terminal_families: Dict[str, str]) -> Dict[str, str]:
+    """Terminal verdicts keyed by the file's path instead of host+path.
+
+    Built once per call and cached on the mapping it came from: the caller
+    asks this for every unmatched stream, and the terminal set is tens of
+    thousands of entries.
+    """
+    cached = getattr(terminal_families, "_by_path", None)
+    if cached is not None:
+        return cached
+    by_path: Dict[str, str] = {}
+    for family, reason in (terminal_families or {}).items():
+        path = path_family(family)
+        if path and _specific_path(path):
+            by_path.setdefault(path, reason)
+    try:
+        setattr(terminal_families, "_by_path", by_path)
+    except AttributeError:  # a plain dict accepts it; a mapping proxy may not
+        pass
+    return by_path
+
+
 def locate(index: Dict[str, Any], entry: Dict[str, Any]) -> Tuple[Optional[Dict[str, Any]], str]:
     """Where a stream is on the site, and how confidently we know it.
 
@@ -768,6 +814,32 @@ def live_preservation(
 
         if family in terminal_families:
             terminal_evidence += 1
+            continue
+
+        # The same terminal verdict, recorded against the file's new hostname.
+        #
+        # `path_family` already exists here because `sm-movie-combined` renames
+        # its CDN host roughly weekly, and the "is it still visible" layers
+        # above already use it. The terminal layer did not, and that is a gap
+        # with one shape: the run probes the URLs the FEED offers - the new
+        # host - so a confirmed 404 is recorded under `dertg.b-cdn.net/...`
+        # while the stream that went missing is `jrtyh.b-cdn.net/...`. Same
+        # path, same file, same answer, and no match.
+        #
+        # Measured on the 2026-10-17 06:12 movies run: 27,962 links confirmed
+        # 404 or 410, and the gate still reported 393 previously live streams
+        # as unexplained. Every one sampled was a retired host whose file the
+        # feed still lists on the new one.
+        #
+        # The evidence is not weakened by this: it is still a 404 or a 410
+        # that some vantage actually received, never a 403 and never a
+        # timeout. What changes is which stream that answer is allowed to
+        # explain - and a path that does not name a file is refused, because
+        # `/live` is served by thousands of unrelated hosts.
+        rotated = _terminal_by_path(terminal_families).get(path_family(family))
+        if rotated:
+            terminal_evidence += 1
+            match_layers["terminal_path_rotated"] += 1
             continue
 
         # Last layer. The card this stream belonged to is not on the site under

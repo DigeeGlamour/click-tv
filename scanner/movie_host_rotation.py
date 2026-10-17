@@ -79,10 +79,23 @@ def _host_of(value: Any) -> str:
 
 
 def _specific(path: str) -> bool:
-    """Is this path a filename, or could any host be serving anything here?"""
+    """Is this path a filename, or could any host be serving anything here?
+
+    `index.m3u8` and its relatives are refused by name: every HLS origin on
+    the internet serves one, so two hosts agreeing on that path says only
+    that both speak HLS. The list is the gate's own, imported rather than
+    copied so the two cannot drift into disagreeing about the same URL.
+    """
     if len(path) < MINIMUM_PATH_LENGTH:
         return False
     tail = path.rsplit("/", 1)[-1]
+    try:
+        from scanner.movie_coverage import GENERIC_BASENAMES
+
+        if tail.casefold() in GENERIC_BASENAMES:
+            return False
+    except Exception:  # pragma: no cover - defensive
+        pass
     return "." in tail and len(tail) > 4
 
 
