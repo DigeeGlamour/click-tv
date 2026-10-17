@@ -699,7 +699,18 @@ def _retain_recent_dropouts(
             # purpose and must not be carried back into it.
             moved_cards=_MIGRATED_CARD_IDS,
             moved_streams=_MIGRATED_STREAM_URLS,
+            # The file paths the sources are offering right now. Retention
+            # uses them for one thing: it will not let the grace countdown
+            # delete a card whose file a source is still listing under a
+            # different hostname. See `_source_still_offers`.
+            source_paths=set(_SOURCE_OFFERS),
         )
+        if summary.get("held_source_still_offers"):
+            print(
+                f"   {category_slug}: {summary['held_source_still_offers']} "
+                "card(s) held past the grace - their source is still "
+                "offering the file on another host"
+            )
         if summary.get("moved_to_series"):
             print(
                 f"   {category_slug}: {summary['moved_to_series']} card(s) "

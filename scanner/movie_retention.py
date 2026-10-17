@@ -413,6 +413,7 @@ def retain(
     persist: bool = True,
     moved_cards: Optional[Any] = None,
     moved_streams: Optional[Any] = None,
+    source_paths: Optional[Any] = None,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """(list to publish, summary). Adds back recent drop-outs, adds only.
 
@@ -557,6 +558,35 @@ def retain(
             "complete_misses": complete_misses,
             "last_missing_at": stamp,
         }
+        if misses > GRACE_SCANS and _source_still_offers(previous, source_paths):
+            # The grace has run out, but the source is still listing this
+            # file - under a different hostname, which is what
+            # `sm-movie-combined` does roughly weekly. Dropping it here is
+            # what produced the deadlock measured on 2026-10-17: the card
+            # left the catalogue, `movie_source_removal` rightly refused to
+            # call a file the feed still lists "removed with no
+            # alternative" (456 refusals on that run), and the stream was
+            # then neither published nor terminally explained - which is
+            # exactly what the no-loss gate blocks on.
+            #
+            # A file that is listed but genuinely gone is still removed, by
+            # the other road: a confirmed 404 or 410 from the link-health
+            # ledger is terminal evidence in its own right and does not
+            # depend on this countdown.
+            carried = dict(previous)
+            carried["verification_status"] = RETAINED_STATUS
+            carried["retained_after_failed_scan"] = True
+            carried["retained_scan_count"] = misses
+            carried["retained_while_source_offers_it"] = True
+            carried["retention_note"] = (
+                "Not found by the last "
+                f"{misses} scans, but the source is still offering this file "
+                "under a different hostname, so it is not treated as gone."
+            )
+            retained.append(carried)
+            summary["held_source_still_offers"] = (
+                summary.get("held_source_still_offers", 0) + 1)
+            continue
         if misses > GRACE_SCANS:
             summary["dropped_after_grace"] += 1
             removed[key] = {
@@ -594,6 +624,44 @@ def retain(
     summary["retained"] = len(retained)
     summary["removed_tracked"] = len(removed)
     return incoming + retained, summary
+
+
+def _source_still_offers(card: Dict[str, Any], source_paths: Optional[Any]) -> bool:
+    """Is any source listing this card's file right now, on any hostname?
+
+    The weaker of the two comparisons the gate knows, used here for one
+    purpose only: to REFUSE to let the countdown delete a card. It can keep
+    a card on the site; it can never remove one.
+
+    Measured on the 2026-10-17 11:00 movies run, which is why this exists.
+    `sm-movie-combined` renames its CDN host roughly weekly, so a published
+    card sits on a hostname the feed no longer uses while the feed serves
+    the same file from the new one. The card is therefore never "found" by a
+    scan, the grace runs out, and it is dropped - while
+    `movie_source_removal` correctly refuses to call a file the feed is
+    still listing removed:
+
+        source removals: 49 of 799 past the retention grace with no
+        alternative; kept: 456 a_source_offers_the_same_file_on_another_host
+
+    Those 456 cards left the catalogue with no terminal explanation, and the
+    no-loss gate blocked the publish over them.
+
+    A file that is listed but genuinely gone is still removed, by the other
+    road: a confirmed 404 or 410 in the link-health ledger is terminal
+    evidence on its own and does not wait for this countdown.
+    """
+    if not source_paths:
+        return False
+    try:
+        from scanner.movie_source_removal import _path
+    except Exception:  # noqa: BLE001 - never fail a scan over this
+        return False
+    for url in _stream_urls(card):
+        path = _path(url)
+        if path and path in source_paths:
+            return True
+    return False
 
 
 def _forget_stale_removals(
