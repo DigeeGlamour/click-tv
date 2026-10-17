@@ -864,7 +864,24 @@ def live_preservation(
             merged += 1
             continue
 
-        lost.append({"stream_family": family, "inventory_line": line})
+        # Every layer above said no. Record WHICH of them came closest, so
+        # the next person reading this report is not left guessing which
+        # mechanism should have explained the stream and did not.
+        #
+        # Four runs on 2026-10-17 took the loss from 635 to 10, and each step
+        # cost a scan to diagnose because the report named the streams
+        # without naming what was true about them. The three facts below are
+        # the ones that would have answered it each time: is the card still
+        # on the site at all, is the same file published under some other
+        # host, and did anything at all offer this path.
+        lost.append({
+            "stream_family": family,
+            "inventory_line": line,
+            "card_id_published": bool(index["by_card_id"].get(recorded_id)),
+            "path_published": bool(index["by_path"].get(path_family(family))),
+            "terminal_known_for_path": bool(
+                _terminal_by_path(terminal_families).get(path_family(family))),
+        })
 
     block_reasons: List[str] = []
     if lost:
