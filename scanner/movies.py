@@ -1006,6 +1006,149 @@ def _annotate_provider_pending(movies: List[Dict[str, Any]]) -> Dict[str, Any]:
 _MIGRATED_CARD_IDS: set = set()
 _MIGRATED_STREAM_URLS: set = set()
 
+#: What the enabled Movie sources are offering on this run, keyed by the path
+#: part of each URL, and the host+path set that goes with it. Filled in
+#: `process_movies` from the raw candidates - including the ones the merger
+#: drops as duplicates, because an entry that lost a dedupe is still the
+#: source saying where the file is today. Read by `_adopt_rotated_hosts`.
+_SOURCE_OFFERS: dict = {}
+_SOURCE_FAMILIES: set = set()
+
+#: retired host -> the host the source moved to, learned from the cards this
+#: run actually moved and accumulated across categories. Read by the poster
+#: repair, which has to fix images on cards whose own link never rotated.
+_ROTATED_HOSTS: dict = {}
+
+
+def _remember_source_offers(entries: List[Dict[str, Any]]) -> None:
+    """Record where every source says its files are, before anything merges.
+
+    Wrapped: a catalogue that cannot follow a rotation is the behaviour this
+    run already had, and it is not worth taking a scan down for.
+    """
+    _SOURCE_OFFERS.clear()
+    _SOURCE_FAMILIES.clear()
+    _ROTATED_HOSTS.clear()
+    try:
+        from scanner import movie_host_rotation
+
+        offers = movie_host_rotation.offers_by_path(entries)
+        _SOURCE_OFFERS.update(offers)
+        _SOURCE_FAMILIES.update(movie_host_rotation.offered_families(offers))
+    except Exception as exc:  # pragma: no cover - defensive
+        print(f"   movie source offers unavailable: {exc}")
+
+
+def _adopt_rotated_hosts(movies: List[Dict[str, Any]], category_slug: str) -> int:
+    """Point a card at the host its source is using now. See
+    `scanner/movie_host_rotation.py` for the measurement that forced this.
+
+    Runs after retention, because the cards that need it most are the carried
+    ones: a card is carried precisely when the scan did not find its URL, and
+    on this feed the reason it was not found is that the hostname moved.
+    """
+    if not _SOURCE_OFFERS:
+        return 0
+    try:
+        from scanner import movie_host_rotation
+
+        summary = movie_host_rotation.apply(
+            movies, _SOURCE_OFFERS, _SOURCE_FAMILIES)
+    except Exception as exc:  # pragma: no cover - defensive
+        print(f"   {category_slug}: host rotation skipped: {exc}")
+        return 0
+    moved = summary.get(movie_host_rotation.ADOPTED, 0)
+    if moved:
+        print(f"   {category_slug}: {movie_host_rotation.describe(summary)}")
+    # The poster is the same defect wearing a different hat: the image URL is
+    # an image proxy wrapping the very hostname the film just moved off, so
+    # the 403 the viewer got was the retired zone's own page passed through.
+    # The map is accumulated across categories because a category whose films
+    # all come from one source learns nothing on its own.
+    try:
+        _ROTATED_HOSTS.update(movie_host_rotation.observed_host_map(movies))
+        repaired = movie_host_rotation.repair_posters(movies, _ROTATED_HOSTS)
+    except Exception as exc:  # pragma: no cover - defensive
+        print(f"   {category_slug}: poster host rotation skipped: {exc}")
+        repaired = 0
+    if repaired:
+        print(
+            f"   {category_slug}: {repaired} poster(s) repointed at the host "
+            "their film moved to"
+        )
+    ambiguous = summary.get(movie_host_rotation.AMBIGUOUS, 0)
+    if ambiguous:
+        print(
+            f"   {category_slug}: {ambiguous} card(s) left alone - more than "
+            "one host offers that path and none is the card's own source"
+        )
+    return moved
+
+
+#: Marks a previously published card that was lent to the catalogue-wide
+#: passes for this run only. It is removed again before grouping, so retention
+#: stays the single owner of every carried card.
+_CARRIED_PROBE = "_carried_probe"
+
+
+def _carried_candidates(
+    incoming: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """The published cards this scan did not find, lent to ধারা ৪.৬ and ধাপ ৩খ.
+
+    Classification and the series migration run in `process_movies`, over the
+    catalogue while it is still one list. Retention runs later, inside
+    `paginate_movie_list`, and it is what puts a carried card back. So the
+    passes that decide "this is an episode, it belongs in the series
+    catalogue" have never once seen a carried card - and a card is carried
+    precisely when the scan could not reach its URL.
+
+    Measured on 2026-09-26 against the published catalogue:
+
+        movie cards whose title states a season and episode      313
+          classified (series_show_key set)                         0
+          verification_status                      stale_last_good 313
+          retained_after_failed_scan                          True 313
+
+        movie cards that were classified                         117
+          every one of them fresh (verified_global, not carried)
+
+    Nothing carried had ever been classified, so 313 episode cards - which
+    would group into 95 shows, 37 of them Bachelor Point alone - were stuck as
+    separate movie cards permanently. That is the duplicate-card fault a
+    viewer reported, and it could not clear on its own: the card is carried
+    because its link is unreachable, and being carried is what hid it from the
+    step that would have moved it.
+
+    They are lent, not published. Each is marked and removed again before
+    grouping, so a card the migration does not take goes back to retention
+    with its grace count untouched.
+    """
+    try:
+        from scanner import movie_retention
+
+        present = {
+            movie_retention._item_key(movie)
+            for movie in incoming
+            if isinstance(movie, dict)
+        } - {""}
+        probes: List[Dict[str, Any]] = []
+        seen: set = set()
+        for category, slug in CATEGORY_SLUGS.items():
+            for card in movie_retention.previously_published(slug):
+                key = movie_retention._item_key(card)
+                if not key or key in present or key in seen:
+                    continue
+                seen.add(key)
+                probe = dict(card)
+                probe[_CARRIED_PROBE] = True
+                probe.setdefault("category", category)
+                probes.append(probe)
+        return probes
+    except Exception as exc:  # noqa: BLE001 - never fail a scan over this
+        print(f"   carried classification pass skipped: {exc}")
+        return []
+
 
 def _remember_series_migration(series_items: List[Dict[str, Any]]) -> None:
     """Record what the migration took, from the records it wrote.
@@ -4332,6 +4475,13 @@ def paginate_movie_list(
     # as well. Only the real publish path asks for it.
     if retain_recent_dropouts:
         prepared = _retain_recent_dropouts(prepared, category_slug)
+        # After retention and before every check that reads a card's URL: a
+        # carried card is carried *because* its URL was not found, and on the
+        # largest Movie source the reason is that the CDN hostname rotated.
+        # Repairing the link here means the badge pass, the poster pass and
+        # the coverage inventory all see the URL the viewer will actually be
+        # given, rather than the retired one.
+        _adopt_rotated_hosts(prepared, category_slug)
     # After retention, because retention is what can introduce a second card
     # with the same cleaned title - see _resolve_presentation_collisions.
     _collisions = _resolve_presentation_collisions(prepared)
@@ -5043,6 +5193,7 @@ def process_movies(
     remote_sources_path: str = DEFAULT_REMOTE_SOURCES_PATH,
     *,
     defer_derived: bool = False,
+    source_entries: Optional[List[Dict[str, Any]]] = None,
 ) -> Dict[str, Dict[str, Any]]:
     candidates = _load_required_results(bd_results_path)
     settings = _load_optional_json(settings_path)
@@ -5053,6 +5204,17 @@ def process_movies(
         for item in candidates
         if str(item.get("source_pipeline") or "").strip().lower() == "movies"
     ]
+
+    # Before the merger, because the merger is where duplicates are dropped
+    # and a dropped duplicate is still evidence of where a file lives today.
+    #
+    # `source_entries` is what the sources actually produced, which the caller
+    # has and this function does not: `bd-results.json` holds what survived
+    # the health check, and an entry on a host this run has never reached is
+    # exactly the entry a rotation repair needs. Falls back to the candidates
+    # so an ad-hoc call still behaves.
+    _remember_source_offers(
+        source_entries if source_entries is not None else movie_candidates)
 
     resolved_candidates = _resolve_category_precedence(movie_candidates)
     discovered_movies = merge_candidates(
@@ -5083,7 +5245,30 @@ def process_movies(
         if not is_confirmed_player_failure(movie, "movie", failure_keys)
     ]
     bd_settings = settings.get("bd_verification") if isinstance(settings, dict) else {}
-    if isinstance(bd_settings, dict) and bool(bd_settings.get("strict_player_publish", False)):
+    # Both flags, which is what `scanner/channels.py` has always required and
+    # what `scanner/player_compatibility.py` documents ("This gate is currently
+    # off (bangla_requires_player_proof = false)"). The movie pipeline read
+    # only the first, so a gate the configuration had switched off was running
+    # anyway - against a ledger holding 45 proofs.
+    #
+    # Measured on 2026-09-26. The owner's private source offers 94 Bangla
+    # films; `reports/manual-movie-integrity.json` reported Bangla
+    # `source_unique=0, published=0` while every other category matched its
+    # source exactly:
+    #
+    #     Dubbed 97/97   Hindi 82/82   South Indian 142/142
+    #     English 79/79  Premium 25/25       Bangla 0/0
+    #
+    # Nothing here is loosened: a confirmed browser failure is a separate,
+    # evidence-based gate a few lines above and still removes those films.
+    # What stops is requiring positive proof that almost nothing can have.
+    strict_player_publish = isinstance(bd_settings, dict) and bool(
+        bd_settings.get("strict_player_publish", False)
+    )
+    bangla_requires_player_proof = isinstance(bd_settings, dict) and bool(
+        bd_settings.get("bangla_requires_player_proof", False)
+    )
+    if strict_player_publish and bangla_requires_player_proof:
         proof_keys = load_proof_keys()
         bangla_movies = [
             movie for movie in merged_movies
@@ -5095,6 +5280,16 @@ def process_movies(
             if _canonical_movie_category(movie.get("category")) != "Bangla"
             or is_player_proven(movie, "movie", proof_keys)
         ]
+
+    # ধাপ ৩খ. Show the carried cards to ধারা ৪.৬ as well, or they are invisible
+    # to it for ever - see `_carried_candidates`.
+    probes = _carried_candidates(merged_movies)
+    if probes:
+        print(
+            f"   {len(probes)} carried card(s) offered to classification and "
+            "the series migration"
+        )
+        merged_movies = list(merged_movies) + probes
 
     # ধারা ৪.৬. Runs over the whole catalogue before it is split by category,
     # because tier-2 evidence is catalogue-wide: a season-only row is proved a
@@ -5111,6 +5306,23 @@ def process_movies(
     # point at which the catalogue is still one list, and a card has to be
     # removed from it before it is paginated.
     merged_movies = _migrate_series_cards(merged_movies, settings)
+
+    # Whatever the migration did not take goes straight back to retention,
+    # which is the only thing that may publish a carried card: leaving a probe
+    # in the list would publish it without a grace count and let a film the
+    # source dropped six scans ago live for ever.
+    returned = sum(1 for movie in merged_movies
+                   if isinstance(movie, dict) and movie.get(_CARRIED_PROBE))
+    merged_movies = [
+        movie for movie in merged_movies
+        if not (isinstance(movie, dict) and movie.get(_CARRIED_PROBE))
+    ]
+    if probes:
+        print(
+            f"   {len(probes) - returned} carried card(s) proved to be "
+            f"episodes and left the movie catalogue; {returned} stayed with "
+            "retention"
+        )
 
     grouped_movies: Dict[str, List[Dict[str, Any]]] = {
         category: [] for category in VALID_MOVIE_CATEGORIES

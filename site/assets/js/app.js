@@ -1464,6 +1464,9 @@ function setSeriesDetailMode(active) {
   // rest of the Home furniture.
   document.body.classList.toggle('movie-detail-view', state.seriesDetailMode
     || Boolean(state.movieDetailItem));
+  // A detail view owns the page for the same reason the portal does, so the
+  // playback flag follows the same rule. See syncMoviePlaybackContextClass.
+  syncMoviePlaybackContextClass();
 }
 
 function clearCurrentListState() {
@@ -2184,15 +2187,33 @@ async function loadMovieWebSeries() {
 
   state.currentItems = [];
   let failures = 0;
+  // Collected first and merged ONCE, because `mergeCategoryItems` replaces
+  // the series in `currentItems` rather than adding to them - it rebuilds
+  // the list as `[manual movies, these series, other movies]`, dropping every
+  // series already there. That is right for browsing one category, which is
+  // its other caller, and wrong here: merging per iteration meant each
+  // category threw away the one before it and the tab showed only the last.
+  //
+  // Measured on 2026-10-17 against the published catalogue: data/series holds
+  // 67 shows (Bangla 1, Hindi 1, English 1, Dubbed 23, South Indian 13,
+  // Premium 28) and the Web Series tab rendered 28 - exactly Premium, the
+  // last category in this loop. 39 of 67 shows, 58% of the series catalogue,
+  // could not be reached by a viewer at all.
+  //
+  // Each item already carries its own `_seriesCategorySlug`, which is what
+  // the merge builds `_uid` from, so shows from different categories keep
+  // distinct ids when they arrive together.
+  const everySeries = [];
   for (const [, slug] of MOVIE_ORDER) {
     try {
       const seriesItems = await seriesModule.loadCategory(slug);
-      if (seriesItems?.length) seriesModule.mergeCategoryItems(seriesItems);
+      if (seriesItems?.length) everySeries.push(...seriesItems);
     } catch (error) {
       // One category's series data missing must not empty the whole tab.
       failures += 1;
     }
   }
+  if (everySeries.length) seriesModule.mergeCategoryItems(everySeries);
   renderCurrentList(true);
   if (state.filteredItems.length) {
     setSidebarCount(`${state.filteredItems.length} Series`, 'Web Series');
@@ -2448,7 +2469,16 @@ function movieBrowseViewActive() {
 
 function setMoviePortalMode(on) {
   document.body.classList.toggle('movie-portal', Boolean(on));
-  if (on) return;
+  if (on) {
+    // Movie Home is the page again, so the player is not - and the html flag
+    // that says "the player owns the page" has to go with it. Cleared here
+    // and not left to `updateContextualPlayerButtons` because that function
+    // is only ever called from the player: on the way back nothing calls it,
+    // so the flag stayed on and the browse shell kept the playback width cap
+    // it is explicitly written to drop. See the note there.
+    syncMoviePlaybackContextClass();
+    return;
+  }
   // The portal off means Movie Home is no longer the page - Play took it, or
   // another section did. Its furniture goes with it, so the column beside the
   // player carries Related (or a season's episodes) and nothing else. The
@@ -13175,6 +13205,33 @@ function setMovieControlsLocked(locked) {
   showControlsTemporarily();
 }
 
+/**
+ * Keep `html.movie-playback-context` meaning "the movie player owns the page".
+ *
+ * The browse shell gives up its width cap and pays the centring back as left
+ * padding, so the category rail's scroll handle reaches the true right edge.
+ * That whole block is written `html:not(.movie-playback-context)
+ * body.movie-portal ...` - "desktop only, and never during playback".
+ *
+ * The flag used to be set from `isMoviePlaybackContext()` alone, which is
+ * true for the whole Movie section, browse included. Nothing cleared it on
+ * the way back and only the player ever set it, so in practice it meant "a
+ * movie has been played at some point this session". Measured at 2560px:
+ * browse 2560, play, Back to Movies - 2040. The page narrowed by 520px
+ * returning to the view it had just left. At 1920 it was 96px; at 1440 the
+ * window is narrower than the cap, so nothing showed and every desktop check
+ * passed.
+ *
+ * The portal and the detail view own the page exactly when the player does
+ * not, so the body is the honest source for the second half of the question.
+ */
+function syncMoviePlaybackContextClass(isMovie = isMoviePlaybackContext()) {
+  const playerOwnsPage = !document.body.classList.contains('movie-portal')
+    && !document.body.classList.contains('movie-detail-view');
+  document.documentElement.classList.toggle(
+    'movie-playback-context', Boolean(isMovie) && playerOwnsPage);
+}
+
 function updateContextualPlayerButtons() {
   const isMovie = isMoviePlaybackContext();
   const phonePlayer = isPhoneSizedPlayer();
@@ -13184,7 +13241,28 @@ function updateContextualPlayerButtons() {
   // previous, next, resolution and fullscreen. The rest come back once
   // fullscreen is entered.
   const compactMobileMovie = mobileMovie && !mobileFullscreen;
-  document.documentElement.classList.toggle('movie-playback-context', isMovie);
+  // `isMoviePlaybackContext()` is true for the whole Movie section, browse
+  // included - it answers "is this a movie", not "is the player on screen".
+  // The html class has to answer the second question, because that is what
+  // the stylesheet asks it: the browse shell gives up its width cap and pays
+  // the centring back as left padding so the rail's scroll handle reaches the
+  // real right edge, and that whole block is written
+  // `html:not(.movie-playback-context) body.movie-portal ...`, "never during
+  // playback".
+  //
+  // Setting it from `isMovie` alone made it mean "a movie has been played at
+  // some point this session", because nothing clears it on the way back and
+  // this function is only ever called from the player. Measured on a 2560px
+  // screen: browse 2560px, play, Back to Movies - 2040px. The page visibly
+  // narrowed by 520px on the way back to the view it had just left, which is
+  // the squeeze the owner reported on a 2K monitor. At 1920 it was 96px; at
+  // 1440 the cap is wider than the window so nothing showed, which is why it
+  // survived every desktop check.
+  //
+  // The portal and the detail view own the page exactly when the player does
+  // not - `setMoviePortalMode` is what takes Movie Home off screen when Play
+  // takes the page - so asking the body is asking the right question.
+  syncMoviePlaybackContextClass(isMovie);
   // The mobile movie transport row is laid out entirely from CSS. This class is
   // what switches it on, so the row keeps one fixed button order.
   document.documentElement.classList.toggle('mobile-movie-controls', mobileMovie);

@@ -109,7 +109,29 @@ class DeferringThemIsPossibleAtAll(unittest.TestCase):
 
 class TheRealCallerDefersAndThenDecides(unittest.TestCase):
     def test_the_scan_defers(self):
-        self.assertIn("process_movies(defer_derived=True)", SCAN)
+        """Read off the syntax tree, not the source text.
+
+        This used to assert the literal `process_movies(defer_derived=True)`,
+        which made it a formatting test: adding a second argument to the call
+        broke it although the deferral it exists to protect was untouched. The
+        question it means to ask is whether scan.py passes `defer_derived=True`
+        to `process_movies`, so it now asks the call itself.
+        """
+        calls = [
+            node for node in ast.walk(ast.parse(SCAN))
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "process_movies"
+        ]
+        self.assertTrue(calls, "scan.py must call process_movies")
+        for call in calls:
+            deferred = {
+                keyword.arg: keyword.value for keyword in call.keywords
+            }.get("defer_derived")
+            self.assertIsInstance(
+                deferred, ast.Constant,
+                "defer_derived must be passed literally, not computed")
+            self.assertIs(deferred.value, True)
 
     def test_it_publishes_them_only_after_the_gate_is_built(self):
         gate = SCAN.index("movie_coverage_report = _build_movie_coverage(")

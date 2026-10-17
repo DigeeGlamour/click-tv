@@ -1602,7 +1602,14 @@ def run_pipeline(
         # stamp describe the catalogue; they are written only once it is known
         # that the catalogue itself is being published. See the note in
         # `movies.publish_derived_surfaces`.
-        movies_data = process_movies(defer_derived=True)
+        # ধারা ৪.১. The rows the sources produced, not the rows that passed
+        # the health check: a card whose CDN host has rotated is unreachable
+        # at its old URL by definition, so the entry that says where the file
+        # moved to is one the checker had no way to confirm.
+        movies_data = process_movies(
+            defer_derived=True,
+            source_entries=list(normalized.get("raw_collected_items") or []),
+        )
 
         print("   Validating mixed TXT Series / Season / Episode catalogue...")
         from scanner.series import prepare_manual_series
