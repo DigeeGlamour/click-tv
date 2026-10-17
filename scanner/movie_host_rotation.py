@@ -217,9 +217,19 @@ def apply(
                 card[field] = entry[field]
         card["link_host_rotated"] = True
         card["previous_stream_host"] = _host_of(old_url)
+        # The retired link is KEPT as a backup, so INVARIANT 2 can still find
+        # the stream that was reaching viewers - but it is not COUNTED, because
+        # `available_link_count` promises a playable route and this one is a
+        # pull zone that answers "Domain suspended or not configured" to
+        # everything. That is the same promise `test_audit_findings` enforces:
+        # "a field whose name promises a playable route, asserting one that
+        # does not exist".
+        live_backups = [
+            backup for backup in (card.get("backups") or ())
+            if not (isinstance(backup, dict) and backup.get("retired_host"))
+        ]
         card["available_link_count"] = (
-            (0 if card.get("metadata_only") is True else 1)
-            + len(card.get("backups") or [])
+            (0 if card.get("metadata_only") is True else 1) + len(live_backups)
         )
         # The status is deliberately left alone. It is the health checker's
         # word, not this function's, and inventing a status outside

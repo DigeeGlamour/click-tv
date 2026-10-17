@@ -135,15 +135,26 @@ class NothingIsLost(unittest.TestCase):
         hr.apply([card], _offers(_entry(NEW)))
         self.assertEqual([b["url"] for b in card["backups"]], [OLD])
 
-    def test_the_link_count_is_recomputed(self):
+    def test_the_retired_link_is_kept_but_not_counted(self):
+        """`available_link_count` promises a PLAYABLE route, and the retired
+        host answers "Domain suspended or not configured" to everything. It
+        stays in `backups` so INVARIANT 2 can still find the stream that was
+        reaching viewers; it does not inflate the count."""
         card = _card()
         hr.apply([card], _offers(_entry(NEW)))
+        self.assertEqual(card["available_link_count"], 1)
+        self.assertEqual(len(card["backups"]), 1)
+
+    def test_a_real_backup_is_still_counted(self):
+        card = _card(backups=[{"url": "https://mirror.example/a.mkv"}])
+        hr.apply([card], _offers(_entry(NEW)))
         self.assertEqual(card["available_link_count"], 2)
+        self.assertEqual(len(card["backups"]), 2)
 
     def test_a_metadata_only_card_counts_no_primary(self):
         card = _card(metadata_only=True)
         hr.apply([card], _offers(_entry(NEW)))
-        self.assertEqual(card["available_link_count"], 1)
+        self.assertEqual(card["available_link_count"], 0)
 
 
 class ACardStaysPutWithoutEvidence(unittest.TestCase):
