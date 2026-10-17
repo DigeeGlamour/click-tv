@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-17T07:52:16.496945+00:00",
+  "updated_at": "2026-10-17T08:12:25.110088+00:00",
   "count": 6,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -82,18 +82,21 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
-      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 5,
-      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_misses": 6,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-17T06:06:15.450775+00:00",
-      "authority_finished_confirmations": 4,
+      "authority_finished_confirmations": 5,
       "authority_finished_seen_at": "2026-10-17T07:32:12.238707+00:00",
       "authority_remove_after": "2026-10-17T07:52:12.238707+00:00",
-      "contradicted_end_confirmations": 2
+      "contradicted_end_confirmations": 3,
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-17T08:12:22.452055+00:00"
     },
     {
       "id": "canada-vs-nepal",
@@ -134,16 +137,10 @@
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        },
-        {
-          "source_id": "dartv-fancode-mirror",
-          "source_name": "FanCode Live API (dartv-ajaz)",
-          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "start_time": "2026-10-17T05:30:00+00:00",
       "start_at": "2026-10-17T05:30:00+00:00",
@@ -161,11 +158,24 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "LiveScore livescore=Play in progress (33, event 1860480)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "livescore": "1860480"
+      },
+      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE"
     },
     {
       "id": "koln-cc-vs-ica-berlin",
@@ -211,17 +221,11 @@
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        },
-        {
-          "source_id": "dartv-fancode-mirror",
-          "source_name": "FanCode Live API (dartv-ajaz)",
-          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "start_time": "2026-10-17T06:30:00+00:00",
       "start_at": "2026-10-17T06:30:00+00:00",
@@ -289,17 +293,11 @@
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        },
-        {
-          "source_id": "dartv-fancode-mirror",
-          "source_name": "FanCode Live API (dartv-ajaz)",
-          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "start_time": "2026-10-17T07:00:00+00:00",
       "start_at": "2026-10-17T07:00:00+00:00",
@@ -564,16 +562,25 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-17T08:12:22.452055+00:00"
     },
     {
-      "id": "auckland-vs-melbourne-city",
-      "name": "Auckland vs Melbourne City",
+      "id": "darmstadt-cc-vs-thcc-rot-gelb-hamburg",
+      "name": "Darmstadt CC vs THCC Rot Gelb Hamburg",
       "primary_stream_key": "",
-      "sport_type": "football",
+      "sport_type": "cricket",
       "sport_type_derived": true,
-      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4249835_53101_AFC_MLC_fc-Web_1791982771900.jpg",
+      "logo": "",
       "category": "today_match",
+      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "media",
@@ -588,12 +595,13 @@
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
-      "source_id": "dartv-fancode-mirror",
+      "source_id": "sm-fancode",
       "metadata_only": true,
       "available_link_count": 0,
+      "backups": [],
       "channel_stats": {
         "streams_in": 1,
-        "unresolved_channel_streams": 1,
+        "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -602,62 +610,64 @@
       },
       "source_provenance": [
         {
+          "source_id": "sm-fancode",
+          "source_name": "SM FanCode Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
+        },
+        {
+          "source_id": "sportlive-fancode-backup",
+          "source_name": "SportLive18 FanCode Backup",
+          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
+        },
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        },
+        {
+          "source_id": "sayanpal-fancode-mirror",
+          "source_name": "FanCode Auto Updated (sayanpal)",
+          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
+        },
+        {
           "source_id": "dartv-fancode-mirror",
           "source_name": "FanCode Live API (dartv-ajaz)",
           "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
+        },
+        {
+          "source_id": "drmlive-fancode-mirror",
+          "source_name": "FanCode Live Events (drmlive)",
+          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
         }
       ],
       "source_ids": [
-        "dartv-fancode-mirror"
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
-      "start_time": "2026-10-17T04:00:00+00:00",
-      "start_at": "2026-10-17T04:00:00+00:00",
-      "end_time": "2026-10-17T06:30:00+00:00",
+      "start_time": "2026-10-17T08:30:00+00:00",
+      "start_at": "2026-10-17T08:30:00+00:00",
+      "end_time": "2026-10-17T13:30:00+00:00",
       "end_time_source": "sport",
-      "competition": "A-League 2026-27",
-      "fixture_id": "provider:auckland-vs-melbourne-city|a league 2026 27|2026-10-17",
+      "competition": "GSL Championship 2026",
+      "fixture_id": "provider:darmstadt-cc-vs-thcc-rot-gelb-hamburg|gsl championship 2026|2026-10-17",
       "status": "LINK_UPDATING",
       "original_status": "UPCOMING",
       "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
-      "source_start_time": "2026-10-17T04:00:00+00:00",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "source_start_time": "2026-10-17T08:30:00+00:00",
       "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
+      "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "LiveScore livescore=FT (6, event 1843484)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "livescore": "1843484"
-      },
-      "authority_finished_confirmations": 5,
+      "sport_class_evidence": "cricket",
       "allow_without_stream": true,
-      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "END_PENDING",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-10-17T06:57:50.032252+00:00",
-      "authority_finished_seen_at": "2026-10-17T07:09:26.178448+00:00",
-      "authority_status": "FINISHED",
-      "authority_remove_after": "2026-10-17T07:29:26.178448+00:00",
-      "contradicted_end_confirmations": 3,
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-10-17T07:52:14.949164+00:00"
+      "lifecycle_state": "STARTING"
     }
   ]
 }
