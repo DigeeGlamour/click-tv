@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-18T05:54:24.414815+00:00",
+  "updated_at": "2026-10-18T06:10:59.160404+00:00",
   "count": 7,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -259,11 +259,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 26,
+      "carried_forward_misses": 27,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-17T21:36:43.336196+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 26,
+      "end_pending_confirmations": 27,
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -349,22 +349,27 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1558404)",
+        "ESPN espn-header=Live (Live, event 1558404)",
         "LiveScore livescore=Play in progress (33, event 1834706)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558404); LiveScore livescore=Play in progress (33, event 1834706)",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1558404",
+        "livescore": "1834706"
+      },
+      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "provider_poster_url": "https://r2.thesportsdb.com/images/media/event/thumb/ahs5xf1766823325.jpg",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/6r5cly1492606239.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/c36k301492606884.png"
@@ -538,11 +543,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-18T03:33:09.744394+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 8,
+      "end_pending_confirmations": 9,
       "ended_seen_at": "2026-10-18T05:54:16.714360+00:00",
       "lifecycle_end_basis": "estimate"
     },
@@ -651,13 +656,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=32' (STATUS_FIRST_HALF, event 401892158)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401892158)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -675,9 +680,10 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-18T04:32:46.288541+00:00"
+      "carried_forward_first_missed_at": "2026-10-18T04:32:46.288541+00:00",
+      "authority_finished_confirmations": 1
     },
     {
       "id": "san-jose-earthquakes-vs-nashville-sc",
@@ -784,14 +790,14 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "MLS",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761886)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 761886)",
         "LiveScore livescore=FT (6, event 1696682)"
       ],
       "authority_independent_count": 2,
@@ -801,7 +807,7 @@
       },
       "authority_status": "FINISHED",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "san-jose-earthquakes-vs-nashville-sc-2407155",
       "artwork_candidates": [
@@ -814,18 +820,21 @@
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpiTBCWMH0gg+IbiAAmIGLj3GQiE0cYUmfFFzBl4ReaIdNaYJ2NEQgA.webp",
       "provider_routing_hint": "live",
       "playback_id": "ctv_b7fe370d53f506cddb00c56db79e244d",
-      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_misses": 5,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-18T05:00:56.455599+00:00",
       "authority_finished_confirmations": 1,
       "authority_finished_seen_at": "2026-10-18T05:33:24.957093+00:00",
       "authority_remove_after": "2026-10-18T05:53:24.957093+00:00",
-      "contradicted_end_confirmations": 2,
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761886); LiveScore livescore=FT (6, event 1696682)"
+      "contradicted_end_confirmations": 3,
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-18T06:10:54.168085+00:00"
     },
     {
       "id": "cruz-azul-vs-fc-juárez",
@@ -988,18 +997,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876939)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876939)",
         "LiveScore livescore=FT (6, event 1799045)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "cruz-azul-vs-ju-rez-2487558",
       "artwork_candidates": [
@@ -1012,15 +1021,27 @@
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxz0qKEDBB8Q3ECRAATbSAimjIRIkMEKTPii5gy8IvNGOmtMM7GiIQA.webp",
       "provider_routing_hint": "live",
       "playback_id": "ctv_0f7ced97ddbff571660fd6a86fea8a9b",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-18T05:33:56.256370+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876939); LiveScore livescore=FT (6, event 1799045)"
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401876939",
+        "livescore": "1799045"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-18T06:10:36.297522+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-18T06:30:36.297522+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-18T06:10:54.168085+00:00"
     },
     {
       "id": "sydney-fc-vs-adelaide-united",
