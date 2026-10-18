@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-18T05:00:27.170393+00:00",
+  "generated_at": "2026-10-18T05:12:21.870628+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,10 +12,12 @@
       "requests_ok": 6,
       "fixtures": 1989,
       "unknown_statuses": [
-        "10|HT",
         "2|1'",
-        "3|86'",
-        "3|90+5'"
+        "2|11'",
+        "2|12'",
+        "2|8'",
+        "2|9'",
+        "3|48'"
       ],
       "attempts": [
         {
@@ -46,13 +48,13 @@
           "sport": "football",
           "date": "2026-10-18",
           "result": "ok",
-          "fixtures": 802
+          "fixtures": 801
         },
         {
           "sport": "football",
           "date": "2026-10-19",
           "result": "ok",
-          "fixtures": 126
+          "fixtures": 127
         }
       ]
     },
@@ -107,19 +109,18 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 9,
-    "upcoming": 58,
+    "today_match": 10,
+    "upcoming": 57,
     "fixtures": 67,
     "verdicts": {
-      "PARTIAL_AUTHORITY": 1,
+      "CONFLICT": 6,
       "VERIFIED": 37,
-      "UNVERIFIED": 24,
-      "CONFLICT": 5
+      "UNVERIFIED": 24
     },
     "verified": 37,
-    "partial_authority": 1,
+    "partial_authority": 0,
     "unverified": 24,
-    "conflict": 5,
+    "conflict": 6,
     "matched_by_authority": {
       "espn-header": {
         "matched": 40,
@@ -132,11 +133,11 @@
     },
     "matched_by_two_independent_authorities": 34,
     "authority_agreements": 30,
-    "authority_disagreements": 3,
+    "authority_disagreements": 4,
     "card_status_conflicts": 2,
     "conflict_reason_counts": {
+      "authorities disagree": 4,
       "card says LIVE, authority says FINISHED": 2,
-      "authorities disagree": 3,
       "kickoff": 2
     },
     "identity_near_misses": 22,
@@ -147,10 +148,12 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "2|1'",
-        "3|86'",
-        "3|90+5'"
+        "2|11'",
+        "2|12'",
+        "2|8'",
+        "2|9'",
+        "3|48'"
       ],
       "espn-header": []
     }
@@ -399,9 +402,9 @@
           "competition_id": "759",
           "kickoff": "2026-10-18T03:10:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "86'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "Apertura",
           "format": "",
@@ -415,10 +418,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -486,12 +491,99 @@
           "competition_id": "25853",
           "kickoff": "2026-10-18T03:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Between innings",
-          "status_code": "157",
+          "status_raw": "Play in progress",
+          "status_code": "33",
           "status": "LIVE",
           "sport": "cricket",
           "round": "",
           "format": "Womens Domestic Twenty20",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:sydney-fc-vs-adelaide-united|a league women|2026-10-18",
+      "card_id": "sydney-fc-vs-adelaide-united",
+      "name": "Sydney FC Vs Adelaide United",
+      "competition": "A-League Women",
+      "kickoff": "2026-10-18T05:30:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401913250",
+          "upstream_family": "ESPN",
+          "name": "Sydney FC vs Adelaide United",
+          "home": "Sydney FC",
+          "away": "Adelaide United",
+          "home_team_id": "20285",
+          "away_team_id": "20286",
+          "competition": "Australian A-League Women",
+          "competition_id": "18992",
+          "kickoff": "2026-10-18T05:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, October 17th at 1:30 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:18992~e:401913250~c:401913250"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1884844",
+          "upstream_family": "LiveScore",
+          "name": "Sydney FC W vs Adelaide United W",
+          "home": "Sydney FC W",
+          "away": "Adelaide United W",
+          "home_team_id": "4302",
+          "away_team_id": "4606",
+          "competition": "A-League Women",
+          "competition_id": "566",
+          "kickoff": "2026-10-18T05:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
           "gender": "women"
         }
       },
@@ -632,95 +724,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:la-galaxy-vs-san-diego-fc|mls|2026-10-18",
-      "card_id": "la-galaxy-vs-san-diego-fc",
-      "name": "LA Galaxy Vs San Diego FC",
-      "competition": "MLS",
-      "kickoff": "2026-10-18T02:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "761887",
-          "upstream_family": "ESPN",
-          "name": "LA Galaxy vs San Diego FC",
-          "home": "LA Galaxy",
-          "away": "San Diego FC",
-          "home_team_id": "187",
-          "away_team_id": "22529",
-          "competition": "MLS",
-          "competition_id": "770",
-          "kickoff": "2026-10-18T02:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "89'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "89'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:770~e:761887~c:761887"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1696670",
-          "upstream_family": "LiveScore",
-          "name": "LA Galaxy vs San Diego",
-          "home": "LA Galaxy",
-          "away": "San Diego",
-          "home_team_id": "8900",
-          "away_team_id": "349552",
-          "competition": "MLS",
-          "competition_id": "145",
-          "kickoff": "2026-10-18T02:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "30",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:san-jose-earthquakes-vs-nashville-sc|mls|2026-10-18",
       "card_id": "san-jose-earthquakes-vs-nashville-sc",
       "name": "San Jose Earthquakes Vs Nashville SC",
@@ -781,95 +784,6 @@
           "away": "Nashville SC",
           "home_team_id": "8908",
           "away_team_id": "8927",
-          "competition": "MLS",
-          "competition_id": "145",
-          "kickoff": "2026-10-18T02:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "30",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:seattle-sounders-fc-vs-cf-montréal|mls|2026-10-18",
-      "card_id": "seattle-sounders-fc-vs-cf-montréal",
-      "name": "Seattle Sounders FC Vs CF Montréal",
-      "competition": "MLS",
-      "kickoff": "2026-10-18T02:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "761885",
-          "upstream_family": "ESPN",
-          "name": "Seattle Sounders FC vs CF Montréal",
-          "home": "Seattle Sounders FC",
-          "away": "CF Montréal",
-          "home_team_id": "9726",
-          "away_team_id": "9720",
-          "competition": "MLS",
-          "competition_id": "770",
-          "kickoff": "2026-10-18T02:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "90'+5'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "90'+5'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:770~e:761885~c:761885"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1696686",
-          "upstream_family": "LiveScore",
-          "name": "Seattle Sounders FC vs CF Montreal",
-          "home": "Seattle Sounders FC",
-          "away": "CF Montreal",
-          "home_team_id": "8301",
-          "away_team_id": "8104",
           "competition": "MLS",
           "competition_id": "145",
           "kickoff": "2026-10-18T02:30:00+00:00",
@@ -1076,6 +990,184 @@
       ],
       "authority_agreement": "AGREE",
       "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:la-galaxy-vs-san-diego-fc|mls|2026-10-18",
+      "card_id": "la-galaxy-vs-san-diego-fc",
+      "name": "LA Galaxy Vs San Diego FC",
+      "competition": "MLS",
+      "kickoff": "2026-10-18T02:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "761887",
+          "upstream_family": "ESPN",
+          "name": "LA Galaxy vs San Diego FC",
+          "home": "LA Galaxy",
+          "away": "San Diego FC",
+          "home_team_id": "187",
+          "away_team_id": "22529",
+          "competition": "MLS",
+          "competition_id": "770",
+          "kickoff": "2026-10-18T02:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "89'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "89'",
+          "espn_status_description": "Second Half",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:770~e:761887~c:761887"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1696670",
+          "upstream_family": "LiveScore",
+          "name": "LA Galaxy vs San Diego",
+          "home": "LA Galaxy",
+          "away": "San Diego",
+          "home_team_id": "8900",
+          "away_team_id": "349552",
+          "competition": "MLS",
+          "competition_id": "145",
+          "kickoff": "2026-10-18T02:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "30",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:seattle-sounders-fc-vs-cf-montréal|mls|2026-10-18",
+      "card_id": "seattle-sounders-fc-vs-cf-montréal",
+      "name": "Seattle Sounders FC Vs CF Montréal",
+      "competition": "MLS",
+      "kickoff": "2026-10-18T02:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "761885",
+          "upstream_family": "ESPN",
+          "name": "Seattle Sounders FC vs CF Montréal",
+          "home": "Seattle Sounders FC",
+          "away": "CF Montréal",
+          "home_team_id": "9726",
+          "away_team_id": "9720",
+          "competition": "MLS",
+          "competition_id": "770",
+          "kickoff": "2026-10-18T02:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "90'+5'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "90'+5'",
+          "espn_status_description": "Second Half",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:770~e:761885~c:761885"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1696686",
+          "upstream_family": "LiveScore",
+          "name": "Seattle Sounders FC vs CF Montreal",
+          "home": "Seattle Sounders FC",
+          "away": "CF Montreal",
+          "home_team_id": "8301",
+          "away_team_id": "8104",
+          "competition": "MLS",
+          "competition_id": "145",
+          "kickoff": "2026-10-18T02:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "30",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -1338,93 +1430,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:sydney-fc-vs-adelaide-united|a league women|2026-10-18",
-      "card_id": "sydney-fc-vs-adelaide-united",
-      "name": "Sydney FC Vs Adelaide United",
-      "competition": "A-League Women",
-      "kickoff": "2026-10-18T05:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401913250",
-          "upstream_family": "ESPN",
-          "name": "Sydney FC vs Adelaide United",
-          "home": "Sydney FC",
-          "away": "Adelaide United",
-          "home_team_id": "20285",
-          "away_team_id": "20286",
-          "competition": "Australian A-League Women",
-          "competition_id": "18992",
-          "kickoff": "2026-10-18T05:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Sun, October 17th at 1:30 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:18992~e:401913250~c:401913250"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1884844",
-          "upstream_family": "LiveScore",
-          "name": "Sydney FC W vs Adelaide United W",
-          "home": "Sydney FC W",
-          "away": "Adelaide United W",
-          "home_team_id": "4302",
-          "away_team_id": "4606",
-          "competition": "A-League Women",
-          "competition_id": "566",
-          "kickoff": "2026-10-18T05:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "1",
-          "format": "",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1698,11 +1703,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1790,11 +1795,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2000,12 +2005,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "sm-fancode",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2410,12 +2415,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "sm-fancode",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2666,12 +2671,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "sm-fancode",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2838,11 +2843,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2917,12 +2922,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "sm-fancode",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3154,8 +3159,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror"
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3806,12 +3811,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "sm-fancode",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3900,11 +3905,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3964,12 +3969,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "sm-fancode",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4610,11 +4615,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4764,11 +4769,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4806,11 +4811,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4935,11 +4940,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4977,11 +4982,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
