@@ -1,11 +1,11 @@
 {
-  "last_scan": "2026-10-18T16:12:01.954319+00:00",
+  "last_scan": "2026-10-18T16:11:57.956936+00:00",
   "status": "completed_with_warnings",
-  "mode": "today",
-  "source_errors": 192,
-  "quarantined_channels": 0,
+  "mode": "channels",
+  "source_errors": 440,
+  "quarantined_channels": 7,
   "quarantined_movies": 0,
-  "rejected_low_quality": 0,
+  "rejected_low_quality": 218,
   "output_safety_warnings": 0,
   "stream_warnings": [],
   "coverage_invariant_failures": [
@@ -13,12 +13,12 @@
   ],
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 68,
-    "fixtures_with_stream": 30,
+    "published_fixtures": 67,
+    "fixtures_with_stream": 28,
     "fixtures_playable_via_catalogue": 0,
-    "fixtures_with_fresh_stream": 19,
+    "fixtures_with_fresh_stream": 17,
     "fixtures_with_carried_stream": 11,
-    "today_with_stream": 30,
+    "today_with_stream": 28,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
     "state": "ok",
@@ -26,7 +26,7 @@
   },
   "movie_output_preserved": false,
   "movie_generation": {
-    "checked_at": "2026-10-18T16:12:04.266935+00:00",
+    "checked_at": "2026-10-18T16:12:00.638972+00:00",
     "generations": {
       "2": 31,
       "unstamped": 13
@@ -54,7 +54,7 @@
   },
   "movie_observability": {
     "skipped_fresh": 0,
-    "due_verified": 500,
+    "due_verified": 3339,
     "repair_attempted": null,
     "series_signal_candidates": null,
     "classification_cache_hits": null,
@@ -72,40 +72,45 @@
     }
   },
   "allowed_playback_hosts": 678,
-  "catalogued_playback_sources": 92,
+  "catalogued_playback_sources": 498,
   "total_playback_catalogue_sources": 54350,
   "movie_verification_status_counts": {
-    "verified_global": 159,
-    "failed": 189,
-    "unreachable_from_browser": 85,
-    "metadata_only": 67
+    "verified_global": 694,
+    "retryable_pending": 5,
+    "failed": 434,
+    "needs_bd_check": 1737,
+    "rejected_low_quality": 218,
+    "quarantine": 7,
+    "unreachable_from_browser": 240,
+    "failed_player_twice": 1,
+    "unknown": 3
   },
   "pipeline_performance": {
-    "timestamp": "2026-10-18T16:11:15.030648+00:00",
-    "mode": "today",
-    "elapsed_seconds": 19,
-    "candidate_pool": 500,
-    "global_network_checked": 500,
-    "global_completed": 500,
-    "bd_proxy_selected": 92,
-    "bd_proxy_submitted": 92,
-    "bd_proxy_completed": 92,
-    "final_processed": 500,
-    "final_publishable": 159,
+    "timestamp": "2026-10-18T16:11:56.599740+00:00",
+    "mode": "channels",
+    "elapsed_seconds": 478,
+    "candidate_pool": 3339,
+    "global_network_checked": 3339,
+    "global_completed": 3339,
+    "bd_proxy_selected": 1858,
+    "bd_proxy_submitted": 1858,
+    "bd_proxy_completed": 1858,
+    "final_processed": 3339,
+    "final_publishable": 909,
     "adaptive_skipped": 0,
     "budget_fallbacks": 0,
-    "strict_player_hidden": 67,
-    "browser_unreachable_hidden": 85,
+    "strict_player_hidden": 0,
+    "browser_unreachable_hidden": 240,
     "unproven_hidden": 0,
     "budget_exhausted": false,
-    "host_circuits_opened": 5,
+    "host_circuits_opened": 26,
     "host_circuit_skips": 0,
     "host_sample_deferred": 0,
     "circuit_deferred": 0,
     "cloud_inconclusive_hosts": 0,
     "path_404_quarantined": 0,
     "path_404_groups": 0,
-    "priority_forced_verification": 0,
+    "priority_forced_verification": 1021,
     "final_global_inflight_limit": 20,
     "workers": {
       "global_pool_count": 1,
@@ -113,13 +118,13 @@
       "global_total_max": 20,
       "global_minimum_inflight": 12,
       "bd_pool_count": 1,
-      "bd_workers_per_pool": 4,
-      "bd_total_max": 4,
-      "shared_total_inflight_limit": 24,
-      "bd_reserved_inflight_slots": 4,
+      "bd_workers_per_pool": 6,
+      "bd_total_max": 6,
+      "shared_total_inflight_limit": 26,
+      "bd_reserved_inflight_slots": 6,
       "global_per_host": 4,
-      "bd_per_host": 4,
-      "combined_per_host": 8,
+      "bd_per_host": 6,
+      "combined_per_host": 10,
       "tail_per_host": 6,
       "host_sample_size": 5,
       "host_sample_uncertain_threshold": 4,
@@ -130,76 +135,76 @@
     }
   },
   "totals": {
-    "channels": 381,
+    "channels": 376,
     "movies": 1970,
-    "today_match": 34,
-    "upcoming": 34
+    "today_match": 32,
+    "upcoming": 35
   },
   "manifest_summary": {
     "schema_version": 1,
     "today_match": {
-      "count": 34,
+      "count": 32,
       "visible": true,
-      "url": "data/today-match.json"
+      "url": "data/snapshots/s0/today-match.json"
     },
     "upcoming": {
-      "count": 34,
+      "count": 35,
       "visible": true,
-      "url": "data/upcoming.json"
+      "url": "data/snapshots/s0/upcoming.json"
     },
     "channels": {
       "Bangla": {
         "count": 42,
-        "incoming_count": 40,
+        "incoming_count": 42,
         "visible": true,
         "protected": false,
         "url": "data/channels/bangla.json"
       },
       "Sports": {
-        "count": 78,
-        "incoming_count": 82,
+        "count": 75,
+        "incoming_count": 75,
         "visible": true,
         "protected": false,
         "url": "data/channels/sports.json"
       },
       "Indian": {
-        "count": 38,
-        "incoming_count": 38,
+        "count": 39,
+        "incoming_count": 39,
         "visible": true,
         "protected": false,
         "url": "data/channels/indian.json"
       },
       "Cartoon": {
-        "count": 20,
-        "incoming_count": 20,
+        "count": 18,
+        "incoming_count": 18,
         "visible": true,
         "protected": false,
         "url": "data/channels/cartoon.json"
       },
       "Islamic": {
-        "count": 11,
+        "count": 10,
         "incoming_count": 10,
         "visible": true,
         "protected": false,
         "url": "data/channels/islamic.json"
       },
       "Infotainments": {
-        "count": 17,
-        "incoming_count": 17,
+        "count": 18,
+        "incoming_count": 18,
         "visible": true,
         "protected": false,
         "url": "data/channels/infotainments.json"
       },
       "Foreign News": {
         "count": 31,
-        "incoming_count": 32,
+        "incoming_count": 31,
         "visible": true,
         "protected": false,
         "url": "data/channels/foreign-news.json"
       },
       "Other": {
-        "count": 144,
-        "incoming_count": 139,
+        "count": 143,
+        "incoming_count": 143,
         "visible": true,
         "protected": false,
         "url": "data/channels/other.json"
@@ -249,7 +254,7 @@
         "index": "data/movies/premium/index.json"
       }
     },
-    "updated_at": "2026-10-18T16:12:01.954319+00:00",
+    "updated_at": "2026-10-18T16:11:57.956936+00:00",
     "snapshot": {
       "slot": "s0",
       "generation": 2068,
