@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-18T05:34:05.266839+00:00",
-  "count": 9,
+  "updated_at": "2026-10-18T05:54:24.414815+00:00",
+  "count": 7,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -259,11 +259,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 25,
+      "carried_forward_misses": 26,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-17T21:36:43.336196+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 25,
+      "end_pending_confirmations": 26,
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -349,27 +349,22 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1558404)",
+        "ESPN espn-header=Scheduled (Scheduled, event 1558404)",
         "LiveScore livescore=Play in progress (33, event 1834706)"
       ],
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "1558404",
-        "livescore": "1834706"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558404); LiveScore livescore=Play in progress (33, event 1834706)",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "STARTING",
       "provider_poster_url": "https://r2.thesportsdb.com/images/media/event/thumb/ahs5xf1766823325.jpg",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/6r5cly1492606239.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/c36k301492606884.png"
@@ -536,16 +531,20 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_35d10935bed9bac6a51e804e8bd9f9d2",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-18T03:33:09.744394+00:00"
+      "carried_forward_misses": 8,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-18T03:33:09.744394+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 8,
+      "ended_seen_at": "2026-10-18T05:54:16.714360+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "wellington-phoenix-vs-melbourne-victory",
@@ -652,182 +651,33 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401892158)"
+        "ESPN espn-header=32' (STATUS_FIRST_HALF, event 401892158)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401892158"
       },
-      "authority_status": "FINISHED",
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/4uj8271759632738.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wwvsqx1473454564.png",
       "playback_id": "ctv_358301bd9afabdb09f2693b0404cedbc",
-      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
       "lifecycle_protections": [
-        "authority_live"
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
       ],
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
-      "carried_forward_first_missed_at": "2026-10-18T04:32:46.288541+00:00",
-      "authority_finished_confirmations": 3,
-      "authority_finished_seen_at": "2026-10-18T05:33:24.957093+00:00",
-      "authority_remove_after": "2026-10-18T05:53:24.957093+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
-      "contradicted_end_confirmations": 1
-    },
-    {
-      "id": "la-galaxy-vs-san-diego-fc",
-      "name": "LA Galaxy Vs San Diego FC",
-      "primary_stream_key": "1aa243109316a8c5d23e7cb8f21a13e35fe806d69f1c2d449d84a585252ec9e4",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/2513/image",
-      "category": "today_match",
-      "url": "https://chatgpt.hereisman.net/playlist/58240/load-playlist?&.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "same_run_cloud_proxy",
-      "verification_status": "verified_proxy",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "la-galaxy-vs-san-diego-fc--mls-tv",
-          "name": "MLS TV",
-          "normalized_name": "mls-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/2513/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "la-galaxy-vs-san-diego-fc--mls-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_proxy",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "la-galaxy-vs-san-diego-fc--mls-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_bd03de53e382e939ea605404",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_proxy",
-              "verified": true,
-              "playback_id": "ctv_517c6268620c505c0fb5132d5f0907bf",
-              "stream_type": "media"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "la-galaxy-vs-san-diego-fc--mls-tv",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "start_time": "2026-10-18T02:30:00+00:00",
-      "start_at": "2026-10-18T02:30:00+00:00",
-      "end_time": "2026-10-18T05:32:18+00:00",
-      "end_time_source": "assumed",
-      "competition": "MLS",
-      "fixture_id": "provider:la-galaxy-vs-san-diego-fc|mls|2026-10-18",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-10-18T02:30:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "league map",
-      "sport_class_evidence": "MLS",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 761887)",
-        "LiveScore livescore=FT (6, event 1696670)"
-      ],
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "761887",
-        "livescore": "1696670"
-      },
-      "authority_status": "FINISHED",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "provider_enriched": "streamed",
-      "provider_event_id": "la-galaxy-vs-san-diego-fc-2407153",
-      "artwork_candidates": [
-        "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8VPmCkgZKSCAghuIPscOmSIRAYNSCwJBT7DZ9XSpRcwZeESyyPTLRgXmKiEEA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphTlVq+NhDcQEXCBj6cfbSDMgCFJnxRcwZTfXmjbTWmHtjREIA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhACADD1xgQdEN1UhEEEABNcekDFMgQBCkz4ouYMvCLzRTprTAuxoiCA.webp"
-      ],
-      "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8VPmCkgZKSCAghuIPscOmSIRAYNSCwJBT7DZ9XSpRcwZeESyyPTLRgXmKiEEA.webp",
-      "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphTlVq+NhDcQEXCBj6cfbSDMgCFJnxRcwZTfXmjbTWmHtjREIA.webp",
-      "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhACADD1xgQdEN1UhEEEABNcekDFMgQBCkz4ouYMvCLzRTprTAuxoiCA.webp",
-      "provider_routing_hint": "live",
-      "playback_id": "ctv_66bbe9e9c44697afae9266300f4c88bc",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-10-18T05:00:56.455599+00:00",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "authority_finished_confirmations": 1,
-      "authority_finished_seen_at": "2026-10-18T05:33:24.957093+00:00",
-      "authority_remove_after": "2026-10-18T05:53:24.957093+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
-      "ended_seen_at": "2026-10-18T05:33:56.256370+00:00"
+      "carried_forward_misses": 5,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-18T04:32:46.288541+00:00"
     },
     {
       "id": "san-jose-earthquakes-vs-nashville-sc",
@@ -934,14 +784,14 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "MLS",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 761886)",
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761886)",
         "LiveScore livescore=FT (6, event 1696682)"
       ],
       "authority_independent_count": 2,
@@ -968,164 +818,14 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
       "carried_forward_first_missed_at": "2026-10-18T05:00:56.455599+00:00",
       "authority_finished_confirmations": 1,
       "authority_finished_seen_at": "2026-10-18T05:33:24.957093+00:00",
       "authority_remove_after": "2026-10-18T05:53:24.957093+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
-      "contradicted_end_confirmations": 1
-    },
-    {
-      "id": "seattle-sounders-fc-vs-cf-montréal",
-      "name": "Seattle Sounders FC Vs CF Montréal",
-      "primary_stream_key": "73a55eceaa8ef279a905e8cd3bb9e9fd1de9d216d8f4af14b2aef6e8aa4ad0c5",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/22009/image",
-      "category": "today_match",
-      "url": "https://chatgpt.hereisman.net/playlist/58244/load-playlist?&.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "seattle-sounders-fc-vs-cf-montr-al--mls-tv",
-          "name": "MLS TV",
-          "normalized_name": "mls-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/22009/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "seattle-sounders-fc-vs-cf-montr-al--mls-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "seattle-sounders-fc-vs-cf-montr-al--mls-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_b614c38e9984ebb2ac816529",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_88cf0f9c1c13ff3ae57f74f881c3fca0",
-              "resolution": "HD",
-              "resolution_height": 720,
-              "stream_type": "media"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "seattle-sounders-fc-vs-cf-montr-al--mls-tv",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "start_time": "2026-10-18T02:30:00+00:00",
-      "start_at": "2026-10-18T02:30:00+00:00",
-      "end_time": "2026-10-18T05:32:18+00:00",
-      "end_time_source": "assumed",
-      "competition": "MLS",
-      "fixture_id": "provider:seattle-sounders-fc-vs-cf-montréal|mls|2026-10-18",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-10-18T02:30:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "league map",
-      "sport_class_evidence": "MLS",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 761885)",
-        "LiveScore livescore=FT (6, event 1696686)"
-      ],
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "761885",
-        "livescore": "1696686"
-      },
-      "authority_status": "FINISHED",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "provider_enriched": "streamed",
-      "provider_event_id": "seattle-sounders-vs-cf-montr-al-2407154",
-      "artwork_candidates": [
-        "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8rAAxyGPMCkohuIPkYMmSIRBBBW+BYEgq3WIsSjAq9bd+XpZZeplowdzFRCCA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkulx0wKEKPhgQIbiD4gYIACYG9F44hMEKTPii5gy2+vNGOmtMM7GiIQA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhzDswAEzFgQibiHUg+IFDpAQzx3CGWEYwJnxRcwZeEXminTWmBdjREEA.webp"
-      ],
-      "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8rAAxyGPMCkohuIPkYMmSIRBBBW+BYEgq3WIsSjAq9bd+XpZZeplowdzFRCCA.webp",
-      "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkulx0wKEKPhgQIbiD4gYIACYG9F44hMEKTPii5gy2+vNGOmtMM7GiIQA.webp",
-      "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhzDswAEzFgQibiHUg+IFDpAQzx3CGWEYwJnxRcwZeEXminTWmBdjREEA.webp",
-      "provider_routing_hint": "live",
-      "playback_id": "ctv_63d134a080f6e06051ea9fc90b9d6797",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-10-18T05:00:56.455599+00:00",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "authority_finished_confirmations": 1,
-      "authority_finished_seen_at": "2026-10-18T05:33:24.957093+00:00",
-      "authority_remove_after": "2026-10-18T05:53:24.957093+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
-      "ended_seen_at": "2026-10-18T05:33:56.256370+00:00"
+      "contradicted_end_confirmations": 2,
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761886); LiveScore livescore=FT (6, event 1696682)"
     },
     {
       "id": "cruz-azul-vs-fc-juárez",
@@ -1295,7 +995,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=87' (STATUS_SECOND_HALF, event 401876939)",
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876939)",
         "LiveScore livescore=FT (6, event 1799045)"
       ],
       "event_type": "today_match",
@@ -1312,15 +1012,15 @@
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhxz0qKEDBB8Q3ECRAATbSAimjIRIkMEKTPii5gy8IvNGOmtMM7GiIQA.webp",
       "provider_routing_hint": "live",
       "playback_id": "ctv_0f7ced97ddbff571660fd6a86fea8a9b",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=87' (STATUS_SECOND_HALF, event 401876939); LiveScore livescore=FT (6, event 1799045)",
       "lifecycle_reason": "still live: primary_playable, backup_playable",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-18T05:33:56.256370+00:00"
+      "carried_forward_first_missed_at": "2026-10-18T05:33:56.256370+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876939); LiveScore livescore=FT (6, event 1799045)"
     },
     {
       "id": "sydney-fc-vs-adelaide-united",
