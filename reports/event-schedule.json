@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-19T17:11:46.043789+00:00",
+  "generated_at": "2026-10-19T17:33:34.588932+00:00",
   "today_match_count": 10,
-  "upcoming_count": 29,
+  "upcoming_count": 28,
   "today_missing_logo": [
     "Emirates Red vs Abu Dhabi",
     "Al Fayha FC vs Al Ahli Saudi FC"
@@ -25,22 +25,22 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 191,
+  "provider_fixture": 186,
   "provider_rejected": 21,
   "provider_rejected_reasons": {
-    "provider_dead_status": 9,
+    "provider_dead_status": 10,
     "status_neither_live_nor_upcoming": 5,
     "kickoff_missing_and_not_live": 1,
-    "upcoming_kickoff_already_passed": 6
+    "upcoming_kickoff_already_passed": 5
   },
   "provider_rejected_by_source": {
+    "sm-sports-data": {
+      "provider_dead_status": 10,
+      "total": 10
+    },
     "srhady-crichd-footy-live": {
       "upcoming_kickoff_already_passed": 5,
       "total": 5
-    },
-    "sm-sports-data": {
-      "provider_dead_status": 9,
-      "total": 9
     },
     "sm-fancode": {
       "status_neither_live_nor_upcoming": 4,
@@ -50,16 +50,21 @@
       "kickoff_missing_and_not_live": 1,
       "total": 1
     },
-    "vk1817-fancode-mirror": {
-      "upcoming_kickoff_already_passed": 1,
-      "total": 1
-    },
     "sportlive-fancode-backup": {
       "status_neither_live_nor_upcoming": 1,
       "total": 1
     }
   },
   "provider_rejected_fixtures": [
+    {
+      "name": "Al Fayha Vs Al Ahli",
+      "competition": "Saudi Pro League",
+      "sport": "football",
+      "source_id": "sm-sports-data",
+      "status": "ENDED",
+      "reason": "provider_dead_status",
+      "start_time": "2026-10-19T15:05:00+00:00"
+    },
     {
       "name": "Arsenal vs Køge",
       "competition": "Womens Champions League",
@@ -170,8 +175,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 191,
-    "discarded": 89,
+    "total": 186,
+    "discarded": 88,
     "examples": [
       {
         "name": "GOLF EVENTO",
@@ -223,7 +228,7 @@
       },
       {
         "name": "ATP 250 Almaty Open 2026 vs Almaty, Kazakhstan",
-        "source": "sm-fancode, drmlive-fancode-mirror, dartv-fancode-mirror, sa",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "ATP 250 - Almaty Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -231,7 +236,7 @@
       },
       {
         "name": "Court 1 Round 32 vs France (2026)",
-        "source": "sm-fancode, drmlive-fancode-mirror, dartv-fancode-mirror, sa",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "BWF Super 750 - French Open 2026",
         "sport_type": "",
         "reason": "badminton gazetteer",
@@ -367,7 +372,7 @@
       },
       {
         "name": "ATP 250 Almaty Open 2026 vs Almaty, Kazakhstan",
-        "source": "sm-fancode, drmlive-fancode-mirror, dartv-fancode-mirror, sa",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "ATP 250 - Almaty Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -574,14 +579,6 @@
         "evidence": "tennis"
       },
       {
-        "name": "World Feed",
-        "source": "sportlive-fancode-backup, dartv-fancode-mirror",
-        "competition": "ATP 250 - Almaty Open 2026",
-        "sport_type": "",
-        "reason": "tennis gazetteer",
-        "evidence": "tennis"
-      },
-      {
         "name": "Formula 1",
         "source": "sm-sports-data",
         "competition": "Formula 1",
@@ -630,6 +627,14 @@
         "evidence": "tennis"
       },
       {
+        "name": "World Feed",
+        "source": "dartv-fancode-mirror",
+        "competition": "ATP 250 - BNP Paribas Fortis European Open",
+        "sport_type": "",
+        "reason": "tennis gazetteer",
+        "evidence": "tennis"
+      },
+      {
         "name": "Formula 1",
         "source": "sm-sports-data",
         "competition": "Formula 1",
@@ -660,37 +665,27 @@
     "applied": 0,
     "pending_confirmation": 0,
     "live": 1,
-    "recorded": 17,
-    "conflict": 2,
-    "unmatched": 19,
+    "recorded": 16,
+    "conflict": 1,
+    "unmatched": 18,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
       "LIVE": 1,
-      "UPCOMING": 17
+      "UPCOMING": 16
     },
     "by_confidence": {
       "HIGH": 12,
-      "CONFLICT": 2,
-      "LOW": 6
+      "LOW": 5,
+      "CONFLICT": 1
     },
     "applied_fixtures": [],
     "conflicts": [
       {
-        "name": "Al Fayha Vs Al Ahli",
-        "reason": "independent authorities disagree: ESPN espn-header=45'+1' (STATUS_FIRST_HALF, event 401900897); LiveScore livescore=FT (6, event 1845655)",
-        "status": "",
-        "confidence": "CONFLICT",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
         "name": "Al Fayha FC vs Al Ahli Saudi FC",
-        "reason": "independent authorities disagree: ESPN espn-header=45'+1' (STATUS_FIRST_HALF, event 401900897); LiveScore livescore=FT (6, event 1845655)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401900897); LiveScore livescore=FT (6, event 1845655)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -704,7 +699,7 @@
     "applied": 0,
     "pending_confirmation": 0,
     "live": 1,
-    "recorded": 1,
+    "recorded": 2,
     "conflict": 1,
     "unmatched": 6,
     "start_window": 0,
@@ -713,18 +708,18 @@
     "kickoff_corrections": [],
     "by_status": {
       "LIVE": 1,
-      "UPCOMING": 1
+      "UPCOMING": 2
     },
     "by_confidence": {
       "HIGH": 1,
       "CONFLICT": 1,
-      "LOW": 1
+      "LOW": 2
     },
     "applied_fixtures": [],
     "conflicts": [
       {
         "name": "Al Fayha FC vs Al Ahli Saudi FC",
-        "reason": "independent authorities disagree: ESPN espn-header=45'+1' (STATUS_FIRST_HALF, event 401900897); LiveScore livescore=FT (6, event 1845655)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401900897); LiveScore livescore=FT (6, event 1845655)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -742,7 +737,7 @@
     "no_verdict": 1
   },
   "live_protection": {
-    "carried_forward": 1,
+    "carried_forward": 2,
     "released_ended": 0,
     "released_ended_ids": [],
     "retired_terminal": [],
@@ -752,13 +747,13 @@
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
     "probe_alive": 1,
-    "probe_dead": 0,
+    "probe_dead": 1,
     "probe_inconclusive": 0,
     "end_pending": 0,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 1
+      "LIVE": 2
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -784,10 +779,9 @@
     "hold_expired": 0
   },
   "channel_names": {
-    "stamped": 4,
-    "unresolved": 263,
+    "stamped": 3,
+    "unresolved": 260,
     "names": {
-      "Dubai": 1,
       "Sky Sports": 1,
       "Fox": 1,
       "Willow": 1
@@ -800,9 +794,9 @@
     "calls": 4,
     "cache_hits": 0,
     "errors": 0,
-    "fixtures_ingested": 235,
+    "fixtures_ingested": 236,
     "embed_streams": 4,
-    "artwork_supplied": 225
+    "artwork_supplied": 226
   },
   "streamed_enrichment": {
     "matched": 5,
@@ -813,11 +807,11 @@
     "matched_by_participants": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 33,
+    "attempted": 31,
     "poster_filled": 1,
-    "badge_filled": 10,
+    "badge_filled": 8,
     "badge_used_as_logo": 0,
-    "cache_hits": 6,
+    "cache_hits": 5,
     "cached_entries": 1071,
     "provider": {
       "requests": 2,
@@ -825,7 +819,7 @@
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 29,
+      "skipped_rate_limited": 28,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -840,15 +834,7 @@
       "now": "T20 Spring Challenge, 2026"
     }
   ],
-  "duplicate_fixtures_folded": [
-    {
-      "kept": "Al Fayha FC vs Al Ahli Saudi FC",
-      "folded": "Al Fayha Vs Al Ahli",
-      "kickoff": "2026-10-19T15:05:00+00:00",
-      "home_away_corrected": "",
-      "rule": "both clubs named more briefly, one candidate"
-    }
-  ],
+  "duplicate_fixtures_folded": [],
   "home_away_corrected": [],
   "competition_labels_clarified": [
     {
@@ -869,23 +855,23 @@
   ],
   "sport_filter": {
     "at_merge": {
-      "total": 41,
-      "published": 39,
+      "total": 38,
+      "published": 36,
       "rejected": 2,
       "quarantined": 0,
       "states": {
-        "confirmed_cricket": 21,
-        "confirmed_football": 18,
+        "confirmed_cricket": 20,
+        "confirmed_football": 16,
         "confirmed_other": 2
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 13,
+          "total": 11,
           "cricket": 2,
-          "football": 9,
+          "football": 7,
           "quarantined": 0,
           "rejected": 2,
-          "published": 11
+          "published": 9
         },
         "sm-fancode": {
           "total": 18,
@@ -902,14 +888,6 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 18
-        },
-        "vk1817-fancode-mirror": {
-          "total": 19,
-          "cricket": 14,
-          "football": 5,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
         },
         "srhady-primevideo-sports": {
           "total": 2,
@@ -935,21 +913,29 @@
           "rejected": 0,
           "published": 19
         },
-        "sayanpal-fancode-mirror": {
-          "total": 18,
-          "cricket": 13,
-          "football": 5,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
-        },
         "sportlive-fancode-backup": {
-          "total": 18,
+          "total": 19,
           "cricket": 13,
-          "football": 5,
+          "football": 6,
           "quarantined": 0,
           "rejected": 0,
-          "published": 18
+          "published": 19
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 19,
+          "cricket": 13,
+          "football": 6,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
+        },
+        "vk1817-fancode-mirror": {
+          "total": 19,
+          "cricket": 13,
+          "football": 6,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
         }
       },
       "rejected_examples": [
@@ -984,12 +970,12 @@
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 6,
+          "total": 5,
           "cricket": 2,
-          "football": 4,
+          "football": 3,
           "quarantined": 0,
           "rejected": 0,
-          "published": 6
+          "published": 5
         },
         "sm-fancode": {
           "total": 2,
@@ -1007,14 +993,6 @@
           "rejected": 0,
           "published": 2
         },
-        "vk1817-fancode-mirror": {
-          "total": 3,
-          "cricket": 2,
-          "football": 1,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 3
-        },
         "srhady-primevideo-sports": {
           "total": 2,
           "cricket": 0,
@@ -1022,6 +1000,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 2
+        },
+        "vk1817-fancode-mirror": {
+          "total": 1,
+          "cricket": 1,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
         }
       },
       "rejected_examples": [],
@@ -1029,22 +1015,22 @@
       "leaks": []
     },
     "upcoming": {
-      "total": 29,
-      "published": 29,
+      "total": 28,
+      "published": 28,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 12,
+        "confirmed_football": 11,
         "confirmed_cricket": 17
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 6,
+          "total": 5,
           "cricket": 0,
-          "football": 6,
+          "football": 5,
           "quarantined": 0,
           "rejected": 0,
-          "published": 6
+          "published": 5
         },
         "srhady-willow-event": {
           "total": 6,
@@ -1070,6 +1056,22 @@
           "rejected": 0,
           "published": 19
         },
+        "sportlive-fancode-backup": {
+          "total": 19,
+          "cricket": 13,
+          "football": 6,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 19,
+          "cricket": 13,
+          "football": 6,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
+        },
         "dartv-fancode-mirror": {
           "total": 16,
           "cricket": 12,
@@ -1078,29 +1080,13 @@
           "rejected": 0,
           "published": 16
         },
-        "sayanpal-fancode-mirror": {
-          "total": 18,
-          "cricket": 13,
-          "football": 5,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
-        },
-        "sportlive-fancode-backup": {
-          "total": 18,
-          "cricket": 13,
-          "football": 5,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 18
-        },
         "vk1817-fancode-mirror": {
-          "total": 16,
-          "cricket": 12,
-          "football": 4,
+          "total": 19,
+          "cricket": 13,
+          "football": 6,
           "quarantined": 0,
           "rejected": 0,
-          "published": 16
+          "published": 19
         }
       },
       "rejected_examples": [],
@@ -1116,16 +1102,16 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 446,
-    "cricket_kept": 21,
-    "football_kept": 18,
-    "other_discarded": 91,
+    "raw_events": 441,
+    "cricket_kept": 20,
+    "football_kept": 16,
+    "other_discarded": 90,
     "unresolved": 0,
     "today_final": 10,
-    "upcoming_final": 29,
+    "upcoming_final": 28,
     "published_states": {
       "confirmed_cricket": 21,
-      "confirmed_football": 18
+      "confirmed_football": 17
     },
     "other_sport_leak": 0,
     "ball_sport_wrongly_refused": 0
@@ -1157,28 +1143,28 @@
     }
   },
   "fixture_stream_health": {
-    "fixtures": 44,
-    "published_fixtures": 39,
-    "fixtures_with_verified_stream": 12,
-    "fixtures_with_zero_verified": 32,
-    "published_without_stream": 32,
-    "fallback_available": 6,
-    "targeted_fixtures": 4,
-    "targeted_attempts": 4,
-    "fixtures_with_a_first_link_time": 3,
-    "candidate_routes": 61,
-    "verified_routes": 42,
-    "failed_routes": 19,
-    "fixtures_touched_by_a_route_failure": 9,
-    "fixtures_left_with_nothing": 3,
+    "fixtures": 41,
+    "published_fixtures": 38,
+    "fixtures_with_verified_stream": 11,
+    "fixtures_with_zero_verified": 30,
+    "published_without_stream": 31,
+    "fallback_available": 5,
+    "targeted_fixtures": 3,
+    "targeted_attempts": 3,
+    "fixtures_with_a_first_link_time": 2,
+    "candidate_routes": 58,
+    "verified_routes": 41,
+    "failed_routes": 17,
+    "fixtures_touched_by_a_route_failure": 8,
+    "fixtures_left_with_nothing": 2,
     "distinct_failure_codes": 4,
-    "unrecognised_candidate_groups": 21,
+    "unrecognised_candidate_groups": 22,
     "unrecognised_failed_routes": 50
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 39,
-    "verified": 16,
+    "fixtures": 38,
+    "verified": 15,
     "partial_authority": 0,
     "unverified": 20,
     "conflict": 3,
@@ -1188,11 +1174,11 @@
     "card_status_conflicts": 2,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 1
+    "not_published": 0
   },
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 39,
+    "published_fixtures": 38,
     "fixtures_with_stream": 7,
     "fixtures_playable_via_catalogue": 0,
     "fixtures_with_fresh_stream": 6,
