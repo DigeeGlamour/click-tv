@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T07:11:49.638496+00:00",
+  "generated_at": "2026-10-19T07:32:21.189823+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,7 +13,9 @@
       "fixtures": 1161,
       "unknown_statuses": [
         "12|Int.",
-        "132|Stumps - day 1"
+        "132|Stumps - day 1",
+        "180|Tea - day 1",
+        "219|Start delayed"
       ],
       "attempts": [
         {
@@ -60,27 +62,27 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 3,
-      "fixtures": 427,
+      "requests_ok": 6,
+      "fixtures": 542,
       "unknown_statuses": [],
       "attempts": [
         {
           "sport": "cricket",
           "date": "2026-10-18",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 41
         },
         {
           "sport": "cricket",
           "date": "2026-10-19",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 34
         },
         {
           "sport": "cricket",
           "date": "2026-10-20",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 40
         },
         {
           "sport": "football",
@@ -109,40 +111,42 @@
     "upcoming": 30,
     "fixtures": 33,
     "verdicts": {
-      "VERIFIED": 16,
-      "UNVERIFIED": 17
+      "UNVERIFIED": 16,
+      "VERIFIED": 17
     },
-    "verified": 16,
+    "verified": 17,
     "partial_authority": 0,
-    "unverified": 17,
+    "unverified": 16,
     "conflict": 0,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 22,
-        "matched": 11
+        "matched": 18,
+        "unmatched": 15
       },
       "livescore": {
         "matched": 18,
         "unmatched": 15
       }
     },
-    "matched_by_two_independent_authorities": 10,
-    "authority_agreements": 10,
+    "matched_by_two_independent_authorities": 13,
+    "authority_agreements": 13,
     "authority_disagreements": 0,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "kickoff": 2
+      "kickoff": 4
     },
     "identity_near_misses": 3,
     "independent_authority_count_distribution": {
-      "0": 17,
-      "1": 6,
-      "2": 10
+      "0": 16,
+      "1": 4,
+      "2": 13
     },
     "unknown_authority_statuses": {
       "livescore": [
         "12|Int.",
-        "132|Stumps - day 1"
+        "132|Stumps - day 1",
+        "180|Tea - day 1",
+        "219|Start delayed"
       ],
       "espn-header": []
     }
@@ -175,13 +179,191 @@
   ],
   "fixtures": [
     {
+      "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-19",
+      "card_id": "south-africa-vs-australia",
+      "name": "South Africa Vs Australia",
+      "competition": "TEST International",
+      "kickoff": "2026-10-19T07:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "ambiguous_kickoff_lifted",
+          "verified": false,
+          "event_id": "1525660",
+          "upstream_family": "ESPN",
+          "name": "South Africa vs Australia",
+          "home": "South Africa",
+          "away": "Australia",
+          "home_team_id": "3",
+          "away_team_id": "2",
+          "competition": "Australia tour of South Africa 2026/27",
+          "competition_id": "24203",
+          "kickoff": "2026-10-18T07:45:00+00:00",
+          "kickoff_delta_minutes": -1440.0,
+          "status_raw": "Stumps",
+          "status_code": "Stumps",
+          "status": "LIVE",
+          "sport": "cricket",
+          "round": "2nd Test",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Stumps",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-23T23:59:00Z",
+          "authority_uid": "s:200~e:1525660~c:1525660"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "ambiguous_kickoff_lifted",
+          "verified": false,
+          "event_id": "1743144",
+          "upstream_family": "LiveScore",
+          "name": "South Africa vs Australia",
+          "home": "South Africa",
+          "away": "Australia",
+          "home_team_id": "86128",
+          "away_team_id": "86103",
+          "competition": "South Africa v Australia Test Series",
+          "competition_id": "24652",
+          "kickoff": "2026-10-18T07:45:00+00:00",
+          "kickoff_delta_minutes": -1440.0,
+          "status_raw": "Start delayed",
+          "status_code": "219",
+          "status": "UNKNOWN",
+          "sport": "cricket",
+          "round": "2nd Test",
+          "format": "Test",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "near_miss_count": 2,
+      "conflict_reasons": [
+        "kickoff: ours 2026-10-19T07:45, espn-header 2026-10-18T07:45 (-1440.0 min)",
+        "kickoff: ours 2026-10-19T07:45, livescore 2026-10-18T07:45 (-1440.0 min)"
+      ],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:western-australia-vs-new-south-wales|sheffield shield 2026 27|2026-10-19",
+      "card_id": "western-australia-vs-new-south-wales",
+      "name": "Western Australia vs New South Wales",
+      "competition": "Sheffield Shield, 2026/27",
+      "kickoff": "2026-10-19T02:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "dartv-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "ambiguous",
+          "verified": false,
+          "event_id": "1544869",
+          "upstream_family": "ESPN",
+          "name": "Western Australia vs New South Wales",
+          "home": "Western Australia",
+          "away": "New South Wales",
+          "home_team_id": "602",
+          "away_team_id": "387",
+          "competition": "Sheffield Shield",
+          "competition_id": "8043",
+          "kickoff": "2026-10-19T02:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Live",
+          "status_code": "Live",
+          "status": "LIVE",
+          "sport": "cricket",
+          "round": "6th Match",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Live",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-23T23:59:00Z",
+          "authority_uid": "s:200~e:1544869~c:1544869"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "ambiguous",
+          "verified": false,
+          "event_id": "1820591",
+          "upstream_family": "LiveScore",
+          "name": "Western Australia vs New South Wales",
+          "home": "Western Australia",
+          "away": "New South Wales",
+          "home_team_id": "86294",
+          "away_team_id": "86293",
+          "competition": "Sheffield Shield",
+          "competition_id": "25761",
+          "kickoff": "2026-10-19T02:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Tea - day 1",
+          "status_code": "180",
+          "status": "UNKNOWN",
+          "sport": "cricket",
+          "round": "Match 6",
+          "format": "Domestic First Class",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "near_miss_count": 2,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:oman-vs-nepal|icc cwc league 2 oman 2026|2026-10-19",
       "card_id": "oman-vs-nepal",
       "name": "Oman vs Nepal",
       "competition": "ICC CWC League 2 Oman, 2026",
       "kickoff": "2026-10-19T05:30:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -232,127 +414,6 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:western-australia-vs-new-south-wales|sheffield shield 2026 27|2026-10-19",
-      "card_id": "western-australia-vs-new-south-wales",
-      "name": "Western Australia vs New South Wales",
-      "competition": "Sheffield Shield, 2026/27",
-      "kickoff": "2026-10-19T02:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "ambiguous",
-          "verified": false,
-          "event_id": "1820591",
-          "upstream_family": "LiveScore",
-          "name": "Western Australia vs New South Wales",
-          "home": "Western Australia",
-          "away": "New South Wales",
-          "home_team_id": "86294",
-          "away_team_id": "86293",
-          "competition": "Sheffield Shield",
-          "competition_id": "25761",
-          "kickoff": "2026-10-19T02:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "Match 6",
-          "format": "Domestic First Class",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
-        "LiveScore"
-      ],
-      "near_miss_count": 1,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:south-africa-vs-australia|australia tour of south africa 2026 2nd test|2026-10-19",
-      "card_id": "south-africa-vs-australia",
-      "name": "South Africa vs Australia",
-      "competition": "Australia tour of South Africa 2026 - 2nd Test",
-      "kickoff": "2026-10-19T07:11:49+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "ambiguous_kickoff_lifted",
-          "verified": false,
-          "event_id": "1743144",
-          "upstream_family": "LiveScore",
-          "name": "South Africa vs Australia",
-          "home": "South Africa",
-          "away": "Australia",
-          "home_team_id": "86128",
-          "away_team_id": "86103",
-          "competition": "South Africa v Australia Test Series",
-          "competition_id": "24652",
-          "kickoff": "2026-10-18T08:00:00+00:00",
-          "kickoff_delta_minutes": -1391.8,
-          "status_raw": "Stumps - day 1",
-          "status_code": "132",
-          "status": "UNKNOWN",
-          "sport": "cricket",
-          "round": "2nd Test",
-          "format": "Test",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
-        "LiveScore"
-      ],
-      "near_miss_count": 1,
-      "conflict_reasons": [
-        "kickoff: ours 2026-10-19T07:11, livescore 2026-10-18T08:00 (-1391.8 min)"
-      ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -450,7 +511,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1555118",
+          "upstream_family": "ESPN",
+          "name": "Afghanistan vs Zimbabwe",
+          "home": "Afghanistan",
+          "away": "Zimbabwe",
+          "home_team_id": "40",
+          "away_team_id": "9",
+          "competition": "United Arab Emirates Tri-Nation Series",
+          "competition_id": "10931",
+          "kickoff": "2026-10-19T11:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "2nd Match (D/N)",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-21T23:59:00Z",
+          "authority_uid": "s:200~e:1555118~c:1555118"
         },
         "livescore": {
           "result": "matched",
@@ -477,13 +565,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -504,9 +593,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -546,9 +635,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -588,9 +677,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -765,12 +854,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sm-fancode",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -861,9 +950,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -953,9 +1042,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -963,7 +1052,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1528723",
+          "upstream_family": "ESPN",
+          "name": "Australia Women vs New Zealand Women",
+          "home": "Australia Women",
+          "away": "New Zealand Women",
+          "home_team_id": "238",
+          "away_team_id": "2563",
+          "competition": "New Zealand Women tour of Australia 2026/27",
+          "competition_id": "24268",
+          "kickoff": "2026-10-20T08:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "2nd T20I (D/N)",
+          "format": "T20",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-21T23:59:00Z",
+          "authority_uid": "s:200~e:1528723~c:1528723"
         },
         "livescore": {
           "result": "matched",
@@ -990,13 +1106,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1092,9 +1209,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1134,9 +1251,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1263,9 +1380,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1328,7 +1445,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1535654",
+          "upstream_family": "ESPN",
+          "name": "India Women vs Zimbabwe Women",
+          "home": "India Women",
+          "away": "Zimbabwe Women",
+          "home_team_id": "1812",
+          "away_team_id": "271866",
+          "competition": "Zimbabwe Women tour of India 2026/27",
+          "competition_id": "24371",
+          "kickoff": "2026-10-20T13:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "3rd T20I (D/N)",
+          "format": "T20",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-21T23:59:00Z",
+          "authority_uid": "s:200~e:1535654~c:1535654"
         },
         "livescore": {
           "result": "matched",
@@ -1355,13 +1499,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1382,9 +1527,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1392,20 +1537,49 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1557521",
+          "upstream_family": "ESPN",
+          "name": "Lesotho vs Mozambique",
+          "home": "Lesotho",
+          "away": "Mozambique",
+          "home_team_id": "108",
+          "away_team_id": "120",
+          "competition": "ICC Men's T20 World Cup Sub Regional Africa Qualifier Group C",
+          "competition_id": "23028",
+          "kickoff": "2026-10-20T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "2nd Match",
+          "format": "T20",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-21T23:59:00Z",
+          "authority_uid": "s:200~e:1557521~c:1557521"
         },
         "livescore": {
           "result": "unmatched"
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1422,12 +1596,12 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sm-fancode",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1518,9 +1692,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1648,9 +1822,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1659,7 +1833,34 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "kickoff_lifted",
+          "verified": false,
+          "event_id": "1550714",
+          "upstream_family": "ESPN",
+          "name": "Pakistan vs England",
+          "home": "Pakistan",
+          "away": "England",
+          "home_team_id": "7",
+          "away_team_id": "1",
+          "competition": "Pakistan ODI Tri-Series",
+          "competition_id": "1550706",
+          "kickoff": "2026-10-20T08:00:00+00:00",
+          "kickoff_delta_minutes": -60.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "2nd Match (D/N)",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-21T23:59:00Z",
+          "authority_uid": "s:200~e:1550714~c:1550714"
         },
         "livescore": {
           "result": "matched",
@@ -1688,10 +1889,12 @@
       "authority_upstreams": [],
       "independent_authority_count": 0,
       "near_miss_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 1,
+      "near_miss_count": 2,
       "conflict_reasons": [
+        "kickoff: ours 2026-10-20T09:00, espn-header 2026-10-20T08:00 (-60.0 min)",
         "kickoff: ours 2026-10-20T09:00, livescore 2026-10-20T08:00 (-60.0 min)"
       ],
       "authority_agreement": "NONE",
@@ -1839,9 +2042,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1918,9 +2121,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1982,9 +2185,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2198,9 +2401,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2227,27 +2430,54 @@
   ],
   "retired_or_unpublished": [
     {
-      "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-19",
+      "fixture_id": "provider:south-africa-vs-australia|australia tour of south africa 2026 2nd test|2026-10-19",
       "card_id": "south-africa-vs-australia",
-      "name": "South Africa Vs Australia",
-      "competition": "TEST International",
-      "kickoff": "2026-10-19T07:45:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "",
-      "card_status_normalized": "UPCOMING",
+      "name": "South Africa vs Australia",
+      "competition": "Australia tour of South Africa 2026 - 2nd Test",
+      "kickoff": "2026-10-19T07:11:49+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "srhady-primevideo-sports"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "PrimeVideo"
       ],
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "ambiguous_kickoff_lifted",
+          "verified": false,
+          "event_id": "1525660",
+          "upstream_family": "ESPN",
+          "name": "South Africa vs Australia",
+          "home": "South Africa",
+          "away": "Australia",
+          "home_team_id": "3",
+          "away_team_id": "2",
+          "competition": "Australia tour of South Africa 2026/27",
+          "competition_id": "24203",
+          "kickoff": "2026-10-18T07:45:00+00:00",
+          "kickoff_delta_minutes": -1406.8,
+          "status_raw": "Stumps",
+          "status_code": "Stumps",
+          "status": "LIVE",
+          "sport": "cricket",
+          "round": "2nd Test",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Stumps",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-23T23:59:00Z",
+          "authority_uid": "s:200~e:1525660~c:1525660"
         },
         "livescore": {
           "result": "matched",
@@ -2262,10 +2492,10 @@
           "away_team_id": "86103",
           "competition": "South Africa v Australia Test Series",
           "competition_id": "24652",
-          "kickoff": "2026-10-18T08:00:00+00:00",
-          "kickoff_delta_minutes": -1425.0,
-          "status_raw": "Stumps - day 1",
-          "status_code": "132",
+          "kickoff": "2026-10-18T07:45:00+00:00",
+          "kickoff_delta_minutes": -1406.8,
+          "status_raw": "Start delayed",
+          "status_code": "219",
           "status": "UNKNOWN",
           "sport": "cricket",
           "round": "2nd Test",
@@ -2276,257 +2506,14 @@
       "authority_upstreams": [],
       "independent_authority_count": 0,
       "near_miss_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 1,
+      "near_miss_count": 2,
       "conflict_reasons": [
-        "kickoff: ours 2026-10-19T07:45, livescore 2026-10-18T08:00 (-1425.0 min)"
+        "kickoff: ours 2026-10-19T07:11, espn-header 2026-10-18T07:45 (-1406.8 min)",
+        "kickoff: ours 2026-10-19T07:11, livescore 2026-10-18T07:45 (-1406.8 min)"
       ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:powerball-cup-final|2026-10-18",
-      "card_id": "powerball-cup-final",
-      "name": "Powerball Cup, Final",
-      "competition": "",
-      "kickoff": "2026-10-18T18:13:44+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:remo-vs-red-bull-bragantino|campeonato brasileiro s rie a|2026-10-18",
-      "card_id": "remo-vs-red-bull-bragantino",
-      "name": "Remo Vs Red Bull Bragantino",
-      "competition": "Campeonato Brasileiro Série A",
-      "kickoff": "2026-10-18T22:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401841274",
-          "upstream_family": "ESPN",
-          "name": "Remo vs Red Bull Bragantino",
-          "home": "Remo",
-          "away": "Red Bull Bragantino",
-          "home_team_id": "4936",
-          "away_team_id": "6079",
-          "competition": "Brazilian Serie A",
-          "competition_id": "630",
-          "kickoff": "2026-10-18T22:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:630~e:401841274~c:401841274"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Remo vs RB Bragantino",
-              "event_id": "1708741",
-              "agreed_side": "remo",
-              "ours": "red bull bragantino",
-              "theirs": "rb bragantino"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED"
-    },
-    {
-      "fixture_id": "provider:chicago-stars-fc-vs-seattle-reign-fc|nwsl|2026-10-18",
-      "card_id": "chicago-stars-fc-vs-seattle-reign-fc",
-      "name": "Chicago Stars FC Vs Seattle Reign FC",
-      "competition": "NWSL",
-      "kickoff": "2026-10-18T23:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401854026",
-          "upstream_family": "ESPN",
-          "name": "Chicago Stars FC vs Seattle Reign FC",
-          "home": "Chicago Stars FC",
-          "away": "Seattle Reign FC",
-          "home_team_id": "15360",
-          "away_team_id": "15363",
-          "competition": "NWSL",
-          "competition_id": "8301",
-          "kickoff": "2026-10-18T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:8301~e:401854026~c:401854026"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Chicago Red Stars vs Seattle Reign FC",
-              "event_id": "1731864",
-              "agreed_side": "seattle reign",
-              "ours": "chicago stars",
-              "theirs": "chicago red stars"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED"
-    },
-    {
-      "fixture_id": "provider:cienciano-vs-universidad-técnica-de-cajamarca|liga 1 te apuesto|2026-10-18",
-      "card_id": "cienciano-vs-universidad-técnica-de-cajamarca",
-      "name": "Cienciano Vs Universidad Técnica de Cajamarca",
-      "competition": "Liga 1 Te Apuesto",
-      "kickoff": "2026-10-18T23:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Cienciano del Cusco vs UTC",
-              "event_id": "401886167",
-              "agreed_side": "cienciano",
-              "ours": "universidad tecnica de cajamarca",
-              "theirs": "utc"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Cienciano vs CD UT Cajamarca",
-              "event_id": "1806667",
-              "agreed_side": "cienciano",
-              "ours": "universidad tecnica de cajamarca",
-              "theirs": "ut cajamarca"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
