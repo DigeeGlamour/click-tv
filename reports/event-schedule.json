@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-19T19:57:44.741403+00:00",
+  "generated_at": "2026-10-19T20:13:09.165328+00:00",
   "today_match_count": 11,
   "upcoming_count": 25,
   "today_missing_logo": [
@@ -57,15 +57,6 @@
   },
   "provider_rejected_fixtures": [
     {
-      "name": "Abha Vs Al Kholood",
-      "competition": "Saudi Pro League",
-      "sport": "football",
-      "source_id": "sm-sports-data",
-      "status": "ENDED",
-      "reason": "provider_dead_status",
-      "start_time": "2026-10-19T15:20:00+00:00"
-    },
-    {
       "name": "South Africa Vs Australia",
       "competition": "TEST International",
       "sport": "cricket",
@@ -109,6 +100,15 @@
       "status": "ENDED",
       "reason": "provider_dead_status",
       "start_time": "2026-10-19T07:45:00+00:00"
+    },
+    {
+      "name": "Abha Vs Al Kholood",
+      "competition": "Saudi Pro League",
+      "sport": "football",
+      "source_id": "sm-sports-data",
+      "status": "ENDED",
+      "reason": "provider_dead_status",
+      "start_time": "2026-10-19T15:20:00+00:00"
     },
     {
       "name": "Al Fayha Vs Al Ahli",
@@ -318,7 +318,7 @@
       },
       {
         "name": "ATP 250 Almaty Open 2026 vs Almaty, Kazakhstan",
-        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+        "source": "sm-fancode, drmlive-fancode-mirror, vk1817-fancode-mirror, d",
         "competition": "ATP 250 - Almaty Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -326,7 +326,7 @@
       },
       {
         "name": "Court 1 Round 32 vs France (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+        "source": "sm-fancode, drmlive-fancode-mirror, vk1817-fancode-mirror, d",
         "competition": "BWF Super 750 - French Open 2026",
         "sport_type": "",
         "reason": "badminton gazetteer",
@@ -446,7 +446,7 @@
       },
       {
         "name": "ATP 250 Almaty Open 2026 vs Almaty, Kazakhstan",
-        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+        "source": "sm-fancode, drmlive-fancode-mirror, vk1817-fancode-mirror, d",
         "competition": "ATP 250 - Almaty Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -754,21 +754,20 @@
   "authority_status": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 4,
-    "recorded": 7,
-    "conflict": 1,
+    "live": 0,
+    "recorded": 10,
+    "conflict": 2,
     "unmatched": 22,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 4,
-      "UPCOMING": 7
+      "UPCOMING": 10
     },
     "by_confidence": {
-      "CONFLICT": 1,
-      "LOW": 7,
+      "CONFLICT": 2,
+      "LOW": 6,
       "HIGH": 4
     },
     "applied_fixtures": [],
@@ -782,49 +781,38 @@
           "ESPN",
           "LiveScore"
         ]
+      },
+      {
+        "name": "Al Hilal SFC vs Al Hazem FC",
+        "reason": "independent authorities disagree: ESPN espn-header=13' (STATUS_FIRST_HALF, event 401900896); LiveScore livescore=FT (6, event 1845666)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
       }
     ]
   },
   "authority_status_carried": {
-    "applied": 1,
+    "applied": 0,
     "pending_confirmation": 0,
-    "live": 4,
-    "recorded": 0,
-    "conflict": 1,
-    "unmatched": 6,
+    "live": 0,
+    "recorded": 3,
+    "conflict": 3,
+    "unmatched": 5,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "FINISHED": 1,
-      "LIVE": 4
+      "UPCOMING": 3
     },
     "by_confidence": {
-      "CONFLICT": 1,
-      "HIGH": 1,
-      "LOW": 4
+      "CONFLICT": 3,
+      "LOW": 3
     },
-    "applied_fixtures": [
-      {
-        "name": "Trabzonspor Vs Beşiktaş JK",
-        "fixture_id": "provider:trabzonspor-vs-beşiktaş-jk|trendyol s per lig|2026-10-19",
-        "status": "FINISHED",
-        "confidence": "HIGH",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ],
-        "evidence": [
-          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401888277)",
-          "LiveScore livescore=FT (6, event 1821017)"
-        ],
-        "authority_finished_seen_at": "2026-10-19T19:57:23.374446+00:00",
-        "remove_after": "2026-10-19T20:17:23.374446+00:00",
-        "was_playable": true,
-        "lifecycle_state_before": "LIVE"
-      }
-    ],
+    "applied_fixtures": [],
     "conflicts": [
       {
         "name": "Afghanistan Vs Zimbabwe",
@@ -838,9 +826,19 @@
       },
       {
         "name": "Trabzonspor Vs Beşiktaş JK",
-        "reason": "authority says FINISHED while the card still carries a route",
-        "status": "FINISHED",
-        "confidence": "HIGH",
+        "reason": "independent authorities disagree: ESPN espn-header=55' (STATUS_SECOND_HALF, event 401888277); LiveScore livescore=FT (6, event 1821017)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Al Hilal SFC vs Al Hazem FC",
+        "reason": "independent authorities disagree: ESPN espn-header=13' (STATUS_FIRST_HALF, event 401900896); LiveScore livescore=FT (6, event 1845666)",
+        "status": "",
+        "confidence": "CONFLICT",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -849,31 +847,30 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 2,
+    "asked": 1,
     "finished": 0,
     "unplayable": 0,
     "cache_hits": 0,
-    "no_verdict": 2
+    "no_verdict": 1
   },
   "live_protection": {
     "carried_forward": 4,
     "released_ended": 0,
     "released_ended_ids": [],
     "retired_terminal": [],
-    "released_listing_expired": 1,
+    "released_listing_expired": 0,
     "released_dead_link": 0,
-    "released_stale": 1,
+    "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 3,
+    "probe_alive": 2,
     "probe_dead": 1,
     "probe_inconclusive": 0,
     "end_pending": 1,
-    "released_confirmed": 1,
+    "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
       "LIVE": 3,
-      "ENDED": 1,
       "END_PENDING": 1
     },
     "reconciled_into_canonical": 0,
@@ -887,7 +884,7 @@
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
-    "absence_only_refused": 1,
+    "absence_only_refused": 0,
     "never_archived_statuses": [],
     "decided_this_scan": 0
   },
@@ -1030,13 +1027,13 @@
           "rejected": 0,
           "published": 8
         },
-        "sportlive-fancode-backup": {
-          "total": 19,
-          "cricket": 14,
+        "drmlive-fancode-mirror": {
+          "total": 20,
+          "cricket": 15,
           "football": 5,
           "quarantined": 0,
           "rejected": 0,
-          "published": 19
+          "published": 20
         },
         "sayanpal-fancode-mirror": {
           "total": 19,
@@ -1046,7 +1043,7 @@
           "rejected": 0,
           "published": 19
         },
-        "drmlive-fancode-mirror": {
+        "sportlive-fancode-backup": {
           "total": 19,
           "cricket": 14,
           "football": 5,
@@ -1149,14 +1146,6 @@
           "rejected": 0,
           "published": 6
         },
-        "sportlive-fancode-backup": {
-          "total": 19,
-          "cricket": 14,
-          "football": 5,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
-        },
         "sm-fancode": {
           "total": 14,
           "cricket": 11,
@@ -1164,6 +1153,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 14
+        },
+        "drmlive-fancode-mirror": {
+          "total": 20,
+          "cricket": 15,
+          "football": 5,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 20
         },
         "vk1817-fancode-mirror": {
           "total": 17,
@@ -1173,6 +1170,14 @@
           "rejected": 0,
           "published": 17
         },
+        "dartv-fancode-mirror": {
+          "total": 14,
+          "cricket": 11,
+          "football": 3,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 14
+        },
         "sayanpal-fancode-mirror": {
           "total": 19,
           "cricket": 14,
@@ -1181,21 +1186,13 @@
           "rejected": 0,
           "published": 19
         },
-        "drmlive-fancode-mirror": {
+        "sportlive-fancode-backup": {
           "total": 19,
           "cricket": 14,
           "football": 5,
           "quarantined": 0,
           "rejected": 0,
           "published": 19
-        },
-        "dartv-fancode-mirror": {
-          "total": 14,
-          "cricket": 11,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 14
         },
         "sm-sports-data": {
           "total": 2,
@@ -1270,8 +1267,8 @@
     "targeted_attempts": 5,
     "fixtures_with_a_first_link_time": 3,
     "candidate_routes": 84,
-    "verified_routes": 44,
-    "failed_routes": 40,
+    "verified_routes": 43,
+    "failed_routes": 41,
     "fixtures_touched_by_a_route_failure": 15,
     "fixtures_left_with_nothing": 6,
     "distinct_failure_codes": 4,
@@ -1282,16 +1279,16 @@
     "shadow_only": true,
     "fixtures": 36,
     "verified": 7,
-    "partial_authority": 4,
+    "partial_authority": 0,
     "unverified": 23,
-    "conflict": 2,
+    "conflict": 6,
     "matched_by_two_independent_authorities": 10,
-    "authority_agreements": 5,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 1,
+    "authority_agreements": 4,
+    "authority_disagreements": 3,
+    "card_status_conflicts": 3,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 3
+    "not_published": 2
   },
   "stream_health": {
     "sources_in_outage": [],
