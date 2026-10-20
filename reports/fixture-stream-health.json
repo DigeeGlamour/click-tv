@@ -1,41 +1,73 @@
 {
-  "generated_at": "2026-10-20T16:36:17.551637+00:00",
+  "generated_at": "2026-10-20T18:51:33.139278+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
-    "fixtures": 25,
-    "published_fixtures": 22,
-    "fixtures_with_verified_stream": 2,
+    "fixtures": 27,
+    "published_fixtures": 21,
+    "fixtures_with_verified_stream": 4,
     "fixtures_with_zero_verified": 23,
-    "published_without_stream": 22,
+    "published_without_stream": 21,
     "fallback_available": 0,
     "targeted_fixtures": 1,
-    "targeted_attempts": 2,
+    "targeted_attempts": 1,
     "fixtures_with_a_first_link_time": 0,
-    "candidate_routes": 3,
-    "verified_routes": 2,
-    "failed_routes": 1,
-    "fixtures_touched_by_a_route_failure": 1,
-    "fixtures_left_with_nothing": 1,
-    "distinct_failure_codes": 1,
-    "unrecognised_candidate_groups": 0,
-    "unrecognised_failed_routes": 0
+    "candidate_routes": 8,
+    "verified_routes": 5,
+    "failed_routes": 3,
+    "fixtures_touched_by_a_route_failure": 3,
+    "fixtures_left_with_nothing": 2,
+    "distinct_failure_codes": 3,
+    "unrecognised_candidate_groups": 1,
+    "unrecognised_failed_routes": 1
   },
   "failure_codes": {
-    "http_403": 1
+    "http_403": 2,
+    "http_404": 1,
+    "browser_unreachable": 1
   },
   "failure_code_fixtures": {
+    "browser_unreachable": 1,
+    "http_404": 1,
     "http_403": 1
   },
   "fixtures": [
     {
-      "fixture_id": "sharjah-vs-emirates-red",
-      "fixture_key": "sharjah-vs-emirates-red",
-      "fixture_name": "Sharjah vs Emirates Red",
+      "fixture_id": "detroit-pistons-vs-boston-celtics",
+      "fixture_key": "detroit-pistons-vs-boston-celtics",
+      "fixture_name": "Detroit Pistons Vs Boston Celtics",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 1,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "gillingham-vs-port-vale-f-c",
+      "fixture_key": "gillingham-vs-port-vale-f-c",
+      "fixture_name": "Gillingham vs Port Vale F C",
       "recognised_fixture": true,
-      "source_id": "sportlive-fancode-backup",
+      "source_id": "sm-fancode",
       "source_ids": [
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sm-fancode",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "candidate_stream_count": 1,
       "verified_stream_count": 0,
@@ -43,6 +75,56 @@
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": true,
+      "target_attempt_count": 1,
+      "last_attempt_bucket": "2026-10-20T18:50Z",
+      "first_link_at": "",
+      "targeted": true
+    },
+    {
+      "fixture_id": "luton-town-vs-barnsley",
+      "fixture_key": "luton-town-vs-barnsley",
+      "fixture_name": "Luton Town Vs Barnsley",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 1,
+      "verified_stream_count": 0,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "the-golazo-show",
+      "fixture_key": "the-golazo-show",
+      "fixture_name": "The Golazo Show",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 1,
+      "verified_stream_count": 0,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "browser_unreachable"
       ],
       "fallback_available": false,
       "published": false,
@@ -131,7 +213,7 @@
       "failure_codes": [],
       "fallback_available": false,
       "published": true,
-      "published_tab": "upcoming",
+      "published_tab": "today",
       "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
@@ -252,34 +334,9 @@
       "targeted": false
     },
     {
-      "fixture_id": "provider:emirates-red-vs-sharjah|emirates d20 2026|2026-10-20",
-      "fixture_key": "emirates-red-vs-sharjah",
-      "fixture_name": "Emirates Red vs Sharjah",
-      "recognised_fixture": true,
-      "source_id": "sm-fancode",
-      "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": true,
-      "target_attempt_count": 2,
-      "last_attempt_bucket": "2026-10-20T16:35Z",
-      "first_link_at": "",
-      "targeted": true
-    },
-    {
-      "fixture_id": "fenerbahce-vs-sk-slavia-praha",
-      "fixture_key": "fenerbahce-vs-sk-slavia-praha",
-      "fixture_name": "Fenerbahçe Vs SK Slavia Praha",
+      "fixture_id": "gillingham-vs-port-vale",
+      "fixture_key": "gillingham-vs-port-vale",
+      "fixture_name": "Gillingham Vs Port Vale",
       "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
@@ -294,34 +351,6 @@
       "published": false,
       "published_tab": "",
       "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "provider:gillingham-vs-port-vale-f-c|league two 2026 27|2026-10-20",
-      "fixture_key": "gillingham-vs-port-vale-f-c",
-      "fixture_name": "Gillingham vs Port Vale F C",
-      "recognised_fixture": true,
-      "source_id": "sm-fancode",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -435,6 +464,29 @@
       "targeted": false
     },
     {
+      "fixture_id": "manchester-city-vs-aek-athens",
+      "fixture_key": "manchester-city-vs-aek-athens",
+      "fixture_name": "Manchester City Vs AEK Athens",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 1,
+      "verified_stream_count": 1,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "provider:mozambique-vs-gambia|icc men t20 wc africa sub regional qualifier c 2026|2026-10-21",
       "fixture_key": "mozambique-vs-gambia",
       "fixture_name": "Mozambique vs Gambia",
@@ -537,6 +589,29 @@
       "targeted": false
     },
     {
+      "fixture_id": "paris-saint-germain-vs-fc-barcelona",
+      "fixture_key": "paris-saint-germain-vs-fc-barcelona",
+      "fixture_name": "Paris Saint Germain Vs FC Barcelona",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 1,
+      "verified_stream_count": 1,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "provider:reading-vs-leyton-orient|league one 2026 27|2026-10-21",
       "fixture_key": "reading-vs-leyton-orient",
       "fixture_name": "Reading vs Leyton Orient",
@@ -559,29 +634,6 @@
       "published": true,
       "published_tab": "upcoming",
       "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "sabah-fk-vs-borussia-dortmund",
-      "fixture_key": "sabah-fk-vs-borussia-dortmund",
-      "fixture_name": "Sabah FK Vs Borussia Dortmund",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 1,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
@@ -662,6 +714,29 @@
       "published": true,
       "published_tab": "upcoming",
       "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "vfb-stuttgart-vs-atletico-madrid",
+      "fixture_key": "vfb-stuttgart-vs-atletico-madrid",
+      "fixture_name": "VfB Stuttgart Vs Atlético Madrid",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 2,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
       "first_link_at": "",
