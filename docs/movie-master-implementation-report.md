@@ -3040,3 +3040,46 @@ credential is rejected by both the API and `git push`
 nothing will be until the workflows are switched back on and a full movies
 scan runs: the last `Auto update: movies` was 2026-09-26 10:08, so none of
 the movie fixes written since have ever executed against the real catalogue.
+
+---
+
+# 2026-10-21 — One broken item no longer stops the system, and the plan's last items
+
+## Why the scanner kept stopping itself
+
+Four outages in October had one shape. A test read the published catalogue in
+`data/`, asserted something about it, and the data moved: a sustained-playback
+proof one hide path ignored (10-04, thirteen days), a card whose route was a
+`playback_id` rather than a `url` (10-17), an Upcoming badge fifteen seconds past
+kickoff (10-17), and a running show that reached 61 episodes against a ceiling of
+57 (10-20). The suite gated every scan, so the scan never started — and the scan
+was the only thing that could change the data back.
+
+Fixing each test was necessary and never sufficient: the next one was already
+written. So the gate itself changed.
+
+## What was built
+
+| Suggestion | What it does | Where |
+|---|---|---|
+| ক Split code faults from data facts | The suite runs unchanged through `scripts/run-test-gate.py`, which records every test that reads `data/` — in its body, in `setUpClass`, or at import. A failing test that never touched `data/` is a code fault and blocks the scan. A failing test that read the published catalogue is a data audit: a GitHub warning, a line in the alert, and the scan proceeds. Measured on the full suite: 5,485 tests, 78 of them read `data/`. | `scripts/run-test-gate.py`, `tests/test_run_test_gate.py` |
+| খ Do not re-test code that already passed | The workflow fingerprints every tracked file except `data/ state/ reports/ working/ docs/`. If that exact code already passed the gate, a run that only brings new data skips the suite. | `scan.yml` steps *Fingerprint…* / *Has this exact code already passed…* / *Remember…* |
+| গ One broken item, not one broken run | **Build:** `scripts/quarantine-bad-items.py` runs the validator's own per-item checks before the Pages build and removes only the item that would fail it (and a later duplicate), fixing every count the validator cross-checks and recording the item and reason in `reports/item-quarantine.json`. More than 5% of a surface failing (floor 10) is a scan fault: it then changes nothing and the build fails as before. **Scan:** in `all` mode each pipeline (channels, movies, events) runs in its own `try`; a failure is recorded in `reports/pipeline-failures.json` and the others still publish. The series tree always isolates — it is written after the movie catalogue. A failing catch-up scan no longer aborts the scheduled scan in the same run. | `scripts/quarantine-bad-items.py`, `scripts/build-pages.sh`, `scan.py`, `scan.yml` |
+| ঘ Never silent again | Failure alerts are sent on the 3rd failure in a row and every 12th after (cancelled runs are skipped over), and they name the test that stopped the scan. Success alerts list anything held back. A separate watchdog workflow, every six hours, reports any workflow that is not `active` and a scanner with no success in six hours. It only reads; it never re-enables. | `scripts/failure-streak.py`, `scanner/telegram_notify.py`, `scripts/scanner-watchdog.py`, `.github/workflows/watchdog.yml` |
+
+## The plan's remaining items
+
+| Plan item | Status |
+|---|---|
+| ধারা ৪.৫ steps 3–5 — find a dead card's film in the source snapshot, probe only the new URLs, add up to five live backups | **IMPLEMENTED.** `scanner/movie_repair_candidates.py`; the repair run reads the scan's own cached snapshot (restored read-only), records live finds in the link ledger, and the scan adds them as backups (`_adopt_repair_discoveries`). Tokenized URLs are never written to the committed ledger; a declared sub-720p copy is never a candidate; an undeclared one is published `quality_unknown` only after the probe proves it plays. |
+| ধারা ৪.৫ — playback failure as a repair trigger | **IMPLEMENTED.** A route a real browser could not play (`state/measured-playback-failures.json`) queues its card as a dead primary. The card is not hidden. |
+| ধারা ৪.৫ — P3 restricted / uncertain | **IMPLEMENTED.** A primary failing only with a vantage-shaped 403/451 (`stale_reason: geo`) is P3, not P0/P1. |
+| ধারা ৪.৬ — series identity priorities 1 and 3 | **IMPLEMENTED.** Same-title records carrying different show ids are different shows; an id-less record joins the id sharing its first-air-year. A year never splits a show on its own (the Undekhi rule holds). |
+| ধারা ৮ — restricted/unknown poster never final | **IMPLEMENTED on the data side.** Every movie card carries `poster_verified`; an unproven poster is published as provisional and the page replaces it with the placeholder the moment it fails to load. It is not blanked for everyone, because a 403 here is vantage-shaped and the same image loads in Bangladesh. |
+| A working movie source | **ADDED.** `sm-movie-bdix-combined` (`combined.m3u`, three movie groups, 11,584 rows / 10,055 films) at priority 120, above `sm-movie-combined`, whose whole catalogue is on a suspended BunnyCDN zone. |
+
+## Still the owner's
+
+- **OMDb API key** — rejected (12 auth failures, breaker open). TMDB carries metadata meanwhile; a new key restores the second provider.
+- **`sm-movie-combined`'s CDN** — every URL answers "Domain suspended or not configured". Nothing in this repository can bring that zone back.
+- **BDIX hosts** — `cinehub24.com` is unreachable from GitHub runners, so those films cannot be verified from CI. They play for viewers in Bangladesh.

@@ -3,6 +3,30 @@
   "description": "Movie / VOD catalogue sources.",
   "sources": [
     {
+      "id": "sm-movie-bdix-combined",
+      "name": "SM Combined - direct-file movies",
+      "url": "https://raw.githubusercontent.com/sm-monirulislam/SM-Movie-Hup-Auto-Update/refs/heads/main/combined.m3u",
+      "format": "auto",
+      "enabled": true,
+      "priority": 120,
+      "category_mode": "detect",
+      "default_category": "Mix",
+      "follow_nested_playlists": true,
+      "maximum_nested_depth": 2,
+      "preserve_source_headers": true,
+      "preserve_drm": true,
+      "note": "Measured 2026-10-17. sm-movie-combined (priority 110) still lists 38,658 films, and every one of them is on lrtyuh.b-cdn.net, which answers every path - including the zone root - with BunnyCDN's 'Domain suspended or not configured' page. Not a block, not a rate limit, not one vantage: the provider's CDN zone is off, so that source currently serves nothing at all, and 1,521 of the 1,970 published cards point into it. The same provider's repository also publishes combined.m3u, whose files are on hosts that do serve: ftp.ctgfun.com answered 206 with real video, and cinehub24.com (203.76.96.50) is a BDIX host - unreachable from a GitHub runner or from outside Bangladesh, and fast and free for the viewers this site is for. The three groups included below are 11,584 rows carrying 10,055 distinct films and exactly 4 rows with a series signal, so this adds films rather than the episode cards D-01 spent a phase removing. The BDIX TV-show groups in the same playlist are deliberately left out for that reason. Priority 120 puts it above sm-movie-combined so that where both list the same film, the link that plays becomes the primary and the suspended one stays as a backup rather than the other way round.",
+      "source_rules": {
+        "include": {
+          "groups": [
+            "Movies",
+            "Movie Bangla",
+            "Movie English"
+          ]
+        }
+      }
+    },
+    {
       "id": "sm-movie-combined",
       "name": "SM Movie Combined",
       "url": "https://raw.githubusercontent.com/sm-monirulislam/SM-Movie-Hup-Auto-Update/refs/heads/main/Movie_Combined.m3u",

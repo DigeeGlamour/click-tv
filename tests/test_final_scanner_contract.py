@@ -234,10 +234,29 @@ class FinalScannerContractTests(unittest.TestCase):
         self.assertEqual(len(ids), len(set(ids)), "a source is configured twice")
         tv_ids = [s["id"] for s in payload["tv"]]
         self.assertEqual(len(tv_ids), len(set(tv_ids)), "a TV source is configured twice")
-        self.assertEqual(len(payload["movies"]), 2)
+        # Three since 2026-10-17. sm-movie-combined's whole catalogue sits on
+        # a BunnyCDN zone that now answers every path with "Domain suspended
+        # or not configured", so it serves nothing; sm-movie-bdix-combined is
+        # the same provider's other playlist, on hosts that do serve, and it
+        # is included at a higher priority so the link that plays wins the
+        # primary slot. The set is asserted exactly rather than loosely: which
+        # sources a pipeline reads is a decision, and a decision should have
+        # to be made twice.
+        self.assertEqual(len(payload["movies"]), 3)
         self.assertEqual(
             {entry["id"] for entry in payload["movies"]},
-            {"sm-movie-combined", "bollywood-movies-collector"},
+            {"sm-movie-bdix-combined", "sm-movie-combined",
+             "bollywood-movies-collector"},
+        )
+        by_id = {entry["id"]: entry for entry in payload["movies"]}
+        self.assertGreater(by_id["sm-movie-bdix-combined"]["priority"],
+                           by_id["sm-movie-combined"]["priority"])
+        # Its three movie groups only: the same playlist's BDIX TV-show
+        # groups are episodes, and D-01 spent a phase taking episode cards
+        # out of the movie catalogue.
+        self.assertEqual(
+            by_id["sm-movie-bdix-combined"]["source_rules"]["include"]["groups"],
+            ["Movies", "Movie Bangla", "Movie English"],
         )
         self.assertEqual(payload["tv"][1]["id"], "sm-roarzone-auto-update")
         self.assertEqual(payload["tv"][1]["priority"], 148)
