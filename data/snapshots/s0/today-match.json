@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-21T21:37:51.720914+00:00",
-  "count": 15,
+  "updated_at": "2026-10-21T22:25:12.850875+00:00",
+  "count": 14,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -74,7 +74,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-21T20:24:55.903928+00:00"
     },
@@ -241,9 +241,9 @@
       "authority_event_ids": {
         "espn-header": "401890164"
       },
-      "authority_status": "LIVE",
+      "authority_status": "FINISHED",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
       "protected_source": true,
       "requires_credentials": true,
@@ -252,15 +252,21 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 8,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-21T20:36:00.125502+00:00",
-      "authority_finished_confirmations": 1
+      "authority_finished_confirmations": 4,
+      "authority_finished_seen_at": "2026-10-21T22:05:02.014692+00:00",
+      "authority_remove_after": "2026-10-21T22:25:02.014692+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-21T22:05:16.508098+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "the-golazo-show",
@@ -355,7 +361,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-21T18:55:00+00:00",
       "start_at": "2026-10-21T18:55:00+00:00",
-      "end_time": "2026-10-21T22:25:09+00:00",
+      "end_time": "2026-10-21T23:24:59+00:00",
       "end_time_source": "assumed",
       "competition": "UEFA Champions League",
       "fixture_id": "provider:the-golazo-show|uefa champions league|2026-10-21",
@@ -496,21 +502,22 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=87' (STATUS_SECOND_HALF, event 401880779)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401880779)",
         "LiveScore livescore=FT (6, event 1802976)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401880779"
+        "espn-header": "401880779",
+        "livescore": "1802976"
       },
-      "authority_status": "LIVE",
+      "authority_status": "FINISHED",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tprvtu1448811527.png",
@@ -523,16 +530,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
       "lifecycle_protections": [
-        "authority_live",
-        "primary_playable",
-        "backup_playable"
+        "authority_live"
       ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_misses": 6,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
       "carried_forward_first_missed_at": "2026-10-21T21:05:26.514050+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=87' (STATUS_SECOND_HALF, event 401880779); LiveScore livescore=FT (6, event 1802976)"
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-21T22:05:02.014692+00:00",
+      "authority_remove_after": "2026-10-21T22:25:02.014692+00:00",
+      "contradicted_end_confirmations": 2,
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "aston-villa-vs-viking-fk",
@@ -773,19 +782,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=84' (STATUS_SECOND_HALF, event 401915394)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401915394)",
         "LiveScore livescore=FT (6, event 1882786)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=84' (STATUS_SECOND_HALF, event 401915394); LiveScore livescore=FT (6, event 1882786)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "aston-villa-vs-viking-2594554",
       "artwork_candidates": [
@@ -804,7 +812,28 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-21T21:45:18.420656+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401915394",
+        "livescore": "1882786"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-21T22:05:02.014692+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-21T22:25:02.014692+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-21T22:05:16.508098+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "club-brugge-kv-vs-rc-lens",
@@ -1107,20 +1136,40 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=85' (STATUS_SECOND_HALF, event 401915388)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401915388)",
         "LiveScore livescore=FT (6, event 1882799)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401915388); LiveScore livescore=FT (6, event 1882799)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_381671e4af75cee4ade2410f225f9415"
+      "lifecycle_state": "END_PENDING",
+      "playback_id": "ctv_381671e4af75cee4ade2410f225f9415",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-21T21:45:18.420656+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401915388",
+        "livescore": "1882799"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-21T22:05:02.014692+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-21T22:25:02.014692+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-21T22:05:16.508098+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "fc-bayern-münchen-vs-arsenal",
@@ -1623,401 +1672,40 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=85' (STATUS_SECOND_HALF, event 401915312)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401915312)",
         "LiveScore livescore=FT (6, event 1882737)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401915312); LiveScore livescore=FT (6, event 1882737)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_7849b71c5b845fae1c1ee81b6ff19be6"
-    },
-    {
-      "id": "inter-vs-shakhtar-donetsk",
-      "name": "Inter Vs Shakhtar Donetsk",
-      "primary_stream_key": "cab698f93f12e537471c108f78079ed2cb71e913cf9249ebc31b112ba02a41b8",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/2697/image",
-      "category": "today_match",
-      "url": "https://edgestream6.pro/hls/griogoehvn2.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "hls",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 5,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_90c0fda4eeb82d07ac80f2cdeb6e813b",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_403576564d5c2daa212e7d20f812ed5a",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_f150ba96040d68bc3fbbdf84d23c060b",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-4",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_fdaa9839340f85ae6f20c8df11eb9ac7",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
+      "lifecycle_state": "END_PENDING",
+      "playback_id": "ctv_7849b71c5b845fae1c1ee81b6ff19be6",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
       ],
-      "channels": [
-        {
-          "id": "inter-vs-shakhtar-donetsk--stream-tv",
-          "name": "STREAM TV",
-          "normalized_name": "stream-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/2697/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "inter-vs-shakhtar-donetsk--stream-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "inter-vs-shakhtar-donetsk--stream-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_11a177fc1c7b6020d9f2fc52",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_e22773283b72155e6df5f3e41ff38a15",
-              "resolution": "HD",
-              "resolution_height": 720,
-              "stream_type": "hls"
-            }
-          ]
-        },
-        {
-          "id": "inter-vs-shakhtar-donetsk--dazn",
-          "name": "DAZN",
-          "normalized_name": "dazn",
-          "logo": "https://img.sofascore.com/api/v1/team/2697/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "inter-vs-shakhtar-donetsk--dazn--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "inter-vs-shakhtar-donetsk--dazn--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_d1b5c9ce5b69cb2607433190",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_90c0fda4eeb82d07ac80f2cdeb6e813b",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "inter-vs-shakhtar-donetsk--paramount",
-          "name": "PARAMOUNT+",
-          "normalized_name": "paramount",
-          "logo": "https://img.sofascore.com/api/v1/team/2697/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "inter-vs-shakhtar-donetsk--paramount--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "inter-vs-shakhtar-donetsk--paramount--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_0f582a69e3318c5b5bb08c95",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_403576564d5c2daa212e7d20f812ed5a",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "inter-vs-shakhtar-donetsk--prime-sonyliv",
-          "name": "PRIME SONYLIV",
-          "normalized_name": "prime-sonyliv",
-          "logo": "https://img.sofascore.com/api/v1/team/2697/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "inter-vs-shakhtar-donetsk--prime-sonyliv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "inter-vs-shakhtar-donetsk--prime-sonyliv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_602b3f3e85a7b44857b5e484",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_f150ba96040d68bc3fbbdf84d23c060b",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "inter-vs-shakhtar-donetsk--server-1",
-          "name": "Server-1",
-          "normalized_name": "server-1",
-          "logo": "https://img.sofascore.com/api/v1/team/2697/image",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "inter-vs-shakhtar-donetsk--server-1--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "inter-vs-shakhtar-donetsk--server-1--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_e21ceb150dd643d1652b25fb",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_fdaa9839340f85ae6f20c8df11eb9ac7",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 5,
-      "default_channel_id": "inter-vs-shakhtar-donetsk--stream-tv",
-      "channel_stats": {
-        "streams_in": 5,
-        "unresolved_channel_streams": 1,
-        "exact_duplicates_removed": 0,
-        "channels": 5,
-        "variants": 5,
-        "embed_variants": 0,
-        "generic_server_channels": 1
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-21T21:45:18.420656+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401915312",
+        "livescore": "1882737"
       },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "start_time": "2026-10-21T19:00:00+00:00",
-      "start_at": "2026-10-21T19:00:00+00:00",
-      "end_time": "2026-10-21T22:25:09+00:00",
-      "end_time_source": "assumed",
-      "competition": "UEFA Champions League",
-      "fixture_id": "provider:inter-vs-shakhtar-donetsk|uefa champions league|2026-10-21",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-10-21T19:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=84' (STATUS_SECOND_HALF, event 401915390)",
-        "LiveScore livescore=FT (6, event 1882750)"
-      ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=84' (STATUS_SECOND_HALF, event 401915390); LiveScore livescore=FT (6, event 1882750)",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_f9d997a34c4713bd11f52f505c73d4cf"
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-21T22:05:02.014692+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-21T22:25:02.014692+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-21T22:05:16.508098+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "real-betis-vs-feyenoord",
@@ -2375,17 +2063,16 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=87' (STATUS_SECOND_HALF, event 401915389)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401915389)",
         "LiveScore livescore=FT (6, event 1882800)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=87' (STATUS_SECOND_HALF, event 401915389); LiveScore livescore=FT (6, event 1882800)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2399,7 +2086,25 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkulyUw3MKLBgAJiG4g9exDgggSIRCEMEKTPii6by9eaMdNa20VLpA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpjJQyWaCBDcQEEHxCISh3VpAxDBCkz4ouYMvCLzRdprTAOxoiEA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_604371a0ddc9ca5b3a50a0e49e256080"
+      "playback_id": "ctv_604371a0ddc9ca5b3a50a0e49e256080",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_first_missed_at": "2026-10-21T21:45:18.420656+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401915389",
+        "livescore": "1882800"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-21T22:05:02.014692+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-21T22:25:02.014692+00:00",
+      "contradicted_end_confirmations": 2,
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "real-madrid-vs-rb-leipzig",
@@ -2949,17 +2654,16 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=84' (STATUS_SECOND_HALF, event 401915313)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401915313)",
         "LiveScore livescore=FT (6, event 1882744)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=84' (STATUS_SECOND_HALF, event 401915313); LiveScore livescore=FT (6, event 1882744)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2973,7 +2677,25 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpgAmYPmDUas6kNxAQQfEIhIgYuEChAqrBCkz4ouYMvCLzRzprTCuxohBAA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpiTBVA7hTQhuIEiBQgIuI6cP6JhGMCZ8UXMGXhF5o+01phHY0RCA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_ef363c325aaec769fcf9d94365a79a83"
+      "playback_id": "ctv_ef363c325aaec769fcf9d94365a79a83",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_first_missed_at": "2026-10-21T21:45:18.420656+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401915313",
+        "livescore": "1882744"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-21T22:05:02.014692+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-21T22:25:02.014692+00:00",
+      "contradicted_end_confirmations": 2,
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "sporting-cp-vs-lask",
@@ -3276,17 +2998,16 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=84' (STATUS_SECOND_HALF, event 401915391)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401915391)",
         "LiveScore livescore=FT (6, event 1882781)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=84' (STATUS_SECOND_HALF, event 401915391); LiveScore livescore=FT (6, event 1882781)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -3300,7 +3021,25 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhCiQ7MKIAMIPiG66QRxAcR6je5YRjAmfFF03l680Q6a0wmsaIhA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkh1ZUQuEABNgYENy3qQiEiBOajIFKYIUmfFFzBl4ReaIdNaYJ2NEQgA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_81f5d8d192ce1bb544153a4569069c72"
+      "playback_id": "ctv_81f5d8d192ce1bb544153a4569069c72",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_first_missed_at": "2026-10-21T21:45:18.420656+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401915391",
+        "livescore": "1882781"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-21T22:05:02.014692+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-21T22:25:02.014692+00:00",
+      "contradicted_end_confirmations": 2,
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "betis-vs-feyenoord",
@@ -3544,17 +3283,25 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-21T21:45:18.420656+00:00"
     },
     {
       "id": "predator-european-championships-spain",
       "name": "Predator European Championships Spain",
-      "primary_stream_key": "a191a1743529416c1345e3d310b9bd72133174a24cd87c06afa3c8107359b3df",
+      "primary_stream_key": "4cacdbfbc5bebe71351ece08314951f74429735a868604b4717fc85da48db93d",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.447494d8-1dc7-4b08-89c7-f04ce02111ea/5/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
       "category": "today_match",
-      "header_profile": "android_tv",
+      "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
       "requires_headers": false,
@@ -3574,7 +3321,7 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -3585,14 +3332,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_a3a827641524cbd7be6f9ddeeb7cf1bb",
+          "playback_id": "ctv_423728da357dc198a96416f744da67dc",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -3614,14 +3361,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_423728da357dc198a96416f744da67dc",
+          "playback_id": "ctv_8b821124a1b73ee11e95f59ddbf78eb6",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -3686,19 +3433,6 @@
               "id": "predator-european-championships-spain--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_cea41c90fd20595bf67af84e",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_8b821124a1b73ee11e95f59ddbf78eb6",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "predator-european-championships-spain--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_8aba4077e62754f39a615e83",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -3709,7 +3443,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "predator-european-championships-spain--prime-video--3",
+              "id": "predator-european-championships-spain--prime-video--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_ccc0d3664c96d5cafc33fc40",
@@ -3717,6 +3451,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_423728da357dc198a96416f744da67dc",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "predator-european-championships-spain--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_cea41c90fd20595bf67af84e",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_8b821124a1b73ee11e95f59ddbf78eb6",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -3764,9 +3511,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-21T21:25:09+00:00",
-      "start_at": "2026-10-21T21:25:09+00:00",
-      "end_time": "2026-10-22T01:25:09+00:00",
+      "start_time": "2026-10-21T21:45:04+00:00",
+      "start_at": "2026-10-21T21:45:04+00:00",
+      "end_time": "2026-10-22T01:45:04+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:predator-european-championships-spain|2026-10-21",
       "status": "LIVE_NOW",
@@ -3780,19 +3527,27 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_8b821124a1b73ee11e95f59ddbf78eb6",
+      "playback_id": "ctv_a3a827641524cbd7be6f9ddeeb7cf1bb",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-21T22:05:16.508098+00:00"
     },
     {
       "id": "montevideo-city-torque-vs-atlético-mineiro",
       "name": "Montevideo City Torque Vs Atlético Mineiro",
-      "primary_stream_key": "e17a47f25d3e5268fc854ca58223b7d1f677612b1589c89472aca7943fd4f241",
+      "primary_stream_key": "23a32f72373d6e8dba79ac9d54766440f286c26203b922620bb95b537ab7459e",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/174972/image",
@@ -3813,7 +3568,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 3,
+      "available_link_count": 2,
       "backups": [
         {
           "name": "Backup-1",
@@ -3843,42 +3598,13 @@
             "query_parameters": [],
             "drm": true
           }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_fd195fa61874122c77418f46de049b29",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
         }
       ],
       "channels": [
         {
-          "id": "montevideo-city-torque-vs-atl-tico-mineiro--d-sports",
-          "name": "D SPORTS +",
-          "normalized_name": "d-sports",
+          "id": "montevideo-city-torque-vs-atl-tico-mineiro--bein-english",
+          "name": "beIN ENGLISH",
+          "normalized_name": "bein-english",
           "logo": "https://img.sofascore.com/api/v1/team/174972/image",
           "name_confidence": "explicit",
           "name_source": "channel_name",
@@ -3886,7 +3612,7 @@
           "source_ids": [
             "sm-sports-data"
           ],
-          "primary_stream_id": "montevideo-city-torque-vs-atl-tico-mineiro--d-sports--1",
+          "primary_stream_id": "montevideo-city-torque-vs-atl-tico-mineiro--bein-english--1",
           "stream_count": 1,
           "backup_count": 0,
           "verified": true,
@@ -3897,14 +3623,14 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "montevideo-city-torque-vs-atl-tico-mineiro--d-sports--1",
+              "id": "montevideo-city-torque-vs-atl-tico-mineiro--bein-english--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_6bac94a0667f74ed186dca6a",
+              "variant_key": "sv_8fc5d08a0e1a58e498b5c301",
               "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
+              "playback_id": "ctv_fd195fa61874122c77418f46de049b29",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -3946,52 +3672,16 @@
               "stream_type": "dash"
             }
           ]
-        },
-        {
-          "id": "montevideo-city-torque-vs-atl-tico-mineiro--bein-english",
-          "name": "beIN ENGLISH",
-          "normalized_name": "bein-english",
-          "logo": "https://img.sofascore.com/api/v1/team/174972/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "montevideo-city-torque-vs-atl-tico-mineiro--bein-english--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "montevideo-city-torque-vs-atl-tico-mineiro--bein-english--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_8fc5d08a0e1a58e498b5c301",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_fd195fa61874122c77418f46de049b29",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
         }
       ],
-      "channel_count": 3,
-      "default_channel_id": "montevideo-city-torque-vs-atl-tico-mineiro--d-sports",
+      "channel_count": 2,
+      "default_channel_id": "montevideo-city-torque-vs-atl-tico-mineiro--bein-english",
       "channel_stats": {
-        "streams_in": 3,
+        "streams_in": 2,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 3,
-        "variants": 3,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -4017,9 +3707,9 @@
       "end_time_source": "sport",
       "competition": "CONMEBOL Sudamericana",
       "fixture_id": "provider:montevideo-city-torque-vs-atlético-mineiro|conmebol sudamericana|2026-10-21",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-10-21T22:00:00+00:00",
@@ -4032,7 +3722,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/v7urjn1580234584.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/x5lixs1743742872.png",
-      "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
+      "playback_id": "ctv_fd195fa61874122c77418f46de049b29",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -4138,9 +3828,9 @@
       "end_time_source": "sport",
       "competition": "Copa do Brasil, Feminino",
       "fixture_id": "provider:são-paulo-vs-ec-bahia|copa do brasil feminino|2026-10-21",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-10-21T22:00:00+00:00",
