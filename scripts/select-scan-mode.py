@@ -72,6 +72,8 @@ CATCHUP_ORDER = ("channels", "movies")
 #: Modes that must never be displaced or added to. `all` already covers
 #: everything, and the twice-daily `upcoming` refresh is itself sparse.
 NO_CATCHUP_MODES = frozenset({"all", "channels", "movies"})
+#: Modes the scan-trigger Worker dispatches on the schedule's behalf.
+DISPATCHED_SCHEDULE_MODES = frozenset({"today"})
 
 
 def _summary_path(mode: str, reports_dir: str) -> str:
@@ -146,7 +148,14 @@ def choose(
     mode = str(scheduled or "").strip().lower()
     reports = reports_dir or os.path.join(ROOT, "reports")
 
-    if event_name != "schedule":
+    # The scan-trigger Worker is the scheduler now: GitHub delivered 6.7% of
+    # the native crons, so the Worker dispatches `today` on the same cadence
+    # through workflow_dispatch. Treating that dispatch as manual meant no
+    # run ever caught up a catalogue - movies went 31 h without a scan on
+    # 2026-10-21 while every today run said "the requested mode runs on its
+    # own". A dispatched `today` is the schedule; any other dispatched mode is
+    # still somebody asking for exactly that mode.
+    if event_name != "schedule" and mode not in DISPATCHED_SCHEDULE_MODES:
         return mode, "", "manual dispatch: the requested mode runs on its own"
     if mode in NO_CATCHUP_MODES:
         return mode, "", "%s already refreshes a catalogue; nothing added" % mode

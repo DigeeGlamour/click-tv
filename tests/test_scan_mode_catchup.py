@@ -93,10 +93,19 @@ class CatchUpTests(unittest.TestCase):
     def test_a_manual_dispatch_is_left_alone(self):
         """Somebody asked for a specific mode; that is the whole request."""
         mode, catchup, _ = self.choose(
-            "today", event_name="workflow_dispatch", channels=99.0, movies=99.0
+            "upcoming", event_name="workflow_dispatch", channels=99.0, movies=99.0
+        )
+        self.assertEqual("upcoming", mode)
+        self.assertEqual("", catchup)
+
+    def test_the_worker_s_today_dispatch_is_the_schedule(self):
+        """The scan-trigger Worker dispatches `today` because GitHub's cron
+        delivers 6.7%; with that treated as manual, movies went 31 h unscanned."""
+        mode, catchup, _ = self.choose(
+            "today", event_name="workflow_dispatch", channels=1.0, movies=40.0
         )
         self.assertEqual("today", mode)
-        self.assertEqual("", catchup)
+        self.assertEqual("movies", catchup)
 
     def test_a_channels_run_does_not_add_channels_to_itself(self):
         _, catchup, _ = self.choose("channels", channels=99.0, movies=1.0)
