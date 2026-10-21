@@ -127,6 +127,14 @@ cp -a "${SITE_DIR}/." "${DIST_DIR}/"
 log "Asset URL-এ content hash বসানো হচ্ছে (পুরোনো cache আটকাতে)"
 "${PYTHON_BIN:-python}" "${ROOT_DIR}/scripts/stamp-asset-versions.py" "${DIST_DIR}"
 
+# একটা ভাঙা card পুরো build ফেল করাবে না। validator-এর নিজের per-item নিয়মে
+# যে item ফেল করত, শুধু সেটাই data/ থেকে সরানো হয় এবং
+# reports/item-quarantine.json-এ কারণসহ লেখা হয়; বাকি catalogue প্রকাশ হয়।
+# অনেক item একসাথে ফেল করলে সেটা scan-এর দোষ - তখন কিছুই বদলায় না এবং
+# build আগের মতোই ফেল করে, আগের catalogue live থাকে।
+log "ভাঙা item আলাদা করা হচ্ছে (শুধু সেই item বাদ যাবে)"
+"${PYTHON_BIN:-python}" "${ROOT_DIR}/scripts/quarantine-bad-items.py"   --data "${DATA_DIR}" --report "${ROOT_DIR}/reports/item-quarantine.json"   || fail "অনেক item একসাথে ভাঙা - scan-এর দোষ, catalogue ফাঁকা করা হলো না"
+
 log "Generated data dist/data folder-এ copy করা হচ্ছে"
 
 mkdir -p "${DIST_DIR}/data"

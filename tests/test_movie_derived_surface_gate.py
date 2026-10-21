@@ -25,6 +25,7 @@ whoever knows it.
 from __future__ import annotations
 
 import ast
+import re
 import json
 import sys
 import unittest
@@ -137,9 +138,14 @@ class TheRealCallerDefersAndThenDecides(unittest.TestCase):
         gate = SCAN.index("movie_coverage_report = _build_movie_coverage(")
         # The CALL, not the def - `.index` finds the definition first, and the
         # definition is allowed to live anywhere in the file.
-        publish = SCAN.index(
-            "_publish_movie_derived_surfaces(" + chr(10) + "            publish_derived_surfaces")
-        self.assertLess(gate, publish)
+        # Matched whatever its indentation: since 2026-10-21 the movie
+        # pipeline sits inside a try that isolates its failure from the other
+        # pipelines, which moved the call one level in and changed nothing
+        # about the order this pins.
+        match = re.search(
+            r"_publish_movie_derived_surfaces\(\s*publish_derived_surfaces", SCAN)
+        self.assertIsNotNone(match)
+        self.assertLess(gate, match.start())
 
     def test_a_blocked_gate_keeps_the_previous_surfaces(self):
         helper = _function(SCAN, "_publish_movie_derived_surfaces")

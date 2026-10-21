@@ -1569,15 +1569,19 @@ def run_pipeline(
             "\n[Step 4a/5] Processing Live TV channels..."
         )
 
-        from scanner.channels import (
-            process_tv_channels,
-        )
+        try:
+            from scanner.channels import (
+                process_tv_channels,
+            )
 
-        channels_data = process_tv_channels()
+            channels_data = process_tv_channels()
 
-        _sanitize_channel_quarantine(
-            channels_data
-        )
+            _sanitize_channel_quarantine(
+                channels_data
+            )
+        except Exception as error:  # noqa: BLE001 - see _pipeline_failed
+            channels_data = None
+            _pipeline_failed("channels", error, isolate=mode_clean == "all")
 
     if mode_clean in {
         "movies",
@@ -1591,56 +1595,60 @@ def run_pipeline(
         # only honest source for it is the catalogue on disk right now - the
         # one the site is serving. It has to be read before `process_movies`
         # so that nothing this run does can change the answer.
-        movie_previous_inventory = _movie_previous_inventory()
+        try:
+            movie_previous_inventory = _movie_previous_inventory()
 
-        from scanner.movies import (
-            process_movies,
-            publish_derived_surfaces,
-        )
+            from scanner.movies import (
+                process_movies,
+                publish_derived_surfaces,
+            )
 
-        # ধারা ৪.০. Discovery, trending, the genre indexes and the search-index
-        # stamp describe the catalogue; they are written only once it is known
-        # that the catalogue itself is being published. See the note in
-        # `movies.publish_derived_surfaces`.
-        # ধারা ৪.১. The rows the sources produced, not the rows that passed
-        # the health check: a card whose CDN host has rotated is unreachable
-        # at its old URL by definition, so the entry that says where the file
-        # moved to is one the checker had no way to confirm.
-        movies_data = process_movies(
-            defer_derived=True,
-            source_entries=list(normalized.get("raw_collected_items") or []),
-        )
+            # ধারা ৪.০. Discovery, trending, the genre indexes and the search-index
+            # stamp describe the catalogue; they are written only once it is known
+            # that the catalogue itself is being published. See the note in
+            # `movies.publish_derived_surfaces`.
+            # ধারা ৪.১. The rows the sources produced, not the rows that passed
+            # the health check: a card whose CDN host has rotated is unreachable
+            # at its old URL by definition, so the entry that says where the file
+            # moved to is one the checker had no way to confirm.
+            movies_data = process_movies(
+                defer_derived=True,
+                source_entries=list(normalized.get("raw_collected_items") or []),
+            )
 
-        print("   Validating mixed TXT Series / Season / Episode catalogue...")
-        from scanner.series import prepare_manual_series
-        # ধাপ ১২ / A-05. The real publish path is the only caller that may
-        # reach a provider, the same gate movie metadata uses - so tests and
-        # ad-hoc calls still only ever apply what is already cached.
-        prepared_series = prepare_manual_series(
-            project_root=PROJECT_ROOT, allow_lookup=True)
-        print(
-            f"   Series ready: {prepared_series.get('series', 0)} Series / "
-            f"{prepared_series.get('episodes', 0)} Episodes"
-        )
+            print("   Validating mixed TXT Series / Season / Episode catalogue...")
+            from scanner.series import prepare_manual_series
+            # ধাপ ১২ / A-05. The real publish path is the only caller that may
+            # reach a provider, the same gate movie metadata uses - so tests and
+            # ad-hoc calls still only ever apply what is already cached.
+            prepared_series = prepare_manual_series(
+                project_root=PROJECT_ROOT, allow_lookup=True)
+            print(
+                f"   Series ready: {prepared_series.get('series', 0)} Series / "
+                f"{prepared_series.get('episodes', 0)} Episodes"
+            )
 
-        # ধারা ৪.০ NO-LOSS COVERAGE GATE. Built here and not one line earlier:
-        # the series side has to be prepared first, or an episode this run
-        # produced would be counted as a movie stream that went missing.
-        print("\n   [Gate] No-loss coverage accounting...")
-        movie_coverage_report = _build_movie_coverage(
-            raw_entries=list(normalized.get("raw_collected_items") or []),
-            movies_data=movies_data,
-            prepared_series=prepared_series,
-            previous_inventory=movie_previous_inventory,
-        )
+            # ধারা ৪.০ NO-LOSS COVERAGE GATE. Built here and not one line earlier:
+            # the series side has to be prepared first, or an episode this run
+            # produced would be counted as a movie stream that went missing.
+            print("\n   [Gate] No-loss coverage accounting...")
+            movie_coverage_report = _build_movie_coverage(
+                raw_entries=list(normalized.get("raw_collected_items") or []),
+                movies_data=movies_data,
+                prepared_series=prepared_series,
+                previous_inventory=movie_previous_inventory,
+            )
 
-        # The gate has answered, so the surfaces that describe this catalogue
-        # can now be written - or not. A blocked publish keeps the previous
-        # pages, and the previous discovery has to stay with them: a Just Added
-        # row naming films that have no page is the one failure ধাপ ৯ exists to
-        # make impossible.
-        _publish_movie_derived_surfaces(
-            publish_derived_surfaces, movies_data, movie_coverage_report)
+            # The gate has answered, so the surfaces that describe this catalogue
+            # can now be written - or not. A blocked publish keeps the previous
+            # pages, and the previous discovery has to stay with them: a Just Added
+            # row naming films that have no page is the one failure ধাপ ৯ exists to
+            # make impossible.
+            _publish_movie_derived_surfaces(
+                publish_derived_surfaces, movies_data, movie_coverage_report)
+        except Exception as error:  # noqa: BLE001 - see _pipeline_failed
+            movies_data = prepared_series = movie_coverage_report = None
+            _pipeline_failed("movies", error, isolate=mode_clean == "all")
 
     if mode_clean in {
         "today",
@@ -1668,10 +1676,14 @@ def run_pipeline(
                 "and Upcoming Match..."
             )
 
-        events_data = _process_events_for_mode(
-            mode_clean,
-            targeted_plan,
-        )
+        try:
+            events_data = _process_events_for_mode(
+                mode_clean,
+                targeted_plan,
+            )
+        except Exception as error:  # noqa: BLE001 - see _pipeline_failed
+            events_data = None
+            _pipeline_failed("events", error, isolate=mode_clean == "all")
 
     print(
         "\n[Step 5/5] Publishing atomic JSON outputs, "
@@ -1746,18 +1758,22 @@ def run_pipeline(
         )
 
     if prepared_series is not None:
-        from scanner.series import publish_prepared_series
-        series_summary = publish_prepared_series(
-            prepared_series,
-            project_root=PROJECT_ROOT,
-        )
-        from scanner.output import refresh_allowed_hosts
-        refresh_allowed_hosts(PROJECT_ROOT / "data")
-        summary["series"] = series_summary
-        print(
-            f"   Series published: {series_summary.get('series', 0)} Series / "
-            f"{series_summary.get('episodes', 0)} Episodes"
-        )
+        try:
+            from scanner.series import publish_prepared_series
+            series_summary = publish_prepared_series(
+                prepared_series,
+                project_root=PROJECT_ROOT,
+            )
+            from scanner.output import refresh_allowed_hosts
+            refresh_allowed_hosts(PROJECT_ROOT / "data")
+            summary["series"] = series_summary
+            print(
+                f"   Series published: {series_summary.get('series', 0)} Series / "
+                f"{series_summary.get('episodes', 0)} Episodes"
+            )
+        except Exception as error:  # noqa: BLE001 - see _pipeline_failed
+            series_summary = None
+            _pipeline_failed("series", error, isolate=True)
 
     print(
         "\n=================================================="
@@ -1782,6 +1798,39 @@ def run_pipeline(
     )
 
     return summary
+
+
+#: Pipelines that failed this run without taking the others down with them.
+PIPELINE_FAILURES: List[Dict[str, str]] = []
+
+
+def _pipeline_failed(name: str, error: BaseException, *, isolate: bool) -> None:
+    """One pipeline's failure is that pipeline's, not the run's.
+
+    In `all` mode one process scans channels, movies and events in turn, and
+    an exception in any of them ended the run before the others were written -
+    so a bad channel feed held back Today Match. With `isolate` the failure is
+    recorded and reported, and the other pipelines carry on; the failed one
+    publishes nothing, so its previous output stays live. A run that scans one
+    pipeline has nothing to protect, and its failure stays fatal as before.
+
+    The series tree always isolates. It is written last, after the movie
+    catalogue is already on disk, and failing the run there threw that
+    catalogue away with it.
+    """
+    if not isolate:
+        raise error
+    safe_error = redact_sensitive_text(error)
+    PIPELINE_FAILURES.append({"pipeline": name, "error": str(safe_error)[:500]})
+    print(f"\n::error title=Pipeline failed (others continue)::{name}: {safe_error}")
+    try:
+        (PROJECT_ROOT / "reports").mkdir(exist_ok=True)
+        (PROJECT_ROOT / "reports" / "pipeline-failures.json").write_text(
+            json.dumps({"kind": "pipeline_failures", "failures": PIPELINE_FAILURES},
+                       ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8")
+    except Exception:  # noqa: BLE001 - reporting a failure must not add one
+        pass
 
 
 def _flush_visibility_audit() -> None:
