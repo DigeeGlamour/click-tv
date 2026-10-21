@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T05:09:59.084513+00:00",
+  "generated_at": "2026-10-21T05:29:54.357570+00:00",
   "today_match_count": 4,
   "upcoming_count": 46,
   "today_missing_logo": [
@@ -20,7 +20,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 183,
+  "provider_fixture": 182,
   "provider_rejected": 21,
   "provider_rejected_reasons": {
     "provider_dead_status": 13,
@@ -112,7 +112,7 @@
     }
   ],
   "ambiguous_suppressed": 0,
-  "unverified_suppressed": 219,
+  "unverified_suppressed": 218,
   "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
   "streams_attached": 0,
@@ -121,7 +121,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 183,
+    "total": 182,
     "discarded": 79,
     "examples": [
       {
@@ -206,7 +206,7 @@
       },
       {
         "name": "ATP 250 Almaty Open 2026 vs Almaty, Kazakhstan",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "ATP 250 - Almaty Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -222,7 +222,7 @@
       },
       {
         "name": "Court 1 QF vs France (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "BWF Super 750 - French Open 2026",
         "sport_type": "",
         "reason": "badminton gazetteer",
@@ -230,7 +230,7 @@
       },
       {
         "name": "Day 1 World Feed vs Port Royal Golf Course Southampton, Bermuda (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "Butterfield Bermuda Championship 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
@@ -238,7 +238,7 @@
       },
       {
         "name": "Day 3 World Feed vs Almaty, Kazakhstan (2026)",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, sayanpal-f",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
         "competition": "ATP 250 - Almaty Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -302,7 +302,7 @@
       },
       {
         "name": "Practice vs Austin (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "F1 ACADEMY AUSTIN 2026",
         "sport_type": "",
         "reason": "motorsport gazetteer",
@@ -310,7 +310,7 @@
       },
       {
         "name": "Qualifying vs Austin (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "F1 ACADEMY AUSTIN 2026",
         "sport_type": "",
         "reason": "motorsport gazetteer",
@@ -398,7 +398,7 @@
       },
       {
         "name": "ATP 250 Almaty Open 2026 vs Almaty, Kazakhstan",
-        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "ATP 250 - Almaty Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -608,11 +608,11 @@
   },
   "reused_event_ids": 0,
   "authority_status": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 1,
     "recorded": 18,
-    "conflict": 1,
+    "conflict": 0,
     "unmatched": 28,
     "start_window": 0,
     "start_window_fixtures": [],
@@ -631,21 +631,40 @@
       }
     ],
     "by_status": {
+      "FINISHED": 1,
       "UPCOMING": 19,
       "LIVE": 1
     },
     "by_confidence": {
-      "CONFLICT": 1,
-      "HIGH": 9,
+      "HIGH": 10,
       "LOW": 11
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "Tigres UANL Vs Club León",
+        "fixture_id": "provider:tigres-uanl-vs-club-león|liga mx apertura|2026-10-21",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876935)",
+          "LiveScore livescore=FT (6, event 1799036)"
+        ],
+        "authority_finished_seen_at": "2026-10-21T05:29:40.044374+00:00",
+        "remove_after": "2026-10-21T05:49:40.044374+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": ""
+      }
+    ],
     "conflicts": [
       {
         "name": "Tigres UANL Vs Club León",
-        "reason": "independent authorities disagree: ESPN espn-header=57' (STATUS_SECOND_HALF, event 401876935); LiveScore livescore=FT (6, event 1799036)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -654,30 +673,50 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 1,
     "recorded": 0,
-    "conflict": 1,
+    "conflict": 0,
     "unmatched": 2,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 1
+      "LIVE": 1,
+      "FINISHED": 1
     },
     "by_confidence": {
       "LOW": 1,
-      "CONFLICT": 1
+      "HIGH": 1
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "Tigres UANL Vs Club León",
+        "fixture_id": "provider:tigres-uanl-vs-club-león|liga mx apertura|2026-10-21",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876935)",
+          "LiveScore livescore=FT (6, event 1799036)"
+        ],
+        "authority_finished_seen_at": "2026-10-21T05:29:40.044374+00:00",
+        "remove_after": "2026-10-21T05:49:40.044374+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
     "conflicts": [
       {
         "name": "Tigres UANL Vs Club León",
-        "reason": "independent authorities disagree: ESPN espn-header=57' (STATUS_SECOND_HALF, event 401876935); LiveScore livescore=FT (6, event 1799036)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -686,10 +725,10 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 1,
+    "asked": 0,
     "finished": 1,
     "unplayable": 0,
-    "cache_hits": 0,
+    "cache_hits": 1,
     "no_verdict": 0
   },
   "live_protection": {
@@ -736,7 +775,7 @@
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 261,
+    "unresolved": 260,
     "names": {
       "Sky Sports": 1,
       "Fox": 1,
@@ -747,35 +786,35 @@
     "provider": "streamed",
     "available": true,
     "reason": "",
-    "calls": 7,
+    "calls": 6,
     "cache_hits": 0,
     "errors": 0,
-    "fixtures_ingested": 224,
-    "embed_streams": 10,
-    "artwork_supplied": 216
+    "fixtures_ingested": 222,
+    "embed_streams": 8,
+    "artwork_supplied": 214
   },
   "streamed_enrichment": {
     "matched": 4,
     "artwork": 4,
     "embed_backups": 0,
     "embed_channels": 0,
-    "unmatched": 213,
+    "unmatched": 212,
     "matched_by_participants": 3
   },
   "sports_poster_enrichment": {
     "attempted": 43,
     "poster_filled": 2,
-    "badge_filled": 12,
+    "badge_filled": 16,
     "badge_used_as_logo": 1,
-    "cache_hits": 8,
-    "cached_entries": 1081,
+    "cache_hits": 9,
+    "cached_entries": 1083,
     "provider": {
-      "requests": 11,
-      "hits": 9,
+      "requests": 12,
+      "hits": 10,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 28,
+      "skipped_rate_limited": 26,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -824,22 +863,6 @@
           "rejected": 0,
           "published": 14
         },
-        "vk1817-fancode-mirror": {
-          "total": 14,
-          "cricket": 11,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 14
-        },
-        "dartv-fancode-mirror": {
-          "total": 14,
-          "cricket": 11,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 14
-        },
         "srhady-primevideo-sports": {
           "total": 1,
           "cricket": 0,
@@ -856,14 +879,6 @@
           "rejected": 0,
           "published": 9
         },
-        "sportlive-fancode-backup": {
-          "total": 15,
-          "cricket": 11,
-          "football": 4,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 15
-        },
         "drmlive-fancode-mirror": {
           "total": 15,
           "cricket": 11,
@@ -872,7 +887,31 @@
           "rejected": 0,
           "published": 15
         },
+        "sportlive-fancode-backup": {
+          "total": 15,
+          "cricket": 11,
+          "football": 4,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 15
+        },
+        "vk1817-fancode-mirror": {
+          "total": 15,
+          "cricket": 11,
+          "football": 4,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 15
+        },
         "sayanpal-fancode-mirror": {
+          "total": 15,
+          "cricket": 11,
+          "football": 4,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 15
+        },
+        "dartv-fancode-mirror": {
           "total": 15,
           "cricket": 11,
           "football": 4,
@@ -936,22 +975,6 @@
           "rejected": 0,
           "published": 2
         },
-        "vk1817-fancode-mirror": {
-          "total": 2,
-          "cricket": 2,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 2
-        },
-        "dartv-fancode-mirror": {
-          "total": 2,
-          "cricket": 2,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 2
-        },
         "srhady-primevideo-sports": {
           "total": 1,
           "cricket": 0,
@@ -969,6 +992,22 @@
           "published": 1
         },
         "drmlive-fancode-mirror": {
+          "total": 1,
+          "cricket": 1,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
+        },
+        "vk1817-fancode-mirror": {
+          "total": 1,
+          "cricket": 1,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
+        },
+        "dartv-fancode-mirror": {
           "total": 1,
           "cricket": 1,
           "football": 0,
@@ -1023,14 +1062,6 @@
           "rejected": 0,
           "published": 12
         },
-        "sportlive-fancode-backup": {
-          "total": 14,
-          "cricket": 10,
-          "football": 4,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 14
-        },
         "drmlive-fancode-mirror": {
           "total": 14,
           "cricket": 10,
@@ -1039,23 +1070,31 @@
           "rejected": 0,
           "published": 14
         },
-        "vk1817-fancode-mirror": {
-          "total": 12,
-          "cricket": 9,
-          "football": 3,
+        "sportlive-fancode-backup": {
+          "total": 14,
+          "cricket": 10,
+          "football": 4,
           "quarantined": 0,
           "rejected": 0,
-          "published": 12
+          "published": 14
         },
-        "dartv-fancode-mirror": {
-          "total": 12,
-          "cricket": 9,
-          "football": 3,
+        "vk1817-fancode-mirror": {
+          "total": 14,
+          "cricket": 10,
+          "football": 4,
           "quarantined": 0,
           "rejected": 0,
-          "published": 12
+          "published": 14
         },
         "sayanpal-fancode-mirror": {
+          "total": 14,
+          "cricket": 10,
+          "football": 4,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 14
+        },
+        "dartv-fancode-mirror": {
           "total": 14,
           "cricket": 10,
           "football": 4,
@@ -1090,7 +1129,7 @@
     ]
   },
   "sport_pipeline": {
-    "raw_events": 423,
+    "raw_events": 421,
     "cricket_kept": 26,
     "football_kept": 23,
     "other_discarded": 81,
@@ -1125,9 +1164,9 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 2,
+      "provider_or_authority": 3,
       "estimate": 0,
-      "none": 2
+      "none": 1
     }
   },
   "fixture_stream_health": {
@@ -1140,14 +1179,14 @@
     "targeted_fixtures": 1,
     "targeted_attempts": 1,
     "fixtures_with_a_first_link_time": 0,
-    "candidate_routes": 48,
+    "candidate_routes": 47,
     "verified_routes": 23,
-    "failed_routes": 25,
+    "failed_routes": 24,
     "fixtures_touched_by_a_route_failure": 14,
     "fixtures_left_with_nothing": 8,
     "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 21,
-    "unrecognised_failed_routes": 37
+    "unrecognised_failed_routes": 38
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
@@ -1157,9 +1196,9 @@
     "unverified": 29,
     "conflict": 1,
     "matched_by_two_independent_authorities": 10,
-    "authority_agreements": 9,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 0,
+    "authority_agreements": 10,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 1
