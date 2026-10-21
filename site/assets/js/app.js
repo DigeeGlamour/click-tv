@@ -8454,7 +8454,9 @@ function splitUpcomingTeams(title) {
   if (parts.length >= 2) {
     return [parts[0].trim(), parts.slice(1).join(' vs ').trim()];
   }
-  return [String(title || 'Team 1').trim(), 'TBD'];
+  // A show or an auction ("The Golazo Show", "WPL Player Auction") has no
+  // second side. Inventing one put "TBD" in a badge box across from it.
+  return [String(title || 'Team 1').trim(), ''];
 }
 
 /* A logo box is always the same size. When there is no badge, or the badge
@@ -8545,10 +8547,14 @@ function createUpcomingTeamRow(item, visualIndex, ctx) {
     countdown.textContent = countdownText;
     center.appendChild(countdown);
   }
-  const versus = document.createElement('div');
-  versus.className = 'vs-label';
-  versus.textContent = 'VS';
-  center.appendChild(versus);
+  if (teamTwo) {
+    const versus = document.createElement('div');
+    versus.className = 'vs-label';
+    versus.textContent = 'VS';
+    center.appendChild(versus);
+  } else {
+    card.classList.add('solo-event');
+  }
 
   const right = document.createElement('div');
   right.className = 'universal-side universal-right';
@@ -8556,11 +8562,13 @@ function createUpcomingTeamRow(item, visualIndex, ctx) {
   league.className = 'universal-league';
   league.textContent = parts.competition || '';
   right.appendChild(league);
-  right.appendChild(buildLogoBox(awayBadge, teamTwo));
-  const nameTwo = document.createElement('div');
-  nameTwo.className = 'universal-team-name';
-  nameTwo.textContent = teamTwo;
-  right.appendChild(nameTwo);
+  if (teamTwo) {
+    right.appendChild(buildLogoBox(awayBadge, teamTwo));
+    const nameTwo = document.createElement('div');
+    nameTwo.className = 'universal-team-name';
+    nameTwo.textContent = teamTwo;
+    right.appendChild(nameTwo);
+  }
 
   const chevron = document.createElement('span');
   chevron.className = 'universal-chevron';

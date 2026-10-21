@@ -1,0 +1,18 @@
+/* One typeface for the whole site except Movies - the owner's request, 2026-10-21.
+ *
+ * Today Match and Upcoming Match draw in Oswald, with Hind Siliguri for Bangla
+ * (final-match-cards.css). Live TV, the sports channels, the header and the
+ * player used Manrope / Plus Jakarta Sans. Nearly everything takes its face
+ * from --ref-font (reference-design.css) or --font-sans (app.css), so the two
+ * variables are redefined here rather than every rule being rewritten.
+ *
+ * Movies keep their own fonts: the movie section, the movie portal, a movie or
+ * series detail page, and movie playback are all left out by class.
+ * Oswald has no Bangla glyphs, so Bangla falls through to Hind Siliguri - the
+ * same pairing the match cards use.
+ */
+html:not(.movie-playback-context) body:not(.movies-section):not(.movie-portal):not(.movie-detail-view){
+  --ref-font:'Oswald','Hind Siliguri','Noto Sans Bengali',sans-serif;
+  --font-sans:'Oswald','Hind Siliguri','Noto Sans Bengali',sans-serif;
+  letter-spacing:.01em;
+}

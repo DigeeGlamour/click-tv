@@ -633,6 +633,15 @@ def _absorb_timeless(kept: List[Dict[str, Any]]) -> List[Dict[str, str]]:
             continue
         day = _kickoff(item)[:10]
         matches = []
+        # A stated round no candidate answers, but a single candidate that
+        # states NO round. On 2026-10-21 "ODI Tri-Nation Series in UAE 2026 -
+        # 3rd Match - Afghanistan vs Bangladesh" (stamped, round "3rd match")
+        # and "Bangladesh Vs Afghanistan" (11:30, no round) were the only two
+        # cards for the pair that day and stayed two - the second could not
+        # play and the first could. Silence does not contradict a round, and
+        # it is only consulted when no candidate states the same round, so the
+        # England case below still prefers the one that does.
+        silent = []
         for other in kept:
             if other is item or _timeless_identity(other) is not None:
                 continue
@@ -648,13 +657,18 @@ def _absorb_timeless(kept: List[Dict[str, Any]]) -> List[Dict[str, str]]:
             # folded into neither. When the stamped card states NO round it
             # has none to offer, and uniqueness on the day is what carries
             # the identification - which is the Motagua case.
-            if identity[2] and round_of(other) != identity[2]:
-                continue
             if _kickoff(other)[:10] != day:
                 continue
             pair = (_bare(both[0]), _bare(both[1]))
-            if pair == identity[:2] or pair == (identity[1], identity[0]):
-                matches.append(other)
+            if pair != identity[:2] and pair != (identity[1], identity[0]):
+                continue
+            if identity[2] and round_of(other) != identity[2]:
+                if not round_of(other):
+                    silent.append(other)
+                continue
+            matches.append(other)
+        if not matches and len(silent) == 1:
+            matches = silent
         if len(matches) != 1:
             continue  # nothing to fold into, or a question rather than an answer
         keeper = matches[0]

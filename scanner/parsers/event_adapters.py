@@ -958,6 +958,43 @@ def _series_of(title: Any) -> str:
 # S5 / S6 / S8 - trysports cricket+football, sm-sportsdata
 # ---------------------------------------------------------------------------
 
+#: Per-stream header fields sm-sportsdata writes beside `stream_url`.
+_STREAM_HEADER_FIELDS = {
+    "referer": "Referer", "referrer": "Referer", "user_agent": "User-Agent",
+    "useragent": "User-Agent", "origin": "Origin", "cookie": "Cookie",
+}
+
+
+def _stream_headers(base: Dict[str, str], stream: Dict[str, Any]) -> Dict[str, str]:
+    """The row's headers plus the stream's own `referer`/`user_agent`.
+
+    sm-sportsdata moved them from inside the URL to fields beside it; read
+    only from the row, a stream that needs its Referer was published without
+    one and the host refused it."""
+    headers = dict(base)
+    for field, name in _STREAM_HEADER_FIELDS.items():
+        text = str(stream.get(field) or "").strip()
+        if text:
+            headers[name] = text
+    return headers
+
+
+def _stream_clearkey(stream: Dict[str, Any]) -> Dict[str, Any]:
+    """`drm_key: "kid:key"`, or the separate `kid` and `key` fields.
+
+    On 2026-10-21 sm-sportsdata wrote every ClearKey as `kid` + `key`. Read
+    only as `drm_key`, every encrypted Prime Video stream it carried was
+    published with no key, and none of them could play."""
+    drm = _clearkey(stream.get("drm_key"))
+    if drm:
+        return drm
+    kid = str(stream.get("kid") or stream.get("key_id") or "").strip()
+    key = str(stream.get("key") or "").strip()
+    if kid and key:
+        return _clearkey(f"{kid}:{key}")
+    return {}
+
+
 def adapt_named_streams(payload: Dict[str, Any], source_id: str) -> List[Dict[str, Any]]:
     """`matches[]` with `streams[]` that name their own channel.
 
@@ -1034,8 +1071,8 @@ def adapt_named_streams(payload: Dict[str, Any], source_id: str) -> List[Dict[st
                 url,
                 label=label,
                 quality=quality,
-                headers=base_headers,
-                drm=_clearkey(stream.get("drm_key")),
+                headers=_stream_headers(base_headers, stream),
+                drm=_stream_clearkey(stream),
             )
             key = _channel_key(label)
             bucket = grouped.setdefault(
