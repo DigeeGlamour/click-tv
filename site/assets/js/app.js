@@ -11605,8 +11605,44 @@ function acceptPlaybackRoute(session) {
     writeJsonStorage(STORAGE_KEYS.routePreferences, state.routePreferences);
   }
 
+  reconcileChannelWithPlayingSource(session);
   recordPlaybackSuccess();
   sendPlaybackTelemetry('success');
+}
+
+/* The channel button says what is actually on screen.
+ *
+ * The attempt plan tries the chosen channel's own routes first and then, so a
+ * viewer is not left on a black player, every other channel's. When the
+ * chosen channel's routes all failed, the player quietly landed on another
+ * channel - and the chosen button stayed green. Measured on the live site on
+ * 2026-10-21: on Lille v Galatasaray, CBS SPORTS, PRIME VIDEO, PARAMOUNT+,
+ * TNT4UK SPORTS and Server-1 each "played", and the video's clock ran on
+ * unbroken across all five: one stream under five names. Now the green moves
+ * to the channel that is really playing and the viewer is told why.
+ */
+function channelOwningSource(item, source) {
+  const key = sourcePlaybackKey(source || {});
+  if (!key) return null;
+  return eventChannels(item).find((channel) => (channel.streams || [])
+    .some((stream) => sourcePlaybackKey(stream) === key)) || null;
+}
+
+function reconcileChannelWithPlayingSource(session) {
+  const item = session?.item;
+  if (!item || !eventChannels(item).length) return;
+  const owner = channelOwningSource(item, session.currentAttempt?.source);
+  const wanted = activeChannelId(item);
+  if (!owner || owner.id === wanted) return;
+  const wantedChannel = eventChannels(item).find((entry) => entry.id === wanted);
+  const viewerChose = isChannelUserSelected(item);
+  state.channelSelection[eventChannelId(item)] = owner.id;
+  writeJsonStorage(STORAGE_KEYS.channelSelection, state.channelSelection);
+  syncActiveTodayChannel();
+  if (viewerChose && wantedChannel) {
+    showToast(`${String(wantedChannel.name || 'এই চ্যানেল').trim()} এখন চলছে না — `
+      + `${String(owner.name || 'অন্য চ্যানেল').trim()} চালানো হচ্ছে`, 3500);
+  }
 }
 
 function finalizePlaybackSuccess(session) {

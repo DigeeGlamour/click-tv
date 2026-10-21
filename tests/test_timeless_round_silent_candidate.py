@@ -51,5 +51,20 @@ class TheSilentCandidate(unittest.TestCase):
         self.assertGreaterEqual(len(kept), 2)
 
 
+
+class OneBroadcasterIsOneButton(unittest.TestCase):
+    def test_willow_and_willow_become_one_channel(self):
+        a = dict(SILENT, channels=[{"id": "c1", "name": "WILLOW",
+                                    "streams": [{"playback_id": "ctv_a"}]}])
+        b = dict(STAMPED, channels=[{"id": "c9", "name": "Willow",
+                                     "streams": [{"playback_id": "ctv_b"}]},
+                                    {"id": "c8", "name": "Prime Video",
+                                     "streams": [{"playback_id": "ctv_c"}]}])
+        kept, _ = fixture_dedupe.fold([a, b])
+        names = [c["name"] for c in kept[0]["channels"]]
+        self.assertEqual(names, ["WILLOW", "Prime Video"])
+        willow = kept[0]["channels"][0]
+        self.assertEqual([s["playback_id"] for s in willow["streams"]], ["ctv_a", "ctv_b"])
+
 if __name__ == "__main__":
     unittest.main()

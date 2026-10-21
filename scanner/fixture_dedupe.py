@@ -440,6 +440,10 @@ def _weight(item: Dict[str, Any]) -> Tuple[int, int, int]:
     )
 
 
+def _channel_name_key(channel: Dict[str, Any]) -> str:
+    return " ".join(str(channel.get("name") or "").casefold().split())
+
+
 def _absorb(keeper: Dict[str, Any], other: Dict[str, Any]) -> None:
     """Move the folded card's routes and sources into the one being kept."""
     seen = {str(row.get("url") or "")
@@ -471,12 +475,29 @@ def _absorb(keeper: Dict[str, Any], other: Dict[str, Any]) -> None:
     keeper_channels = list(keeper.get("channels") or [])
     known = {str(c.get("id") or c.get("name") or "")
              for c in keeper_channels if isinstance(c, dict)}
+    # The same broadcaster from two feeds is one button. On 2026-10-21 the
+    # folded Afghanistan v Bangladesh card offered "WILLOW" and "Willow" side
+    # by side; the second card's streams now join the first's channel.
+    by_name = {_channel_name_key(c): c for c in keeper_channels
+               if isinstance(c, dict) and _channel_name_key(c)}
     for channel in other.get("channels") or []:
-        if isinstance(channel, dict):
-            marker = str(channel.get("id") or channel.get("name") or "")
-            if marker and marker not in known:
-                known.add(marker)
-                keeper_channels.append(channel)
+        if not isinstance(channel, dict):
+            continue
+        same = by_name.get(_channel_name_key(channel))
+        if same is not None and same is not channel:
+            have = {str(s.get("playback_id") or s.get("url") or "")
+                    for s in same.get("streams") or [] if isinstance(s, dict)}
+            extra = [s for s in channel.get("streams") or [] if isinstance(s, dict)
+                     and str(s.get("playback_id") or s.get("url") or "") not in have]
+            if extra:
+                same["streams"] = list(same.get("streams") or []) + extra
+            continue
+        marker = str(channel.get("id") or channel.get("name") or "")
+        if marker and marker not in known:
+            known.add(marker)
+            keeper_channels.append(channel)
+            if _channel_name_key(channel):
+                by_name[_channel_name_key(channel)] = channel
     if keeper_channels:
         keeper["channels"] = keeper_channels
 
