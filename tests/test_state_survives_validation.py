@@ -45,6 +45,11 @@ sys.path.insert(0, str(ROOT))
 
 WORKFLOW = ROOT / ".github" / "workflows" / "scan.yml"
 
+#: The command that runs the suite. Since 2026-10-21 it is the test gate,
+#: which runs the same `unittest discover` and only changes which failures
+#: may stop a scan (see scripts/run-test-gate.py and tests/test_run_test_gate.py).
+SUITE = "scripts/run-test-gate.py"
+
 
 class ValidationStepTests(unittest.TestCase):
     def setUp(self):
@@ -62,20 +67,20 @@ class ValidationStepTests(unittest.TestCase):
         # files" and is now its own step; either way it is the one to check.
         self.suite_index = next(
             index for index, step in enumerate(self.steps)
-            if "unittest discover" in str(step.get("run") or ""))
+            if SUITE in str(step.get("run") or ""))
         self.suite = self.steps[self.suite_index]
         self.body = str(self.suite.get("run") or "")
         self.validate = self.steps[self.names.index("Validate scanner files")]
         self.validate_body = str(self.validate.get("run") or "")
 
     def test_the_suite_still_runs(self):
-        self.assertIn("unittest discover", self.body)
+        self.assertIn(SUITE, self.body)
 
     def test_exactly_one_step_runs_it(self):
         """Two copies would double a five-minute run's cost and could
         disagree about which modes skip it."""
         running = [str(step.get("name") or "") for step in self.steps
-                   if "unittest discover" in str(step.get("run") or "")]
+                   if SUITE in str(step.get("run") or "")]
         self.assertEqual(1, len(running), running)
 
     def test_only_the_targeted_mode_skips_it(self):
@@ -103,7 +108,7 @@ class ValidationStepTests(unittest.TestCase):
                       "python -m py_compile", "node --check",
                       "node tests/playback-worker-runtime.mjs"):
             self.assertIn(check, self.validate_body, check)
-        self.assertNotIn("unittest discover", self.validate_body)
+        self.assertNotIn(SUITE, self.validate_body)
 
     def test_the_suite_runs_in_a_throwaway_worktree(self):
         """The real fix: the tests cannot reach the scanner's tree at all.
@@ -131,7 +136,7 @@ class ValidationStepTests(unittest.TestCase):
     def test_the_churn_is_discarded_after_it(self):
         self.assertIn("git checkout -- state reports", self.body)
         self.assertLess(
-            self.body.index("unittest discover"),
+            self.body.index(SUITE),
             self.body.index("git checkout -- state reports"),
             "restoring before the suite would restore nothing",
         )
@@ -267,7 +272,7 @@ class TheAbsoluteStatePathsCanBeSentElsewhere(unittest.TestCase):
         # The step that runs the suite - PROMPT 46 gave it one of its own.
         body = next(
             str(step.get("run") or "") for step in steps
-            if "unittest discover" in str(step.get("run") or "")
+            if SUITE in str(step.get("run") or "")
         )
         self.assertIn('CLICKTV_STATE_ROOT="$VALIDATE_TREE/state"', body)
         self.assertIn('CLICKTV_REPORTS_ROOT="$VALIDATE_TREE/reports"', body)

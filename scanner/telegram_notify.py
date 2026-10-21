@@ -6,9 +6,10 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterable, List
+from typing import Any, Dict, Iterable, List, Optional
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -211,7 +212,58 @@ def build_message(mode: str, commit: str, branch: str) -> str:
     return "\n".join(lines)[:4000]
 
 
-def build_failure_message(mode: str, commit: str, branch: str, run_url: str) -> str:
+def read_details(path: str, limit: int = 8) -> List[str]:
+    """The test gate's findings, one per line: `BLOCK <test> - <reason>` for
+    a code fault that stopped the scan, `AUDIT <test> - <reason>` for a fact
+    about today's data that did not. Missing or unreadable is simply none -
+    an alert must never fail because its garnish is absent."""
+    if not path:
+        return []
+    try:
+        with open(path, encoding="utf-8") as handle:
+            lines = [line.strip() for line in handle if line.strip()]
+    except OSError:
+        return []
+    return lines[:limit]
+
+
+def quarantine_lines(limit: int = 8) -> List[str]:
+    """Items the build held back this run (scripts/quarantine-bad-items.py),
+    so a card that disappeared is announced rather than noticed."""
+    path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "reports", "item-quarantine.json")
+    try:
+        with open(path, encoding="utf-8") as handle:
+            report = json.load(handle)
+    except (OSError, ValueError):
+        return []
+    if not report.get("applied"):
+        return []
+    lines = []
+    for entry in (report.get("removed") or [])[:limit]:
+        reason = "; ".join(entry.get("reasons") or [])
+        lines.append("QUARANTINE %s %s - %s" % (
+            entry.get("surface"), entry.get("name") or entry.get("id"), reason))
+    return lines
+
+
+def _detail_lines(details: List[str], heading: str) -> List[str]:
+    if not details:
+        return []
+    out = ["", heading]
+    for line in details:
+        out.append("• " + html.escape(line[:300]))
+    return out
+
+
+def build_failure_message(
+    mode: str,
+    commit: str,
+    branch: str,
+    run_url: str,
+    consecutive: int = 0,
+    details: Optional[List[str]] = None,
+) -> str:
     mode_clean = str(mode or "unknown").strip().lower()
     lines = [
         "❌ <b>CLICK TV SCAN OR GITHUB PUSH FAILED</b>",
@@ -222,6 +274,11 @@ def build_failure_message(mode: str, commit: str, branch: str, run_url: str) -> 
         "<b>Published:</b> No",
         "<b>Action:</b> Open the failed workflow log; previous published data is unchanged.",
     ]
+    if consecutive > 1:
+        lines.insert(2, f"<b>Failed runs in a row:</b> {int(consecutive)}")
+    lines.extend(_detail_lines(
+        [line for line in (details or []) if line.startswith("BLOCK")],
+        "🧪 <b>What stopped it</b>"))
     if run_url:
         safe_url = html.escape(str(run_url), quote=True)
         lines.extend(["", f'<a href="{safe_url}">Open failed GitHub Actions run</a>'])
@@ -235,7 +292,10 @@ def main() -> int:
     parser.add_argument("branch", nargs="?", default="main")
     parser.add_argument("--failure", action="store_true")
     parser.add_argument("--run-url", default="")
+    parser.add_argument("--details-file", default="")
+    parser.add_argument("--consecutive", type=int, default=0)
     args = parser.parse_args()
+    details = read_details(args.details_file)
 
     if args.failure:
         message = build_failure_message(
@@ -243,9 +303,16 @@ def main() -> int:
             args.commit,
             args.branch,
             args.run_url,
+            consecutive=args.consecutive,
+            details=details,
         )
     else:
         message = build_message(args.mode, args.commit, args.branch)
+        audits = [line for line in details if line.startswith("AUDIT")]
+        audits.extend(quarantine_lines())
+        if audits:
+            message = (message + "\n".join(_detail_lines(
+                audits, "⚠️ <b>Held back or flagged (the rest published)</b>")))[:4000]
     sent = send_telegram_alert(message)
     if sent:
         label = "failure" if args.failure else "success"

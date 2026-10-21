@@ -33,6 +33,11 @@ WORKFLOW = ROOT / ".github" / "workflows" / "scan.yml"
 
 TARGETED = "upcoming-targeted"
 
+#: The command that runs the suite. Since 2026-10-21 it is the test gate,
+#: which runs the same `unittest discover` and only changes which failures
+#: may stop a scan (see scripts/run-test-gate.py and tests/test_run_test_gate.py).
+SUITE = "scripts/run-test-gate.py"
+
 #: Steps a targeted run must still execute. Each is either unconditional or
 #: conditioned on something other than the mode.
 REQUIRED_FOR_TARGETED = (
@@ -77,12 +82,12 @@ class TheTargetedRunSkipsOnlyTheSuite(unittest.TestCase):
 
     def test_the_suite_does_not_run_for_targeted(self):
         suite = next(step for step in self.steps
-                     if "unittest discover" in str(step.get("run") or ""))
+                     if SUITE in str(step.get("run") or ""))
         self.assertFalse(_runs_for(suite, TARGETED))
 
     def test_it_still_runs_for_every_other_mode(self):
         suite = next(step for step in self.steps
-                     if "unittest discover" in str(step.get("run") or ""))
+                     if SUITE in str(step.get("run") or ""))
         for mode in ("today", "upcoming", "channels", "movies", "all"):
             self.assertTrue(_runs_for(suite, mode), mode)
 
@@ -139,17 +144,17 @@ class ThePushSafetyIsUnchanged(unittest.TestCase):
 
     def test_the_suite_still_cannot_damage_the_scanners_ledger(self):
         suite = next(step for step in self.steps
-                     if "unittest discover" in str(step.get("run") or ""))
+                     if SUITE in str(step.get("run") or ""))
         body = str(suite["run"])
         self.assertIn("git worktree add --detach", body)
         self.assertIn("git checkout -- state reports", body)
-        self.assertLess(body.index("unittest discover"),
+        self.assertLess(body.index(SUITE),
                         body.index("git checkout -- state reports"))
 
     def test_the_suite_still_runs_before_the_scanner(self):
         suite_index = next(
             index for index, step in enumerate(self.steps)
-            if "unittest discover" in str(step.get("run") or ""))
+            if SUITE in str(step.get("run") or ""))
         self.assertLess(suite_index, self.names.index("Run scanner"))
 
 

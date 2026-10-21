@@ -1,0 +1,41 @@
+name: Scanner Watchdog
+
+# A workflow that has been switched off cannot say so. This one asks, from
+# outside, whether every workflow is enabled and whether the Live Signal
+# Scanner has succeeded in the last six hours, and sends one Telegram message
+# if not. It reads only. See scripts/scanner-watchdog.py.
+#
+# Every cron is UTC. Every six hours at :29, off the round minutes the rest of
+# the platform lands on.
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "29 */6 * * *"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: scanner-watchdog
+  cancel-in-progress: true
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      - name: Ask whether the scanner is alive
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -u scripts/scanner-watchdog.py

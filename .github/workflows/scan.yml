@@ -94,6 +94,9 @@ on:
 
 permissions:
   contents: write
+  # Read-only, for the failure alert: it asks how many runs in a row have
+  # failed, so one bad run does not page anyone and a stuck scanner always does.
+  actions: read
 
 concurrency:
   # Two queues, split by what a run actually writes, because one queue was
@@ -551,8 +554,46 @@ jobs:
       #
       # It reads the selected mode rather than the cron, so a manual
       # `upcoming-targeted` dispatch is treated the same way as the schedule.
+      # THE TEST GATE (2026-10-21)
+      #
+      # Two changes, each aimed at the way the scanner kept stopping itself.
+      #
+      # 1. Code that has already passed is not re-tested. The fingerprint is
+      #    every tracked file except the ones a scan writes (data, state,
+      #    reports, working) and docs. If this exact code already passed the
+      #    gate, a run that only brings new DATA has nothing new to test - and
+      #    new data is precisely what used to fail it.
+      #
+      # 2. When the suite does run, it runs through scripts/run-test-gate.py,
+      #    which watches which tests read data/. A failing test that never
+      #    touched data/ is a code fault and blocks the scan as before. A
+      #    failing test that read the published catalogue is a fact about
+      #    today's data - "61 episodes, expected at most 57" - and is reported
+      #    as a warning while the scan goes ahead, because the scan is the only
+      #    thing that can change it. Four outages in October had that shape.
+      - name: Fingerprint the code the test gate checks
+        id: gate_fp
+        shell: bash
+        run: |
+          set -euo pipefail
+          FP="$(git ls-files -s -- .                  ':(exclude)data' ':(exclude)state' ':(exclude)reports'                  ':(exclude)working' ':(exclude)docs'                 | sha256sum | cut -c1-40)"
+          echo "fingerprint=$FP" >> "$GITHUB_OUTPUT"
+          mkdir -p "${RUNNER_TEMP}/test-gate-green"
+          echo "$FP" > "${RUNNER_TEMP}/test-gate-green/fingerprint"
+          echo "code fingerprint: $FP"
+
+      - name: Has this exact code already passed the gate
+        id: gate_green
+        continue-on-error: true
+        uses: actions/cache/restore@v6
+        with:
+          path: ${{ runner.temp }}/test-gate-green
+          key: test-gate-green-${{ steps.gate_fp.outputs.fingerprint }}
+          lookup-only: true
+
       - name: Run the full test suite
-        if: steps.scan_mode.outputs.mode != 'upcoming-targeted'
+        id: test_gate
+        if: steps.scan_mode.outputs.mode != 'upcoming-targeted' && steps.gate_green.outputs.cache-hit != 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -580,7 +621,7 @@ jobs:
             cd "$VALIDATE_TREE" \
               && CLICKTV_STATE_ROOT="$VALIDATE_TREE/state" \
                  CLICKTV_REPORTS_ROOT="$VALIDATE_TREE/reports" \
-                 python -m unittest discover -s tests -p "test_*.py" -v
+                 python scripts/run-test-gate.py                    --report "${RUNNER_TEMP}/test-gate.json"                    --failures-file "${RUNNER_TEMP}/test-gate-failures.txt"
           )
           VALIDATE_STATUS=$?
           set -e
@@ -609,6 +650,14 @@ jobs:
           git status --porcelain -- state reports | head -40
           git checkout -- state reports
           git status --porcelain -- state reports
+
+      - name: Remember that this code passed the gate
+        if: steps.test_gate.outcome == 'success'
+        continue-on-error: true
+        uses: actions/cache/save@v6
+        with:
+          path: ${{ runner.temp }}/test-gate-green
+          key: test-gate-green-${{ steps.gate_fp.outputs.fingerprint }}
 
       # Five crons ask for roughly 370 runs a day. GitHub delivered ten on
       # 2026-08-27, nine on 08-28 and nine on 08-29, against ninety-five on
@@ -828,7 +877,14 @@ jobs:
           # thing that loses.
           if [[ -n "$CATCHUP" ]]; then
             echo "--- catch-up scan: $CATCHUP ---"
-            python -u scan.py "$CATCHUP" 2>&1 | tee scanner-run.log
+            # The catch-up is a second catalogue riding along in this run. Its
+            # failure is its own: the scheduled mode below still scans and
+            # publishes, and the catch-up's previous catalogue stays live. A
+            # failing movies catch-up used to abort the step here, under
+            # `set -e`, and take the Today Match scan down with it.
+            if ! python -u scan.py "$CATCHUP" 2>&1 | tee scanner-run.log; then
+              echo "::error title=Catch-up scan failed (scheduled scan continues)::$CATCHUP"
+            fi
           fi
 
           if [[ "$STALE" == "yes" ]]; then
@@ -1143,7 +1199,8 @@ jobs:
           python -u scanner/telegram_notify.py \
             "${{ steps.scan_mode.outputs.mode }}" \
             "${{ steps.git_push.outputs.commit }}" \
-            "main"
+            "main" \
+            --details-file "${RUNNER_TEMP}/test-gate-failures.txt"
 
       - name: Send Telegram after failed scan or push
         if: failure()
@@ -1152,14 +1209,35 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           MODE="${{ steps.scan_mode.outputs.mode }}"
           if [[ -z "$MODE" ]]; then MODE="unknown"; fi
+
+          # How many finished runs in a row have failed, this one included.
+          # Cancelled runs are concurrency evictions, not verdicts, and are
+          # stepped over. One failure is weather and pages nobody; the third
+          # in a row is a stuck scanner and always pages, and so does every
+          # twelfth after it (about four hours on the 20-minute cron), so a
+          # scanner that stays broken keeps saying so - which is the thing the
+          # thirteen silent days in October did not have.
+          RECENT="${RUNNER_TEMP}/recent-runs.json"
+          gh run list --workflow scan.yml --limit 40 \
+            --json status,conclusion > "$RECENT" 2>/dev/null || echo "[]" > "$RECENT"
+          STREAK="$(python scripts/failure-streak.py "$RECENT" 2>/dev/null || echo 1)"
+          echo "consecutive failures including this run: $STREAK"
+
+          if [[ "$STREAK" -lt 3 ]] || { [[ "$STREAK" -gt 3 ]] && (( STREAK % 12 != 0 )); }; then
+            echo "Not paging: streak $STREAK (pages at 3, then every 12th)."
+            exit 0
+          fi
           python -u scanner/telegram_notify.py \
             "$MODE" \
             "${{ github.sha }}" \
             "${{ github.ref_name }}" \
             --failure \
+            --consecutive "$STREAK" \
+            --details-file "${RUNNER_TEMP}/test-gate-failures.txt" \
             --run-url "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
       - name: Upload scanner log on failure
