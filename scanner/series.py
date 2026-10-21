@@ -508,11 +508,83 @@ def _series_identity(normalized: Mapping[str, Any]) -> Tuple[str, str]:
     return key, str(normalized.get("category") or "")
 
 
+#: Fields that can carry a provider's id for the SHOW (ধারা ৪.৬ priority 1).
+_EXTERNAL_SHOW_ID_FIELDS = ("tmdb_tv_id", "tvdb_id", "tvmaze_id", "imdb_id", "tmdb_id")
+
+
+def _external_show_id(normalized: Mapping[str, Any]) -> str:
+    """The provider id this record states for its show, as `provider:id`."""
+    external = normalized.get("external_ids")
+    if isinstance(external, Mapping):
+        for provider in ("tmdb", "tvdb", "tvmaze", "imdb"):
+            value = _text(external.get(provider))
+            if value:
+                return f"{provider}:{value}"
+    for field in _EXTERNAL_SHOW_ID_FIELDS:
+        value = _text(normalized.get(field))
+        if value:
+            return f"{field.split('_')[0]}:{value}"
+    return ""
+
+
+def _first_air_year(normalized: Mapping[str, Any]) -> str:
+    for field in ("first_air_year", "first_air_date", "year"):
+        value = _text(normalized.get(field))[:4]
+        if value.isdigit():
+            return value
+    return ""
+
+
+def _disambiguated_identities(records: List[Mapping[str, Any]]) -> List[Tuple[str, str]]:
+    """ধারা ৪.৬ series identity, all three priorities.
+
+        ১) external show ID           first choice
+        ২) normalised title (+ shelf)  what `_series_identity` gives
+        ৩) first-air-year             ONLY to settle a collision
+
+    The title key stays the identity whenever it is unambiguous - which on
+    this catalogue is always: the plan checked 262 base names and found no
+    two shows sharing one. Priority 1 matters only when it does: two records
+    with the same title key that carry DIFFERENT show ids are different shows
+    ("The Office" US and UK), and are split by id. A record in that title
+    group with no id joins the id whose first-air-year it shares, and the
+    first id seen otherwise.
+
+    What this never does is split a title on year alone. A season's year is
+    not a show's identity - that was the four-card Undekhi split this
+    function was written to undo - so year decides only between ids that
+    already disagree.
+    """
+    base = [_series_identity(record) for record in records]
+    ids_by_title: Dict[Tuple[str, str], List[str]] = {}
+    for identity, record in zip(base, records):
+        show_id = _external_show_id(record)
+        if show_id and show_id not in ids_by_title.setdefault(identity, []):
+            ids_by_title[identity].append(show_id)
+    year_of_id: Dict[str, str] = {}
+    for identity, record in zip(base, records):
+        show_id = _external_show_id(record)
+        if show_id and show_id not in year_of_id:
+            year_of_id[show_id] = _first_air_year(record)
+
+    resolved: List[Tuple[str, str]] = []
+    for identity, record in zip(base, records):
+        ids = ids_by_title.get(identity) or []
+        if len(ids) < 2:
+            resolved.append(identity)
+            continue
+        show_id = _external_show_id(record)
+        if not show_id:
+            year = _first_air_year(record)
+            show_id = next((i for i in ids if year and year_of_id.get(i) == year), ids[0])
+        resolved.append((f"{identity[0]}|{show_id}", identity[1]))
+    return resolved
+
+
 def _merge_duplicate_series(items: Iterable[Mapping[str, Any]]) -> List[Dict[str, Any]]:
     merged: Dict[Tuple[str, str], Dict[str, Any]] = {}
-    for position, raw in enumerate(items, start=1):
-        normalized = _normalize_series(raw, position)
-        identity = _series_identity(normalized)
+    records = [_normalize_series(raw, position) for position, raw in enumerate(items, start=1)]
+    for normalized, identity in zip(records, _disambiguated_identities(records)):
         existing = merged.get(identity)
         if existing is None:
             merged[identity] = normalized

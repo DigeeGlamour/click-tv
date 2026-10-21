@@ -368,6 +368,35 @@ def _link_status(health: Dict[str, Any], identity: str) -> str:
     return str(record.get("status") or "unknown")
 
 
+def _restricted_from_our_vantage(health: Dict[str, Any], identity: str) -> bool:
+    """ধারা ৪.৫ P3 - failing only in the way a geo or vantage block fails.
+
+    `movie_link_health` records why a failing link is stale, and a 403 or 451
+    is recorded as `geo`: refused from where the scan stands, which says
+    nothing about a viewer in Dhaka. A primary in that state is not "no live
+    link" (P0) and not "primary dead" (P1). It is uncertain, which is what P3
+    is for, and it is worked last.
+    """
+    record = (health.get("links") or {}).get(identity)
+    if not isinstance(record, dict):
+        return False
+    return (str(record.get("status") or "") in ("failing", "confirmed_unavailable")
+            and str(record.get("stale_reason") or "") == "geo")
+
+
+def _playback_failed(url: str) -> str:
+    """ধারা ৪.৫ trigger - a real browser measured this route and could not
+    play it (`state/measured-playback-failures.json`, fed by
+    playback-feedback.yml). Empty when no such measurement stands."""
+    if not url:
+        return ""
+    try:
+        from scanner import playback_evidence
+        return playback_evidence.unproven_reason(url)
+    except Exception:  # noqa: BLE001 - evidence is optional, never fatal
+        return ""
+
+
 def refresh_from_catalogue(
     queue: Dict[str, Any],
     published: Iterable[Tuple[str, Dict[str, Any]]],
@@ -410,7 +439,17 @@ def refresh_from_catalogue(
         # `unknown` is not a fault. A link nobody has checked yet is the state
         # every link starts in, and queuing those would put the whole catalogue
         # in the repair queue on day one.
-        primary_healthy = primary_status in ("healthy", "unknown")
+        primary_restricted = bool(primary_id) and _restricted_from_our_vantage(
+            health_store, primary_id)
+        primary_healthy = primary_status in ("healthy", "unknown") or primary_restricted
+        # A viewer's player is better evidence than our probe. A route a real
+        # browser could not play is treated as a dead primary whatever the
+        # probe said - which queues the card for repair and nothing else: the
+        # card is not hidden and its badge is the merger's business.
+        playback_failure = _playback_failed(primary_url)
+        if playback_failure:
+            primary_healthy = False
+            primary_status = "playback_failed"
 
         live_backups = 0
         dead_backups = 0
@@ -434,6 +473,7 @@ def refresh_from_catalogue(
             primary_healthy=primary_healthy,
             live_backup_count=live_backups,
             dead_backup_count=dead_backups,
+            restricted=primary_restricted and not playback_failure,
         )
         key = entry_key(content_id, primary_id)
         if severity is None:
@@ -445,8 +485,10 @@ def refresh_from_catalogue(
             content_id=content_id,
             broken_link_id=primary_id,
             severity=severity,
-            reason=f"primary={primary_status}, live_backups={live_backups}, "
-                   f"dead_backups={dead_backups}",
+            reason=(f"primary={primary_status}, live_backups={live_backups}, "
+                    f"dead_backups={dead_backups}"
+                    + (f", restricted_from_vantage" if primary_restricted else "")
+                    + (f", playback_failed: {playback_failure}" if playback_failure else "")),
             now=now,
         )
         seen_keys.add(key)

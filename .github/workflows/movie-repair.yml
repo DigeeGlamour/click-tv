@@ -51,6 +51,21 @@ jobs:
         with:
           python-version: "3.12"
 
+      # ধারা ৪.৫ step 3 searches "আগে থেকেই আনা source snapshot" - the
+      # snapshot the catalogue scan already fetched - for a dead card's film.
+      # Restored from the scan's own cache, read-only: this run never saves
+      # it, so it can never hand the scan an older snapshot than its own. A
+      # miss is not an error; the run finds no candidates and says so.
+      - name: Restore the scan's source snapshot
+        continue-on-error: true
+        uses: actions/cache/restore@v6
+        with:
+          path: working/source-cache
+          key: live-signal-source-cache-${{ runner.os }}-${{ github.ref_name }}-${{ github.run_id }}
+          restore-keys: |
+            live-signal-source-cache-${{ runner.os }}-${{ github.ref_name }}-
+            live-signal-source-cache-${{ runner.os }}-
+
       - name: Validate the modules this run depends on
         shell: bash
         run: |
@@ -60,6 +75,7 @@ jobs:
           # `test -f`.
           for required in \
             scanner/movie_repair_queue.py \
+            scanner/movie_repair_candidates.py \
             scanner/movie_link_health.py \
             scripts/movie-repair-run.py
           do
@@ -70,6 +86,7 @@ jobs:
           done
           python -m py_compile \
             scanner/movie_repair_queue.py \
+            scanner/movie_repair_candidates.py \
             scanner/movie_link_health.py \
             scripts/movie-repair-run.py
 

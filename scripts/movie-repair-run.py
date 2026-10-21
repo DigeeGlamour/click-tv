@@ -30,7 +30,86 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from scanner import movie_link_health as health  # noqa: E402
+from scanner import movie_repair_candidates as candidates  # noqa: E402
 from scanner import movie_repair_queue as repair  # noqa: E402
+
+#: Where the scan keeps what it fetched from each source - the "আগে থেকেই আনা
+#: source snapshot" of ধারা ৪.৫ step 3. The workflow restores it from the
+#: scan's own cache; a run that finds it empty finds no candidates and says so.
+SNAPSHOT_DIR = Path("working") / "source-cache"
+
+#: Content types that are a page about a file rather than the file. A CDN zone
+#: that is suspended, a login wall, a "file not found" page served as 200 -
+#: all of them answer with HTML, and none of them is a film.
+_NOT_MEDIA = ("text/html", "application/json", "text/plain")
+
+
+def load_snapshot(root: Path) -> list:
+    """Every item the scan last fetched, across all its cached sources."""
+    items = []
+    for path in sorted((root / SNAPSHOT_DIR).glob("*.items.json")):
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        rows = payload.get("items") if isinstance(payload, dict) else None
+        if isinstance(rows, list):
+            items.extend(row for row in rows if isinstance(row, dict))
+    return items
+
+
+def http_probe(url: str, timeout: float = 15.0) -> bool:
+    """ধারা ৪.৫ step 4 - does this URL serve a file right now?
+
+    A ranged GET of the first kilobyte, because many hosts answer HEAD
+    differently from GET. 200 or 206 with a media-ish content type is live;
+    anything else - including a 403, which ধারা ৪.১ never treats as
+    terminal - is simply "not added this time". Nothing is ever removed on
+    the strength of this probe.
+    """
+    import urllib.request
+
+    request = urllib.request.Request(url.split("|", 1)[0], headers={
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/131.0 Safari/537.36",
+        "Range": "bytes=0-1023",
+    })
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            kind = str(response.headers.get("Content-Type") or "").lower()
+            return response.status in (200, 206) and not kind.startswith(_NOT_MEDIA)
+    except Exception:  # noqa: BLE001 - any failure is "not live", never "dead"
+        return False
+
+
+def discover(root: Path, store: dict, work: list, *, probe=http_probe) -> dict:
+    """ধারা ৪.৫ steps 3-5 for the entries this run is working."""
+    summary = {"searched": 0, "candidates": 0, "live": 0, "recorded": 0,
+               "snapshot_items": 0}
+    snapshot = load_snapshot(root)
+    summary["snapshot_items"] = len(snapshot)
+    if not snapshot or not work:
+        return summary
+    offers = candidates.index_snapshot(snapshot)
+    try:
+        from scanner.movie_baseline import published_movies
+        cards = {str(card.get("id") or ""): card
+                 for _scope, card in published_movies(root) if isinstance(card, dict)}
+    except Exception:  # noqa: BLE001
+        cards = {}
+    for entry in work:
+        card = cards.get(str(entry.get("content_id") or ""))
+        if card is None:
+            continue
+        summary["searched"] += 1
+        found = candidates.candidates_for(card, offers)
+        summary["candidates"] += len(found)
+        if not found:
+            continue
+        live, _dead = candidates.verify(found, probe)
+        summary["live"] += len(live)
+        summary["recorded"] += candidates.record(
+            store, str(entry.get("content_id")), live, health_module=health)
+    return summary
 
 
 def _promote_backup(store, entry) -> str:
@@ -84,7 +163,15 @@ def main() -> int:
 
     promoted = 0
     attempted = 0
+    discovery = {}
     if arguments.apply:
+        # Steps 3-5 before step 2's bookkeeping, so an entry whose film was
+        # found elsewhere is recorded as such in the same run.
+        discovery = discover(root, store, work)
+        print(candidates.describe(discovery.get("searched", 0),
+                                  discovery.get("candidates", 0),
+                                  discovery.get("live", 0),
+                                  discovery.get("recorded", 0)))
         for entry in work:
             identity = _promote_backup(store, entry)
             if identity:
@@ -107,6 +194,7 @@ def main() -> int:
         "worked": len(work),
         "attempted": attempted,
         "backups_promoted": promoted,
+        "candidates": discovery,
         "sample": [
             {key: entry.get(key) for key in
              ("severity", "content_id", "attempts", "reason")}

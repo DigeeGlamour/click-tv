@@ -1050,6 +1050,92 @@ def _remember_source_offers(entries: List[Dict[str, Any]]) -> None:
         print(f"   movie source offers unavailable: {exc}")
 
 
+#: The link-health ledger, read once per process for the repair discoveries.
+_REPAIR_LEDGER: Dict[str, Any] = {}
+
+
+def _adopt_repair_discoveries(movies: List[Dict[str, Any]], category_slug: str) -> int:
+    """ধারা ৪.৫ step 5 - put on the card what the repair run found for it.
+
+    `scripts/movie-repair-run.py` searches the scan's own source snapshot for
+    a dead card's film by canonical identity, probes only the new URLs, and
+    records the ones that answered in the link-health ledger. It does not
+    publish - one writer, and the writer is this scan. So the scan is where a
+    discovered link becomes a backup.
+
+    Never more than five backups (the validator's limit, and the plan's), a
+    link already on the card is not added twice, and a discovery that has
+    since gone unhealthy in the ledger is not returned at all. The primary is
+    never replaced here; if the primary is dead, the backup is what the player
+    falls through to, and the repair queue's own promotion decides the rest.
+    """
+    try:
+        from scanner import movie_link_health, movie_repair_candidates
+        from scanner.movie_coverage import stream_family
+
+        if not _REPAIR_LEDGER:
+            _REPAIR_LEDGER.update(movie_link_health.load() or {})
+        if not _REPAIR_LEDGER.get("links"):
+            return 0
+        added = 0
+        for card in movies:
+            if not isinstance(card, dict):
+                continue
+            found = movie_repair_candidates.discovered_for(
+                _REPAIR_LEDGER, str(card.get("id") or ""),
+                health_module=movie_link_health)
+            if not found:
+                continue
+            backups = [b for b in (card.get("backups") or []) if isinstance(b, dict)]
+            known = {stream_family(str(card.get("url") or ""))} | {
+                stream_family(str(b.get("url") or "")) for b in backups}
+            for link in found:
+                if len(backups) >= movie_repair_candidates.MAX_BACKUPS:
+                    break
+                if stream_family(link["url"]) in known:
+                    continue
+                known.add(stream_family(link["url"]))
+                backup = {
+                    key: card.get(key) for key in (
+                        "id", "name", "category", "logo", "year", "content_kind",
+                        "source_pipeline", "original_source_pipeline")
+                    if key in card
+                }
+                backup.update({
+                    "url": link["url"],
+                    "source_id": link.get("source_id") or "",
+                    "stream_type": "media",
+                    "proxy_mode": "direct_first"
+                    if link["url"].lower().startswith("https://") else "proxy_first",
+                })
+                height = int(link.get("resolution_height") or 0)
+                if height:
+                    backup["resolution_height"] = height
+                    backup["resolution"] = "%dp" % height
+                else:
+                    # Proved playable by the repair run's probe, resolution not
+                    # declared: exactly what the verifier marks quality_unknown.
+                    backup["quality_unknown"] = True
+                backup.update({
+                    "verification_status": "verified_global",
+                    "verification_mode": "repair_discovered",
+                    "verified": True,
+                    movie_repair_candidates.DISCOVERED_FLAG: True,
+                })
+                backups.append(backup)
+                added += 1
+            card["backups"] = backups
+            card["available_link_count"] = (
+                (0 if card.get("metadata_only") is True else 1) + len(backups))
+        if added:
+            print(f"   {category_slug}: {added} backup(s) the repair run found "
+                  "were added to their cards")
+        return added
+    except Exception as exc:  # noqa: BLE001 - a discovery must never fail a scan
+        print(f"   {category_slug}: repair discoveries skipped: {exc}")
+        return 0
+
+
 def _adopt_rotated_hosts(movies: List[Dict[str, Any]], category_slug: str) -> int:
     """Point a card at the host its source is using now. See
     `scanner/movie_host_rotation.py` for the measurement that forced this.
@@ -4493,6 +4579,7 @@ def paginate_movie_list(
         # the coverage inventory all see the URL the viewer will actually be
         # given, rather than the retired one.
         _adopt_rotated_hosts(prepared, category_slug)
+        _adopt_repair_discoveries(prepared, category_slug)
     # After retention, because retention is what can introduce a second card
     # with the same cleaned title - see _resolve_presentation_collisions.
     _collisions = _resolve_presentation_collisions(prepared)
@@ -5084,6 +5171,18 @@ def _finalize_movie_presentation(
                     year=year,
                     counters=counters,
                 )
+                # ধারা ৮: "restricted/unknown পোস্টার চূড়ান্ত poster হিসেবে
+                # প্রকাশ নয়". The poster itself is still published when
+                # nothing verified exists - a 403 here is vantage-shaped and
+                # the same image loads for viewers in Bangladesh - but it is
+                # published as PROVISIONAL, not final: the card says so
+                # (`poster_verified: false`), it counts against the verified
+                # coverage metric, and the page swaps in the designed
+                # placeholder the moment it fails to load
+                # (replaceBrokenMovieImage), so an unproven poster is never
+                # left on screen as a broken image.
+                movie["poster_verified"] = bool(movie.get("logo")) and (
+                    validator.verdict(movie["logo"]) == "ok")
     finally:
         validator.save()
         _save_poster_cache(poster_cache_path, cache)
