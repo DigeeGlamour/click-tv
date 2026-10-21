@@ -3083,3 +3083,9 @@ written. So the gate itself changed.
 - **OMDb API key** — rejected (12 auth failures, breaker open). TMDB carries metadata meanwhile; a new key restores the second provider.
 - **`sm-movie-combined`'s CDN** — every URL answers "Domain suspended or not configured". Nothing in this repository can bring that zone back.
 - **BDIX hosts** — `cinehub24.com` is unreachable from GitHub runners, so those films cannot be verified from CI. They play for viewers in Bangladesh.
+
+## 2026-10-21 (later) — Why the movie catalogue stayed at 2026-09-24, and the fix
+
+1. **Catch-up never ran.** The scan-trigger Worker dispatches `today` (GitHub delivers ~6.7% of native crons), and `select-scan-mode.py` treated every dispatch as manual, so no run caught up channels or movies (31 h / 30.6 h unscanned). A dispatched `today` now counts as the schedule; other dispatched modes are still left alone. Commit 5c80ab29a.
+2. **The no-loss gate blocked 1,970 movies for 23 streams.** The 23 were episodes on the suspended BunnyCDN zone (0.66% of 3,491 previously live). With the owner's approval, an unexplained loss up to `MAX_HELD_LOSS_SHARE` (2%) of previously live streams is still a failed check - in `failures`, the scan summary, the Telegram alert, and listed in full in `invariant_2.lost_streams` - but no longer blocks the publish. A larger loss blocks exactly as before (tests/test_movie_bounded_loss.py).
+

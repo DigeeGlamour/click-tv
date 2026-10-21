@@ -903,6 +903,7 @@ def live_preservation(
         "match_layers": dict(sorted(match_layers.items())),
         "block_reasons": block_reasons,
         "lost_sample": lost[:25],
+        "lost_streams": lost[:500],
     }
 
 
@@ -1087,6 +1088,11 @@ def build_movie_coverage(
     return report
 
 
+#: The share of previously live streams that may go unexplained before the
+#: gate keeps the previous catalogue. See INVARIANT ২ in check_invariants.
+MAX_HELD_LOSS_SHARE = 0.02
+
+
 def check_invariants(report: Dict[str, Any]) -> Dict[str, Any]:
     """The checks the gate has to survive, and what blocks a publish.
 
@@ -1174,14 +1180,29 @@ def check_invariants(report: Dict[str, Any]) -> Dict[str, Any]:
     )
 
     # INVARIANT ২ - the one number the whole gate is named for.
+    #
+    # A few lost streams are those streams' problem, not the catalogue's. On
+    # 2026-10-19 twenty-three episodes on a suspended CDN zone (0.66% of 3,491
+    # live streams) held all 1,970 movies at their 2026-09-24 publish for
+    # nearly a month. Within the allowance the check still FAILS - it is in
+    # `failures`, the scan summary and the Telegram alert, and every lost
+    # stream is listed in `invariant_2.lost_streams` - but the rest publishes.
+    # Past the allowance a loss looks like a scanner fault, not a dead host,
+    # and the previous catalogue is kept exactly as before.
     lost = int(two.get("unexplained_live_loss") or 0)
+    previously_live = int(two.get("previously_live") or 0)
+    allowance = int(previously_live * MAX_HELD_LOSS_SHARE)
     check(
         "INVARIANT_2 unexplained_live_loss == 0",
         lost == 0,
-        "unexplained live loss: %d" % lost,
+        "unexplained live loss: %d%s" % (
+            lost,
+            " (within the %d allowance: listed in invariant_2.lost_streams, "
+            "the rest published)" % allowance
+            if 0 < lost <= allowance else ""),
+        blocking=lost > allowance,
     )
 
-    previously_live = int(two.get("previously_live") or 0)
     accounted = sum(int(two.get(field) or 0) for field in (
         "currently_visible", "merged_stream", "visible_pending",
         "terminal_evidence", "unexplained_live_loss",
@@ -1215,7 +1236,8 @@ def check_invariants(report: Dict[str, Any]) -> Dict[str, Any]:
 
     reasons = [entry["name"] + (": " + entry["detail"] if entry["detail"] else "")
                for entry in blocking]
-    reasons.extend(str(item) for item in (two.get("block_reasons") or []))
+    if blocking:
+        reasons.extend(str(item) for item in (two.get("block_reasons") or []))
 
     return {
         "checked_at": _utc_now(),
