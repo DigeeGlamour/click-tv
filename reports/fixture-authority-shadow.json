@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-21T04:51:22.555015+00:00",
+  "generated_at": "2026-10-21T05:09:43.349380+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,13 +12,11 @@
       "requests_ok": 6,
       "fixtures": 475,
       "unknown_statuses": [
-        "10|HT",
         "12|Int.",
         "134|Stumps - day 3",
-        "172|Lunch - day 3",
-        "2|45+3'",
-        "3|79'",
-        "3|84'"
+        "3|48'",
+        "3|49'",
+        "3|50'"
       ],
       "attempts": [
         {
@@ -111,54 +109,61 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 4,
-    "upcoming": 42,
-    "fixtures": 46,
+    "upcoming": 46,
+    "fixtures": 50,
     "verdicts": {
-      "PARTIAL_AUTHORITY": 1,
-      "UNVERIFIED": 28,
-      "VERIFIED": 17
+      "CONFLICT": 1,
+      "VERIFIED": 20,
+      "UNVERIFIED": 29
     },
-    "verified": 17,
-    "partial_authority": 1,
-    "unverified": 28,
-    "conflict": 0,
+    "verified": 20,
+    "partial_authority": 0,
+    "unverified": 29,
+    "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 12,
-        "unmatched": 34
+        "matched": 14,
+        "unmatched": 36
       },
       "livescore": {
         "matched": 18,
-        "unmatched": 28
+        "unmatched": 32
       }
     },
-    "matched_by_two_independent_authorities": 11,
-    "authority_agreements": 10,
-    "authority_disagreements": 0,
+    "matched_by_two_independent_authorities": 10,
+    "authority_agreements": 9,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
+      "authorities disagree": 1,
       "kickoff": 1
     },
-    "identity_near_misses": 2,
+    "identity_near_misses": 3,
     "independent_authority_count_distribution": {
-      "0": 28,
-      "1": 7,
-      "2": 11
+      "0": 29,
+      "1": 11,
+      "2": 10
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "12|Int.",
         "134|Stumps - day 3",
-        "172|Lunch - day 3",
-        "2|45+3'",
-        "3|79'",
-        "3|84'"
+        "3|48'",
+        "3|49'",
+        "3|50'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "China U17 Vs Samoa U17",
+      "authority": "espn-header",
+      "authority_name": "China PR U17 vs Samoa U17",
+      "agreed_side": "samoa u17",
+      "ours": "china u17",
+      "theirs": "china pr u17"
+    },
     {
       "fixture": "Como U20 Vs Manchester United U19",
       "authority": "livescore",
@@ -242,11 +247,11 @@
           "competition_id": "759",
           "kickoff": "2026-10-21T03:10:00+00:00",
           "kickoff_delta_minutes": 10.0,
-          "status_raw": "79'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
-          "round": "Apertura",
+          "round": "13",
           "format": "",
           "gender": ""
         }
@@ -258,10 +263,73 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:sydney-sixers-vs-perth-scorchers-women|t20 spring challenge 2026|2026-10-21",
+      "card_id": "sydney-sixers-women-vs-perth-scorchers-women",
+      "name": "Sydney Sixers Women vs Perth Scorchers Women",
+      "competition": "T20 Spring Challenge, 2026",
+      "kickoff": "2026-10-21T03:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1907823",
+          "upstream_family": "LiveScore",
+          "name": "Perth Scorchers W vs Sydney Sixers W",
+          "home": "Perth Scorchers W",
+          "away": "Sydney Sixers W",
+          "home_team_id": "86310",
+          "away_team_id": "86301",
+          "competition": "T20 Spring Challenge",
+          "competition_id": "25853",
+          "kickoff": "2026-10-21T03:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
+          "sport": "cricket",
+          "round": "Final",
+          "format": "Womens Domestic Twenty20",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
       "conflict_reasons": [],
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -271,7 +339,7 @@
       "competition": "",
       "kickoff": "2026-10-21T04:51:22+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
@@ -326,67 +394,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:sydney-sixers-vs-perth-scorchers-women|t20 spring challenge 2026|2026-10-21",
-      "card_id": "sydney-sixers-women-vs-perth-scorchers-women",
-      "name": "Sydney Sixers Women vs Perth Scorchers Women",
-      "competition": "T20 Spring Challenge, 2026",
-      "kickoff": "2026-10-21T03:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1907823",
-          "upstream_family": "LiveScore",
-          "name": "Perth Scorchers W vs Sydney Sixers W",
-          "home": "Perth Scorchers W",
-          "away": "Sydney Sixers W",
-          "home_team_id": "86310",
-          "away_team_id": "86301",
-          "competition": "T20 Spring Challenge",
-          "competition_id": "25853",
-          "kickoff": "2026-10-21T03:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "Final",
-          "format": "Womens Domestic Twenty20",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:tbc|t20 spring challenge 2026|2026-10-21",
       "card_id": "tbc",
       "name": "T20 Spring Challenge, 2026",
@@ -427,6 +434,93 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:atlas-fc-vs-club-américa|liga mx apertura|2026-10-22",
+      "card_id": "atlas-fc-vs-club-américa",
+      "name": "Atlas FC Vs Club América",
+      "competition": "Liga MX, Apertura",
+      "kickoff": "2026-10-22T01:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401876932",
+          "upstream_family": "ESPN",
+          "name": "Atlas vs América",
+          "home": "Atlas",
+          "away": "América",
+          "home_team_id": "216",
+          "away_team_id": "227",
+          "competition": "Mexican Liga BBVA MX",
+          "competition_id": "760",
+          "kickoff": "2026-10-22T01:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 21st at 9:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:760~e:401876932~c:401876932"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1799057",
+          "upstream_family": "LiveScore",
+          "name": "Atlas vs CF America",
+          "home": "Atlas",
+          "away": "CF America",
+          "home_team_id": "3626",
+          "away_team_id": "4753",
+          "competition": "Liga MX: Apertura",
+          "competition_id": "759",
+          "kickoff": "2026-10-22T01:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "13",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
     },
     {
       "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-21",
@@ -555,9 +649,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -597,9 +691,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -624,98 +718,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:al-ahli-saudi-fc-vs-al-khaleej-fc|roshn saudi league 2026 2027|2026-10-22",
-      "card_id": "al-ahli-saudi-fc-vs-al-khaleej-fc",
-      "name": "Al Ahli Saudi FC vs Al Khaleej FC",
-      "competition": "Roshn Saudi League 2026-2027",
-      "kickoff": "2026-10-22T18:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401900892",
-          "upstream_family": "ESPN",
-          "name": "Al Ahli vs Al Khaleej",
-          "home": "Al Ahli",
-          "away": "Al Khaleej",
-          "home_team_id": "8346",
-          "away_team_id": "21829",
-          "competition": "Saudi Pro League",
-          "competition_id": "21231",
-          "kickoff": "2026-10-22T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, October 22nd at 2:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:21231~e:401900892~c:401900892"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1845668",
-          "upstream_family": "LiveScore",
-          "name": "Al Ahli vs Al Khaleej",
-          "home": "Al Ahli",
-          "away": "Al Khaleej",
-          "home_team_id": "4379",
-          "away_team_id": "7878",
-          "competition": "Saudi Professional League",
-          "competition_id": "403",
-          "kickoff": "2026-10-22T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "11",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:al-fateh-sc-vs-al-shabab-fc|roshn saudi league 2026 2027|2026-10-22",
       "card_id": "al-fateh-sc-vs-al-shabab-fc",
       "name": "Al Fateh SC vs Al Shabab FC",
@@ -731,9 +733,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -808,11 +810,11 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:atlas-fc-vs-club-américa|liga mx apertura|2026-10-22",
-      "card_id": "atlas-fc-vs-club-américa",
-      "name": "Atlas FC Vs Club América",
-      "competition": "Liga MX, Apertura",
-      "kickoff": "2026-10-22T01:00:00+00:00",
+      "fixture_id": "provider:aston-villa-u19-vs-viking-fk-u19|uefa youth league|2026-10-21",
+      "card_id": "aston-villa-u19-vs-viking-fk-u19",
+      "name": "Aston Villa U19 Vs Viking FK U19",
+      "competition": "UEFA Youth League",
+      "kickoff": "2026-10-21T13:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
@@ -828,68 +830,40 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401876932",
-          "upstream_family": "ESPN",
-          "name": "Atlas vs América",
-          "home": "Atlas",
-          "away": "América",
-          "home_team_id": "216",
-          "away_team_id": "227",
-          "competition": "Mexican Liga BBVA MX",
-          "competition_id": "760",
-          "kickoff": "2026-10-22T01:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, October 21st at 9:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:760~e:401876932~c:401876932"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1799057",
+          "event_id": "1886583",
           "upstream_family": "LiveScore",
-          "name": "Atlas vs CF America",
-          "home": "Atlas",
-          "away": "CF America",
-          "home_team_id": "3626",
-          "away_team_id": "4753",
-          "competition": "Liga MX: Apertura",
-          "competition_id": "759",
-          "kickoff": "2026-10-22T01:00:00+00:00",
+          "name": "Aston Villa U19 vs Viking U19",
+          "home": "Aston Villa U19",
+          "away": "Viking U19",
+          "home_team_id": "224076",
+          "away_team_id": "414045",
+          "competition": "Champions League Path",
+          "competition_id": "109",
+          "kickoff": "2026-10-21T13:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
           "status_raw": "NS",
           "status_code": "1",
           "status": "UPCOMING",
           "sport": "football",
-          "round": "13",
+          "round": "3",
           "format": "",
           "gender": ""
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1047,6 +1021,159 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:brooklyn-fc-vs-birmingham-legion-fc|usl championship|2026-10-21",
+      "card_id": "brooklyn-fc-vs-birmingham-legion-fc",
+      "name": "Brooklyn FC Vs Birmingham Legion FC",
+      "competition": "USL Championship",
+      "kickoff": "2026-10-21T22:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401842067",
+          "upstream_family": "ESPN",
+          "name": "Brooklyn FC vs Birmingham Legion FC",
+          "home": "Brooklyn FC",
+          "away": "Birmingham Legion FC",
+          "home_team_id": "131579",
+          "away_team_id": "19405",
+          "competition": "USL Championship",
+          "competition_id": "4002",
+          "kickoff": "2026-10-21T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 21st at 6:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:4002~e:401842067~c:401842067"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1711589",
+          "upstream_family": "LiveScore",
+          "name": "Brooklyn vs Birmingham Legion",
+          "home": "Brooklyn",
+          "away": "Birmingham Legion",
+          "home_team_id": "390140",
+          "away_team_id": "10291",
+          "competition": "USL Championship",
+          "competition_id": "24235",
+          "kickoff": "2026-10-21T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:canada-u17-vs-norway-u17|u17 women world championship|2026-10-21",
+      "card_id": "canada-u17-vs-norway-u17",
+      "name": "Canada U17 Vs Norway U17",
+      "competition": "U17 Women's World Championship",
+      "kickoff": "2026-10-21T15:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401874123",
+          "upstream_family": "ESPN",
+          "name": "Canada U17 vs Norway U17",
+          "home": "Canada U17",
+          "away": "Norway U17",
+          "home_team_id": "21566",
+          "away_team_id": "130906",
+          "competition": "FIFA Under-17 Women's World Cup",
+          "competition_id": "20865",
+          "kickoff": "2026-10-21T15:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 21st at 11:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:20865~e:401874123~c:401874123"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1211,11 +1338,84 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:club-brugge-kv-vs-rc-lens|uefa champions league|2026-10-21",
-      "card_id": "club-brugge-kv-vs-rc-lens",
-      "name": "Club Brugge KV Vs RC Lens",
-      "competition": "UEFA Champions League",
-      "kickoff": "2026-10-21T19:00:00+00:00",
+      "fixture_id": "provider:chile-u17-vs-mexico-u17|u17 women world championship|2026-10-22",
+      "card_id": "chile-u17-vs-mexico-u17",
+      "name": "Chile U17 Vs Mexico U17",
+      "competition": "U17 Women's World Championship",
+      "kickoff": "2026-10-22T18:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401874125",
+          "upstream_family": "ESPN",
+          "name": "Chile U17 vs Mexico U17",
+          "home": "Chile U17",
+          "away": "Mexico U17",
+          "home_team_id": "21558",
+          "away_team_id": "21568",
+          "competition": "FIFA Under-17 Women's World Cup",
+          "competition_id": "20865",
+          "kickoff": "2026-10-22T18:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, October 22nd at 2:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:20865~e:401874125~c:401874125"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:china-u17-vs-samoa-u17|u17 women world championship|2026-10-22",
+      "card_id": "china-u17-vs-samoa-u17",
+      "name": "China U17 Vs Samoa U17",
+      "competition": "U17 Women's World Championship",
+      "kickoff": "2026-10-22T15:00:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
@@ -1229,6 +1429,59 @@
         "SM-Aggregate"
       ],
       "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "China PR U17 vs Samoa U17",
+              "event_id": "401874121",
+              "agreed_side": "samoa u17",
+              "ours": "china u17",
+              "theirs": "china pr u17"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:club-brugge-kv-vs-rc-lens|uefa champions league|2026-10-21",
+      "card_id": "club-brugge-kv-vs-rc-lens",
+      "name": "Club Brugge KV Vs RC Lens",
+      "competition": "UEFA Champions League",
+      "kickoff": "2026-10-21T19:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode",
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -1446,9 +1699,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1488,9 +1741,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1551,6 +1804,72 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:ghana-u17-vs-brazil-u17|u17 women world championship|2026-10-21",
+      "card_id": "ghana-u17-vs-brazil-u17",
+      "name": "Ghana U17 Vs Brazil U17",
+      "competition": "U17 Women's World Championship",
+      "kickoff": "2026-10-21T18:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401890164",
+          "upstream_family": "ESPN",
+          "name": "Ghana U17 vs Brazil U17",
+          "home": "Ghana U17",
+          "away": "Brazil U17",
+          "home_team_id": "132376",
+          "away_team_id": "21561",
+          "competition": "FIFA Under-17 Women's World Cup",
+          "competition_id": "20865",
+          "kickoff": "2026-10-21T18:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 21st at 2:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:20865~e:401890164~c:401890164"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1739,9 +2058,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1763,100 +2082,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:levante-ud-vs-athletic-club|laliga|2026-10-21",
-      "card_id": "levante-ud-vs-athletic-club",
-      "name": "Levante UD Vs Athletic Club",
-      "competition": "LaLiga",
-      "kickoff": "2026-10-21T18:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401882870",
-          "upstream_family": "ESPN",
-          "name": "Levante vs Athletic Club",
-          "home": "Levante",
-          "away": "Athletic Club",
-          "home_team_id": "1538",
-          "away_team_id": "93",
-          "competition": "Spanish LALIGA",
-          "competition_id": "740",
-          "kickoff": "2026-10-21T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, October 21st at 2:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:740~e:401882870~c:401882870"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1810663",
-          "upstream_family": "LiveScore",
-          "name": "Levante vs Athletic Club",
-          "home": "Levante",
-          "away": "Athletic Club",
-          "home_team_id": "4164",
-          "away_team_id": "3408",
-          "competition": "LaLiga",
-          "competition_id": "75",
-          "kickoff": "2026-10-21T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "6",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2062,9 +2287,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2324,9 +2549,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2513,43 +2738,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:red-bull-bragantino-u17-vs-corinthians-u17|u17 campeonato brasileiro|2026-10-21",
-      "card_id": "red-bull-bragantino-u17-vs-corinthians-u17",
-      "name": "Red Bull Bragantino U17 Vs Corinthians U17",
-      "competition": "U17 Campeonato Brasileiro",
-      "kickoff": "2026-10-21T22:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:sharjah-vs-abu-dhabi|emirates d20 2026|2026-10-22",
       "card_id": "sharjah-vs-abu-dhabi",
       "name": "Sharjah vs Abu Dhabi",
@@ -2565,9 +2753,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2608,6 +2796,43 @@
       ],
       "upstream_families": [
         "Willow"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:são-paulo-vs-ec-bahia|copa do brasil feminino|2026-10-21",
+      "card_id": "são-paulo-vs-ec-bahia",
+      "name": "São Paulo Vs EC Bahia",
+      "competition": "Copa do Brasil, Feminino",
+      "kickoff": "2026-10-21T22:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -2681,9 +2906,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2725,9 +2950,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2749,188 +2974,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:al-taawoun-fc-vs-al-qadsiah-fc|roshn saudi league 2026 2027|2026-10-20",
-      "card_id": "al-taawoun-fc-vs-al-qadsiah-fc",
-      "name": "Al Taawoun FC vs Al Qadsiah FC",
-      "competition": "Roshn Saudi League 2026-2027",
-      "kickoff": "2026-10-20T15:10:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401900894",
-          "upstream_family": "ESPN",
-          "name": "Al Taawoun vs Al Qadsiah",
-          "home": "Al Taawoun",
-          "away": "Al Qadsiah",
-          "home_team_id": "18459",
-          "away_team_id": "22022",
-          "competition": "Saudi Pro League",
-          "competition_id": "21231",
-          "kickoff": "2026-10-20T15:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:21231~e:401900894~c:401900894"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1845657",
-          "upstream_family": "LiveScore",
-          "name": "Al Taawoun vs Al Qadsiah",
-          "home": "Al Taawoun",
-          "away": "Al Qadsiah",
-          "home_team_id": "7",
-          "away_team_id": "12006",
-          "competition": "Saudi Professional League",
-          "competition_id": "403",
-          "kickoff": "2026-10-20T15:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Regular Season",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED"
-    },
-    {
-      "fixture_id": "provider:al-ettifaq-vs-al-ittihad|roshn saudi league 2026 2027|2026-10-20",
-      "card_id": "al-ettifaq-vs-al-ittihad",
-      "name": "Al Ettifaq vs Al Ittihad",
-      "competition": "Roshn Saudi League 2026-2027",
-      "kickoff": "2026-10-20T18:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401900448",
-          "upstream_family": "ESPN",
-          "name": "Al Ettifaq vs Al Ittihad",
-          "home": "Al Ettifaq",
-          "away": "Al Ittihad",
-          "home_team_id": "8363",
-          "away_team_id": "2276",
-          "competition": "Saudi Pro League",
-          "competition_id": "21231",
-          "kickoff": "2026-10-20T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:21231~e:401900448~c:401900448"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1845660",
-          "upstream_family": "LiveScore",
-          "name": "Al Ettifaq vs Al Ittihad",
-          "home": "Al Ettifaq",
-          "away": "Al Ittihad",
-          "home_team_id": "2754",
-          "away_team_id": "347",
-          "competition": "Saudi Professional League",
-          "competition_id": "403",
-          "kickoff": "2026-10-20T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "10",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED"
     }
   ]
 }
