@@ -1131,6 +1131,7 @@ def _movie_terminal_records(
     published_cards: Sequence[Any] = (),
     current_inventory: Sequence[str] = (),
     raw_entries: Sequence[Dict[str, Any]] = (),
+    previous_inventory: Sequence[str] = (),
 ) -> List[Dict[str, Any]]:
     """Definitive refusals this run recorded, for the no-loss gate.
 
@@ -1174,6 +1175,20 @@ def _movie_terminal_records(
         records.extend(removed)
     except Exception as error:  # noqa: BLE001
         print(f"   no-loss gate: source-removal evidence unavailable ({error})")
+
+    # A CDN zone its provider switched off answers with the provider's own
+    # zone-gone page from every vantage (scanner/movie_dead_zones.py).
+    try:
+        from scanner import movie_dead_zones
+
+        dead, zones = movie_dead_zones.terminal_records(previous_inventory)
+        if dead:
+            print(f"   no-loss gate: {len(dead)} stream(s) on "
+                  f"{len(zones['zones_gone'])} switched-off CDN zone(s): "
+                  + ", ".join(zones["zones_gone"]))
+        records.extend(dead)
+    except Exception as error:  # noqa: BLE001
+        print(f"   no-loss gate: dead-zone evidence unavailable ({error})")
 
     return records
 
@@ -1248,6 +1263,7 @@ def _build_movie_coverage(
                 published_cards=list(movie_cards) + list(episode_cards),
                 current_inventory=current_inventory,
                 raw_entries=entries,
+                previous_inventory=previous_inventory,
             ),
             evidence="scan",
         )

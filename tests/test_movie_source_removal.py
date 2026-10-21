@@ -453,7 +453,7 @@ class TheScanWiresItIn(unittest.TestCase):
     def test_neither_kind_can_fail_a_scan(self):
         source = ast.get_source_segment(
             self.SCAN, self._function("_movie_terminal_records")) or ""
-        self.assertEqual(source.count("except Exception"), 2)
+        self.assertEqual(source.count("except Exception"), 3)
 
     def test_the_payload_is_passed_so_the_vetoes_can_be_applied(self):
         source = ast.get_source_segment(
