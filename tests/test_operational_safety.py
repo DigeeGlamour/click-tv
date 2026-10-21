@@ -281,9 +281,10 @@ class WorkflowSafetyTests(unittest.TestCase):
         message = build_failure_message(
             "channels", "abc123", "main", "https://github.com/example/actions/runs/1"
         )
-        self.assertIn("FAILED", message)
-        self.assertIn("Open failed GitHub Actions run", message)
-        self.assertIn("Published:</b> No", message)
+        self.assertIn("ব্যর্থ", message)
+        self.assertIn("ব্যর্থ গিটহাব রানটি খুলুন", message)
+        self.assertIn("সাইটে প্রকাশ হয়েছে:</b> না", message)
+        self.assertIn('href="https://github.com/example/actions/runs/1"', message)
 
 
 if __name__ == "__main__":

@@ -52,6 +52,11 @@ def _api(path: str) -> Any:
         return json.loads(response.read() or b"{}")
 
 
+def bn(text: str) -> str:
+    """Digits in Bangla - every Telegram message goes out in Bangla."""
+    return text.translate(str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯"))
+
+
 def _parse(stamp: str) -> datetime:
     return datetime.fromisoformat(stamp.replace("Z", "+00:00"))
 
@@ -63,16 +68,16 @@ def findings(workflows: List[Dict[str, Any]], last_success: str,
         state = str(workflow.get("state") or "")
         if state and state != "active":
             problems.append(
-                f"Workflow \"{workflow.get('name')}\" is {state} - "
-                "it will not run until it is enabled again.")
+                f"ওয়ার্কফ্লো \"{workflow.get('name')}\" বন্ধ আছে ({state}) - "
+                "আবার চালু না করা পর্যন্ত এটি চলবে না।")
     if not last_success:
-        problems.append("The Live Signal Scanner has no successful run on record.")
+        problems.append("স্ক্যানারের কোনো সফল রানের রেকর্ড নেই।")
     else:
         age = (now - _parse(last_success)).total_seconds() / 3600.0
         if age > STALE_AFTER_HOURS:
-            problems.append(
-                "The Live Signal Scanner has not finished successfully for "
-                f"{age:.1f} hours (last success {last_success}).")
+            problems.append(bn(
+                f"স্ক্যানার {age:.1f} ঘণ্টা ধরে সফলভাবে শেষ হয়নি "
+                f"(শেষ সফল রান {last_success})।"))
     return problems
 
 
@@ -92,9 +97,9 @@ def main() -> int:
     from scanner.telegram_notify import send_telegram_alert
     import html
     message = "\n".join(
-        ["🐕 <b>CLICK TV SCANNER WATCHDOG</b>", ""]
+        ["🐕 <b>ক্লিক টিভি স্ক্যানার পাহারাদার</b>", ""]
         + ["• " + html.escape(problem) for problem in problems]
-        + ["", "Previously published data stays on the site until a scan succeeds."])
+        + ["", "কোনো স্ক্যান সফল না হওয়া পর্যন্ত সাইটে আগের ডেটাই থাকবে।"])
     send_telegram_alert(message)
     return 0
 

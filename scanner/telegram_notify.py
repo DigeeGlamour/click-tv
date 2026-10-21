@@ -33,15 +33,69 @@ def safe_int(value: Any) -> int:
         return 0
 
 
+_BN_DIGITS = str.maketrans("0123456789", "০১২৩৪৫৬৭৮৯")
+
+#: Every Telegram message goes to the owner in Bangla (the owner's request,
+#: 2026-10-21): Bangla words, Bangla digits. Commit hashes, links and test
+#: names stay as they are - they are identifiers, not prose.
+MODE_BN = {
+    "channels": "টিভি চ্যানেল",
+    "today": "আজকের ম্যাচ",
+    "upcoming": "আসন্ন ম্যাচ",
+    "upcoming-targeted": "আসন্ন ম্যাচ (নির্দিষ্ট)",
+    "movies": "মুভি",
+    "events": "খেলার ইভেন্ট",
+    "all": "সব",
+}
+
+
+def bn(value: Any) -> str:
+    """A number (or any text) with its digits written in Bangla."""
+    return str(value).translate(_BN_DIGITS)
+
+
+def mode_bn(mode: str) -> str:
+    return MODE_BN.get(mode, mode)
+
+
+def time_bn(stamp: str) -> str:
+    """An ISO timestamp as Bangladesh time, in Bangla."""
+    from datetime import datetime, timedelta, timezone
+    try:
+        moment = datetime.fromisoformat(str(stamp).replace("Z", "+00:00"))
+    except ValueError:
+        return bn(stamp)
+    if moment.tzinfo is None:
+        moment = moment.replace(tzinfo=timezone.utc)
+    local = moment.astimezone(timezone(timedelta(hours=6)))
+    return bn(local.strftime("%Y-%m-%d %H:%M")) + " (বাংলাদেশ সময়)"
+
+
+def held_movie_loss_lines(path: Optional[Path] = None) -> List[str]:
+    """Previously live movie streams this publish let go within the no-loss
+    gate's allowance - announced, never silent."""
+    report = load_json(path or PROJECT_ROOT / "reports" / "movie-source-coverage.json")
+    two = report.get("invariant_2") if isinstance(report.get("invariant_2"), dict) else {}
+    lost = safe_int(two.get("unexplained_live_loss"))
+    invariants = report.get("invariants") if isinstance(report.get("invariants"), dict) else {}
+    if not lost or invariants.get("block"):
+        return []
+    lines = ["", "🧹 <b>%s টি আগের চালু মুভি স্ট্রিম আর পাওয়া যায়নি, তাই শুধু সেগুলো বাদ গেছে; বাকি সব প্রকাশ হয়েছে।</b>" % bn(lost)]
+    for item in (two.get("lost_streams") or two.get("lost_sample") or [])[:5]:
+        line = str(item.get("inventory_line") or item.get("stream_family") or "")
+        lines.append("• " + html.escape(line.split("|")[2] if line.count("|") >= 2 else line[:120]))
+    return lines
+
+
 def _format_duration(seconds: Any) -> str:
     total = safe_int(seconds)
     minutes, secs = divmod(total, 60)
     hours, minutes = divmod(minutes, 60)
     if hours:
-        return f"{hours}h {minutes}m {secs}s"
+        return bn(f"{hours} ঘণ্টা {minutes} মিনিট {secs} সেকেন্ড")
     if minutes:
-        return f"{minutes}m {secs}s"
-    return f"{secs}s"
+        return bn(f"{minutes} মিনিট {secs} সেকেন্ড")
+    return bn(f"{secs} সেকেন্ড")
 
 
 def _as_dict_list(value: Any) -> List[Dict[str, Any]]:
@@ -103,7 +157,12 @@ def build_message(mode: str, commit: str, branch: str) -> str:
 
     mode_clean = str(mode or summary.get("mode") or "channels").strip().lower()
     raw_status = str(summary.get("status") or "completed")
-    display_status = "completed ✅" if raw_status.startswith("completed") else raw_status
+    if raw_status == "completed":
+        display_status = "সম্পন্ন ✅"
+    elif raw_status.startswith("completed"):
+        display_status = "সম্পন্ন, কিছু সতর্কতাসহ ⚠️"
+    else:
+        display_status = raw_status
     updated_at = str(summary.get("last_scan") or "")
     warnings = _warning_breakdown(source_report)
 
@@ -116,69 +175,60 @@ def build_message(mode: str, commit: str, branch: str) -> str:
     )
 
     titles = {
-        "channels": "📺 <b>TV CHANNEL SCAN + GITHUB PUSH SUCCESSFUL</b>",
-        "today": "⚽ <b>TODAY MATCH SCAN + GITHUB PUSH SUCCESSFUL</b>",
-        "upcoming": "🗓️ <b>UPCOMING MATCH SCAN + GITHUB PUSH SUCCESSFUL</b>",
-        "movies": "🎬 <b>MOVIES SCAN + GITHUB PUSH SUCCESSFUL</b>",
-        "all": "✅ <b>ALL SCANS + GITHUB PUSH SUCCESSFUL</b>",
+        "channels": "📺 <b>টিভি চ্যানেল স্ক্যান সফল, গিটহাবে আপডেট হয়েছে</b>",
+        "today": "⚽ <b>আজকের ম্যাচ স্ক্যান সফল, গিটহাবে আপডেট হয়েছে</b>",
+        "upcoming": "🗓️ <b>আসন্ন ম্যাচ স্ক্যান সফল, গিটহাবে আপডেট হয়েছে</b>",
+        "movies": "🎬 <b>মুভি স্ক্যান সফল, গিটহাবে আপডেট হয়েছে</b>",
+        "all": "✅ <b>সব স্ক্যান সফল, গিটহাবে আপডেট হয়েছে</b>",
     }
 
+    def row(label: str, value: Any) -> str:
+        return f"<b>{label}:</b> {bn(value)}"
+
     lines = [
-        titles.get(mode_clean, "✅ <b>SCAN + GITHUB PUSH SUCCESSFUL</b>"),
+        titles.get(mode_clean, "✅ <b>স্ক্যান সফল, গিটহাবে আপডেট হয়েছে</b>"),
         "",
-        f"<b>Mode:</b> {html.escape(mode_clean)}",
-        f"<b>Scan Result:</b> {html.escape(display_status)}",
-        "<b>GitHub Push:</b> Success ✅",
-        f"<b>Branch:</b> {html.escape(branch)}",
-        f"<b>Commit:</b> {html.escape(commit)}",
+        f"<b>ধরন:</b> {html.escape(mode_bn(mode_clean))}",
+        f"<b>স্ক্যানের ফল:</b> {html.escape(display_status)}",
+        "<b>গিটহাবে পাঠানো:</b> সফল ✅",
+        f"<b>ব্রাঞ্চ:</b> {html.escape(branch)}",
+        f"<b>কমিট:</b> {html.escape(commit)}",
     ]
 
     if updated_at:
-        lines.append(f"<b>Updated At:</b> {html.escape(updated_at)}")
+        lines.append(f"<b>আপডেটের সময়:</b> {html.escape(time_bn(updated_at))}")
+
+    channels_row = row("টিভি চ্যানেল", safe_int(totals.get("channels")))
+    today_row = row("আজকের ম্যাচ", safe_int(totals.get("today_match")))
+    upcoming_row = row("আসন্ন ম্যাচ", safe_int(totals.get("upcoming")))
+    movies_row = row("মুভি", safe_int(totals.get("movies")))
+    quarantined_row = row("আটকে রাখা চ্যানেল", safe_int(summary.get("quarantined_channels")))
+    low_quality_row = row("কম মানের কারণে বাদ", safe_int(summary.get("rejected_low_quality")))
 
     if mode_clean == "channels":
-        lines.extend(
-            [
-                f"<b>TV Channels:</b> {safe_int(totals.get('channels'))}",
-                f"<b>Quarantined Channels:</b> {safe_int(summary.get('quarantined_channels'))}",
-                f"<b>Rejected Low Quality:</b> {safe_int(summary.get('rejected_low_quality'))}",
-            ]
-        )
+        lines.extend([channels_row, quarantined_row, low_quality_row])
     elif mode_clean == "today":
-        lines.append(f"<b>Today Matches:</b> {safe_int(totals.get('today_match'))}")
+        lines.append(today_row)
     elif mode_clean == "upcoming":
-        lines.append(f"<b>Upcoming Matches:</b> {safe_int(totals.get('upcoming'))}")
+        lines.append(upcoming_row)
     elif mode_clean == "movies":
-        lines.extend(
-            [
-                f"<b>Movies:</b> {safe_int(totals.get('movies'))}",
-                f"<b>Rejected Low Quality:</b> {safe_int(summary.get('rejected_low_quality'))}",
-            ]
-        )
+        lines.extend([movies_row, low_quality_row])
     elif mode_clean == "all":
-        lines.extend(
-            [
-                f"<b>TV Channels:</b> {safe_int(totals.get('channels'))}",
-                f"<b>Today Matches:</b> {safe_int(totals.get('today_match'))}",
-                f"<b>Upcoming Matches:</b> {safe_int(totals.get('upcoming'))}",
-                f"<b>Movies:</b> {safe_int(totals.get('movies'))}",
-                f"<b>Quarantined Channels:</b> {safe_int(summary.get('quarantined_channels'))}",
-                f"<b>Rejected Low Quality:</b> {safe_int(summary.get('rejected_low_quality'))}",
-            ]
-        )
+        lines.extend([channels_row, today_row, upcoming_row, movies_row,
+                      quarantined_row, low_quality_row])
 
     if mode_clean in {"movies", "all"}:
         lines.extend(
             [
                 "",
-                "🎯 <b>Movie Status Breakdown</b>",
-                f"<b>Verified Global:</b> {_status_count(status_counts, 'verified_global', 'verified_bd', 'verified')}",
-                f"<b>Verified Proxy:</b> {_status_count(status_counts, 'verified_proxy')}",
-                f"<b>Stale Last Good:</b> {_status_count(status_counts, 'stale_last_good')}",
-                f"<b>Geo Pending:</b> {_status_count(status_counts, 'geo_pending', 'bd_protected_pending')}",
-                f"<b>Retryable Pending:</b> {_status_count(status_counts, 'retryable_pending')}",
-                f"<b>Host Deferred:</b> {_status_count(status_counts, 'host_deferred')}",
-                f"<b>404 Quarantined:</b> {safe_int(summary.get('quarantined_movies'))}",
+                "🎯 <b>মুভির অবস্থা</b>",
+                row("সব জায়গা থেকে চলে", _status_count(status_counts, "verified_global", "verified_bd", "verified")),
+                row("প্রক্সি দিয়ে চলে", _status_count(status_counts, "verified_proxy")),
+                row("আগের ভালো লিংক রাখা হয়েছে", _status_count(status_counts, "stale_last_good")),
+                row("দেশভিত্তিক বাধা, যাচাই বাকি", _status_count(status_counts, "geo_pending", "bd_protected_pending")),
+                row("আবার যাচাই করা হবে", _status_count(status_counts, "retryable_pending")),
+                row("সার্ভার পরে যাচাই হবে", _status_count(status_counts, "host_deferred")),
+                row("৪০৪ - আটকে রাখা", safe_int(summary.get("quarantined_movies"))),
             ]
         )
 
@@ -186,18 +236,18 @@ def build_message(mode: str, commit: str, branch: str) -> str:
         lines.extend(
             [
                 "",
-                "⚠️ <b>Verification Details</b>",
-                f"<b>Source Fetch Warnings:</b> {warnings['source_fetch']}",
-                f"<b>Failed Stream Candidates:</b> {failed_streams}",
-                f"<b>Output Safety Warnings:</b> {output_safety_count}",
+                "⚠️ <b>যাচাইয়ের বিস্তারিত</b>",
+                row("সোর্স আনতে সতর্কতা", warnings["source_fetch"]),
+                row("না চলা স্ট্রিম", failed_streams),
+                row("আউটপুট নিরাপত্তা সতর্কতা", output_safety_count),
                 (
-                    "<b>Pipeline Budget Exhausted:</b> "
-                    + ("Yes ⚠️" if performance.get("budget_exhausted") is True else "No ✅")
+                    "<b>সময়সীমা শেষ হয়েছে:</b> "
+                    + ("হ্যাঁ ⚠️" if performance.get("budget_exhausted") is True else "না ✅")
                 ),
-                f"<b>Verification Time:</b> {_format_duration(performance.get('elapsed_seconds'))}",
-                f"<b>Global Checked:</b> {safe_int(performance.get('global_network_checked'))}",
-                f"<b>BD/Proxy Checked:</b> {safe_int(performance.get('bd_proxy_submitted'))}",
-                f"<b>Adaptive Skipped:</b> {safe_int(performance.get('adaptive_skipped'))}",
+                f"<b>যাচাইয়ে সময় লেগেছে:</b> {_format_duration(performance.get('elapsed_seconds'))}",
+                row("সরাসরি যাচাই", safe_int(performance.get("global_network_checked"))),
+                row("বিডি/প্রক্সি দিয়ে যাচাই", safe_int(performance.get("bd_proxy_submitted"))),
+                row("যাচাই ছাড়া রাখা (সম্প্রতি ভালো ছিল)", safe_int(performance.get("adaptive_skipped"))),
             ]
         )
 
@@ -205,9 +255,11 @@ def build_message(mode: str, commit: str, branch: str) -> str:
         lines.extend(
             [
                 "",
-                "🛡️ <b>Previous movie output was preserved because the new scan dropped too sharply.</b>",
+                "🛡️ <b>নতুন মুভি তালিকায় অনেক কিছু হারিয়ে গেছে, তাই সাইটে আগের তালিকাই রাখা হয়েছে।</b>",
             ]
         )
+    elif mode_clean in {"movies", "all"}:
+        lines.extend(held_movie_loss_lines())
 
     return "\n".join(lines)[:4000]
 
@@ -243,8 +295,26 @@ def quarantine_lines(limit: int = 8) -> List[str]:
     for entry in (report.get("removed") or [])[:limit]:
         reason = "; ".join(entry.get("reasons") or [])
         lines.append("QUARANTINE %s %s - %s" % (
-            entry.get("surface"), entry.get("name") or entry.get("id"), reason))
+            SURFACE_BN.get(str(entry.get("surface")), entry.get("surface")),
+            entry.get("name") or entry.get("id"), reason))
     return lines
+
+
+SURFACE_BN = {"channels": "চ্যানেল", "movies": "মুভি", "events": "ম্যাচ"}
+
+#: The machine tags read_details/quarantine_lines put first, in Bangla.
+_DETAIL_TAG_BN = {
+    "BLOCK": "কোডের টেস্ট ব্যর্থ:",
+    "AUDIT": "ডেটা যাচাইয়ে সমস্যা (স্ক্যান থামেনি):",
+    "QUARANTINE": "আটকে রাখা হয়েছে:",
+}
+
+
+def _detail_line_bn(line: str) -> str:
+    tag, _, rest = line.partition(" ")
+    if tag in _DETAIL_TAG_BN:
+        return _DETAIL_TAG_BN[tag] + " " + rest
+    return line
 
 
 def _detail_lines(details: List[str], heading: str) -> List[str]:
@@ -252,7 +322,7 @@ def _detail_lines(details: List[str], heading: str) -> List[str]:
         return []
     out = ["", heading]
     for line in details:
-        out.append("• " + html.escape(line[:300]))
+        out.append("• " + html.escape(_detail_line_bn(line)[:300]))
     return out
 
 
@@ -266,22 +336,22 @@ def build_failure_message(
 ) -> str:
     mode_clean = str(mode or "unknown").strip().lower()
     lines = [
-        "❌ <b>CLICK TV SCAN OR GITHUB PUSH FAILED</b>",
+        "❌ <b>ক্লিক টিভি স্ক্যান বা গিটহাবে আপডেট ব্যর্থ হয়েছে</b>",
         "",
-        f"<b>Mode:</b> {html.escape(mode_clean)}",
-        f"<b>Branch:</b> {html.escape(str(branch or 'main'))}",
-        f"<b>Started From:</b> {html.escape(str(commit or 'unknown'))}",
-        "<b>Published:</b> No",
-        "<b>Action:</b> Open the failed workflow log; previous published data is unchanged.",
+        f"<b>ধরন:</b> {html.escape(mode_bn(mode_clean))}",
+        f"<b>ব্রাঞ্চ:</b> {html.escape(str(branch or 'main'))}",
+        f"<b>যে কমিট থেকে শুরু:</b> {html.escape(str(commit or 'অজানা'))}",
+        "<b>সাইটে প্রকাশ হয়েছে:</b> না",
+        "<b>করণীয়:</b> ব্যর্থ রানের লগ খুলে দেখুন; সাইটে আগের ডেটাই আছে, কিছু বদলায়নি।",
     ]
     if consecutive > 1:
-        lines.insert(2, f"<b>Failed runs in a row:</b> {int(consecutive)}")
+        lines.insert(2, f"<b>পরপর ব্যর্থ রান:</b> {bn(int(consecutive))}")
     lines.extend(_detail_lines(
         [line for line in (details or []) if line.startswith("BLOCK")],
-        "🧪 <b>What stopped it</b>"))
+        "🧪 <b>যে কারণে থেমেছে</b>"))
     if run_url:
         safe_url = html.escape(str(run_url), quote=True)
-        lines.extend(["", f'<a href="{safe_url}">Open failed GitHub Actions run</a>'])
+        lines.extend(["", f'<a href="{safe_url}">ব্যর্থ গিটহাব রানটি খুলুন</a>'])
     return "\n".join(lines)[:4000]
 
 
@@ -312,7 +382,7 @@ def main() -> int:
         audits.extend(quarantine_lines())
         if audits:
             message = (message + "\n".join(_detail_lines(
-                audits, "⚠️ <b>Held back or flagged (the rest published)</b>")))[:4000]
+                audits, "⚠️ <b>যেগুলো আটকে রাখা বা চিহ্নিত হয়েছে (বাকি সব প্রকাশ হয়েছে)</b>")))[:4000]
     sent = send_telegram_alert(message)
     if sent:
         label = "failure" if args.failure else "success"

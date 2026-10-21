@@ -96,5 +96,70 @@ class TheWatchdogSeesWhatTheScannerCannot(unittest.TestCase):
         self.assertIn("cron:", workflow)
 
 
+
+class EveryTelegramMessageIsInBangla(unittest.TestCase):
+    """The owner reads these: Bangla words, Bangla digits, no Banglish."""
+
+    def setUp(self):
+        from scanner import telegram_notify
+        self.notify = telegram_notify
+
+    @staticmethod
+    def _prose(message):
+        import re
+        text = re.sub(r"<[^>]+>", "", message)
+        text = re.sub(r"https?://\S+", "", text)
+        return text
+
+    def test_the_failure_message_has_no_english_words(self):
+        message = self.notify.build_failure_message(
+            "movies", "abc123", "main", "https://github.com/x/actions/runs/1",
+            consecutive=3)
+        prose = self._prose(message).replace("abc123", "").replace("main", "")
+        self.assertNotRegex(prose, r"[A-Za-z0-9]")
+        self.assertIn("৩", message)
+
+    def test_the_success_message_has_no_english_labels(self):
+        import re
+        message = self.notify.build_message("movies", "abc123", "main")
+        for line in message.splitlines():
+            label = re.match(r"<b>([^<]*)</b>", line)
+            if label:
+                self.assertNotRegex(label.group(1), r"[A-Za-z]", line)
+
+    def test_bangla_digits_and_bangladesh_time(self):
+        self.assertEqual(self.notify.bn(1970), "১৯৭০")
+        self.assertEqual(self.notify.time_bn("2026-10-21T08:17:00+00:00"),
+                         "২০২৬-১০-২১ ১৪:১৭ (বাংলাদেশ সময়)")
+
+    def test_a_held_movie_loss_is_announced(self):
+        import json
+        import tempfile
+        report = {"invariant_2": {"unexplained_live_loss": 23, "lost_streams": [
+            {"inventory_line": "movie|mix|sultan-s01e21|https://x/y.mkv"}]},
+            "invariants": {"block": False}}
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "c.json"
+            path.write_text(json.dumps(report), encoding="utf-8")
+            lines = self.notify.held_movie_loss_lines(path)
+        self.assertIn("২৩", lines[1])
+        self.assertIn("sultan-s01e21", lines[2])
+
+    def test_a_blocked_publish_is_not_announced_as_a_held_loss(self):
+        import json
+        import tempfile
+        report = {"invariant_2": {"unexplained_live_loss": 200},
+                  "invariants": {"block": True}}
+        with tempfile.TemporaryDirectory() as root:
+            path = Path(root) / "c.json"
+            path.write_text(json.dumps(report), encoding="utf-8")
+            self.assertEqual(self.notify.held_movie_loss_lines(path), [])
+
+    def test_the_watchdog_speaks_bangla(self):
+        from datetime import datetime, timezone
+        problems = WATCHDOG.findings([], "2026-10-20T00:00:00Z",
+                                     datetime(2026, 10, 21, tzinfo=timezone.utc))
+        self.assertNotRegex(problems[0].split("(")[0], r"[A-Za-z0-9]")
+
 if __name__ == "__main__":
     unittest.main()
