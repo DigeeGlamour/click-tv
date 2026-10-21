@@ -213,7 +213,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
         with:
+          # Full history, file contents on demand. With every blob of every
+          # data commit, checkout took six minutes (08:04:01 -> 08:09:57 on
+          # 2026-10-21), longer than the five-minute targeted cadence, so
+          # each targeted run was cancelled by the next one still inside
+          # this step and no stream was ever looked for before kickoff.
+          # Commits stay complete, so merge-base and the rebase below work
+          # as before; a blob a later step needs is fetched when it is read.
           fetch-depth: 0
+          filter: blob:none
           persist-credentials: true
 
       - name: Set up Python
