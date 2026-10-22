@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-22T04:47:59.891166+00:00",
+  "updated_at": "2026-10-22T05:44:20.137269+00:00",
   "count": 3,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -252,7 +252,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-22T02:47:35.806143+00:00"
     },
@@ -612,7 +612,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T05:04:24.162577+00:00"
     },
     {
       "id": "santos-laguna-vs-pumas-unam",
@@ -707,7 +715,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-22T03:10:00+00:00",
       "start_at": "2026-10-22T03:10:00+00:00",
-      "end_time": "2026-10-22T05:47:49+00:00",
+      "end_time": "2026-10-22T06:23:55+00:00",
       "end_time_source": "assumed",
       "competition": "Liga MX, Apertura",
       "fixture_id": "provider:santos-laguna-vs-pumas-unam|liga mx apertura|2026-10-22",
@@ -722,21 +730,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=45'+5' (STATUS_FIRST_HALF, event 401876929)"
+        "ESPN espn-header=33' (STATUS_FIRST_HALF, event 401876929)",
+        "LiveScore livescore=FT (6, event 1799030)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401876929"
-      },
-      "authority_status": "LIVE",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "santos-laguna-vs-pumas-unam-2487567",
       "artwork_candidates": [
@@ -755,7 +760,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=33' (STATUS_FIRST_HALF, event 401876929); LiveScore livescore=FT (6, event 1799030)",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-22T05:44:14.091949+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-22T05:44:14.091949+00:00"
     }
   ]
 }
