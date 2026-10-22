@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-22T21:24:55.738064+00:00",
+  "updated_at": "2026-10-22T21:44:28.471350+00:00",
   "count": 25,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -72,8 +72,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 6,
-      "carried_forward_misses": 6,
+      "end_pending_confirmations": 7,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-22T20:04:32.491971+00:00"
     },
@@ -266,7 +266,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-22T19:44:37.822755+00:00"
     },
@@ -459,7 +459,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-22T19:44:37.822755+00:00"
     },
@@ -652,7 +652,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-22T19:44:37.822755+00:00"
     },
@@ -845,7 +845,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-22T19:44:37.822755+00:00"
     },
@@ -972,7 +972,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-22T20:32:46.916958+00:00",
       "authority_near_misses": [
@@ -1108,13 +1108,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=65' (STATUS_SECOND_HALF, event 401874125)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401874125)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1136,9 +1136,10 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-22T20:32:46.916958+00:00"
+      "carried_forward_first_missed_at": "2026-10-22T20:32:46.916958+00:00",
+      "authority_finished_confirmations": 1
     },
     {
       "id": "the-golazo-show",
@@ -1233,7 +1234,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-22T18:56:00+00:00",
       "start_at": "2026-10-22T18:56:00+00:00",
-      "end_time": "2026-10-22T22:24:28+00:00",
+      "end_time": "2026-10-22T22:44:03+00:00",
       "end_time_source": "assumed",
       "competition": "UEFA The Golazo Show",
       "fixture_id": "provider:the-golazo-show|uefa the golazo show|2026-10-22",
@@ -1381,10 +1382,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401915837)",
+        "ESPN espn-header=76' (STATUS_SECOND_HALF, event 401915837)",
         "LiveScore livescore=FT (6, event 1883613)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=24' (STATUS_FIRST_HALF, event 401915837); LiveScore livescore=FT (6, event 1883613)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1405,7 +1405,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=76' (STATUS_SECOND_HALF, event 401915837); LiveScore livescore=FT (6, event 1883613)",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "agf-vs-kf-egnatia",
@@ -1515,7 +1524,7 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_finished_confirmations": 2,
+      "authority_finished_confirmations": 3,
       "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
@@ -1529,7 +1538,7 @@
         "livescore": "1883693"
       },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_82ef7844ea02b85459908db63b2bc280",
       "protected_source": true,
       "requires_credentials": true,
@@ -1537,7 +1546,18 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_finished_seen_at": "2026-10-22T21:44:03.705995+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-22T22:04:03.705995+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-22T21:44:18.258772+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "as-monaco-vs-sc-freiburg",
@@ -1654,10 +1674,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401915836)",
+        "ESPN espn-header=71' (STATUS_SECOND_HALF, event 401915836)",
         "LiveScore livescore=FT (6, event 1883620)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=24' (STATUS_FIRST_HALF, event 401915836); LiveScore livescore=FT (6, event 1883620)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1678,7 +1697,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=71' (STATUS_SECOND_HALF, event 401915836); LiveScore livescore=FT (6, event 1883620)",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "fc-midtjylland-vs-sint-truidense-vv",
@@ -1794,7 +1822,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=23' (STATUS_FIRST_HALF, event 401915835)"
+        "ESPN espn-header=74' (STATUS_SECOND_HALF, event 401915835)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1810,7 +1838,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "fk-borac-banja-luka-vs-kuopion-palloseura",
@@ -1929,7 +1965,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "lincoln-red-imps-vs-fc-twente",
@@ -2046,10 +2090,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401915833)",
+        "ESPN espn-header=74' (STATUS_SECOND_HALF, event 401915833)",
         "LiveScore livescore=FT (6, event 1883654)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=24' (STATUS_FIRST_HALF, event 401915833); LiveScore livescore=FT (6, event 1883654)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2070,7 +2113,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=74' (STATUS_SECOND_HALF, event 401915833); LiveScore livescore=FT (6, event 1883654)",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "sporting-braga-vs-kaa-gent",
@@ -2186,7 +2238,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=25' (STATUS_FIRST_HALF, event 401915832)"
+        "ESPN espn-header=74' (STATUS_SECOND_HALF, event 401915832)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2202,7 +2254,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "beşiktaş-jk-vs-crystal-palace",
@@ -2319,10 +2379,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=23' (STATUS_FIRST_HALF, event 401915553)",
+        "ESPN espn-header=72' (STATUS_SECOND_HALF, event 401915553)",
         "LiveScore livescore=FT (6, event 1883577)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=23' (STATUS_FIRST_HALF, event 401915553); LiveScore livescore=FT (6, event 1883577)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_b0d4ed1e768eecc2ae5d40836bd1c5fb",
@@ -2332,7 +2391,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=72' (STATUS_SECOND_HALF, event 401915553); LiveScore livescore=FT (6, event 1883577)",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "bournemouth-vs-ac-milan",
@@ -2512,10 +2580,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=25' (STATUS_FIRST_HALF, event 401915552)",
+        "ESPN espn-header=71' (STATUS_SECOND_HALF, event 401915552)",
         "LiveScore livescore=FT (6, event 1883551)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=25' (STATUS_FIRST_HALF, event 401915552); LiveScore livescore=FT (6, event 1883551)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2529,7 +2596,17 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphQgYIEMCa8ADCG4gSIRBDUg++ywYAmBCkz4ouYMvCLzRTprTAuxoiCA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpj5gAJuThkc3EBD0hDhmCDWmQuvgQpMrXMGXhF5olMCa0wDsaIhA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_3c5f2cc9ca1c749d6167d2ef57a2db29"
+      "playback_id": "ctv_15deb2b3608e5110d79b47c81a46d99e",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=71' (STATUS_SECOND_HALF, event 401915552); LiveScore livescore=FT (6, event 1883551)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "celtic-vs-celta-vigo",
@@ -2774,10 +2851,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401915555)",
+        "ESPN espn-header=75' (STATUS_SECOND_HALF, event 401915555)",
         "LiveScore livescore=FT (6, event 1883520)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=24' (STATUS_FIRST_HALF, event 401915555); LiveScore livescore=FT (6, event 1883520)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2791,7 +2867,17 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhDwwZACYhuILRG0g+IEiFNHTMEJcuMKTPii7ry9eaMdNaYdWNEQgA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphDAAJsCREADGBIhuINSBQgYICCETGchlAQpM+KLnvL15ol01pg9Y0QggA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_50b0d5daf63c97d456e4d56b1d7c0c70"
+      "playback_id": "ctv_a5ed6a0c8fa7e1b9efadb3d60ce9b26b",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=75' (STATUS_SECOND_HALF, event 401915555); LiveScore livescore=FT (6, event 1883520)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "fc-viktoria-plzeň-vs-levski-sofia",
@@ -2974,10 +3060,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=25' (STATUS_FIRST_HALF, event 401915539)",
+        "ESPN espn-header=76' (STATUS_SECOND_HALF, event 401915539)",
         "LiveScore livescore=FT (6, event 1883505)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=25' (STATUS_FIRST_HALF, event 401915539); LiveScore livescore=FT (6, event 1883505)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2998,7 +3083,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=76' (STATUS_SECOND_HALF, event 401915539); LiveScore livescore=FT (6, event 1883505)",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "jagiellonia-białystok-vs-rsc-anderlecht",
@@ -3117,7 +3211,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "lillestrøm-sk-vs-real-sociedad",
@@ -3233,7 +3335,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=25' (STATUS_FIRST_HALF, event 401915540)"
+        "ESPN espn-header=77' (STATUS_SECOND_HALF, event 401915540)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -3260,7 +3362,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "nk-celje-vs-red-bull-salzburg",
@@ -3370,7 +3480,7 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_finished_confirmations": 2,
+      "authority_finished_confirmations": 3,
       "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
@@ -3384,7 +3494,7 @@
         "livescore": "1883564"
       },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/amvs371681106952.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/nc2cua1781541639.png",
       "playback_id": "ctv_d65d4c90ae27fce0759e0e5d19be38e4",
@@ -3394,7 +3504,18 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_finished_seen_at": "2026-10-22T21:44:03.705995+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-22T22:04:03.705995+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-22T21:44:18.258772+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "olympiacos-fc-vs-ac-sparta-praha",
@@ -3511,10 +3632,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=25' (STATUS_IN_PROGRESS, event 401915554)",
+        "ESPN espn-header=76' (STATUS_SECOND_HALF, event 401915554)",
         "LiveScore livescore=FT (6, event 1883488)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=25' (STATUS_IN_PROGRESS, event 401915554); LiveScore livescore=FT (6, event 1883488)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_12f98d1616330e9a9775743ece122a3b",
@@ -3524,7 +3644,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=76' (STATUS_SECOND_HALF, event 401915554); LiveScore livescore=FT (6, event 1883488)",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "omonia-nicosia-vs-benfica",
@@ -3641,10 +3770,9 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401915544)",
+        "ESPN espn-header=72' (STATUS_SECOND_HALF, event 401915544)",
         "LiveScore livescore=FT (6, event 1883562)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=24' (STATUS_FIRST_HALF, event 401915544); LiveScore livescore=FT (6, event 1883562)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -3665,7 +3793,17 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=72' (STATUS_SECOND_HALF, event 401915544); LiveScore livescore=FT (6, event 1883562)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     },
     {
       "id": "tsg-hoffenheim-vs-olympique-lyonnais",
@@ -3784,7 +3922,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T21:44:18.258772+00:00"
     }
   ]
 }
