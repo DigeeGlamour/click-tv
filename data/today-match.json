@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-22T17:39:01.174567+00:00",
-  "count": 23,
+  "updated_at": "2026-10-22T17:44:47.256714+00:00",
+  "count": 25,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -230,7 +230,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-22T17:44:41.496394+00:00"
     },
     {
       "id": "england-vs-sri-lanka",
@@ -842,19 +851,18 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1550715)",
+        "ESPN espn-header=Result (Result, event 1550715)",
         "LiveScore livescore=FT (6, event 1874258)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Live (Live, event 1550715); LiveScore livescore=FT (6, event 1874258)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_162f8797e3084e9811a9238b960d3248",
       "protected_source": true,
       "requires_credentials": true,
@@ -862,7 +870,24 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1550715",
+        "livescore": "1874258"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-22T17:44:18.028470+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-22T18:04:18.028470+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-22T17:44:41.496394+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-22T17:44:41.496394+00:00"
     },
     {
       "id": "emirates-red-vs-dubai",
@@ -931,8 +956,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 5,
-      "carried_forward_misses": 5,
+      "end_pending_confirmations": 6,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-22T16:04:11.033751+00:00"
     },
@@ -977,20 +1002,20 @@
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
         },
         {
-          "source_id": "dartv-fancode-mirror",
-          "source_name": "FanCode Live API (dartv-ajaz)",
-          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        },
+        {
+          "source_id": "dartv-fancode-mirror",
+          "source_name": "FanCode Live API (dartv-ajaz)",
+          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
         "sm-fancode",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "start_time": "2026-10-22T16:30:00+00:00",
       "start_at": "2026-10-22T16:30:00+00:00",
@@ -1013,233 +1038,6 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING"
-    },
-    {
-      "id": "fc-kairat-almaty-vs-panathinaikos-fc",
-      "name": "FC Kairat Almaty Vs Panathinaikos FC",
-      "primary_stream_key": "0f53be434220a4b0b6ac9c4aefa597a878511f1e6e2c04d2698ff1e851c749dc",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/5172/image",
-      "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_ae59feb0c3876828a1f4f5f85ab4121c",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
-      "channels": [
-        {
-          "id": "fc-kairat-almaty-vs-panathinaikos-fc--paramount",
-          "name": "PARAMOUNT+",
-          "normalized_name": "paramount",
-          "logo": "https://img.sofascore.com/api/v1/team/5172/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "fc-kairat-almaty-vs-panathinaikos-fc--paramount--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "fc-kairat-almaty-vs-panathinaikos-fc--paramount--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_d33b3995c35750bdec1cf690",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_9ccfe4603aaa9985621f434eb46f98df",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "fc-kairat-almaty-vs-panathinaikos-fc--server-1",
-          "name": "Server-1",
-          "normalized_name": "server-1",
-          "logo": "https://img.sofascore.com/api/v1/team/5172/image",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "fc-kairat-almaty-vs-panathinaikos-fc--server-1--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "fc-kairat-almaty-vs-panathinaikos-fc--server-1--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_c50d3da02be38b960c21b1ba",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ae59feb0c3876828a1f4f5f85ab4121c",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 2,
-      "default_channel_id": "fc-kairat-almaty-vs-panathinaikos-fc--paramount",
-      "channel_stats": {
-        "streams_in": 2,
-        "unresolved_channel_streams": 1,
-        "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
-        "embed_variants": 0,
-        "generic_server_channels": 1
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-10-22T14:30:00+00:00",
-      "start_at": "2026-10-22T14:30:00+00:00",
-      "end_time": "2026-10-22T17:44:10+00:00",
-      "end_time_source": "assumed",
-      "competition": "UEFA Conference League",
-      "fixture_id": "provider:fc-kairat-almaty-vs-panathinaikos-fc|uefa conference league|2026-10-22",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-10-22T14:30:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401915846)",
-        "LiveScore livescore=FT (6, event 1883670)"
-      ],
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "provider_enriched": "streamed",
-      "provider_event_id": "kairat-almaty-vs-panathinaikos-2594764",
-      "artwork_candidates": [
-        "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8VGbUIpgYMChDcQfECeP7ExiCCtSCwJBT7DZ9FGBXa278vSyztTLS6ovQhQA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpnhgkIMihAztGkHxBacIPTH0mCFJnxRcwZVfXmjbTWmHtjREIA.webp",
-        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpgAm0OHzCaIIbiB06QuEDCMhEKEHwIUm1rmDLwi80SmBNaYR2NEQgA.webp"
-      ],
-      "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8VGbUIpgYMChDcQfECeP7ExiCCtSCwJBT7DZ9FGBXa278vSyztTLS6ovQhQA.webp",
-      "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpnhgkIMihAztGkHxBacIPTH0mCFJnxRcwZVfXmjbTWmHtjREIA.webp",
-      "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpgAm0OHzCaIIbiB06QuEDCMhEKEHwIUm1rmDLwi80SmBNaYR2NEQgA.webp",
-      "provider_routing_hint": "live",
-      "playback_id": "ctv_9ccfe4603aaa9985621f434eb46f98df",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      },
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "primary_playable",
-        "backup_playable"
-      ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-10-22T17:04:21.317942+00:00",
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "401915846",
-        "livescore": "1883670"
-      },
-      "authority_finished_confirmations": 1,
-      "authority_finished_seen_at": "2026-10-22T17:24:13.143103+00:00",
-      "authority_status": "FINISHED",
-      "authority_remove_after": "2026-10-22T17:44:13.143103+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-10-22T17:24:31.117113+00:00"
     },
     {
       "id": "al-fateh-sc-vs-al-shabab-fc",
@@ -1301,14 +1099,14 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=80' (STATUS_SECOND_HALF, event 401900445)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401900445)",
         "LiveScore livescore=FT (6, event 1845674)"
       ],
       "allow_without_stream": true,
@@ -1316,14 +1114,23 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "LIVE",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=80' (STATUS_SECOND_HALF, event 401900445); LiveScore livescore=FT (6, event 1845674)",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-10-22T17:24:31.117113+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_first_missed_at": "2026-10-22T17:24:31.117113+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401900445",
+        "livescore": "1845674"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-22T17:44:18.028470+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-22T18:04:18.028470+00:00",
+      "contradicted_end_confirmations": 1
     },
     {
       "id": "the-golazo-show",
@@ -1443,6 +1250,138 @@
       "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzuAQ1sFKBWSYAU2DFLABM8E9g1gDCFJMd46Tp51jwywYAE50IFNhFSsIAMbiQMUiCohhICCHgi5anZpnqUIGZpBqVwCNi2KN4ifzCCpBSY8LAkuWRKHPWa2FSejdtMGcrEIggA.webp",
       "provider_routing_hint": "live",
       "playback_id": "ctv_9f8153ff208a9850d845216a2dfc5450",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "fc-iberia-1999-vs-mjällby-aif",
+      "name": "FC Iberia 1999 Vs Mjällby AIF",
+      "primary_stream_key": "1cddcc9899590772af70d940d547fc9d8e1cc9e0c5af5fe1fdea9e126c2b4e43",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/116312/image",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "fc-iberia-1999-vs-mj-llby-aif--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/116312/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "fc-iberia-1999-vs-mj-llby-aif--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "fc-iberia-1999-vs-mj-llby-aif--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_d01b15ab3b762afd7503044e",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_cdd8beddd46c82126806f0b2a3dc187f",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "fc-iberia-1999-vs-mj-llby-aif--server-1",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 1,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 1
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-22T16:45:00+00:00",
+      "start_at": "2026-10-22T16:45:00+00:00",
+      "end_time": "2026-10-22T19:15:00+00:00",
+      "end_time_source": "sport",
+      "competition": "UEFA Conference League",
+      "fixture_id": "provider:fc-iberia-1999-vs-mjällby-aif|uefa conference league|2026-10-22",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-10-22T16:45:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=17' (STATUS_FIRST_HALF, event 401915845)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401915845"
+      },
+      "authority_status": "LIVE",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_cdd8beddd46c82126806f0b2a3dc187f",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1625,18 +1564,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915844)"
+        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401915844)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401915844"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1662,7 +1602,7 @@
     {
       "id": "fk-crvena-zvezda-vs-fc-københavn",
       "name": "FK Crvena zvezda Vs FC København",
-      "primary_stream_key": "556c16b29e28751848e3dfc3384f5c44a356e401922bf777f3239d122325a14b",
+      "primary_stream_key": "839d9012e4b7c95dc80510189f7f2d277efb2c43248877aa7d7534a0f7d84ec3",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/5149/image",
@@ -1683,8 +1623,38 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_40d8b74463ac2e18c884e94f03bdf289",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
       "channels": [
         {
           "id": "fk-crvena-zvezda-vs-fc-k-benhavn--paramount",
@@ -1721,18 +1691,54 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "fk-crvena-zvezda-vs-fc-k-benhavn--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/5149/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "fk-crvena-zvezda-vs-fc-k-benhavn--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "fk-crvena-zvezda-vs-fc-k-benhavn--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_a377394303d8c6663e34acb2",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_98f10bcb4c077a9a268e8d63630cd363",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 1,
-      "default_channel_id": "fk-crvena-zvezda-vs-fc-k-benhavn--paramount",
+      "channel_count": 2,
+      "default_channel_id": "fk-crvena-zvezda-vs-fc-k-benhavn--server-1",
       "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "streams_in": 2,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
-        "generic_server_channels": 0
+        "generic_server_channels": 1
       },
       "source_provenance": [
         {
@@ -1769,7 +1775,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_40d8b74463ac2e18c884e94f03bdf289",
+      "playback_id": "ctv_98f10bcb4c077a9a268e8d63630cd363",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1803,8 +1809,38 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_c190f2c964890e19047d7382157d5273",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
       "channels": [
         {
           "id": "fk-jablonec-vs-brighton-hove-albion--paramount",
@@ -1841,18 +1877,54 @@
               "stream_type": "media"
             }
           ]
+        },
+        {
+          "id": "fk-jablonec-vs-brighton-hove-albion--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/2205/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "fk-jablonec-vs-brighton-hove-albion--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "fk-jablonec-vs-brighton-hove-albion--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_f4374def1f6f9dea7bb3bf2b",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_c190f2c964890e19047d7382157d5273",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 1,
+      "channel_count": 2,
       "default_channel_id": "fk-jablonec-vs-brighton-hove-albion--paramount",
       "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "streams_in": 2,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
-        "generic_server_channels": 0
+        "generic_server_channels": 1
       },
       "source_provenance": [
         {
@@ -1883,18 +1955,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915842)"
+        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401915842)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401915842"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1908,12 +1981,155 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhwAmIeGBTZQ6kNxB8QRw2pIgzhiLgIUmfFFzBkN9eaIdNaYJ2NEQgA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphRg+YVXCiJuICHpCHDumCBQhTEAhSZ8UXMGXhF5o+01phHY0RCA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_5931e83fc0b41fa72192195868fd7341"
+      "playback_id": "ctv_100879e9814e7251f406cd8ebc0d58dc"
+    },
+    {
+      "id": "fk-kauno-žalgiris-vs-sk-brann",
+      "name": "FK Kauno Žalgiris Vs SK Brann",
+      "primary_stream_key": "8c49910623cd7143eb52a5ed821ae819f8424035268ee27c91b192dbbbcd9862",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/80741/image",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "fk-kauno-algiris-vs-sk-brann--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/80741/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "fk-kauno-algiris-vs-sk-brann--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "fk-kauno-algiris-vs-sk-brann--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_89b4ee10f39956eaefafb446",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_04c0498e1d51cef893392b7cfc241d96",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "fk-kauno-algiris-vs-sk-brann--server-1",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 1,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 1
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-22T16:45:00+00:00",
+      "start_at": "2026-10-22T16:45:00+00:00",
+      "end_time": "2026-10-22T19:15:00+00:00",
+      "end_time_source": "sport",
+      "competition": "UEFA Conference League",
+      "fixture_id": "provider:fk-kauno-žalgiris-vs-sk-brann|uefa conference league|2026-10-22",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-10-22T16:45:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401915841)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401915841"
+      },
+      "authority_status": "LIVE",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "provider_enriched": "streamed",
+      "provider_event_id": "kauno--algiris-vs-brann-2594807",
+      "artwork_candidates": [
+        "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8rAAxyKbGYm4g+II4ZQhEhiEbMFgSCn2Gz6KMCpRdX5ellnumtMFcxUQggA.webp",
+        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphTAAJiBBsQ8SCG4g++kBGMkdJ4xAIUmfVWzBld9eaNVNaYJ2NEQgA.webp",
+        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhyoATMNLog+IbiFUgUIGPsMgSICLtwEKTPii4by9eaMdNaYDWNEQgA.webp"
+      ],
+      "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8rAAxyKbGYm4g+II4ZQhEhiEbMFgSCn2Gz6KMCpRdX5ellnumtMFcxUQggA.webp",
+      "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphTAAJiBBsQ8SCG4g++kBGMkdJ4xAIUmfVWzBld9eaNVNaYJ2NEQgA.webp",
+      "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhyoATMNLog+IbiFUgUIGPsMgSICLtwEKTPii4by9eaMdNaYDWNEQgA.webp",
+      "provider_routing_hint": "live",
+      "playback_id": "ctv_04c0498e1d51cef893392b7cfc241d96",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
     },
     {
       "id": "getafe-vs-fc-lugano",
       "name": "Getafe Vs FC Lugano",
-      "primary_stream_key": "03f458674ebdd4c3b02570e5a48e65f0ccd57887ef7ff7cb997459946079dbfa",
+      "primary_stream_key": "5f7e8d0bb683c79480469ee10851159b65df5ff6b08c17d142543d55b7b14679",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/2859/image",
@@ -1934,8 +2150,38 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_df6933643c6be53864aaafef3aab1168",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
       "channels": [
         {
           "id": "getafe-vs-fc-lugano--paramount",
@@ -1972,18 +2218,54 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "getafe-vs-fc-lugano--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/2859/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "getafe-vs-fc-lugano--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "getafe-vs-fc-lugano--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_9347f849f900554e47bd8aae",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ef4c8b770eb72f45f120b0c993ecd5be",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 1,
-      "default_channel_id": "getafe-vs-fc-lugano--paramount",
+      "channel_count": 2,
+      "default_channel_id": "getafe-vs-fc-lugano--server-1",
       "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "streams_in": 2,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
-        "generic_server_channels": 0
+        "generic_server_channels": 1
       },
       "source_provenance": [
         {
@@ -2018,18 +2300,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915840)"
+        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401915840)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401915840"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2043,7 +2326,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhzIpQuEJpQhuIACYgSh49oggzRxhSZ81bMGXhF5otU1pgHY0RCA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkulzAADKFUpgAExDcQJEHr7H9hiyH0EKTPtrZgy8IvNHamtME7GiIQA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_df6933643c6be53864aaafef3aab1168",
+      "playback_id": "ctv_ef4c8b770eb72f45f120b0c993ecd5be",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -2053,12 +2336,12 @@
       }
     },
     {
-      "id": "pafos-fc-vs-riga-fc",
-      "name": "Pafos FC Vs Riga FC",
-      "primary_stream_key": "a1ac99e684d40abdf1c002e18aeba660e9ff86be22cc001afcaede8ad66384ea",
+      "id": "inter-club-descaldes-vs-universitatea-craiova",
+      "name": "Inter Club d'Escaldes Vs Universitatea Craiova",
+      "primary_stream_key": "d6b73c44dcbf4ee81e2fba853cdd19c3b2f196b783a42e14f11c82347886dc82",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/171626/image",
+      "logo": "https://img.sofascore.com/api/v1/team/37946/image",
       "category": "today_match",
       "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
@@ -2079,6 +2362,230 @@
       "available_link_count": 1,
       "backups": [],
       "channels": [
+        {
+          "id": "inter-club-descaldes-vs-universitatea-craiova--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/37946/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "inter-club-descaldes-vs-universitatea-craiova--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "inter-club-descaldes-vs-universitatea-craiova--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_a2248be568d11fef2dc6fd7a",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4b9487819a49e7a3c6058c24392a68f4",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "inter-club-descaldes-vs-universitatea-craiova--server-1",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 1,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 1
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-22T16:45:00+00:00",
+      "start_at": "2026-10-22T16:45:00+00:00",
+      "end_time": "2026-10-22T19:15:00+00:00",
+      "end_time_source": "sport",
+      "competition": "UEFA Conference League",
+      "fixture_id": "provider:inter-club-d-escaldes-vs-universitatea-craiova|uefa conference league|2026-10-22",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-10-22T16:45:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "provider_enriched": "streamed",
+      "provider_event_id": "inter-club-d-escaldes-vs-universitatea-craiova-2594796",
+      "artwork_candidates": [
+        "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8VelAFSQOkiG4g+OwyBQhERiCYVMkFPsNn0UYFSi6vy9LLPdNaYK5iohBAA.webp",
+        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpIZgQwAAzNmIbiD4hDKEDBOH9uEMsIxgTPii5gy8IvNGOmtMM7GiIQA.webp",
+        "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhC8kdMElxgUqkCRB8Quo7sRHuIGAQpM+KLmDLwi80Q6a0wTsaIhA.webp"
+      ],
+      "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTtw5kAJqWCEImeuFFs8VelAFSQOkiG4g+OwyBQhERiCYVMkFPsNn0UYFSi6vy9LLPdNaYK5iohBAA.webp",
+      "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpIZgQwAAzNmIbiD4hDKEDBOH9uEMsIxgTPii5gy8IvNGOmtMM7GiIQA.webp",
+      "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhC8kdMElxgUqkCRB8Quo7sRHuIGAQpM+KLmDLwi80Q6a0wTsaIhA.webp",
+      "provider_routing_hint": "live",
+      "playback_id": "ctv_4b9487819a49e7a3c6058c24392a68f4",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "pafos-fc-vs-riga-fc",
+      "name": "Pafos FC Vs Riga FC",
+      "primary_stream_key": "2b1110594660ef66c8f13a3763766f48d929b636c72a036323e76432eea9787e",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/171626/image",
+      "category": "today_match",
+      "url": "https://live2.jorvakstreamcache.com/live/channel13.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 3,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_c1e543cae1a2cafa658e19b2c935468e",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_a60dac0f0ae9bd810ba225fc74190c20",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "pafos-fc-vs-riga-fc--faster-tv",
+          "name": "FASTER TV+",
+          "normalized_name": "faster-tv",
+          "logo": "https://img.sofascore.com/api/v1/team/171626/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "pafos-fc-vs-riga-fc--faster-tv--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "pafos-fc-vs-riga-fc--faster-tv--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_a4447e99dcbf6cc4988410bb",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_6aee708e547c00b50c6c05c522520765",
+              "stream_type": "hls"
+            }
+          ]
+        },
         {
           "id": "pafos-fc-vs-riga-fc--paramount",
           "name": "PARAMOUNT+",
@@ -2114,18 +2621,54 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "pafos-fc-vs-riga-fc--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/171626/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "pafos-fc-vs-riga-fc--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "pafos-fc-vs-riga-fc--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_3695098a98d2c180469e054e",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_a60dac0f0ae9bd810ba225fc74190c20",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 1,
-      "default_channel_id": "pafos-fc-vs-riga-fc--paramount",
+      "channel_count": 3,
+      "default_channel_id": "pafos-fc-vs-riga-fc--faster-tv",
       "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "streams_in": 3,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 3,
+        "variants": 3,
         "embed_variants": 0,
-        "generic_server_channels": 0
+        "generic_server_channels": 1
       },
       "source_provenance": [
         {
@@ -2137,12 +2680,6 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
       "start_time": "2026-10-22T16:45:00+00:00",
       "start_at": "2026-10-22T16:45:00+00:00",
       "end_time": "2026-10-22T19:15:00+00:00",
@@ -2160,18 +2697,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915838)"
+        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401915838)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401915838"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2185,14 +2723,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkphCU2IFGFUATENxAkQfDSBghEus-pgEKTPii5gy8IvNGOmtMM7GiIQA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhAxmYMjBAoEIbiBIg+2vSZw5EywmqZ8UXDeXrzR9prTAaxoiEA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_c1e543cae1a2cafa658e19b2c935468e",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "playback_id": "ctv_6aee708e547c00b50c6c05c522520765"
     },
     {
       "id": "trabzonspor-vs-heart-of-midlothian",
@@ -2219,8 +2750,38 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_f4f72a29dd0a350c2a9fd530b6ed503e",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
       "channels": [
         {
           "id": "trabzonspor-vs-heart-of-midlothian--faster-tv",
@@ -2255,18 +2816,54 @@
               "stream_type": "hls"
             }
           ]
+        },
+        {
+          "id": "trabzonspor-vs-heart-of-midlothian--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/3051/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "trabzonspor-vs-heart-of-midlothian--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "trabzonspor-vs-heart-of-midlothian--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_1818916c370ea08866b6c3d8",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f4f72a29dd0a350c2a9fd530b6ed503e",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 1,
+      "channel_count": 2,
       "default_channel_id": "trabzonspor-vs-heart-of-midlothian--faster-tv",
       "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "streams_in": 2,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
-        "generic_server_channels": 0
+        "generic_server_channels": 1
       },
       "source_provenance": [
         {
@@ -2295,18 +2892,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915745)"
+        "ESPN espn-header=18' (STATUS_FIRST_HALF, event 401915745)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401915745"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2320,7 +2918,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhAoQAEwQhE9NCG4g+hjSFM4j63KoIUmfFFzBl4ReaIdNaYJ2NEQgA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpLB8w3MABMwKSCG4gIhkHxAkQKExZCIUBCkz4ouYMvCLzRzprTCuxohBAA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_bae86b4fe21bbead1be1d7f1714c858a"
+      "playback_id": "ctv_cdcff74592963d551acd1af3f918db0d"
     },
     {
       "id": "fc-ararat-armenia-vs-az-alkmaar",
@@ -2338,7 +2936,7 @@
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "Verified",
+      "verification_badge": "Playback Unproven",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
@@ -2541,6 +3139,8 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
+      "playback_unproven": true,
+      "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
       "start_time": "2026-10-22T16:45:00+00:00",
       "start_at": "2026-10-22T16:45:00+00:00",
       "end_time": "2026-10-22T19:15:00+00:00",
@@ -2558,18 +3158,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915548)"
+        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401915548)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401915548"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2583,7 +3184,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhz4hEKEABMEpENxAkQGzSAghVMXKdMEKTPii5gy8IvNGOmtMM7GiIQA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpj7RuYVQBMwmkNxAQQfEIhImDRkGb4EKTG1zBl4ReaJTAmtME7GiIQA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_2df61472a89478e6953211192bb246d4"
+      "playback_id": "ctv_18d4aca4478c6877d4a3f8ef2f6390ce"
     },
     {
       "id": "ferencváros-tc-vs-torreense",
@@ -2601,7 +3202,7 @@
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "Verified",
+      "verification_badge": "Playback Unproven",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
@@ -2610,7 +3211,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
@@ -2633,6 +3234,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_bdf09061b0ab5903c42e183082b2b891",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_d5d002f8373f5f5a0e134d430d237ce2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2714,18 +3344,54 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "ferencv-ros-tc-vs-torreense--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/1925/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "ferencv-ros-tc-vs-torreense--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "ferencv-ros-tc-vs-torreense--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_400687b0b32567bffa4bee1c",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_d5d002f8373f5f5a0e134d430d237ce2",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 3,
       "default_channel_id": "ferencv-ros-tc-vs-torreense--faster-tv",
       "channel_stats": {
-        "streams_in": 2,
-        "unresolved_channel_streams": 0,
+        "streams_in": 3,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 3,
+        "variants": 3,
         "embed_variants": 0,
-        "generic_server_channels": 0
+        "generic_server_channels": 1
       },
       "source_provenance": [
         {
@@ -2739,6 +3405,8 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
+      "playback_unproven": true,
+      "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
       "start_time": "2026-10-22T16:45:00+00:00",
       "start_at": "2026-10-22T16:45:00+00:00",
       "end_time": "2026-10-22T19:15:00+00:00",
@@ -2756,21 +3424,22 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915558)"
+        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401915558)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401915558"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_df2d536cdf65a2c5e37aa677a89dc9e4"
+      "playback_id": "ctv_bee26bedba200373020aef74b4a9b357"
     },
     {
       "id": "gnk-dinamo-zagreb-vs-nec-nijmegen",
@@ -2788,7 +3457,7 @@
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "Playback Unproven",
+      "verification_badge": "Verified",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
@@ -2797,7 +3466,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
@@ -2820,6 +3489,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_9641d3b204fda0290615f7a80103d55e",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_bf2c4eacb25a219e8ab64b1b979e3ef6",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2901,18 +3599,54 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "gnk-dinamo-zagreb-vs-nec-nijmegen--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/2032/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "gnk-dinamo-zagreb-vs-nec-nijmegen--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "gnk-dinamo-zagreb-vs-nec-nijmegen--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_64bd180860db32e18b73ef3d",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_bf2c4eacb25a219e8ab64b1b979e3ef6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 3,
       "default_channel_id": "gnk-dinamo-zagreb-vs-nec-nijmegen--faster-tv",
       "channel_stats": {
-        "streams_in": 2,
-        "unresolved_channel_streams": 0,
+        "streams_in": 3,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 3,
+        "variants": 3,
         "embed_variants": 0,
-        "generic_server_channels": 0
+        "generic_server_channels": 1
       },
       "source_provenance": [
         {
@@ -2926,8 +3660,6 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_unproven": true,
-      "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
       "start_time": "2026-10-22T16:45:00+00:00",
       "start_at": "2026-10-22T16:45:00+00:00",
       "end_time": "2026-10-22T19:15:00+00:00",
@@ -2947,7 +3679,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_6d5bf6080ea149e224d5f5d83a32edc3"
+      "playback_id": "ctv_e9a34f2d39c63cdfd8fd888a89dae54e"
     },
     {
       "id": "juventus-vs-stade-rennais",
@@ -2965,7 +3697,7 @@
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "Verified",
+      "verification_badge": "Playback Unproven",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
@@ -2986,14 +3718,16 @@
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
-          "verification_badge": "Verified",
+          "verification_badge": "Playback Unproven",
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
           "host": "live.vivo155.com",
+          "playback_unproven": true,
+          "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_941c6c35d8a5c6e5175332e69b5374c0"
+          "playback_id": "ctv_c68ae1117063871d9edcb8f304b084da"
         },
         {
           "name": "Backup-2",
@@ -3012,7 +3746,7 @@
           "host": "chatgpt.hereisman.net",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_4d9f74cb73706f275566cfbfdc41c0d0"
+          "playback_id": "ctv_72a15c3afcb075a935b7a8ffc21c2bf5"
         },
         {
           "name": "Backup-3",
@@ -3255,6 +3989,8 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
+      "playback_unproven": true,
+      "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
       "start_time": "2026-10-22T16:45:00+00:00",
       "start_at": "2026-10-22T16:45:00+00:00",
       "end_time": "2026-10-22T19:15:00+00:00",
@@ -3272,18 +4008,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915547)"
+        "ESPN espn-header=18' (STATUS_FIRST_HALF, event 401915547)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401915547"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -3293,7 +4030,7 @@
       ],
       "provider_poster_url": "https://streamed.pk/api/images/proxy/GwZg7AZpYEZgHCAjAJgCzuAQ1sFKBWSYAU2DFLABM8E9g1gDCFJMd46Tp51jwywYAE50IFMCrjJICCGHB4IkDGwgSIAMbrsMzYq0gjSrIYVLhIGjUSIswOfnIRQYQSKa6JYQsCS5NCSE3VhcFMgkCRXI3B1IHIA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_58067c3885a0a592c28c6e2f24ce8b62"
+      "playback_id": "ctv_60166ffef4abaef0ea35c9cd265b7956"
     },
     {
       "id": "lech-poznań-vs-sunderland",
@@ -3311,7 +4048,7 @@
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "Verified",
+      "verification_badge": "Playback Unproven",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
@@ -3332,14 +4069,16 @@
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
-          "verification_badge": "Verified",
+          "verification_badge": "Playback Unproven",
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
           "host": "live.vivo155.com",
+          "playback_unproven": true,
+          "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_9bdbfbe744bb3b131f952acc409c7f6d"
+          "playback_id": "ctv_edc9abf1a8cc8e6aac79bc9674be7951"
         },
         {
           "name": "Backup-2",
@@ -3354,14 +4093,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4cf146d486c50fc67111f8b902e69997",
+          "playback_id": "ctv_ab5b88c6376a9895c464958a465b24d9",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -3383,14 +4122,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_ab5b88c6376a9895c464958a465b24d9",
+          "playback_id": "ctv_4cf146d486c50fc67111f8b902e69997",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -3569,6 +4308,8 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
+      "playback_unproven": true,
+      "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
       "start_time": "2026-10-22T16:45:00+00:00",
       "start_at": "2026-10-22T16:45:00+00:00",
       "end_time": "2026-10-22T19:15:00+00:00",
@@ -3586,18 +4327,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915546)"
+        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401915546)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401915546"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -3611,7 +4353,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhDgkwACZhwKbSG4gNqkCRMgUIPiAjWQMAhSZ8UXMGXhF5ol01pg3YqIQQA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpNjUoZRNxARtIPXq2IdKPQQpM+KLmA1F5oq01pgbY0RCA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_b534715e4e311a2a6f2cb970a51c45db"
+      "playback_id": "ctv_a600511fab71b41c3f7285d81064e8a5"
     },
     {
       "id": "ofi-crete-vs-bayer-04-leverkusen",
@@ -3629,7 +4371,7 @@
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "Verified",
+      "verification_badge": "Playback Unproven",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
@@ -3638,10 +4380,39 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_0996f7b079596813baef5341acc46f14",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -3742,18 +4513,54 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "ofi-crete-vs-bayer-04-leverkusen--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/3241/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "ofi-crete-vs-bayer-04-leverkusen--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "ofi-crete-vs-bayer-04-leverkusen--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_8f40e2158716fd891ae3944b",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_0996f7b079596813baef5341acc46f14",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 3,
       "default_channel_id": "ofi-crete-vs-bayer-04-leverkusen--faster-tv",
       "channel_stats": {
-        "streams_in": 2,
-        "unresolved_channel_streams": 0,
+        "streams_in": 3,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 3,
+        "variants": 3,
         "embed_variants": 0,
-        "generic_server_channels": 0
+        "generic_server_channels": 1
       },
       "source_provenance": [
         {
@@ -3767,6 +4574,8 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
+      "playback_unproven": true,
+      "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
       "start_time": "2026-10-22T16:45:00+00:00",
       "start_at": "2026-10-22T16:45:00+00:00",
       "end_time": "2026-10-22T19:15:00+00:00",
@@ -3786,7 +4595,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_810e80f077d25eaebf7fcdb589bfc044"
+      "playback_id": "ctv_439f8959697f4cc0823b5dd056735426"
     },
     {
       "id": "royale-union-saint-gilloise-vs-hapoel-beer-sheva",
@@ -3804,7 +4613,7 @@
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "Verified",
+      "verification_badge": "Playback Unproven",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
@@ -4007,6 +4816,8 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
+      "playback_unproven": true,
+      "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
       "start_time": "2026-10-22T16:45:00+00:00",
       "start_at": "2026-10-22T16:45:00+00:00",
       "end_time": "2026-10-22T19:15:00+00:00",
@@ -4026,7 +4837,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_6ac79d75a90e4353eec7051bf138587f"
+      "playback_id": "ctv_8c4a267dd106f7bf43536ee14d6be77c"
     },
     {
       "id": "sk-sturm-graz-vs-olympique-de-marseille",
@@ -4053,7 +4864,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
@@ -4076,6 +4887,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_7bce4745d12622f0641b76bc600efeb9",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_282416e4504714a7a6f356308cf69f06",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -4157,18 +4997,54 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "sk-sturm-graz-vs-olympique-de-marseille--server-1",
+          "name": "Server-1",
+          "normalized_name": "server-1",
+          "logo": "https://img.sofascore.com/api/v1/team/2051/image",
+          "name_confidence": "generic",
+          "name_source": "generic",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "sk-sturm-graz-vs-olympique-de-marseille--server-1--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "sk-sturm-graz-vs-olympique-de-marseille--server-1--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_bb7d7db569ecbfe4f081f9e4",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_282416e4504714a7a6f356308cf69f06",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 3,
       "default_channel_id": "sk-sturm-graz-vs-olympique-de-marseille--faster-tv",
       "channel_stats": {
-        "streams_in": 2,
-        "unresolved_channel_streams": 0,
+        "streams_in": 3,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 3,
+        "variants": 3,
         "embed_variants": 0,
-        "generic_server_channels": 0
+        "generic_server_channels": 1
       },
       "source_provenance": [
         {
@@ -4199,18 +5075,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915557)"
+        "ESPN espn-header=18' (STATUS_FIRST_HALF, event 401915557)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401915557"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -4224,7 +5101,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpjgx+INUhB8Q3ECW0gjB40ZARtBCkz4ouYMvCLzRdprTAOxoiEA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkh0QATBjzBJQIbiD76QKXLpM4Q+ghSZ8UXMGXhF5ou01pgHY0RCA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_67f9d40e4f00303594c363cb23a38676"
+      "playback_id": "ctv_1850bf2aa36fb980b034e53e7b1e2940"
     },
     {
       "id": "al-ahli-vs-al-khaleej",
@@ -4323,9 +5200,9 @@
       "end_time_source": "sport",
       "competition": "Saudi Pro League",
       "fixture_id": "provider:al-ahli-vs-al-khaleej|saudi pro league|2026-10-22",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-10-22T18:00:00+00:00",
@@ -4334,6 +5211,30 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_near_misses": [
+        {
+          "authority": "espn-header",
+          "matched_by": "kickoff_lifted",
+          "event_id": "401900892",
+          "upstream_family": "ESPN",
+          "name": "Al Ahli vs Al Khaleej",
+          "competition": "Saudi Pro League",
+          "kickoff": "2026-10-23T18:00:00+00:00",
+          "kickoff_delta_minutes": 1440.0,
+          "status": "UPCOMING"
+        },
+        {
+          "authority": "livescore",
+          "matched_by": "kickoff_lifted",
+          "event_id": "1845668",
+          "upstream_family": "LiveScore",
+          "name": "Al Ahli vs Al Khaleej",
+          "competition": "Saudi Professional League",
+          "kickoff": "2026-10-23T16:00:00+00:00",
+          "kickoff_delta_minutes": 1320.0,
+          "status": "UPCOMING"
+        }
+      ],
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_a934ea23be83d3c53734e4764de808bb",
@@ -4453,6 +5354,20 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401874125)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401874125"
+      },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN and our own schedule both put kickoff 15 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_36c0b671d1013423f9c8c795486cb2dc",
