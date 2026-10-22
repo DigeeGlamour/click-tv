@@ -487,6 +487,12 @@ def normalize_source_identity(url: str) -> str:
 def _redact_path_segment(segment: str) -> str:
     if re.fullmatch(r"[A-Za-z0-9_\-]{1,14}\.(?:m3u8|ts|mpd|mp4)", segment):
         return "{file}"
+    # A long opaque name WITH an extension - "aHR0cDovLz...dTg.m3u8", a base64
+    # upstream address as the file name (itcnbd, 2026-10-22). Without this
+    # it was published verbatim, because the rule below needs the whole
+    # segment to be alphanumeric and the extension's dot broke that.
+    if re.fullmatch(r"[A-Za-z0-9+=_\-]{32,}\.(?:m3u8|ts|mpd|mp4)", segment):
+        return "{seg}." + segment.rsplit(".", 1)[1]
     if ":" in segment or re.fullmatch(r"[A-Za-z0-9]{8,}", segment):
         return "{seg}"
     return segment

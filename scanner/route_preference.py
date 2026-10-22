@@ -27,6 +27,7 @@ from __future__ import annotations
 import datetime as _dt
 import json
 import os
+import re
 from typing import Any, Dict, List, Optional
 
 from scanner import route_evidence as rev
@@ -69,6 +70,31 @@ def load(path: Optional[str] = None) -> Dict[str, Any]:
     if not isinstance(payload, dict) or not isinstance(payload.get("preferred"), dict):
         return {"version": 1, "preferred": {}}
     return payload
+
+
+def registry_route_id(url: str) -> str:
+    """The route's identity as the registry stores and compares it.
+
+    normalize_source_identity keeps the path verbatim, which is right for
+    matching and wrong for a committed file when a path segment is itself an
+    opaque token - itcnbd names its files with a base64 upstream address. Such
+    a segment (32+ characters with a digit, the same test that refuses it in
+    evidence) is replaced by a short digest: still one stable identity per
+    route, no longer the raw value. Every route that has no such segment
+    keeps exactly the identity it had before.
+    """
+    import hashlib
+
+    identity = rev.normalize_source_identity(url)
+
+    def digest(match: "re.Match[str]") -> str:
+        segment = match.group(0)
+        stem, dot, ext = segment.partition(".")
+        if len(stem) < 32 or not any(ch.isdigit() for ch in stem):
+            return segment
+        return "{h:" + hashlib.sha256(stem.encode("utf-8")).hexdigest()[:12] + "}" + dot + ext
+
+    return re.sub(r"[^/?&=]+", digest, identity)
 
 
 def _key(kind: str, name: str) -> str:
@@ -115,7 +141,7 @@ def record(
         "recorded_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
         # Stored normalised so a rotating cache-buster does not look like a
         # different route on the next scan.
-        "route_id": rev.normalize_source_identity(route_url),
+        "route_id": registry_route_id(route_url),
         "url_public_template": rev.redact_public_template(route_url),
         "pass_count": passes,
         "window_seconds": evidence.get("window_seconds"),
@@ -384,7 +410,7 @@ def promote_preferred(
 
     def _matches(stream: Dict[str, Any]) -> bool:
         url = str((stream or {}).get("url") or "")
-        if not url or rev.normalize_source_identity(url) != wanted:
+        if not url or registry_route_id(url) != wanted:
             return False
         # A proof from two weeks ago does not outrank this scan measuring the
         # route unplayable today - but an inconclusive reading from one
