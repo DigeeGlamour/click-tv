@@ -620,6 +620,33 @@ def stamp(
     return "applied"
 
 
+_CARRIED_END_FIELDS = ("authority_finished_seen_at", "authority_finished_confirmations")
+
+
+def _card_keys(card: Dict[str, Any]) -> List[str]:
+    """Every name this fixture goes by; a fresh card may not have its id yet."""
+    keys = []
+    for field in ("fixture_id", "id", "name"):
+        text = " ".join(str(card.get(field) or "").casefold().split())
+        if text:
+            keys.append(f"{field}:{text}")
+    return keys
+
+
+def _carried_end_fields(previous: Iterable[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
+    """What the published cards already knew about an end, by fixture."""
+    out: Dict[str, Dict[str, Any]] = {}
+    for card in previous or ():
+        if not isinstance(card, dict):
+            continue
+        fields = {field: card[field] for field in _CARRIED_END_FIELDS
+                  if card.get(field) not in (None, "")}
+        if fields:
+            for key in _card_keys(card):
+                out.setdefault(key, fields)
+    return out
+
+
 def apply(
     cards: Iterable[Dict[str, Any]],
     by_authority: Dict[str, List[Dict[str, Any]]],
@@ -628,8 +655,19 @@ def apply(
     now: _dt.datetime,
     confirmations_required: int = event_lifecycle.DEFAULT_CONFIRMATIONS_REQUIRED,
     post_match_grace_minutes: int = 0,
+    previous: Iterable[Dict[str, Any]] = (),
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Stamp every card, and return the rows the report will need.
+
+    `previous` is the last published Today Match. A scan builds its cards
+    fresh from the feeds, so without it every scan met a finished match for
+    the first time: the end was stamped "now" again, the post-match grace
+    restarted, and with Today scans every 15 minutes against a 20-minute grace
+    a finished card never left. Measured on 2026-10-22: New Zealand v India,
+    finished at 12:45 by ESPN and LiveScore, still on the tab at 13:40 with
+    its removal pushed to 13:59. The first sighting and the confirmation count
+    are carried from the published card, so the grace runs from when the end
+    was first seen and a single authority's repetitions actually add up.
 
     The rows are `authority_shadow.compare` output, so the report at the end of
     the scan is built from the same comparison the lifecycle acted on rather
@@ -658,9 +696,14 @@ def apply(
         "applied_fixtures": [],
         "conflicts": [],
     }
+    carried = _carried_end_fields(previous)
     for card in cards:
         if not isinstance(card, dict):
             continue
+        earlier = next((carried[key] for key in _card_keys(card) if key in carried), None)
+        if earlier:
+            for field, value in earlier.items():
+                card.setdefault(field, value)
         row = authority_shadow.compare(card, by_authority, health)
         rows.append(row)
         evidence = read(row)

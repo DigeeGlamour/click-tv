@@ -2406,6 +2406,8 @@ def process_events(
                     "confirmations_required"],
                 post_match_grace_minutes=lifecycle_timings[
                     "post_match_grace_minutes"],
+                previous=(_load_optional_json(Path("data") / "today-match.json")
+                          .get("items") or []),
             )
             schedule_stats["authority_status"] = authority_apply_stats
             print("   fixture authority (applied): %d ended by authority, "

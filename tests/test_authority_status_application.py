@@ -713,3 +713,34 @@ class WiringTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TheEndIsNotRediscoveredEveryScanTests(unittest.TestCase):
+    """2026-10-22: New Zealand v India finished at 12:45 and was still on the
+    tab at 13:40 - every scan built a fresh card, stamped the end "now" and
+    restarted the post-match grace."""
+
+    def run_scan(self, fresh, authorities, now, previous):
+        from unittest import mock
+        with mock.patch.object(authority_status.authority_shadow, "compare",
+                               return_value=shadow_row(authorities)):
+            authority_status.apply([fresh], {}, {}, now=now,
+                                   post_match_grace_minutes=GRACE,
+                                   previous=previous)
+
+    def test_the_grace_runs_from_the_first_sighting(self):
+        first = NOW.isoformat()
+        published = dict(card(), authority_finished_seen_at=first)
+        fresh = card()
+        self.run_scan(fresh, BOTH_FINISHED, NOW + dt.timedelta(minutes=35), [published])
+        self.assertEqual(fresh["authority_finished_seen_at"], first)
+        self.assertEqual(
+            fresh["authority_remove_after"],
+            (NOW + dt.timedelta(minutes=GRACE)).isoformat())
+
+    def test_a_match_no_longer_finished_drops_the_carried_sighting(self):
+        published = dict(card(), authority_finished_seen_at=NOW.isoformat())
+        fresh = card()
+        live = {"livescore": entry(status=fixture_authority.LIVE, raw="2H")}
+        self.run_scan(fresh, live, NOW, [published])
+        self.assertNotIn("authority_finished_seen_at", fresh)
