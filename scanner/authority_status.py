@@ -620,7 +620,11 @@ def stamp(
     return "applied"
 
 
-_CARRIED_END_FIELDS = ("authority_finished_seen_at", "authority_finished_confirmations")
+#: `ended_seen_at` is the lifecycle's own first sighting - event_lifecycle
+#: says it is never cleared and is measured from the first scan that saw the
+#: end, which only holds if the published card hands it to the fresh one.
+_CARRIED_END_FIELDS = ("authority_finished_seen_at", "authority_finished_confirmations",
+                       "ended_seen_at")
 
 
 def _card_keys(card: Dict[str, Any]) -> List[str]:

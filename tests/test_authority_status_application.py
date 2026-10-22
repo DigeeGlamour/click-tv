@@ -744,3 +744,9 @@ class TheEndIsNotRediscoveredEveryScanTests(unittest.TestCase):
         live = {"livescore": entry(status=fixture_authority.LIVE, raw="2H")}
         self.run_scan(fresh, live, NOW, [published])
         self.assertNotIn("authority_finished_seen_at", fresh)
+
+    def test_the_lifecycle_sighting_is_carried_too(self):
+        published = dict(card(), ended_seen_at=NOW.isoformat())
+        fresh = card()
+        self.run_scan(fresh, BOTH_FINISHED, NOW + dt.timedelta(minutes=40), [published])
+        self.assertEqual(fresh["ended_seen_at"], NOW.isoformat())
