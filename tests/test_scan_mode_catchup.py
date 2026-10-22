@@ -57,6 +57,12 @@ class CatchUpTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
+        # The mechanism, independent of today's pause switch (movies were
+        # paused by the owner on 2026-10-21; tests/test_paused_modes.py
+        # covers the switch itself).
+        original = select_scan_mode._paused_modes
+        select_scan_mode._paused_modes = lambda: set()
+        self.addCleanup(setattr, select_scan_mode, "_paused_modes", original)
 
     def choose(self, scheduled, *, event_name="schedule", **ages):
         return select_scan_mode.choose(

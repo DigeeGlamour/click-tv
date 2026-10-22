@@ -61,10 +61,22 @@ def _parse(stamp: str) -> datetime:
     return datetime.fromisoformat(stamp.replace("Z", "+00:00"))
 
 
+def paused_workflows() -> set:
+    """config/settings.json -> paused.workflows: switched off on purpose."""
+    try:
+        settings = json.loads((ROOT / "config" / "settings.json").read_text(encoding="utf-8"))
+        return {str(name) for name in (settings.get("paused") or {}).get("workflows") or []}
+    except Exception:  # noqa: BLE001
+        return set()
+
+
 def findings(workflows: List[Dict[str, Any]], last_success: str,
              now: datetime) -> List[str]:
     problems = []
+    paused = paused_workflows()
     for workflow in workflows:
+        if str(workflow.get("path") or "").rsplit("/", 1)[-1] in paused:
+            continue
         state = str(workflow.get("state") or "")
         if state and state != "active":
             problems.append(

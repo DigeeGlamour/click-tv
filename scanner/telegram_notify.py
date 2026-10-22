@@ -367,6 +367,13 @@ def main() -> int:
     args = parser.parse_args()
     details = read_details(args.details_file)
 
+    settings = load_json(PROJECT_ROOT / "config" / "settings.json")
+    paused = {str(m).lower() for m in (settings.get("paused") or {}).get("modes") or []}
+    if not args.failure and str(args.mode).strip().lower() in paused:
+        # Nothing was scanned; a "scan successful" message would be untrue.
+        print(f"{args.mode} is paused; no Telegram message.")
+        return 0
+
     if args.failure:
         message = build_failure_message(
             args.mode,

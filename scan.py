@@ -1322,6 +1322,21 @@ def _configured_movie_sources() -> List[Dict[str, Any]]:
     return sources
 
 
+def paused_modes() -> set:
+    """Scan modes the owner has paused in config/settings.json -> paused.
+
+    A paused mode does not scan and writes nothing: its catalogue stays
+    exactly as last published. Movies were paused on 2026-10-21 because no
+    working source remained to replace the suspended CDN."""
+    try:
+        settings = json.loads(
+            (PROJECT_ROOT / "config" / "settings.json").read_text(encoding="utf-8"))
+        return {str(mode).strip().lower()
+                for mode in (settings.get("paused") or {}).get("modes") or []}
+    except Exception:  # noqa: BLE001 - a broken switch must not stop a scan
+        return set()
+
+
 def run_pipeline(
     mode: str = "all",
 ) -> Dict[str, Any]:
@@ -1600,6 +1615,12 @@ def run_pipeline(
             _pipeline_failed("channels", error, isolate=mode_clean == "all")
 
     if mode_clean in {
+        "movies",
+        "all",
+    } and "movies" in paused_modes():
+        print("\n[Step 4b/5] Movies are paused in config/settings.json; "
+              "the published movie catalogue is left exactly as it is.")
+    elif mode_clean in {
         "movies",
         "all",
     }:
@@ -1910,6 +1931,11 @@ def main() -> int:
     mode_choice = str(
         args.mode
     ).lower()
+
+    if mode_choice in paused_modes():
+        print(f"{mode_choice} is paused in config/settings.json -> paused; "
+              "nothing scanned, nothing written.")
+        return 0
 
     try:
         run_pipeline(

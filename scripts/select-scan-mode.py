@@ -136,6 +136,16 @@ def hours_stale(
     return (moment - max(stamps)).total_seconds() / 3600.0
 
 
+def _paused_modes() -> set:
+    """config/settings.json -> paused.modes: never caught up."""
+    try:
+        with open(os.path.join(ROOT, "config", "settings.json"), encoding="utf-8") as handle:
+            paused = (json.load(handle).get("paused") or {}).get("modes") or []
+        return {str(mode).strip().lower() for mode in paused}
+    except Exception:  # noqa: BLE001
+        return set()
+
+
 def choose(
     scheduled: str,
     *,
@@ -161,7 +171,7 @@ def choose(
         return mode, "", "%s already refreshes a catalogue; nothing added" % mode
 
     for candidate in CATCHUP_ORDER:
-        if candidate == mode:
+        if candidate == mode or candidate in _paused_modes():
             continue
         stale = hours_stale(
             candidate,
