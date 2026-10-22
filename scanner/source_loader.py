@@ -380,6 +380,33 @@ def _source_cache_paths(source_id: str, request_url: str) -> Tuple[Path, Path]:
     )
 
 
+_PARSER_FINGERPRINT: Optional[str] = None
+
+
+def _parser_fingerprint() -> str:
+    """A hash of the code that turns a feed into candidates.
+
+    A 304 hands back the items the LAST parse produced, so without this a rule
+    added to a parser waits for the feed itself to change before it applies.
+    Measured on 2026-10-22: the shared-link rule shipped, the sm-sports-data
+    feed answered 304, and a scan published the WILLOW SPORTS link the new
+    rule removes - parsed by the previous code.
+    """
+    global _PARSER_FINGERPRINT
+    if _PARSER_FINGERPRINT is None:
+        digest = hashlib.sha256()
+        here = Path(__file__).resolve().parent
+        for path in sorted([*here.glob("parsers/*.py"), here / "source_loader.py",
+                            here / "normalizer.py"]):
+            try:
+                digest.update(path.name.encode("utf-8"))
+                digest.update(path.read_bytes().replace(b"\r\n", b"\n"))
+            except OSError:
+                continue
+        _PARSER_FINGERPRINT = digest.hexdigest()[:16]
+    return _PARSER_FINGERPRINT
+
+
 def _load_source_cache(source_id: str, request_url: str) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     meta_path, items_path = _source_cache_paths(source_id, request_url)
     meta = _load_json_file(meta_path)
@@ -387,7 +414,12 @@ def _load_source_cache(source_id: str, request_url: str) -> Tuple[Dict[str, Any]
     items = payload.get("items") if isinstance(payload, dict) else []
     if not isinstance(items, list):
         items = []
-    return meta, [item for item in items if isinstance(item, dict)]
+    items = [item for item in items if isinstance(item, dict)]
+    if meta and str(meta.get("parser_fingerprint") or "") != _parser_fingerprint():
+        # Parsed by other code: no validators go out, so the feed is fetched
+        # and parsed again; the old items stay only as the outage fallback.
+        return {}, items
+    return meta, items
 
 
 def _save_source_cache(
@@ -409,6 +441,7 @@ def _save_source_cache(
             "last_modified": str(response_meta.get("last_modified") or ""),
             "detected_format": detected_format,
             "item_count": len(items),
+            "parser_fingerprint": _parser_fingerprint(),
         },
     )
     _atomic_write_json(
