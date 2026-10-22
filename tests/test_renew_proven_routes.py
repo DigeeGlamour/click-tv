@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -39,3 +40,17 @@ class Renewal(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class RenewalRunsOnItsOwnTests(unittest.TestCase):
+    """Nobody has to remember: the workflow renews on a schedule."""
+
+    def test_scheduled_workflow_runs_the_renewal(self):
+        path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                            ".github", "workflows", "route-renewal.yml")
+        text = open(path, encoding="utf-8").read()
+        self.assertIn("schedule:", text)
+        self.assertIn("scripts/renew-proven-routes.py", text)
+        self.assertIn("--vantage github-actions", text)
+        # Renewal comes only from a fresh pass, never from age alone.
+        self.assertNotIn("--dry-run", text)

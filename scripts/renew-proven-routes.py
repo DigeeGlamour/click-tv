@@ -5,15 +5,21 @@
     python scripts/renew-proven-routes.py --channel "STAR JALSHA"
     python scripts/renew-proven-routes.py --dry-run    # list what is due
 
+It also runs on its own: .github/workflows/route-renewal.yml calls it every
+three days on a GitHub runner (--vantage github-actions), so no proof lapses
+because nobody was at a machine to run it.
+
 A route in state/route-preference.json leads its channel for
 PREFERENCE_TTL_SECONDS (14 days) after it passed two 120 s browser sessions.
 When the proof lapses the scanner ranks the channel's routes on its own again,
 and on 2026-10-21 that is exactly how Zee Bangla went back to a route that
 stuttered: its August proof had expired and nothing renewed it.
 
-The proof has to be measured from a viewer's vantage - a browser in
-Bangladesh - so it cannot run on GitHub's runners. This is the one command to
-run on such a machine. For every due entry it finds the route on the
+A browser in Bangladesh is the best vantage, and a run from one is welcome,
+but a route that plays two full sessions from a GitHub runner has played -
+the measurement is the same and the vantage is written into the evidence. A
+route only a Bangladeshi viewer can reach fails there and lapses, which is
+what would have happened with no renewal at all. For every due entry it finds the route on the
 channel's published card, runs the same two-session acceptance
 (scripts/sustained-playback-check.py), and records a fresh proof only for a
 route that passes again. A route that fails is left to lapse: the registry
@@ -98,6 +104,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     ap.add_argument("--channel", action="append", default=[])
     ap.add_argument("--due-after-days", type=float, default=10.0)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--vantage", default="local",
+                    help="where this ran, written into the evidence")
     args = ap.parse_args(argv)
 
     registry = route_preference.load()
@@ -136,6 +144,7 @@ def main(argv: Optional[List[str]] = None) -> int:
         proven = {p["name"]: p for p in ADD.proven_routes(raw_report)}
 
     clean = _redacted(payload)
+    clean["vantage"] = args.vantage
     if rev.evidence_contains_forbidden_material(clean):
         print("refused: the redacted report still carries credential-shaped material")
         return 1

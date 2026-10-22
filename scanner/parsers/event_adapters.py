@@ -1583,6 +1583,111 @@ def adapter_name_for(source_info: Dict[str, Any]) -> str:
     return ADAPTER_BY_SOURCE.get(str((source_info or {}).get("id") or ""), "")
 
 
+def _fixture_key(name: Any) -> str:
+    """Who plays, order-free: "Sri Lanka vs England" == "England Vs Sri Lanka".
+
+    A series prefix ("Pakistan ODI Tri-Series 2026 - 3rd Match - ...") is not
+    part of who plays, so only the text after the last " - " on the left side
+    counts.
+    """
+    def norm(text: str) -> str:
+        return " ".join(re.sub(r"[^a-z0-9]+", " ", text.casefold()).split())
+
+    text = str(name or "")
+    sides = re.split(r"(?i)\s+vs\.?\s+|\s+v\s+", text, maxsplit=1)
+    if len(sides) != 2:
+        return norm(text)
+    left = sides[0].rsplit(" - ", 1)[-1]
+    return "|".join(sorted((norm(left), norm(sides[1]))))
+
+
+def _stream_route(url: Any) -> str:
+    """The exact link, query included.
+
+    The query stays: on portal links (`live.php?mac=...&stream=809386`) it is
+    the only thing that tells one channel from another. Within one payload a
+    shared channel is the same string byte for byte - that is how the rutube
+    SKY CRICKET link appeared under three matches.
+    """
+    return str(url or "").strip().split("#", 1)[0]
+
+
+#: Two fixtures are on air together when both are live, or when their kickoffs
+#: are this close. A link a feed reuses for a match tonight and another next
+#: week is a channel's schedule, not a contradiction.
+SHARED_LINK_OVERLAP_HOURS = 4.0
+
+
+def _on_air_together(a: Tuple[str, str, bool], b: Tuple[str, str, bool]) -> bool:
+    if a[2] and b[2]:
+        return True
+    try:
+        first = datetime.fromisoformat(a[1].replace("Z", "+00:00"))
+        second = datetime.fromisoformat(b[1].replace("Z", "+00:00"))
+    except (AttributeError, ValueError):
+        return False
+    return abs((first - second).total_seconds()) <= SHARED_LINK_OVERLAP_HOURS * 3600
+
+
+def _drop_streams_shared_across_fixtures(
+    records: List[Dict[str, Any]], source_id: str
+) -> int:
+    """A link one feed hangs under two matches on air together belongs to neither.
+
+    Measured on 2026-10-22: sm-sports-data listed one rutube "SKY CRICKET"
+    link under South Africa v Australia, Australia Women v New Zealand Women
+    and England v Sri Lanka, all live at once. It is a 24/7 channel; it was
+    showing England v Sri Lanka, and the Australia Women card - which got it
+    as its primary - played the wrong match. A per-match feed (Willow,
+    FanCode, Prime) carries a different URL for every match, so one URL under
+    two simultaneous fixtures says the feed does not know what is on it, and
+    neither does this scanner. The server is removed from every one of those
+    fixtures; their other channels stay, and a fixture left with nothing
+    becomes metadata-only rather than playing the wrong match.
+
+    Ended fixtures do not count, and neither do two fixtures hours apart (see
+    SHARED_LINK_OVERLAP_HOURS). Channel rows (entry_type set) are not fixtures.
+    """
+    live_words = {"LIVE", "LIVE NOW", "IN PROGRESS", "INPROGRESS", "ONGOING"}
+    owners: Dict[str, Dict[str, Tuple[str, str, bool]]] = collections.defaultdict(dict)
+    for record in records:
+        if record.get("entry_type") or record.get("source_says_ended"):
+            continue
+        fixture = _fixture_key(record.get("name"))
+        slot = (fixture, str(record.get("start_time") or ""),
+                str(record.get("status_raw") or "").strip().upper() in live_words)
+        for channel in record.get("channels") or ():
+            for server in channel.get("servers") or ():
+                route = _stream_route(server.get("url"))
+                if route:
+                    owners[route].setdefault(fixture, slot)
+    shared = set()
+    for route, fixtures in owners.items():
+        slots = list(fixtures.values())
+        if any(_on_air_together(slots[i], slots[j])
+               for i in range(len(slots)) for j in range(i + 1, len(slots))):
+            shared.add(route)
+    if not shared:
+        return 0
+    removed = 0
+    for record in records:
+        if record.get("entry_type") or record.get("source_says_ended"):
+            continue
+        kept_channels = []
+        for channel in record.get("channels") or ():
+            servers = [s for s in channel.get("servers") or ()
+                       if _stream_route(s.get("url")) not in shared]
+            removed += len(channel.get("servers") or ()) - len(servers)
+            if servers:
+                kept_channels.append(dict(channel, servers=servers))
+        record["channels"] = kept_channels
+        record["metadata_only"] = not kept_channels
+    if removed:
+        _stats(source_id)["skip_reasons"][
+            "link shared by fixtures on air together (generic channel)"] += removed
+    return removed
+
+
 def parse_event_source(
     content: str,
     source_info: Dict[str, Any],
@@ -1607,6 +1712,7 @@ def parse_event_source(
         return None
 
     records = handler(payload, source_id)
+    _drop_streams_shared_across_fixtures(records, source_id)
     stats = _stats(source_id)
     for record in records:
         stats["parsed"] += 1
