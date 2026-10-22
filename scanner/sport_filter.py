@@ -300,6 +300,10 @@ UNAMBIGUOUS_OTHER_SPORT = [_word(p) for p in (
     "formula ?[123e]", "grand ?prix", "wrc",
     "ppa tour", "pickleball",
     "bmx", "velodrome",
+    # Pool. Predator is the cue maker whose name every major European pool
+    # event carries; "Predator European Championships: Spain" was published
+    # as football on 2026-10-22 because of the word Spain.
+    "predator", "billiards?", "pool championships?", "[0-9]{1,2}-ball",
 )]
 
 

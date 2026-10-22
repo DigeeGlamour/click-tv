@@ -70,6 +70,8 @@ UNKNOWN = fixture_authority.UNKNOWN
 #: States that mean this fixture will not continue. Each may end a card, and
 #: each keeps its own word rather than being flattened into "finished".
 TERMINAL_STATES = (FINISHED, ABANDONED, CANCELLED, NO_RESULT)
+#: When authorities name the same end differently, the most specific word wins.
+_TERMINAL_SPECIFICITY = (ABANDONED, CANCELLED, NO_RESULT, FINISHED)
 
 #: Recorded, never applied. Postponed means later, suspended means paused -
 #: and the task is explicit that neither is an ordinary finish.
@@ -231,6 +233,15 @@ def read(row: Dict[str, Any]) -> Evidence:
                        or upstream_family.family_for(name)
                        for name, entry in matched.items()})
     statuses = {_text(entry.get("status")) for entry in matched.values()}
+
+    # Different words for the same end are agreement, not a dispute. Measured
+    # on 2026-10-22: Australia Women v New Zealand Women was washed out, ESPN
+    # said "No result" and LiveScore "FT", and the card stayed Live for hours
+    # because the two were read as disagreeing. Both say the match will not
+    # continue; the most specific word is kept, because "finished" about an
+    # abandoned match loses the interesting part (see the module docstring).
+    if len(statuses) > 1 and statuses <= set(TERMINAL_STATES):
+        statuses = {next(word for word in _TERMINAL_SPECIFICITY if word in statuses)}
 
     if len(statuses) > 1:
         return Evidence(

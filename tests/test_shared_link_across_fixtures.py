@@ -47,6 +47,28 @@ class SharedLinkTests(unittest.TestCase):
         # Nothing else to play: kept as a fixture, never given the wrong match.
         self.assertEqual(channels(records, "South Africa Vs Australia"), ([], True))
 
+    def test_one_channel_through_two_cdns_is_one_link(self):
+        """WILLOW SPORTS, 2026-10-22: same channel id, bom vs lhr CDN."""
+        records = parse([
+            match("South Africa Vs Australia", "LIVE", "22/10/2026 01:45:00 PM",
+                  [stream("WILLOW SPORTS HD", "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/tll6uwepxa/out/v1/a7f67cbb33df/cenc.mpd"),
+                   stream("WILLOW FHD", "https://w.example/enc/2jx5hrl31t/out/v1/9b12/cenc.mpd")]),
+            match("Australia Women Vs New Zealand Women", "LIVE", "22/10/2026 02:15:00 PM",
+                  [stream("WILLOW SPORTS", "https://live-pv-ta.amazon.fastly-edge.com/lhr-nitro/live/clients/dash/enc/tll6uwepxa/out/v1/a7f67cbb33df/cenc.mpd"),
+                   stream("WILLOW FHD", "https://w.example/enc/upctcqjn8t/out/v1/81ce/cenc.mpd")]),
+        ])
+        self.assertEqual(channels(records, "South Africa Vs Australia"), (["WILLOW"], False))
+        self.assertEqual(channels(records, "Australia Women Vs New Zealand Women"), (["WILLOW"], False))
+
+    def test_rotating_token_does_not_hide_a_shared_channel(self):
+        records = parse([
+            match("A Vs B", "LIVE", "22/10/2026 02:00:00 PM",
+                  [stream("SKY", "https://bl.rutube.ru/livestream/7c13a51576b9ff26/index.m3u8?s=one")]),
+            match("C Vs D", "LIVE", "22/10/2026 02:00:00 PM",
+                  [stream("SKY", "https://bl.rutube.ru/livestream/7c13a51576b9ff26/index.m3u8?s=two")]),
+        ])
+        self.assertEqual(channels(records, "A Vs B"), ([], True))
+
     def test_per_match_links_are_kept(self):
         records = parse([
             match("A Vs B", "LIVE", "22/10/2026 02:00:00 PM", [stream("WILLOW", "https://w.example/1.mpd")]),

@@ -219,6 +219,20 @@ class DisagreementTests(unittest.TestCase):
         self.assertNotIn("authority_status", subject)
         self.assertEqual(verdict_for(subject).state, LIVE)
 
+    def test_two_words_for_the_same_end_are_agreement(self):
+        """2026-10-22: a washed-out match - ESPN "No result", LiveScore "FT"."""
+        subject = card()
+        action, evidence = stamp(subject, {
+            "livescore": entry(status=fixture_authority.FINISHED),
+            "espn-header": entry("espn-header", "ESPN",
+                                 status=fixture_authority.NO_RESULT,
+                                 raw="No result"),
+        })
+        self.assertEqual(evidence.confidence, authority_status.HIGH)
+        self.assertEqual(evidence.status, fixture_authority.NO_RESULT)
+        self.assertEqual(action, "applied")
+        self.assertNotIn("disagree", subject.get("authority_end_conflict", ""))
+
     def test_a_disagreement_is_written_down(self):
         subject = card()
         stamp(subject, {
@@ -553,7 +567,7 @@ class StreamVersusAuthorityTests(unittest.TestCase):
     def test_a_card_with_no_route_records_no_such_conflict(self):
         subject = card(url="", verified=False, playback_id="", backups=[])
         stamp(subject, BOTH_FINISHED)
-        self.assertNotIn("authority_end_conflict", subject)
+        self.assertNotIn("disagree", subject.get("authority_end_conflict", ""))
 
     def test_a_viewer_watching_it_does_not_stop_the_end_but_keeps_the_card(self):
         """FINAL_2 ধাপ ৪: grace শেষ হলে card তালিকা থেকে যাবে, চলমান playback

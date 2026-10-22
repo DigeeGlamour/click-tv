@@ -1601,15 +1601,33 @@ def _fixture_key(name: Any) -> str:
     return "|".join(sorted((norm(left), norm(sides[1]))))
 
 
-def _stream_route(url: Any) -> str:
-    """The exact link, query included.
+_OPAQUE_SEGMENT = re.compile(r"^(?=[A-Za-z0-9_-]*\d)(?=[A-Za-z0-9_-]*[A-Za-z])[A-Za-z0-9_-]{10,}$")
 
-    The query stays: on portal links (`live.php?mac=...&stream=809386`) it is
-    the only thing that tells one channel from another. Within one payload a
-    shared channel is the same string byte for byte - that is how the rutube
-    SKY CRICKET link appeared under three matches.
+
+def _stream_route(url: Any) -> str:
+    """What channel a link plays, as far as the link itself says.
+
+    From the first opaque path segment on - the channel's own id - with the
+    host, the region prefix and the query left out. Measured on 2026-10-22:
+    sm-sports-data's WILLOW SPORTS was
+    `otte.cache.aiv-cdn.net/bom-nitro/.../enc/tll6uwepxa/out/v1/a7f67.../cenc.mpd`
+    on one match and `live-pv-ta.amazon.fastly-edge.com/lhr-nitro/.../enc/
+    tll6uwepxa/out/v1/a7f67.../cenc.mpd` on another: one channel through two
+    CDNs, playing England v Sri Lanka on both cards. The rutube SKY CRICKET
+    link carries a rotating `?s=` token after its id.
+
+    A link with no such id (`live.php?mac=...&stream=809386`) is compared
+    whole, query included: there the query is the only thing that tells one
+    channel from another.
     """
-    return str(url or "").strip().split("#", 1)[0]
+    text = str(url or "").strip().split("#", 1)[0]
+    match = re.match(r"(?i)^[a-z][a-z0-9+.-]*://[^/]+(/[^?]*)", text)
+    if match:
+        segments = [seg for seg in match.group(1).split("/") if seg]
+        for index, segment in enumerate(segments):
+            if _OPAQUE_SEGMENT.match(segment):
+                return "/".join(segments[index:])
+    return text
 
 
 #: Two fixtures are on air together when both are live, or when their kickoffs
