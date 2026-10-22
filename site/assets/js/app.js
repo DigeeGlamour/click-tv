@@ -1128,16 +1128,16 @@ const FINAL_MAIN_GROUPS = Object.freeze([
   ['movies', 'Movies']
 ]);
 
-// Labels in Bangla (the owner's choice, 2026-10-22); the third column is what
-// the data calls the category and stays as the data writes it.
+// English labels, like the header and the movie rail (the owner, 2026-10-22).
+// The third column is what the data calls the category.
 const FINAL_LIVE_TV_CATEGORIES = Object.freeze([
-  ['bangla', 'বাংলা চ্যানেল', ['Bangla']],
-  ['indian', 'ইন্ডিয়ান চ্যানেল', ['Indian']],
-  ['cartoon', 'কার্টুন ও শিশু', ['Cartoon']],
-  ['islamic', 'ইসলামিক', ['Islamic']],
-  ['infotainments', 'তথ্য ও বিনোদন', ['Infotainments', 'Infotainment']],
-  ['foreign-news', 'বিদেশি সংবাদ', ['Foreign News', 'Foreign']],
-  ['others', 'অন্যান্য', ['Others', 'Other']]
+  ['bangla', 'Bangla', ['Bangla']],
+  ['indian', 'Indian', ['Indian']],
+  ['cartoon', 'Cartoon', ['Cartoon']],
+  ['islamic', 'Islamic', ['Islamic']],
+  ['infotainments', 'Infotainment', ['Infotainments', 'Infotainment']],
+  ['foreign-news', 'Foreign News', ['Foreign News', 'Foreign']],
+  ['others', 'Others', ['Others', 'Other']]
 ]);
 
 const LIVE_TV_CATEGORY_ICONS = Object.freeze({
@@ -1149,8 +1149,8 @@ const LIVE_TV_CATEGORY_ICONS = Object.freeze({
  * Today Match and Upcoming, using the sport the scanner already wrote on
  * every card, so no new data is needed. */
 const LIVE_SPORT_FILTERS = Object.freeze([
-  ['cricket', 'ক্রিকেট', 'fa-baseball-bat-ball'],
-  ['football', 'ফুটবল', 'fa-futbol']
+  ['cricket', 'Cricket', 'fa-baseball-bat-ball'],
+  ['football', 'Football', 'fa-futbol']
 ]);
 
 const FINAL_MAIN_ICONS = Object.freeze({
@@ -1184,16 +1184,16 @@ function finalChannelLabel(candidates = []) {
 function finalSubItems(group = state.activeMainGroup) {
   if (group === 'sports') {
     return [
-      ['today-match', 'আজকের ম্যাচ'],
-      ['upcoming', 'আসন্ন ম্যাচ'],
-      ...LIVE_SPORT_FILTERS.map(([sport, label]) => [`sport:${sport}`, label]),
-      ['sports-channel', '২৪/৭ স্পোর্টস চ্যানেল']
+      ['today-match', 'Today Match'],
+      ['upcoming', 'Upcoming Match'],
+      ['sports-channel', '24/7 Sports'],
+      ...LIVE_SPORT_FILTERS.map(([sport, label]) => [`sport:${sport}`, label])
     ];
   }
   if (group === 'live-tv') {
     return [
-      ['popular', 'জনপ্রিয় চ্যানেল'],
-      ['bookmarks', 'বুকমার্ক চ্যানেল'],
+      ['popular', 'Popular Channels'],
+      ['bookmarks', 'Bookmarks'],
       ...FINAL_LIVE_TV_CATEGORIES.map(([key, label]) => [key, label])
     ];
   }
@@ -2670,9 +2670,13 @@ function railButton(root, key, text, icon, extra = {}) {
   glyph.setAttribute('aria-hidden', 'true');
   button.insertBefore(glyph, button.firstChild);
   if (extra.tone) button.dataset.railTone = extra.tone;
-  if (extra.live) button.dataset.railLive = toBanglaDigits(extra.live);
-  else if (extra.count !== undefined && extra.count !== null) {
-    button.dataset.railCount = toBanglaDigits(extra.count);
+  // Today Match's count is the number live now, tinted green; every other
+  // entry carries its plain count, like the movie rail.
+  if (extra.live) {
+    button.dataset.railCount = String(extra.live);
+    button.dataset.railLive = 'on';
+  } else if (extra.count !== undefined && extra.count !== null) {
+    button.dataset.railCount = String(extra.count);
   }
   root.appendChild(button);
   return button;
@@ -2698,58 +2702,33 @@ function renderLiveRail(root, group) {
   if (!stats) void loadRailEventStats();
 
   if (group === 'sports') {
-    railCaption(root, 'ম্যাচ সেন্টার');
-    railButton(root, 'today-match', 'আজকের ম্যাচ', 'fa-circle-play',
+    railCaption(root, 'MATCH CENTER');
+    railButton(root, 'today-match', 'Today Match', 'fa-circle-play',
       stats?.live ? { live: stats.live } : { count: state.manifest?.today_match?.count ?? null });
-    railButton(root, 'upcoming', 'আসন্ন ম্যাচ', 'fa-calendar-days',
+    railButton(root, 'upcoming', 'Upcoming', 'fa-calendar-days',
       { count: state.manifest?.upcoming?.count ?? null });
+    railButton(root, 'sports-channel', '24/7 Sports', 'fa-satellite-dish',
+      { count: channelCategoryCount(['Sports']) });
     const sports = LIVE_SPORT_FILTERS.filter(([sport]) => !stats || stats.bySport[sport]);
     if (sports.length) {
-      railCaption(root, 'খেলা অনুযায়ী');
+      railCaption(root, 'BY SPORT');
       sports.forEach(([sport, label, icon]) => {
         railButton(root, `sport:${sport}`, label, icon, { count: stats ? stats.bySport[sport] : null });
       });
     }
-    railCaption(root, 'স্পোর্টস টিভি');
-    railButton(root, 'sports-channel', '২৪/৭ স্পোর্টস', 'fa-satellite-dish',
-      { count: channelCategoryCount(['Sports']) });
   } else {
-    railCaption(root, 'কুইক অ্যাক্সেস');
-    railButton(root, 'bookmarks', 'বুকমার্ক চ্যানেল', 'fa-star',
+    railCaption(root, 'QUICK ACCESS');
+    railButton(root, 'bookmarks', 'Bookmarks', 'fa-star',
       { count: getFavoriteItems().filter((item) => (item._sourceKind || VIEW.CHANNEL) === VIEW.CHANNEL).length });
-    railButton(root, 'popular', 'জনপ্রিয় চ্যানেল', 'fa-fire', { tone: 'top' });
-    railCaption(root, 'টিভি ক্যাটাগরি');
+    railButton(root, 'popular', 'Popular', 'fa-fire', { tone: 'top' });
+    railCaption(root, 'TV CATEGORIES');
     FINAL_LIVE_TV_CATEGORIES.forEach(([key, label, candidates]) => {
       const count = channelCategoryCount(candidates);
       if (count === 0) return;
       railButton(root, key, label, LIVE_TV_CATEGORY_ICONS[key] || 'fa-tv', { count });
     });
   }
-  root.appendChild(buildLiveRailStatusCard(group, stats));
   attachMovieRailScrollHandle(root.closest('.desktop-category-rail'));
-}
-
-/* Where the design drew "Click TV User / Premium Plan": this site has no
- * accounts and no plans, so the card says something true instead - what is
- * live right now. */
-function buildLiveRailStatusCard(group, stats) {
-  const card = document.createElement('div');
-  card.className = 'movie-rail-user live-rail-status';
-  let line = '';
-  if (group === 'sports') {
-    line = stats ? `● এখন ${toBanglaDigits(stats.live)}টি ম্যাচ লাইভ` : 'লাইভ ম্যাচ খোঁজা হচ্ছে…';
-  } else {
-    const total = Object.values(state.manifest?.channels || {})
-      .reduce((sum, entry) => sum + (Number(entry?.count) || 0), 0);
-    line = `● ${toBanglaDigits(total)}টি চ্যানেল চালু`;
-  }
-  card.innerHTML =
-    '<span class="movie-rail-user-avatar" aria-hidden="true">C</span>' +
-    '<span class="movie-rail-user-copy">' +
-      '<strong>Click TV Live</strong>' +
-      `<small class="movie-rail-user-plan">${escapeHtml(line)}</small>` +
-    '</span>';
-  return card;
 }
 
 async function loadRailEventStats() {
@@ -2821,7 +2800,7 @@ async function showPopularChannels() {
   setSearchQuery('');
   state.currentQuery = '';
   state.view = VIEW.CHANNEL;
-  state.selectedCategory = 'জনপ্রিয় চ্যানেল';
+  state.selectedCategory = 'Popular Channels';
   renderFinalNavigation();
   showListMessage('জনপ্রিয় চ্যানেল লোড হচ্ছে…', 'fa-spinner', true);
   setSidebarCount('Loading...');

@@ -11,18 +11,12 @@
   font-family:'Oswald','Hind Siliguri',sans-serif!important;
 }
 
-/* Live Sports / Live TV rail tags (app.js renderLiveRail). The rail reuses
- * the movie rail's classes for size and layout; only the two tags the movie
- * rail never needed are added here. */
+/* Live Sports / Live TV rail (app.js renderLiveRail). It reuses the movie
+ * rail's classes, so font, size and layout are the movie rail's; only the
+ * TOP tag and the green live count are added here. */
 #desktopSubNav.live-rail .final-sub-button[data-rail-tone="top"]::after{
   content:"TOP";background:rgba(255,42,74,.18);border:1px solid rgba(255,42,74,.55);color:#ff8298;
 }
-#desktopSubNav.live-rail .final-sub-button[data-rail-live]::after{
-  content:"● " attr(data-rail-live) " লাইভ";margin-left:auto;flex-shrink:0;display:inline-flex;align-items:center;
-  padding:3px 5px;border-radius:999px;background:rgba(43,224,138,.14);border:1px solid rgba(43,224,138,.4);
-  color:#2be08a;font-size:9.5px;font-weight:800;line-height:1;white-space:nowrap;
+#desktopSubNav.live-rail .final-sub-button[data-rail-live][data-rail-count]::after{
+  background:rgba(43,224,138,.14);color:#2be08a;
 }
-#desktopSubNav.live-rail .live-rail-status .movie-rail-user-plan{color:#2be08a}
-/* Long Bangla labels with a count: half a pixel of type and 3px of gap so
- * they fit the same 40px rows of the same width. */
-body #desktopSubNav.live-rail .final-sub-button{font-size:13px!important;gap:7px!important}

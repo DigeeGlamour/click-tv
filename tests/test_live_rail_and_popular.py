@@ -29,13 +29,18 @@ class ThePopularList(unittest.TestCase):
 class TheRail(unittest.TestCase):
     def test_both_live_sections_draw_the_grouped_rail(self):
         self.assertIn("renderLiveRail(root, state.activeMainGroup);", APP)
-        for caption in ("ম্যাচ সেন্টার", "খেলা অনুযায়ী", "স্পোর্টস টিভি",
-                        "কুইক অ্যাক্সেস", "টিভি ক্যাটাগরি"):
+        for caption in ("'MATCH CENTER'", "'BY SPORT'", "'QUICK ACCESS'", "'TV CATEGORIES'"):
             self.assertIn(caption, APP)
 
-    def test_no_account_or_plan_is_claimed_on_the_live_rails(self):
-        start = APP.index("function buildLiveRailStatusCard")
+    def test_24_7_sports_follows_upcoming(self):
+        start = APP.index("railCaption(root, 'MATCH CENTER');")
+        body = APP[start:APP.index("railCaption(root, 'BY SPORT');")]
+        self.assertLess(body.index("'upcoming'"), body.index("'sports-channel'"))
+
+    def test_the_live_rails_carry_no_user_card(self):
+        start = APP.index("function renderLiveRail")
         body = APP[start:APP.index("async function loadRailEventStats")]
+        self.assertNotIn("movie-rail-user", body)
         self.assertNotIn("Premium", body)
 
 
