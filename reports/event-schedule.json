@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T03:47:05.642858+00:00",
+  "generated_at": "2026-10-22T03:59:58.091523+00:00",
   "today_match_count": 4,
   "upcoming_count": 32,
   "today_missing_logo": [],
@@ -21,7 +21,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 148,
+  "provider_fixture": 147,
   "provider_rejected": 141,
   "provider_rejected_reasons": {
     "provider_dead_status": 131,
@@ -608,7 +608,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 148,
+    "total": 147,
     "discarded": 67,
     "examples": [
       {
@@ -621,7 +621,7 @@
       },
       {
         "name": "Genesis Championship Day 1 22 Oct 2026",
-        "source": "drmlive-sonyliv-backup, sayanpal-sonyliv-backup",
+        "source": "drmlive-sonyliv-backup, sportlive-sonyliv-backup",
         "competition": "DP World Tour",
         "sport_type": "",
         "reason": "league map: golf",
@@ -797,7 +797,7 @@
       },
       {
         "name": "Genesis Championship Day 1 22 Oct 2026",
-        "source": "sportlive-sonyliv-backup",
+        "source": "sayanpal-sonyliv-backup",
         "competition": "DP World Tour",
         "sport_type": "",
         "reason": "league map: golf",
@@ -1116,40 +1116,50 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
     "live": 0,
     "recorded": 1,
-    "conflict": 2,
-    "unmatched": 4,
+    "conflict": 0,
+    "unmatched": 2,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
+      "FINISHED": 1,
       "UPCOMING": 1
     },
     "by_confidence": {
-      "CONFLICT": 2,
+      "HIGH": 1,
       "LOW": 1
     },
-    "applied_fixtures": [],
-    "conflicts": [
+    "applied_fixtures": [
       {
-        "name": "Palmeiras Vs Fluminense",
-        "reason": "independent authorities disagree: ESPN espn-header=56' (STATUS_SECOND_HALF, event 401912520); LiveScore livescore=AP (13, event 1869525)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "name": "Atlas FC Vs Club América",
+        "fixture_id": "provider:atlas-fc-vs-club-américa|liga mx apertura|2026-10-22",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
-        ]
-      },
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876932)",
+          "LiveScore livescore=FT (6, event 1799057)"
+        ],
+        "authority_finished_seen_at": "2026-10-22T03:59:42.345610+00:00",
+        "remove_after": "2026-10-22T04:19:42.345610+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
+    "conflicts": [
       {
         "name": "Atlas FC Vs Club América",
-        "reason": "independent authorities disagree: ESPN espn-header=42' (STATUS_FIRST_HALF, event 401876932); LiveScore livescore=FT (6, event 1799057)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1158,55 +1168,46 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 2,
+    "asked": 1,
     "finished": 0,
     "unplayable": 0,
     "cache_hits": 0,
-    "no_verdict": 3
+    "no_verdict": 1
   },
   "live_protection": {
     "carried_forward": 2,
-    "released_ended": 1,
-    "released_ended_ids": [
-      "palmeiras-vs-fluminense"
-    ],
-    "retired_terminal": [
-      {
-        "id": "palmeiras-vs-fluminense",
-        "name": "Palmeiras Vs Fluminense",
-        "provenance": "feed_strong_end",
-        "reason": "authoritative finished status"
-      }
-    ],
-    "released_listing_expired": 2,
+    "released_ended": 0,
+    "released_ended_ids": [],
+    "retired_terminal": [],
+    "released_listing_expired": 0,
     "released_dead_link": 0,
-    "released_stale": 2,
+    "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 4,
+    "probe_alive": 1,
     "probe_dead": 0,
     "probe_inconclusive": 0,
-    "end_pending": 0,
-    "released_confirmed": 2,
+    "end_pending": 1,
+    "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "ENDED": 3,
-      "LIVE": 2
+      "END_PENDING": 1,
+      "LIVE": 1
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 1,
+    "added": 0,
     "total": 748,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
-    "absence_only_refused": 2,
+    "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 1
+    "decided_this_scan": 0
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1218,7 +1219,7 @@
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 258,
+    "unresolved": 257,
     "names": {
       "Sky Sports": 1,
       "Fox": 1,
@@ -1253,12 +1254,12 @@
     "cache_hits": 11,
     "cached_entries": 1095,
     "provider": {
-      "requests": 2,
-      "hits": 0,
+      "requests": 11,
+      "hits": 9,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 21,
+      "skipped_rate_limited": 12,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1339,7 +1340,7 @@
           "rejected": 0,
           "published": 15
         },
-        "sayanpal-fancode-mirror": {
+        "dartv-fancode-mirror": {
           "total": 15,
           "cricket": 8,
           "football": 7,
@@ -1347,7 +1348,7 @@
           "rejected": 0,
           "published": 15
         },
-        "dartv-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 15,
           "cricket": 8,
           "football": 7,
@@ -1465,7 +1466,7 @@
           "rejected": 0,
           "published": 15
         },
-        "sayanpal-fancode-mirror": {
+        "dartv-fancode-mirror": {
           "total": 15,
           "cricket": 8,
           "football": 7,
@@ -1473,7 +1474,7 @@
           "rejected": 0,
           "published": 15
         },
-        "dartv-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 15,
           "cricket": 8,
           "football": 7,
@@ -1495,7 +1496,7 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 524,
+    "raw_events": 523,
     "cricket_kept": 22,
     "football_kept": 12,
     "other_discarded": 69,
@@ -1530,9 +1531,9 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 0,
+      "provider_or_authority": 1,
       "estimate": 0,
-      "none": 4
+      "none": 3
     }
   },
   "fixture_stream_health": {
@@ -1562,12 +1563,12 @@
     "unverified": 21,
     "conflict": 2,
     "matched_by_two_independent_authorities": 11,
-    "authority_agreements": 9,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 1,
+    "authority_agreements": 10,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 2,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 3
+    "not_published": 0
   },
   "stream_health": {
     "sources_in_outage": [],
