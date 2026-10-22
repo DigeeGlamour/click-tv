@@ -37,3 +37,12 @@
   white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;
 }
 .search-tag:hover,.search-tag:focus-visible{background:rgba(255,42,74,.16);border-color:rgba(255,42,74,.5);color:#fff;outline:none}
+
+/* Phone sub-category chips (Live Sports): centred when they fit, starting at
+ * the left edge when they do not. justify-content:center pushed the first chip
+ * ("Today Match") past the left edge once the row grew to five chips, where
+ * no scroll can reach it. Auto margins centre the same way and fall to 0 on
+ * overflow. */
+html body .mobile-sub-navigation.sports-subnav .final-sub-nav{justify-content:flex-start!important}
+html body .mobile-sub-navigation.sports-subnav .final-sub-nav > :first-child{margin-left:auto!important}
+html body .mobile-sub-navigation.sports-subnav .final-sub-nav > :last-child{margin-right:auto!important}
