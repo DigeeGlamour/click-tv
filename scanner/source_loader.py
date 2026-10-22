@@ -322,6 +322,25 @@ def parse_source_content(
     )
 
 
+def _streams_over_http(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """The same stream over plain HTTP, for a host whose HTTPS is broken.
+
+    Opt-in per source (`stream_https_to_http`). Measured on 2026-10-22:
+    every Jago BD stream on static.jagobd.com.bd failed certificate
+    verification over HTTPS - 112 of 112 - while the identical URL over HTTP
+    answered 200 with a 1080p playlist. A browser cannot use that HTTPS either,
+    so nothing playable is lost; the HTTP route reaches viewers through the
+    site's proxy like every other HTTP stream.
+    """
+    out = []
+    for item in items or ():
+        url = str(item.get("url") or "") if isinstance(item, dict) else ""
+        if url.lower().startswith("https://"):
+            item = dict(item, url="http://" + url[len("https://"):])
+        out.append(item)
+    return out
+
+
 #: Per-source filter telemetry from this process, by source id. Read by the
 #: coverage report so a source's own include rules are visible as counts rather
 #: than as a silent difference between what a playlist holds and what a scan
@@ -340,6 +359,8 @@ def _apply_source_rules(
     source that declares nothing is returned unchanged, which is every source
     configured before this existed.
     """
+    if source_info.get("stream_https_to_http") is True:
+        items = _streams_over_http(items)
     try:
         from scanner import source_filters
 
