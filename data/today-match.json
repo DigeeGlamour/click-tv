@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-22T01:05:15.231694+00:00",
+  "updated_at": "2026-10-22T01:25:10.643097+00:00",
   "count": 7,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -114,7 +114,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "ppv-the-golazo-show",
       "artwork_candidates": [
@@ -131,14 +131,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-21T23:05:14.024122+00:00"
+      "carried_forward_misses": 8,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-21T23:05:14.024122+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 8,
+      "ended_seen_at": "2026-10-22T01:25:07.495613+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "betis-vs-feyenoord",
@@ -388,7 +392,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 11,
+      "carried_forward_misses": 12,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-21T21:45:18.420656+00:00"
     },
@@ -639,7 +643,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 10,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-21T22:05:16.508098+00:00"
     },
@@ -766,7 +770,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-22T00:45:06.405673+00:00"
     },
@@ -1114,7 +1118,7 @@
     {
       "id": "louisville-city-fc-at-sporting-club-jacksonville",
       "name": "Louisville City FC at Sporting Club Jacksonville",
-      "primary_stream_key": "99fce3a348ae3c8199624a218047c8dc3315a59ac920dae15206ce1ae74d2e72",
+      "primary_stream_key": "2378f87b47c1a3e10af1ae6459f418022cf30673af524ac85342d124e21826b3",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.6adb0731-bf95-4848-988b-4d283e61e98d/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
@@ -1139,35 +1143,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1196,7 +1171,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1216,6 +1191,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1251,19 +1255,6 @@
               "id": "louisville-city-fc-at-sporting-club-jacksonville--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "louisville-city-fc-at-sporting-club-jacksonville--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_0e638de706138f746f0f4bb0",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -1274,7 +1265,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "louisville-city-fc-at-sporting-club-jacksonville--prime-video--3",
+              "id": "louisville-city-fc-at-sporting-club-jacksonville--prime-video--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_b9a4754dd8779c45821c460d",
@@ -1287,7 +1278,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "louisville-city-fc-at-sporting-club-jacksonville--prime-video--4",
+              "id": "louisville-city-fc-at-sporting-club-jacksonville--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_5458cc437e60a57ab38df02d",
@@ -1295,6 +1286,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "louisville-city-fc-at-sporting-club-jacksonville--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1329,9 +1333,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-22T01:04:55+00:00",
-      "start_at": "2026-10-22T01:04:55+00:00",
-      "end_time": "2026-10-22T03:34:55+00:00",
+      "start_time": "2026-10-22T01:24:54+00:00",
+      "start_at": "2026-10-22T01:24:54+00:00",
+      "end_time": "2026-10-22T03:54:54+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:louisville-city-fc-at-sporting-club-jacksonville|2026-10-22",
       "status": "LIVE_NOW",
@@ -1345,7 +1349,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+      "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
