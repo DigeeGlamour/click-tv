@@ -1194,6 +1194,7 @@ function finalSubItems(group = state.activeMainGroup) {
     return [
       ['popular', 'Popular Channels'],
       ['bookmarks', 'Bookmarks'],
+      ['recent', 'Recent'],
       ...FINAL_LIVE_TV_CATEGORIES.map(([key, label]) => [key, label])
     ];
   }
@@ -1363,6 +1364,10 @@ async function selectFinalSubcategory(key) {
   }
   if (key === 'popular') {
     await showPopularChannels();
+    return;
+  }
+  if (key === 'recent') {
+    showRecentChannels();
     return;
   }
   if (key === 'bookmarks') {
@@ -2720,6 +2725,8 @@ function renderLiveRail(root, group) {
     railCaption(root, 'QUICK ACCESS');
     railButton(root, 'bookmarks', 'Bookmarks', 'fa-star',
       { count: getFavoriteItems().filter((item) => (item._sourceKind || VIEW.CHANNEL) === VIEW.CHANNEL).length });
+    railButton(root, 'recent', 'Recent', 'fa-clock-rotate-left',
+      { count: recentChannelItems().length });
     railButton(root, 'popular', 'Popular', 'fa-fire', { tone: 'top' });
     railCaption(root, 'TV CATEGORIES');
     FINAL_LIVE_TV_CATEGORIES.forEach(([key, label, candidates]) => {
@@ -2751,8 +2758,10 @@ async function loadRailEventStats() {
       const sport = itemSportType(item);
       bySport[sport] = (bySport[sport] || 0) + 1;
     });
+    const liveItems = todayItems.filter((item) => ['LIVE_NOW', 'CHANNEL_LIVE'].includes(eventUiStatus(item)));
     state.railEventStats = {
-      live: todayItems.filter((item) => ['LIVE_NOW', 'CHANNEL_LIVE'].includes(eventUiStatus(item))).length,
+      live: liveItems.length,
+      liveNames: liveItems.map((item) => ({ name: String(item.name || ''), sport: itemSportType(item) })),
       bySport,
       loadedAt: Date.now()
     };
@@ -2806,16 +2815,8 @@ async function showPopularChannels() {
   setSidebarCount('Loading...');
   const sessionId = ++state.dataSessionId;
   try {
-    const config = await fetchJson(POPULAR_CHANNELS_URL, { cache: 'no-store' }).catch(() => ({}));
-    const names = Array.isArray(config?.channels) ? config.channels : [];
-    if (!state.allChannelsCache) {
-      const lists = await Promise.all(Object.values(state.manifest?.channels || {})
-        .filter((entry) => entry?.url)
-        .map((entry) => fetchJson(entry.url, { cache: 'no-store' })
-          .then((data) => (Array.isArray(data) ? data : (data.channels || data.items || [])))
-          .catch(() => [])));
-      state.allChannelsCache = lists.flat();
-    }
+    const names = await popularChannelNames();
+    await loadAllChannels();
     if (sessionId !== state.dataSessionId) return;
     const all = state.allChannelsCache;
     const byKey = new Map();
@@ -2848,6 +2849,142 @@ async function showPopularChannels() {
     setSidebarCount('0 Items');
   }
 }
+
+async function popularChannelNames() {
+  if (!state.popularChannelNames) {
+    const config = await fetchJson(POPULAR_CHANNELS_URL, { cache: 'no-store' }).catch(() => ({}));
+    state.popularChannelNames = Array.isArray(config?.channels) ? config.channels : [];
+  }
+  return state.popularChannelNames;
+}
+
+async function loadAllChannels() {
+  if (!state.allChannelsCache) {
+    const lists = await Promise.all(Object.values(state.manifest?.channels || {})
+      .filter((entry) => entry?.url)
+      .map((entry) => fetchJson(entry.url, { cache: 'no-store' })
+        .then((data) => (Array.isArray(data) ? data : (data.channels || data.items || [])))
+        .catch(() => [])));
+    state.allChannelsCache = lists.flat();
+  }
+  return state.allChannelsCache;
+}
+
+/* Recent: the channels this viewer played last, newest first - the browser's
+ * own record (saveRecentItem), nothing sent anywhere. One click back to the
+ * channel they were just on. */
+function recentChannelItems() {
+  return getRecentItems().filter((item) => (item._sourceKind || VIEW.CHANNEL) === VIEW.CHANNEL);
+}
+
+function showRecentChannels() {
+  closeEventPreview();
+  closeEventSportFilter();
+  state.eventSportFilter = 'all';
+  cancelDataLoading();
+  clearCurrentListState();
+  closeMobileSearch(true);
+  setSearchQuery('');
+  state.currentQuery = '';
+  state.view = VIEW.CHANNEL;
+  state.selectedCategory = 'Recent';
+  renderFinalNavigation();
+  state.currentItems = normalizeList(recentChannelItems(), VIEW.CHANNEL);
+  renderCurrentList(true);
+  if (!state.currentItems.length) showListMessage('এখনো কোনো চ্যানেল দেখা হয়নি', 'fa-clock-rotate-left');
+  hidePlayerMessage();
+}
+
+/* ── Search tags ───────────────────────────────────────────────────────────
+ *
+ * Focusing an empty search box offers a few one-click shortcuts: matches live
+ * right now, then the owner's popular channels. Built from published data
+ * only - a tag never names something that is not there. The panel floats
+ * over the page (position:fixed), so nothing on the page moves. Movies keep
+ * their own search suggestions and never see these.
+ */
+const SPORT_TAG_ICON = Object.freeze({ cricket: '🏏', football: '⚽' });
+
+function hideSearchTags() {
+  document.querySelector('.search-tags-drop')?.remove();
+}
+
+async function showSearchTags(input) {
+  if (!input || input.value.trim() || document.body.classList.contains('movies-section')) {
+    hideSearchTags();
+    return;
+  }
+  if (!state.railEventStats) await loadRailEventStats();
+  const names = await popularChannelNames();
+  const channels = await loadAllChannels();
+  if (document.activeElement !== input || input.value.trim()) return;
+  const published = new Set(channels.map((channel) => popularNameKey(channel?.name)));
+  const tags = [];
+  (state.railEventStats?.liveNames || []).slice(0, 2).forEach((match) => {
+    tags.push({ kind: 'match', label: match.name, icon: SPORT_TAG_ICON[match.sport] || '🔴' });
+  });
+  names.filter((name) => published.has(popularNameKey(name)))
+    .slice(0, 6 - tags.length)
+    .forEach((name) => tags.push({ kind: 'channel', label: name, icon: '📺' }));
+  hideSearchTags();
+  if (!tags.length) return;
+
+  const drop = document.createElement('div');
+  drop.className = 'search-tags-drop';
+  drop.setAttribute('role', 'listbox');
+  const head = document.createElement('div');
+  head.className = 'search-tags-head';
+  head.textContent = 'Popular now';
+  drop.appendChild(head);
+  tags.forEach((tag) => {
+    const pill = document.createElement('button');
+    pill.type = 'button';
+    pill.className = 'search-tag tv-focusable';
+    pill.textContent = `${tag.icon} ${tag.label.length > 26 ? `${tag.label.slice(0, 25)}…` : tag.label}`;
+    pill.title = tag.label;
+    pill.addEventListener('pointerdown', (event) => event.preventDefault());
+    pill.addEventListener('click', () => openSearchTag(tag, input));
+    drop.appendChild(pill);
+  });
+  const box = (input.closest('.search-wrap, .mobile-search-bar-wrap') || input).getBoundingClientRect();
+  drop.style.top = `${Math.round(box.bottom + 6)}px`;
+  drop.style.left = `${Math.round(box.left)}px`;
+  drop.style.width = `${Math.round(Math.max(box.width, 260))}px`;
+  document.body.appendChild(drop);
+  // The phone's empty search box closes itself after five seconds; a viewer
+  // reading the tags is not idle.
+  if (input === mobileSearchInput) clearMobileSearchAutoClose();
+}
+
+async function openSearchTag(tag, input) {
+  hideSearchTags();
+  input?.blur();
+  const findAndPlay = () => {
+    const wanted = popularNameKey(tag.label);
+    const item = (state.currentItems || []).find((entry) => popularNameKey(entry.name) === wanted)
+      || (state.currentItems || []).find((entry) => popularNameKey(entry.name).startsWith(wanted));
+    if (item && isPlayable(item)) startPlayback(item, true);
+  };
+  if (tag.kind === 'match') {
+    state.activeMainGroup = 'sports';
+    await selectFinalSubcategory('today-match');
+  } else {
+    state.activeMainGroup = 'live-tv';
+    await selectFinalSubcategory('popular');
+  }
+  findAndPlay();
+}
+
+[searchInput, mobileSearchInput].forEach((input) => {
+  if (!input) return;
+  input.addEventListener('focus', () => { void showSearchTags(input); });
+  input.addEventListener('input', () => { if (input.value.trim()) hideSearchTags(); });
+  input.addEventListener('blur', () => { setTimeout(hideSearchTags, 150); });
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') hideSearchTags();
+});
+window.addEventListener('resize', hideSearchTags);
 
 /**
  * The rail's scroll handle - the demo's `.sidebar-custom-thumb`.

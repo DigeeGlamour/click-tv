@@ -44,5 +44,23 @@ class TheRail(unittest.TestCase):
         self.assertNotIn("Premium", body)
 
 
+
+class SearchTagsAndRecent(unittest.TestCase):
+    def test_tags_float_and_never_reach_movies(self):
+        start = APP.index("async function showSearchTags")
+        body = APP[start:APP.index("async function openSearchTag")]
+        self.assertIn("movies-section", body)
+        css = (ROOT / "site" / "assets" / "css" / "site-font.css").read_text(encoding="utf-8")
+        self.assertIn("position:fixed", css[css.index(".search-tags-drop"):])
+
+    def test_a_tag_only_names_a_published_channel(self):
+        start = APP.index("async function showSearchTags")
+        body = APP[start:APP.index("async function openSearchTag")]
+        self.assertIn("published.has(popularNameKey(name))", body)
+
+    def test_recent_is_on_the_live_tv_rail(self):
+        self.assertIn("railButton(root, 'recent', 'Recent'", APP)
+        self.assertIn("['recent', 'Recent']", APP)
+
 if __name__ == "__main__":
     unittest.main()
