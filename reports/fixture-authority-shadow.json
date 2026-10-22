@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T03:04:24.470488+00:00",
+  "generated_at": "2026-10-22T03:24:15.472006+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,11 +12,12 @@
       "requests_ok": 6,
       "fixtures": 540,
       "unknown_statuses": [
+        "10|HT",
         "12|Int.",
         "135|Stumps - day 4",
-        "2|35'",
-        "3|71'",
-        "3|85'"
+        "2|11'",
+        "2|14'",
+        "3|90+1'"
       ],
       "attempts": [
         {
@@ -64,7 +65,7 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 398,
+      "fixtures": 397,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -89,7 +90,7 @@
           "sport": "football",
           "date": "2026-10-21",
           "result": "ok",
-          "fixtures": 106
+          "fixtures": 105
         },
         {
           "sport": "football",
@@ -114,10 +115,11 @@
     "verdicts": {
       "CONFLICT": 2,
       "UNVERIFIED": 23,
-      "VERIFIED": 14
+      "PARTIAL_AUTHORITY": 1,
+      "VERIFIED": 13
     },
-    "verified": 14,
-    "partial_authority": 0,
+    "verified": 13,
+    "partial_authority": 1,
     "unverified": 23,
     "conflict": 2,
     "matched_by_authority": {
@@ -132,12 +134,13 @@
     },
     "matched_by_two_independent_authorities": 12,
     "authority_agreements": 10,
-    "authority_disagreements": 2,
-    "card_status_conflicts": 0,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "authorities disagree": 2
+      "authorities disagree": 1,
+      "card says LIVE, authority says FINISHED": 1
     },
-    "identity_near_misses": 7,
+    "identity_near_misses": 5,
     "independent_authority_count_distribution": {
       "0": 23,
       "1": 4,
@@ -145,32 +148,17 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "12|Int.",
         "135|Stumps - day 4",
-        "2|35'",
-        "3|71'",
-        "3|85'"
+        "2|11'",
+        "2|14'",
+        "3|90+1'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
-    {
-      "fixture": "Cartaginés vs Olimpia",
-      "authority": "espn-header",
-      "authority_name": "Cartaginés vs Club Deportivo Olimpia",
-      "agreed_side": "cartagines",
-      "ours": "olimpia",
-      "theirs": "deportivo olimpia"
-    },
-    {
-      "fixture": "Cartaginés vs Olimpia",
-      "authority": "livescore",
-      "authority_name": "C.S. Cartagines vs CD Olimpia",
-      "agreed_side": "olimpia",
-      "ours": "cartagines",
-      "theirs": "c s cartagines"
-    },
     {
       "fixture": "Al Ittihad vs Diriyah",
       "authority": "espn-header",
@@ -248,7 +236,7 @@
           "competition_id": "760",
           "kickoff": "2026-10-22T01:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "64'",
+          "status_raw": "86'",
           "status_code": "STATUS_SECOND_HALF",
           "status": "LIVE",
           "sport": "football",
@@ -257,7 +245,7 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "64'",
+          "espn_status_detail": "86'",
           "espn_status_description": "Second Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
@@ -307,62 +295,7 @@
       "card_id": "cartaginés-vs-olimpia",
       "name": "Cartaginés vs Olimpia",
       "competition": "",
-      "kickoff": "2026-10-22T03:04:24+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Cartaginés vs Club Deportivo Olimpia",
-              "event_id": "401922486",
-              "agreed_side": "cartagines",
-              "ours": "olimpia",
-              "theirs": "deportivo olimpia"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "C.S. Cartagines vs CD Olimpia",
-              "event_id": "1894831",
-              "agreed_side": "olimpia",
-              "ours": "cartagines",
-              "theirs": "c s cartagines"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:predator-european-championships-spain|2026-10-21",
-      "card_id": "predator-european-championships-spain",
-      "name": "Predator European Championships Spain",
-      "competition": "",
-      "kickoff": "2026-10-21T21:45:04+00:00",
+      "kickoff": "2026-10-22T03:24:15+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -432,95 +365,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:palmeiras-vs-fluminense|conmebol libertadores|2026-10-22",
-      "card_id": "palmeiras-vs-fluminense",
-      "name": "Palmeiras Vs Fluminense",
-      "competition": "CONMEBOL Libertadores",
-      "kickoff": "2026-10-22T00:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401912520",
-          "upstream_family": "ESPN",
-          "name": "Palmeiras vs Fluminense",
-          "home": "Palmeiras",
-          "away": "Fluminense",
-          "home_team_id": "2029",
-          "away_team_id": "3445",
-          "competition": "CONMEBOL Libertadores",
-          "competition_id": "783",
-          "kickoff": "2026-10-22T00:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Pens",
-          "status_code": "STATUS_SHOOTOUT",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Penalties",
-          "espn_status_description": "Shootout",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:783~e:401912520~c:401912520"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1869525",
-          "upstream_family": "LiveScore",
-          "name": "Palmeiras vs Fluminense",
-          "home": "Palmeiras",
-          "away": "Fluminense",
-          "home_team_id": "4934",
-          "away_team_id": "4840",
-          "competition": "Semi-Finals",
-          "competition_id": "292",
-          "kickoff": "2026-10-22T00:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "AP",
-          "status_code": "13",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Semi-finals",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:santos-laguna-vs-pumas-unam|liga mx apertura|2026-10-22",
       "card_id": "santos-laguna-vs-pumas-unam",
       "name": "Santos Laguna Vs Pumas UNAM",
@@ -585,11 +429,11 @@
           "competition_id": "759",
           "kickoff": "2026-10-22T03:10:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "11'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
-          "round": "13",
+          "round": "Apertura",
           "format": "",
           "gender": ""
         }
@@ -602,9 +446,135 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:predator-european-championships-spain|2026-10-21",
+      "card_id": "predator-european-championships-spain",
+      "name": "Predator European Championships Spain",
+      "competition": "",
+      "kickoff": "2026-10-21T21:45:04+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "upstream_families": [
+        "PrimeVideo"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:palmeiras-vs-fluminense|conmebol libertadores|2026-10-22",
+      "card_id": "palmeiras-vs-fluminense",
+      "name": "Palmeiras Vs Fluminense",
+      "competition": "CONMEBOL Libertadores",
+      "kickoff": "2026-10-22T00:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401912520",
+          "upstream_family": "ESPN",
+          "name": "Palmeiras vs Fluminense",
+          "home": "Palmeiras",
+          "away": "Fluminense",
+          "home_team_id": "2029",
+          "away_team_id": "3445",
+          "competition": "CONMEBOL Libertadores",
+          "competition_id": "783",
+          "kickoff": "2026-10-22T00:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT-Pens",
+          "status_code": "STATUS_FINAL_PEN",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT-Pens",
+          "espn_status_description": "Final Score - After Penalties",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:783~e:401912520~c:401912520"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1869525",
+          "upstream_family": "LiveScore",
+          "name": "Palmeiras vs Fluminense",
+          "home": "Palmeiras",
+          "away": "Fluminense",
+          "home_team_id": "4934",
+          "away_team_id": "4840",
+          "competition": "Semi-Finals",
+          "competition_id": "292",
+          "kickoff": "2026-10-22T00:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "AP",
+          "status_code": "13",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "Semi-finals",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -770,10 +740,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -862,10 +832,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -904,10 +874,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -996,10 +966,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1088,10 +1058,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1155,10 +1125,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1371,10 +1341,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1547,10 +1517,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1639,10 +1609,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1681,10 +1651,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1810,10 +1780,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1881,10 +1851,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2180,10 +2150,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2259,10 +2229,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2449,10 +2419,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
