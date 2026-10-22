@@ -275,17 +275,44 @@
       "note": "A linear channel list - PTV Sports, Sky Sports Cricket, Star Sports - not a fixture feed, so it belongs here and not in today-match.json. 5 of its 14 distinct streams reached a media segment from Bangladesh on 2026-08-30; the rest are dead hosts the verifier will drop on its own."
     },
     {
-      "id": "rslivetv-channels",
-      "name": "RS Live TV channel list",
-      "url": "https://rslivetv.pages.dev/bd76t2s1w9.json",
-      "format": "json",
+      "id": "tv-bd1-bestiptvpro",
+      "name": "tv-bd1 Best IPTV Pro",
+      "url": "https://raw.githubusercontent.com/tv-bd1/bestiptvpro/refs/heads/main/All.m3u",
+      "format": "auto",
       "enabled": true,
       "priority": 140,
       "category_mode": "detect",
       "bd_candidate": true,
       "preserve_source_headers": true,
       "preserve_drm": true,
-      "note": "Added 2026-10-22 at the owner's request. A list its site keeps current; it carries lighter, CloudFront-served routes for channels whose usual routes stutter in fullscreen (Star Jalsha 720p Main, Zee Bangla 360p). Adds alternatives only; the file name is opaque, so if it moves this source simply yields nothing."
+      "note": "2026-10-22, the owner's request. The GitHub playlist behind rslivetv.pages.dev's list (same owner, tv-bd1), at a permanent raw.githubusercontent.com address rather than that site's opaque file name. Carries lighter CloudFront routes for Star Jalsha (720p Main) and Zee Bangla (360p) whose usual routes stutter in fullscreen. Adds alternatives; changes no existing route."
+    },
+    {
+      "id": "iptv-org-in-bangla",
+      "name": "iptv-org India (Bangla entertainment only)",
+      "url": "https://raw.githubusercontent.com/iptv-org/iptv/master/streams/in.m3u",
+      "format": "auto",
+      "enabled": true,
+      "priority": 130,
+      "category_mode": "detect",
+      "bd_candidate": true,
+      "preserve_source_headers": true,
+      "preserve_drm": true,
+      "source_rules": {
+        "include": {
+          "name_patterns": [
+            "\\bstar\\s*jalsha\\b",
+            "\\bjalsha\\s*movies\\b",
+            "\\bzee\\s*bangla\\b",
+            "\\bcolors\\s*bangla\\b",
+            "\\bsony\\s*aath\\b",
+            "\\bsun\\s*bangla\\b",
+            "\\baakash\\s*aath\\b",
+            "\\benterr10\\s*bangla\\b"
+          ]
+        }
+      },
+      "note": "2026-10-22. The largest maintained open playlist; its India file carries thousands of channels, so only the Bangla entertainment channels are taken, as alternative routes - the catalogue does not grow by thousands of unknown channels and the scan is not slowed."
     }
   ]
 }
