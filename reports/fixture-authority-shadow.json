@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-22T00:44:53.835260+00:00",
+  "generated_at": "2026-10-22T01:04:55.553061+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -16,13 +16,14 @@
         "12|Int.",
         "134|Stumps - day 3",
         "135|Stumps - day 4",
-        "2|14'",
-        "2|15'",
+        "2|1'",
+        "2|2'",
+        "2|34'",
         "2|35'",
-        "3|50'",
-        "3|68'",
+        "3|54'",
         "3|70'",
-        "3|71'"
+        "3|88'",
+        "3|90+1'"
       ],
       "attempts": [
         {
@@ -69,8 +70,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 6,
-      "fixtures": 398,
+      "requests_ok": 5,
+      "fixtures": 390,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -88,8 +89,8 @@
         {
           "sport": "cricket",
           "date": "2026-10-23",
-          "result": "ok",
-          "fixtures": 8
+          "result": "INCONCLUSIVE",
+          "reason": "http 502"
         },
         {
           "sport": "football",
@@ -114,40 +115,40 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 8,
+    "today_match": 7,
     "upcoming": 34,
-    "fixtures": 42,
+    "fixtures": 41,
     "verdicts": {
-      "VERIFIED": 15,
+      "CONFLICT": 2,
       "UNVERIFIED": 26,
-      "CONFLICT": 1
+      "VERIFIED": 13
     },
-    "verified": 15,
+    "verified": 13,
     "partial_authority": 0,
     "unverified": 26,
-    "conflict": 1,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 14,
-        "unmatched": 28
+        "matched": 11,
+        "unmatched": 30
       },
       "livescore": {
         "matched": 14,
-        "unmatched": 28
+        "unmatched": 27
       }
     },
-    "matched_by_two_independent_authorities": 12,
-    "authority_agreements": 11,
+    "matched_by_two_independent_authorities": 10,
+    "authority_agreements": 8,
     "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1
+      "card says LIVE, authority says UPCOMING": 2
     },
-    "identity_near_misses": 9,
+    "identity_near_misses": 7,
     "independent_authority_count_distribution": {
       "0": 26,
-      "1": 4,
-      "2": 12
+      "1": 5,
+      "2": 10
     },
     "unknown_authority_statuses": {
       "livescore": [
@@ -155,34 +156,19 @@
         "12|Int.",
         "134|Stumps - day 3",
         "135|Stumps - day 4",
-        "2|14'",
-        "2|15'",
+        "2|1'",
+        "2|2'",
+        "2|34'",
         "2|35'",
-        "3|50'",
-        "3|68'",
+        "3|54'",
         "3|70'",
-        "3|71'"
+        "3|88'",
+        "3|90+1'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
-    {
-      "fixture": "Montevideo City Torque Vs Atlético Mineiro",
-      "authority": "espn-header",
-      "authority_name": "Montevideo City Torque vs Atlético-MG",
-      "agreed_side": "montevideo city torque",
-      "ours": "atletico mineiro",
-      "theirs": "atletico mg"
-    },
-    {
-      "fixture": "Montevideo City Torque Vs Atlético Mineiro",
-      "authority": "livescore",
-      "authority_name": "Montevideo City Torque vs Atletico MG",
-      "agreed_side": "montevideo city torque",
-      "ours": "atletico mineiro",
-      "theirs": "atletico mg"
-    },
     {
       "fixture": "Al Ittihad vs Diriyah",
       "authority": "espn-header",
@@ -247,9 +233,9 @@
       "name": "Atlas FC Vs Club América",
       "competition": "Liga MX, Apertura",
       "kickoff": "2026-10-22T01:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -306,11 +292,11 @@
           "competition_id": "759",
           "kickoff": "2026-10-22T01:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "2'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
-          "round": "13",
+          "round": "Apertura",
           "format": "",
           "gender": ""
         }
@@ -322,10 +308,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -333,7 +321,7 @@
       "card_id": "louisville-city-fc-at-sporting-club-jacksonville",
       "name": "Louisville City FC at Sporting Club Jacksonville",
       "competition": "",
-      "kickoff": "2026-10-22T00:44:53+00:00",
+      "kickoff": "2026-10-22T01:04:55+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -430,7 +418,7 @@
           "competition_id": "292",
           "kickoff": "2026-10-22T00:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "14'",
+          "status_raw": "34'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -603,61 +591,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:montevideo-city-torque-vs-atlético-mineiro|conmebol sudamericana|2026-10-21",
-      "card_id": "montevideo-city-torque-vs-atlético-mineiro",
-      "name": "Montevideo City Torque Vs Atlético Mineiro",
-      "competition": "CONMEBOL Sudamericana",
-      "kickoff": "2026-10-21T22:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Montevideo City Torque vs Atlético-MG",
-              "event_id": "401913956",
-              "agreed_side": "montevideo city torque",
-              "ours": "atletico mineiro",
-              "theirs": "atletico mg"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Montevideo City Torque vs Atletico MG",
-              "event_id": "1894992",
-              "agreed_side": "montevideo city torque",
-              "ours": "atletico mineiro",
-              "theirs": "atletico mg"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-22",
       "card_id": "south-africa-vs-australia",
       "name": "South Africa Vs Australia",
@@ -783,10 +716,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -794,34 +727,7 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1556871",
-          "upstream_family": "ESPN",
-          "name": "Afghanistan vs Zimbabwe",
-          "home": "Afghanistan",
-          "away": "Zimbabwe",
-          "home_team_id": "40",
-          "away_team_id": "9",
-          "competition": "United Arab Emirates Tri-Nation Series",
-          "competition_id": "10931",
-          "kickoff": "2026-10-23T11:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "Final (D/N)",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-25T23:59:00Z",
-          "authority_uid": "s:200~e:1556871~c:1556871"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -848,14 +754,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -875,10 +780,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -917,10 +822,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1009,10 +914,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1101,10 +1006,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1168,10 +1073,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1384,10 +1289,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1615,10 +1520,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1707,10 +1612,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1749,10 +1654,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1878,10 +1783,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1889,49 +1794,20 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1557528",
-          "upstream_family": "ESPN",
-          "name": "Gambia vs Uganda",
-          "home": "Gambia",
-          "away": "Uganda",
-          "home_team_id": "82",
-          "away_team_id": "35",
-          "competition": "ICC Men's T20 World Cup Sub Regional Africa Qualifier Group C",
-          "competition_id": "23028",
-          "kickoff": "2026-10-23T13:00:00+00:00",
-          "kickoff_delta_minutes": 10.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "9th Match",
-          "format": "T20",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-24T23:59:00Z",
-          "authority_uid": "s:200~e:1557528~c:1557528"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "unmatched"
         }
       },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1949,10 +1825,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2047,34 +1923,7 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1535655",
-          "upstream_family": "ESPN",
-          "name": "India Women vs Zimbabwe Women",
-          "home": "India Women",
-          "away": "Zimbabwe Women",
-          "home_team_id": "1812",
-          "away_team_id": "271866",
-          "competition": "Zimbabwe Women tour of India 2026/27",
-          "competition_id": "24371",
-          "kickoff": "2026-10-23T08:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "1st ODI (D/N)",
-          "format": "ODI",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-24T23:59:00Z",
-          "authority_uid": "s:200~e:1535655~c:1535655"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -2101,14 +1950,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2248,10 +2096,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2414,10 +2262,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2604,10 +2452,10 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2652,6 +2500,62 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
+    }
+  ],
+  "retired_or_unpublished": [
+    {
+      "fixture_id": "provider:montevideo-city-torque-vs-atlético-mineiro|conmebol sudamericana|2026-10-21",
+      "card_id": "montevideo-city-torque-vs-atlético-mineiro",
+      "name": "Montevideo City Torque Vs Atlético Mineiro",
+      "competition": "CONMEBOL Sudamericana",
+      "kickoff": "2026-10-21T22:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Montevideo City Torque vs Atlético-MG",
+              "event_id": "401913956",
+              "agreed_side": "montevideo city torque",
+              "ours": "atletico mineiro",
+              "theirs": "atletico mg"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Montevideo City Torque vs Atletico MG",
+              "event_id": "1894992",
+              "agreed_side": "montevideo city torque",
+              "ours": "atletico mineiro",
+              "theirs": "atletico mg"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED"
     }
   ]
 }
