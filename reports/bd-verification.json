@@ -1,39 +1,23 @@
 {
-  "timestamp": "2026-10-22T16:36:54.188620+00:00",
+  "timestamp": "2026-10-22T16:42:10.275279+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 6,
-  "total_global_network_checked": 6,
+  "total_input_pool": 7,
+  "total_global_network_checked": 7,
   "total_proxy_selected": 1,
   "total_proxy_checked": 1,
-  "total_processed": 6,
-  "total_publishable": 0,
-  "strict_player_hidden": 1,
+  "total_processed": 7,
+  "total_publishable": 2,
+  "strict_player_hidden": 0,
   "browser_unreachable_hidden": 1,
   "unproven_hidden": 0,
   "status_counts": {
     "failed": 4,
     "unreachable_from_browser": 1,
-    "metadata_only": 1
+    "verified_global": 2
   },
   "groups": {
     "failed": [
-      {
-        "id": "abu-dhabi-vs-sharjah",
-        "name": "Abu Dhabi vs Sharjah",
-        "source_id": "sportlive-fancode-backup",
-        "source_pipeline": "today_match",
-        "url": "https://in-mc-flive.fancode.com/mumbai/4250481_english_hls_b5ed5279eb83693_1ta-di_h264/1080p5.m3u8",
-        "verification_status": "failed",
-        "verification_mode": "global",
-        "publish_allowed": false,
-        "http_status": 403,
-        "proxy_name": "default-cloudflare-worker",
-        "proxy_http_status": 403,
-        "verification_error": "HTTP 403: Forbidden",
-        "verification_note": "",
-        "permanent_fail_count": 0
-      },
       {
         "id": "fc-nordsjælland-vs-cska-sofia",
         "name": "FC Nordsjælland Vs CSKA Sofia",
@@ -47,6 +31,22 @@
         "proxy_name": "",
         "proxy_http_status": 0,
         "verification_error": "Stream URL is empty",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "horse-racing",
+        "name": "Horse Racing",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://tmaxapp.site/8wirwjs76erftg/skysportsracing.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "global",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "ssl: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: Hostname mismatch, certificate is not valid for 'tmaxapp.site'. (_ssl.c:1010)",
         "verification_note": "",
         "permanent_fail_count": 0
       },
@@ -67,19 +67,19 @@
         "permanent_fail_count": 0
       },
       {
-        "id": "abu-dhabi-vs-sharjah",
-        "name": "Abu Dhabi vs Sharjah",
-        "source_id": "sayanpal-fancode-mirror",
+        "id": "horse-racing",
+        "name": "Horse Racing",
+        "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
-        "url": "",
+        "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/0eiyyz8qzm/out/v1/dd17af8835fe4bd087d1a4e359b635d7/cenc.mpd",
         "verification_status": "failed",
-        "verification_mode": "same_run_cloud_second_pass",
+        "verification_mode": "same_run_player_gate",
         "publish_allowed": false,
-        "http_status": 0,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "Stream URL is empty",
-        "verification_note": "",
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
         "permanent_fail_count": 0
       }
     ],
@@ -101,21 +101,37 @@
         "permanent_fail_count": 0
       }
     ],
-    "metadata_only": [
+    "verified_global": [
       {
-        "id": "sharjah-vs-abu-dhabi",
-        "name": "Sharjah vs Abu Dhabi",
-        "source_id": "sm-fancode",
-        "source_pipeline": "upcoming",
-        "url": "",
-        "verification_status": "metadata_only",
-        "verification_mode": "none",
-        "publish_allowed": false,
-        "http_status": 0,
+        "id": "horse-racing",
+        "name": "Horse Racing",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://otte.cache.aiv-cdn.net/bom-nitro/live/clients/dash/enc/fsu3wl2rwb/out/v1/be61206c04e643349d53fb22301f3b50/cenc.mpd",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
         "proxy_name": "",
         "proxy_http_status": 0,
         "verification_error": "",
-        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "horse-racing",
+        "name": "Horse Racing",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://bl.rutube.ru/livestream/362d68a2d5d5b48dbf23522573e64d57/index.m3u8",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
         "permanent_fail_count": 0
       }
     ]
