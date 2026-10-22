@@ -67,7 +67,11 @@ CHANNEL_SLUGS = {
 # name that was actually found.
 PINNED_SPORTS_CHANNEL_ORDER = (
     "T Sports", "PTV Sports", "Willow", "Willow 2", "Star Sports 1 Hindi",
-    "Star Sports 2", "A Sports", "Star Sports Select 2", "UNITE8 SPORTS 2",
+    "Star Sports 2", "A Sports",
+    # Owner's request, 2026-10-22: these two at 4 and 5, right after A Sports
+    # on the list as it is published (T Sports, PTV Sports, A Sports).
+    "BDIX SPORTS LIVE", "Willow TV",
+    "Star Sports Select 2", "UNITE8 SPORTS 2",
     "Pk Sports", "BEIN SPORTS", "BEIN Sports 2", "BEIN Sports 3",
     "BEIN Sports 4", "BEIN Sports 5", "Bein Sports Extra", "BeIN Sports Xtra",
     "Bein Sports Xtra - *2", "Live Sports", "GOAL TV", "M Sports",

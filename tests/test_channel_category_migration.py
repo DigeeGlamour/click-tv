@@ -126,7 +126,15 @@ class PinnedSportsChannelOrderTests(unittest.TestCase):
     def test_every_named_channel_is_covered_by_the_pinned_list(self) -> None:
         # Guards against a future edit accidentally dropping one of the
         # twenty-one channels handed over.
-        self.assertEqual(len(PINNED_SPORTS_CHANNEL_ORDER), 21)
+        self.assertEqual(len(PINNED_SPORTS_CHANNEL_ORDER), 23)
+
+    def test_bdix_and_willow_tv_are_fourth_and_fifth_on_todays_list(self) -> None:
+        # The owner's request, 2026-10-22, against the list as published.
+        present = ["UNITE8 SPORTS 2", "Willow TV", "A Sports", "Goal TV",
+                   "BDIX SPORTS LIVE", "PTV Sports", "T Sports"]
+        ordered = [card["name"] for card in _apply_pinned_sports_order(
+            [self._card(name) for name in present])]
+        self.assertEqual(ordered[3:5], ["BDIX SPORTS LIVE", "Willow TV"])
 
     def test_a_channel_not_on_the_list_keeps_its_relative_order_after_every_pinned_one(self) -> None:
         cards = [
