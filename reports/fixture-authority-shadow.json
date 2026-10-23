@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T08:24:00.740247+00:00",
+  "generated_at": "2026-10-23T08:44:12.696273+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -102,13 +102,13 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 2,
-    "upcoming": 53,
+    "today_match": 3,
+    "upcoming": 52,
     "fixtures": 55,
     "verdicts": {
+      "VERIFIED": 26,
       "CONFLICT": 3,
-      "UNVERIFIED": 26,
-      "VERIFIED": 26
+      "UNVERIFIED": 26
     },
     "verified": 26,
     "partial_authority": 0,
@@ -120,16 +120,16 @@
         "unmatched": 31
       },
       "livescore": {
-        "matched": 23,
-        "unmatched": 32
+        "unmatched": 32,
+        "matched": 23
       }
     },
     "matched_by_two_independent_authorities": 17,
-    "authority_agreements": 17,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "authority_agreements": 16,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1,
+      "authorities disagree": 1,
       "kickoff": 3
     },
     "identity_near_misses": 16,
@@ -275,11 +275,77 @@
   ],
   "fixtures": [
     {
+      "fixture_id": "provider:brisbane-roar-vs-perth-glory|a league men|2026-10-23",
+      "card_id": "brisbane-roar-vs-perth-glory",
+      "name": "Brisbane Roar Vs Perth Glory",
+      "competition": "A-League Men",
+      "kickoff": "2026-10-23T09:00:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401892156",
+          "upstream_family": "ESPN",
+          "name": "Brisbane Roar FC vs Perth Glory FC",
+          "home": "Brisbane Roar FC",
+          "away": "Perth Glory FC",
+          "home_team_id": "5326",
+          "away_team_id": "5322",
+          "competition": "Australian A-League Men",
+          "competition_id": "3906",
+          "kickoff": "2026-10-23T09:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 23rd at 5:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3906~e:401892156~c:401892156"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:india-vs-zimbabwe-women|zimbabwe women tour of india 2026 1st odi|2026-10-23",
       "card_id": "india-women-vs-zimbabwe-women",
       "name": "India Women vs Zimbabwe Women",
       "competition": "Zimbabwe Women tour of India 2026 - 1st ODI",
-      "kickoff": "2026-10-23T08:24:00+00:00",
+      "kickoff": "2026-10-23T08:44:12+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -310,7 +376,7 @@
           "competition": "Zimbabwe Women tour of India 2026/27",
           "competition_id": "24371",
           "kickoff": "2026-10-23T08:30:00+00:00",
-          "kickoff_delta_minutes": 6.0,
+          "kickoff_delta_minutes": -14.2,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -340,10 +406,10 @@
           "competition": "India W vs Zimbabwe W ODI Series",
           "competition_id": "25259",
           "kickoff": "2026-10-23T08:30:00+00:00",
-          "kickoff_delta_minutes": 6.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "kickoff_delta_minutes": -14.2,
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "1st ODI",
           "format": "Womens ODI",
@@ -358,10 +424,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
       ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -379,9 +445,6 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
@@ -476,72 +539,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:brisbane-roar-vs-perth-glory|a league men|2026-10-23",
-      "card_id": "brisbane-roar-vs-perth-glory",
-      "name": "Brisbane Roar Vs Perth Glory",
-      "competition": "A-League Men",
-      "kickoff": "2026-10-23T09:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401892156",
-          "upstream_family": "ESPN",
-          "name": "Brisbane Roar FC vs Perth Glory FC",
-          "home": "Brisbane Roar FC",
-          "away": "Perth Glory FC",
-          "home_team_id": "5326",
-          "away_team_id": "5322",
-          "competition": "Australian A-League Men",
-          "competition_id": "3906",
-          "kickoff": "2026-10-23T09:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, October 23rd at 5:00 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3906~e:401892156~c:401892156"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:melbourne-stars-vs-hobart-hurricanes-women-2-match|women big bash league 2026|2026-10-29",
       "card_id": "2nd-match-melbourne-stars-women-vs-hobart-hurricanes-women",
       "name": "2nd Match Melbourne Stars Women vs Hobart Hurricanes Women",
@@ -631,9 +628,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -724,9 +721,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -767,9 +764,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -907,9 +904,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1175,9 +1172,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1268,9 +1265,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1378,9 +1375,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1536,9 +1533,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1577,8 +1574,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1654,9 +1651,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1725,9 +1722,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -1865,9 +1862,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2567,8 +2564,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2608,9 +2605,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -2848,9 +2845,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -3114,9 +3111,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -3265,9 +3262,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
@@ -3339,9 +3336,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "upstream_families": [
