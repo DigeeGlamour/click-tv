@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T21:44:02.591996+00:00",
+  "generated_at": "2026-10-23T22:04:08.640341+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,11 +12,9 @@
       "requests_ok": 6,
       "fixtures": 1530,
       "unknown_statuses": [
-        "2|14'",
-        "2|33'",
-        "2|41'",
-        "3|57'",
-        "3|84'"
+        "10|HT",
+        "2|35'",
+        "3|77'"
       ],
       "attempts": [
         {
@@ -108,50 +106,48 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 11,
+    "today_match": 9,
     "upcoming": 43,
-    "fixtures": 54,
+    "fixtures": 52,
     "verdicts": {
       "UNVERIFIED": 30,
-      "CONFLICT": 6,
-      "PARTIAL_AUTHORITY": 1,
-      "VERIFIED": 17
+      "VERIFIED": 18,
+      "CONFLICT": 3,
+      "PARTIAL_AUTHORITY": 1
     },
-    "verified": 17,
+    "verified": 18,
     "partial_authority": 1,
     "unverified": 30,
-    "conflict": 6,
+    "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 32,
-        "matched": 22
+        "matched": 20
       },
       "livescore": {
         "unmatched": 34,
-        "matched": 20
+        "matched": 18
       }
     },
-    "matched_by_two_independent_authorities": 18,
-    "authority_agreements": 13,
-    "authority_disagreements": 5,
-    "card_status_conflicts": 0,
+    "matched_by_two_independent_authorities": 16,
+    "authority_agreements": 16,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "authorities disagree": 5,
+      "card says LIVE, authority says FINISHED": 2,
       "kickoff": 1
     },
     "identity_near_misses": 4,
     "independent_authority_count_distribution": {
       "0": 30,
       "1": 6,
-      "2": 18
+      "2": 16
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "2|14'",
-        "2|33'",
-        "2|41'",
-        "3|57'",
-        "3|84'"
+        "10|HT",
+        "2|35'",
+        "3|77'"
       ],
       "espn-header": []
     }
@@ -192,48 +188,11 @@
   ],
   "fixtures": [
     {
-      "fixture_id": "provider:mlf-team-series-heritage-cup-championship-round",
-      "card_id": "mlf-live-team-series-heritage-cup-championship-round",
-      "name": "MLF LIVE Team Series Heritage Cup Championship Round",
-      "competition": "",
-      "kickoff": "2026-10-23T21:44:02+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:united-states-practice-2|2026-10-23",
       "card_id": "united-states-practice-2",
       "name": "United States Practice 2",
       "competition": "",
-      "kickoff": "2026-10-23T21:44:02+00:00",
+      "kickoff": "2026-10-23T22:04:08+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -337,18 +296,18 @@
           "competition_id": "3921",
           "kickoff": "2026-10-23T18:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "90'+6'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "90'+6'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3921~e:401883152~c:401883152"
         },
@@ -383,12 +342,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -426,18 +383,18 @@
           "competition_id": "3914",
           "kickoff": "2026-10-23T19:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "67'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "67'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3914~e:401880207~c:401880207"
         },
@@ -472,12 +429,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -515,18 +470,18 @@
           "competition_id": "700",
           "kickoff": "2026-10-23T19:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "67'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "67'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:700~e:401879253~c:401879253"
         },
@@ -562,99 +517,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+        "card says LIVE, authority says FINISHED"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:deportivo-alavés-vs-málaga-cf|laliga|2026-10-23",
-      "card_id": "deportivo-alavés-vs-málaga-cf",
-      "name": "Deportivo Alavés Vs Málaga CF",
-      "competition": "LaLiga",
-      "kickoff": "2026-10-23T19:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401882836",
-          "upstream_family": "ESPN",
-          "name": "Alavés vs Málaga",
-          "home": "Alavés",
-          "away": "Málaga",
-          "home_team_id": "96",
-          "away_team_id": "99",
-          "competition": "Spanish LALIGA",
-          "competition_id": "740",
-          "kickoff": "2026-10-23T19:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "67'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "67'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:740~e:401882836~c:401882836"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1810716",
-          "upstream_family": "LiveScore",
-          "name": "Deportivo Alaves vs Malaga",
-          "home": "Deportivo Alaves",
-          "away": "Malaga",
-          "home_team_id": "4482",
-          "away_team_id": "4442",
-          "competition": "LaLiga",
-          "competition_id": "75",
-          "kickoff": "2026-10-23T19:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "10",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -705,7 +571,7 @@
           "competition_id": "154",
           "kickoff": "2026-10-23T21:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "14'",
+          "status_raw": "35'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -727,92 +593,40 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:torino-vs-monza|serie a|2026-10-23",
-      "card_id": "torino-vs-monza",
-      "name": "Torino Vs Monza",
-      "competition": "Italian Serie A",
-      "kickoff": "2026-10-23T18:45:00+00:00",
+      "fixture_id": "provider:mlf-team-series-heritage-cup-championship-round",
+      "card_id": "mlf-live-team-series-heritage-cup-championship-round",
+      "name": "MLF LIVE Team Series Heritage Cup Championship Round",
+      "competition": "",
+      "kickoff": "2026-10-23T21:44:02+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "srhady-primevideo-sports"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "PrimeVideo"
       ],
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401874957",
-          "upstream_family": "ESPN",
-          "name": "Torino vs Monza",
-          "home": "Torino",
-          "away": "Monza",
-          "home_team_id": "239",
-          "away_team_id": "4007",
-          "competition": "Italian Serie A",
-          "competition_id": "730",
-          "kickoff": "2026-10-23T18:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "81'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "81'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:730~e:401874957~c:401874957"
+          "result": "unmatched"
         },
         "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1785411",
-          "upstream_family": "LiveScore",
-          "name": "Torino vs Monza",
-          "home": "Torino",
-          "away": "Monza",
-          "home_team_id": "3178",
-          "away_team_id": "4224",
-          "competition": "Serie A",
-          "competition_id": "77",
-          "kickoff": "2026-10-23T18:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "8",
-          "format": "",
-          "gender": ""
+          "result": "unmatched"
         }
       },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -853,22 +667,22 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:al-ahli-saudi-fc-vs-al-khaleej-fc|roshn saudi league 2026 2027|2026-10-23",
-      "card_id": "al-ahli-saudi-fc-vs-al-khaleej-fc",
-      "name": "Al Ahli Saudi FC vs Al Khaleej FC",
-      "competition": "Roshn Saudi League 2026-2027",
-      "kickoff": "2026-10-23T18:00:00+00:00",
-      "schedule_status": "LINK_UPDATING",
+      "fixture_id": "provider:deportivo-alavés-vs-málaga-cf|laliga|2026-10-23",
+      "card_id": "deportivo-alavés-vs-málaga-cf",
+      "name": "Deportivo Alavés Vs Málaga CF",
+      "competition": "LaLiga",
+      "kickoff": "2026-10-23T19:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "dartv-fancode-mirror"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "FanCode"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -876,16 +690,16 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "401900892",
+          "event_id": "401882836",
           "upstream_family": "ESPN",
-          "name": "Al Ahli vs Al Khaleej",
-          "home": "Al Ahli",
-          "away": "Al Khaleej",
-          "home_team_id": "8346",
-          "away_team_id": "21829",
-          "competition": "Saudi Pro League",
-          "competition_id": "21231",
-          "kickoff": "2026-10-23T18:00:00+00:00",
+          "name": "Alavés vs Málaga",
+          "home": "Alavés",
+          "away": "Málaga",
+          "home_team_id": "96",
+          "away_team_id": "99",
+          "competition": "Spanish LALIGA",
+          "competition_id": "740",
+          "kickoff": "2026-10-23T19:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
           "status_raw": "FT",
           "status_code": "STATUS_FULL_TIME",
@@ -900,28 +714,28 @@
           "espn_status_description": "Full Time",
           "espn_completed": true,
           "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:21231~e:401900892~c:401900892"
+          "authority_uid": "s:600~l:740~e:401882836~c:401882836"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1845668",
+          "event_id": "1810716",
           "upstream_family": "LiveScore",
-          "name": "Al Ahli vs Al Khaleej",
-          "home": "Al Ahli",
-          "away": "Al Khaleej",
-          "home_team_id": "4379",
-          "away_team_id": "7878",
-          "competition": "Saudi Professional League",
-          "competition_id": "403",
-          "kickoff": "2026-10-23T18:00:00+00:00",
+          "name": "Deportivo Alaves vs Malaga",
+          "home": "Deportivo Alaves",
+          "away": "Malaga",
+          "home_team_id": "4482",
+          "away_team_id": "4442",
+          "competition": "LaLiga",
+          "competition_id": "75",
+          "kickoff": "2026-10-23T19:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
           "status_raw": "FT",
           "status_code": "6",
           "status": "FINISHED",
           "sport": "football",
-          "round": "11",
+          "round": "10",
           "format": "",
           "gender": ""
         }
@@ -933,10 +747,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
       "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -974,6 +790,93 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:cruzeiro-vs-remo|campeonato brasileiro s rie a|2026-10-23",
+      "card_id": "cruzeiro-vs-remo",
+      "name": "Cruzeiro Vs Remo",
+      "competition": "Campeonato Brasileiro Série A",
+      "kickoff": "2026-10-23T23:00:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401841287",
+          "upstream_family": "ESPN",
+          "name": "Cruzeiro vs Remo",
+          "home": "Cruzeiro",
+          "away": "Remo",
+          "home_team_id": "2022",
+          "away_team_id": "4936",
+          "competition": "Brazilian Serie A",
+          "competition_id": "630",
+          "kickoff": "2026-10-23T23:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 23rd at 7:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:630~e:401841287~c:401841287"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1708713",
+          "upstream_family": "LiveScore",
+          "name": "Cruzeiro vs Remo",
+          "home": "Cruzeiro",
+          "away": "Remo",
+          "home_team_id": "4935",
+          "away_team_id": "4748",
+          "competition": "Serie A",
+          "competition_id": "155",
+          "kickoff": "2026-10-23T23:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "32",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1103,9 +1006,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1251,9 +1154,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1302,9 +1205,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1432,9 +1335,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1525,9 +1428,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1553,93 +1456,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:cruzeiro-vs-remo|campeonato brasileiro s rie a|2026-10-23",
-      "card_id": "cruzeiro-vs-remo",
-      "name": "Cruzeiro Vs Remo",
-      "competition": "Campeonato Brasileiro Série A",
-      "kickoff": "2026-10-23T23:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401841287",
-          "upstream_family": "ESPN",
-          "name": "Cruzeiro vs Remo",
-          "home": "Cruzeiro",
-          "away": "Remo",
-          "home_team_id": "2022",
-          "away_team_id": "4936",
-          "competition": "Brazilian Serie A",
-          "competition_id": "630",
-          "kickoff": "2026-10-23T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, October 23rd at 7:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:630~e:401841287~c:401841287"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1708713",
-          "upstream_family": "LiveScore",
-          "name": "Cruzeiro vs Remo",
-          "home": "Cruzeiro",
-          "away": "Remo",
-          "home_team_id": "4935",
-          "away_team_id": "4748",
-          "competition": "Serie A",
-          "competition_id": "155",
-          "kickoff": "2026-10-23T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "32",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:denmark-vs-kuwait|icc cwc challenge league a 2026|2026-10-24",
       "card_id": "denmark-vs-kuwait",
       "name": "Denmark vs Kuwait",
@@ -1654,9 +1470,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1725,9 +1541,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1767,9 +1583,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1846,9 +1662,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2208,9 +2024,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2512,9 +2328,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2554,9 +2370,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2646,9 +2462,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2886,9 +2702,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3065,9 +2881,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3216,9 +3032,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3288,8 +3104,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
+        "dartv-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3389,6 +3205,182 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "upcoming"
+    }
+  ],
+  "retired_or_unpublished": [
+    {
+      "fixture_id": "provider:al-ahli-saudi-fc-vs-al-khaleej-fc|roshn saudi league 2026 2027|2026-10-23",
+      "card_id": "al-ahli-saudi-fc-vs-al-khaleej-fc",
+      "name": "Al Ahli Saudi FC vs Al Khaleej FC",
+      "competition": "Roshn Saudi League 2026-2027",
+      "kickoff": "2026-10-23T18:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
+      "provider_identity": "",
+      "source_ids": [
+        "dartv-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401900892",
+          "upstream_family": "ESPN",
+          "name": "Al Ahli vs Al Khaleej",
+          "home": "Al Ahli",
+          "away": "Al Khaleej",
+          "home_team_id": "8346",
+          "away_team_id": "21829",
+          "competition": "Saudi Pro League",
+          "competition_id": "21231",
+          "kickoff": "2026-10-23T18:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:21231~e:401900892~c:401900892"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1845668",
+          "upstream_family": "LiveScore",
+          "name": "Al Ahli vs Al Khaleej",
+          "home": "Al Ahli",
+          "away": "Al Khaleej",
+          "home_team_id": "4379",
+          "away_team_id": "7878",
+          "competition": "Saudi Professional League",
+          "competition_id": "403",
+          "kickoff": "2026-10-23T18:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "11",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED"
+    },
+    {
+      "fixture_id": "provider:torino-vs-monza|serie a|2026-10-23",
+      "card_id": "torino-vs-monza",
+      "name": "Torino Vs Monza",
+      "competition": "Italian Serie A",
+      "kickoff": "2026-10-23T18:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401874957",
+          "upstream_family": "ESPN",
+          "name": "Torino vs Monza",
+          "home": "Torino",
+          "away": "Monza",
+          "home_team_id": "239",
+          "away_team_id": "4007",
+          "competition": "Italian Serie A",
+          "competition_id": "730",
+          "kickoff": "2026-10-23T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:730~e:401874957~c:401874957"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1785411",
+          "upstream_family": "LiveScore",
+          "name": "Torino vs Monza",
+          "home": "Torino",
+          "away": "Monza",
+          "home_team_id": "3178",
+          "away_team_id": "4224",
+          "competition": "Serie A",
+          "competition_id": "77",
+          "kickoff": "2026-10-23T18:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "8",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT"
     }
   ]
 }
