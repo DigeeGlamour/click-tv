@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-23T15:44:30.848467+00:00",
+  "updated_at": "2026-10-23T16:04:39.131030+00:00",
   "count": 6,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -263,19 +263,18 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1535655)",
+        "ESPN espn-header=Result (Result, event 1535655)",
         "LiveScore livescore=FT (6, event 1775133)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Live (Live, event 1535655); LiveScore livescore=FT (6, event 1775133)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kgpver1597857601.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/zargnl1718412654.png",
       "playback_id": "ctv_64da0f954ec802fe1860ac29dc8c7e5f",
@@ -285,7 +284,24 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1535655",
+        "livescore": "1775133"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-23T16:04:13.583700+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-23T16:24:13.583700+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-23T16:04:33.515496+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-23T16:04:33.515496+00:00"
     },
     {
       "id": "zimbabwe-vs-afghanistan",
@@ -811,7 +827,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1556871)",
+        "ESPN espn-header=Innings break (Innings break, event 1556871)",
         "LiveScore livescore=Play in progress (33, event 1908260)"
       ],
       "authority_independent_count": 2,
@@ -829,7 +845,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-23T16:04:33.515496+00:00"
     },
     {
       "id": "ajman-vs-sharjah",
@@ -837,7 +862,7 @@
       "primary_stream_key": "",
       "sport_type": "cricket",
       "sport_type_derived": true,
-      "logo": "https://r2.thesportsdb.com/images/media/team/badge/zohyna1677576452.png",
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4250482_53130_AJM_SHA_fc-web_1792412929295.jpg",
       "category": "today_match",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
@@ -853,12 +878,12 @@
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
+      "source_id": "dartv-fancode-mirror",
       "metadata_only": true,
       "available_link_count": 0,
       "channel_stats": {
         "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -867,18 +892,12 @@
       },
       "source_provenance": [
         {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
           "source_id": "dartv-fancode-mirror",
           "source_name": "FanCode Live API (dartv-ajaz)",
           "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
         "dartv-fancode-mirror"
       ],
       "start_time": "2026-10-23T12:30:00+00:00",
@@ -891,7 +910,7 @@
       "original_status": "UPCOMING",
       "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
       "source_start_time": "2026-10-23T12:30:00+00:00",
       "time_verification": "provider_feed",
       "sport_class": "confirmed_cricket",
@@ -902,7 +921,6 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING",
-      "provider_poster_url": "https://r2.thesportsdb.com/images/media/team/badge/zohyna1677576452.png",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/zohyna1677576452.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kccfg11753982654.png"
     },
@@ -912,7 +930,7 @@
       "primary_stream_key": "",
       "sport_type": "cricket",
       "sport_type_derived": true,
-      "logo": "",
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4249762_53093_GAM_UGA_FC-Web_1792493253257.png",
       "category": "today_match",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
@@ -928,12 +946,12 @@
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
+      "source_id": "dartv-fancode-mirror",
       "metadata_only": true,
       "available_link_count": 0,
       "channel_stats": {
         "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -942,18 +960,12 @@
       },
       "source_provenance": [
         {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
           "source_id": "dartv-fancode-mirror",
           "source_name": "FanCode Live API (dartv-ajaz)",
           "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
         "dartv-fancode-mirror"
       ],
       "start_time": "2026-10-23T12:50:00+00:00",
@@ -966,30 +978,30 @@
       "original_status": "UPCOMING",
       "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
       "source_start_time": "2026-10-23T12:50:00+00:00",
       "time_verification": "provider_feed",
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1557528)"
+        "ESPN espn-header=Result (Result, event 1557528)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "1557528"
       },
-      "authority_status": "LIVE",
+      "authority_finished_confirmations": 1,
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE"
+      "lifecycle_state": "STARTING"
     },
     {
       "id": "al-faisaly-saudi-vs-al-nassr-fc",
@@ -1065,15 +1077,14 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=75' (STATUS_SECOND_HALF, event 401900444)",
+        "ESPN espn-header=81' (STATUS_IN_PROGRESS, event 401900444)",
         "LiveScore livescore=FT (6, event 1845665)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=75' (STATUS_SECOND_HALF, event 401900444); LiveScore livescore=FT (6, event 1845665)",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "backups": [
         {
           "id": "al-faisaly-vs-al-nassr",
@@ -1201,7 +1212,17 @@
             }
           ]
         }
-      ]
+      ],
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=81' (STATUS_IN_PROGRESS, event 401900444); LiveScore livescore=FT (6, event 1845665)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-23T16:04:33.515496+00:00"
     },
     {
       "id": "al-ittihad-vs-diriyah",
@@ -1209,9 +1230,8 @@
       "primary_stream_key": "",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "",
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4250267_53025_ITT_DIR_FC-Web.png",
       "category": "today_match",
-      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "media",
@@ -1226,13 +1246,12 @@
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
+      "source_id": "vk1817-fancode-mirror",
       "metadata_only": true,
       "available_link_count": 0,
-      "backups": [],
       "channel_stats": {
         "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -1240,11 +1259,6 @@
         "generic_server_channels": 0
       },
       "source_provenance": [
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
         {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
@@ -1257,7 +1271,6 @@
         }
       ],
       "source_ids": [
-        "sm-fancode",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
@@ -1271,13 +1284,14 @@
       "original_status": "UPCOMING",
       "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
       "source_start_time": "2026-10-23T15:30:00+00:00",
       "time_verification": "provider_feed",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING"
