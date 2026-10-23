@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T08:44:12.696273+00:00",
+  "generated_at": "2026-10-23T09:04:04.653005+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -11,7 +11,9 @@
       "requests": 6,
       "requests_ok": 6,
       "fixtures": 1525,
-      "unknown_statuses": [],
+      "unknown_statuses": [
+        "2|3'"
+      ],
       "attempts": [
         {
           "sport": "cricket",
@@ -58,7 +60,7 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 584,
+      "fixtures": 586,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -71,7 +73,7 @@
           "sport": "cricket",
           "date": "2026-10-23",
           "result": "ok",
-          "fixtures": 8
+          "fixtures": 10
         },
         {
           "sport": "cricket",
@@ -103,32 +105,33 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 3,
-    "upcoming": 52,
-    "fixtures": 55,
+    "upcoming": 53,
+    "fixtures": 56,
     "verdicts": {
-      "VERIFIED": 26,
-      "CONFLICT": 3,
-      "UNVERIFIED": 26
+      "CONFLICT": 4,
+      "UNVERIFIED": 26,
+      "VERIFIED": 26
     },
     "verified": 26,
     "partial_authority": 0,
     "unverified": 26,
-    "conflict": 3,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 24,
+        "matched": 25,
         "unmatched": 31
       },
       "livescore": {
         "unmatched": 32,
-        "matched": 23
+        "matched": 24
       }
     },
-    "matched_by_two_independent_authorities": 17,
-    "authority_agreements": 16,
+    "matched_by_two_independent_authorities": 18,
+    "authority_agreements": 17,
     "authority_disagreements": 1,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
       "authorities disagree": 1,
       "kickoff": 3
     },
@@ -136,10 +139,12 @@
     "independent_authority_count_distribution": {
       "0": 26,
       "1": 12,
-      "2": 17
+      "2": 18
     },
     "unknown_authority_statuses": {
-      "livescore": [],
+      "livescore": [
+        "2|3'"
+      ],
       "espn-header": []
     }
   },
@@ -280,9 +285,9 @@
       "name": "Brisbane Roar Vs Perth Glory",
       "competition": "A-League Men",
       "kickoff": "2026-10-23T09:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -334,33 +339,33 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:india-vs-zimbabwe-women|zimbabwe women tour of india 2026 1st odi|2026-10-23",
+      "fixture_id": "provider:india-vs-zimbabwe-women|odi icc women championship|2026-10-23",
       "card_id": "india-women-vs-zimbabwe-women",
-      "name": "India Women vs Zimbabwe Women",
-      "competition": "Zimbabwe Women tour of India 2026 - 1st ODI",
-      "kickoff": "2026-10-23T08:44:12+00:00",
+      "name": "India Women Vs Zimbabwe Women",
+      "competition": "ODI ICC Women's Championship",
+      "kickoff": "2026-10-23T08:30:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "PrimeVideo",
-        "Willow"
+        "SM-Aggregate"
       ],
-      "independent_witness_count": 2,
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -376,7 +381,7 @@
           "competition": "Zimbabwe Women tour of India 2026/27",
           "competition_id": "24371",
           "kickoff": "2026-10-23T08:30:00+00:00",
-          "kickoff_delta_minutes": -14.2,
+          "kickoff_delta_minutes": 0.0,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -406,7 +411,7 @@
           "competition": "India W vs Zimbabwe W ODI Series",
           "competition_id": "25259",
           "kickoff": "2026-10-23T08:30:00+00:00",
-          "kickoff_delta_minutes": -14.2,
+          "kickoff_delta_minutes": 0.0,
           "status_raw": "Play in progress",
           "status_code": "33",
           "status": "LIVE",
@@ -628,10 +633,10 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -721,10 +726,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -764,10 +769,10 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -904,10 +909,10 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1172,10 +1177,10 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1265,10 +1270,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1375,10 +1380,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1533,10 +1538,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1574,8 +1579,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1651,10 +1656,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1722,10 +1727,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1862,10 +1867,10 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2146,9 +2151,9 @@
           "verified": true,
           "event_id": "401892153",
           "upstream_family": "ESPN",
-          "name": "Melbourne Victory vs Melbourne City FC",
-          "home": "Melbourne Victory",
-          "away": "Melbourne City FC",
+          "name": "MELBOURNE VICTORY vs MELBOURNE CITY FC",
+          "home": "MELBOURNE VICTORY",
+          "away": "MELBOURNE CITY FC",
           "home_team_id": "5328",
           "away_team_id": "11143",
           "competition": "Australian A-League Men",
@@ -2564,9 +2569,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2591,6 +2596,94 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:racing-club-de-santander-vs-rcd-espanyol|laliga 2026 27|2026-10-24",
+      "card_id": "racing-club-de-santander-vs-rcd-espanyol",
+      "name": "Racing Club de Santander vs RCD Espanyol",
+      "competition": "LALIGA 2026-27",
+      "kickoff": "2026-10-24T14:15:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401882831",
+          "upstream_family": "ESPN",
+          "name": "Racing Santander vs Espanyol",
+          "home": "Racing Santander",
+          "away": "Espanyol",
+          "home_team_id": "87",
+          "away_team_id": "88",
+          "competition": "Spanish LALIGA",
+          "competition_id": "740",
+          "kickoff": "2026-10-24T14:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sat, October 24th at 10:15 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:740~e:401882831~c:401882831"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1810720",
+          "upstream_family": "LiveScore",
+          "name": "Racing Santander vs Espanyol",
+          "home": "Racing Santander",
+          "away": "Espanyol",
+          "home_team_id": "4508",
+          "away_team_id": "12635",
+          "competition": "LaLiga",
+          "competition_id": "75",
+          "kickoff": "2026-10-24T14:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "10",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:rayo-vallecano-vs-elche-cf|laliga 2026 27|2026-10-24",
       "card_id": "rayo-vallecano-vs-elche-cf",
       "name": "Rayo Vallecano vs Elche CF",
@@ -2605,10 +2698,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2845,10 +2938,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3111,10 +3204,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3262,10 +3355,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3336,10 +3429,10 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "dartv-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3747,6 +3840,98 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
+    }
+  ],
+  "retired_or_unpublished": [
+    {
+      "fixture_id": "provider:india-vs-zimbabwe-women|zimbabwe women tour of india 2026 1st odi|2026-10-23",
+      "card_id": "india-women-vs-zimbabwe-women",
+      "name": "India Women vs Zimbabwe Women",
+      "competition": "Zimbabwe Women tour of India 2026 - 1st ODI",
+      "kickoff": "2026-10-23T08:44:12+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "PrimeVideo",
+        "Willow"
+      ],
+      "independent_witness_count": 2,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1535655",
+          "upstream_family": "ESPN",
+          "name": "India Women vs Zimbabwe Women",
+          "home": "India Women",
+          "away": "Zimbabwe Women",
+          "home_team_id": "1812",
+          "away_team_id": "271866",
+          "competition": "Zimbabwe Women tour of India 2026/27",
+          "competition_id": "24371",
+          "kickoff": "2026-10-23T08:30:00+00:00",
+          "kickoff_delta_minutes": -14.2,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "1st ODI (D/N)",
+          "format": "ODI",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-24T23:59:00Z",
+          "authority_uid": "s:200~e:1535655~c:1535655"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1775133",
+          "upstream_family": "LiveScore",
+          "name": "India W vs Zimbabwe W",
+          "home": "India W",
+          "away": "Zimbabwe W",
+          "home_team_id": "86118",
+          "away_team_id": "192201",
+          "competition": "India W vs Zimbabwe W ODI Series",
+          "competition_id": "25259",
+          "kickoff": "2026-10-23T08:30:00+00:00",
+          "kickoff_delta_minutes": -14.2,
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
+          "sport": "cricket",
+          "round": "1st ODI",
+          "format": "Womens ODI",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT"
     }
   ]
 }
