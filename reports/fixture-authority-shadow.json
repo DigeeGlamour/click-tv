@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T00:24:31.192258+00:00",
+  "generated_at": "2026-10-23T00:32:40.968850+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -11,7 +11,9 @@
       "requests": 6,
       "requests_ok": 6,
       "fixtures": 1518,
-      "unknown_statuses": [],
+      "unknown_statuses": [
+        "2|1'"
+      ],
       "attempts": [
         {
           "sport": "cricket",
@@ -102,43 +104,46 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 3,
+    "today_match": 4,
     "upcoming": 38,
-    "fixtures": 41,
+    "fixtures": 42,
     "verdicts": {
-      "UNVERIFIED": 24,
-      "VERIFIED": 15,
-      "CONFLICT": 2
+      "UNVERIFIED": 25,
+      "CONFLICT": 3,
+      "VERIFIED": 14
     },
-    "verified": 15,
+    "verified": 14,
     "partial_authority": 0,
-    "unverified": 24,
-    "conflict": 2,
+    "unverified": 25,
+    "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 30,
+        "unmatched": 31,
         "matched": 11
       },
       "livescore": {
-        "unmatched": 26,
+        "unmatched": 27,
         "matched": 15
       }
     },
     "matched_by_two_independent_authorities": 8,
-    "authority_agreements": 8,
+    "authority_agreements": 7,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
       "kickoff": 2
     },
     "identity_near_misses": 4,
     "independent_authority_count_distribution": {
-      "0": 24,
+      "0": 25,
       "1": 9,
       "2": 8
     },
     "unknown_authority_statuses": {
-      "livescore": [],
+      "livescore": [
+        "2|1'"
+      ],
       "espn-header": []
     }
   },
@@ -182,7 +187,7 @@
       "card_id": "assumption-vs-saint-anselm-football",
       "name": "Assumption vs Saint Anselm Football",
       "competition": "",
-      "kickoff": "2026-10-23T00:24:31+00:00",
+      "kickoff": "2026-10-23T00:32:40+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -220,9 +225,9 @@
       "name": "Flamengo Vs Estudiantes de La Plata",
       "competition": "CONMEBOL Libertadores",
       "kickoff": "2026-10-23T00:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -279,11 +284,11 @@
           "competition_id": "292",
           "kickoff": "2026-10-23T00:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "1'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
-          "round": "Semi Finals",
+          "round": "Semi-finals",
           "format": "",
           "gender": ""
         }
@@ -295,10 +300,49 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:olimpia-asuncion-vs-cruzeiro|copa liberates femeninio|2026-10-23",
+      "card_id": "olimpia-asuncion-vs-cruzeiro",
+      "name": "Olimpia Asuncion Vs Cruzeiro",
+      "competition": "Copa Liberates Femeninio",
+      "kickoff": "2026-10-23T00:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -494,10 +538,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -586,10 +630,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -628,10 +672,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -724,10 +768,10 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -817,10 +861,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -922,10 +966,10 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -994,10 +1038,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1036,10 +1080,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1078,10 +1122,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1170,10 +1214,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1212,10 +1256,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1254,10 +1298,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1325,10 +1369,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1367,10 +1411,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1620,10 +1664,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1745,10 +1789,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1920,10 +1964,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2197,10 +2241,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2351,10 +2395,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2393,10 +2437,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
+        "dartv-fancode-mirror",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "dartv-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2479,161 +2523,6 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "upcoming"
-    }
-  ],
-  "retired_or_unpublished": [
-    {
-      "fixture_id": "provider:fk-borac-banja-luka-vs-kuopion-palloseura|uefa conference league|2026-10-22",
-      "card_id": "fk-borac-banja-luka-vs-kuopion-palloseura",
-      "name": "FK Borac Banja Luka Vs Kuopion Palloseura",
-      "competition": "UEFA Conference League",
-      "kickoff": "2026-10-22T19:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Borac Banja Luka vs KuPS Kuopio",
-              "event_id": "401915743",
-              "agreed_side": "borac banja luka",
-              "ours": "kuopion palloseura",
-              "theirs": "kups kuopio"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Borac Banja Luka vs KuPS",
-              "event_id": "1883657",
-              "agreed_side": "borac banja luka",
-              "ours": "kuopion palloseura",
-              "theirs": "kups"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:jagiellonia-białystok-vs-rsc-anderlecht|uefa europa league|2026-10-22",
-      "card_id": "jagiellonia-białystok-vs-rsc-anderlecht",
-      "name": "Jagiellonia Białystok Vs RSC Anderlecht",
-      "competition": "UEFA Europa League",
-      "kickoff": "2026-10-22T19:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Jagiellonia Bialystok vs Anderlecht",
-              "event_id": "401915542",
-              "agreed_side": "jagiellonia bialystok",
-              "ours": "rsc anderlecht",
-              "theirs": "anderlecht"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Jagiellonia Bialystok vs Anderlecht",
-              "event_id": "1883560",
-              "agreed_side": "jagiellonia bialystok",
-              "ours": "rsc anderlecht",
-              "theirs": "anderlecht"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:tsg-hoffenheim-vs-olympique-lyonnais|uefa europa league|2026-10-22",
-      "card_id": "tsg-hoffenheim-vs-olympique-lyonnais",
-      "name": "TSG Hoffenheim Vs Olympique Lyonnais",
-      "competition": "UEFA Europa League",
-      "kickoff": "2026-10-22T19:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "TSG Hoffenheim vs Lyon",
-              "event_id": "401915543",
-              "agreed_side": "tsg hoffenheim",
-              "ours": "olympique lyonnais",
-              "theirs": "lyon"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
     }
   ]
 }
