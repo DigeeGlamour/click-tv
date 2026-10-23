@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-23T01:04:40.189529+00:00",
+  "updated_at": "2026-10-23T01:24:41.378176+00:00",
   "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -114,7 +114,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "ppv-the-golazo-show",
       "artwork_candidates": [
@@ -130,14 +130,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-22T23:04:23.901577+00:00"
+      "carried_forward_misses": 9,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-22T23:04:23.901577+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 9,
+      "ended_seen_at": "2026-10-23T01:24:34.917574+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "olimpia-asuncion-vs-cruzeiro",
@@ -261,7 +265,7 @@
     {
       "id": "flamengo-vs-estudiantes-de-la-plata",
       "name": "Flamengo Vs Estudiantes de La Plata",
-      "primary_stream_key": "3f3fde7af55d1d08b0aac25e8014ef87811c17cf944ec5fb04fcd7e943d36730",
+      "primary_stream_key": "23a32f72373d6e8dba79ac9d54766440f286c26203b922620bb95b537ab7459e",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/5981/image",
@@ -269,7 +273,7 @@
       "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
-      "requires_headers": false,
+      "requires_headers": true,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -289,7 +293,7 @@
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": true,
+          "requires_headers": false,
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
@@ -304,7 +308,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_fd195fa61874122c77418f46de049b29",
+          "playback_id": "ctv_a728d53c7382c88791a799075ed845f0",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -315,42 +319,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "flamengo-vs-estudiantes-de-la-plata--sportdigital-fussball",
-          "name": "SportDigital Fussball",
-          "normalized_name": "sportdigital-fussball",
-          "logo": "https://img.sofascore.com/api/v1/team/5981/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "flamengo-vs-estudiantes-de-la-plata--sportdigital-fussball--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "flamengo-vs-estudiantes-de-la-plata--sportdigital-fussball--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_d01639e8473ac9c8fc4abd73",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_a728d53c7382c88791a799075ed845f0",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "flamengo-vs-estudiantes-de-la-plata--bein3-sports",
           "name": "BEIN3 SPORTS",
@@ -386,10 +354,46 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "flamengo-vs-estudiantes-de-la-plata--sportdigital-fussball",
+          "name": "SportDigital Fussball",
+          "normalized_name": "sportdigital-fussball",
+          "logo": "https://img.sofascore.com/api/v1/team/5981/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "flamengo-vs-estudiantes-de-la-plata--sportdigital-fussball--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "flamengo-vs-estudiantes-de-la-plata--sportdigital-fussball--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_d01639e8473ac9c8fc4abd73",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_a728d53c7382c88791a799075ed845f0",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "flamengo-vs-estudiantes-de-la-plata--sportdigital-fussball",
+      "default_channel_id": "flamengo-vs-estudiantes-de-la-plata--bein3-sports",
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 0,
@@ -432,24 +436,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "UPCOMING",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=2' (STATUS_FIRST_HALF, event 401912521)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912521)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401912521"
       },
-      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/syptwx1473538074.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/pf08dq1760634366.png",
-      "playback_id": "ctv_a728d53c7382c88791a799075ed845f0",
+      "playback_id": "ctv_fd195fa61874122c77418f46de049b29",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -487,7 +490,7 @@
         {
           "id": "motagua-vs-alajuelense",
           "name": "Motagua vs Alajuelense",
-          "primary_stream_key": "2378f87b47c1a3e10af1ae6459f418022cf30673af524ac85342d124e21826b3",
+          "primary_stream_key": "99fce3a348ae3c8199624a218047c8dc3315a59ac920dae15206ce1ae74d2e72",
           "sport_type": "football",
           "sport_type_derived": true,
           "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.f5c7ebbe-e3f6-4225-a9e7-d9565ef2423b/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
@@ -533,9 +536,9 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "start_time": "2026-10-23T01:04:08+00:00",
-          "start_at": "2026-10-23T01:04:08+00:00",
-          "end_time": "2026-10-23T05:04:08+00:00",
+          "start_time": "2026-10-23T01:24:15+00:00",
+          "start_at": "2026-10-23T01:24:15+00:00",
+          "end_time": "2026-10-23T05:24:15+00:00",
           "end_time_source": "assumed",
           "fixture_id": "provider:motagua-vs-alajuelense|2026-10-23",
           "status": "LIVE_NOW",
@@ -564,7 +567,7 @@
           "lifecycle_state": "LIVE",
           "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/zi6mw31581857175.png",
           "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/zi9ft21707630526.png",
-          "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
+          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -575,6 +578,35 @@
         },
         {
           "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -594,35 +626,6 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -723,6 +726,19 @@
               "id": "motagua-vs-alajuelense--prime-video--1",
               "role": "primary",
               "playback_type": "native",
+              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "motagua-vs-alajuelense--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_0e638de706138f746f0f4bb0",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -733,7 +749,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "motagua-vs-alajuelense--prime-video--2",
+              "id": "motagua-vs-alajuelense--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_b9a4754dd8779c45821c460d",
@@ -741,19 +757,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "motagua-vs-alajuelense--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -858,35 +861,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -915,7 +889,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -935,6 +909,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -983,19 +986,6 @@
               "id": "assumption-vs-saint-anselm-football--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_c1e02be4d063e0566b724069",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "assumption-vs-saint-anselm-football--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_01b11c32d050778527634c31",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -1006,7 +996,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "assumption-vs-saint-anselm-football--prime-video--4",
+              "id": "assumption-vs-saint-anselm-football--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_b7f37c054f02157af5afadd6",
@@ -1014,6 +1004,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "assumption-vs-saint-anselm-football--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_c1e02be4d063e0566b724069",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1048,9 +1051,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-23T01:04:08+00:00",
-      "start_at": "2026-10-23T01:04:08+00:00",
-      "end_time": "2026-10-23T03:34:08+00:00",
+      "start_time": "2026-10-23T01:24:15+00:00",
+      "start_at": "2026-10-23T01:24:15+00:00",
+      "end_time": "2026-10-23T03:54:15+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:assumption-vs-saint-anselm-football|2026-10-23",
       "status": "LIVE_NOW",

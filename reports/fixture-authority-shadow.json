@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-23T01:04:08.136603+00:00",
+  "generated_at": "2026-10-23T01:24:15.183460+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,10 +12,10 @@
       "requests_ok": 6,
       "fixtures": 1518,
       "unknown_statuses": [
-        "2|1'",
-        "2|2'",
-        "2|33'",
-        "2|4'"
+        "10|HT",
+        "2|18'",
+        "2|23'",
+        "2|25'"
       ],
       "attempts": [
         {
@@ -112,14 +112,14 @@
     "fixtures": 42,
     "verdicts": {
       "UNVERIFIED": 22,
-      "PARTIAL_AUTHORITY": 2,
-      "VERIFIED": 15,
-      "CONFLICT": 3
+      "PARTIAL_AUTHORITY": 1,
+      "CONFLICT": 4,
+      "VERIFIED": 15
     },
     "verified": 15,
-    "partial_authority": 2,
+    "partial_authority": 1,
     "unverified": 22,
-    "conflict": 3,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 24,
@@ -133,8 +133,9 @@
     "matched_by_two_independent_authorities": 12,
     "authority_agreements": 11,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
       "kickoff": 3
     },
     "identity_near_misses": 4,
@@ -145,10 +146,10 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "2|1'",
-        "2|2'",
-        "2|33'",
-        "2|4'"
+        "10|HT",
+        "2|18'",
+        "2|23'",
+        "2|25'"
       ],
       "espn-header": []
     }
@@ -193,7 +194,7 @@
       "card_id": "assumption-vs-saint-anselm-football",
       "name": "Assumption vs Saint Anselm Football",
       "competition": "",
-      "kickoff": "2026-10-23T01:04:08+00:00",
+      "kickoff": "2026-10-23T01:24:15+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -274,7 +275,7 @@
           "competition_id": "26271",
           "kickoff": "2026-10-23T01:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "2'",
+          "status_raw": "23'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -330,17 +331,17 @@
           "competition_id": "783",
           "kickoff": "2026-10-23T00:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "2'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "2'",
-          "espn_status_description": "First Half",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, October 22nd at 8:30 PM EDT",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:783~e:401912521~c:401912521"
@@ -360,8 +361,8 @@
           "competition_id": "292",
           "kickoff": "2026-10-23T00:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "33'",
-          "status_code": "2",
+          "status_raw": "HT",
+          "status_code": "10",
           "status": "UNKNOWN",
           "sport": "football",
           "round": "Semi-finals",
@@ -376,10 +377,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -426,7 +429,7 @@
       "competition": "UEFA The Golazo Show",
       "kickoff": "2026-10-22T18:56:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -545,10 +548,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -637,10 +640,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -679,10 +682,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -775,10 +778,10 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -868,10 +871,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -973,10 +976,10 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1045,10 +1048,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1087,10 +1090,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1158,10 +1161,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1250,10 +1253,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1292,10 +1295,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1334,10 +1337,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1405,10 +1408,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1476,10 +1479,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1729,10 +1732,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1910,10 +1913,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2085,10 +2088,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2362,10 +2365,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2454,10 +2457,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2546,10 +2549,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2619,10 +2622,10 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "dartv-fancode-mirror",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2740,7 +2743,7 @@
       "card_id": "motagua-vs-alajuelense",
       "name": "Motagua vs Alajuelense",
       "competition": "",
-      "kickoff": "2026-10-23T01:04:08+00:00",
+      "kickoff": "2026-10-23T01:24:15+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "",
       "card_status_normalized": "LIVE",
@@ -2769,7 +2772,7 @@
           "competition": "Concacaf Central American Cup",
           "competition_id": "22947",
           "kickoff": "2026-10-23T01:00:00+00:00",
-          "kickoff_delta_minutes": -4.1,
+          "kickoff_delta_minutes": -24.2,
           "status_raw": "Scheduled",
           "status_code": "STATUS_SCHEDULED",
           "status": "UPCOMING",
@@ -2805,6 +2808,7 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
+        "kickoff: ours 2026-10-23T01:24, espn-header 2026-10-23T01:00 (-24.2 min)",
         "card says LIVE, authority says UPCOMING"
       ],
       "authority_agreement": "SINGLE",
