@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-23T19:44:38.800635+00:00",
-  "count": 16,
+  "updated_at": "2026-10-23T20:44:48.717419+00:00",
+  "count": 14,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -496,19 +496,18 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1556871)",
+        "ESPN espn-header=Result (Result, event 1556871)",
         "LiveScore livescore=FT (6, event 1908260)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Live (Live, event 1556871); LiveScore livescore=FT (6, event 1908260)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_90bf51180ec3131bbc98f8b4bc98601e",
       "protected_source": true,
       "requires_credentials": true,
@@ -516,82 +515,27 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
-    },
-    {
-      "id": "ajman-vs-sharjah",
-      "name": "Ajman vs Sharjah",
-      "primary_stream_key": "",
-      "sport_type": "cricket",
-      "sport_type_derived": true,
-      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4250482_53130_AJM_SHA_fc-web_1792412929295.jpg",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "dartv-fancode-mirror",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 1,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
       },
-      "source_provenance": [
-        {
-          "source_id": "dartv-fancode-mirror",
-          "source_name": "FanCode Live API (dartv-ajaz)",
-          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
-        }
-      ],
-      "source_ids": [
-        "dartv-fancode-mirror"
-      ],
-      "start_time": "2026-10-23T12:30:00+00:00",
-      "start_at": "2026-10-23T12:30:00+00:00",
-      "end_time": "2026-10-23T17:30:00+00:00",
-      "end_time_source": "sport",
-      "competition": "Emirates D20, 2026",
-      "fixture_id": "provider:ajman-vs-sharjah|emirates d20 2026|2026-10-23",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
-      "source_start_time": "2026-10-23T12:30:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_cricket",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "cricket",
-      "allow_without_stream": true,
-      "route_failed_while_live": true,
-      "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/zohyna1677576452.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kccfg11753982654.png",
-      "lifecycle_reason": "still live: authority_live",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1556871",
+        "livescore": "1908260"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-23T20:04:11.133638+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-23T20:24:11.133638+00:00",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 9,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-10-23T17:24:28.625513+00:00"
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-23T20:04:41.038164+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-23T20:44:35.358654+00:00"
     },
     {
       "id": "emirates-blues-vs-abu-dhabi",
@@ -657,7 +601,13 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "end_pending": true,
+      "end_pending_confirmations": 3,
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "carried_forward_first_missed_at": "2026-10-23T20:04:41.038164+00:00"
     },
     {
       "id": "al-ittihad-vs-diriyah",
@@ -761,432 +711,21 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_32331ebb0296788c86f7338573807081",
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live",
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-23T18:04:16.196417+00:00"
-    },
-    {
-      "id": "darmstadt-98-vs-fc-st-pauli",
-      "name": "Darmstadt 98 Vs FC St Pauli",
-      "primary_stream_key": "eee322287ac5e08572726b3bd88d655a0c78ff53208aa665e9026feebe6c2eaa",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/2576/image",
-      "category": "today_match",
-      "url": "https://live.vivo155.com/live/sd-1-4566576.m3u8?txSecret=44af3c8ac7267b390df83f662a3f0f5a&txTime=6ADB9F25",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "hls",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "darmstadt-98-vs-fc-st-pauli--quality",
-          "name": "QUALITY",
-          "normalized_name": "quality",
-          "logo": "https://img.sofascore.com/api/v1/team/2576/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "darmstadt-98-vs-fc-st-pauli--quality--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "darmstadt-98-vs-fc-st-pauli--quality--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_8eb3aac336241dd90bc427d9",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_7c929aaea5117ee9645529c65900ef9a",
-              "resolution": "SD",
-              "resolution_height": 480,
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "darmstadt-98-vs-fc-st-pauli--quality",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "resolution": "SD",
-      "resolution_height": 480,
-      "start_time": "2026-10-23T16:30:00+00:00",
-      "start_at": "2026-10-23T16:30:00+00:00",
-      "end_time": "2026-10-23T19:04:01+00:00",
-      "end_time_source": "assumed",
-      "competition": "2. Bundesliga",
-      "fixture_id": "provider:darmstadt-98-vs-fc-st-pauli|2 bundesliga|2026-10-23",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-10-23T16:30:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401885082)",
-        "LiveScore livescore=FT (6, event 1813362)"
-      ],
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "401885082",
-        "livescore": "1813362"
-      },
-      "authority_status": "FINISHED",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "playback_id": "ctv_469c0ffe3a775e0db7fe6fdb392d5cc5",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 6,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-10-23T18:24:31.920012+00:00",
+      "carried_forward_misses": 10,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-23T18:04:16.196417+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 0,
-      "authority_finished_confirmations": 1,
-      "authority_finished_seen_at": "2026-10-23T19:44:07.122631+00:00",
-      "authority_remove_after": "2026-10-23T20:04:07.122631+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
-      "ended_seen_at": "2026-10-23T19:44:32.240179+00:00"
-    },
-    {
-      "id": "vfl-bochum-1848-vs-vfl-wolfsburg",
-      "name": "VfL Bochum 1848 Vs VfL Wolfsburg",
-      "primary_stream_key": "1636671e8c97ce7651412f69eee0b49b27671c8006768f16a309618b27580302",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/2542/image",
-      "category": "today_match",
-      "url": "https://live.vivo155.com/live/sd-1-4566642.m3u8?txSecret=59c137c9098144320850696e9db1c67a&txTime=6ADB9F44",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "hls",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "vfl-bochum-1848-vs-vfl-wolfsburg--quality",
-          "name": "QUALITY",
-          "normalized_name": "quality",
-          "logo": "https://img.sofascore.com/api/v1/team/2542/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "vfl-bochum-1848-vs-vfl-wolfsburg--quality--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "vfl-bochum-1848-vs-vfl-wolfsburg--quality--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_aad7cf771277cd68acbff627",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_949fcdc89b3205ebc168bd5aec149d72",
-              "resolution": "SD",
-              "resolution_height": 480,
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "vfl-bochum-1848-vs-vfl-wolfsburg--quality",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "resolution": "SD",
-      "resolution_height": 480,
-      "start_time": "2026-10-23T16:30:00+00:00",
-      "start_at": "2026-10-23T16:30:00+00:00",
-      "end_time": "2026-10-23T19:24:10+00:00",
-      "end_time_source": "assumed",
-      "competition": "2. Bundesliga",
-      "fixture_id": "provider:vfl-bochum-1848-vs-vfl-wolfsburg|2 bundesliga|2026-10-23",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-10-23T16:30:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "FINISHED",
-      "authority_end_confidence": "HIGH",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401885079)",
-        "LiveScore livescore=FT (6, event 1813356)"
-      ],
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "401885079",
-        "livescore": "1813356"
-      },
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "playback_id": "ctv_7569bf2664439c687fc5dc52a18b52ff",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 5,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-10-23T18:44:28.779344+00:00",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "authority_finished_confirmations": 1,
-      "authority_finished_seen_at": "2026-10-23T19:44:07.122631+00:00",
-      "authority_status": "FINISHED",
-      "authority_remove_after": "2026-10-23T20:04:07.122631+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
-      "ended_seen_at": "2026-10-23T19:44:32.240179+00:00"
-    },
-    {
-      "id": "alanyaspor-vs-kocaelispor",
-      "name": "Alanyaspor Vs Kocaelispor",
-      "primary_stream_key": "191e028e249c9be2fffa382b67908baef59be774858a2fc9bc2a864cadccfc15",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/6362/image",
-      "category": "today_match",
-      "url": "https://live.vivo155.com/live/sd-1-4581341.m3u8?txSecret=d4cd5c3a65004080586d36589a6ac096&txTime=6ADBA7AE",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "hls",
-      "requires_headers": true,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "alanyaspor-vs-kocaelispor--stream-tv",
-          "name": "STREAM TV",
-          "normalized_name": "stream-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/6362/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "alanyaspor-vs-kocaelispor--stream-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "alanyaspor-vs-kocaelispor--stream-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_2371a9c49590e0d91bea9df2",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_1c600c96fe3d8ebeab3cb9efa6ba356d",
-              "resolution": "SD",
-              "resolution_height": 480,
-              "stream_type": "hls"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "alanyaspor-vs-kocaelispor--stream-tv",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "resolution": "SD",
-      "resolution_height": 480,
-      "start_time": "2026-10-23T17:00:00+00:00",
-      "start_at": "2026-10-23T17:00:00+00:00",
-      "end_time": "2026-10-23T19:44:04+00:00",
-      "end_time_source": "assumed",
-      "competition": "Trendyol Süper Lig",
-      "fixture_id": "provider:alanyaspor-vs-kocaelispor|trendyol s per lig|2026-10-23",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-10-23T17:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=84' (STATUS_SECOND_HALF, event 401888268)",
-        "LiveScore livescore=FT (6, event 1821013)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401888268"
-      },
-      "authority_status": "LIVE",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://www.thesportsdb.com/images/media/team/badge/8r4d531792772765.png",
-      "away_badge_url": "https://www.thesportsdb.com/images/media/team/badge/oqs2h11792772341.png",
-      "playback_id": "ctv_909c71cde3befbf6aefc9d8f2f1e2cb4",
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-10-23T19:04:52.535255+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=84' (STATUS_SECOND_HALF, event 401888268); LiveScore livescore=FT (6, event 1821013)",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-10-23T19:44:32.240179+00:00"
+      "end_pending_confirmations": 10,
+      "ended_seen_at": "2026-10-23T20:44:35.358654+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "al-ahli-saudi-fc-vs-al-khaleej-fc",
@@ -1194,7 +733,7 @@
       "primary_stream_key": "",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "",
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4250219_53025_AAS_AKH_FC-Web.png",
       "category": "today_match",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
@@ -1210,12 +749,12 @@
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
+      "source_id": "dartv-fancode-mirror",
       "metadata_only": true,
       "available_link_count": 0,
       "channel_stats": {
         "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -1224,18 +763,12 @@
       },
       "source_provenance": [
         {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
           "source_id": "dartv-fancode-mirror",
           "source_name": "FanCode Live API (dartv-ajaz)",
           "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
         "dartv-fancode-mirror"
       ],
       "start_time": "2026-10-23T18:00:00+00:00",
@@ -1248,30 +781,35 @@
       "original_status": "UPCOMING",
       "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
       "source_start_time": "2026-10-23T18:00:00+00:00",
       "time_verification": "provider_feed",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=43' (STATUS_FIRST_HALF, event 401900892)"
+        "ESPN espn-header=60' (STATUS_SECOND_HALF, event 401900892)",
+        "LiveScore livescore=FT (6, event 1845668)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401900892"
-      },
-      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE"
+      "lifecycle_state": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=60' (STATUS_SECOND_HALF, event 401900892); LiveScore livescore=FT (6, event 1845668)",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-10-23T20:44:35.358654+00:00"
     },
     {
       "id": "al-qadsiah-vs-al-hilal",
@@ -1366,7 +904,7 @@
       "resolution_height": 720,
       "start_time": "2026-10-23T18:00:00+00:00",
       "start_at": "2026-10-23T18:00:00+00:00",
-      "end_time": "2026-10-23T20:44:07+00:00",
+      "end_time": "2026-10-23T21:25:43+00:00",
       "end_time_source": "assumed",
       "competition": "Saudi Pro League",
       "fixture_id": "provider:al-qadsiah-vs-al-hilal|saudi pro league|2026-10-23",
@@ -1381,21 +919,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=44' (STATUS_FIRST_HALF, event 401900888)"
+        "ESPN espn-header=64' (STATUS_SECOND_HALF, event 401900888)",
+        "LiveScore livescore=FT (6, event 1845669)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401900888"
-      },
-      "authority_status": "LIVE",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ok63wb1719134839.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/w0b80d1661656916.png",
       "playback_id": "ctv_8070a2ce5760068df10ed58b08afb7ee",
@@ -1405,12 +940,20 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=64' (STATUS_SECOND_HALF, event 401900888); LiveScore livescore=FT (6, event 1845669)",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-23T20:44:35.358654+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-23T20:44:35.358654+00:00"
     },
     {
       "id": "vfb-stuttgart-vs-borussia-mgladbach",
       "name": "VfB Stuttgart Vs Borussia M'gladbach",
-      "primary_stream_key": "ab9fc31a67261ecabdbf08ee67731d041f1b3fb19323f719082e6a8a129d307c",
+      "primary_stream_key": "cc6e84d5425f2dcbac3652b73c0c4e7a9d5770e12cf4e1b84a686bd448447ee2",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/2677/image",
@@ -1453,7 +996,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_36c0b671d1013423f9c8c795486cb2dc",
+          "playback_id": "ctv_dba2eb5537be6cf056ceb35ef20457a6",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1538,7 +1081,7 @@
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "vfb-stuttgart-vs-borussia-mgladbach--server-1",
+      "default_channel_id": "vfb-stuttgart-vs-borussia-mgladbach--nbc-sports",
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 1,
@@ -1566,8 +1109,8 @@
       "resolution_height": 1080,
       "start_time": "2026-10-23T18:30:00+00:00",
       "start_at": "2026-10-23T18:30:00+00:00",
-      "end_time": "2026-10-23T21:00:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-10-23T21:25:43+00:00",
+      "end_time_source": "assumed",
       "competition": "German Bundesliga",
       "fixture_id": "provider:vfb-stuttgart-vs-borussia-m-gladbach|bundesliga|2026-10-23",
       "status": "LIVE_NOW",
@@ -1581,17 +1124,38 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "LiveScore livescore=FT (6, event 1812713)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "livescore": "1812713"
+      },
+      "authority_finished_confirmations": 2,
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "competition_from_source": "Bundesliga",
-      "playback_id": "ctv_dba2eb5537be6cf056ceb35ef20457a6",
+      "playback_id": "ctv_36c0b671d1013423f9c8c795486cb2dc",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-23T20:44:35.358654+00:00"
     },
     {
       "id": "granada-vs-real-valladolid",
@@ -1599,7 +1163,7 @@
       "primary_stream_key": "",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "https://r2.thesportsdb.com/images/media/event/thumb/ro7ru51755421269.jpg",
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4250107_53017_GRD_VLD_FC-Web.png",
       "category": "today_match",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
@@ -1615,12 +1179,12 @@
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
+      "source_id": "dartv-fancode-mirror",
       "metadata_only": true,
       "available_link_count": 0,
       "channel_stats": {
         "streams_in": 1,
-        "unresolved_channel_streams": 0,
+        "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
         "channels": 0,
         "variants": 0,
@@ -1629,18 +1193,12 @@
       },
       "source_provenance": [
         {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
           "source_id": "dartv-fancode-mirror",
           "source_name": "FanCode Live API (dartv-ajaz)",
           "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
         "dartv-fancode-mirror"
       ],
       "start_time": "2026-10-23T18:30:00+00:00",
@@ -1653,19 +1211,21 @@
       "original_status": "UPCOMING",
       "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
       "source_start_time": "2026-10-23T18:30:00+00:00",
       "time_verification": "provider_feed",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=13' (STATUS_FIRST_HALF, event 401883152)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401883152)",
+        "LiveScore livescore=FT (6, event 1811122)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1677,9 +1237,16 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "LIVE",
-      "provider_poster_url": "https://r2.thesportsdb.com/images/media/event/thumb/ro7ru51755421269.jpg",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/f9iss11677472689.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bnhu8b1719983736.png"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bnhu8b1719983736.png",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401883152); LiveScore livescore=FT (6, event 1811122)",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-10-23T20:44:35.358654+00:00"
     },
     {
       "id": "united-states-practice-1",
@@ -1844,7 +1411,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-23T19:04:52.535255+00:00"
     },
@@ -2268,8 +1835,8 @@
       "resolution_height": 1080,
       "start_time": "2026-10-23T18:45:00+00:00",
       "start_at": "2026-10-23T18:45:00+00:00",
-      "end_time": "2026-10-23T21:15:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-10-23T21:25:43+00:00",
+      "end_time_source": "assumed",
       "competition": "Italian Serie A",
       "fixture_id": "provider:torino-vs-monza|serie a|2026-10-23",
       "status": "LIVE_NOW",
@@ -2283,18 +1850,21 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401874957)"
+        "ESPN espn-header=38' (STATUS_FIRST_HALF, event 401874957)",
+        "LiveScore livescore=FT (6, event 1785411)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401874957"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2316,7 +1886,96 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=38' (STATUS_FIRST_HALF, event 401874957); LiveScore livescore=FT (6, event 1785411)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-23T20:44:35.358654+00:00"
+    },
+    {
+      "id": "bolton-wanderers-vs-middlesbrough-f-c",
+      "name": "Bolton Wanderers vs Middlesbrough F C",
+      "primary_stream_key": "",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4249597_52993_BOL_MIDD_fc-web.jpg",
+      "category": "today_match",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "media",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "none",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "vk1817-fancode-mirror",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 1,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        }
+      ],
+      "source_ids": [
+        "vk1817-fancode-mirror"
+      ],
+      "start_time": "2026-10-23T19:00:00+00:00",
+      "start_at": "2026-10-23T19:00:00+00:00",
+      "end_time": "2026-10-23T21:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "EFL Championship 2026-27",
+      "fixture_id": "provider:bolton-wanderers-vs-middlesbrough-f-c|efl championship 2026 27|2026-10-23",
+      "status": "LINK_UPDATING",
+      "original_status": "UPCOMING",
+      "schedule_status": "LINK_UPDATING",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
+      "source_start_time": "2026-10-23T19:00:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401880207)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401880207"
+      },
+      "authority_status": "LIVE",
+      "allow_without_stream": true,
+      "route_failed_while_live": true,
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "LIVE"
     },
     {
       "id": "ipswich-town-vs-nottingham-forest",
@@ -2423,18 +2082,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401879253)"
+        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401879253)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401879253"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2449,7 +2109,15 @@
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkplrdsuMChAQQ3EHxCG9BnTEPmAJgQpM+KLmDLwi80faa0wjsaIhA.webp",
       "provider_routing_hint": "live",
       "competition_from_source": "Premier League",
-      "playback_id": "ctv_2330751924f6e4d60c8310f25b5126c7"
+      "playback_id": "ctv_5e3223c5db571aef540b0ffbb20fd084",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-23T20:44:35.358654+00:00"
     },
     {
       "id": "deportivo-alavés-vs-málaga-cf",
@@ -2518,7 +2186,7 @@
       "channel_count": 1,
       "default_channel_id": "deportivo-alav-s-vs-m-laga-cf--d-sports",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 1,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
         "channels": 1,
@@ -2559,18 +2227,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882836)"
+        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401882836)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401882836"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -2591,7 +2260,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-23T20:44:35.358654+00:00"
     },
     {
       "id": "mlf-live-team-series-heritage-cup-championship-round",
@@ -2684,9 +2361,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-23T19:44:07+00:00",
-      "start_at": "2026-10-23T19:44:07+00:00",
-      "end_time": "2026-10-23T23:44:07+00:00",
+      "start_time": "2026-10-23T20:44:06+00:00",
+      "start_at": "2026-10-23T20:44:06+00:00",
+      "end_time": "2026-10-24T00:44:06+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:mlf-team-series-heritage-cup-championship-round",
       "status": "LIVE_NOW",
@@ -2701,6 +2378,122 @@
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_fffa01b388626c0449923fcdb52b699d",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "united-states-practice-2",
+      "name": "United States Practice 2",
+      "primary_stream_key": "8d6583a8190299d8fcf20e19ec5a85856add38459020fdf2067d6bbae68e1fa1",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.fabe0f59-433c-4e9f-9107-48c52eb472b4/7/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "united-states-practice-2--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.fabe0f59-433c-4e9f-9107-48c52eb472b4/7/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "united-states-practice-2--prime-video--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "united-states-practice-2--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_3838e3071ff716f9bed9e2cc",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_73a22e9984a758ef9a3e893aa0b392f2",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "united-states-practice-2--prime-video",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-23T20:44:06+00:00",
+      "start_at": "2026-10-23T20:44:06+00:00",
+      "end_time": "2026-10-23T23:14:06+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:united-states-practice-2|2026-10-23",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_73a22e9984a758ef9a3e893aa0b392f2",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
