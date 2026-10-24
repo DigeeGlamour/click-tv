@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-24T04:44:53.447071+00:00",
+  "updated_at": "2026-10-24T05:24:51.478780+00:00",
   "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -66,30 +66,27 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "authority_end_status": "LIVE",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1544852)",
-        "LiveScore livescore=Play in progress (33, event 1825035)"
+        "ESPN espn-header=Live (Live, event 1544852)"
       ],
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "END_PENDING",
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "1544852",
-        "livescore": "1825035"
+        "espn-header": "1544852"
       },
       "authority_status": "LIVE",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 11,
-      "carried_forward_misses": 11,
+      "end_pending_confirmations": 14,
+      "carried_forward_misses": 14,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-24T01:24:32.585858+00:00"
     },
@@ -326,7 +323,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_bb3f3d5611c5d1ba516ccfdde8ef8455",
       "protected_source": true,
       "requires_credentials": true,
@@ -335,14 +332,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 10,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-24T01:44:41.774803+00:00"
+      "carried_forward_misses": 13,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-24T01:44:41.774803+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 13,
+      "ended_seen_at": "2026-10-24T05:24:47.483176+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "portland-thorns-fc-vs-north-carolina-courage",
@@ -452,23 +453,24 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "NWSL",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=54' (STATUS_SECOND_HALF, event 401854029)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401854029)",
         "LiveScore livescore=FT (6, event 1731847)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401854029"
+        "espn-header": "401854029",
+        "livescore": "1731847"
       },
-      "authority_status": "LIVE",
+      "authority_status": "FINISHED",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/a6v95r1625387014.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/8cc1sp1552136867.png",
       "playback_id": "ctv_e63ebbddb884e26b3e67a0ab042bf4df",
@@ -479,15 +481,21 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 7,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-24T03:44:33.345880+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=54' (STATUS_SECOND_HALF, event 401854029); LiveScore livescore=FT (6, event 1731847)"
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-24T05:24:24.317854+00:00",
+      "authority_remove_after": "2026-10-24T05:44:24.317854+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-24T05:24:47.483176+00:00"
     },
     {
       "id": "newcastle-jets-vs-macarthur",
@@ -530,11 +538,6 @@
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
         },
         {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        },
-        {
           "source_id": "dartv-fancode-mirror",
           "source_name": "FanCode Live API (dartv-ajaz)",
           "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
@@ -542,7 +545,6 @@
       ],
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
       "start_time": "2026-10-24T04:00:00+00:00",
@@ -573,7 +575,7 @@
     {
       "id": "live-genesis-championship-day-3",
       "name": "LIVE Genesis Championship Day 3",
-      "primary_stream_key": "3947e24a069007489e5b81428c67c71bb8e80055e23b310cdb2638def5c14b0e",
+      "primary_stream_key": "421e071a825d2268cd9fd6dae6c60108ba0da47d3ce3931b0e7b704c29f9c85e",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.12cf5e96-f0e3-4b84-b40a-a59b510ef741/1/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
@@ -598,7 +600,7 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -609,14 +611,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_7ec45c4b942db251c499bd1a5d3bbf01",
+          "playback_id": "ctv_93470083f4e79e3683bee811ae48805b",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -656,7 +658,7 @@
         },
         {
           "name": "Backup-3",
-          "header_profile": "android_tv",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -667,14 +669,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_93470083f4e79e3683bee811ae48805b",
+          "playback_id": "ctv_bd57078884ea8462123600c3fa33ad82",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -710,11 +712,11 @@
               "id": "live-genesis-championship-day-3--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_9865982df996593ddd1fbc25",
+              "variant_key": "sv_52d423a0dda82280a4829881",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_bd57078884ea8462123600c3fa33ad82",
+              "playback_id": "ctv_7ec45c4b942db251c499bd1a5d3bbf01",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -723,11 +725,11 @@
               "id": "live-genesis-championship-day-3--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_52d423a0dda82280a4829881",
+              "variant_key": "sv_fd3ecee4956aa1d3d187c414",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_7ec45c4b942db251c499bd1a5d3bbf01",
+              "playback_id": "ctv_93470083f4e79e3683bee811ae48805b",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -749,11 +751,11 @@
               "id": "live-genesis-championship-day-3--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_fd3ecee4956aa1d3d187c414",
+              "variant_key": "sv_9865982df996593ddd1fbc25",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_93470083f4e79e3683bee811ae48805b",
+              "playback_id": "ctv_bd57078884ea8462123600c3fa33ad82",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -788,9 +790,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-24T04:44:21+00:00",
-      "start_at": "2026-10-24T04:44:21+00:00",
-      "end_time": "2026-10-24T08:44:21+00:00",
+      "start_time": "2026-10-24T05:24:24+00:00",
+      "start_at": "2026-10-24T05:24:24+00:00",
+      "end_time": "2026-10-24T09:24:24+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:genesis-championship",
       "status": "LIVE_NOW",
@@ -804,7 +806,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_bd57078884ea8462123600c3fa33ad82",
+      "playback_id": "ctv_7ec45c4b942db251c499bd1a5d3bbf01",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
