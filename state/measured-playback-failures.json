@@ -28988,17 +28988,7 @@
       ],
       "window_seconds": 0.0,
       "evidence_report": "reports/delivery-path-check.json",
-      "vantage": "delivery_path_proxy",
-      "superseded_by": {
-        "verdict": "proven",
-        "vantage": "delivery_path_proxy",
-        "sessions": 1,
-        "media_progress_seconds": [
-          0
-        ],
-        "window_seconds": 0.0,
-        "evidence_report": "reports/delivery-path-check.json"
-      }
+      "vantage": "delivery_path_proxy"
     },
     "otte.live.fly.ww.aiv-cdn.net/pdx-nitro/startover/clients/dash/manipulated-manifest-pdx-prod/enc/slskxlgpme/out/v1/85424275a0cb470db4acf738ff142e7b/bc518291-9664-4422-b5c3-3f2db8d678a6-cenc.mpd?aws_sessionId=b8ef052c-8dfc-4c84-b649-b9d558dc7e71": {
       "route_id": "otte.live.fly.ww.aiv-cdn.net/pdx-nitro/startover/clients/dash/manipulated-manifest-pdx-prod/enc/slskxlgpme/out/v1/85424275a0cb470db4acf738ff142e7b/bc518291-9664-4422-b5c3-3f2db8d678a6-cenc.mpd?aws_sessionId=b8ef052c-8dfc-4c84-b649-b9d558dc7e71",
@@ -29241,6 +29231,18 @@
         "window_seconds": 0.0,
         "evidence_report": "reports/delivery-path-check.json"
       }
+    },
+    "chatgpt.hereisman.net/playlist/58509/load-playlist-multi?.m3u8=": {
+      "route_id": "chatgpt.hereisman.net/playlist/58509/load-playlist-multi?.m3u8=",
+      "url_public_template": "{id}.hereisman.net/{seg}/58509/load-playlist-multi?.m3u8={v}",
+      "reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "sessions": 1,
+      "media_progress_seconds": [
+        0
+      ],
+      "window_seconds": 0.0,
+      "evidence_report": "reports/delivery-path-check.json",
+      "vantage": "delivery_path_proxy"
     }
   },
   "note": "Routes a real browser measured and could not play, each with the vantage it was measured from. Marks the card; never hides it, never changes publish_allowed, never demotes another route. Keyed by route, so a channel recovers when its route changes - or when a later measurement from any vantage passes, which supersedes the failure rather than deleting it."
