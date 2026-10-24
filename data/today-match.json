@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-24T21:07:15.842121+00:00",
+  "updated_at": "2026-10-24T21:24:54.338574+00:00",
   "count": 19,
-  "filtered_stale": 1,
+  "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -74,7 +74,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 10,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-24T18:44:30.826110+00:00"
     },
@@ -325,7 +325,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 12,
+      "carried_forward_misses": 13,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-24T18:05:15.065402+00:00"
     },
@@ -490,18 +490,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "MLS",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=67' (STATUS_SECOND_HALF, event 761903)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 761903)",
         "LiveScore livescore=FT (6, event 1696729)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "cf-montr-al-vs-nashville-sc-2407171",
       "artwork_candidates": [
@@ -514,12 +514,12 @@
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpiTBCWMH0gg+IbiAAmIGLj3GQiE0cYUmfFFzBl4ReaIdNaYJ2NEQgA.webp",
       "provider_routing_hint": "live",
       "playback_id": "ctv_096a2cd47abd73f76a23ba8c09330811",
-      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 4,
-      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_misses": 5,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-24T20:05:32.462106+00:00",
       "authority_independent_count": 2,
       "authority_event_ids": {
@@ -530,8 +530,11 @@
       "authority_finished_seen_at": "2026-10-24T20:44:08.974159+00:00",
       "authority_status": "FINISHED",
       "authority_remove_after": "2026-10-24T21:04:08.974159+00:00",
-      "contradicted_end_confirmations": 2,
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=67' (STATUS_SECOND_HALF, event 761903); LiveScore livescore=FT (6, event 1696729)"
+      "contradicted_end_confirmations": 3,
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-24T21:24:46.728247+00:00"
     },
     {
       "id": "venezuela-u17-vs-japan-u17",
@@ -707,13 +710,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401874060)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401874060)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -735,9 +738,10 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-24T20:44:44.654979+00:00"
+      "carried_forward_first_missed_at": "2026-10-24T20:44:44.654979+00:00",
+      "authority_finished_confirmations": 1
     },
     {
       "id": "wisła-kraków-vs-raków-częstochowa",
@@ -845,10 +849,17 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/y9j7hv1781237442.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vy8paa1579458598.png",
-      "playback_id": "ctv_5c574e9a0a7a212abf75048699732608"
+      "playback_id": "ctv_5c574e9a0a7a212abf75048699732608",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-24T21:24:46.728247+00:00",
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-24T21:04:37.752980+00:00"
     },
     {
       "id": "1-fc-nürnberg-vs-1-fc-kaiserslautern",
@@ -964,7 +975,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=34' (STATUS_FIRST_HALF, event 401885080)"
+        "ESPN espn-header=90'+5' (STATUS_SECOND_HALF, event 401885080)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -986,7 +997,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-24T21:04:37.752980+00:00"
     },
@@ -1153,22 +1164,21 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-24T19:04:40.921419+00:00"
     },
     {
       "id": "lazio-vs-parma",
       "name": "Lazio Vs Parma",
-      "primary_stream_key": "29bc31fd777c723d101d54b8cd724dd2bd69750f230667a7d70a6a204b9b1885",
+      "primary_stream_key": "9bec3bc31132d2a00567cff13817cae6e3b5e3a9631e82689daf8f3c484f01df",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/2699/image",
       "category": "today_match",
-      "url": "https://chatgpt.hereisman.net/playlist/58521/load-playlist-multi?&.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "media",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
       "requires_headers": true,
       "inherit_manifest_query": false,
       "verification_mode": "global",
@@ -1182,7 +1192,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 6,
+      "available_link_count": 4,
       "backups": [
         {
           "name": "Backup-1",
@@ -1215,35 +1225,6 @@
         },
         {
           "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_f8de50dc4103eb7921e2847a8f35906f",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1272,8 +1253,8 @@
           }
         },
         {
-          "name": "Backup-4",
-          "header_profile": "android_tv",
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -1283,44 +1264,15 @@
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-5",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_1afb2056408e515ad9245fa0a8e28c6e",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1331,130 +1283,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "lazio-vs-parma--paramount",
-          "name": "PARAMOUNT+",
-          "normalized_name": "paramount",
-          "logo": "https://img.sofascore.com/api/v1/team/2699/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "lazio-vs-parma--paramount--1",
-          "stream_count": 2,
-          "backup_count": 1,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "lazio-vs-parma--paramount--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_5a448df1b37d8614328d63c6",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_c4f22059957bad13685af849e1015913",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "lazio-vs-parma--paramount--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_177b3a73de77aec857870d2b",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_8793ebdb009f99ff7fe41fa1e1de13f9",
-              "resolution": "HD",
-              "resolution_height": 720,
-              "stream_type": "media"
-            }
-          ]
-        },
-        {
-          "id": "lazio-vs-parma--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.6bb34adf-bfbc-4818-ae48-f03ec9de5813/5/BOXART-16X9/en-US/1920x1080._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMpng_.png",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
-          "source_ids": [
-            "srhady-primevideo-sports"
-          ],
-          "primary_stream_id": "lazio-vs-parma--prime-video--1",
-          "stream_count": 4,
-          "backup_count": 3,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "lazio-vs-parma--prime-video--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_0e638de706138f746f0f4bb0",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "lazio-vs-parma--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "lazio-vs-parma--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_5458cc437e60a57ab38df02d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "lazio-vs-parma--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_b9a4754dd8779c45821c460d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "lazio-vs-parma--cbs-sports",
           "name": "CBS SPORTS",
@@ -1485,6 +1313,42 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_f8de50dc4103eb7921e2847a8f35906f",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "lazio-vs-parma--paramount",
+          "name": "PARAMOUNT+",
+          "normalized_name": "paramount",
+          "logo": "https://img.sofascore.com/api/v1/team/2699/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "lazio-vs-parma--paramount--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "lazio-vs-parma--paramount--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_5a448df1b37d8614328d63c6",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_c4f22059957bad13685af849e1015913",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1564,113 +1428,17 @@
           ]
         }
       ],
-      "channel_count": 5,
-      "default_channel_id": "lazio-vs-parma--paramount",
+      "channel_count": 4,
+      "default_channel_id": "lazio-vs-parma--cbs-sports",
       "channel_stats": {
-        "streams_in": 9,
+        "streams_in": 4,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 5,
-        "variants": 9,
+        "channels": 4,
+        "variants": 4,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
-      "standby_link_count": 3,
-      "standby": [
-        {
-          "name": "Standby-1",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "requires_headers": false,
-          "verification_status": "verified_global",
-          "verified": true,
-          "source_id": "sm-sports-data",
-          "source_provenance": [
-            {
-              "source_id": "sm-sports-data",
-              "source_name": "SM Live and Upcoming Sports Data",
-              "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-            }
-          ],
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_8cb875850cb47667f9354f986ba0af86",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Standby-2",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "requires_headers": false,
-          "verification_status": "verified_global",
-          "verified": true,
-          "source_id": "srhady-primevideo-sports",
-          "source_provenance": [
-            {
-              "source_id": "srhady-primevideo-sports",
-              "source_name": "Prime Video Free Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-            }
-          ],
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_066af861eff5143340bed5b8399e02c2",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Standby-3",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "requires_headers": false,
-          "verification_status": "verified_global",
-          "verified": true,
-          "source_id": "srhady-primevideo-sports",
-          "source_provenance": [
-            {
-              "source_id": "srhady-primevideo-sports",
-              "source_name": "Prime Video Free Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-            }
-          ],
-          "host": "otte.cache.aiv-cdn.net",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_b7ca0b99358f1da1cd59cf73ef06f6fa",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
       "source_provenance": [
         {
           "source_id": "sm-sports-data",
@@ -1681,11 +1449,15 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "start_time": "2026-10-24T18:45:00+00:00",
       "start_at": "2026-10-24T18:45:00+00:00",
-      "end_time": "2026-10-24T21:44:08+00:00",
+      "end_time": "2026-10-24T22:24:11+00:00",
       "end_time_source": "assumed",
       "competition": "Italian Serie A",
       "fixture_id": "provider:lazio-vs-parma|serie a|2026-10-24",
@@ -1707,10 +1479,10 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401874955)",
+        "ESPN espn-header=81' (STATUS_SECOND_HALF, event 401874955)",
         "LiveScore livescore=FT (6, event 1785397)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401874955); LiveScore livescore=FT (6, event 1785397)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=81' (STATUS_SECOND_HALF, event 401874955); LiveScore livescore=FT (6, event 1785397)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1725,7 +1497,14 @@
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhAATMCnFhwibmtwg+ICCBj6zqkPAIUmfTWzBl4ReaM1NaYJ2NEQgA.webp",
       "provider_routing_hint": "live",
       "competition_from_source": "Serie A",
-      "playback_id": "ctv_86f996fce6e3f34f643f33faafe475a6"
+      "playback_id": "ctv_f8de50dc4103eb7921e2847a8f35906f",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
     },
     {
       "id": "rc-lens-vs-paris-fc",
@@ -1820,7 +1599,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-24T18:45:00+00:00",
       "start_at": "2026-10-24T18:45:00+00:00",
-      "end_time": "2026-10-24T22:04:06+00:00",
+      "end_time": "2026-10-24T22:24:11+00:00",
       "end_time_source": "assumed",
       "competition": "Ligue 1",
       "fixture_id": "provider:rc-lens-vs-paris-fc|ligue 1|2026-10-24",
@@ -1842,10 +1621,10 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401876427)",
+        "ESPN espn-header=77' (STATUS_SECOND_HALF, event 401876427)",
         "LiveScore livescore=FT (6, event 1794726)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=19' (STATUS_FIRST_HALF, event 401876427); LiveScore livescore=FT (6, event 1794726)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=77' (STATUS_SECOND_HALF, event 401876427); LiveScore livescore=FT (6, event 1794726)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1871,20 +1650,19 @@
     {
       "id": "atlético-madrid-vs-deportivo-de-a-coruña",
       "name": "Atlético Madrid Vs Deportivo de A Coruña",
-      "primary_stream_key": "4747459d311d854b1762cf5dddfc753086bba971b91f9c769e7c6cb6aefe3934",
+      "primary_stream_key": "0b662c9628e2793b3a9d6d9e2a27db50376c5bc0f741b3080f4202f6218cffc0",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/2836/image",
       "category": "today_match",
-      "url": "https://edgestream2.pro/hls/377qj1h2727.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "hls",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
       "requires_headers": true,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "Playback Unproven",
+      "verification_badge": "Verified",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
@@ -1893,39 +1671,10 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 4,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_bc1496033cdfad6af15c4d5e0eb30d35",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1954,7 +1703,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -2091,52 +1840,18 @@
               "stream_type": "dash"
             }
           ]
-        },
-        {
-          "id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--server-1",
-          "name": "Server-1",
-          "normalized_name": "server-1",
-          "logo": "https://img.sofascore.com/api/v1/team/2836/image",
-          "name_confidence": "generic",
-          "name_source": "generic",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--server-1--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--server-1--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_d645cf558a9827bccf1f9053",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_a523564391d16ffe4f086152b550619a",
-              "stream_type": "hls"
-            }
-          ]
         }
       ],
-      "channel_count": 4,
-      "default_channel_id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--server-1",
+      "channel_count": 3,
+      "default_channel_id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--caze-tv-fhd2",
       "channel_stats": {
-        "streams_in": 4,
-        "unresolved_channel_streams": 1,
+        "streams_in": 3,
+        "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 4,
-        "variants": 4,
+        "channels": 3,
+        "variants": 3,
         "embed_variants": 0,
-        "generic_server_channels": 1
+        "generic_server_channels": 0
       },
       "source_provenance": [
         {
@@ -2148,11 +1863,15 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "playback_unproven": true,
-      "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "start_time": "2026-10-24T19:00:00+00:00",
       "start_at": "2026-10-24T19:00:00+00:00",
-      "end_time": "2026-10-24T21:44:08+00:00",
+      "end_time": "2026-10-24T22:24:11+00:00",
       "end_time_source": "assumed",
       "competition": "LaLiga",
       "fixture_id": "provider:atlético-madrid-vs-deportivo-de-a-coruña|laliga|2026-10-24",
@@ -2173,7 +1892,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=43' (STATUS_FIRST_HALF, event 401882834)"
+        "ESPN espn-header=64' (STATUS_SECOND_HALF, event 401882834)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2193,7 +1912,14 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhBxRYUCHhhuIXXz0gURkKYhbDywjGBM+KLmDLb680Q6a0wTsaIhA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhAATXAzCqwfLSG4g+IY4hj6QiAyTUEKTPii5gy8IvNGOmtMM7GiIQA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_0234a10b73bcc8ca6aa7c85c0a808702"
+      "playback_id": "ctv_bc1496033cdfad6af15c4d5e0eb30d35",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
     },
     {
       "id": "atletico-de-madrid-vs-deportivo-de-la-coruna",
@@ -2259,7 +1985,13 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-10-24T21:24:46.728247+00:00"
     },
     {
       "id": "internacional-vs-botafogo",
@@ -2354,7 +2086,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-24T19:30:00+00:00",
       "start_at": "2026-10-24T19:30:00+00:00",
-      "end_time": "2026-10-24T22:04:06+00:00",
+      "end_time": "2026-10-24T22:24:11+00:00",
       "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:internacional-vs-botafogo|campeonato brasileiro s rie a|2026-10-24",
@@ -2369,18 +2101,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841285)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401841285)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401841285"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yprvxx1473538097.png",
@@ -2487,7 +2220,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-24T19:30:00+00:00",
       "start_at": "2026-10-24T19:30:00+00:00",
-      "end_time": "2026-10-24T22:04:06+00:00",
+      "end_time": "2026-10-24T22:24:11+00:00",
       "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:mirassol-vs-são-paulo|campeonato brasileiro s rie a|2026-10-24",
@@ -2502,18 +2235,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841284)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401841284)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401841284"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/pw8uo11765900737.png",
@@ -2620,7 +2354,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-24T19:30:00+00:00",
       "start_at": "2026-10-24T19:30:00+00:00",
-      "end_time": "2026-10-24T22:04:06+00:00",
+      "end_time": "2026-10-24T22:24:11+00:00",
       "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:vitória-vs-athletico|campeonato brasileiro s rie a|2026-10-24",
@@ -2635,18 +2369,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841280)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401841280)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401841280"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tysrrx1473538156.png",
@@ -2746,8 +2481,8 @@
       ],
       "start_time": "2026-10-24T19:30:00+00:00",
       "start_at": "2026-10-24T19:30:00+00:00",
-      "end_time": "2026-10-24T22:00:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-10-24T22:24:11+00:00",
+      "end_time_source": "assumed",
       "competition": "Liga Portugal Betclic",
       "fixture_id": "provider:gil-vicente-vs-fc-porto|liga portugal betclic|2026-10-24",
       "status": "LIVE_NOW",
@@ -2767,7 +2502,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=11' (STATUS_FIRST_HALF, event 401885417)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401885417)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2778,7 +2513,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/88bsg41626201503.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xu47rb1628855600.png",
-      "playback_id": "ctv_0d83d0cd36d6a6549b03736477d5215f"
+      "playback_id": "ctv_1311e3e7d0fc7b2585483d8660700d0a"
     },
     {
       "id": "columbus-crew-vs-toronto-fc",
@@ -2870,8 +2605,8 @@
       "resolution_height": 720,
       "start_time": "2026-10-24T19:30:00+00:00",
       "start_at": "2026-10-24T19:30:00+00:00",
-      "end_time": "2026-10-24T22:00:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-10-24T22:24:11+00:00",
+      "end_time_source": "assumed",
       "competition": "MLS",
       "fixture_id": "provider:columbus-crew-vs-toronto-fc|mls|2026-10-24",
       "status": "LIVE_NOW",
@@ -2891,7 +2626,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=4' (STATUS_FIRST_HALF, event 761890)"
+        "ESPN espn-header=44' (STATUS_FIRST_HALF, event 761890)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2911,7 +2646,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkhyhIEIEM1ghuIACa4QKEDBAkjGsyAgEKTPii5gy8IvNGOmtMM7GiIQA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkpizlwKajm4gIIPiEQkDIACYgj2xhSZ8UXMGXhF5ou01pgHY0RCA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_58b5abeb07f167206b3305a06d9e5418"
+      "playback_id": "ctv_a88f315bc341583c2b67cd870b1a70d5"
     },
     {
       "id": "eastern-new-mexico-university-vs-western-oregon-football",
@@ -3160,14 +2895,14 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-24T21:04:37.752980+00:00"
     },
     {
       "id": "palmeiras-vs-red-bull-bragantino",
       "name": "Palmeiras Vs Red Bull Bragantino",
-      "primary_stream_key": "4ff9ff67a103ec84812102346cb7f33b93b9de5f68f7ad9c0ac4d9f76721bcd7",
+      "primary_stream_key": "bbe5d926749926ca4d5ff2cfe55ad1c37fce2e4425d5bba18b370761e575ec44",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/1963/image",
@@ -3175,7 +2910,7 @@
       "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
-      "requires_headers": true,
+      "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -3195,7 +2930,7 @@
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": false,
+          "requires_headers": true,
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
@@ -3210,7 +2945,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_74fe9e179d2314f08622fe2eb279ce38",
+          "playback_id": "ctv_bc1e0c2eac4ab0692ed73f770762d031",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -3221,42 +2956,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "palmeiras-vs-red-bull-bragantino--premiere2-sports",
-          "name": "PREMIERE2 SPORTS",
-          "normalized_name": "premiere2-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/1963/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "palmeiras-vs-red-bull-bragantino--premiere2-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "palmeiras-vs-red-bull-bragantino--premiere2-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_f64ce57a6644d12b33ef4275",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_bc1e0c2eac4ab0692ed73f770762d031",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "palmeiras-vs-red-bull-bragantino--premierer1",
           "name": "PREMIERER1",
@@ -3292,10 +2991,46 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "palmeiras-vs-red-bull-bragantino--premiere2-sports",
+          "name": "PREMIERE2 SPORTS",
+          "normalized_name": "premiere2-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/1963/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "palmeiras-vs-red-bull-bragantino--premiere2-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "palmeiras-vs-red-bull-bragantino--premiere2-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_f64ce57a6644d12b33ef4275",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_bc1e0c2eac4ab0692ed73f770762d031",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "palmeiras-vs-red-bull-bragantino--premiere2-sports",
+      "default_channel_id": "palmeiras-vs-red-bull-bragantino--premierer1",
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 0,
@@ -3338,9 +3073,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841283)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401841283"
+      },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN and our own schedule both put kickoff 5 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_bc1e0c2eac4ab0692ed73f770762d031",
+      "playback_id": "ctv_74fe9e179d2314f08622fe2eb279ce38",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -3457,6 +3206,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841281)",
+        "LiveScore livescore=NS (1, event 1708709)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401841281",
+        "livescore": "1708709"
+      },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ynqlxo1630521109.png",
