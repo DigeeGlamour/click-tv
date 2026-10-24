@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T22:05:34.882882+00:00",
+  "generated_at": "2026-10-24T22:25:18.464772+00:00",
   "today_match_count": 16,
   "upcoming_count": 58,
   "today_missing_logo": [],
@@ -23,7 +23,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 263,
+  "provider_fixture": 262,
   "provider_rejected": 105,
   "provider_rejected_reasons": {
     "provider_dead_status": 98,
@@ -592,7 +592,7 @@
     }
   ],
   "ambiguous_suppressed": 0,
-  "unverified_suppressed": 159,
+  "unverified_suppressed": 160,
   "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
   "provider_rejected_fixtures_truncated": 2,
@@ -602,7 +602,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 263,
+    "total": 262,
     "discarded": 91,
     "examples": [
       {
@@ -807,7 +807,7 @@
       },
       {
         "name": "Day 7 World Feed vs Brussels, Belgium",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, sayanpal-f",
         "competition": "ATP 250 - BNP Paribas Fortis European Open",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -879,7 +879,7 @@
       },
       {
         "name": "Race Day vs Phillip Island (2026)",
-        "source": "sm-fancode, vk1817-fancode-mirror, dartv-fancode-mirror",
+        "source": "sm-fancode, dartv-fancode-mirror, vk1817-fancode-mirror",
         "competition": "GRAND PRIX OF AUSTRALIA 2026",
         "sport_type": "",
         "reason": "league map: motorsport",
@@ -1110,41 +1110,51 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 0,
-    "pending_confirmation": 0,
-    "live": 3,
+    "applied": 1,
+    "pending_confirmation": 3,
+    "live": 0,
     "recorded": 2,
-    "conflict": 7,
+    "conflict": 5,
     "unmatched": 5,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 3,
+      "FINISHED": 4,
       "UPCOMING": 2
     },
     "by_confidence": {
       "LOW": 5,
-      "CONFLICT": 7
+      "HIGH": 1,
+      "CONFLICT": 5
     },
-    "applied_fixtures": [],
-    "conflicts": [
+    "applied_fixtures": [
       {
-        "name": "Lazio Vs Parma",
-        "reason": "independent authorities disagree: ESPN espn-header=18' (STATUS_FIRST_HALF, event 401874955); LiveScore livescore=FT (6, event 1785397)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "name": "RC Lens Vs Paris FC",
+        "fixture_id": "provider:rc-lens-vs-paris-fc|ligue 1|2026-10-24",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
-        ]
-      },
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876427)",
+          "LiveScore livescore=FT (6, event 1794726)"
+        ],
+        "authority_finished_seen_at": "2026-10-24T22:24:11.394954+00:00",
+        "remove_after": "2026-10-24T22:44:11.394954+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
+    "conflicts": [
       {
         "name": "RC Lens Vs Paris FC",
-        "reason": "independent authorities disagree: ESPN espn-header=19' (STATUS_FIRST_HALF, event 401876427); LiveScore livescore=FT (6, event 1794726)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1152,7 +1162,7 @@
       },
       {
         "name": "Internacional Vs Botafogo",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841285); LiveScore livescore=FT (6, event 1708714)",
+        "reason": "independent authorities disagree: ESPN espn-header=90' (STATUS_SECOND_HALF, event 401841285); LiveScore livescore=FT (6, event 1708714)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1162,7 +1172,7 @@
       },
       {
         "name": "Mirassol Vs São Paulo",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841284); LiveScore livescore=FT (6, event 1708712)",
+        "reason": "independent authorities disagree: ESPN espn-header=90' (STATUS_SECOND_HALF, event 401841284); LiveScore livescore=FT (6, event 1708712)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1172,7 +1182,7 @@
       },
       {
         "name": "Vitória Vs Athletico",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841280); LiveScore livescore=FT (6, event 1708716)",
+        "reason": "independent authorities disagree: ESPN espn-header=90'+1' (STATUS_SECOND_HALF, event 401841280); LiveScore livescore=FT (6, event 1708716)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1182,7 +1192,7 @@
       },
       {
         "name": "Gil Vicente Vs FC Porto",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401885417); LiveScore livescore=FT (6, event 1816439)",
+        "reason": "independent authorities disagree: ESPN espn-header=90'+4' (STATUS_SECOND_HALF, event 401885417); LiveScore livescore=FT (6, event 1816439)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1192,7 +1202,7 @@
       },
       {
         "name": "Columbus Crew Vs Toronto FC",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761890); LiveScore livescore=FT (6, event 1696711)",
+        "reason": "independent authorities disagree: ESPN espn-header=84' (STATUS_SECOND_HALF, event 761890); LiveScore livescore=FT (6, event 1696711)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1203,48 +1213,38 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 10,
-    "finished": 5,
+    "asked": 6,
+    "finished": 4,
     "unplayable": 0,
-    "cache_hits": 1,
+    "cache_hits": 4,
     "no_verdict": 6
   },
   "live_protection": {
     "carried_forward": 13,
-    "released_ended": 1,
-    "released_ended_ids": [
-      "lazio-vs-parma"
-    ],
-    "retired_terminal": [
-      {
-        "id": "lazio-vs-parma",
-        "name": "Lazio Vs Parma",
-        "provenance": "authority_finished",
-        "reason": "authoritative finished status"
-      }
-    ],
+    "released_ended": 0,
+    "released_ended_ids": [],
+    "retired_terminal": [],
     "released_listing_expired": 0,
     "released_dead_link": 0,
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 9,
+    "probe_alive": 8,
     "probe_dead": 4,
     "probe_inconclusive": 0,
-    "end_pending": 6,
+    "end_pending": 7,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "END_PENDING": 6,
-      "LIVE": 7,
-      "ENDED": 1
+      "END_PENDING": 7,
+      "LIVE": 6
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 1,
+    "added": 0,
     "total": 849,
     "refused": 0,
     "refused_names": [],
@@ -1252,7 +1252,7 @@
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 1
+    "decided_this_scan": 0
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1264,7 +1264,7 @@
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 201,
+    "unresolved": 202,
     "names": {
       "Sky Sports": 1,
       "Fox": 1,
@@ -1275,19 +1275,19 @@
     "provider": "streamed",
     "available": true,
     "reason": "",
-    "calls": 30,
+    "calls": 31,
     "cache_hits": 1,
     "errors": 0,
-    "fixtures_ingested": 183,
-    "embed_streams": 58,
-    "artwork_supplied": 167
+    "fixtures_ingested": 186,
+    "embed_streams": 60,
+    "artwork_supplied": 169
   },
   "streamed_enrichment": {
     "matched": 15,
     "artwork": 15,
     "embed_backups": 0,
     "embed_channels": 0,
-    "unmatched": 140,
+    "unmatched": 141,
     "matched_by_participants": 4,
     "poster_filled": 1
   },
@@ -1299,12 +1299,12 @@
     "cache_hits": 16,
     "cached_entries": 1143,
     "provider": {
-      "requests": 2,
-      "hits": 0,
+      "requests": 6,
+      "hits": 4,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 37,
+      "skipped_rate_limited": 33,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1378,14 +1378,6 @@
           "rejected": 0,
           "published": 19
         },
-        "vk1817-fancode-mirror": {
-          "total": 19,
-          "cricket": 10,
-          "football": 9,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
-        },
         "sayanpal-fancode-mirror": {
           "total": 19,
           "cricket": 10,
@@ -1395,6 +1387,14 @@
           "published": 19
         },
         "dartv-fancode-mirror": {
+          "total": 19,
+          "cricket": 10,
+          "football": 9,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
+        },
+        "vk1817-fancode-mirror": {
           "total": 19,
           "cricket": 10,
           "football": 9,
@@ -1802,14 +1802,6 @@
           "rejected": 0,
           "published": 19
         },
-        "vk1817-fancode-mirror": {
-          "total": 19,
-          "cricket": 10,
-          "football": 9,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
-        },
         "sayanpal-fancode-mirror": {
           "total": 19,
           "cricket": 10,
@@ -1819,6 +1811,14 @@
           "published": 19
         },
         "dartv-fancode-mirror": {
+          "total": 19,
+          "cricket": 10,
+          "football": 9,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
+        },
+        "vk1817-fancode-mirror": {
           "total": 19,
           "cricket": 10,
           "football": 9,
@@ -1882,9 +1882,9 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 6,
+      "provider_or_authority": 7,
       "estimate": 0,
-      "none": 10
+      "none": 9
     }
   },
   "fixture_stream_health": {
@@ -1897,29 +1897,29 @@
     "targeted_fixtures": 9,
     "targeted_attempts": 27,
     "fixtures_with_a_first_link_time": 7,
-    "candidate_routes": 140,
-    "verified_routes": 93,
+    "candidate_routes": 139,
+    "verified_routes": 92,
     "failed_routes": 47,
-    "fixtures_touched_by_a_route_failure": 28,
+    "fixtures_touched_by_a_route_failure": 29,
     "fixtures_left_with_nothing": 8,
     "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 54,
-    "unrecognised_failed_routes": 82
+    "unrecognised_failed_routes": 86
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 74,
-    "verified": 29,
+    "verified": 26,
     "partial_authority": 0,
     "unverified": 30,
-    "conflict": 15,
+    "conflict": 18,
     "matched_by_two_independent_authorities": 29,
-    "authority_agreements": 22,
-    "authority_disagreements": 6,
-    "card_status_conflicts": 2,
+    "authority_agreements": 23,
+    "authority_disagreements": 5,
+    "card_status_conflicts": 6,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 1
+    "not_published": 0
   },
   "stream_health": {
     "sources_in_outage": [],
