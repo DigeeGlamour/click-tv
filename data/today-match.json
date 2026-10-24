@@ -1,95 +1,10 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-24T06:02:02.560573+00:00",
-  "count": 4,
+  "updated_at": "2026-10-24T06:04:53.449747+00:00",
+  "count": 3,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
-    {
-      "id": "tasmania-vs-victoria",
-      "name": "Tasmania vs Victoria",
-      "primary_stream_key": "",
-      "sport_type": "cricket",
-      "sport_type_derived": true,
-      "logo": "",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-fancode"
-      ],
-      "start_time": "2026-10-23T23:30:00+00:00",
-      "start_at": "2026-10-23T23:30:00+00:00",
-      "end_time": "2026-10-24T04:30:00+00:00",
-      "end_time_source": "sport",
-      "competition": "One Day Cup, 2026/27",
-      "fixture_id": "provider:tasmania-vs-victoria|one day cup 2026 27|2026-10-23",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "source_start_time": "2026-10-23T23:30:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_cricket",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "cricket",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Innings break (Innings break, event 1544852)"
-      ],
-      "allow_without_stream": true,
-      "route_failed_while_live": true,
-      "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "END_PENDING",
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "1544852"
-      },
-      "authority_status": "LIVE",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
-      "end_pending": true,
-      "end_pending_confirmations": 15,
-      "carried_forward_misses": 15,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
-      "carried_forward_first_missed_at": "2026-10-24T01:24:32.585858+00:00"
-    },
     {
       "id": "western-australia-vs-new-south-wales",
       "name": "Western Australia vs New South Wales",
@@ -164,6 +79,17 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (Scheduled, event 1544853)",
+        "LiveScore livescore=Play in progress (33, event 1825034)"
+      ],
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1544853); LiveScore livescore=Play in progress (33, event 1825034)",
       "allow_without_stream": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
@@ -235,6 +161,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "LiveScore livescore=FT (6, event 1843495)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "livescore": "1843495"
+      },
+      "authority_finished_confirmations": 1,
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
@@ -272,6 +211,35 @@
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_9df7f209223ec00369d43780c3d17b10",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -300,7 +268,7 @@
           }
         },
         {
-          "name": "Backup-2",
+          "name": "Backup-3",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -320,35 +288,6 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_93470083f4e79e3683bee811ae48805b",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_9df7f209223ec00369d43780c3d17b10",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -397,6 +336,19 @@
               "id": "live-genesis-championship-day-3--prime-video--2",
               "role": "backup",
               "playback_type": "native",
+              "variant_key": "sv_6ee5ab4c4423e67ea00c80dc",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_9df7f209223ec00369d43780c3d17b10",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "live-genesis-championship-day-3--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_9865982df996593ddd1fbc25",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -407,7 +359,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "live-genesis-championship-day-3--prime-video--3",
+              "id": "live-genesis-championship-day-3--prime-video--4",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_fd3ecee4956aa1d3d187c414",
@@ -415,19 +367,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_93470083f4e79e3683bee811ae48805b",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "live-genesis-championship-day-3--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_6ee5ab4c4423e67ea00c80dc",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_9df7f209223ec00369d43780c3d17b10",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -462,9 +401,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-24T05:44:14+00:00",
-      "start_at": "2026-10-24T05:44:14+00:00",
-      "end_time": "2026-10-24T09:44:14+00:00",
+      "start_time": "2026-10-24T06:04:23+00:00",
+      "start_at": "2026-10-24T06:04:23+00:00",
+      "end_time": "2026-10-24T10:04:23+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:genesis-championship",
       "status": "LIVE_NOW",
