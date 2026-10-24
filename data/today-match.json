@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-24T23:36:59.701834+00:00",
-  "count": 15,
+  "updated_at": "2026-10-24T23:42:28.426093+00:00",
+  "count": 16,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -252,11 +252,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 20,
+      "carried_forward_misses": 21,
       "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-24T18:05:15.065402+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 20,
+      "end_pending_confirmations": 21,
       "ended_seen_at": "2026-10-24T23:24:40.504249+00:00",
       "lifecycle_end_basis": "estimate"
     },
@@ -513,7 +513,7 @@
       },
       "authority_status": "FINISHED",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "atl-tico-madrid-vs-deportivo-de-a-coru-a-2506260",
       "artwork_candidates": [
@@ -533,18 +533,20 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 7,
-      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_misses": 8,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-24T21:40:10.260151+00:00",
-      "authority_finished_confirmations": 4,
+      "authority_finished_confirmations": 5,
       "authority_finished_seen_at": "2026-10-24T23:04:16.253719+00:00",
       "authority_remove_after": "2026-10-24T23:24:16.253719+00:00",
-      "contradicted_end_confirmations": 2,
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-24T23:42:23.015501+00:00"
     },
     {
       "id": "columbus-crew-vs-toronto-fc",
@@ -679,7 +681,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-24T22:05:04.609475+00:00",
       "authority_independent_count": 2,
@@ -691,11 +693,10 @@
       "authority_finished_seen_at": "2026-10-24T22:44:11.399750+00:00",
       "authority_status": "FINISHED",
       "authority_remove_after": "2026-10-24T23:04:11.399750+00:00",
-      "contradicted_end_confirmations": 3,
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
       "end_pending": true,
       "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-10-24T23:24:40.504249+00:00"
+      "ended_seen_at": "2026-10-24T23:24:40.504249+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "palmeiras-vs-red-bull-bragantino",
@@ -921,7 +922,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-24T21:30:00+00:00",
       "start_at": "2026-10-24T21:30:00+00:00",
-      "end_time": "2026-10-25T00:24:14+00:00",
+      "end_time": "2026-10-25T00:41:31+00:00",
       "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:palmeiras-vs-red-bull-bragantino|campeonato brasileiro s rie a|2026-10-24",
@@ -1053,7 +1054,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-24T21:30:00+00:00",
       "start_at": "2026-10-24T21:30:00+00:00",
-      "end_time": "2026-10-25T00:24:14+00:00",
+      "end_time": "2026-10-25T00:41:31+00:00",
       "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:vasco-da-gama-vs-corinthians|campeonato brasileiro s rie a|2026-10-24",
@@ -1068,267 +1069,22 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=53' (STATUS_SECOND_HALF, event 401841281)"
+        "ESPN espn-header=53' (STATUS_SECOND_HALF, event 401841281)",
+        "LiveScore livescore=FT (6, event 1708709)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401841281"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=53' (STATUS_SECOND_HALF, event 401841281); LiveScore livescore=FT (6, event 1708709)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ynqlxo1630521109.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vvuvps1473538042.png",
       "playback_id": "ctv_39cbda4c7e79a02e4f41308c09c15d68",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
-    },
-    {
-      "id": "eastern-new-mexico-university-vs-western-oregon-football",
-      "name": "Eastern New Mexico University vs Western Oregon Football",
-      "primary_stream_key": "0ab055d8318ca25624249202225aac5bbf5523fe2c0903d7226ce7e237e057e6",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.30c1a092-a4c4-48f6-9d14-92ae7e98045c/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
-      "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-primevideo-sports",
-      "metadata_only": false,
-      "available_link_count": 4,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_790011f782de0b35adc32993ce02bb83",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
-      "channels": [
-        {
-          "id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.30c1a092-a4c4-48f6-9d14-92ae7e98045c/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
-          "source_ids": [
-            "srhady-primevideo-sports"
-          ],
-          "primary_stream_id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video--1",
-          "stream_count": 4,
-          "backup_count": 3,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_c1e02be4d063e0566b724069",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_b7f37c054f02157af5afadd6",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_01b11c32d050778527634c31",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_8db6155c66a901f36b688c53",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_790011f782de0b35adc32993ce02bb83",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video",
-      "channel_stats": {
-        "streams_in": 4,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 4,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-10-24T23:24:14+00:00",
-      "start_at": "2026-10-24T23:24:14+00:00",
-      "end_time": "2026-10-25T01:54:14+00:00",
-      "end_time_source": "sport",
-      "fixture_id": "provider:eastern-new-mexico-university-vs-western-oregon-football|2026-10-24",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1451,609 +1207,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
-    },
-    {
-      "id": "mls-la-previa",
-      "name": "MLS La Previa⁩",
-      "primary_stream_key": "e56423058f6bfd89ddc4adc091208611cdc68682c5ae6190d24300babfeb1f69",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.57a117dc-2956-4a9e-867c-38574b0a3957/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-primevideo-sports",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "mls-la-previa--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.57a117dc-2956-4a9e-867c-38574b0a3957/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
-          "source_ids": [
-            "srhady-primevideo-sports"
-          ],
-          "primary_stream_id": "mls-la-previa--prime-video--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "mls-la-previa--prime-video--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_15126d38b7946dabf60fd9c8",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_e71a1a6581e57aa27ecfd6e317cb28b1",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "mls-la-previa--prime-video",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
       },
-      "source_provenance": [
-        {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        }
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
       ],
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-10-24T23:24:14+00:00",
-      "start_at": "2026-10-24T23:24:14+00:00",
-      "end_time": "2026-10-25T01:54:14+00:00",
-      "end_time_source": "sport",
-      "fixture_id": "provider:mls-la-previa|2026-10-24",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_e71a1a6581e57aa27ecfd6e317cb28b1",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
-    },
-    {
-      "id": "texas-a-m-kingsville-vs-angelo-state-football",
-      "name": "Texas A M Kingsville vs Angelo State Football",
-      "primary_stream_key": "07c9e71fcac4b098994dbba2c17784239cde5aeb51e28631d40bbc5ea77674bd",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.22a94b54-51c8-49e3-afa2-1e90173fb150/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-primevideo-sports",
-      "metadata_only": false,
-      "available_link_count": 4,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_f40d0dd07e0d3b34e943a6485614a084",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_5e022ad6b2dc091c0d8c441de033a5e7",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_55fa22bb2d0e979e5a21fce5eae43852",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
-      "channels": [
-        {
-          "id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.22a94b54-51c8-49e3-afa2-1e90173fb150/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
-          "source_ids": [
-            "srhady-primevideo-sports"
-          ],
-          "primary_stream_id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video--1",
-          "stream_count": 4,
-          "backup_count": 3,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_ea63e494f67b40f1a47957d6",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_73c8ade531e51d14e61704a8",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_f40d0dd07e0d3b34e943a6485614a084",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_2d64a69c5e7ff40087da8cd5",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_5e022ad6b2dc091c0d8c441de033a5e7",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_d29ade42fd9842f9fc81560e",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_55fa22bb2d0e979e5a21fce5eae43852",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video",
-      "channel_stats": {
-        "streams_in": 4,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 4,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-10-24T23:24:14+00:00",
-      "start_at": "2026-10-24T23:24:14+00:00",
-      "end_time": "2026-10-25T01:54:14+00:00",
-      "end_time_source": "sport",
-      "fixture_id": "provider:texas-a-m-kingsville-vs-angelo-state-football|2026-10-24",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
-    },
-    {
-      "id": "united-states-v-australia-a",
-      "name": "United States v Australia A",
-      "primary_stream_key": "25f8a9d44499f221db368820a87115019f7bac5a39e23001acdcce2a6b76425a",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.3cd54ddf-5e69-4ea1-b6eb-fc070ac9e26a/1/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-primevideo-sports",
-      "metadata_only": false,
-      "available_link_count": 4,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_72a2ec65e0040755888d04a37d019e46",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_756b1b2330bfe7ffef667c75b5789bcb",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_cc4a71fe0c0a79d22a02e92a6930e571",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
-      "channels": [
-        {
-          "id": "united-states-v-australia-a--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.3cd54ddf-5e69-4ea1-b6eb-fc070ac9e26a/1/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
-          "source_ids": [
-            "srhady-primevideo-sports"
-          ],
-          "primary_stream_id": "united-states-v-australia-a--prime-video--1",
-          "stream_count": 4,
-          "backup_count": 3,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "united-states-v-australia-a--prime-video--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_0afc8764c8e732e9619bcb47",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_3c997681c11e7518d96d47cc3d48d892",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "united-states-v-australia-a--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_3e3a996cb3957ae560e3abe8",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_72a2ec65e0040755888d04a37d019e46",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "united-states-v-australia-a--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_7a44163d1c467db298a36bbc",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_756b1b2330bfe7ffef667c75b5789bcb",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "united-states-v-australia-a--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_36255dbaa55d2f9991d6eb1d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_cc4a71fe0c0a79d22a02e92a6930e571",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "united-states-v-australia-a--prime-video",
-      "channel_stats": {
-        "streams_in": 4,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 4,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-10-24T23:24:14+00:00",
-      "start_at": "2026-10-24T23:24:14+00:00",
-      "end_time": "2026-10-25T01:54:14+00:00",
-      "end_time_source": "sport",
-      "fixture_id": "provider:united-states-vs-australia-a|2026-10-24",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_3c997681c11e7518d96d47cc3d48d892",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-24T23:42:23.015501+00:00"
     },
     {
       "id": "atlanta-united-vs-chicago-fire",
@@ -2120,19 +1282,16 @@
       "sport_class_reason": "league map",
       "sport_class_evidence": "MLS",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761893)",
-        "LiveScore livescore=NS (1, event 1696720)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761893)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "761893",
-        "livescore": "1696720"
+        "espn-header": "761893"
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
@@ -2153,7 +1312,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-24T23:24:40.504249+00:00"
     },
@@ -2252,7 +1411,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-24T23:24:40.504249+00:00"
     },
@@ -2321,19 +1480,16 @@
       "sport_class_reason": "league map",
       "sport_class_evidence": "MLS",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761892)",
-        "LiveScore livescore=NS (1, event 1696732)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761892)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "761892",
-        "livescore": "1696732"
+        "espn-header": "761892"
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
@@ -2354,7 +1510,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-24T23:24:40.504249+00:00"
     },
@@ -2423,19 +1579,16 @@
       "sport_class_reason": "league map",
       "sport_class_evidence": "MLS",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761894)",
-        "LiveScore livescore=NS (1, event 1696745)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761894)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "761894",
-        "livescore": "1696745"
+        "espn-header": "761894"
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
@@ -2456,9 +1609,1097 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-24T23:24:40.504249+00:00"
+    },
+    {
+      "id": "birmingham-legion-fc-at-pittsburgh-riverhounds-sc",
+      "name": "Birmingham Legion FC at Pittsburgh Riverhounds SC",
+      "primary_stream_key": "99fce3a348ae3c8199624a218047c8dc3315a59ac920dae15206ce1ae74d2e72",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.e7e124a3-1b74-4c00-9039-321c4c122994/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 4,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "birmingham-legion-fc-at-pittsburgh-riverhounds-sc--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.e7e124a3-1b74-4c00-9039-321c4c122994/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "birmingham-legion-fc-at-pittsburgh-riverhounds-sc--prime-video--1",
+          "stream_count": 4,
+          "backup_count": 3,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "birmingham-legion-fc-at-pittsburgh-riverhounds-sc--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "birmingham-legion-fc-at-pittsburgh-riverhounds-sc--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b9a4754dd8779c45821c460d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "birmingham-legion-fc-at-pittsburgh-riverhounds-sc--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_0e638de706138f746f0f4bb0",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "birmingham-legion-fc-at-pittsburgh-riverhounds-sc--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_5458cc437e60a57ab38df02d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "birmingham-legion-fc-at-pittsburgh-riverhounds-sc--prime-video",
+      "channel_stats": {
+        "streams_in": 4,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 4,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-24T23:41:31+00:00",
+      "start_at": "2026-10-24T23:41:31+00:00",
+      "end_time": "2026-10-25T02:11:31+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:birmingham-legion-fc-at-pittsburgh-riverhounds-sc|2026-10-24",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "eastern-new-mexico-university-vs-western-oregon-football",
+      "name": "Eastern New Mexico University vs Western Oregon Football",
+      "primary_stream_key": "702eb2766b8b05614091067a75d9e9eedc5a04cda45655bfa6d8b82efd8b6e98",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.30c1a092-a4c4-48f6-9d14-92ae7e98045c/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 4,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_790011f782de0b35adc32993ce02bb83",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.30c1a092-a4c4-48f6-9d14-92ae7e98045c/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video--1",
+          "stream_count": 4,
+          "backup_count": 3,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_b7f37c054f02157af5afadd6",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_01b11c32d050778527634c31",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_8db6155c66a901f36b688c53",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_790011f782de0b35adc32993ce02bb83",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_c1e02be4d063e0566b724069",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "eastern-new-mexico-university-vs-western-oregon-football--prime-video",
+      "channel_stats": {
+        "streams_in": 4,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 4,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-24T23:41:31+00:00",
+      "start_at": "2026-10-24T23:41:31+00:00",
+      "end_time": "2026-10-25T02:11:31+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:eastern-new-mexico-university-vs-western-oregon-football|2026-10-24",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "mls-la-previa",
+      "name": "MLS La Previa⁩",
+      "primary_stream_key": "e56423058f6bfd89ddc4adc091208611cdc68682c5ae6190d24300babfeb1f69",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.57a117dc-2956-4a9e-867c-38574b0a3957/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "mls-la-previa--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.57a117dc-2956-4a9e-867c-38574b0a3957/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "mls-la-previa--prime-video--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "mls-la-previa--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_15126d38b7946dabf60fd9c8",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_e71a1a6581e57aa27ecfd6e317cb28b1",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "mls-la-previa--prime-video",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-24T23:41:31+00:00",
+      "start_at": "2026-10-24T23:41:31+00:00",
+      "end_time": "2026-10-25T02:11:31+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:mls-la-previa|2026-10-24",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_e71a1a6581e57aa27ecfd6e317cb28b1",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "texas-a-m-kingsville-vs-angelo-state-football",
+      "name": "Texas A M Kingsville vs Angelo State Football",
+      "primary_stream_key": "36334b52c160e23abee3dd88985b3133cc302716119dbb561cd885cc87fa871e",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.22a94b54-51c8-49e3-afa2-1e90173fb150/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 4,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_5e022ad6b2dc091c0d8c441de033a5e7",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_f40d0dd07e0d3b34e943a6485614a084",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.22a94b54-51c8-49e3-afa2-1e90173fb150/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video--1",
+          "stream_count": 4,
+          "backup_count": 3,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_d29ade42fd9842f9fc81560e",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_55fa22bb2d0e979e5a21fce5eae43852",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_2d64a69c5e7ff40087da8cd5",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_5e022ad6b2dc091c0d8c441de033a5e7",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_ea63e494f67b40f1a47957d6",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_73c8ade531e51d14e61704a8",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_f40d0dd07e0d3b34e943a6485614a084",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "texas-a-m-kingsville-vs-angelo-state-football--prime-video",
+      "channel_stats": {
+        "streams_in": 4,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 4,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-24T23:41:31+00:00",
+      "start_at": "2026-10-24T23:41:31+00:00",
+      "end_time": "2026-10-25T02:11:31+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:texas-a-m-kingsville-vs-angelo-state-football|2026-10-24",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_55fa22bb2d0e979e5a21fce5eae43852",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "united-states-v-australia-a",
+      "name": "United States v Australia A",
+      "primary_stream_key": "76f095872948f6c18db284617b0aa01d2dbcc3fd34d41d1c385b13355b415217",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.3cd54ddf-5e69-4ea1-b6eb-fc070ac9e26a/1/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 4,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_72a2ec65e0040755888d04a37d019e46",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_cc4a71fe0c0a79d22a02e92a6930e571",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_3c997681c11e7518d96d47cc3d48d892",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "united-states-v-australia-a--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.3cd54ddf-5e69-4ea1-b6eb-fc070ac9e26a/1/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "united-states-v-australia-a--prime-video--1",
+          "stream_count": 4,
+          "backup_count": 3,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "united-states-v-australia-a--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_7a44163d1c467db298a36bbc",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_756b1b2330bfe7ffef667c75b5789bcb",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "united-states-v-australia-a--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_3e3a996cb3957ae560e3abe8",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_72a2ec65e0040755888d04a37d019e46",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "united-states-v-australia-a--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_36255dbaa55d2f9991d6eb1d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_cc4a71fe0c0a79d22a02e92a6930e571",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "united-states-v-australia-a--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_0afc8764c8e732e9619bcb47",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_3c997681c11e7518d96d47cc3d48d892",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "united-states-v-australia-a--prime-video",
+      "channel_stats": {
+        "streams_in": 4,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 4,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-24T23:41:31+00:00",
+      "start_at": "2026-10-24T23:41:31+00:00",
+      "end_time": "2026-10-25T02:11:31+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:united-states-vs-australia-a|2026-10-24",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_756b1b2330bfe7ffef667c75b5789bcb",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
     },
     {
       "id": "santos-vs-bahia",
@@ -2568,6 +2809,33 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_near_misses": [
+        {
+          "authority": "livescore",
+          "matched_by": "kickoff_lifted",
+          "event_id": "1708710",
+          "upstream_family": "LiveScore",
+          "name": "Santos FC vs Bahia",
+          "competition": "Serie A",
+          "kickoff": "2026-10-25T01:00:00+00:00",
+          "kickoff_delta_minutes": 60.0,
+          "status": "UPCOMING"
+        }
+      ],
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841282)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401841282"
+      },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN and our own schedule both put kickoff 18 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/j8xk9g1679447486.png",
