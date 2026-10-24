@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-24T19:14:35.402934+00:00",
+  "updated_at": "2026-10-24T19:25:03.233108+00:00",
   "count": 20,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -128,7 +128,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 25,
+      "carried_forward_misses": 26,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-24T12:04:48.415623+00:00",
       "authority_near_misses": [
@@ -225,7 +225,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-24T18:44:30.826110+00:00"
     },
@@ -476,7 +476,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-24T18:05:15.065402+00:00"
     },
@@ -588,13 +588,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=90'+9' (STATUS_SECOND_HALF, event 401874129)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401874129)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -616,9 +616,10 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-24T17:44:36.756401+00:00"
+      "carried_forward_first_missed_at": "2026-10-24T17:44:36.756401+00:00",
+      "authority_finished_confirmations": 1
     },
     {
       "id": "ssc-napoli-vs-as-roma",
@@ -1102,18 +1103,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401874948)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401874948)",
         "LiveScore livescore=FT (6, event 1785407)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/l8qyxv1742982541.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/jwro2s1760820674.png",
       "competition_from_source": "Serie A",
@@ -1125,15 +1126,27 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 4,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-24T18:44:30.826110+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401874948); LiveScore livescore=FT (6, event 1785407)"
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401874948",
+        "livescore": "1785407"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-24T19:24:14.068564+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-24T19:44:14.068564+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-24T19:24:49.635905+00:00"
     },
     {
       "id": "chelsea-vs-tottenham-hotspur",
@@ -1313,7 +1326,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=25' (STATUS_FIRST_HALF, event 401878767)",
+        "ESPN espn-header=90'+7' (STATUS_SECOND_HALF, event 401878767)",
         "LiveScore livescore=FT (6, event 1793619)"
       ],
       "event_type": "today_match",
@@ -1331,16 +1344,16 @@
       "provider_routing_hint": "live",
       "competition_from_source": "Premier League",
       "playback_id": "ctv_ba82ed7ed289e5f515e8569617125f90",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=25' (STATUS_FIRST_HALF, event 401878767); LiveScore livescore=FT (6, event 1793619)",
       "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
       "lifecycle_protections": [
         "authority_live",
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-24T19:14:24.726631+00:00"
+      "carried_forward_first_missed_at": "2026-10-24T19:14:24.726631+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90'+7' (STATUS_SECOND_HALF, event 401878767); LiveScore livescore=FT (6, event 1793619)"
     },
     {
       "id": "borussia-dortmund-vs-eintracht-frankfurt",
@@ -1450,14 +1463,14 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=26' (STATUS_FIRST_HALF, event 401884763)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401884763)",
         "LiveScore livescore=FT (6, event 1812711)"
       ],
       "event_type": "today_match",
@@ -1482,16 +1495,24 @@
         "query_parameters": [],
         "drm": true
       },
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=26' (STATUS_FIRST_HALF, event 401884763); LiveScore livescore=FT (6, event 1812711)",
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
       "lifecycle_protections": [
-        "authority_live",
-        "primary_playable",
-        "backup_playable"
+        "authority_live"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-24T19:14:24.726631+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_first_missed_at": "2026-10-24T19:14:24.726631+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401884763",
+        "livescore": "1812711"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-24T19:24:14.068564+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-24T19:44:14.068564+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "contradicted_end_confirmations": 1
     },
     {
       "id": "valencia-vs-villarreal",
@@ -1608,7 +1629,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=24' (STATUS_FIRST_HALF, event 401882827)",
+        "ESPN espn-header=90'+2' (STATUS_SECOND_HALF, event 401882827)",
         "LiveScore livescore=FT (6, event 1810724)"
       ],
       "event_type": "today_match",
@@ -1632,16 +1653,16 @@
         "query_parameters": [],
         "drm": true
       },
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=24' (STATUS_FIRST_HALF, event 401882827); LiveScore livescore=FT (6, event 1810724)",
       "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
       "lifecycle_protections": [
         "authority_live",
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-24T19:14:24.726631+00:00"
+      "carried_forward_first_missed_at": "2026-10-24T19:14:24.726631+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90'+2' (STATUS_SECOND_HALF, event 401882827); LiveScore livescore=FT (6, event 1810724)"
     },
     {
       "id": "cf-montréal-vs-nashville-sc",
@@ -1789,7 +1810,7 @@
       "resolution_height": 720,
       "start_time": "2026-10-24T17:30:00+00:00",
       "start_at": "2026-10-24T17:30:00+00:00",
-      "end_time": "2026-10-24T20:13:38+00:00",
+      "end_time": "2026-10-24T20:24:14+00:00",
       "end_time_source": "assumed",
       "competition": "MLS",
       "fixture_id": "provider:cf-montréal-vs-nashville-sc|mls|2026-10-24",
@@ -1804,18 +1825,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "MLS",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761903)"
+        "ESPN espn-header=44' (STATUS_FIRST_HALF, event 761903)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "761903"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -1834,7 +1856,7 @@
     {
       "id": "venezuela-u17-vs-japan-u17",
       "name": "Venezuela U17 Vs Japan U17",
-      "primary_stream_key": "4aa854ac44e2e59e2a5e9757d1f4257bcae01812bd9d13c2bf24f544e3dcc25e",
+      "primary_stream_key": "57f82792d6cec38733a7d718da91867ed7e1bb08d7cb7ac78de8ef099e5a5a0c",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/4722/image",
@@ -1877,7 +1899,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_60bc86ef904bebd0772303ff8e2e2112",
+          "playback_id": "ctv_b7335b94df2332301caf9037d7ff3350",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1888,42 +1910,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "venezuela-u17-vs-japan-u17--d-sports",
-          "name": "D SPORTS +",
-          "normalized_name": "d-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/4722/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "venezuela-u17-vs-japan-u17--d-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "venezuela-u17-vs-japan-u17--d-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_532ccd48fb0b64b73714dd69",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_b7335b94df2332301caf9037d7ff3350",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "venezuela-u17-vs-japan-u17--sports2",
           "name": "SPORTS2",
@@ -1959,10 +1945,46 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "venezuela-u17-vs-japan-u17--d-sports",
+          "name": "D SPORTS +",
+          "normalized_name": "d-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/4722/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "venezuela-u17-vs-japan-u17--d-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "venezuela-u17-vs-japan-u17--d-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_532ccd48fb0b64b73714dd69",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_b7335b94df2332301caf9037d7ff3350",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "venezuela-u17-vs-japan-u17--d-sports",
+      "default_channel_id": "venezuela-u17-vs-japan-u17--sports2",
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 0,
@@ -2005,21 +2027,22 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401874060)"
+        "ESPN espn-header=23' (STATUS_FIRST_HALF, event 401874060)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401874060"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_b7335b94df2332301caf9037d7ff3350",
+      "playback_id": "ctv_60bc86ef904bebd0772303ff8e2e2112",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -2433,7 +2456,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-24T19:04:40.921419+00:00"
     },
@@ -2514,6 +2537,35 @@
         },
         {
           "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -2542,7 +2594,7 @@
           }
         },
         {
-          "name": "Backup-4",
+          "name": "Backup-5",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -2562,35 +2614,6 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-5",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2675,32 +2698,6 @@
               "id": "lazio-vs-parma--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_b9a4754dd8779c45821c460d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "lazio-vs-parma--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_5458cc437e60a57ab38df02d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "lazio-vs-parma--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_0e638de706138f746f0f4bb0",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -2711,7 +2708,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "lazio-vs-parma--prime-video--4",
+              "id": "lazio-vs-parma--prime-video--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_c2976ef28b75526dffdfcc0a",
@@ -2719,6 +2716,32 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "lazio-vs-parma--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b9a4754dd8779c45821c460d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "lazio-vs-parma--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_5458cc437e60a57ab38df02d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -3132,7 +3155,7 @@
     {
       "id": "atlético-madrid-vs-deportivo-de-a-coruña",
       "name": "Atlético Madrid Vs Deportivo de A Coruña",
-      "primary_stream_key": "23a32f72373d6e8dba79ac9d54766440f286c26203b922620bb95b537ab7459e",
+      "primary_stream_key": "e17a47f25d3e5268fc854ca58223b7d1f677612b1589c89472aca7943fd4f241",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/2836/image",
@@ -3175,7 +3198,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
+          "playback_id": "ctv_fd195fa61874122c77418f46de049b29",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -3186,42 +3209,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--bein-english",
-          "name": "beIN ENGLISH",
-          "normalized_name": "bein-english",
-          "logo": "https://img.sofascore.com/api/v1/team/2836/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--bein-english--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--bein-english--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_8fc5d08a0e1a58e498b5c301",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_fd195fa61874122c77418f46de049b29",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--d-sports",
           "name": "D SPORTS +",
@@ -3257,10 +3244,46 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--bein-english",
+          "name": "beIN ENGLISH",
+          "normalized_name": "bein-english",
+          "logo": "https://img.sofascore.com/api/v1/team/2836/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--bein-english--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--bein-english--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_8fc5d08a0e1a58e498b5c301",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_fd195fa61874122c77418f46de049b29",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--bein-english",
+      "default_channel_id": "atl-tico-madrid-vs-deportivo-de-a-coru-a--d-sports",
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 0,
@@ -3328,7 +3351,7 @@
       "home_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhBxRYUCHhhuIXXz0gURkKYhbDywjGBM+KLmDLb680Q6a0wTsaIhA.webp",
       "away_badge_url": "https://streamed.pk/api/images/badge/GwZg7AZpYEZgHCAjAJgCzrAThFlBWSUYAUwVmDW2nmAmD32FrWGHXbeAENgBjUgg5sSdTt0z1Rvdqyw8xAkuhAATXAzCqwfLSG4g+IY4hj6QiAyTUEKTPii5gy8IvNGOmtMM7GiIQA.webp",
       "provider_routing_hint": "live",
-      "playback_id": "ctv_fd195fa61874122c77418f46de049b29",
+      "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -3534,7 +3557,7 @@
         "livescore": "1708714"
       },
       "start_window_claimed": "LIVE_NOW",
-      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 16 minute(s) away",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yprvxx1473538097.png",
@@ -3672,7 +3695,7 @@
         "livescore": "1708712"
       },
       "start_window_claimed": "LIVE_NOW",
-      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 16 minute(s) away",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/pw8uo11765900737.png",
@@ -3810,7 +3833,7 @@
         "livescore": "1708716"
       },
       "start_window_claimed": "LIVE_NOW",
-      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 16 minute(s) away",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tysrrx1473538156.png",
