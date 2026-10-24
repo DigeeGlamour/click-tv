@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-24T10:05:07.141448+00:00",
+  "updated_at": "2026-10-24T10:24:52.585453+00:00",
   "count": 7,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -72,7 +72,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1544853)",
+        "ESPN espn-header=Innings break (Innings break, event 1544853)",
         "LiveScore livescore=Play in progress (33, event 1825034)"
       ],
       "allow_without_stream": true,
@@ -90,7 +90,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-24T09:24:36.873790+00:00"
     },
@@ -154,23 +154,24 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1559443)"
+        "ESPN espn-header=Live (Live, event 1559443)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "1559443"
       },
+      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE"
     },
     {
       "id": "namibia-vs-ireland",
@@ -280,17 +281,22 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1558232)",
+        "ESPN espn-header=Live (Live, event 1558232)",
         "LiveScore livescore=Play in progress (33, event 1907918)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558232); LiveScore livescore=Play in progress (33, event 1907918)",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1558232",
+        "livescore": "1907918"
+      },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_ce4d09169653a3234ac0ca9e26f5a9e3",
@@ -368,23 +374,24 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1557529)"
+        "ESPN espn-header=Live (Live, event 1557529)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "1557529"
       },
+      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "provider_poster_url": "https://r2.thesportsdb.com/images/media/event/thumb/pr38ra1694246808.jpg",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vgb3iv1553368586.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/jpbvy51742102860.png"
@@ -417,35 +424,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4a311acd046c267f477e41191829180e",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -474,7 +452,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -494,6 +472,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4a311acd046c267f477e41191829180e",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -542,19 +549,6 @@
               "id": "cricket-new-zealand-vs-india-2nd-t20i--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_491dc8b294dde630a1a3699b",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4a311acd046c267f477e41191829180e",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "cricket-new-zealand-vs-india-2nd-t20i--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_69b889f788a97aa5addcd66d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -565,7 +559,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "cricket-new-zealand-vs-india-2nd-t20i--prime-video--4",
+              "id": "cricket-new-zealand-vs-india-2nd-t20i--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_64b1265d54d66528d0699925",
@@ -573,6 +567,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "cricket-new-zealand-vs-india-2nd-t20i--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_491dc8b294dde630a1a3699b",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4a311acd046c267f477e41191829180e",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -607,9 +614,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-24T10:04:29+00:00",
-      "start_at": "2026-10-24T10:04:29+00:00",
-      "end_time": "2026-10-24T14:04:29+00:00",
+      "start_time": "2026-10-24T10:24:24+00:00",
+      "start_at": "2026-10-24T10:24:24+00:00",
+      "end_time": "2026-10-24T14:24:24+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:cricket-new-zealand-vs-india-2-t20i|2026-10-24",
       "status": "LIVE_NOW",
@@ -879,7 +886,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-24T08:44:47.714685+00:00"
     },
