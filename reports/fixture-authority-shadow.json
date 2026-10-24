@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T04:04:27.485682+00:00",
+  "generated_at": "2026-10-24T04:24:25.729398+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,9 +12,11 @@
       "requests_ok": 6,
       "fixtures": 2195,
       "unknown_statuses": [
-        "10|HT",
-        "2|0'",
-        "3|90+5'"
+        "2|23'",
+        "2|24'",
+        "3|50'",
+        "3|56'",
+        "3|62'"
       ],
       "attempts": [
         {
@@ -61,8 +63,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 5,
-      "fixtures": 462,
+      "requests_ok": 6,
+      "fixtures": 762,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -98,8 +100,8 @@
         {
           "sport": "football",
           "date": "2026-10-25",
-          "result": "INCONCLUSIVE",
-          "reason": "http 502"
+          "result": "ok",
+          "fixtures": 300
         }
       ]
     }
@@ -110,44 +112,46 @@
     "upcoming": 77,
     "fixtures": 82,
     "verdicts": {
-      "UNVERIFIED": 24,
+      "UNVERIFIED": 22,
       "PARTIAL_AUTHORITY": 1,
       "CONFLICT": 6,
-      "VERIFIED": 51
+      "VERIFIED": 53
     },
-    "verified": 51,
+    "verified": 53,
     "partial_authority": 1,
-    "unverified": 24,
+    "unverified": 22,
     "conflict": 6,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 34,
-        "matched": 48
+        "unmatched": 26,
+        "matched": 56
       },
       "livescore": {
         "unmatched": 33,
         "matched": 49
       }
     },
-    "matched_by_two_independent_authorities": 36,
-    "authority_agreements": 35,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "matched_by_two_independent_authorities": 42,
+    "authority_agreements": 41,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1,
+      "authorities disagree": 1,
       "kickoff": 5
     },
     "identity_near_misses": 10,
     "independent_authority_count_distribution": {
-      "0": 24,
-      "1": 22,
-      "2": 36
+      "0": 22,
+      "1": 18,
+      "2": 42
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
-        "2|0'",
-        "3|90+5'"
+        "2|23'",
+        "2|24'",
+        "3|50'",
+        "3|56'",
+        "3|62'"
       ],
       "espn-header": []
     }
@@ -240,7 +244,7 @@
       "card_id": "live-genesis-championship-day-3",
       "name": "LIVE Genesis Championship Day 3",
       "competition": "",
-      "kickoff": "2026-10-24T04:04:27+00:00",
+      "kickoff": "2026-10-24T04:24:25+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -312,7 +316,7 @@
           "competition_id": "128",
           "kickoff": "2026-10-24T04:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "0'",
+          "status_raw": "24'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -405,17 +409,17 @@
           "competition_id": "8301",
           "kickoff": "2026-10-24T02:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, October 23rd at 10:00 PM EDT",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:8301~e:401854029~c:401854029"
@@ -435,11 +439,11 @@
           "competition_id": "24463",
           "kickoff": "2026-10-24T02:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "90+5'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
-          "round": "1",
+          "round": "Regular Season",
           "format": "",
           "gender": "women"
         }
@@ -452,10 +456,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
       ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -959,9 +963,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1232,7 +1236,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401878036",
+          "upstream_family": "ESPN",
+          "name": "Alianza FC vs Internacional de Bogotá",
+          "home": "Alianza FC",
+          "away": "Internacional de Bogotá",
+          "home_team_id": "9761",
+          "away_team_id": "7445",
+          "competition": "Colombian Primera A",
+          "competition_id": "650",
+          "kickoff": "2026-10-25T21:05:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, October 25th at 5:05 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:650~e:401878036~c:401878036"
         },
         "livescore": {
           "result": "matched",
@@ -1259,13 +1290,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1463,9 +1495,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1557,9 +1589,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1651,9 +1683,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1832,9 +1864,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1919,7 +1951,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401878052",
+          "upstream_family": "ESPN",
+          "name": "Atlético Nacional vs Independiente Medellín",
+          "home": "Atlético Nacional",
+          "away": "Independiente Medellín",
+          "home_team_id": "5264",
+          "away_team_id": "2690",
+          "competition": "Colombian Primera A",
+          "competition_id": "650",
+          "kickoff": "2026-10-25T23:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, October 25th at 7:10 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:650~e:401878052~c:401878052"
         },
         "livescore": {
           "result": "matched",
@@ -1946,13 +2005,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2262,9 +2322,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2356,9 +2416,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2536,9 +2596,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2755,20 +2815,49 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401877918",
+          "upstream_family": "ESPN",
+          "name": "Deportes Tolima vs Deportivo Pasto",
+          "home": "Deportes Tolima",
+          "away": "Deportivo Pasto",
+          "home_team_id": "5489",
+          "away_team_id": "5485",
+          "competition": "Colombian Primera A",
+          "competition_id": "650",
+          "kickoff": "2026-10-26T01:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, October 25th at 9:15 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:650~e:401877918~c:401877918"
         },
         "livescore": {
           "result": "unmatched"
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2786,9 +2875,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2827,8 +2916,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3048,7 +3137,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401877906",
+          "upstream_family": "ESPN",
+          "name": "Fortaleza CEIF vs Deportivo Cali",
+          "home": "Fortaleza CEIF",
+          "away": "Deportivo Cali",
+          "home_team_id": "4928",
+          "away_team_id": "2672",
+          "competition": "Colombian Primera A",
+          "competition_id": "650",
+          "kickoff": "2026-10-25T19:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, October 25th at 3:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:650~e:401877906~c:401877906"
         },
         "livescore": {
           "result": "matched",
@@ -3075,13 +3191,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -3101,9 +3218,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3210,9 +3327,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3478,9 +3595,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4424,7 +4541,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401882832",
+          "upstream_family": "ESPN",
+          "name": "Barcelona vs Real Madrid",
+          "home": "Barcelona",
+          "away": "Real Madrid",
+          "home_team_id": "83",
+          "away_team_id": "86",
+          "competition": "Spanish LALIGA",
+          "competition_id": "740",
+          "kickoff": "2026-10-25T20:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, October 25th at 4:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:740~e:401882832~c:401882832"
         },
         "livescore": {
           "result": "matched",
@@ -4451,13 +4595,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -4478,9 +4623,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4841,7 +4986,34 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401888653",
+          "upstream_family": "ESPN",
+          "name": "Sportivo Ameliano vs Club Olimpia",
+          "home": "Sportivo Ameliano",
+          "away": "Club Olimpia",
+          "home_team_id": "21313",
+          "away_team_id": "2675",
+          "competition": "Paraguayan Primera División",
+          "competition_id": "3934",
+          "kickoff": "2026-10-25T13:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, October 25th at 9:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3934~e:401888653~c:401888653"
         },
         "livescore": {
           "result": "matched",
@@ -4868,13 +5040,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -4932,9 +5105,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -5034,7 +5207,34 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401892151",
+          "upstream_family": "ESPN",
+          "name": "Sydney FC vs Adelaide United FC",
+          "home": "Sydney FC",
+          "away": "Adelaide United FC",
+          "home_team_id": "5327",
+          "away_team_id": "5321",
+          "competition": "Australian A-League Men",
+          "competition_id": "3906",
+          "kickoff": "2026-10-25T04:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, October 24th at 12:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3906~e:401892151~c:401892151"
         },
         "livescore": {
           "result": "unmatched",
@@ -5049,14 +5249,16 @@
           ]
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -5075,9 +5277,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -5087,7 +5289,34 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401913245",
+          "upstream_family": "ESPN",
+          "name": "Sydney FC vs Melbourne City",
+          "home": "Sydney FC",
+          "away": "Melbourne City",
+          "home_team_id": "20285",
+          "away_team_id": "20280",
+          "competition": "Australian A-League Women",
+          "competition_id": "18992",
+          "kickoff": "2026-10-25T06:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, October 24th at 2:45 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:18992~e:401913245~c:401913245"
         },
         "livescore": {
           "result": "matched",
@@ -5114,13 +5343,14 @@
         }
       },
       "authority_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 1,
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -5273,9 +5503,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -5346,9 +5576,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -5624,9 +5854,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
