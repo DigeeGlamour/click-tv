@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-23T23:44:45.960651+00:00",
+  "updated_at": "2026-10-24T00:04:43.351137+00:00",
   "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -13,7 +13,6 @@
       "sport_type_derived": true,
       "logo": "",
       "category": "today_match",
-      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "media",
@@ -31,7 +30,6 @@
       "source_id": "sm-fancode",
       "metadata_only": true,
       "available_link_count": 0,
-      "backups": [],
       "channel_stats": {
         "streams_in": 1,
         "unresolved_channel_streams": 0,
@@ -85,6 +83,7 @@
       ],
       "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1544852); LiveScore livescore=Play in progress (33, event 1825035)",
       "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING"
@@ -209,7 +208,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-23T22:04:33.374055+00:00"
     },
@@ -333,7 +332,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-23T23:04:21.623232+00:00"
     },
@@ -445,6 +444,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_near_misses": [
+        {
+          "authority": "livescore",
+          "matched_by": "ambiguous",
+          "event_id": "1708713",
+          "upstream_family": "LiveScore",
+          "name": "Cruzeiro vs Remo",
+          "competition": "Serie A",
+          "kickoff": "2026-10-23T23:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status": "UNKNOWN"
+        }
+      ],
       "authority_end_status": "UPCOMING",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
@@ -509,6 +521,35 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_3d4823ad13dd1e3b7aace51107cea2f6",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
           "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
@@ -526,7 +567,7 @@
           }
         },
         {
-          "name": "Backup-2",
+          "name": "Backup-3",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -546,35 +587,6 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_371e461c339e929e84bf812095c38a0c",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_3d4823ad13dd1e3b7aace51107cea2f6",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -623,6 +635,19 @@
               "id": "combat-fc-14-prelims--prime-video--2",
               "role": "backup",
               "playback_type": "native",
+              "variant_key": "sv_5cb633c8e1f6f07e3aecd90a",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_3d4823ad13dd1e3b7aace51107cea2f6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "combat-fc-14-prelims--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_4bde20baa5016e5737ed2555",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -633,7 +658,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "combat-fc-14-prelims--prime-video--3",
+              "id": "combat-fc-14-prelims--prime-video--4",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_0fb83c137b00e4cca299cc47",
@@ -641,19 +666,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_371e461c339e929e84bf812095c38a0c",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "combat-fc-14-prelims--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_5cb633c8e1f6f07e3aecd90a",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_3d4823ad13dd1e3b7aace51107cea2f6",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -688,11 +700,11 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-23T23:44:14+00:00",
-      "start_at": "2026-10-23T23:44:14+00:00",
-      "end_time": "2026-10-24T02:14:14+00:00",
+      "start_time": "2026-10-24T00:04:13+00:00",
+      "start_at": "2026-10-24T00:04:13+00:00",
+      "end_time": "2026-10-24T02:34:13+00:00",
       "end_time_source": "sport",
-      "fixture_id": "provider:combat-fc-14-prelims|2026-10-23",
+      "fixture_id": "provider:combat-fc-14-prelims|2026-10-24",
       "status": "LIVE_NOW",
       "original_status": "LIVE",
       "schedule_status": "LIVE_NOW",
