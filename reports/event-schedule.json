@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-25T00:05:18.797503+00:00",
-  "today_match_count": 14,
+  "generated_at": "2026-10-25T00:25:27.032815+00:00",
+  "today_match_count": 12,
   "upcoming_count": 47,
   "today_missing_logo": [],
   "upcoming_missing_logo": [
@@ -592,7 +592,7 @@
     }
   ],
   "ambiguous_suppressed": 0,
-  "unverified_suppressed": 152,
+  "unverified_suppressed": 141,
   "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
   "provider_rejected_fixtures_truncated": 35,
@@ -799,7 +799,7 @@
       },
       {
         "name": "ATP 500 Erste Bank Open 2026 vs Vienna, Austria",
-        "source": "sm-fancode, sportlive-fancode-backup, dartv-fancode-mirror, ",
+        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
         "competition": "ATP 500 - Erste Bank Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -815,7 +815,7 @@
       },
       {
         "name": "Day 4 World Feed vs Port Royal Golf Course Southampton, Bermuda (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, dartv-fancode-mirror, ",
+        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
         "competition": "Butterfield Bermuda Championship 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
@@ -823,7 +823,7 @@
       },
       {
         "name": "Day 7 World Feed vs Almaty, Kazakhstan (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, dartv-fancode-mirror, ",
+        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
         "competition": "ATP 250 - Almaty Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -831,7 +831,7 @@
       },
       {
         "name": "Day 7 World Feed vs Brussels, Belgium",
-        "source": "sm-fancode, sportlive-fancode-backup, dartv-fancode-mirror, ",
+        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
         "competition": "ATP 250 - BNP Paribas Fortis European Open",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -839,7 +839,7 @@
       },
       {
         "name": "Feature Race vs Austin (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, dartv-fancode-mirror, ",
+        "source": "sm-fancode, sportlive-fancode-backup, drmlive-fancode-mirror",
         "competition": "F1 ACADEMY AUSTIN 2026",
         "sport_type": "",
         "reason": "motorsport gazetteer",
@@ -999,7 +999,7 @@
       },
       {
         "name": "Race Day",
-        "source": "sportlive-fancode-backup, dartv-fancode-mirror, vk1817-fanco",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, dartv-fanc",
         "competition": "GRAND PRIX OF AUSTRALIA 2026",
         "sport_type": "",
         "reason": "league map: motorsport",
@@ -1031,7 +1031,7 @@
       },
       {
         "name": "Seattle Kraken Vs Minnesota Wild",
-        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, dartv-",
+        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, drmliv",
         "competition": "NHL",
         "sport_type": "",
         "reason": "league map: hockey",
@@ -1110,24 +1110,24 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 1,
-    "pending_confirmation": 0,
-    "live": 1,
-    "recorded": 4,
-    "conflict": 1,
+    "applied": 2,
+    "pending_confirmation": 1,
+    "live": 2,
+    "recorded": 2,
+    "conflict": 0,
     "unmatched": 7,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "FINISHED": 1,
-      "LIVE": 1,
-      "UPCOMING": 4
+      "FINISHED": 3,
+      "UPCOMING": 2,
+      "LIVE": 2
     },
     "by_confidence": {
       "LOW": 6,
-      "CONFLICT": 1
+      "HIGH": 1
     },
     "applied_fixtures": [
       {
@@ -1145,6 +1145,24 @@
         "remove_after": "2026-10-24T23:24:16.253719+00:00",
         "was_playable": true,
         "lifecycle_state_before": "END_PENDING"
+      },
+      {
+        "name": "Vasco da Gama Vs Corinthians",
+        "fixture_id": "provider:vasco-da-gama-vs-corinthians|campeonato brasileiro s rie a|2026-10-24",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401841281)",
+          "LiveScore livescore=FT (6, event 1708709)"
+        ],
+        "authority_finished_seen_at": "2026-10-25T00:24:14.631984+00:00",
+        "remove_after": "2026-10-25T00:44:14.631984+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
       }
     ],
     "conflicts": [
@@ -1159,9 +1177,9 @@
       },
       {
         "name": "Vasco da Gama Vs Corinthians",
-        "reason": "independent authorities disagree: ESPN espn-header=9' (STATUS_FIRST_HALF, event 401841281); LiveScore livescore=FT (6, event 1708709)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1170,30 +1188,46 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 3,
+    "asked": 2,
     "finished": 2,
     "unplayable": 0,
-    "cache_hits": 1,
+    "cache_hits": 2,
     "no_verdict": 2
   },
   "live_protection": {
-    "carried_forward": 10,
-    "released_ended": 0,
-    "released_ended_ids": [],
-    "retired_terminal": [],
+    "carried_forward": 8,
+    "released_ended": 2,
+    "released_ended_ids": [
+      "atlético-madrid-vs-deportivo-de-a-coruña",
+      "vasco-da-gama-vs-corinthians"
+    ],
+    "retired_terminal": [
+      {
+        "id": "atlético-madrid-vs-deportivo-de-a-coruña",
+        "name": "Atlético Madrid Vs Deportivo de A Coruña",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "vasco-da-gama-vs-corinthians",
+        "name": "Vasco da Gama Vs Corinthians",
+        "provenance": "authority_finished",
+        "reason": "authoritative finished status"
+      }
+    ],
     "released_listing_expired": 0,
     "released_dead_link": 0,
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 5,
+    "probe_alive": 4,
     "probe_dead": 4,
     "probe_inconclusive": 0,
-    "end_pending": 2,
+    "end_pending": 0,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "END_PENDING": 2,
+      "ENDED": 2,
       "LIVE": 8
     },
     "reconciled_into_canonical": 0,
@@ -1201,15 +1235,15 @@
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 0,
-    "total": 860,
+    "added": 2,
+    "total": 862,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 0
+    "decided_this_scan": 2
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1221,7 +1255,7 @@
   },
   "channel_names": {
     "stamped": 3,
-    "unresolved": 189,
+    "unresolved": 178,
     "names": {
       "Sky Sports": 1,
       "Fox": 1,
@@ -1232,19 +1266,19 @@
     "provider": "streamed",
     "available": true,
     "reason": "",
-    "calls": 57,
+    "calls": 46,
     "cache_hits": 2,
     "errors": 0,
-    "fixtures_ingested": 198,
-    "embed_streams": 110,
-    "artwork_supplied": 181
+    "fixtures_ingested": 181,
+    "embed_streams": 89,
+    "artwork_supplied": 167
   },
   "streamed_enrichment": {
     "matched": 11,
     "artwork": 11,
     "embed_backups": 0,
     "embed_channels": 0,
-    "unmatched": 138,
+    "unmatched": 127,
     "matched_by_participants": 4,
     "poster_filled": 1
   },
@@ -1256,12 +1290,12 @@
     "cache_hits": 14,
     "cached_entries": 1145,
     "provider": {
-      "requests": 9,
-      "hits": 7,
+      "requests": 10,
+      "hits": 8,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 25,
+      "skipped_rate_limited": 24,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1327,22 +1361,6 @@
           "rejected": 0,
           "published": 19
         },
-        "dartv-fancode-mirror": {
-          "total": 19,
-          "cricket": 10,
-          "football": 9,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
-        },
-        "vk1817-fancode-mirror": {
-          "total": 19,
-          "cricket": 10,
-          "football": 9,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
-        },
         "drmlive-fancode-mirror": {
           "total": 19,
           "cricket": 10,
@@ -1352,6 +1370,22 @@
           "published": 19
         },
         "sayanpal-fancode-mirror": {
+          "total": 19,
+          "cricket": 10,
+          "football": 9,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
+        },
+        "dartv-fancode-mirror": {
+          "total": 19,
+          "cricket": 10,
+          "football": 9,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
+        },
+        "vk1817-fancode-mirror": {
           "total": 19,
           "cricket": 10,
           "football": 9,
@@ -1539,7 +1573,7 @@
           "source": "sm-sports-data",
           "competition": "AFL, Women",
           "sport_type": "other",
-          "reason": "fixture lookup: only one provider knows this (australian rules)"
+          "reason": "fixture lookup: no provider answered"
         },
         {
           "name": "Hawthorn Hawks Vs Essendon Bombers",
@@ -1559,12 +1593,12 @@
       "leaks": []
     },
     "today_match": {
-      "total": 14,
-      "published": 14,
+      "total": 12,
+      "published": 12,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 14
+        "confirmed_football": 12
       },
       "by_source": {
         "srhady-primevideo-sports": {
@@ -1576,12 +1610,12 @@
           "published": 6
         },
         "sm-sports-data": {
-          "total": 8,
+          "total": 6,
           "cricket": 0,
-          "football": 8,
+          "football": 6,
           "quarantined": 0,
           "rejected": 0,
-          "published": 8
+          "published": 6
         }
       },
       "rejected_examples": [],
@@ -1630,22 +1664,6 @@
           "rejected": 0,
           "published": 19
         },
-        "dartv-fancode-mirror": {
-          "total": 19,
-          "cricket": 10,
-          "football": 9,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
-        },
-        "vk1817-fancode-mirror": {
-          "total": 19,
-          "cricket": 10,
-          "football": 9,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
-        },
         "drmlive-fancode-mirror": {
           "total": 19,
           "cricket": 10,
@@ -1655,6 +1673,22 @@
           "published": 19
         },
         "sayanpal-fancode-mirror": {
+          "total": 19,
+          "cricket": 10,
+          "football": 9,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
+        },
+        "dartv-fancode-mirror": {
+          "total": 19,
+          "cricket": 10,
+          "football": 9,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 19
+        },
+        "vk1817-fancode-mirror": {
           "total": 19,
           "cricket": 10,
           "football": 9,
@@ -1683,15 +1717,15 @@
     ]
   },
   "sport_pipeline": {
-    "raw_events": 526,
+    "raw_events": 515,
     "cricket_kept": 27,
     "football_kept": 24,
     "other_discarded": 104,
     "unresolved": 8,
-    "today_final": 14,
+    "today_final": 12,
     "upcoming_final": 47,
     "published_states": {
-      "confirmed_football": 34,
+      "confirmed_football": 32,
       "confirmed_cricket": 27
     },
     "other_sport_leak": 0,
@@ -1705,7 +1739,7 @@
     "future": 0,
     "newest_kickoff": "2026-08-27T23:00:00+00:00",
     "oldest_kickoff": "2026-07-21T13:45:00+00:00",
-    "days_since_newest": 58.0,
+    "days_since_newest": 58.1,
     "schedulable_now": 0
   },
   "undeliverable_routes_dropped": 0,
@@ -1718,50 +1752,50 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 2,
+      "provider_or_authority": 0,
       "estimate": 0,
       "none": 12
     }
   },
   "fixture_stream_health": {
-    "fixtures": 91,
-    "published_fixtures": 61,
-    "fixtures_with_verified_stream": 32,
+    "fixtures": 89,
+    "published_fixtures": 59,
+    "fixtures_with_verified_stream": 30,
     "fixtures_with_zero_verified": 59,
     "published_without_stream": 51,
-    "fallback_available": 6,
-    "targeted_fixtures": 8,
-    "targeted_attempts": 38,
-    "fixtures_with_a_first_link_time": 4,
-    "candidate_routes": 99,
-    "verified_routes": 71,
-    "failed_routes": 28,
-    "fixtures_touched_by_a_route_failure": 19,
+    "fallback_available": 5,
+    "targeted_fixtures": 6,
+    "targeted_attempts": 30,
+    "fixtures_with_a_first_link_time": 2,
+    "candidate_routes": 91,
+    "verified_routes": 65,
+    "failed_routes": 26,
+    "fixtures_touched_by_a_route_failure": 18,
     "fixtures_left_with_nothing": 8,
     "distinct_failure_codes": 4,
-    "unrecognised_candidate_groups": 84,
-    "unrecognised_failed_routes": 120
+    "unrecognised_candidate_groups": 86,
+    "unrecognised_failed_routes": 122
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 61,
-    "verified": 20,
-    "partial_authority": 3,
+    "fixtures": 59,
+    "verified": 19,
+    "partial_authority": 1,
     "unverified": 32,
-    "conflict": 6,
-    "matched_by_two_independent_authorities": 18,
+    "conflict": 7,
+    "matched_by_two_independent_authorities": 17,
     "authority_agreements": 17,
-    "authority_disagreements": 1,
-    "card_status_conflicts": 2,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 4,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 3
+    "not_published": 2
   },
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 61,
+    "published_fixtures": 59,
     "fixtures_with_stream": 4,
-    "fixtures_playable_via_catalogue": 6,
+    "fixtures_playable_via_catalogue": 4,
     "fixtures_with_fresh_stream": 4,
     "fixtures_with_carried_stream": 0,
     "today_with_stream": 4,
