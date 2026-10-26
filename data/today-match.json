@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-26T05:44:32.780111+00:00",
+  "updated_at": "2026-10-26T06:04:29.950536+00:00",
   "count": 4,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -251,18 +251,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=65' (STATUS_SECOND_HALF, event 401876920)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876920)",
         "LiveScore livescore=FT (6, event 1799060)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "tijuana-vs-santos-laguna-2487577",
       "artwork_candidates": [
@@ -282,15 +282,27 @@
         "query_parameters": [],
         "drm": true
       },
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=65' (STATUS_SECOND_HALF, event 401876920); LiveScore livescore=FT (6, event 1799060)",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-26T05:44:27.011695+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-26T05:44:27.011695+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401876920",
+        "livescore": "1799060"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-26T06:04:07.414752+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-26T06:24:07.414752+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-26T06:04:22.018762+00:00"
     },
     {
       "id": "mls-el-resumen",
@@ -412,7 +424,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-26T05:04:15.096876+00:00"
     },
@@ -536,7 +548,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-26T05:04:15.096876+00:00"
     }
