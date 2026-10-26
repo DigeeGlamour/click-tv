@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-26T04:44:24.725236+00:00",
+  "updated_at": "2026-10-26T05:44:32.780111+00:00",
   "count": 4,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -13,7 +13,6 @@
       "sport_type_derived": true,
       "logo": "",
       "category": "today_match",
-      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "media",
@@ -31,7 +30,6 @@
       "source_id": "sm-fancode",
       "metadata_only": true,
       "available_link_count": 0,
-      "backups": [],
       "channel_stats": {
         "streams_in": 1,
         "unresolved_channel_streams": 0,
@@ -74,6 +72,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING"
@@ -237,7 +236,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-26T03:10:00+00:00",
       "start_at": "2026-10-26T03:10:00+00:00",
-      "end_time": "2026-10-26T05:44:04+00:00",
+      "end_time": "2026-10-26T06:24:17+00:00",
       "end_time_source": "assumed",
       "competition": "Liga MX, Apertura",
       "fixture_id": "provider:club-tijuana-vs-santos-laguna|liga mx apertura|2026-10-26",
@@ -252,18 +251,16 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876920)"
+        "ESPN espn-header=65' (STATUS_SECOND_HALF, event 401876920)",
+        "LiveScore livescore=FT (6, event 1799060)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401876920"
-      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "provider_enriched": "streamed",
@@ -284,7 +281,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=65' (STATUS_SECOND_HALF, event 401876920); LiveScore livescore=FT (6, event 1799060)",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-26T05:44:27.011695+00:00"
     },
     {
       "id": "mls-el-resumen",
@@ -400,7 +406,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-26T05:04:15.096876+00:00"
     },
     {
       "id": "mls-wrap-up",
@@ -516,7 +530,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-26T05:04:15.096876+00:00"
     }
   ]
 }
