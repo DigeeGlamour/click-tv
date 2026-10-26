@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-26T22:37:02.571943+00:00",
+  "updated_at": "2026-10-26T23:04:40.723190+00:00",
   "count": 8,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -74,7 +74,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-26T20:24:32.389253+00:00"
     },
@@ -257,7 +257,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-26T21:37:52.507073+00:00"
     },
@@ -330,7 +330,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-26T20:47:44.720201+00:00"
     },
@@ -457,7 +457,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-26T22:04:14.493336+00:00"
     },
@@ -700,19 +700,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=82' (STATUS_SECOND_HALF, event 401882828)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401882828)",
         "LiveScore livescore=FT (6, event 1810722)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=82' (STATUS_SECOND_HALF, event 401882828); LiveScore livescore=FT (6, event 1810722)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "provider_enriched": "streamed",
       "provider_event_id": "sevilla-vs-osasuna-2506263",
       "artwork_candidates": [
@@ -731,7 +730,24 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-26T22:53:59.133055+00:00",
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-10-26T22:53:59.133055+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401882828",
+        "livescore": "1810722"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-26T23:04:16.069986+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-26T23:24:16.069986+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "walsall-vs-salford-city",
@@ -838,22 +854,39 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=87' (STATUS_SECOND_HALF, event 401881290)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401881290)",
         "LiveScore livescore=FT (6, event 1803650)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=87' (STATUS_SECOND_HALF, event 401881290); LiveScore livescore=FT (6, event 1803650)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ivjidn1689630099.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/lpi7qa1779778149.png",
-      "playback_id": "ctv_8d92968083e9273de720db677bc83288"
+      "playback_id": "ctv_8d92968083e9273de720db677bc83288",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
+      "carried_forward_first_missed_at": "2026-10-26T22:53:59.133055+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401881290",
+        "livescore": "1803650"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-26T23:04:16.069986+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-26T23:24:16.069986+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "contradicted_end_confirmations": 1
     },
     {
       "id": "coritiba-vs-grêmio",
@@ -952,9 +985,9 @@
       "end_time_source": "sport",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:coritiba-vs-grêmio|campeonato brasileiro s rie a|2026-10-26",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-10-26T22:30:00+00:00",
@@ -964,22 +997,17 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841279)",
-        "LiveScore livescore=NS (1, event 1708715)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841279)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "401841279",
-        "livescore": "1708715"
+        "espn-header": "401841279"
       },
-      "start_window_claimed": "LIVE_NOW",
-      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ywwsyu1473538050.png",
@@ -996,7 +1024,7 @@
     {
       "id": "flamengo-vs-atlético-mineiro",
       "name": "Flamengo Vs Atlético Mineiro",
-      "primary_stream_key": "bbe5d926749926ca4d5ff2cfe55ad1c37fce2e4425d5bba18b370761e575ec44",
+      "primary_stream_key": "ab9fc31a67261ecabdbf08ee67731d041f1b3fb19323f719082e6a8a129d307c",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/5981/image",
@@ -1004,7 +1032,7 @@
       "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
-      "requires_headers": false,
+      "requires_headers": true,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -1024,7 +1052,7 @@
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": true,
+          "requires_headers": false,
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
@@ -1039,7 +1067,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_dba2eb5537be6cf056ceb35ef20457a6",
+          "playback_id": "ctv_74fe9e179d2314f08622fe2eb279ce38",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1124,7 +1152,7 @@
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "flamengo-vs-atl-tico-mineiro--premierer1",
+      "default_channel_id": "flamengo-vs-atl-tico-mineiro--server-1",
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 1,
@@ -1156,9 +1184,9 @@
       "end_time_source": "sport",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:flamengo-vs-atlético-mineiro|campeonato brasileiro s rie a|2026-10-26",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-10-26T23:00:00+00:00",
@@ -1171,7 +1199,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/syptwx1473538074.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/x5lixs1743742872.png",
-      "playback_id": "ctv_74fe9e179d2314f08622fe2eb279ce38",
+      "playback_id": "ctv_dba2eb5537be6cf056ceb35ef20457a6",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
