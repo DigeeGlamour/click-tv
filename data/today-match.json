@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-26T12:37:12.807717+00:00",
+  "updated_at": "2026-10-26T12:44:22.655025+00:00",
   "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -74,7 +74,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 16,
+      "carried_forward_misses": 17,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-26T07:44:18.117897+00:00"
     },
@@ -234,15 +234,16 @@
     {
       "id": "npl",
       "name": "NPL",
-      "primary_stream_key": "ccf7e04304fa3420d7598484a32d6913858019ac66654064f2e414f8318ba82b",
+      "primary_stream_key": "718330120d85e7b294ef7125a94e4a5d87661783f7a2d7ae6016e1dfe6abec74",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQAV3dcOxi7602i_xcqoTE6eoiGVCPJFo6uZwtDkDK-g&s=10",
       "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": true,
+      "url": "https://flussonic.defineatoz.com/starsportsselect2sw/tracks-v1a1/mono.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -255,10 +256,68 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 4,
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_ef370a347f15b9c10a7f92107cc07471",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "abfjk4haaaaaaaamkitc5445rybm6.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "SD",
+          "resolution_height": 576,
+          "playback_id": "ctv_6c8253c2c143816eba4b3f296aa19977",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -289,6 +348,42 @@
       ],
       "channels": [
         {
+          "id": "npl--star-sports",
+          "name": "STAR SPORTS",
+          "normalized_name": "star-sports",
+          "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQAV3dcOxi7602i_xcqoTE6eoiGVCPJFo6uZwtDkDK-g&s=10",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "npl--star-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "npl--star-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_4e736cc30e4cf9a557a184c3",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_b27d8ae74137f04b3df7dfde0e5664c0",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "hls"
+            }
+          ]
+        },
+        {
           "id": "npl--fancode",
           "name": "FANCODE",
           "normalized_name": "fancode",
@@ -300,8 +395,8 @@
             "sm-sports-data"
           ],
           "primary_stream_id": "npl--fancode--1",
-          "stream_count": 1,
-          "backup_count": 0,
+          "stream_count": 2,
+          "backup_count": 1,
           "verified": true,
           "verification_status": "verified_global",
           "playback_types": [
@@ -320,6 +415,19 @@
               "playback_id": "ctv_ef370a347f15b9c10a7f92107cc07471",
               "resolution": "FHD",
               "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "npl--fancode--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_27d09d52d262221346cbdfe1",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_6c8253c2c143816eba4b3f296aa19977",
+              "resolution": "SD",
+              "resolution_height": 576,
               "stream_type": "dash"
             }
           ]
@@ -361,14 +469,14 @@
           ]
         }
       ],
-      "channel_count": 2,
-      "default_channel_id": "npl--fancode",
+      "channel_count": 3,
+      "default_channel_id": "npl--star-sports",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 4,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 3,
+        "variants": 4,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -382,10 +490,6 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
       "resolution": "FHD",
       "resolution_height": 1080,
       "start_time": "2026-10-26T11:55:00+00:00",
@@ -407,14 +511,7 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_ef370a347f15b9c10a7f92107cc07471",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "playback_id": "ctv_b27d8ae74137f04b3df7dfde0e5664c0"
     },
     {
       "id": "abu-dhabi-vs-emirates-red",
@@ -464,6 +561,11 @@
           "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
         },
         {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        },
+        {
           "source_id": "drmlive-fancode-mirror",
           "source_name": "FanCode Live Events (drmlive)",
           "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
@@ -477,20 +579,15 @@
           "source_id": "sayanpal-fancode-mirror",
           "source_name": "FanCode Auto Updated (sayanpal)",
           "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "start_time": "2026-10-26T12:30:00+00:00",
       "start_at": "2026-10-26T12:30:00+00:00",
