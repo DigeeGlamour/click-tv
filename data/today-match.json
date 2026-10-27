@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-27T08:07:01.257746+00:00",
+  "updated_at": "2026-10-27T08:24:26.444560+00:00",
   "count": 8,
-  "filtered_stale": 0,
+  "filtered_stale": 1,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -74,7 +74,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-10-27T07:44:25.720859+00:00"
     },
@@ -223,23 +223,24 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1559447)"
+        "ESPN espn-header=Live (Live, event 1559447)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "1559447"
       },
+      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE"
     },
     {
       "id": "npl",
@@ -903,31 +904,36 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1539434)",
+        "ESPN espn-header=Live (Live, event 1539434)",
         "LiveScore livescore=Play in progress (33, event 1784529)"
       ],
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/91xpk81742982935.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kgpver1597857601.png",
-      "playback_id": "ctv_38b1ea58855a9cc3bc3e7cc0937ff922",
+      "playback_id": "",
       "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
       "lifecycle_protections": [
         "authority_live",
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-27T07:44:25.720859+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1539434); LiveScore livescore=Play in progress (33, event 1784529)"
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1539434",
+        "livescore": "1784529"
+      },
+      "authority_status": "LIVE"
     },
     {
       "id": "namibia-vs-ireland",
@@ -1196,7 +1202,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_9bf4a668b2fa8e962dd094bc1f7aff30",
+          "playback_id": "ctv_010687b6c4b613c35793e62e2c409405",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1326,6 +1332,19 @@
               "id": "south-africa-vs-australia--prime-video--1",
               "role": "primary",
               "playback_type": "native",
+              "variant_key": "sv_1870da507e6f3d08df0c03c4",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_103c7140fea958afe933dd630b34a6b6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "south-africa-vs-australia--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_7887fe94cdf053d4ae28066d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -1336,7 +1355,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "south-africa-vs-australia--prime-video--2",
+              "id": "south-africa-vs-australia--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_f2b993b7e8d5ad50a9706cbe",
@@ -1344,19 +1363,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_23206c3529b2c5ce3b85997a4679a2d6",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "south-africa-vs-australia--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_2dfcc2fee3a27c43d05757ff",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_9bf4a668b2fa8e962dd094bc1f7aff30",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1378,11 +1384,11 @@
               "id": "south-africa-vs-australia--prime-video--5",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_0c9736d153aa0797d7021cd6",
+              "variant_key": "sv_c507a09ce9b541bff735c4b0",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_f23ae4859bc2db0df19e9bf46c12a557",
+              "playback_id": "ctv_aefb2b39c147ad1d52b1456f1411dfcb",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1391,11 +1397,11 @@
               "id": "south-africa-vs-australia--prime-video--6",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_1870da507e6f3d08df0c03c4",
+              "variant_key": "sv_0c9736d153aa0797d7021cd6",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_103c7140fea958afe933dd630b34a6b6",
+              "playback_id": "ctv_f23ae4859bc2db0df19e9bf46c12a557",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1428,11 +1434,11 @@
               "id": "south-africa-vs-australia--willow--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_2da34b154f0935a8c90f1264",
+              "variant_key": "sv_806c82383631cea645de306e",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_27048c333b22e158b97a7d7eb44737de",
+              "playback_id": "ctv_584b969154f5ced6066e5828cd3e4bd5",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1441,11 +1447,11 @@
               "id": "south-africa-vs-australia--willow--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_0cafaa778eab2e9f93e3891e",
+              "variant_key": "sv_2da34b154f0935a8c90f1264",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_5b42bd5ab079b547457572ff467e506d",
+              "playback_id": "ctv_27048c333b22e158b97a7d7eb44737de",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1467,11 +1473,11 @@
               "id": "south-africa-vs-australia--willow--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_544e6ed20f3c5a8ee4d4468c",
+              "variant_key": "sv_0cafaa778eab2e9f93e3891e",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_8a158c0ff18f62c119bdf0dd649f96cb",
+              "playback_id": "ctv_5b42bd5ab079b547457572ff467e506d",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1480,11 +1486,11 @@
               "id": "south-africa-vs-australia--willow--5",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_806c82383631cea645de306e",
+              "variant_key": "sv_544e6ed20f3c5a8ee4d4468c",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_584b969154f5ced6066e5828cd3e4bd5",
+              "playback_id": "ctv_8a158c0ff18f62c119bdf0dd649f96cb",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1736,17 +1742,12 @@
               "source_id": "srhady-primevideo-sports",
               "source_name": "Prime Video Free Sports",
               "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-            },
-            {
-              "source_id": "srhady-willow-event",
-              "source_name": "Willow Event Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
             }
           ],
           "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_dcd087c6fae5b459e2fe191889e2eae0",
+          "playback_id": "ctv_4f7de56ffd706dc9f6107e463b21e360",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1997,7 +1998,7 @@
       ],
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_b33a4dbcf7c11877ddef7ef9685f87a2"
+      "playback_id": ""
     }
   ]
 }
