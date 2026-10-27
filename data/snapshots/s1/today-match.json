@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-27T07:42:08.704767+00:00",
-  "count": 7,
-  "filtered_stale": 0,
+  "updated_at": "2026-10-27T07:57:15.656644+00:00",
+  "count": 6,
+  "filtered_stale": 1,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -69,7 +69,14 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-10-27T07:44:25.720859+00:00"
     },
     {
       "id": "netherlands-vs-oman",
@@ -110,16 +117,10 @@
           "source_id": "sm-fancode",
           "source_name": "SM FanCode Auto Update",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
+        "sm-fancode"
       ],
       "start_time": "2026-10-27T05:30:00+00:00",
       "start_at": "2026-10-27T05:30:00+00:00",
@@ -159,15 +160,14 @@
     {
       "id": "npl",
       "name": "NPL",
-      "primary_stream_key": "718330120d85e7b294ef7125a94e4a5d87661783f7a2d7ae6016e1dfe6abec74",
+      "primary_stream_key": "d64093465484d4956f44041475936aed58328a3316c14983d6c7d6813725e47e",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQAV3dcOxi7602i_xcqoTE6eoiGVCPJFo6uZwtDkDK-g&s=10",
       "category": "today_match",
-      "url": "https://flussonic.defineatoz.com/starsportsselect2sw/tracks-v1a1/mono.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
@@ -181,39 +181,10 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 3,
+      "available_link_count": 2,
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_ce4d09169653a3234ac0ca9e26f5a9e3",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -243,42 +214,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "npl--star-sports",
-          "name": "STAR SPORTS",
-          "normalized_name": "star-sports",
-          "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQAV3dcOxi7602i_xcqoTE6eoiGVCPJFo6uZwtDkDK-g&s=10",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "npl--star-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "npl--star-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_4e736cc30e4cf9a557a184c3",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_b27d8ae74137f04b3df7dfde0e5664c0",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "hls"
-            }
-          ]
-        },
         {
           "id": "npl--fancode2",
           "name": "FANCODE2",
@@ -352,14 +287,14 @@
           ]
         }
       ],
-      "channel_count": 3,
-      "default_channel_id": "npl--star-sports",
+      "channel_count": 2,
+      "default_channel_id": "npl--fancode2",
       "channel_stats": {
-        "streams_in": 3,
+        "streams_in": 2,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 3,
-        "variants": 3,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -373,8 +308,12 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "HD",
+      "resolution_height": 720,
       "start_time": "2026-10-27T06:45:00+00:00",
       "start_at": "2026-10-27T06:45:00+00:00",
       "end_time": "2026-10-27T11:45:00+00:00",
@@ -394,7 +333,14 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_79508b7f7d20bf0df9b5602c8aefe7e3"
+      "playback_id": "ctv_ce4d09169653a3234ac0ca9e26f5a9e3",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
     },
     {
       "id": "new-zealand-vs-india",
@@ -883,85 +829,21 @@
         "ESPN espn-header=Scheduled (Scheduled, event 1539434)",
         "LiveScore livescore=Play in progress (33, event 1784529)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1539434); LiveScore livescore=Play in progress (33, event 1784529)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/91xpk81742982935.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kgpver1597857601.png",
-      "playback_id": "ctv_38b1ea58855a9cc3bc3e7cc0937ff922"
-    },
-    {
-      "id": "namibia-vs-ireland",
-      "name": "Namibia vs Ireland",
-      "primary_stream_key": "",
-      "sport_type": "cricket",
-      "sport_type_derived": true,
-      "logo": "",
-      "category": "today_match",
-      "url": "",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "backups": [],
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "dartv-fancode-mirror",
-          "source_name": "FanCode Live API (dartv-ajaz)",
-          "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
-        }
+      "playback_id": "ctv_38b1ea58855a9cc3bc3e7cc0937ff922",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1539434); LiveScore livescore=Play in progress (33, event 1784529)",
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
       ],
-      "source_ids": [
-        "sm-fancode",
-        "dartv-fancode-mirror"
-      ],
-      "start_time": "2026-10-27T07:30:00+00:00",
-      "start_at": "2026-10-27T07:30:00+00:00",
-      "end_time": "2026-10-27T12:30:00+00:00",
-      "end_time_source": "sport",
-      "competition": "Ireland tour of Namibia, 2026",
-      "fixture_id": "provider:namibia-vs-ireland|ireland tour of namibia 2026|2026-10-27",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "source_start_time": "2026-10-27T07:30:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_cricket",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "cricket",
-      "allow_without_stream": true,
-      "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-27T07:44:25.720859+00:00"
     },
     {
       "id": "haryana-hustlers-vs-chandigarh-chargers",
@@ -1006,21 +888,6 @@
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
         },
         {
-          "source_id": "sportlive-fancode-backup",
-          "source_name": "SportLive18 FanCode Backup",
-          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
-        },
-        {
-          "source_id": "drmlive-fancode-mirror",
-          "source_name": "FanCode Live Events (drmlive)",
-          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
-        },
-        {
-          "source_id": "sayanpal-fancode-mirror",
-          "source_name": "FanCode Auto Updated (sayanpal)",
-          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
@@ -1033,9 +900,6 @@
       ],
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
@@ -1308,11 +1172,11 @@
               "id": "south-africa-vs-australia--willow--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_806c82383631cea645de306e",
+              "variant_key": "sv_2da34b154f0935a8c90f1264",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_584b969154f5ced6066e5828cd3e4bd5",
+              "playback_id": "ctv_27048c333b22e158b97a7d7eb44737de",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1334,11 +1198,11 @@
               "id": "south-africa-vs-australia--willow--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_2da34b154f0935a8c90f1264",
+              "variant_key": "sv_806c82383631cea645de306e",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_27048c333b22e158b97a7d7eb44737de",
+              "playback_id": "ctv_584b969154f5ced6066e5828cd3e4bd5",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1383,6 +1247,19 @@
               "id": "south-africa-vs-australia--prime-video--1",
               "role": "primary",
               "playback_type": "native",
+              "variant_key": "sv_1870da507e6f3d08df0c03c4",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_103c7140fea958afe933dd630b34a6b6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "south-africa-vs-australia--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_7887fe94cdf053d4ae28066d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -1393,7 +1270,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "south-africa-vs-australia--prime-video--2",
+              "id": "south-africa-vs-australia--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_22f9b63a855bfef9fc0bc537",
@@ -1401,19 +1278,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_010687b6c4b613c35793e62e2c409405",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "south-africa-vs-australia--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_1870da507e6f3d08df0c03c4",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_103c7140fea958afe933dd630b34a6b6",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1773,9 +1637,9 @@
       "end_time_source": "sport",
       "competition": "TEST International",
       "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-27",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-10-27T08:00:00+00:00",
@@ -1784,6 +1648,30 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
+      "authority_near_misses": [
+        {
+          "authority": "espn-header",
+          "matched_by": "ambiguous",
+          "event_id": "1525661",
+          "upstream_family": "ESPN",
+          "name": "South Africa vs Australia",
+          "competition": "Australia tour of South Africa 2026/27",
+          "kickoff": "2026-10-27T08:30:00+00:00",
+          "kickoff_delta_minutes": 30.0,
+          "status": "UPCOMING"
+        },
+        {
+          "authority": "livescore",
+          "matched_by": "ambiguous",
+          "event_id": "1743143",
+          "upstream_family": "LiveScore",
+          "name": "South Africa vs Australia",
+          "competition": "South Africa v Australia Test Series",
+          "kickoff": "2026-10-27T08:30:00+00:00",
+          "kickoff_delta_minutes": 30.0,
+          "status": "UPCOMING"
+        }
+      ],
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_b33a4dbcf7c11877ddef7ef9685f87a2"
