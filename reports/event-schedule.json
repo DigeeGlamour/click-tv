@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T16:07:46.855279+00:00",
+  "generated_at": "2026-10-27T16:24:46.506834+00:00",
   "today_match_count": 9,
   "upcoming_count": 52,
   "today_missing_logo": [],
@@ -24,7 +24,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 111,
+  "provider_fixture": 110,
   "provider_rejected": 8,
   "provider_rejected_reasons": {
     "provider_dead_status": 0,
@@ -130,7 +130,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 111,
+    "total": 110,
     "discarded": 17,
     "examples": [
       {
@@ -223,7 +223,7 @@
       },
       {
         "name": "Glaubandich Court",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, dartv-fanc",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
         "competition": "ATP 500 - Erste Bank Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -231,7 +231,7 @@
       },
       {
         "name": "IWB Court 1",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, dartv-fanc",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
         "competition": "ATP 500 - Swiss Indoors Basel 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -308,25 +308,42 @@
   "authority_status_carried": {
     "applied": 2,
     "pending_confirmation": 0,
-    "live": 1,
+    "live": 2,
     "recorded": 1,
-    "conflict": 2,
-    "unmatched": 4,
+    "conflict": 0,
+    "unmatched": 3,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 1,
       "FINISHED": 2,
+      "LIVE": 2,
       "UPCOMING": 1
     },
     "by_confidence": {
-      "CONFLICT": 2,
-      "LOW": 3,
-      "HIGH": 1
+      "HIGH": 3,
+      "LOW": 2
     },
     "applied_fixtures": [
+      {
+        "name": "Namibia vs Ireland",
+        "fixture_id": "provider:namibia-vs-ireland|ireland tour of namibia 2026|2026-10-27",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1558233)",
+          "LiveScore livescore=FT (6, event 1907916)"
+        ],
+        "authority_finished_seen_at": "2026-10-27T16:24:15.931812+00:00",
+        "remove_after": "2026-10-27T16:44:15.931812+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": "LIVE"
+      },
       {
         "name": "Ratchaburi Vs Kashiwa Reysol",
         "fixture_id": "provider:ratchaburi-vs-kashiwa-reysol|afc champions league elite|2026-10-27",
@@ -344,45 +361,9 @@
         "remove_after": "2026-10-27T16:04:24.984267+00:00",
         "was_playable": true,
         "lifecycle_state_before": "LIVE"
-      },
-      {
-        "name": "Beijing Guoan vs Jeonbuk Motors",
-        "fixture_id": "provider:beijing-guoan-vs-jeonbuk-motors|afc champions league elite 2026 27|2026-10-27",
-        "status": "FINISHED",
-        "confidence": "LOW",
-        "upstream_families": [
-          "LiveScore"
-        ],
-        "evidence": [
-          "LiveScore livescore=FT (6, event 1873649)"
-        ],
-        "authority_finished_seen_at": "2026-10-27T15:04:16.219800+00:00",
-        "remove_after": "2026-10-27T15:24:16.219800+00:00",
-        "was_playable": false,
-        "lifecycle_state_before": "END_PENDING"
       }
     ],
     "conflicts": [
-      {
-        "name": "Namibia vs Ireland",
-        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1558233); LiveScore livescore=FT (6, event 1907916)",
-        "status": "",
-        "confidence": "CONFLICT",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
-        "name": "Afghanistan Vs Zimbabwe",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1555120); LiveScore livescore=Play in progress (33, event 1889626)",
-        "status": "",
-        "confidence": "CONFLICT",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
       {
         "name": "Ratchaburi Vs Kashiwa Reysol",
         "reason": "authority says FINISHED while the card still carries a route",
@@ -404,39 +385,29 @@
   },
   "live_protection": {
     "carried_forward": 6,
-    "released_ended": 1,
-    "released_ended_ids": [
-      "beijing-guoan-vs-jeonbuk-motors"
-    ],
-    "retired_terminal": [
-      {
-        "id": "beijing-guoan-vs-jeonbuk-motors",
-        "name": "Beijing Guoan vs Jeonbuk Motors",
-        "provenance": "feed_strong_end",
-        "reason": "authoritative finished status"
-      }
-    ],
+    "released_ended": 0,
+    "released_ended_ids": [],
+    "retired_terminal": [],
     "released_listing_expired": 0,
     "released_dead_link": 0,
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
     "probe_alive": 2,
-    "probe_dead": 3,
+    "probe_dead": 2,
     "probe_inconclusive": 0,
     "end_pending": 0,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 6,
-      "ENDED": 1
+      "LIVE": 6
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 1,
+    "added": 0,
     "total": 944,
     "refused": 0,
     "refused_names": [],
@@ -444,7 +415,7 @@
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 1
+    "decided_this_scan": 0
   },
   "source_outage": {
     "sources_in_outage": [
@@ -503,12 +474,12 @@
     "cache_hits": 12,
     "cached_entries": 1185,
     "provider": {
-      "requests": 12,
-      "hits": 10,
+      "requests": 14,
+      "hits": 12,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 38,
+      "skipped_rate_limited": 36,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -725,14 +696,6 @@
           "rejected": 0,
           "published": 23
         },
-        "vk1817-fancode-mirror": {
-          "total": 20,
-          "cricket": 8,
-          "football": 12,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 20
-        },
         "sayanpal-fancode-mirror": {
           "total": 23,
           "cricket": 8,
@@ -740,6 +703,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 23
+        },
+        "vk1817-fancode-mirror": {
+          "total": 20,
+          "cricket": 8,
+          "football": 12,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 20
         },
         "dartv-fancode-mirror": {
           "total": 16,
@@ -771,7 +742,7 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 119,
+    "raw_events": 118,
     "cricket_kept": 27,
     "football_kept": 13,
     "other_discarded": 18,
@@ -819,11 +790,11 @@
     "published_without_stream": 57,
     "fallback_available": 2,
     "targeted_fixtures": 11,
-    "targeted_attempts": 56,
+    "targeted_attempts": 57,
     "fixtures_with_a_first_link_time": 3,
-    "candidate_routes": 55,
+    "candidate_routes": 54,
     "verified_routes": 21,
-    "failed_routes": 34,
+    "failed_routes": 33,
     "fixtures_touched_by_a_route_failure": 22,
     "fixtures_left_with_nothing": 15,
     "distinct_failure_codes": 3,
@@ -833,17 +804,17 @@
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 61,
-    "verified": 22,
+    "verified": 24,
     "partial_authority": 1,
     "unverified": 33,
-    "conflict": 5,
+    "conflict": 3,
     "matched_by_two_independent_authorities": 21,
-    "authority_agreements": 18,
-    "authority_disagreements": 2,
+    "authority_agreements": 20,
+    "authority_disagreements": 0,
     "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 2
+    "not_published": 0
   },
   "stream_health": {
     "sources_in_outage": [
