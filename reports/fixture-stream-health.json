@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-27T04:44:09.325868+00:00",
+  "generated_at": "2026-10-27T05:04:12.261672+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
     "fixtures": 45,
@@ -11,26 +11,28 @@
     "targeted_fixtures": 1,
     "targeted_attempts": 7,
     "fixtures_with_a_first_link_time": 0,
-    "candidate_routes": 20,
+    "candidate_routes": 21,
     "verified_routes": 11,
-    "failed_routes": 9,
+    "failed_routes": 10,
     "fixtures_touched_by_a_route_failure": 6,
     "fixtures_left_with_nothing": 2,
-    "distinct_failure_codes": 3,
+    "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 43,
-    "unrecognised_failed_routes": 110
+    "unrecognised_failed_routes": 111
   },
   "failure_codes": {
     "http_403": 42,
     "browser_unreachable": 37,
     "http_404": 37,
-    "verification_failed": 2,
-    "timeout": 1
+    "verification_failed": 3,
+    "timeout": 1,
+    "exception": 1
   },
   "failure_code_fixtures": {
     "http_403": 5,
+    "timeout": 1,
     "browser_unreachable": 1,
-    "timeout": 1
+    "verification_failed": 1
   },
   "fixtures": [
     {
@@ -571,6 +573,33 @@
       "targeted": false
     },
     {
+      "fixture_id": "one-friday-fights",
+      "fixture_key": "one-friday-fights",
+      "fixture_name": "One Friday Fights",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 1,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "exception",
+        "http_404",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "utah-jazz-vs-memphis-grizzlies",
       "fixture_key": "utah-jazz-vs-memphis-grizzlies",
       "fixture_name": "Utah Jazz Vs Memphis Grizzlies",
@@ -605,8 +634,8 @@
       "source_id": "drmlive-sonyliv-backup",
       "source_ids": [
         "drmlive-sonyliv-backup",
-        "sportlive-sonyliv-backup",
         "sayanpal-sonyliv-backup",
+        "sportlive-sonyliv-backup",
         "kajju-sonyliv-backup"
       ],
       "candidate_stream_count": 2,
@@ -678,6 +707,36 @@
       "targeted": false
     },
     {
+      "fixture_id": "delhi-dynamites-vs-uttrakhand-stars",
+      "fixture_key": "delhi-dynamites-vs-uttrakhand-stars",
+      "fixture_name": "Delhi Dynamites vs Uttrakhand Stars",
+      "recognised_fixture": true,
+      "source_id": "vk1817-fancode-mirror",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "verification_failed",
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": true,
+      "target_attempt_count": 7,
+      "last_attempt_bucket": "2026-10-27T03:35Z",
+      "first_link_at": "",
+      "targeted": true
+    },
+    {
       "fixture_id": "edmonton-oilers-vs-detroit-red-wings",
       "fixture_key": "edmonton-oilers-vs-detroit-red-wings",
       "fixture_name": "Edmonton Oilers Vs Detroit Red Wings",
@@ -718,32 +777,6 @@
       "unchecked_stream_count": 0,
       "failure_codes": [
         "http_403",
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "one-friday-fights",
-      "fixture_key": "one-friday-fights",
-      "fixture_name": "One Friday Fights",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 2,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404",
         "browser_unreachable"
       ],
       "fallback_available": false,
@@ -880,35 +913,6 @@
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
-    },
-    {
-      "fixture_id": "delhi-dynamites-vs-uttrakhand-stars",
-      "fixture_key": "delhi-dynamites-vs-uttrakhand-stars",
-      "fixture_name": "Delhi Dynamites vs Uttrakhand Stars",
-      "recognised_fixture": true,
-      "source_id": "sm-fancode",
-      "source_ids": [
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sm-fancode",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "candidate_stream_count": 1,
-      "verified_stream_count": 0,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": true,
-      "target_attempt_count": 7,
-      "last_attempt_bucket": "2026-10-27T03:35Z",
-      "first_link_at": "",
-      "targeted": true
     },
     {
       "fixture_id": "fc-andorra-vs-burgos-club-de-futbol",
@@ -1264,9 +1268,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1361,9 +1365,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1389,9 +1393,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1417,9 +1421,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1537,9 +1541,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1565,9 +1569,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1662,9 +1666,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1690,9 +1694,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1741,9 +1745,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1769,9 +1773,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1866,9 +1870,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1894,9 +1898,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1922,9 +1926,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1950,9 +1954,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2001,9 +2005,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2029,9 +2033,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2057,9 +2061,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2131,9 +2135,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2205,9 +2209,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2233,9 +2237,9 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
