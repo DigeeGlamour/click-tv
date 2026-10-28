@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T14:04:57.515700+00:00",
+  "generated_at": "2026-10-28T14:25:20.845456+00:00",
   "today_match_count": 15,
   "upcoming_count": 54,
   "today_missing_logo": [
@@ -15,7 +15,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 235,
+  "provider_fixture": 233,
   "provider_rejected": 54,
   "provider_rejected_reasons": {
     "provider_dead_status": 39,
@@ -40,14 +40,10 @@
       "kickoff_missing_and_not_live": 4,
       "total": 4
     },
-    "vk1817-fancode-mirror": {
-      "upcoming_kickoff_already_passed": 2,
-      "total": 3,
-      "status_neither_live_nor_upcoming": 1
-    },
     "dartv-fancode-mirror": {
-      "upcoming_kickoff_already_passed": 1,
-      "total": 1
+      "upcoming_kickoff_already_passed": 3,
+      "total": 4,
+      "status_neither_live_nor_upcoming": 1
     }
   },
   "provider_rejected_fixtures": [
@@ -172,7 +168,7 @@
       "name": "Kashima Antlers vs Pohang Steelers",
       "competition": "AFC Champions League Elite 2026-27",
       "sport": "football",
-      "source_id": "vk1817-fancode-mirror",
+      "source_id": "dartv-fancode-mirror",
       "status": "UPCOMING",
       "reason": "upcoming_kickoff_already_passed",
       "start_time": "2026-10-28T10:00:00+00:00"
@@ -181,7 +177,7 @@
       "name": "Punjab Warriors vs Rajasthan Royalsmen",
       "competition": "Northern Artist Champions League 2026",
       "sport": "cricket",
-      "source_id": "vk1817-fancode-mirror",
+      "source_id": "dartv-fancode-mirror",
       "status": "UPCOMING",
       "reason": "upcoming_kickoff_already_passed",
       "start_time": "2026-10-28T08:00:00+00:00"
@@ -199,7 +195,7 @@
       "name": "South Africa vs Australia",
       "competition": "Australia tour of South Africa, 2026",
       "sport": "cricket",
-      "source_id": "vk1817-fancode-mirror",
+      "source_id": "dartv-fancode-mirror",
       "status": "PAUSED",
       "reason": "status_neither_live_nor_upcoming",
       "start_time": "2026-10-27T08:30:00+00:00"
@@ -341,7 +337,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 235,
+    "total": 233,
     "discarded": 53,
     "examples": [
       {
@@ -482,7 +478,7 @@
       },
       {
         "name": "Glaubandich Court",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
         "competition": "ATP 500 - Erste Bank Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -498,7 +494,7 @@
       },
       {
         "name": "IWB Court 1",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
         "competition": "ATP 500 - Swiss Indoors Basel 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -586,7 +582,7 @@
       },
       {
         "name": "World Feed",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
         "competition": "ATP 500 - Swiss Indoors Basel 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -634,7 +630,7 @@
       },
       {
         "name": "World Feed",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
         "competition": "ATP 500 - Erste Bank Open 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -772,31 +768,51 @@
   },
   "reused_event_ids": 0,
   "authority_status": {
-    "applied": 0,
-    "pending_confirmation": 0,
+    "applied": 1,
+    "pending_confirmation": 1,
     "live": 0,
-    "recorded": 28,
-    "conflict": 3,
-    "unmatched": 34,
+    "recorded": 27,
+    "conflict": 2,
+    "unmatched": 33,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 28
+      "FINISHED": 2,
+      "UPCOMING": 27
     },
     "by_confidence": {
+      "HIGH": 20,
       "LOW": 9,
-      "CONFLICT": 3,
-      "HIGH": 19
+      "CONFLICT": 2
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "India Women Vs Zimbabwe Women",
+        "fixture_id": "provider:india-vs-zimbabwe-women|icc women championship|2026-10-28",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1535657)",
+          "LiveScore livescore=FT (6, event 1775132)"
+        ],
+        "authority_finished_seen_at": "2026-10-28T14:24:26.381390+00:00",
+        "remove_after": "2026-10-28T14:44:26.381390+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": ""
+      }
+    ],
     "conflicts": [
       {
         "name": "India Women Vs Zimbabwe Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1535657); LiveScore livescore=FT (6, event 1775132)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -825,28 +841,59 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 0,
-    "pending_confirmation": 0,
+    "applied": 1,
+    "pending_confirmation": 1,
     "live": 0,
-    "recorded": 2,
+    "recorded": 1,
     "conflict": 1,
-    "unmatched": 11,
+    "unmatched": 10,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 2
+      "FINISHED": 2,
+      "UPCOMING": 1
     },
     "by_confidence": {
+      "HIGH": 1,
       "CONFLICT": 1,
       "LOW": 2
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "India Women Vs Zimbabwe Women",
+        "fixture_id": "provider:india-vs-zimbabwe-women|icc women championship|2026-10-28",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1535657)",
+          "LiveScore livescore=FT (6, event 1775132)"
+        ],
+        "authority_finished_seen_at": "2026-10-28T14:24:26.381390+00:00",
+        "remove_after": "2026-10-28T14:44:26.381390+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
     "conflicts": [
       {
         "name": "India Women Vs Zimbabwe Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1535657); LiveScore livescore=FT (6, event 1775132)",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      },
+      {
+        "name": "Persib Bandung Vs Melbourne Victory",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401912785); LiveScore livescore=FT (6, event 1885202)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -864,7 +911,7 @@
     "no_verdict": 2
   },
   "live_protection": {
-    "carried_forward": 4,
+    "carried_forward": 5,
     "released_ended": 0,
     "released_ended_ids": [],
     "retired_terminal": [],
@@ -875,13 +922,13 @@
     "released_exhausted": 0,
     "probe_alive": 1,
     "probe_dead": 3,
-    "probe_inconclusive": 0,
+    "probe_inconclusive": 1,
     "end_pending": 1,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
       "END_PENDING": 1,
-      "LIVE": 3
+      "LIVE": 4
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -930,19 +977,19 @@
     "unmatched": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 65,
+    "attempted": 64,
     "poster_filled": 3,
-    "badge_filled": 24,
+    "badge_filled": 22,
     "badge_used_as_logo": 2,
-    "cache_hits": 18,
+    "cache_hits": 17,
     "cached_entries": 1207,
     "provider": {
-      "requests": 10,
-      "hits": 8,
+      "requests": 11,
+      "hits": 9,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 56,
+      "skipped_rate_limited": 55,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -963,40 +1010,24 @@
   ],
   "sport_filter": {
     "at_merge": {
-      "total": 77,
-      "published": 65,
+      "total": 76,
+      "published": 64,
       "rejected": 2,
       "quarantined": 10,
       "states": {
         "confirmed_cricket": 33,
-        "confirmed_football": 32,
+        "confirmed_football": 31,
         "confirmed_other": 2,
         "unknown": 10
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 46,
+          "total": 45,
           "cricket": 5,
-          "football": 30,
+          "football": 29,
           "quarantined": 9,
           "rejected": 2,
-          "published": 35
-        },
-        "vk1817-fancode-mirror": {
-          "total": 17,
-          "cricket": 10,
-          "football": 7,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 17
-        },
-        "dartv-fancode-mirror": {
-          "total": 16,
-          "cricket": 9,
-          "football": 7,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 16
+          "published": 34
         },
         "srhady-primevideo-sports": {
           "total": 3,
@@ -1005,6 +1036,14 @@
           "quarantined": 1,
           "rejected": 0,
           "published": 2
+        },
+        "dartv-fancode-mirror": {
+          "total": 16,
+          "cricket": 9,
+          "football": 7,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 16
         },
         "sm-fancode": {
           "total": 14,
@@ -1039,6 +1078,14 @@
           "published": 14
         },
         "sayanpal-fancode-mirror": {
+          "total": 14,
+          "cricket": 9,
+          "football": 5,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 14
+        },
+        "vk1817-fancode-mirror": {
           "total": 14,
           "cricket": 9,
           "football": 5,
@@ -1157,13 +1204,13 @@
           "rejected": 0,
           "published": 8
         },
-        "vk1817-fancode-mirror": {
-          "total": 6,
-          "cricket": 3,
-          "football": 3,
+        "srhady-primevideo-sports": {
+          "total": 2,
+          "cricket": 2,
+          "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 6
+          "published": 2
         },
         "dartv-fancode-mirror": {
           "total": 6,
@@ -1172,14 +1219,6 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 6
-        },
-        "srhady-primevideo-sports": {
-          "total": 2,
-          "cricket": 2,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 2
         },
         "sm-fancode": {
           "total": 3,
@@ -1220,6 +1259,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 1
+        },
+        "vk1817-fancode-mirror": {
+          "total": 2,
+          "cricket": 1,
+          "football": 1,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 2
         }
       },
       "rejected_examples": [],
@@ -1260,6 +1307,14 @@
           "rejected": 0,
           "published": 14
         },
+        "dartv-fancode-mirror": {
+          "total": 12,
+          "cricket": 7,
+          "football": 5,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 12
+        },
         "drmlive-fancode-mirror": {
           "total": 14,
           "cricket": 9,
@@ -1276,21 +1331,13 @@
           "rejected": 0,
           "published": 14
         },
-        "dartv-fancode-mirror": {
-          "total": 12,
-          "cricket": 7,
-          "football": 5,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 12
-        },
         "vk1817-fancode-mirror": {
-          "total": 13,
-          "cricket": 8,
+          "total": 14,
+          "cricket": 9,
           "football": 5,
           "quarantined": 0,
           "rejected": 0,
-          "published": 13
+          "published": 14
         },
         "sm-sports-data": {
           "total": 30,
@@ -1314,9 +1361,9 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 289,
+    "raw_events": 287,
     "cricket_kept": 33,
-    "football_kept": 32,
+    "football_kept": 31,
     "other_discarded": 55,
     "unresolved": 10,
     "today_final": 15,
@@ -1349,39 +1396,39 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 1,
+      "provider_or_authority": 2,
       "estimate": 0,
-      "none": 14
+      "none": 13
     }
   },
   "fixture_stream_health": {
-    "fixtures": 90,
+    "fixtures": 89,
     "published_fixtures": 69,
-    "fixtures_with_verified_stream": 21,
+    "fixtures_with_verified_stream": 20,
     "fixtures_with_zero_verified": 69,
     "published_without_stream": 61,
-    "fallback_available": 7,
+    "fallback_available": 5,
     "targeted_fixtures": 12,
     "targeted_attempts": 64,
     "fixtures_with_a_first_link_time": 3,
-    "candidate_routes": 124,
-    "verified_routes": 56,
-    "failed_routes": 68,
-    "fixtures_touched_by_a_route_failure": 28,
-    "fixtures_left_with_nothing": 16,
-    "distinct_failure_codes": 6,
+    "candidate_routes": 122,
+    "verified_routes": 53,
+    "failed_routes": 69,
+    "fixtures_touched_by_a_route_failure": 27,
+    "fixtures_left_with_nothing": 15,
+    "distinct_failure_codes": 7,
     "unrecognised_candidate_groups": 20,
     "unrecognised_failed_routes": 43
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 69,
-    "verified": 26,
-    "partial_authority": 2,
+    "verified": 27,
+    "partial_authority": 1,
     "unverified": 36,
     "conflict": 5,
     "matched_by_two_independent_authorities": 24,
-    "authority_agreements": 19,
+    "authority_agreements": 20,
     "authority_disagreements": 3,
     "card_status_conflicts": 1,
     "authority_unavailable": [],
@@ -1393,8 +1440,8 @@
     "published_fixtures": 69,
     "fixtures_with_stream": 7,
     "fixtures_playable_via_catalogue": 1,
-    "fixtures_with_fresh_stream": 7,
-    "fixtures_with_carried_stream": 0,
+    "fixtures_with_fresh_stream": 6,
+    "fixtures_with_carried_stream": 1,
     "today_with_stream": 7,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
