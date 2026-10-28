@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-28T08:01:58.396088+00:00",
+  "updated_at": "2026-10-28T08:44:20.398979+00:00",
   "count": 6,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -84,8 +84,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 18,
-      "carried_forward_misses": 18,
+      "end_pending_confirmations": 22,
+      "carried_forward_misses": 22,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-28T01:44:29.220113+00:00",
       "authority_status": "LIVE",
@@ -139,10 +139,29 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 4,
       "backups": [
         {
           "name": "Backup-1",
+          "url": "https://hpc5-nmc-mnc.mydex.tv/_tkn_st=1793163608~exp=1793192468~acl=/bpk-tv/202/default/*~eti=fa5c4cfd542424a6997eeb9a23402d68~sid=bd517d501743ba42~imax=2~hmac=a93e35b6ba5cd2b8f875372fdddac209b26195fd898d8aacdb59621bf0359000/bpk-tv/202/default/index.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "direct_first",
+          "stream_type": "hls",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "hpc5-nmc-mnc.mydex.tv",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_253e99ad8c49c93aade6143de1c063c5"
+        },
+        {
+          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -162,6 +181,35 @@
           "resolution": "HD",
           "resolution_height": 720,
           "playback_id": "ctv_422e8e304c9b74d5cb1bea7426e3c0e6",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "SD",
+          "resolution_height": 576,
+          "playback_id": "ctv_ae59ca34ea58f381670191284107e167",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -209,6 +257,42 @@
           ]
         },
         {
+          "id": "bangladesh-vs-west-indies--rabbithole",
+          "name": "RABBITHOLE",
+          "normalized_name": "rabbithole",
+          "logo": "https://img.sofascore.com/api/v1/team/187744/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "bangladesh-vs-west-indies--rabbithole--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "bangladesh-vs-west-indies--rabbithole--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_7c904f94ac42a46df6c35882",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_253e99ad8c49c93aade6143de1c063c5",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "hls"
+            }
+          ]
+        },
+        {
           "id": "bangladesh-vs-west-indies--fancode",
           "name": "FANCODE",
           "normalized_name": "fancode",
@@ -220,8 +304,8 @@
             "sm-sports-data"
           ],
           "primary_stream_id": "bangladesh-vs-west-indies--fancode--1",
-          "stream_count": 1,
-          "backup_count": 0,
+          "stream_count": 2,
+          "backup_count": 1,
           "verified": true,
           "verification_status": "verified_global",
           "playback_types": [
@@ -241,18 +325,31 @@
               "resolution": "HD",
               "resolution_height": 720,
               "stream_type": "dash"
+            },
+            {
+              "id": "bangladesh-vs-west-indies--fancode--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_39eecac0ca6642a97afe357f",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ae59ca34ea58f381670191284107e167",
+              "resolution": "SD",
+              "resolution_height": 576,
+              "stream_type": "dash"
             }
           ]
         }
       ],
-      "channel_count": 2,
+      "channel_count": 3,
       "default_channel_id": "bangladesh-vs-west-indies--t-sports",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 4,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 3,
+        "variants": 4,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -311,7 +408,7 @@
       ],
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_522b9c32bcc6baf00a0a68762806a15c"
+      "playback_id": "ctv_76c5d5e271c130c710a533c1c9133c72"
     },
     {
       "id": "himachal-highlenders-vs-up-thunderbolts",
@@ -377,7 +474,13 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "end_pending": true,
+      "end_pending_confirmations": 4,
+      "carried_forward_misses": 4,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "carried_forward_first_missed_at": "2026-10-28T07:44:38.752459+00:00"
     },
     {
       "id": "qatar-vs-denmark",
@@ -423,17 +526,11 @@
           "source_id": "dartv-fancode-mirror",
           "source_name": "FanCode Live API (dartv-ajaz)",
           "source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
         "sm-fancode",
-        "dartv-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "dartv-fancode-mirror"
       ],
       "start_time": "2026-10-28T06:45:00+00:00",
       "start_at": "2026-10-28T06:45:00+00:00",
@@ -451,23 +548,24 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1559449)"
+        "ESPN espn-header=Live (Live, event 1559449)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "1559449"
       },
+      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE"
     },
     {
       "id": "punjab-warriors-vs-rajasthan-royalsmen",
@@ -477,7 +575,6 @@
       "sport_type_derived": true,
       "logo": "",
       "category": "today_match",
-      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "media",
@@ -495,7 +592,6 @@
       "source_id": "sm-fancode",
       "metadata_only": true,
       "available_link_count": 0,
-      "backups": [],
       "channel_stats": {
         "streams_in": 1,
         "unresolved_channel_streams": 0,
@@ -544,6 +640,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING"
@@ -577,6 +674,93 @@
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_aea04371ccb60e6a00138f24cbcb8f48",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_5278815c8576a2fe6d35f31eef72a519",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "abfjk4haaaaaaaamkitc5445rybm6.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_7da7b9495fd9a8e02b38b82ad89f912c",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -605,36 +789,7 @@
           }
         },
         {
-          "name": "Backup-2",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_87f53b513247b48c40535260c0cc9351",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
+          "name": "Backup-5",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -654,64 +809,6 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_8260dba84d132627c1ea3313daba2c9e",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-4",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_aea04371ccb60e6a00138f24cbcb8f48",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-5",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-willow-event",
-          "host": "ss-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_a5d6c4dbc0357b14705893c605d2a614",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -770,8 +867,8 @@
             "srhady-primevideo-sports"
           ],
           "primary_stream_id": "south-africa-vs-australia--prime-video--1",
-          "stream_count": 4,
-          "backup_count": 3,
+          "stream_count": 3,
+          "backup_count": 2,
           "verified": true,
           "verification_status": "verified_global",
           "playback_types": [
@@ -783,19 +880,6 @@
               "id": "south-africa-vs-australia--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_cf96d21260c66621673318b0",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_b9ad72d3e77a23eaaba432eb6f20fb5f",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "south-africa-vs-australia--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_90f2d5bec756ef287f7be0ed",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -806,7 +890,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "south-africa-vs-australia--prime-video--3",
+              "id": "south-africa-vs-australia--prime-video--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_99964593f3c7d3dfceaabe34",
@@ -819,11 +903,47 @@
               "stream_type": "dash"
             },
             {
-              "id": "south-africa-vs-australia--prime-video--4",
+              "id": "south-africa-vs-australia--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_25633628949b10c8b9e370a6",
+              "variant_key": "sv_cf96d21260c66621673318b0",
               "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_b9ad72d3e77a23eaaba432eb6f20fb5f",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "south-africa-vs-australia--willow-sports",
+          "name": "WILLOW SPORTS",
+          "normalized_name": "willow-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/187747/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "south-africa-vs-australia--willow-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "south-africa-vs-australia--willow-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_25633628949b10c8b9e370a6",
+              "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_aea04371ccb60e6a00138f24cbcb8f48",
@@ -835,18 +955,19 @@
         },
         {
           "id": "south-africa-vs-australia--willow",
-          "name": "Willow",
+          "name": "WILLOW",
           "normalized_name": "willow",
-          "logo": "https://m.media-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.20a790a3-51e9-4ec1-9a8b-cb632845af2d/2/BOXART-16X9/en-US._UR1920,1080_.jpeg",
+          "logo": "https://img.sofascore.com/api/v1/team/187747/image",
           "name_confidence": "explicit",
           "name_source": "channel_name",
-          "provider": "srhady-willow-event",
+          "provider": "sm-sports-data",
           "source_ids": [
+            "sm-sports-data",
             "srhady-willow-event"
           ],
           "primary_stream_id": "south-africa-vs-australia--willow--1",
-          "stream_count": 2,
-          "backup_count": 1,
+          "stream_count": 4,
+          "backup_count": 3,
           "verified": true,
           "verification_status": "verified_global",
           "playback_types": [
@@ -858,6 +979,19 @@
               "id": "south-africa-vs-australia--willow--1",
               "role": "primary",
               "playback_type": "native",
+              "variant_key": "sv_fa90403ce5696ea4ed6f4725",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_5278815c8576a2fe6d35f31eef72a519",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "south-africa-vs-australia--willow--2",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_10e8fa59c262f531f1bd7647",
               "provider": "srhady-willow-event",
               "verification_status": "verified_global",
@@ -868,7 +1002,20 @@
               "stream_type": "dash"
             },
             {
-              "id": "south-africa-vs-australia--willow--2",
+              "id": "south-africa-vs-australia--willow--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_e76469c65811946cac0f7375",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_7da7b9495fd9a8e02b38b82ad89f912c",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "south-africa-vs-australia--willow--4",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_76088f3929b53547b9715344",
@@ -919,21 +1066,57 @@
           ]
         }
       ],
-      "channel_count": 4,
+      "channel_count": 5,
       "default_channel_id": "south-africa-vs-australia--sky-cricket",
       "channel_stats": {
-        "streams_in": 8,
+        "streams_in": 10,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 4,
-        "variants": 8,
+        "channels": 5,
+        "variants": 10,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
-      "standby_link_count": 2,
+      "standby_link_count": 4,
       "standby": [
         {
           "name": "Standby-1",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "srhady-primevideo-sports",
+          "source_provenance": [
+            {
+              "source_id": "srhady-primevideo-sports",
+              "source_name": "Prime Video Free Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+            },
+            {
+              "source_id": "srhady-willow-event",
+              "source_name": "Willow Event Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
+            }
+          ],
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_dde9748d20540a8e130d02862e9185a7",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Standby-2",
           "drm": {
             "type": "clearkey",
             "protected": true
@@ -969,7 +1152,38 @@
           }
         },
         {
-          "name": "Standby-2",
+          "name": "Standby-3",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "srhady-willow-event",
+          "source_provenance": [
+            {
+              "source_id": "srhady-willow-event",
+              "source_name": "Willow Event Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json"
+            }
+          ],
+          "host": "ss-ott.bia-cf.live.pv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_94128f070a6c4e29492f34bff9d94ffe",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Standby-4",
           "drm": {
             "type": "clearkey",
             "protected": true
@@ -1018,9 +1232,9 @@
       "end_time_source": "sport",
       "competition": "TEST International",
       "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-28",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-10-28T08:00:00+00:00",
@@ -1029,9 +1243,33 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
+      "authority_near_misses": [
+        {
+          "authority": "espn-header",
+          "matched_by": "ambiguous_kickoff_lifted",
+          "event_id": "1525661",
+          "upstream_family": "ESPN",
+          "name": "South Africa vs Australia",
+          "competition": "Australia tour of South Africa 2026/27",
+          "kickoff": "2026-10-27T08:30:00+00:00",
+          "kickoff_delta_minutes": -1410.0,
+          "status": "LIVE"
+        },
+        {
+          "authority": "livescore",
+          "matched_by": "ambiguous_kickoff_lifted",
+          "event_id": "1743143",
+          "upstream_family": "LiveScore",
+          "name": "South Africa vs Australia",
+          "competition": "South Africa v Australia Test Series",
+          "kickoff": "2026-10-27T08:30:00+00:00",
+          "kickoff_delta_minutes": -1410.0,
+          "status": "LIVE"
+        }
+      ],
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_b33a4dbcf7c11877ddef7ef9685f87a2"
+      "playback_id": ""
     }
   ]
 }
