@@ -1,22 +1,57 @@
 {
-  "timestamp": "2026-10-28T03:32:09.043449+00:00",
+  "timestamp": "2026-10-28T03:37:05.305985+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 13,
-  "total_global_network_checked": 13,
-  "total_proxy_selected": 0,
-  "total_proxy_checked": 0,
-  "total_processed": 13,
+  "total_input_pool": 16,
+  "total_global_network_checked": 16,
+  "total_proxy_selected": 1,
+  "total_proxy_checked": 1,
+  "total_processed": 16,
   "total_publishable": 10,
-  "strict_player_hidden": 1,
+  "strict_player_hidden": 2,
   "browser_unreachable_hidden": 2,
   "unproven_hidden": 0,
   "status_counts": {
+    "failed": 2,
     "verified_global": 10,
-    "metadata_only": 1,
+    "metadata_only": 2,
     "unreachable_from_browser": 2
   },
   "groups": {
+    "failed": [
+      {
+        "id": "bangladesh-vs-west-indies",
+        "name": "Bangladesh vs West Indies",
+        "source_id": "sportlive-fancode-backup",
+        "source_pipeline": "today_match",
+        "url": "https://in-mc-flive.fancode.com/mumbai/4250526_english_hls_d3c070eb3086860_1ta-di_h264/1080p.m3u8",
+        "verification_status": "failed",
+        "verification_mode": "same_run_player_gate",
+        "publish_allowed": false,
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Forbidden",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "bangladesh-vs-west-indies",
+        "name": "Bangladesh vs West Indies",
+        "source_id": "sayanpal-fancode-mirror",
+        "source_pipeline": "today_match",
+        "url": "",
+        "verification_status": "failed",
+        "verification_mode": "same_run_cloud_second_pass",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "Stream URL is empty",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      }
+    ],
     "verified_global": [
       {
         "id": "golf-evento",
@@ -180,6 +215,22 @@
       }
     ],
     "metadata_only": [
+      {
+        "id": "bangladesh-vs-west-indies",
+        "name": "Bangladesh vs West Indies",
+        "source_id": "sm-fancode",
+        "source_pipeline": "upcoming",
+        "url": "",
+        "verification_status": "metadata_only",
+        "verification_mode": "none",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "permanent_fail_count": 0
+      },
       {
         "id": "himachal-highlenders-vs-up-thunderbolts",
         "name": "Himachal Highlenders vs UP Thunderbolts",
