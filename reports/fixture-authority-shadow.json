@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T23:04:46.226700+00:00",
+  "generated_at": "2026-10-28T23:24:19.813656+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,13 +12,11 @@
       "requests_ok": 6,
       "fixtures": 719,
       "unknown_statuses": [
+        "10|HT",
         "12|Int.",
         "132|Stumps - day 1",
         "133|Stumps - day 2",
-        "2|33'",
-        "2|34'",
-        "2|35'",
-        "2|4'"
+        "2|23'"
       ],
       "attempts": [
         {
@@ -110,52 +108,51 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 18,
+    "today_match": 15,
     "upcoming": 52,
-    "fixtures": 70,
+    "fixtures": 67,
     "verdicts": {
-      "PARTIAL_AUTHORITY": 2,
+      "CONFLICT": 8,
       "UNVERIFIED": 31,
-      "VERIFIED": 30,
-      "CONFLICT": 7
+      "VERIFIED": 28
     },
-    "verified": 30,
-    "partial_authority": 2,
+    "verified": 28,
+    "partial_authority": 0,
     "unverified": 31,
-    "conflict": 7,
+    "conflict": 8,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 35,
+        "matched": 32,
         "unmatched": 35
       },
       "livescore": {
-        "matched": 34,
+        "matched": 31,
         "unmatched": 36
       }
     },
-    "matched_by_two_independent_authorities": 26,
-    "authority_agreements": 24,
-    "authority_disagreements": 0,
+    "matched_by_two_independent_authorities": 23,
+    "authority_agreements": 20,
+    "authority_disagreements": 1,
     "card_status_conflicts": 6,
     "conflict_reason_counts": {
-      "card says LIVE, authority says FINISHED": 6,
-      "kickoff": 5
+      "card says LIVE, authority says UPCOMING": 5,
+      "kickoff": 5,
+      "authorities disagree": 1,
+      "card says LIVE, authority says FINISHED": 1
     },
     "identity_near_misses": 10,
     "independent_authority_count_distribution": {
       "0": 31,
       "1": 13,
-      "2": 26
+      "2": 23
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "12|Int.",
         "132|Stumps - day 1",
         "133|Stumps - day 2",
-        "2|33'",
-        "2|34'",
-        "2|35'",
-        "2|4'"
+        "2|23'"
       ],
       "espn-header": []
     }
@@ -194,6 +191,14 @@
       "theirs": "chelsea"
     },
     {
+      "fixture": "Al Khaldiya SC vs Al Wahda",
+      "authority": "livescore",
+      "authority_name": "AL Khalidiyah vs Al-Wahda",
+      "agreed_side": "al wahda",
+      "ours": "al khaldiya",
+      "theirs": "al khalidiyah"
+    },
+    {
       "fixture": "Holstein Kiel Vs TSG Hoffenheim",
       "authority": "livescore",
       "authority_name": "Holstein Kiel vs Hoffenheim",
@@ -208,14 +213,6 @@
       "agreed_side": "inter",
       "ours": "ol lyonnes",
       "theirs": "lyon"
-    },
-    {
-      "fixture": "Al Khaldiya SC vs Al Wahda",
-      "authority": "livescore",
-      "authority_name": "AL Khalidiyah vs Al-Wahda",
-      "agreed_side": "al wahda",
-      "ours": "al khaldiya",
-      "theirs": "al khalidiyah"
     },
     {
       "fixture": "HB Køge Women vs Barcelona Women",
@@ -278,17 +275,17 @@
           "competition_id": "630",
           "kickoff": "2026-10-28T22:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "2'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "2'",
-          "espn_status_description": "First Half",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 6:30 PM EDT",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841289~c:401841289"
@@ -308,11 +305,11 @@
           "competition_id": "155",
           "kickoff": "2026-10-28T22:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "35'",
-          "status_code": "2",
+          "status_raw": "HT",
+          "status_code": "10",
           "status": "UNKNOWN",
           "sport": "football",
-          "round": "33",
+          "round": "Regular Season",
           "format": "",
           "gender": ""
         }
@@ -324,10 +321,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -335,7 +334,7 @@
       "card_id": "mls-countdown",
       "name": "MLS Countdown",
       "competition": "",
-      "kickoff": "2026-10-28T23:04:46+00:00",
+      "kickoff": "2026-10-28T23:24:19+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -372,7 +371,7 @@
       "card_id": "mls-la-previa",
       "name": "MLS La Previa⁩",
       "competition": "",
-      "kickoff": "2026-10-28T23:04:46+00:00",
+      "kickoff": "2026-10-28T23:24:19+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -439,17 +438,17 @@
           "competition_id": "630",
           "kickoff": "2026-10-28T22:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "3'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "3'",
-          "espn_status_description": "First Half",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 6:30 PM EDT",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841291~c:401841291"
@@ -473,10 +472,12 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -514,17 +515,17 @@
           "competition_id": "630",
           "kickoff": "2026-10-28T22:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "1'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "1'",
-          "espn_status_description": "First Half",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 6:30 PM EDT",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841293~c:401841293"
@@ -544,11 +545,11 @@
           "competition_id": "155",
           "kickoff": "2026-10-28T22:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "33'",
-          "status_code": "2",
+          "status_raw": "HT",
+          "status_code": "10",
           "status": "UNKNOWN",
           "sport": "football",
-          "round": "Regular Season",
+          "round": "33",
           "format": "",
           "gender": ""
         }
@@ -560,10 +561,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -601,273 +604,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:sunderland-vs-brentford|efl cup|2026-10-28",
-      "card_id": "sunderland-vs-brentford",
-      "name": "Sunderland Vs Brentford",
-      "competition": "EFL Cup",
-      "kickoff": "2026-10-28T19:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401921843",
-          "upstream_family": "ESPN",
-          "name": "Sunderland vs Brentford",
-          "home": "Sunderland",
-          "away": "Brentford",
-          "home_team_id": "366",
-          "away_team_id": "337",
-          "competition": "English Carabao Cup",
-          "competition_id": "3920",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3920~e:401921843~c:401921843"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1894152",
-          "upstream_family": "LiveScore",
-          "name": "Sunderland vs Brentford",
-          "home": "Sunderland",
-          "away": "Brentford",
-          "home_team_id": "2949",
-          "away_team_id": "2865",
-          "competition": "EFL Cup: Round 4",
-          "competition_id": "1114",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "4",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:bournemouth-vs-aston-villa|efl cup|2026-10-28",
-      "card_id": "bournemouth-vs-aston-villa",
-      "name": "Bournemouth Vs Aston Villa",
-      "competition": "EFL Cup",
-      "kickoff": "2026-10-28T19:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401921840",
-          "upstream_family": "ESPN",
-          "name": "AFC Bournemouth vs Aston Villa",
-          "home": "AFC Bournemouth",
-          "away": "Aston Villa",
-          "home_team_id": "349",
-          "away_team_id": "362",
-          "competition": "English Carabao Cup",
-          "competition_id": "3920",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3920~e:401921840~c:401921840"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1894156",
-          "upstream_family": "LiveScore",
-          "name": "AFC Bournemouth vs Aston Villa",
-          "home": "AFC Bournemouth",
-          "away": "Aston Villa",
-          "home_team_id": "3928",
-          "away_team_id": "3863",
-          "competition": "EFL Cup: Round 4",
-          "competition_id": "1114",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "8th Finals",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:fulham-vs-crystal-palace|efl cup|2026-10-28",
-      "card_id": "fulham-vs-crystal-palace",
-      "name": "Fulham Vs Crystal Palace",
-      "competition": "EFL Cup",
-      "kickoff": "2026-10-28T19:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401921841",
-          "upstream_family": "ESPN",
-          "name": "Fulham vs Crystal Palace",
-          "home": "Fulham",
-          "away": "Crystal Palace",
-          "home_team_id": "370",
-          "away_team_id": "384",
-          "competition": "English Carabao Cup",
-          "competition_id": "3920",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3920~e:401921841~c:401921841"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1894155",
-          "upstream_family": "LiveScore",
-          "name": "Fulham vs Crystal Palace",
-          "home": "Fulham",
-          "away": "Crystal Palace",
-          "home_team_id": "2872",
-          "away_team_id": "2772",
-          "competition": "EFL Cup: Round 4",
-          "competition_id": "1114",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "4",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -972,6 +708,81 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:al-khaldiya-sc-vs-al-wahda|afc champions league two 2026 27|2026-10-28",
+      "card_id": "al-khaldiya-sc-vs-al-wahda",
+      "name": "Al Khaldiya SC vs Al Wahda",
+      "competition": "AFC Champions League Two 2026-27",
+      "kickoff": "2026-10-28T18:15:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
+      "provider_identity": "",
+      "source_ids": [
+        "dartv-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401912779",
+          "upstream_family": "ESPN",
+          "name": "Al-Khaldiya SC vs Al Wahda FC",
+          "home": "Al-Khaldiya SC",
+          "away": "Al Wahda FC",
+          "home_team_id": "22354",
+          "away_team_id": "7134",
+          "competition": "AFC Champions League Two",
+          "competition_id": "2466",
+          "kickoff": "2026-10-28T18:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "52'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "52'",
+          "espn_status_description": "Second Half",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2466~e:401912779~c:401912779"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "AL Khalidiyah vs Al-Wahda",
+              "event_id": "1873836",
+              "agreed_side": "al wahda",
+              "ours": "al khaldiya",
+              "theirs": "al khalidiyah"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:holstein-kiel-vs-tsg-hoffenheim|dfb pokal|2026-10-28",
       "card_id": "holstein-kiel-vs-tsg-hoffenheim",
       "name": "Holstein Kiel Vs TSG Hoffenheim",
@@ -1006,17 +817,17 @@
           "competition_id": "3954",
           "kickoff": "2026-10-28T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Pens",
-          "status_code": "STATUS_SHOOTOUT",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Penalties",
-          "espn_status_description": "Shootout",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 3:45 PM EDT",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3954~e:401917034~c:401917034"
@@ -1040,83 +851,8 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:ol-lyonnes-vs-inter|uefa women champions league|2026-10-28",
-      "card_id": "ol-lyonnes-vs-inter",
-      "name": "OL Lyonnes Vs Inter",
-      "competition": "UEFA Women's Champions League",
-      "kickoff": "2026-10-28T20:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401916996",
-          "upstream_family": "ESPN",
-          "name": "OL Lyonnes vs Internazionale",
-          "home": "OL Lyonnes",
-          "away": "Internazionale",
-          "home_team_id": "19256",
-          "away_team_id": "131635",
-          "competition": "UEFA Women's Champions League",
-          "competition_id": "19483",
-          "kickoff": "2026-10-28T20:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "women",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:19483~e:401916996~c:401916996"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Lyon W vs Inter W",
-              "event_id": "1887696",
-              "agreed_side": "inter",
-              "ours": "ol lyonnes",
-              "theirs": "lyon"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
+        "card says LIVE, authority says UPCOMING"
       ],
       "authority_agreement": "SINGLE",
       "card_status_conflict": true,
@@ -1250,18 +986,18 @@
           "competition_id": "3920",
           "kickoff": "2026-10-28T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT-Pens",
-          "status_code": "STATUS_FINAL_PEN",
-          "status": "FINISHED",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT-Pens",
-          "espn_status_description": "Final Score - After Penalties",
-          "espn_completed": true,
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 4:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3920~e:401921842~c:401921842"
         },
@@ -1297,10 +1033,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
       ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -1342,22 +1078,22 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:al-khaldiya-sc-vs-al-wahda|afc champions league two 2026 27|2026-10-28",
-      "card_id": "al-khaldiya-sc-vs-al-wahda",
-      "name": "Al Khaldiya SC vs Al Wahda",
-      "competition": "AFC Champions League Two 2026-27",
-      "kickoff": "2026-10-28T18:15:00+00:00",
-      "schedule_status": "LINK_UPDATING",
+      "fixture_id": "provider:ol-lyonnes-vs-inter|uefa women champions league|2026-10-28",
+      "card_id": "ol-lyonnes-vs-inter",
+      "name": "OL Lyonnes Vs Inter",
+      "competition": "UEFA Women's Champions League",
+      "kickoff": "2026-10-28T20:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "dartv-fancode-mirror"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "FanCode"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -1365,41 +1101,41 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "401912779",
+          "event_id": "401916996",
           "upstream_family": "ESPN",
-          "name": "Al-Khaldiya SC vs Al Wahda FC",
-          "home": "Al-Khaldiya SC",
-          "away": "Al Wahda FC",
-          "home_team_id": "22354",
-          "away_team_id": "7134",
-          "competition": "AFC Champions League Two",
-          "competition_id": "2466",
-          "kickoff": "2026-10-28T18:15:00+00:00",
+          "name": "OL Lyonnes vs Internazionale",
+          "home": "OL Lyonnes",
+          "away": "Internazionale",
+          "home_team_id": "19256",
+          "away_team_id": "131635",
+          "competition": "UEFA Women's Champions League",
+          "competition_id": "19483",
+          "kickoff": "2026-10-28T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 4:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
           "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:2466~e:401912779~c:401912779"
+          "authority_uid": "s:600~l:19483~e:401916996~c:401916996"
         },
         "livescore": {
           "result": "unmatched",
           "near_misses": [
             {
-              "authority_name": "AL Khalidiyah vs Al-Wahda",
-              "event_id": "1873836",
-              "agreed_side": "al wahda",
-              "ours": "al khaldiya",
-              "theirs": "al khalidiyah"
+              "authority_name": "Lyon W vs Inter W",
+              "event_id": "1887696",
+              "agreed_side": "inter",
+              "ours": "ol lyonnes",
+              "theirs": "lyon"
             }
           ]
         }
@@ -1410,10 +1146,12 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -1530,9 +1268,9 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1623,8 +1361,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1709,9 +1447,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
@@ -1889,6 +1628,7 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
@@ -1931,8 +1671,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2108,6 +1848,7 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
@@ -2148,12 +1889,16 @@
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-willow-event"
+        "srhady-willow-event",
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
+        "FanCode",
         "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -2488,8 +2233,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2561,9 +2306,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
@@ -2737,9 +2483,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
@@ -2819,9 +2566,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2860,6 +2607,7 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
@@ -2976,9 +2724,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3018,8 +2766,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3136,9 +2884,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3534,6 +3282,7 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
@@ -3575,6 +3324,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
@@ -3676,9 +3426,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4016,8 +3766,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4093,6 +3843,7 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
@@ -4222,8 +3973,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4313,8 +4064,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4387,9 +4138,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
@@ -4549,9 +4301,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4700,9 +4452,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -4780,152 +4532,13 @@
   ],
   "retired_or_unpublished": [
     {
-      "fixture_id": "provider:emirates-blues-vs-abu-dhabi|emirates d20 2026|2026-10-28",
-      "card_id": "emirates-blues-vs-abu-dhabi",
-      "name": "Emirates Blues vs Abu Dhabi",
-      "competition": "Emirates D20, 2026",
-      "kickoff": "2026-10-28T16:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
-      "provider_identity": "",
-      "source_ids": [
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:fc-spartak-moscow-vs-rubin-kazan|russian cup|2026-10-28",
-      "card_id": "fc-spartak-moscow-vs-rubin-kazan",
-      "name": "FC Spartak Moscow Vs Rubin Kazan",
-      "competition": "Russian Cup",
-      "kickoff": "2026-10-28T17:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:brazil-u17-vs-poland-u17|u17 women world championship|2026-10-28",
-      "card_id": "brazil-u17-vs-poland-u17",
-      "name": "Brazil U17 Vs Poland U17",
-      "competition": "U17 Women's World Championship",
-      "kickoff": "2026-10-28T18:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401916259",
-          "upstream_family": "ESPN",
-          "name": "Brazil U17 vs Poland U17",
-          "home": "Brazil U17",
-          "away": "Poland U17",
-          "home_team_id": "21561",
-          "away_team_id": "22309",
-          "competition": "FIFA Under-17 Women's World Cup",
-          "competition_id": "20865",
-          "kickoff": "2026-10-28T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT-Pens",
-          "status_code": "STATUS_FINAL_PEN",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "women",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT-Pens",
-          "espn_status_description": "Final Score - After Penalties",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:20865~e:401916259~c:401916259"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:manchester-city-vs-brighton-hove-albion|efl cup|2026-10-28",
-      "card_id": "manchester-city-vs-brighton-hove-albion",
-      "name": "Manchester City Vs Brighton Hove Albion",
+      "fixture_id": "provider:bournemouth-vs-aston-villa|efl cup|2026-10-28",
+      "card_id": "bournemouth-vs-aston-villa",
+      "name": "Bournemouth Vs Aston Villa",
       "competition": "EFL Cup",
-      "kickoff": "2026-10-28T19:30:00+00:00",
+      "kickoff": "2026-10-28T19:45:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -4942,49 +4555,137 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "401921834",
+          "event_id": "401921840",
           "upstream_family": "ESPN",
-          "name": "Manchester City vs Brighton & Hove Albion",
-          "home": "Manchester City",
-          "away": "Brighton & Hove Albion",
-          "home_team_id": "382",
-          "away_team_id": "331",
+          "name": "AFC Bournemouth vs Aston Villa",
+          "home": "AFC Bournemouth",
+          "away": "Aston Villa",
+          "home_team_id": "349",
+          "away_team_id": "362",
           "competition": "English Carabao Cup",
           "competition_id": "3920",
-          "kickoff": "2026-10-28T19:30:00+00:00",
+          "kickoff": "2026-10-28T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT-Pens",
-          "status_code": "STATUS_FINAL_PEN",
-          "status": "FINISHED",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT-Pens",
-          "espn_status_description": "Final Score - After Penalties",
-          "espn_completed": true,
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 3:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
           "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3920~e:401921834~c:401921834"
+          "authority_uid": "s:600~l:3920~e:401921840~c:401921840"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1894849",
+          "event_id": "1894156",
           "upstream_family": "LiveScore",
-          "name": "Manchester City vs Brighton",
-          "home": "Manchester City",
-          "away": "Brighton",
-          "home_team_id": "12633",
-          "away_team_id": "2918",
+          "name": "AFC Bournemouth vs Aston Villa",
+          "home": "AFC Bournemouth",
+          "away": "Aston Villa",
+          "home_team_id": "3928",
+          "away_team_id": "3863",
           "competition": "EFL Cup: Round 4",
           "competition_id": "1114",
-          "kickoff": "2026-10-28T19:30:00+00:00",
+          "kickoff": "2026-10-28T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "AP",
-          "status_code": "13",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "8th Finals",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT"
+    },
+    {
+      "fixture_id": "provider:fulham-vs-crystal-palace|efl cup|2026-10-28",
+      "card_id": "fulham-vs-crystal-palace",
+      "name": "Fulham Vs Crystal Palace",
+      "competition": "EFL Cup",
+      "kickoff": "2026-10-28T19:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401921841",
+          "upstream_family": "ESPN",
+          "name": "Fulham vs Crystal Palace",
+          "home": "Fulham",
+          "away": "Crystal Palace",
+          "home_team_id": "370",
+          "away_team_id": "384",
+          "competition": "English Carabao Cup",
+          "competition_id": "3920",
+          "kickoff": "2026-10-28T19:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 3:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3920~e:401921841~c:401921841"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1894155",
+          "upstream_family": "LiveScore",
+          "name": "Fulham vs Crystal Palace",
+          "home": "Fulham",
+          "away": "Crystal Palace",
+          "home_team_id": "2872",
+          "away_team_id": "2772",
+          "competition": "EFL Cup: Round 4",
+          "competition_id": "1114",
+          "kickoff": "2026-10-28T19:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
           "status": "FINISHED",
           "sport": "football",
           "round": "4",
@@ -5000,20 +4701,20 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
       ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT"
     },
     {
-      "fixture_id": "provider:fc-bayern-münchen-vs-1-fc-magdeburg|dfb pokal|2026-10-28",
-      "card_id": "fc-bayern-münchen-vs-1-fc-magdeburg",
-      "name": "FC Bayern München Vs 1 FC Magdeburg",
-      "competition": "DFB Pokal",
+      "fixture_id": "provider:sunderland-vs-brentford|efl cup|2026-10-28",
+      "card_id": "sunderland-vs-brentford",
+      "name": "Sunderland Vs Brentford",
+      "competition": "EFL Cup",
       "kickoff": "2026-10-28T19:45:00+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -5030,52 +4731,52 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "401917035",
+          "event_id": "401921843",
           "upstream_family": "ESPN",
-          "name": "Bayern Munich vs 1. FC Magdeburg",
-          "home": "Bayern Munich",
-          "away": "1. FC Magdeburg",
-          "home_team_id": "132",
-          "away_team_id": "10382",
-          "competition": "German Cup",
-          "competition_id": "3954",
+          "name": "Sunderland vs Brentford",
+          "home": "Sunderland",
+          "away": "Brentford",
+          "home_team_id": "366",
+          "away_team_id": "337",
+          "competition": "English Carabao Cup",
+          "competition_id": "3920",
           "kickoff": "2026-10-28T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 3:45 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
           "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3954~e:401917035~c:401917035"
+          "authority_uid": "s:600~l:3920~e:401921843~c:401921843"
         },
         "livescore": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1888389",
+          "event_id": "1894152",
           "upstream_family": "LiveScore",
-          "name": "Bayern Munich vs Magdeburg",
-          "home": "Bayern Munich",
-          "away": "Magdeburg",
-          "home_team_id": "2940",
-          "away_team_id": "4453",
-          "competition": "DFB Cup: Round 2",
-          "competition_id": "97",
+          "name": "Sunderland vs Brentford",
+          "home": "Sunderland",
+          "away": "Brentford",
+          "home_team_id": "2949",
+          "away_team_id": "2865",
+          "competition": "EFL Cup: Round 4",
+          "competition_id": "1114",
           "kickoff": "2026-10-28T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
           "status_raw": "FT",
           "status_code": "6",
           "status": "FINISHED",
           "sport": "football",
-          "round": "2nd Round",
+          "round": "4",
           "format": "",
           "gender": ""
         }
@@ -5088,538 +4789,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
       ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:hannover-96-vs-1-fc-kaiserslautern|dfb pokal|2026-10-28",
-      "card_id": "hannover-96-vs-1-fc-kaiserslautern",
-      "name": "Hannover 96 Vs 1 FC Kaiserslautern",
-      "competition": "DFB Pokal",
-      "kickoff": "2026-10-28T19:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401916922",
-          "upstream_family": "ESPN",
-          "name": "Hannover 96 vs Kaiserslautern",
-          "home": "Hannover 96",
-          "away": "Kaiserslautern",
-          "home_team_id": "2428",
-          "away_team_id": "130",
-          "competition": "German Cup",
-          "competition_id": "3954",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3954~e:401916922~c:401916922"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1888392",
-          "upstream_family": "LiveScore",
-          "name": "Hannover 96 vs Kaiserslautern",
-          "home": "Hannover 96",
-          "away": "Kaiserslautern",
-          "home_team_id": "2852",
-          "away_team_id": "5243",
-          "competition": "DFB Cup: Round 2",
-          "competition_id": "97",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "2nd Round",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:genoa-vs-juventus|serie a|2026-10-28",
-      "card_id": "genoa-vs-juventus",
-      "name": "Genoa Vs Juventus",
-      "competition": "Italian Serie A",
-      "kickoff": "2026-10-28T19:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401874988",
-          "upstream_family": "ESPN",
-          "name": "Genoa vs Juventus",
-          "home": "Genoa",
-          "away": "Juventus",
-          "home_team_id": "3263",
-          "away_team_id": "111",
-          "competition": "Italian Serie A",
-          "competition_id": "730",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:730~e:401874988~c:401874988"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1785367",
-          "upstream_family": "LiveScore",
-          "name": "Genoa vs Juventus",
-          "home": "Genoa",
-          "away": "Juventus",
-          "home_team_id": "3179",
-          "away_team_id": "4238",
-          "competition": "Serie A",
-          "competition_id": "77",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "9",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:monza-vs-ssc-napoli|serie a|2026-10-28",
-      "card_id": "monza-vs-ssc-napoli",
-      "name": "Monza Vs SSC Napoli",
-      "competition": "Italian Serie A",
-      "kickoff": "2026-10-28T19:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401874799",
-          "upstream_family": "ESPN",
-          "name": "Monza vs Napoli",
-          "home": "Monza",
-          "away": "Napoli",
-          "home_team_id": "4007",
-          "away_team_id": "114",
-          "competition": "Italian Serie A",
-          "competition_id": "730",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:730~e:401874799~c:401874799"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1785366",
-          "upstream_family": "LiveScore",
-          "name": "Monza vs Napoli",
-          "home": "Monza",
-          "away": "Napoli",
-          "home_team_id": "4224",
-          "away_team_id": "3460",
-          "competition": "Serie A",
-          "competition_id": "77",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "9",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:celtic-vs-dundee-united|scottish premiership|2026-10-28",
-      "card_id": "celtic-vs-dundee-united",
-      "name": "Celtic Vs Dundee United",
-      "competition": "Scottish Premiership",
-      "kickoff": "2026-10-28T19:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401878355",
-          "upstream_family": "ESPN",
-          "name": "Celtic vs Dundee United",
-          "home": "Celtic",
-          "away": "Dundee United",
-          "home_team_id": "256",
-          "away_team_id": "264",
-          "competition": "Scottish Premiership",
-          "competition_id": "735",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:735~e:401878355~c:401878355"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1792823",
-          "upstream_family": "LiveScore",
-          "name": "Celtic vs Dundee United",
-          "home": "Celtic",
-          "away": "Dundee United",
-          "home_team_id": "4700",
-          "away_team_id": "3064",
-          "competition": "Premiership",
-          "competition_id": "69",
-          "kickoff": "2026-10-28T19:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "11",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:heart-of-midlothian-vs-rangers|scottish premiership|2026-10-28",
-      "card_id": "heart-of-midlothian-vs-rangers",
-      "name": "Heart of Midlothian Vs Rangers",
-      "competition": "Scottish Premiership",
-      "kickoff": "2026-10-28T20:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401878353",
-          "upstream_family": "ESPN",
-          "name": "Heart of Midlothian vs Rangers",
-          "home": "Heart of Midlothian",
-          "away": "Rangers",
-          "home_team_id": "262",
-          "away_team_id": "257",
-          "competition": "Scottish Premiership",
-          "competition_id": "735",
-          "kickoff": "2026-10-28T20:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:735~e:401878353~c:401878353"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1792827",
-          "upstream_family": "LiveScore",
-          "name": "Hearts vs Rangers",
-          "home": "Hearts",
-          "away": "Rangers",
-          "home_team_id": "4669",
-          "away_team_id": "450",
-          "competition": "Premiership",
-          "competition_id": "69",
-          "kickoff": "2026-10-28T20:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "11",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
-    },
-    {
-      "fixture_id": "provider:arsenal-vs-benfica|uefa women champions league|2026-10-28",
-      "card_id": "arsenal-vs-benfica",
-      "name": "Arsenal Vs Benfica",
-      "competition": "UEFA Women's Champions League",
-      "kickoff": "2026-10-28T20:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401916997",
-          "upstream_family": "ESPN",
-          "name": "Arsenal vs Benfica",
-          "home": "Arsenal",
-          "away": "Benfica",
-          "home_team_id": "19973",
-          "away_team_id": "20830",
-          "competition": "UEFA Women's Champions League",
-          "competition_id": "19483",
-          "kickoff": "2026-10-28T20:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "women",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:19483~e:401916997~c:401916997"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1887724",
-          "upstream_family": "LiveScore",
-          "name": "Arsenal W vs Benfica W",
-          "home": "Arsenal W",
-          "away": "Benfica W",
-          "home_team_id": "3935",
-          "away_team_id": "83076",
-          "competition": "Final Stage",
-          "competition_id": "104",
-          "kickoff": "2026-10-28T20:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "3",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT"
     }
   ]
