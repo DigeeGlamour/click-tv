@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-28T06:24:17.635794+00:00",
+  "generated_at": "2026-10-28T06:44:11.723703+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -59,8 +59,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 6,
-      "fixtures": 481,
+      "requests_ok": 5,
+      "fixtures": 448,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -78,8 +78,8 @@
         {
           "sport": "cricket",
           "date": "2026-10-29",
-          "result": "ok",
-          "fixtures": 33
+          "result": "INCONCLUSIVE",
+          "reason": "http 502"
         },
         {
           "sport": "football",
@@ -105,29 +105,30 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 5,
-    "upcoming": 56,
-    "fixtures": 61,
+    "upcoming": 61,
+    "fixtures": 66,
     "verdicts": {
+      "PARTIAL_AUTHORITY": 2,
+      "VERIFIED": 33,
       "UNVERIFIED": 30,
-      "VERIFIED": 30,
       "CONFLICT": 1
     },
-    "verified": 30,
-    "partial_authority": 0,
+    "verified": 33,
+    "partial_authority": 2,
     "unverified": 30,
     "conflict": 1,
     "matched_by_authority": {
       "espn-header": {
         "matched": 27,
-        "unmatched": 34
+        "unmatched": 39
       },
       "livescore": {
-        "matched": 32,
-        "unmatched": 29
+        "matched": 34,
+        "unmatched": 32
       }
     },
-    "matched_by_two_independent_authorities": 21,
-    "authority_agreements": 21,
+    "matched_by_two_independent_authorities": 20,
+    "authority_agreements": 20,
     "authority_disagreements": 0,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
@@ -136,8 +137,8 @@
     "identity_near_misses": 5,
     "independent_authority_count_distribution": {
       "0": 30,
-      "1": 10,
-      "2": 21
+      "1": 16,
+      "2": 20
     },
     "unknown_authority_statuses": {
       "livescore": [
@@ -172,20 +173,20 @@
       "theirs": "alajuelense"
     },
     {
-      "fixture": "New England Revolution Vs New York Red Bulls",
-      "authority": "espn-header",
-      "authority_name": "New England Revolution vs Red Bull New York",
-      "agreed_side": "new england revolution",
-      "ours": "new york red bulls",
-      "theirs": "red bull new york"
-    },
-    {
       "fixture": "Pokhara Avengers vs Sudurpaschim Royals",
       "authority": "espn-header",
       "authority_name": "Pokhara Avengers (NPL) vs Sudur Paschim Royals (NPL)",
       "agreed_side": "pokhara avengers",
       "ours": "sudurpaschim royals",
       "theirs": "sudur paschim royals npl"
+    },
+    {
+      "fixture": "Red Bull Bragantino Vs Chapecoense",
+      "authority": "livescore",
+      "authority_name": "RB Bragantino vs Chapecoense AF",
+      "agreed_side": "chapecoense",
+      "ours": "red bull bragantino",
+      "theirs": "rb bragantino"
     }
   ],
   "fixtures": [
@@ -211,8 +212,8 @@
       "authorities": {
         "espn-header": {
           "result": "matched",
-          "matched_by": "ambiguous",
-          "verified": false,
+          "matched_by": "same_fixture",
+          "verified": true,
           "event_id": "1553295",
           "upstream_family": "ESPN",
           "name": "Bangladesh vs West Indies",
@@ -263,54 +264,18 @@
           "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 2,
+      "near_miss_count": 1,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:himachal-highlenders-vs-up-thunderbolts|northern artist champions league 2026|2026-10-28",
-      "card_id": "himachal-highlenders-vs-up-thunderbolts",
-      "name": "Himachal Highlenders vs UP Thunderbolts",
-      "competition": "Northern Artist Champions League 2026",
-      "kickoff": "2026-10-28T03:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
-      "provider_identity": "",
-      "source_ids": [
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -319,17 +284,14 @@
       "name": "Qatar vs Denmark",
       "competition": "ICC CWC Challenge League A 2026",
       "kickoff": "2026-10-28T06:45:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LINK_UPDATING",
       "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
         "dartv-fancode-mirror"
       ],
@@ -385,13 +347,50 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:himachal-highlenders-vs-up-thunderbolts|northern artist champions league 2026|2026-10-28",
+      "card_id": "himachal-highlenders-vs-up-thunderbolts",
+      "name": "Himachal Highlenders vs UP Thunderbolts",
+      "competition": "Northern Artist Champions League 2026",
+      "kickoff": "2026-10-28T03:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
+      "provider_identity": "",
+      "source_ids": [
+        "vk1817-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:dbu-vs-midwestern-state-soccer-women|2026-10-28",
       "card_id": "dbu-vs-midwestern-state-womens-soccer",
       "name": "DBU vs Midwestern State Women's Soccer",
       "competition": "",
       "kickoff": "2026-10-28T02:44:11+00:00",
       "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
@@ -443,8 +442,8 @@
       "authorities": {
         "espn-header": {
           "result": "matched",
-          "matched_by": "ambiguous",
-          "verified": false,
+          "matched_by": "same_fixture",
+          "verified": true,
           "event_id": "1544870",
           "upstream_family": "ESPN",
           "name": "South Australia vs Western Australia",
@@ -495,108 +494,19 @@
           "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 2,
+      "near_miss_count": 1,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-28",
-      "card_id": "south-africa-vs-australia",
-      "name": "South Africa Vs Australia",
-      "competition": "TEST International",
-      "kickoff": "2026-10-28T08:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "ambiguous_kickoff_lifted",
-          "verified": false,
-          "event_id": "1525661",
-          "upstream_family": "ESPN",
-          "name": "South Africa vs Australia",
-          "home": "South Africa",
-          "away": "Australia",
-          "home_team_id": "3",
-          "away_team_id": "2",
-          "competition": "Australia tour of South Africa 2026/27",
-          "competition_id": "24203",
-          "kickoff": "2026-10-27T08:30:00+00:00",
-          "kickoff_delta_minutes": -1410.0,
-          "status_raw": "Stumps",
-          "status_code": "Stumps",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "3rd Test",
-          "format": "Test",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Stumps",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-01T23:59:00Z",
-          "authority_uid": "s:200~e:1525661~c:1525661"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "ambiguous_kickoff_lifted",
-          "verified": false,
-          "event_id": "1743143",
-          "upstream_family": "LiveScore",
-          "name": "South Africa vs Australia",
-          "home": "South Africa",
-          "away": "Australia",
-          "home_team_id": "86128",
-          "away_team_id": "86103",
-          "competition": "South Africa v Australia Test Series",
-          "competition_id": "24652",
-          "kickoff": "2026-10-27T08:30:00+00:00",
-          "kickoff_delta_minutes": -1410.0,
-          "status_raw": "Stumps - day 1",
-          "status_code": "132",
-          "status": "UNKNOWN",
-          "sport": "cricket",
-          "round": "3rd Test",
-          "format": "Test",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "near_miss_count": 2,
-      "conflict_reasons": [
-        "kickoff: ours 2026-10-28T08:00, espn-header 2026-10-27T08:30 (-1410.0 min)",
-        "kickoff: ours 2026-10-28T08:00, livescore 2026-10-27T08:30 (-1410.0 min)"
-      ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
     },
     {
       "fixture_id": "provider:melbourne-stars-vs-hobart-hurricanes-women-2-match|women big bash league 2026|2026-10-29",
@@ -625,34 +535,7 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1543945",
-          "upstream_family": "ESPN",
-          "name": "Melbourne Stars Women vs Hobart Hurricanes Women",
-          "home": "Melbourne Stars Women",
-          "away": "Hobart Hurricanes Women",
-          "home_team_id": "896399",
-          "away_team_id": "896433",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-10-29T08:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "2nd Match (D/N)",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-29T23:59:00Z",
-          "authority_uid": "s:200~e:1543945~c:1543945"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -679,14 +562,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -805,34 +687,7 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1555121",
-          "upstream_family": "ESPN",
-          "name": "Afghanistan vs Zimbabwe",
-          "home": "Afghanistan",
-          "away": "Zimbabwe",
-          "home_team_id": "40",
-          "away_team_id": "9",
-          "competition": "Zimbabwe tour of United Arab Emirates 2026/27",
-          "competition_id": "24799",
-          "kickoff": "2026-10-29T14:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "2nd T20I (D/N)",
-          "format": "T20",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-30T23:59:00Z",
-          "authority_uid": "s:200~e:1555121~c:1555121"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -859,14 +714,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -1581,93 +1435,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:cienciano-vs-club-atlético-grau|liga 1 te apuesto|2026-10-29",
-      "card_id": "cienciano-vs-club-atlético-grau",
-      "name": "Cienciano Vs Club Atlético Grau",
-      "competition": "Liga 1 Te Apuesto",
-      "kickoff": "2026-10-29T00:00:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401886152",
-          "upstream_family": "ESPN",
-          "name": "Cienciano del Cusco vs Atlético Grau",
-          "home": "Cienciano del Cusco",
-          "away": "Atlético Grau",
-          "home_team_id": "3372",
-          "away_team_id": "20293",
-          "competition": "Peruvian Liga 1",
-          "competition_id": "670",
-          "kickoff": "2026-10-29T00:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, October 28th at 8:00 PM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:670~e:401886152~c:401886152"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1806680",
-          "upstream_family": "LiveScore",
-          "name": "Cienciano vs Atletico Grau",
-          "home": "Cienciano",
-          "away": "Atletico Grau",
-          "home_team_id": "9670",
-          "away_team_id": "6606",
-          "competition": "Liga 1: Clausura",
-          "competition_id": "506",
-          "kickoff": "2026-10-29T00:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "14",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:club-américa-vs-club-tijuana|liga mx apertura|2026-10-29",
       "card_id": "club-américa-vs-club-tijuana",
       "name": "Club América Vs Club Tijuana",
@@ -1983,6 +1750,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:fluminense-vs-internacional|campeonato brasileiro s rie a|2026-10-28",
+      "card_id": "fluminense-vs-internacional",
+      "name": "Fluminense Vs Internacional",
+      "competition": "Campeonato Brasileiro Série A",
+      "kickoff": "2026-10-28T22:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401841289",
+          "upstream_family": "ESPN",
+          "name": "Fluminense vs Internacional",
+          "home": "Fluminense",
+          "away": "Internacional",
+          "home_team_id": "3445",
+          "away_team_id": "1936",
+          "competition": "Brazilian Serie A",
+          "competition_id": "630",
+          "kickoff": "2026-10-28T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 6:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:630~e:401841289~c:401841289"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1708718",
+          "upstream_family": "LiveScore",
+          "name": "Fluminense vs Internacional",
+          "home": "Fluminense",
+          "away": "Internacional",
+          "home_team_id": "4840",
+          "away_team_id": "4940",
+          "competition": "Serie A",
+          "competition_id": "155",
+          "kickoff": "2026-10-28T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "33",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:gamba-osaka-vs-buriram-united|afc champions league elite|2026-10-28",
       "card_id": "gamba-osaka-vs-buriram-united",
       "name": "Gamba Osaka Vs Buriram United",
@@ -2287,6 +2141,130 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:india-vs-zimbabwe-women|icc women championship|2026-10-28",
+      "card_id": "india-women-vs-zimbabwe-women",
+      "name": "India Women Vs Zimbabwe Women",
+      "competition": "ICC Women's Championship",
+      "kickoff": "2026-10-28T08:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1535657",
+          "upstream_family": "ESPN",
+          "name": "India Women vs Zimbabwe Women",
+          "home": "India Women",
+          "away": "Zimbabwe Women",
+          "home_team_id": "1812",
+          "away_team_id": "271866",
+          "competition": "Zimbabwe Women tour of India 2026/27",
+          "competition_id": "24371",
+          "kickoff": "2026-10-28T08:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "3rd ODI (D/N)",
+          "format": "ODI",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-29T23:59:00Z",
+          "authority_uid": "s:200~e:1535657~c:1535657"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1775132",
+          "upstream_family": "LiveScore",
+          "name": "India W vs Zimbabwe W",
+          "home": "India W",
+          "away": "Zimbabwe W",
+          "home_team_id": "86118",
+          "away_team_id": "192201",
+          "competition": "India W vs Zimbabwe W ODI Series",
+          "competition_id": "25259",
+          "kickoff": "2026-10-28T08:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "3rd ODI",
+          "format": "Womens ODI",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:inter-bogota-vs-medellin|primera a|2026-10-29",
+      "card_id": "inter-bogota-vs-medellin",
+      "name": "Inter Bogota Vs Medellin",
+      "competition": "Primera A",
+      "kickoff": "2026-10-29T01:05:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:janakpur-bolts-vs-kathmandu-gorkhas|nepal premier league season 3 2026|2026-10-29",
       "card_id": "janakpur-bolts-vs-kathmandu-gorkhas",
       "name": "Janakpur Bolts vs Kathmandu Gorkhas",
@@ -2549,6 +2527,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:manchester-united-vs-burnley-fc-women|fa women league cup|2026-10-28",
+      "card_id": "manchester-united-vs-burnley-fc-women",
+      "name": "Manchester United Vs Burnley FC Women",
+      "competition": "FA Women's League Cup",
+      "kickoff": "2026-10-28T19:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401923390",
+          "upstream_family": "ESPN",
+          "name": "Manchester United vs Burnley",
+          "home": "Manchester United",
+          "away": "Burnley",
+          "home_team_id": "20061",
+          "away_team_id": "21048",
+          "competition": "English WSL Players Cup",
+          "competition_id": "23390",
+          "kickoff": "2026-10-28T19:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 3:00 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:23390~e:401923390~c:401923390"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1870279",
+          "upstream_family": "LiveScore",
+          "name": "Manchester United W vs Burnley W",
+          "home": "Manchester United W",
+          "away": "Burnley W",
+          "home_team_id": "202112",
+          "away_team_id": "82861",
+          "competition": "Women's League Cup",
+          "competition_id": "26138",
+          "kickoff": "2026-10-28T19:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1",
+          "format": "",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:melbourne-renegades-vs-sydney-thunder-women|women big bash league 2026 1st|2026-10-29",
       "card_id": "melbourne-renegades-women-vs-sydney-thunder-women",
       "name": "Melbourne Renegades Women vs Sydney Thunder Women",
@@ -2576,34 +2641,7 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1543944",
-          "upstream_family": "ESPN",
-          "name": "Melbourne Renegades Women vs Sydney Thunder Women",
-          "home": "Melbourne Renegades Women",
-          "away": "Sydney Thunder Women",
-          "home_team_id": "896407",
-          "away_team_id": "896401",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-10-29T04:40:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "1st Match",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-29T23:59:00Z",
-          "authority_uid": "s:200~e:1543944~c:1543944"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -2630,14 +2668,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -2779,74 +2816,6 @@
           "status": "UPCOMING",
           "sport": "football",
           "round": "10",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:new-england-revolution-vs-new-york-red-bulls|mls|2026-10-28",
-      "card_id": "new-england-revolution-vs-new-york-red-bulls",
-      "name": "New England Revolution Vs New York Red Bulls",
-      "competition": "MLS",
-      "kickoff": "2026-10-28T23:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "New England Revolution vs Red Bull New York",
-              "event_id": "761909",
-              "agreed_side": "new england revolution",
-              "ours": "new york red bulls",
-              "theirs": "red bull new york"
-            }
-          ]
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1696721",
-          "upstream_family": "LiveScore",
-          "name": "New England Revolution vs New York Red Bulls",
-          "home": "New England Revolution",
-          "away": "New York Red Bulls",
-          "home_team_id": "8888",
-          "away_team_id": "8947",
-          "competition": "MLS",
-          "competition_id": "145",
-          "kickoff": "2026-10-28T23:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "32",
           "format": "",
           "gender": ""
         }
@@ -3306,6 +3275,168 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:red-bull-bragantino-vs-chapecoense|campeonato brasileiro s rie a|2026-10-28",
+      "card_id": "red-bull-bragantino-vs-chapecoense",
+      "name": "Red Bull Bragantino Vs Chapecoense",
+      "competition": "Campeonato Brasileiro Série A",
+      "kickoff": "2026-10-28T22:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401841291",
+          "upstream_family": "ESPN",
+          "name": "Red Bull Bragantino vs Chapecoense",
+          "home": "Red Bull Bragantino",
+          "away": "Chapecoense",
+          "home_team_id": "6079",
+          "away_team_id": "9318",
+          "competition": "Brazilian Serie A",
+          "competition_id": "630",
+          "kickoff": "2026-10-28T22:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 6:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:630~e:401841291~c:401841291"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "RB Bragantino vs Chapecoense AF",
+              "event_id": "1708722",
+              "agreed_side": "chapecoense",
+              "ours": "red bull bragantino",
+              "theirs": "rb bragantino"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:remo-vs-botafogo|campeonato brasileiro s rie a|2026-10-29",
+      "card_id": "remo-vs-botafogo",
+      "name": "Remo Vs Botafogo",
+      "competition": "Campeonato Brasileiro Série A",
+      "kickoff": "2026-10-29T00:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401841297",
+          "upstream_family": "ESPN",
+          "name": "Remo vs Botafogo",
+          "home": "Remo",
+          "away": "Botafogo",
+          "home_team_id": "4936",
+          "away_team_id": "6086",
+          "competition": "Brazilian Serie A",
+          "competition_id": "630",
+          "kickoff": "2026-10-29T00:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, October 28th at 8:30 PM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:630~e:401841297~c:401841297"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1708728",
+          "upstream_family": "LiveScore",
+          "name": "Remo vs Botafogo FR",
+          "home": "Remo",
+          "away": "Botafogo FR",
+          "home_team_id": "4748",
+          "away_team_id": "4688",
+          "competition": "Serie A",
+          "competition_id": "155",
+          "kickoff": "2026-10-29T00:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "33",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:san-jose-earthquakes-vs-colorado-rapids|mls|2026-10-29",
       "card_id": "san-jose-earthquakes-vs-colorado-rapids",
       "name": "San Jose Earthquakes Vs Colorado Rapids",
@@ -3683,6 +3814,96 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-28",
+      "card_id": "south-africa-vs-australia",
+      "name": "South Africa Vs Australia",
+      "competition": "TEST International",
+      "kickoff": "2026-10-28T08:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "ambiguous_kickoff_lifted",
+          "verified": false,
+          "event_id": "1525661",
+          "upstream_family": "ESPN",
+          "name": "South Africa vs Australia",
+          "home": "South Africa",
+          "away": "Australia",
+          "home_team_id": "3",
+          "away_team_id": "2",
+          "competition": "Australia tour of South Africa 2026/27",
+          "competition_id": "24203",
+          "kickoff": "2026-10-27T08:30:00+00:00",
+          "kickoff_delta_minutes": -1410.0,
+          "status_raw": "Stumps",
+          "status_code": "Stumps",
+          "status": "LIVE",
+          "sport": "cricket",
+          "round": "3rd Test",
+          "format": "Test",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Stumps",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-11-01T23:59:00Z",
+          "authority_uid": "s:200~e:1525661~c:1525661"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "ambiguous_kickoff_lifted",
+          "verified": false,
+          "event_id": "1743143",
+          "upstream_family": "LiveScore",
+          "name": "South Africa vs Australia",
+          "home": "South Africa",
+          "away": "Australia",
+          "home_team_id": "86128",
+          "away_team_id": "86103",
+          "competition": "South Africa v Australia Test Series",
+          "competition_id": "24652",
+          "kickoff": "2026-10-27T08:30:00+00:00",
+          "kickoff_delta_minutes": -1410.0,
+          "status_raw": "Stumps - day 1",
+          "status_code": "132",
+          "status": "UNKNOWN",
+          "sport": "cricket",
+          "round": "3rd Test",
+          "format": "Test",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "near_miss_count": 2,
+      "conflict_reasons": [
+        "kickoff: ours 2026-10-28T08:00, espn-header 2026-10-27T08:30 (-1410.0 min)",
+        "kickoff: ours 2026-10-28T08:00, livescore 2026-10-27T08:30 (-1410.0 min)"
+      ],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:south-africa-vs-oman|hong kong sixes 2026 4th|2026-10-30",
       "card_id": "south-africa-vs-oman",
       "name": "South Africa vs Oman",
@@ -3746,34 +3967,7 @@
       "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1550718",
-          "upstream_family": "ESPN",
-          "name": "England vs Sri Lanka",
-          "home": "England",
-          "away": "Sri Lanka",
-          "home_team_id": "1",
-          "away_team_id": "8",
-          "competition": "Pakistan ODI Tri-Series",
-          "competition_id": "1550706",
-          "kickoff": "2026-10-29T08:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "6th Match (D/N)",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-30T23:59:00Z",
-          "authority_uid": "s:200~e:1550718~c:1550718"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "matched",
@@ -3800,14 +3994,13 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
@@ -4066,6 +4259,43 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:women-s-ipl-auctions|women ipl auctions|2026-10-28",
+      "card_id": "womens-ipl-auctions",
+      "name": "WOMEN'S IPL AUCTIONS",
+      "competition": "WOMEN'S IPL AUCTIONS",
+      "kickoff": "2026-10-28T12:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     }
   ]
