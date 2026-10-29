@@ -1,20 +1,21 @@
 {
-  "timestamp": "2026-10-29T16:31:57.045511+00:00",
+  "timestamp": "2026-10-29T16:36:47.430350+00:00",
   "mode": "upcoming-targeted",
   "pipelined": true,
-  "total_input_pool": 4,
-  "total_global_network_checked": 4,
-  "total_proxy_selected": 1,
-  "total_proxy_checked": 1,
-  "total_processed": 4,
-  "total_publishable": 0,
+  "total_input_pool": 10,
+  "total_global_network_checked": 10,
+  "total_proxy_selected": 2,
+  "total_proxy_checked": 2,
+  "total_processed": 10,
+  "total_publishable": 1,
   "strict_player_hidden": 1,
-  "browser_unreachable_hidden": 1,
+  "browser_unreachable_hidden": 4,
   "unproven_hidden": 0,
   "status_counts": {
-    "failed": 2,
-    "unreachable_from_browser": 1,
-    "metadata_only": 1
+    "failed": 4,
+    "unreachable_from_browser": 4,
+    "metadata_only": 1,
+    "verified_global": 1
   },
   "groups": {
     "failed": [
@@ -23,15 +24,15 @@
         "name": "Atlanta Dream Vs Golden State Valkyries",
         "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
-        "url": "",
+        "url": "https://edgestream3.pro/sh/access/U0hBQ0NFU1MBAAAAAQECAAAAAGrjlEsAAAAAAAAAAAAA__92s8_DFxNodHRwczovL2VkZ2VzdHJlYW0zLnByb25hbWUvc2RnaGp2cWF6aHZnODBFBsatQMH8R5SiUuVr8rK2taCMgbxGFAvhqiXOLI_UJg/cdn/hls/sdghjvqazhvg80.json",
         "verification_status": "failed",
-        "verification_mode": "same_run_cloud_second_pass",
+        "verification_mode": "same_run_player_gate",
         "publish_allowed": false,
-        "http_status": 0,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "Stream URL is empty",
-        "verification_note": "",
+        "http_status": 403,
+        "proxy_name": "default-cloudflare-worker",
+        "proxy_http_status": 403,
+        "verification_error": "HTTP 403: Response",
+        "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
         "permanent_fail_count": 0
       },
       {
@@ -48,6 +49,38 @@
         "proxy_http_status": 403,
         "verification_error": "HTTP 403: Forbidden",
         "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "numancia-vs-real-oviedo",
+        "name": "Numancia Vs Real Oviedo",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "",
+        "verification_status": "failed",
+        "verification_mode": "same_run_cloud_second_pass",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "Stream URL is empty",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "emirates-red-vs-dubai",
+        "name": "Emirates Red vs Dubai",
+        "source_id": "sayanpal-fancode-mirror",
+        "source_pipeline": "today_match",
+        "url": "",
+        "verification_status": "failed",
+        "verification_mode": "same_run_cloud_second_pass",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "Stream URL is empty",
+        "verification_note": "",
         "permanent_fail_count": 0
       }
     ],
@@ -67,6 +100,54 @@
         "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.41): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
         "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
         "permanent_fail_count": 0
+      },
+      {
+        "id": "rosenborg-kvinner-vs-brøndby-if",
+        "name": "Rosenborg Kvinner Vs Brøndby IF",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.44/hls/FIII.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.44): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "sparta-prague-vs-scu-torreense",
+        "name": "Sparta Prague Vs SCU Torreense",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.44/hls/FIIIQ.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.44): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "atlanta-dream-vs-golden-state-valkyries",
+        "name": "Atlanta Dream Vs Golden State Valkyries",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.50/hls/GGGGA.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.50): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
       }
     ],
     "metadata_only": [
@@ -84,6 +165,24 @@
         "proxy_http_status": 0,
         "verification_error": "",
         "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "permanent_fail_count": 0
+      }
+    ],
+    "verified_global": [
+      {
+        "id": "atlanta-dream-vs-golden-state-valkyries",
+        "name": "Atlanta Dream Vs Golden State Valkyries",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "https://chatgpt.hereisman.net/playlist/58837/load-playlist",
+        "verification_status": "verified_global",
+        "verification_mode": "global",
+        "publish_allowed": true,
+        "http_status": 200,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "",
         "permanent_fail_count": 0
       }
     ]
