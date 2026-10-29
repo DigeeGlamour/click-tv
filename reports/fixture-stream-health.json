@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T10:24:05.630521+00:00",
+  "generated_at": "2026-10-29T10:44:09.975051+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
     "fixtures": 74,
@@ -12,11 +12,11 @@
     "targeted_attempts": 52,
     "fixtures_with_a_first_link_time": 3,
     "candidate_routes": 101,
-    "verified_routes": 55,
-    "failed_routes": 46,
+    "verified_routes": 54,
+    "failed_routes": 47,
     "fixtures_touched_by_a_route_failure": 18,
     "fixtures_left_with_nothing": 5,
-    "distinct_failure_codes": 6,
+    "distinct_failure_codes": 7,
     "unrecognised_candidate_groups": 20,
     "unrecognised_failed_routes": 39
   },
@@ -26,16 +26,18 @@
     "http_404": 9,
     "verification_failed": 8,
     "timeout": 6,
+    "http_502": 1,
     "dns": 1,
     "http_451": 1
   },
   "failure_code_fixtures": {
     "http_403": 12,
-    "browser_unreachable": 9,
+    "browser_unreachable": 8,
     "verification_failed": 6,
     "timeout": 2,
     "http_451": 1,
-    "dns": 1
+    "dns": 1,
+    "http_502": 1
   },
   "fixtures": [
     {
@@ -63,6 +65,37 @@
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
+    },
+    {
+      "fixture_id": "adelaide-united-vs-lion-city-sailors",
+      "fixture_key": "adelaide-united-vs-lion-city-sailors",
+      "fixture_name": "Adelaide United Vs Lion City Sailors",
+      "recognised_fixture": true,
+      "source_id": "dartv-fancode-mirror",
+      "source_ids": [
+        "sm-sports-data",
+        "sm-fancode",
+        "vk1817-fancode-mirror",
+        "dartv-fancode-mirror"
+      ],
+      "candidate_stream_count": 5,
+      "verified_stream_count": 0,
+      "failed_stream_count": 5,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "timeout",
+        "browser_unreachable",
+        "verification_failed",
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": true,
+      "target_attempt_count": 7,
+      "last_attempt_bucket": "2026-10-29T07:50Z",
+      "first_link_at": "",
+      "targeted": true
     },
     {
       "fixture_id": "bangladesh-vs-west-indies",
@@ -121,37 +154,6 @@
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
-    },
-    {
-      "fixture_id": "adelaide-united-vs-lion-city-sailors",
-      "fixture_key": "adelaide-united-vs-lion-city-sailors",
-      "fixture_name": "Adelaide United Vs Lion City Sailors",
-      "recognised_fixture": true,
-      "source_id": "dartv-fancode-mirror",
-      "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 0,
-      "failed_stream_count": 4,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "timeout",
-        "browser_unreachable",
-        "verification_failed",
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": true,
-      "target_attempt_count": 7,
-      "last_attempt_bucket": "2026-10-29T07:50Z",
-      "first_link_at": "",
-      "targeted": true
     },
     {
       "fixture_id": "afghanistan-vs-zimbabwe",
@@ -434,8 +436,6 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 2,
@@ -771,29 +771,31 @@
       "targeted": false
     },
     {
-      "fixture_id": "everton-vs-newcastle-united",
-      "fixture_key": "everton-vs-newcastle-united",
-      "fixture_name": "Everton Vs Newcastle United",
+      "fixture_id": "england-vs-sri-lanka",
+      "fixture_key": "england-vs-sri-lanka",
+      "fixture_name": "England Vs Sri Lanka",
       "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 2,
+      "candidate_stream_count": 5,
+      "verified_stream_count": 4,
       "failed_stream_count": 1,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "browser_unreachable"
+        "http_502"
       ],
-      "fallback_available": false,
+      "fallback_available": true,
       "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 1,
+      "last_attempt_bucket": "2026-10-29T07:35Z",
+      "first_link_at": "2026-10-29T07:36:30.513107+00:00",
+      "targeted": true
     },
     {
       "fixture_id": "golf-evento",
@@ -1097,10 +1099,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1125,10 +1127,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1153,10 +1155,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1205,10 +1207,10 @@
         "sm-sports-data",
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1302,10 +1304,10 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1483,31 +1485,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "england-vs-sri-lanka",
-      "fixture_key": "england-vs-sri-lanka",
-      "fixture_name": "England Vs Sri Lanka",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
-      ],
-      "candidate_stream_count": 5,
-      "verified_stream_count": 5,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": true,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 1,
-      "last_attempt_bucket": "2026-10-29T07:35Z",
-      "first_link_at": "2026-10-29T07:36:30.513107+00:00",
-      "targeted": true
-    },
-    {
       "fixture_id": "provider:england-vs-australia|hong kong sixes 2026 9th|2026-10-30",
       "fixture_key": "england-vs-australia",
       "fixture_name": "England vs Australia",
@@ -1516,10 +1493,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1559,6 +1536,29 @@
       "targeted": false
     },
     {
+      "fixture_id": "everton-vs-newcastle-united",
+      "fixture_key": "everton-vs-newcastle-united",
+      "fixture_name": "Everton Vs Newcastle United",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 2,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "provider:fk-austria-wien-vs-juventus|uefa women champions league|2026-10-29",
       "fixture_key": "fk-austria-wien-vs-juventus",
       "fixture_name": "FK Austria Wien Vs Juventus",
@@ -1567,10 +1567,10 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1664,10 +1664,10 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1692,10 +1692,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1720,10 +1720,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1770,10 +1770,10 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1984,10 +1984,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2103,10 +2103,10 @@
       "source_id": "sm-fancode",
       "source_ids": [
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2154,10 +2154,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2182,10 +2182,10 @@
       "source_ids": [
         "srhady-willow-event",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2303,10 +2303,10 @@
       "source_ids": [
         "sm-sports-data",
         "sm-fancode",
-        "drmlive-fancode-mirror",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
