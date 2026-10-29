@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T10:04:08.554229+00:00",
+  "generated_at": "2026-10-29T10:24:05.630521+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,12 +10,14 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 656,
+      "fixtures": 657,
       "unknown_statuses": [
         "12|Int.",
         "133|Stumps - day 2",
-        "2|3'",
-        "2|4'"
+        "220|Drinks",
+        "2|23'",
+        "2|24'",
+        "2|37'"
       ],
       "attempts": [
         {
@@ -52,7 +54,7 @@
           "sport": "football",
           "date": "2026-10-30",
           "result": "ok",
-          "fixtures": 201
+          "fixtures": 202
         }
       ]
     },
@@ -111,12 +113,13 @@
     "upcoming": 50,
     "fixtures": 62,
     "verdicts": {
-      "CONFLICT": 4,
       "UNVERIFIED": 20,
-      "VERIFIED": 38
+      "CONFLICT": 4,
+      "PARTIAL_AUTHORITY": 1,
+      "VERIFIED": 37
     },
-    "verified": 38,
-    "partial_authority": 0,
+    "verified": 37,
+    "partial_authority": 1,
     "unverified": 20,
     "conflict": 4,
     "matched_by_authority": {
@@ -131,11 +134,12 @@
     },
     "matched_by_two_independent_authorities": 20,
     "authority_agreements": 17,
-    "authority_disagreements": 3,
-    "card_status_conflicts": 0,
+    "authority_disagreements": 2,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "authorities disagree": 3,
-      "kickoff": 3
+      "kickoff": 3,
+      "card says LIVE, authority says UPCOMING": 1,
+      "authorities disagree": 2
     },
     "identity_near_misses": 13,
     "independent_authority_count_distribution": {
@@ -147,8 +151,10 @@
       "livescore": [
         "12|Int.",
         "133|Stumps - day 2",
-        "2|3'",
-        "2|4'"
+        "220|Drinks",
+        "2|23'",
+        "2|24'",
+        "2|37'"
       ],
       "espn-header": []
     }
@@ -261,95 +267,6 @@
   ],
   "fixtures": [
     {
-      "fixture_id": "provider:adelaide-united-vs-lion-city-sailors|afc champions league two 2026 27|2026-10-29",
-      "card_id": "adelaide-united-vs-lion-city-sailors",
-      "name": "Adelaide United vs Lion City Sailors",
-      "competition": "AFC Champions League Two 2026-27",
-      "kickoff": "2026-10-29T07:45:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
-      "provider_identity": "",
-      "source_ids": [
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401912777",
-          "upstream_family": "ESPN",
-          "name": "Adelaide United FC vs Lion City Sailors FC",
-          "home": "Adelaide United FC",
-          "away": "Lion City Sailors FC",
-          "home_team_id": "5321",
-          "away_team_id": "8040",
-          "competition": "AFC Champions League Two",
-          "competition_id": "2466",
-          "kickoff": "2026-10-29T07:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, October 29th at 3:45 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:2466~e:401912777~c:401912777"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1873899",
-          "upstream_family": "LiveScore",
-          "name": "Adelaide United vs Lion City Sailors FC",
-          "home": "Adelaide United",
-          "away": "Lion City Sailors FC",
-          "home_team_id": "410",
-          "away_team_id": "10583",
-          "competition": "AFC Champions League Two: Group F",
-          "competition_id": "690",
-          "kickoff": "2026-10-29T07:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "Group Stage Group F",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:bangladesh-vs-west-indies|icc world test championship|2026-10-29",
       "card_id": "bangladesh-vs-west-indies",
       "name": "Bangladesh Vs West Indies",
@@ -444,7 +361,7 @@
       "card_id": "cricket-wbbl-2026-stars-vs-hurricanes-2nd-match",
       "name": "Cricket WBBL 2026 Stars vs Hurricanes 2nd Match",
       "competition": "",
-      "kickoff": "2026-10-29T10:04:08+00:00",
+      "kickoff": "2026-10-29T10:24:05+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -545,9 +462,9 @@
           "competition_id": "26208",
           "kickoff": "2026-10-29T08:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Drinks",
+          "status_code": "220",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "Match 6",
           "format": "ODI",
@@ -562,10 +479,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+        "card says LIVE, authority says UPCOMING"
       ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -669,7 +586,7 @@
       "competition": "ICC CWC League 2 UAE, 2026",
       "kickoff": "2026-10-29T05:30:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
@@ -700,9 +617,9 @@
           "competition_id": "16821",
           "kickoff": "2026-10-29T05:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Drinks",
+          "status_code": "220",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "Match 141",
           "format": "ODI",
@@ -716,9 +633,9 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -734,12 +651,16 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "PrimeVideo",
+        "SM-Aggregate",
+        "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 3,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -998,6 +919,95 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:adelaide-united-vs-lion-city-sailors|afc champions league two 2026 27|2026-10-29",
+      "card_id": "adelaide-united-vs-lion-city-sailors",
+      "name": "Adelaide United vs Lion City Sailors",
+      "competition": "AFC Champions League Two 2026-27",
+      "kickoff": "2026-10-29T07:45:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/dartv-ajaz/Fancode-Live-API/refs/heads/main/live_matches.json",
+      "provider_identity": "",
+      "source_ids": [
+        "dartv-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401912777",
+          "upstream_family": "ESPN",
+          "name": "Adelaide United FC vs Lion City Sailors FC",
+          "home": "Adelaide United FC",
+          "away": "Lion City Sailors FC",
+          "home_team_id": "5321",
+          "away_team_id": "8040",
+          "competition": "AFC Champions League Two",
+          "competition_id": "2466",
+          "kickoff": "2026-10-29T07:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "19'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "19'",
+          "espn_status_description": "First Half",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2466~e:401912777~c:401912777"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1873899",
+          "upstream_family": "LiveScore",
+          "name": "Adelaide United vs Lion City Sailors FC",
+          "home": "Adelaide United",
+          "away": "Lion City Sailors FC",
+          "home_team_id": "410",
+          "away_team_id": "10583",
+          "competition": "AFC Champions League Two: Group F",
+          "competition_id": "690",
+          "kickoff": "2026-10-29T07:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
+          "sport": "football",
+          "round": "Group Stage Group F",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -1602,9 +1612,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1683,9 +1693,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1755,9 +1765,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1887,9 +1897,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2354,9 +2364,9 @@
         "sm-sports-data",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2434,9 +2444,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2680,9 +2690,9 @@
         "sm-sports-data",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2993,9 +3003,9 @@
         "sm-sports-data",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3074,9 +3084,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3155,9 +3165,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3217,8 +3227,8 @@
       "name": "Karnali Yaks vs Biratnagar Kings",
       "competition": "Nepal Premier League Season 3, 2026",
       "kickoff": "2026-10-29T11:15:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -3226,9 +3236,9 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3749,9 +3759,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3894,9 +3904,9 @@
       "source_ids": [
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3936,9 +3946,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4008,9 +4018,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4176,9 +4186,9 @@
         "sm-sports-data",
         "sm-fancode",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "sportlive-fancode-backup"
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4424,7 +4434,7 @@
       "card_id": "2nd-match-melbourne-stars-women-vs-hobart-hurricanes-women",
       "name": "2nd Match Melbourne Stars Women vs Hobart Hurricanes Women",
       "competition": "Womens Big Bash League 2026",
-      "kickoff": "2026-10-29T10:04:08+00:00",
+      "kickoff": "2026-10-29T10:24:05+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "",
       "card_status_normalized": "LIVE",
@@ -4455,7 +4465,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "21284",
           "kickoff": "2026-10-29T08:10:00+00:00",
-          "kickoff_delta_minutes": -114.1,
+          "kickoff_delta_minutes": -134.1,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -4485,7 +4495,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "25707",
           "kickoff": "2026-10-29T08:10:00+00:00",
-          "kickoff_delta_minutes": -114.1,
+          "kickoff_delta_minutes": -134.1,
           "status_raw": "Play in progress",
           "status_code": "33",
           "status": "LIVE",
@@ -4503,8 +4513,8 @@
       ],
       "near_miss_count": 2,
       "conflict_reasons": [
-        "kickoff: ours 2026-10-29T10:04, espn-header 2026-10-29T08:10 (-114.1 min)",
-        "kickoff: ours 2026-10-29T10:04, livescore 2026-10-29T08:10 (-114.1 min)"
+        "kickoff: ours 2026-10-29T10:24, espn-header 2026-10-29T08:10 (-134.1 min)",
+        "kickoff: ours 2026-10-29T10:24, livescore 2026-10-29T08:10 (-134.1 min)"
       ],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
@@ -4515,7 +4525,7 @@
       "card_id": "sri-lanka-vs-england",
       "name": "Sri Lanka vs England",
       "competition": "Pakistan ODI Tri-Series 2026 - 6th Match",
-      "kickoff": "2026-10-29T10:04:08+00:00",
+      "kickoff": "2026-10-29T10:24:05+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "",
       "card_status_normalized": "LIVE",
@@ -4546,7 +4556,7 @@
           "competition": "Pakistan ODI Tri-Series",
           "competition_id": "1550706",
           "kickoff": "2026-10-29T08:00:00+00:00",
-          "kickoff_delta_minutes": -124.1,
+          "kickoff_delta_minutes": -144.1,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -4576,10 +4586,10 @@
           "competition": "Tri-Series in Pakistan",
           "competition_id": "26208",
           "kickoff": "2026-10-29T08:00:00+00:00",
-          "kickoff_delta_minutes": -124.1,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "kickoff_delta_minutes": -144.1,
+          "status_raw": "Drinks",
+          "status_code": "220",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "Match 6",
           "format": "ODI",
@@ -4594,119 +4604,9 @@
       ],
       "near_miss_count": 2,
       "conflict_reasons": [
-        "kickoff: ours 2026-10-29T10:04, espn-header 2026-10-29T08:00 (-124.1 min)",
-        "kickoff: ours 2026-10-29T10:04, livescore 2026-10-29T08:00 (-124.1 min)"
+        "kickoff: ours 2026-10-29T10:24, espn-header 2026-10-29T08:00 (-144.1 min)",
+        "kickoff: ours 2026-10-29T10:24, livescore 2026-10-29T08:00 (-144.1 min)"
       ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:himachal-highlenders-vs-rajasthan-royalsmen|northern artist champions league 2026|2026-10-29",
-      "card_id": "himachal-highlenders-vs-rajasthan-royalsmen",
-      "name": "Himachal Highlenders vs Rajasthan Royalsmen",
-      "competition": "Northern Artist Champions League 2026",
-      "kickoff": "2026-10-29T03:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror",
-        "dartv-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:mls-el-resumen|2026-10-29",
-      "card_id": "mls-el-resumen",
-      "name": "MLS El Resumen⁩",
-      "competition": "",
-      "kickoff": "2026-10-29T05:44:05+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:mls-wrap-up|2026-10-29",
-      "card_id": "mls-wrap-up",
-      "name": "MLS Wrap Up⁩",
-      "competition": "",
-      "kickoff": "2026-10-29T05:44:05+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
