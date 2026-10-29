@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-29T16:04:05.875957+00:00",
+  "generated_at": "2026-10-29T16:24:06.323222+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,13 +12,15 @@
       "requests_ok": 6,
       "fixtures": 658,
       "unknown_statuses": [
-        "10|HT",
         "133|Stumps - day 2",
-        "2|1'",
-        "2|27'",
-        "2|3'",
-        "2|5'",
-        "3|64'"
+        "134|Stumps - day 3",
+        "2|21'",
+        "2|23'",
+        "2|25'",
+        "2|45+2'",
+        "3|61'",
+        "3|63'",
+        "3|84'"
       ],
       "attempts": [
         {
@@ -114,31 +116,32 @@
     "upcoming": 41,
     "fixtures": 51,
     "verdicts": {
+      "PARTIAL_AUTHORITY": 1,
       "CONFLICT": 3,
-      "VERIFIED": 30,
-      "UNVERIFIED": 18
+      "UNVERIFIED": 18,
+      "VERIFIED": 29
     },
-    "verified": 30,
-    "partial_authority": 0,
+    "verified": 29,
+    "partial_authority": 1,
     "unverified": 18,
     "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 30,
-        "unmatched": 21
+        "matched": 29,
+        "unmatched": 22
       },
       "livescore": {
-        "matched": 21,
-        "unmatched": 30
+        "matched": 20,
+        "unmatched": 31
       }
     },
     "matched_by_two_independent_authorities": 16,
-    "authority_agreements": 15,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 2,
+    "authority_agreements": 14,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1,
-      "kickoff": 3,
+      "authorities disagree": 1,
+      "kickoff": 1,
       "card says UPCOMING, authority says POSTPONED": 1
     },
     "identity_near_misses": 10,
@@ -149,13 +152,15 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "133|Stumps - day 2",
-        "2|1'",
-        "2|27'",
-        "2|3'",
-        "2|5'",
-        "3|64'"
+        "134|Stumps - day 3",
+        "2|21'",
+        "2|23'",
+        "2|25'",
+        "2|45+2'",
+        "3|61'",
+        "3|63'",
+        "3|84'"
       ],
       "espn-header": []
     }
@@ -278,17 +283,17 @@
           "competition_id": "21231",
           "kickoff": "2026-10-29T14:35:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "45'+2'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, October 29th at 10:35 AM EDT",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "45'+2'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:21231~e:401900882~c:401900882"
@@ -308,7 +313,7 @@
           "competition_id": "403",
           "kickoff": "2026-10-29T14:35:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "64'",
+          "status_raw": "84'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -324,12 +329,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -371,8 +374,8 @@
           "competition_id": "1550706",
           "kickoff": "2026-10-29T08:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Innings break",
-          "status_code": "Innings break",
+          "status_raw": "Live",
+          "status_code": "Live",
           "status": "LIVE",
           "sport": "cricket",
           "round": "6th Match (D/N)",
@@ -381,7 +384,7 @@
           "espn_state": "in",
           "espn_status": "in",
           "espn_status_detail": "Live",
-          "espn_status_description": "Innings break",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-10-30T23:59:00Z",
           "authority_uid": "s:200~e:1550718~c:1550718"
@@ -401,9 +404,9 @@
           "competition_id": "26208",
           "kickoff": "2026-10-29T08:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "cricket",
           "round": "Match 6",
           "format": "ODI",
@@ -417,10 +420,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -507,6 +512,47 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:dubai-vs-emirates-red|emirates d20 2026|2026-10-29",
+      "card_id": "dubai-vs-emirates-red",
+      "name": "Dubai vs Emirates Red",
+      "competition": "Emirates D20, 2026",
+      "kickoff": "2026-10-29T16:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:krylya-sovetov-samara-vs-dinamo-makhachkala|russian cup|2026-10-29",
       "card_id": "krylya-sovetov-samara-vs-dinamo-makhachkala",
       "name": "Krylya Sovetov Samara Vs Dinamo Makhachkala",
@@ -544,13 +590,91 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-29",
+      "card_id": "south-africa-vs-australia",
+      "name": "South Africa Vs Australia",
+      "competition": "TEST International",
+      "kickoff": "2026-10-29T08:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data",
+        "srhady-willow-event",
+        "srhady-primevideo-sports"
+      ],
+      "upstream_families": [
+        "PrimeVideo",
+        "SM-Aggregate",
+        "Willow"
+      ],
+      "independent_witness_count": 3,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:stars-vs-hurricanes-2-match|2026-10-29",
+      "card_id": "cricket-wbbl-2026-stars-vs-hurricanes-2nd-match",
+      "name": "Cricket WBBL 2026 Stars vs Hurricanes 2nd Match",
+      "competition": "",
+      "kickoff": "2026-10-29T11:43:59+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "upstream_families": [
+        "PrimeVideo"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:sharjah-vs-ajman|emirates d20 2026|2026-10-29",
       "card_id": "sharjah-vs-ajman",
       "name": "Sharjah vs Ajman",
       "competition": "Emirates D20, 2026",
       "kickoff": "2026-10-29T12:30:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -581,54 +705,13 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:south-africa-vs-australia|test international|2026-10-29",
-      "card_id": "south-africa-vs-australia",
-      "name": "South Africa Vs Australia",
-      "competition": "TEST International",
-      "kickoff": "2026-10-29T08:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
-      ],
-      "upstream_families": [
-        "PrimeVideo",
-        "SM-Aggregate",
-        "Willow"
-      ],
-      "independent_witness_count": 3,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:karnali-yaks-vs-biratnagar-kings|nepal premier league season 3 2026|2026-10-29",
       "card_id": "karnali-yaks-vs-biratnagar-kings",
       "name": "Karnali Yaks vs Biratnagar Kings",
       "competition": "Nepal Premier League Season 3, 2026",
       "kickoff": "2026-10-29T11:15:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -687,133 +770,6 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "CONFLICT",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:stars-vs-hurricanes-2-match|2026-10-29",
-      "card_id": "cricket-wbbl-2026-stars-vs-hurricanes-2nd-match",
-      "name": "Cricket WBBL 2026 Stars vs Hurricanes 2nd Match",
-      "competition": "",
-      "kickoff": "2026-10-29T11:43:59+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:bangladesh-vs-west-indies|icc world test championship|2026-10-29",
-      "card_id": "bangladesh-vs-west-indies",
-      "name": "Bangladesh Vs West Indies",
-      "competition": "ICC World Test Championship",
-      "kickoff": "2026-10-29T03:16:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "ambiguous_kickoff_lifted",
-          "verified": false,
-          "event_id": "1553295",
-          "upstream_family": "ESPN",
-          "name": "Bangladesh vs West Indies",
-          "home": "Bangladesh",
-          "away": "West Indies",
-          "home_team_id": "25",
-          "away_team_id": "4",
-          "competition": "West Indies tour of Bangladesh 2026/27",
-          "competition_id": "24756",
-          "kickoff": "2026-10-28T03:30:00+00:00",
-          "kickoff_delta_minutes": -1426.0,
-          "status_raw": "Stumps",
-          "status_code": "Stumps",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "1st Test",
-          "format": "Test",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Stumps",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-02T23:59:00Z",
-          "authority_uid": "s:200~e:1553295~c:1553295"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "ambiguous_kickoff_lifted",
-          "verified": false,
-          "event_id": "1890505",
-          "upstream_family": "LiveScore",
-          "name": "Bangladesh vs West Indies",
-          "home": "Bangladesh",
-          "away": "West Indies",
-          "home_team_id": "86123",
-          "away_team_id": "86109",
-          "competition": "Bangladesh v West Indies",
-          "competition_id": "26363",
-          "kickoff": "2026-10-28T03:30:00+00:00",
-          "kickoff_delta_minutes": -1426.0,
-          "status_raw": "Stumps - day 2",
-          "status_code": "133",
-          "status": "UNKNOWN",
-          "sport": "cricket",
-          "round": "1st Test",
-          "format": "Test",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "near_miss_count": 2,
-      "conflict_reasons": [
-        "kickoff: ours 2026-10-29T03:16, espn-header 2026-10-28T03:30 (-1426.0 min)",
-        "kickoff: ours 2026-10-29T03:16, livescore 2026-10-28T03:30 (-1426.0 min)"
-      ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -1037,12 +993,13 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1275,8 +1232,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1356,8 +1313,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1428,8 +1385,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -1482,6 +1439,43 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:bangladesh-vs-west-indies|icc world test championship|2026-10-30",
+      "card_id": "bangladesh-vs-west-indies",
+      "name": "Bangladesh Vs West Indies",
+      "competition": "ICC World Test Championship",
+      "kickoff": "2026-10-30T03:15:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1560,8 +1554,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2012,53 +2006,13 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "upcoming"
-    },
-    {
-      "fixture_id": "provider:dubai-vs-emirates-red|emirates d20 2026|2026-10-29",
-      "card_id": "dubai-vs-emirates-red",
-      "name": "Dubai vs Emirates Red",
-      "competition": "Emirates D20, 2026",
-      "kickoff": "2026-10-29T16:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2099,8 +2053,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2345,8 +2299,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2658,8 +2612,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2739,8 +2693,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -2820,8 +2774,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3159,8 +3113,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3305,8 +3259,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3377,8 +3331,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror"
       ],
       "upstream_families": [
@@ -3639,11 +3593,50 @@
   ],
   "retired_or_unpublished": [
     {
+      "fixture_id": "provider:emirates-red-vs-dubai|emirates d20 2026|2026-10-29",
+      "card_id": "emirates-red-vs-dubai",
+      "name": "Emirates Red vs Dubai",
+      "competition": "Emirates D20, 2026",
+      "kickoff": "2026-10-29T16:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED"
+    },
+    {
       "fixture_id": "provider:sri-lanka-vs-england|pakistan odi tri series 2026 6th|2026-10-29",
       "card_id": "sri-lanka-vs-england",
       "name": "Sri Lanka vs England",
       "competition": "Pakistan ODI Tri-Series 2026 - 6th Match",
-      "kickoff": "2026-10-29T16:04:05+00:00",
+      "kickoff": "2026-10-29T16:24:06+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "",
       "card_status_normalized": "LIVE",
@@ -3674,9 +3667,9 @@
           "competition": "Pakistan ODI Tri-Series",
           "competition_id": "1550706",
           "kickoff": "2026-10-29T08:00:00+00:00",
-          "kickoff_delta_minutes": -484.1,
-          "status_raw": "Innings break",
-          "status_code": "Innings break",
+          "kickoff_delta_minutes": -504.1,
+          "status_raw": "Live",
+          "status_code": "Live",
           "status": "LIVE",
           "sport": "cricket",
           "round": "6th Match (D/N)",
@@ -3685,7 +3678,7 @@
           "espn_state": "in",
           "espn_status": "in",
           "espn_status_detail": "Live",
-          "espn_status_description": "Innings break",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-10-30T23:59:00Z",
           "authority_uid": "s:200~e:1550718~c:1550718"
@@ -3704,10 +3697,10 @@
           "competition": "Tri-Series in Pakistan",
           "competition_id": "26208",
           "kickoff": "2026-10-29T08:00:00+00:00",
-          "kickoff_delta_minutes": -484.1,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "kickoff_delta_minutes": -504.1,
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "cricket",
           "round": "Match 6",
           "format": "ODI",
@@ -3722,45 +3715,9 @@
       ],
       "near_miss_count": 2,
       "conflict_reasons": [
-        "kickoff: ours 2026-10-29T16:04, espn-header 2026-10-29T08:00 (-484.1 min)",
-        "kickoff: ours 2026-10-29T16:04, livescore 2026-10-29T08:00 (-484.1 min)"
+        "kickoff: ours 2026-10-29T16:24, espn-header 2026-10-29T08:00 (-504.1 min)",
+        "kickoff: ours 2026-10-29T16:24, livescore 2026-10-29T08:00 (-504.1 min)"
       ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:bangladesh-vs-west-indies|icc world test championship|2026-10-30",
-      "card_id": "bangladesh-vs-west-indies",
-      "name": "Bangladesh Vs West Indies",
-      "competition": "ICC World Test Championship",
-      "kickoff": "2026-10-30T03:15:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
