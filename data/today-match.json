@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-29T21:04:50.771492+00:00",
-  "count": 20,
+  "updated_at": "2026-10-29T21:24:17.742550+00:00",
+  "count": 21,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -69,7 +69,13 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-10-29T21:24:12.899024+00:00"
     },
     {
       "id": "south-africa-vs-australia",
@@ -427,14 +433,13 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
       "lifecycle_protections": [
-        "authority_live",
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 11,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_misses": 12,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-29T17:44:31.235238+00:00"
     },
     {
@@ -538,13 +543,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=61' (STATUS_SECOND_HALF, event 401842861)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401842861)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -558,11 +563,12 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-29T19:44:55.637522+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 5
+      "end_pending_confirmations": 6,
+      "authority_finished_confirmations": 1
     },
     {
       "id": "paris-fc-vs-bk-häcken-ff",
@@ -672,13 +678,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=60' (STATUS_SECOND_HALF, event 401916994)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401916994)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -700,9 +706,10 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-29T20:44:21.323033+00:00"
+      "carried_forward_first_missed_at": "2026-10-29T20:44:21.323033+00:00",
+      "authority_finished_confirmations": 1
     },
     {
       "id": "örgryte-is-vs-mjällby-aif",
@@ -805,13 +812,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401842865)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401842865)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -825,11 +832,12 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-29T20:04:26.815857+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 4
+      "end_pending_confirmations": 5,
+      "authority_finished_confirmations": 1
     },
     {
       "id": "atlético-calatayud-vs-osasuna",
@@ -939,14 +947,14 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=47' (STATUS_SECOND_HALF, event 401928496)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401928496)",
         "LiveScore livescore=FT (6, event 1903128)"
       ],
       "event_type": "today_match",
@@ -966,13 +974,22 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-29T20:44:21.323033+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=47' (STATUS_SECOND_HALF, event 401928496); LiveScore livescore=FT (6, event 1903128)",
       "end_pending": true,
       "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-10-29T21:04:38.309550+00:00"
+      "ended_seen_at": "2026-10-29T21:04:38.309550+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401928496",
+        "livescore": "1903128"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-29T21:24:03.977413+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-29T21:44:03.977413+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route"
     },
     {
       "id": "ub-lebrijana-vs-getafe",
@@ -1082,18 +1099,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401928526)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401928526)",
         "LiveScore livescore=FT (6, event 1903165)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_6d7c5e8c065138760bf65ca66ec6f4cc",
       "protected_source": true,
       "requires_credentials": true,
@@ -1102,15 +1119,27 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-29T20:44:21.323033+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401928526); LiveScore livescore=FT (6, event 1903165)"
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401928526",
+        "livescore": "1903165"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-29T21:24:03.977413+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-29T21:44:03.977413+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-29T21:24:12.899024+00:00"
     },
     {
       "id": "al-nassr-vs-al-kholood",
@@ -1286,18 +1315,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401900881)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401900881)",
         "LiveScore livescore=FT (6, event 1845690)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_a728d53c7382c88791a799075ed845f0",
       "protected_source": true,
       "requires_credentials": true,
@@ -1306,15 +1335,27 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-29T20:44:21.323033+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401900881); LiveScore livescore=FT (6, event 1845690)"
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401900881",
+        "livescore": "1845690"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-29T21:24:03.977413+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-29T21:44:03.977413+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-29T21:24:12.899024+00:00"
     },
     {
       "id": "al-riyadh-vs-al-qadsiah",
@@ -1421,28 +1462,40 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401900880)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401900880)",
         "LiveScore livescore=FT (6, event 1845689)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_53d415d8ff7b5d46ee34a011287dcdd2",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-29T20:44:21.323033+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401900880); LiveScore livescore=FT (6, event 1845689)"
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401900880",
+        "livescore": "1845689"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-10-29T21:24:03.977413+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-10-29T21:44:03.977413+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-10-29T21:24:12.899024+00:00"
     },
     {
       "id": "japan-u17-vs-kenya-u17",
@@ -1552,13 +1605,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401916252)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401916252)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1580,9 +1633,10 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-29T21:04:38.309550+00:00"
+      "carried_forward_first_missed_at": "2026-10-29T21:04:38.309550+00:00",
+      "authority_finished_confirmations": 1
     },
     {
       "id": "sporting-braga-vs-famalicão",
@@ -1743,7 +1797,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-29T18:45:00+00:00",
       "start_at": "2026-10-29T18:45:00+00:00",
-      "end_time": "2026-10-29T22:04:15+00:00",
+      "end_time": "2026-10-29T22:24:03+00:00",
       "end_time_source": "assumed",
       "competition": "Taça da Liga",
       "fixture_id": "provider:sporting-braga-vs-famalicão|ta a da liga|2026-10-29",
@@ -1758,6 +1812,7 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_finished_confirmations": 2,
       "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
@@ -1770,7 +1825,6 @@
       "authority_event_ids": {
         "livescore": "1851571"
       },
-      "authority_finished_confirmations": 1,
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_60bc86ef904bebd0772303ff8e2e2112",
@@ -1850,35 +1904,6 @@
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_0fba7d9bedcea5c14f09fb138d7c1735",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-4",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
           "requires_headers": true,
           "inherit_manifest_query": false,
           "verification_mode": "global",
@@ -1895,6 +1920,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_f8de50dc4103eb7921e2847a8f35906f",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_0fba7d9bedcea5c14f09fb138d7c1735",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2086,8 +2140,8 @@
       "resolution_height": 720,
       "start_time": "2026-10-29T19:45:00+00:00",
       "start_at": "2026-10-29T19:45:00+00:00",
-      "end_time": "2026-10-29T22:15:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-10-29T22:24:03+00:00",
+      "end_time_source": "assumed",
       "competition": "EFL Cup",
       "fixture_id": "provider:everton-vs-newcastle-united|efl cup|2026-10-29",
       "status": "LIVE_NOW",
@@ -2101,18 +2155,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401921844)"
+        "ESPN espn-header=19' (STATUS_FIRST_HALF, event 401921844)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401921844"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/eqayrf1523184794.png",
@@ -2362,8 +2417,8 @@
       "resolution_height": 720,
       "start_time": "2026-10-29T19:45:00+00:00",
       "start_at": "2026-10-29T19:45:00+00:00",
-      "end_time": "2026-10-29T22:15:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-10-29T22:24:03+00:00",
+      "end_time_source": "assumed",
       "competition": "Italian Serie A",
       "fixture_id": "provider:fiorentina-vs-atalanta|serie a|2026-10-29",
       "status": "LIVE_NOW",
@@ -2377,18 +2432,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401874969)"
+        "ESPN espn-header=16' (STATUS_FIRST_HALF, event 401874969)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401874969"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hc8nhu1656098030.png",
@@ -2567,18 +2623,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401928513)"
+        "ESPN espn-header=2' (STATUS_FIRST_HALF, event 401928513)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401928513"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_186a6179b2b2ccda1c32bb5f9ad1207d"
@@ -2754,18 +2811,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401928507)"
+        "ESPN espn-header=1' (STATUS_FIRST_HALF, event 401928507)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401928507"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_40d461c9372e8f6c6473e9fbcbbbe525"
@@ -2878,18 +2936,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401928489)"
+        "ESPN espn-header=2' (STATUS_FIRST_HALF, event 401928489)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401928489"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_15b4022ad201ebbf155851439d321b5e",
@@ -3072,18 +3131,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401928552)"
+        "ESPN espn-header=1' (STATUS_FIRST_HALF, event 401928552)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401928552"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_6d2009be22d5ec4386e4e2c69684bd66"
@@ -3172,8 +3232,7 @@
         }
       ],
       "source_ids": [
-        "sm-sports-data",
-        "sm-fancode"
+        "sm-sports-data"
       ],
       "resolution": "SD",
       "resolution_height": 480,
@@ -3194,18 +3253,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401916993)"
+        "ESPN espn-header=2' (STATUS_FIRST_HALF, event 401916993)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401916993"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_1e5138dbda89e655d001a3d06315beae"
@@ -3315,18 +3375,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401916992)"
+        "ESPN espn-header=4' (STATUS_FIRST_HALF, event 401916992)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401916992"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_a8edca2fac497b5107c36a4bd2fb43ae"
@@ -3444,6 +3505,249 @@
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hj4kyc1781152436.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/88bsg41626201503.png",
       "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "cal-state-la-vs-cal-state-dominguez-hills-mens-soccer",
+      "name": "Cal State LA vs Cal State Dominguez Hills Men's Soccer",
+      "primary_stream_key": "78923aa8ed84f70892cd6149da3402388f0c6d050fe3fbfd84faa1f983c981f3",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.aefbfd95-d39c-4092-b3e6-696091f598b7/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 4,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "cal-state-la-vs-cal-state-dominguez-hills-mens-soccer--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.aefbfd95-d39c-4092-b3e6-696091f598b7/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "cal-state-la-vs-cal-state-dominguez-hills-mens-soccer--prime-video--1",
+          "stream_count": 4,
+          "backup_count": 3,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "cal-state-la-vs-cal-state-dominguez-hills-mens-soccer--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_8db6155c66a901f36b688c53",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_790011f782de0b35adc32993ce02bb83",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "cal-state-la-vs-cal-state-dominguez-hills-mens-soccer--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_c1e02be4d063e0566b724069",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "cal-state-la-vs-cal-state-dominguez-hills-mens-soccer--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b7f37c054f02157af5afadd6",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "cal-state-la-vs-cal-state-dominguez-hills-mens-soccer--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_01b11c32d050778527634c31",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "cal-state-la-vs-cal-state-dominguez-hills-mens-soccer--prime-video",
+      "channel_stats": {
+        "streams_in": 4,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 4,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-29T21:24:03+00:00",
+      "start_at": "2026-10-29T21:24:03+00:00",
+      "end_time": "2026-10-29T23:54:03+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:cal-state-la-vs-cal-state-dominguez-hills-men-s-soccer|2026-10-29",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_790011f782de0b35adc32993ce02bb83",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
