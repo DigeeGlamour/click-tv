@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T07:24:20.585724+00:00",
+  "generated_at": "2026-10-30T07:44:18.744525+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,10 +10,11 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 1398,
+      "fixtures": 1399,
       "unknown_statuses": [
         "132|Stumps - day 1",
-        "134|Stumps - day 3"
+        "134|Stumps - day 3",
+        "220|Drinks"
       ],
       "attempts": [
         {
@@ -50,7 +51,7 @@
           "sport": "football",
           "date": "2026-10-31",
           "result": "ok",
-          "fixtures": 975
+          "fixtures": 976
         }
       ]
     },
@@ -105,50 +106,68 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 15,
+    "today_match": 14,
     "upcoming": 80,
-    "fixtures": 95,
+    "fixtures": 94,
     "verdicts": {
-      "UNVERIFIED": 29,
-      "VERIFIED": 65,
-      "CONFLICT": 1
+      "UNVERIFIED": 31,
+      "CONFLICT": 2,
+      "VERIFIED": 61
     },
-    "verified": 65,
+    "verified": 61,
     "partial_authority": 0,
-    "unverified": 29,
-    "conflict": 1,
+    "unverified": 31,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 30,
-        "matched": 65
+        "unmatched": 32,
+        "matched": 62
       },
       "livescore": {
-        "unmatched": 48,
+        "unmatched": 47,
         "matched": 47
       }
     },
     "matched_by_two_independent_authorities": 44,
-    "authority_agreements": 44,
-    "authority_disagreements": 0,
+    "authority_agreements": 43,
+    "authority_disagreements": 1,
     "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "authorities disagree": 1,
       "card says UPCOMING, authority says POSTPONED": 1
     },
-    "identity_near_misses": 11,
+    "identity_near_misses": 13,
     "independent_authority_count_distribution": {
-      "0": 29,
-      "1": 22,
+      "0": 31,
+      "1": 19,
       "2": 44
     },
     "unknown_authority_statuses": {
       "livescore": [
         "132|Stumps - day 1",
-        "134|Stumps - day 3"
+        "134|Stumps - day 3",
+        "220|Drinks"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "South Africa vs Australia",
+      "authority": "livescore",
+      "authority_name": "South Africa 6s vs Afghanistan 6s",
+      "agreed_side": "south africa",
+      "ours": "australia",
+      "theirs": "afghanistan 6s"
+    },
+    {
+      "fixture": "South Africa vs Australia",
+      "authority": "livescore",
+      "authority_name": "England 6s vs Australia 6s",
+      "agreed_side": "australia",
+      "ours": "south africa",
+      "theirs": "england 6s"
+    },
     {
       "fixture": "Hong Kong, China vs England",
       "authority": "livescore",
@@ -314,72 +333,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:bangladesh-vs-sri-lanka|hong kong sixes 2026|2026-10-30",
-      "card_id": "bangladesh-vs-sri-lanka",
-      "name": "Bangladesh vs Sri Lanka",
-      "competition": "Hong Kong Sixes, 2026",
-      "kickoff": "2026-10-30T05:20:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1559198",
-          "upstream_family": "ESPN",
-          "name": "Bangladesh vs Sri Lanka",
-          "home": "Bangladesh",
-          "away": "Sri Lanka",
-          "home_team_id": "25",
-          "away_team_id": "8",
-          "competition": "Hong Kong International Cricket Sixes",
-          "competition_id": "8768",
-          "kickoff": "2026-10-30T05:20:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "Group B",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-31T23:59:00Z",
-          "authority_uid": "s:200~e:1559198~c:1559198"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:bangladesh-vs-west-indies|icc world test championship|2026-10-30",
       "card_id": "bangladesh-vs-west-indies",
       "name": "Bangladesh Vs West Indies",
@@ -426,10 +379,9 @@
       "lifecycle_state": "STARTING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -482,9 +434,9 @@
           "competition_id": "26652",
           "kickoff": "2026-10-30T07:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "4th ODI",
           "format": "ODI",
@@ -498,10 +450,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -514,10 +468,9 @@
       "lifecycle_state": "STARTING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -572,171 +525,48 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:hong-kong-china-vs-england|hong kong sixes 2026|2026-10-30",
-      "card_id": "hong-kong-china-vs-england",
-      "name": "Hong Kong, China vs England",
-      "competition": "Hong Kong Sixes, 2026",
-      "kickoff": "2026-10-30T04:25:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
+      "fixture_id": "provider:south-africa-vs-australia|australia tour of south africa 2026 3rd test|2026-10-30",
+      "card_id": "south-africa-vs-australia",
+      "name": "South Africa vs Australia",
+      "competition": "Australia tour of South Africa 2026 - 3rd Test",
+      "kickoff": "2026-10-30T07:44:18+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode"
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
       "upstream_families": [
-        "FanCode"
+        "PrimeVideo",
+        "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1559197",
-          "upstream_family": "ESPN",
-          "name": "Hong Kong vs England",
-          "home": "Hong Kong",
-          "away": "England",
-          "home_team_id": "19",
-          "away_team_id": "1",
-          "competition": "Hong Kong International Cricket Sixes",
-          "competition_id": "8768",
-          "kickoff": "2026-10-30T04:25:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "Group A",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-31T23:59:00Z",
-          "authority_uid": "s:200~e:1559197~c:1559197"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "unmatched",
           "near_misses": [
             {
-              "authority_name": "Hong Kong 6s vs England 6s",
-              "event_id": "1903117",
-              "agreed_side": "england",
-              "ours": "hong kong china",
-              "theirs": "hong kong 6s"
+              "authority_name": "South Africa 6s vs Afghanistan 6s",
+              "event_id": "1903118",
+              "agreed_side": "south africa",
+              "ours": "australia",
+              "theirs": "afghanistan 6s"
+            },
+            {
+              "authority_name": "England 6s vs Australia 6s",
+              "event_id": "1903114",
+              "agreed_side": "australia",
+              "ours": "south africa",
+              "theirs": "england 6s"
             }
           ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:pakistan-vs-united-arab-emirates|hong kong sixes 2026|2026-10-30",
-      "card_id": "pakistan-vs-united-arab-emirates",
-      "name": "Pakistan vs United Arab Emirates",
-      "competition": "Hong Kong Sixes, 2026",
-      "kickoff": "2026-10-30T02:35:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1559195",
-          "upstream_family": "ESPN",
-          "name": "Pakistan vs United Arab Emirates",
-          "home": "Pakistan",
-          "away": "United Arab Emirates",
-          "home_team_id": "7",
-          "away_team_id": "27",
-          "competition": "Hong Kong International Cricket Sixes",
-          "competition_id": "8768",
-          "kickoff": "2026-10-30T02:35:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "Group C",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-31T23:59:00Z",
-          "authority_uid": "s:200~e:1559195~c:1559195"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:rajasthan-royalsmen-vs-uttrakhand-stars|northern artist champions league 2026|2026-10-30",
-      "card_id": "rajasthan-royalsmen-vs-uttrakhand-stars",
-      "name": "Rajasthan Royalsmen vs Uttrakhand Stars",
-      "competition": "Northern Artist Champions League 2026",
-      "kickoff": "2026-10-30T04:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
         }
       },
       "authority_upstreams": [],
@@ -750,19 +580,23 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:south-africa-vs-oman|hong kong sixes 2026|2026-10-30",
-      "card_id": "south-africa-vs-oman",
-      "name": "South Africa vs Oman",
+      "fixture_id": "provider:england-vs-australia|hong kong sixes 2026|2026-10-30",
+      "card_id": "england-vs-australia",
+      "name": "England vs Australia",
       "competition": "Hong Kong Sixes, 2026",
-      "kickoff": "2026-10-30T03:30:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
+      "kickoff": "2026-10-30T08:05:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode"
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -773,31 +607,31 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1559196",
+          "event_id": "1559201",
           "upstream_family": "ESPN",
-          "name": "Oman vs South Africa",
-          "home": "Oman",
-          "away": "South Africa",
-          "home_team_id": "37",
-          "away_team_id": "3",
+          "name": "Australia vs England",
+          "home": "Australia",
+          "away": "England",
+          "home_team_id": "2",
+          "away_team_id": "1",
           "competition": "Hong Kong International Cricket Sixes",
           "competition_id": "8768",
-          "kickoff": "2026-10-30T03:30:00+00:00",
+          "kickoff": "2026-10-30T08:05:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
           "sport": "cricket",
-          "round": "Group D",
+          "round": "Group A",
           "format": "ODI",
           "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
           "espn_completed": null,
           "espn_end_date_raw": "2026-10-31T23:59:00Z",
-          "authority_uid": "s:200~e:1559196~c:1559196"
+          "authority_uid": "s:200~e:1559201~c:1559201"
         },
         "livescore": {
           "result": "unmatched"
@@ -977,6 +811,72 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:bangladesh-vs-sri-lanka|hong kong sixes 2026|2026-10-30",
+      "card_id": "bangladesh-vs-sri-lanka",
+      "name": "Bangladesh vs Sri Lanka",
+      "competition": "Hong Kong Sixes, 2026",
+      "kickoff": "2026-10-30T05:20:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1559198",
+          "upstream_family": "ESPN",
+          "name": "Bangladesh vs Sri Lanka",
+          "home": "Bangladesh",
+          "away": "Sri Lanka",
+          "home_team_id": "25",
+          "away_team_id": "8",
+          "competition": "Hong Kong International Cricket Sixes",
+          "competition_id": "8768",
+          "kickoff": "2026-10-30T05:20:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Live",
+          "status_code": "Live",
+          "status": "LIVE",
+          "sport": "cricket",
+          "round": "Group B",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Live",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-31T23:59:00Z",
+          "authority_uid": "s:200~e:1559198~c:1559198"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:new-zealand-vs-india|t20 international|2026-10-30",
       "card_id": "new-zealand-vs-india",
       "name": "New Zealand Vs India",
@@ -1064,23 +964,19 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:south-africa-vs-afghanistan|hong kong sixes 2026|2026-10-30",
-      "card_id": "south-africa-vs-afghanistan",
-      "name": "South Africa vs Afghanistan",
+      "fixture_id": "provider:hong-kong-china-vs-england|hong kong sixes 2026|2026-10-30",
+      "card_id": "hong-kong-china-vs-england",
+      "name": "Hong Kong, China vs England",
       "competition": "Hong Kong Sixes, 2026",
-      "kickoff": "2026-10-30T07:10:00+00:00",
+      "kickoff": "2026-10-30T04:25:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode"
@@ -1091,34 +987,43 @@
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1559200",
+          "event_id": "1559197",
           "upstream_family": "ESPN",
-          "name": "Afghanistan vs South Africa",
-          "home": "Afghanistan",
-          "away": "South Africa",
-          "home_team_id": "40",
-          "away_team_id": "3",
+          "name": "Hong Kong vs England",
+          "home": "Hong Kong",
+          "away": "England",
+          "home_team_id": "19",
+          "away_team_id": "1",
           "competition": "Hong Kong International Cricket Sixes",
           "competition_id": "8768",
-          "kickoff": "2026-10-30T07:10:00+00:00",
+          "kickoff": "2026-10-30T04:25:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
+          "status_raw": "Result",
+          "status_code": "Result",
+          "status": "FINISHED",
           "sport": "cricket",
-          "round": "Group D",
+          "round": "Group A",
           "format": "ODI",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "Final",
+          "espn_status_description": "Result",
           "espn_completed": null,
           "espn_end_date_raw": "2026-10-31T23:59:00Z",
-          "authority_uid": "s:200~e:1559200~c:1559200"
+          "authority_uid": "s:200~e:1559197~c:1559197"
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Hong Kong 6s vs England 6s",
+              "event_id": "1903117",
+              "agreed_side": "england",
+              "ours": "hong kong china",
+              "theirs": "hong kong 6s"
+            }
+          ]
         }
       },
       "authority_upstreams": [
@@ -1132,6 +1037,130 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:rajasthan-royalsmen-vs-uttrakhand-stars|northern artist champions league 2026|2026-10-30",
+      "card_id": "rajasthan-royalsmen-vs-uttrakhand-stars",
+      "name": "Rajasthan Royalsmen vs Uttrakhand Stars",
+      "competition": "Northern Artist Champions League 2026",
+      "kickoff": "2026-10-30T04:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:brisbane-heat-vs-sydney-sixers-women|women big bash league|2026-10-30",
+      "card_id": "brisbane-heat-women-vs-sydney-sixers-women",
+      "name": "Brisbane Heat Women Vs Sydney Sixers Women",
+      "competition": "Women's Big Bash League",
+      "kickoff": "2026-10-30T08:10:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1543946",
+          "upstream_family": "ESPN",
+          "name": "Brisbane Heat Women vs Sydney Sixers Women",
+          "home": "Brisbane Heat Women",
+          "away": "Sydney Sixers Women",
+          "home_team_id": "896397",
+          "away_team_id": "896403",
+          "competition": "Women's Big Bash League",
+          "competition_id": "21284",
+          "kickoff": "2026-10-30T08:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "3rd Match (D/N)",
+          "format": "",
+          "gender": "women",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-30T23:59:00Z",
+          "authority_uid": "s:200~e:1543946~c:1543946"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1813031",
+          "upstream_family": "LiveScore",
+          "name": "Brisbane Heat W vs Sydney Sixers W",
+          "home": "Brisbane Heat W",
+          "away": "Sydney Sixers W",
+          "home_team_id": "86302",
+          "away_team_id": "86301",
+          "competition": "Women's Big Bash League",
+          "competition_id": "25707",
+          "kickoff": "2026-10-30T08:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Match 3",
+          "format": "Womens Domestic Twenty20",
+          "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
     },
     {
       "fixture_id": "provider:ac-milan-vs-inter|serie a|2026-10-31",
@@ -1779,99 +1808,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:brisbane-heat-vs-sydney-sixers-women|women big bash league|2026-10-30",
-      "card_id": "brisbane-heat-women-vs-sydney-sixers-women",
-      "name": "Brisbane Heat Women Vs Sydney Sixers Women",
-      "competition": "Women's Big Bash League",
-      "kickoff": "2026-10-30T08:10:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode",
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1543946",
-          "upstream_family": "ESPN",
-          "name": "Brisbane Heat Women vs Sydney Sixers Women",
-          "home": "Brisbane Heat Women",
-          "away": "Sydney Sixers Women",
-          "home_team_id": "896397",
-          "away_team_id": "896403",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-10-30T08:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "3rd Match (D/N)",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-30T23:59:00Z",
-          "authority_uid": "s:200~e:1543946~c:1543946"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1813031",
-          "upstream_family": "LiveScore",
-          "name": "Brisbane Heat W vs Sydney Sixers W",
-          "home": "Brisbane Heat W",
-          "away": "Sydney Sixers W",
-          "home_team_id": "86302",
-          "away_team_id": "86301",
-          "competition": "Women's Big Bash League",
-          "competition_id": "25707",
-          "kickoff": "2026-10-30T08:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "Match 3",
-          "format": "Womens Domestic Twenty20",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:brisbane-roar-vs-auckland-fc|a league men|2026-10-30",
       "card_id": "brisbane-roar-vs-auckland-fc",
       "name": "Brisbane Roar Vs Auckland FC",
@@ -2344,6 +2280,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
@@ -3246,76 +3183,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:england-vs-australia|hong kong sixes 2026|2026-10-30",
-      "card_id": "england-vs-australia",
-      "name": "England vs Australia",
-      "competition": "Hong Kong Sixes, 2026",
-      "kickoff": "2026-10-30T08:05:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1559201",
-          "upstream_family": "ESPN",
-          "name": "Australia vs England",
-          "home": "Australia",
-          "away": "England",
-          "home_team_id": "2",
-          "away_team_id": "1",
-          "competition": "Hong Kong International Cricket Sixes",
-          "competition_id": "8768",
-          "kickoff": "2026-10-30T08:05:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "Group A",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-31T23:59:00Z",
-          "authority_uid": "s:200~e:1559201~c:1559201"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:estudiantes-de-la-plata-vs-instituto-de-córdoba|liga profesional de f tbol|2026-11-01",
       "card_id": "estudiantes-de-la-plata-vs-instituto-de-córdoba",
       "name": "Estudiantes de La Plata Vs Instituto De Córdoba",
@@ -3707,6 +3574,47 @@
       "authority_agreement": "AGREE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:himachal-highlenders-vs-chandigarh-chargers|northern artist champions league 2026|2026-10-30",
+      "card_id": "himachal-highlenders-vs-chandigarh-chargers",
+      "name": "Himachal Highlenders vs Chandigarh Chargers",
+      "competition": "Northern Artist Champions League 2026",
+      "kickoff": "2026-10-30T08:30:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     },
     {
@@ -5244,6 +5152,7 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -6001,9 +5910,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
