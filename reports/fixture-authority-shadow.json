@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T03:04:23.409130+00:00",
+  "generated_at": "2026-10-30T03:24:18.077127+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,10 +12,11 @@
       "requests_ok": 6,
       "fixtures": 1400,
       "unknown_statuses": [
-        "10|HT",
         "133|Stumps - day 2",
         "134|Stumps - day 3",
-        "3|76'"
+        "213|Rain delay",
+        "3|55'",
+        "3|59'"
       ],
       "attempts": [
         {
@@ -107,19 +108,19 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 10,
-    "upcoming": 83,
+    "today_match": 11,
+    "upcoming": 82,
     "fixtures": 93,
     "verdicts": {
-      "UNVERIFIED": 25,
+      "UNVERIFIED": 26,
       "PARTIAL_AUTHORITY": 1,
-      "CONFLICT": 4,
-      "VERIFIED": 63
+      "VERIFIED": 64,
+      "CONFLICT": 2
     },
-    "verified": 63,
+    "verified": 64,
     "partial_authority": 1,
-    "unverified": 25,
-    "conflict": 4,
+    "unverified": 26,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 27,
@@ -133,9 +134,8 @@
     "matched_by_two_independent_authorities": 44,
     "authority_agreements": 43,
     "authority_disagreements": 1,
-    "card_status_conflicts": 3,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 2,
       "kickoff": 1,
       "sport": 1,
       "authorities disagree": 1,
@@ -143,16 +143,17 @@
     },
     "identity_near_misses": 14,
     "independent_authority_count_distribution": {
-      "0": 25,
-      "1": 24,
+      "0": 26,
+      "1": 23,
       "2": 44
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
         "133|Stumps - day 2",
         "134|Stumps - day 3",
-        "3|76'"
+        "213|Rain delay",
+        "3|55'",
+        "3|59'"
       ],
       "espn-header": []
     }
@@ -393,8 +394,8 @@
           "competition_id": "26271",
           "kickoff": "2026-10-30T02:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "HT",
-          "status_code": "10",
+          "status_raw": "59'",
+          "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
           "round": "Semi Finals",
@@ -449,17 +450,17 @@
           "competition_id": "3928",
           "kickoff": "2026-10-30T02:10:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "14'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, October 29th at 10:10 PM EDT",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "14'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3928~e:401879594~c:401879594"
@@ -483,20 +484,18 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:pakistan-vs-united-arab-emirates|hong kong sixes 2026 3rd|2026-10-30",
+      "fixture_id": "provider:pakistan-vs-united-arab-emirates|2026-10-30",
       "card_id": "pakistan-vs-united-arab-emirates",
       "name": "Pakistan vs United Arab Emirates",
-      "competition": "Hong Kong Sixes 2026 - 3rd Match",
-      "kickoff": "2026-10-30T03:04:23+00:00",
+      "competition": "",
+      "kickoff": "2026-10-30T03:24:18+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -504,19 +503,17 @@
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
+        "srhady-primevideo-sports"
       ],
       "upstream_families": [
-        "PrimeVideo",
-        "Willow"
+        "PrimeVideo"
       ],
-      "independent_witness_count": 2,
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
+          "matched_by": "kickoff_lifted",
+          "verified": false,
           "event_id": "1559195",
           "upstream_family": "ESPN",
           "name": "Pakistan vs United Arab Emirates",
@@ -527,7 +524,7 @@
           "competition": "Hong Kong International Cricket Sixes",
           "competition_id": "8768",
           "kickoff": "2026-10-30T02:35:00+00:00",
-          "kickoff_delta_minutes": -29.4,
+          "kickoff_delta_minutes": -49.3,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -547,20 +544,86 @@
           "result": "unmatched"
         }
       },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [
+        "ESPN"
+      ],
+      "near_miss_count": 1,
+      "conflict_reasons": [
+        "kickoff: ours 2026-10-30T03:24, espn-header 2026-10-30T02:35 (-49.3 min)",
+        "sport: ours football, espn-header cricket"
+      ],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:south-africa-vs-oman|hong kong sixes 2026|2026-10-30",
+      "card_id": "south-africa-vs-oman",
+      "name": "South Africa vs Oman",
+      "competition": "Hong Kong Sixes, 2026",
+      "kickoff": "2026-10-30T03:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "vk1817-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1559196",
+          "upstream_family": "ESPN",
+          "name": "Oman vs South Africa",
+          "home": "Oman",
+          "away": "South Africa",
+          "home_team_id": "37",
+          "away_team_id": "3",
+          "competition": "Hong Kong International Cricket Sixes",
+          "competition_id": "8768",
+          "kickoff": "2026-10-30T03:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Group D",
+          "format": "ODI",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
+          "espn_completed": null,
+          "espn_end_date_raw": "2026-10-31T23:59:00Z",
+          "authority_uid": "s:200~e:1559196~c:1559196"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
       "authority_upstreams": [
         "ESPN"
       ],
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "kickoff: ours 2026-10-30T03:04, espn-header 2026-10-30T02:35 (-29.4 min)",
-        "sport: ours football, espn-header cricket",
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
       "tab": "today_match"
     },
     {
@@ -568,7 +631,7 @@
       "card_id": "trophy-cup-at-tulare-thunderbowl-raceway",
       "name": "Trophy Cup at Tulare Thunderbowl Raceway",
       "competition": "",
-      "kickoff": "2026-10-30T03:04:23+00:00",
+      "kickoff": "2026-10-30T03:24:18+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -709,8 +772,8 @@
           "competition_id": "8043",
           "kickoff": "2026-10-29T23:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
+          "status_raw": "Lunch",
+          "status_code": "Lunch",
           "status": "LIVE",
           "sport": "cricket",
           "round": "8th Match",
@@ -719,7 +782,7 @@
           "espn_state": "in",
           "espn_status": "in",
           "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_status_description": "Lunch",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-02T23:59:00Z",
           "authority_uid": "s:200~e:1544871~c:1544871"
@@ -796,8 +859,8 @@
           "competition_id": "630",
           "kickoff": "2026-10-30T00:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "50'",
-          "status_code": "STATUS_SECOND_HALF",
+          "status_raw": "90'",
+          "status_code": "STATUS_IN_PROGRESS",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -805,8 +868,8 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "50'",
-          "espn_status_description": "Second Half",
+          "espn_status_detail": "90'",
+          "espn_status_description": "In Progress",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841290~c:401841290"
@@ -997,11 +1060,11 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode",
@@ -1414,9 +1477,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1625,11 +1688,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode",
@@ -2961,9 +3024,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3089,9 +3152,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3553,9 +3616,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3632,9 +3695,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4834,11 +4897,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode",
@@ -5051,11 +5114,11 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode",
@@ -5197,8 +5260,8 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -5549,11 +5612,11 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sm-fancode"
       ],
       "upstream_families": [
         "FanCode",
@@ -5709,9 +5772,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6157,9 +6220,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6409,9 +6472,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -6778,51 +6841,51 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
-    },
+    }
+  ],
+  "retired_or_unpublished": [
     {
-      "fixture_id": "provider:south-africa-vs-oman|hong kong sixes 2026|2026-10-30",
-      "card_id": "south-africa-vs-oman",
-      "name": "South Africa vs Oman",
-      "competition": "Hong Kong Sixes, 2026",
-      "kickoff": "2026-10-30T03:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "fixture_id": "provider:pakistan-vs-united-arab-emirates|hong kong sixes 2026 3rd|2026-10-30",
+      "card_id": "pakistan-vs-united-arab-emirates",
+      "name": "Pakistan vs United Arab Emirates",
+      "competition": "Hong Kong Sixes 2026 - 3rd Match",
+      "kickoff": "2026-10-30T03:04:23+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
       "upstream_families": [
-        "FanCode"
+        "PrimeVideo",
+        "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "matched",
           "matched_by": "same_fixture",
           "verified": true,
-          "event_id": "1559196",
+          "event_id": "1559195",
           "upstream_family": "ESPN",
-          "name": "Oman vs South Africa",
-          "home": "Oman",
-          "away": "South Africa",
-          "home_team_id": "37",
-          "away_team_id": "3",
+          "name": "Pakistan vs United Arab Emirates",
+          "home": "Pakistan",
+          "away": "United Arab Emirates",
+          "home_team_id": "7",
+          "away_team_id": "27",
           "competition": "Hong Kong International Cricket Sixes",
           "competition_id": "8768",
-          "kickoff": "2026-10-30T03:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
+          "kickoff": "2026-10-30T02:35:00+00:00",
+          "kickoff_delta_minutes": -29.4,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
           "sport": "cricket",
-          "round": "Group D",
+          "round": "Group C",
           "format": "ODI",
           "gender": "",
           "espn_state": "pre",
@@ -6831,7 +6894,7 @@
           "espn_status_description": "Scheduled",
           "espn_completed": null,
           "espn_end_date_raw": "2026-10-31T23:59:00Z",
-          "authority_uid": "s:200~e:1559196~c:1559196"
+          "authority_uid": "s:200~e:1559195~c:1559195"
         },
         "livescore": {
           "result": "unmatched"
@@ -6843,11 +6906,14 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "kickoff: ours 2026-10-30T03:04, espn-header 2026-10-30T02:35 (-29.4 min)",
+        "sport: ours football, espn-header cricket",
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
+      "card_status_conflict": true,
+      "verdict": "CONFLICT"
     }
   ]
 }
