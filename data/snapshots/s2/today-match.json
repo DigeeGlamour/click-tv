@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-30T01:04:41.157207+00:00",
+  "updated_at": "2026-10-30T01:24:14.166143+00:00",
   "count": 8,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -65,6 +65,11 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "league map",
       "sport_class_evidence": "Sheffield Shield",
+      "allow_without_stream": true,
+      "route_failed_while_live": true,
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "LIVE",
       "authority_near_misses": [
         {
           "authority": "espn-header",
@@ -75,7 +80,7 @@
           "competition": "Sheffield Shield",
           "kickoff": "2026-10-29T23:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status": "LIVE"
+          "status": "UPCOMING"
         },
         {
           "authority": "livescore",
@@ -89,11 +94,13 @@
           "status": "LIVE"
         }
       ],
-      "allow_without_stream": true,
-      "route_failed_while_live": true,
-      "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-10-30T01:24:10.539188+00:00"
     },
     {
       "id": "hong-kong-sixes",
@@ -215,92 +222,6 @@
       }
     },
     {
-      "id": "australia-vs-hong-kong-china",
-      "name": "Australia vs Hong Kong, China",
-      "primary_stream_key": "",
-      "sport_type": "cricket",
-      "sport_type_derived": true,
-      "logo": "",
-      "category": "today_match",
-      "url": "",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "backups": [],
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-fancode"
-      ],
-      "start_time": "2026-10-30T00:45:00+00:00",
-      "start_at": "2026-10-30T00:45:00+00:00",
-      "end_time": "2026-10-30T05:45:00+00:00",
-      "end_time_source": "sport",
-      "competition": "Hong Kong Sixes, 2026",
-      "fixture_id": "provider:australia-vs-hong-kong-china|hong kong sixes 2026|2026-10-30",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "source_start_time": "2026-10-30T00:45:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_cricket",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "cricket",
-      "allow_without_stream": true,
-      "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1559193)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "1559193"
-      },
-      "lifecycle_reason": "still live: authority_live",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-10-30T00:44:16.405688+00:00"
-    },
-    {
       "id": "cricket-preview-hk-sixes-australia-vs-hk-china",
       "name": "Cricket Preview HK Sixes Australia vs HK, China",
       "primary_stream_key": "8b00251d31df2dccf77a405598f7c7b9d9408a02807ec091562cb9ca1dc66140",
@@ -339,14 +260,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
+          "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -368,14 +289,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
+          "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -453,11 +374,11 @@
               "id": "cricket-preview-hk-sixes-australia-vs-hk-china--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_69b889f788a97aa5addcd66d",
+              "variant_key": "sv_64b1265d54d66528d0699925",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
+              "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -466,11 +387,11 @@
               "id": "cricket-preview-hk-sixes-australia-vs-hk-china--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_64b1265d54d66528d0699925",
+              "variant_key": "sv_69b889f788a97aa5addcd66d",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_f39a925af8c1d87e49547f4ce2778456",
+              "playback_id": "ctv_4a947344dd295f02e94504d9ba5cc9ac",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -518,9 +439,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-30T01:04:13+00:00",
-      "start_at": "2026-10-30T01:04:13+00:00",
-      "end_time": "2026-10-30T06:04:13+00:00",
+      "start_time": "2026-10-30T01:24:00+00:00",
+      "start_at": "2026-10-30T01:24:00+00:00",
+      "end_time": "2026-10-30T06:24:00+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:cricket-preview-hk-sixes-australia-vs-hk-china|2026-10-30",
       "status": "LIVE_NOW",
@@ -546,12 +467,12 @@
     {
       "id": "trophy-cup-at-tulare-thunderbowl-raceway",
       "name": "Trophy Cup at Tulare Thunderbowl Raceway",
-      "primary_stream_key": "07ca84504f29b84860978cd05d511762f030888883bb9d78638ff463aa9190a0",
+      "primary_stream_key": "fa8e0fe01bdd6e5043760062163e5f17e28412cb168878496e7ddc56798c22d8",
       "sport_type": "cricket",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.c0a6813b-8b81-4020-a28e-3be07b65a78d/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
       "category": "today_match",
-      "header_profile": "android_chrome",
+      "header_profile": "android_tv",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
       "requires_headers": false,
@@ -571,64 +492,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_608a478e808b437e6c9ba3e4dc9af0bf",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_b114d00d2e39e70f3963227a7d8ab786",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -648,6 +511,64 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_bda7646710afa23635f5f5bc9be2071e",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_61ee5a32b0e2703dddfdbb83fa1b5d13",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_b114d00d2e39e70f3963227a7d8ab786",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -683,19 +604,6 @@
               "id": "trophy-cup-at-tulare-thunderbowl-raceway--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_b6c92e62b9e2f39709928c93",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_61ee5a32b0e2703dddfdbb83fa1b5d13",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "trophy-cup-at-tulare-thunderbowl-raceway--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_e70f43d0934a3c26b9ca133a",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -706,14 +614,27 @@
               "stream_type": "dash"
             },
             {
-              "id": "trophy-cup-at-tulare-thunderbowl-raceway--prime-video--3",
+              "id": "trophy-cup-at-tulare-thunderbowl-raceway--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_6276b977aca6ea864c248e99",
+              "variant_key": "sv_7b9a1cae9772199c88afb417",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_b114d00d2e39e70f3963227a7d8ab786",
+              "playback_id": "ctv_bda7646710afa23635f5f5bc9be2071e",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "trophy-cup-at-tulare-thunderbowl-raceway--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b6c92e62b9e2f39709928c93",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_61ee5a32b0e2703dddfdbb83fa1b5d13",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -722,11 +643,11 @@
               "id": "trophy-cup-at-tulare-thunderbowl-raceway--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_7b9a1cae9772199c88afb417",
+              "variant_key": "sv_6276b977aca6ea864c248e99",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_bda7646710afa23635f5f5bc9be2071e",
+              "playback_id": "ctv_b114d00d2e39e70f3963227a7d8ab786",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -761,9 +682,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-30T01:04:13+00:00",
-      "start_at": "2026-10-30T01:04:13+00:00",
-      "end_time": "2026-10-30T05:04:13+00:00",
+      "start_time": "2026-10-30T01:24:00+00:00",
+      "start_at": "2026-10-30T01:24:00+00:00",
+      "end_time": "2026-10-30T05:24:00+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:trophy-cup-at-tulare-thunderbowl-raceway|2026-10-30",
       "status": "LIVE_NOW",
@@ -777,7 +698,7 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_61ee5a32b0e2703dddfdbb83fa1b5d13",
+      "playback_id": "ctv_608a478e808b437e6c9ba3e4dc9af0bf",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -785,6 +706,109 @@
         "query_parameters": [],
         "drm": true
       }
+    },
+    {
+      "id": "bangladesh-vs-scotland",
+      "name": "Bangladesh vs Scotland",
+      "primary_stream_key": "",
+      "sport_type": "cricket",
+      "sport_type_derived": true,
+      "logo": "",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "media",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "none",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "sm-fancode",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-fancode",
+          "source_name": "SM FanCode Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
+        },
+        {
+          "source_id": "sportlive-fancode-backup",
+          "source_name": "SportLive18 FanCode Backup",
+          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
+        },
+        {
+          "source_id": "sayanpal-fancode-mirror",
+          "source_name": "FanCode Auto Updated (sayanpal)",
+          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
+        },
+        {
+          "source_id": "drmlive-fancode-mirror",
+          "source_name": "FanCode Live Events (drmlive)",
+          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
+        },
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        }
+      ],
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror"
+      ],
+      "start_time": "2026-10-30T01:40:00+00:00",
+      "start_at": "2026-10-30T01:40:00+00:00",
+      "end_time": "2026-10-30T06:40:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Hong Kong Sixes, 2026",
+      "fixture_id": "provider:bangladesh-vs-scotland|hong kong sixes 2026|2026-10-30",
+      "status": "LINK_UPDATING",
+      "original_status": "UPCOMING",
+      "schedule_status": "LINK_UPDATING",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "source_start_time": "2026-10-30T01:40:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_cricket",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "cricket",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (Scheduled, event 1559194)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "1559194"
+      },
+      "allow_without_stream": true,
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "STARTING"
     },
     {
       "id": "atlético-mineiro-vs-cruzeiro",
@@ -910,7 +934,7 @@
       "end_pending": true,
       "end_pending_confirmations": 0,
       "ended_seen_at": "2026-10-30T01:04:36.298332+00:00",
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-10-30T01:04:36.298332+00:00"
     },
@@ -1161,7 +1185,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-30T00:24:29.819584+00:00"
     },
