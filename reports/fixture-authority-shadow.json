@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-30T08:24:26.600609+00:00",
+  "generated_at": "2026-10-30T08:44:26.660929+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -14,8 +14,10 @@
       "unknown_statuses": [
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "182|Tea - day 3",
-        "2|24'"
+        "220|Drinks",
+        "25|Delay",
+        "2|15'",
+        "2|44'"
       ],
       "attempts": [
         {
@@ -107,39 +109,41 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 14,
-    "upcoming": 80,
-    "fixtures": 94,
+    "today_match": 17,
+    "upcoming": 78,
+    "fixtures": 95,
     "verdicts": {
-      "UNVERIFIED": 31,
-      "CONFLICT": 4,
-      "VERIFIED": 59
+      "UNVERIFIED": 32,
+      "CONFLICT": 3,
+      "VERIFIED": 59,
+      "PARTIAL_AUTHORITY": 1
     },
     "verified": 59,
-    "partial_authority": 0,
-    "unverified": 31,
-    "conflict": 4,
+    "partial_authority": 1,
+    "unverified": 32,
+    "conflict": 3,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 33,
+        "unmatched": 34,
         "matched": 61
       },
       "livescore": {
-        "unmatched": 46,
+        "unmatched": 47,
         "matched": 48
       }
     },
     "matched_by_two_independent_authorities": 44,
     "authority_agreements": 41,
-    "authority_disagreements": 3,
+    "authority_disagreements": 2,
     "card_status_conflicts": 1,
     "conflict_reason_counts": {
-      "authorities disagree": 3,
+      "kickoff": 2,
+      "authorities disagree": 2,
       "card says UPCOMING, authority says POSTPONED": 1
     },
     "identity_near_misses": 11,
     "independent_authority_count_distribution": {
-      "0": 31,
+      "0": 32,
       "1": 19,
       "2": 44
     },
@@ -147,8 +151,10 @@
       "livescore": [
         "132|Stumps - day 1",
         "134|Stumps - day 3",
-        "182|Tea - day 3",
-        "2|24'"
+        "220|Drinks",
+        "25|Delay",
+        "2|15'",
+        "2|44'"
       ],
       "espn-header": []
     }
@@ -356,24 +362,26 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:brisbane-heat-vs-sydney-sixers-women|women big bash league|2026-10-30",
+      "fixture_id": "provider:brisbane-heat-vs-sydney-sixers-women|women big bash league 2026 3rd|2026-10-30",
       "card_id": "brisbane-heat-women-vs-sydney-sixers-women",
-      "name": "Brisbane Heat Women Vs Sydney Sixers Women",
-      "competition": "Women's Big Bash League",
-      "kickoff": "2026-10-30T08:10:00+00:00",
+      "name": "Brisbane Heat Women vs Sydney Sixers Women",
+      "competition": "Womens Big Bash League 2026 - 3rd Match",
+      "kickoff": "2026-10-30T08:44:26+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data"
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
       "upstream_families": [
-        "SM-Aggregate"
+        "PrimeVideo",
+        "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -389,7 +397,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "21284",
           "kickoff": "2026-10-30T08:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
+          "kickoff_delta_minutes": -34.4,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -419,7 +427,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "25707",
           "kickoff": "2026-10-30T08:10:00+00:00",
-          "kickoff_delta_minutes": 0.0,
+          "kickoff_delta_minutes": -34.4,
           "status_raw": "Play in progress",
           "status_code": "33",
           "status": "LIVE",
@@ -437,11 +445,116 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
+        "kickoff: ours 2026-10-30T08:44, espn-header 2026-10-30T08:10 (-34.4 min)",
+        "kickoff: ours 2026-10-30T08:44, livescore 2026-10-30T08:10 (-34.4 min)",
         "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
       ],
       "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
       "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:brisbane-roar-vs-auckland-fc|a league men|2026-10-30",
+      "card_id": "brisbane-roar-vs-auckland-fc",
+      "name": "Brisbane Roar Vs Auckland FC",
+      "competition": "A-League Men",
+      "kickoff": "2026-10-30T09:00:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401892150",
+          "upstream_family": "ESPN",
+          "name": "Brisbane Roar FC vs Auckland FC",
+          "home": "Brisbane Roar FC",
+          "away": "Auckland FC",
+          "home_team_id": "5326",
+          "away_team_id": "22344",
+          "competition": "Australian A-League Men",
+          "competition_id": "3906",
+          "kickoff": "2026-10-30T09:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, October 30th at 5:00 AM EDT",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3906~e:401892150~c:401892150"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:heat-vs-sixers-3-match|2026-10-30",
+      "card_id": "cricket-wbbl-2026-heat-vs-sixers-3rd-match",
+      "name": "Cricket WBBL 2026 Heat vs Sixers 3rd Match",
+      "competition": "",
+      "kickoff": "2026-10-30T08:44:26+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "upstream_families": [
+        "PrimeVideo"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -575,9 +688,9 @@
           "competition_id": "26652",
           "kickoff": "2026-10-30T07:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Drinks",
+          "status_code": "220",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "4th ODI",
           "format": "ODI",
@@ -591,12 +704,10 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
-      ],
-      "authority_agreement": "DISAGREE",
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -670,7 +781,7 @@
       "card_id": "south-africa-vs-australia",
       "name": "South Africa vs Australia",
       "competition": "Australia tour of South Africa 2026 - 3rd Test",
-      "kickoff": "2026-10-30T08:24:26+00:00",
+      "kickoff": "2026-10-30T08:44:26+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -714,6 +825,68 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:brisbane-roar-vs-auckland|a league 2026 27|2026-10-30",
+      "card_id": "brisbane-roar-vs-auckland",
+      "name": "Brisbane Roar vs Auckland",
+      "competition": "A-League 2026-27",
+      "kickoff": "2026-10-30T09:00:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1843487",
+          "upstream_family": "LiveScore",
+          "name": "Brisbane Roar FC vs Auckland FC",
+          "home": "Brisbane Roar FC",
+          "away": "Auckland FC",
+          "home_team_id": "435",
+          "away_team_id": "335031",
+          "competition": "A-League",
+          "competition_id": "128",
+          "kickoff": "2026-10-30T09:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:himachal-highlenders-vs-chandigarh-chargers|northern artist champions league 2026|2026-10-30",
       "card_id": "himachal-highlenders-vs-chandigarh-chargers",
       "name": "Himachal Highlenders vs Chandigarh Chargers",
@@ -727,9 +900,6 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1071,72 +1241,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:brisbane-roar-vs-auckland-fc|a league men|2026-10-30",
-      "card_id": "brisbane-roar-vs-auckland-fc",
-      "name": "Brisbane Roar Vs Auckland FC",
-      "competition": "A-League Men",
-      "kickoff": "2026-10-30T09:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401892150",
-          "upstream_family": "ESPN",
-          "name": "Brisbane Roar FC vs Auckland FC",
-          "home": "Brisbane Roar FC",
-          "away": "Auckland FC",
-          "home_team_id": "5326",
-          "away_team_id": "22344",
-          "competition": "Australian A-League Men",
-          "competition_id": "3906",
-          "kickoff": "2026-10-30T09:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, October 30th at 5:00 AM EDT",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3906~e:401892150~c:401892150"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:ac-milan-vs-inter|serie a|2026-10-31",
       "card_id": "ac-milan-vs-inter",
       "name": "AC Milan Vs Inter",
@@ -1239,8 +1343,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1819,68 +1923,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:brisbane-roar-vs-auckland|a league 2026 27|2026-10-30",
-      "card_id": "brisbane-roar-vs-auckland",
-      "name": "Brisbane Roar vs Auckland",
-      "competition": "A-League 2026-27",
-      "kickoff": "2026-10-30T09:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1843487",
-          "upstream_family": "LiveScore",
-          "name": "Brisbane Roar FC vs Auckland FC",
-          "home": "Brisbane Roar FC",
-          "away": "Auckland FC",
-          "home_team_id": "435",
-          "away_team_id": "335031",
-          "competition": "A-League",
-          "competition_id": "128",
-          "kickoff": "2026-10-30T09:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "3",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:brisbane-roar-vs-sydney-fc|a league women|2026-10-31",
       "card_id": "brisbane-roar-vs-sydney-fc",
       "name": "Brisbane Roar Vs Sydney FC",
@@ -2289,8 +2331,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -3076,8 +3118,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -3759,8 +3801,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -4794,8 +4836,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -4974,8 +5016,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -5120,8 +5162,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -5474,8 +5516,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -5881,8 +5923,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -6051,8 +6093,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -6303,8 +6345,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -6710,204 +6752,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:cricket-preview-hk-sixes-australia-vs-hk-china|2026-10-30",
-      "card_id": "cricket-preview-hk-sixes-australia-vs-hk-china",
-      "name": "Cricket Preview HK Sixes Australia vs HK, China",
-      "competition": "",
-      "kickoff": "2026-10-30T01:24:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:hong-kong-china-vs-england|hong kong sixes 2026|2026-10-30",
-      "card_id": "hong-kong-china-vs-england",
-      "name": "Hong Kong, China vs England",
-      "competition": "Hong Kong Sixes, 2026",
-      "kickoff": "2026-10-30T04:25:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1559197",
-          "upstream_family": "ESPN",
-          "name": "Hong Kong vs England",
-          "home": "Hong Kong",
-          "away": "England",
-          "home_team_id": "19",
-          "away_team_id": "1",
-          "competition": "Hong Kong International Cricket Sixes",
-          "competition_id": "8768",
-          "kickoff": "2026-10-30T04:25:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "Group A",
-          "format": "ODI",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-31T23:59:00Z",
-          "authority_uid": "s:200~e:1559197~c:1559197"
-        },
-        "livescore": {
-          "result": "unmatched",
-          "near_misses": [
-            {
-              "authority_name": "Hong Kong 6s vs England 6s",
-              "event_id": "1903117",
-              "agreed_side": "england",
-              "ours": "hong kong china",
-              "theirs": "hong kong 6s"
-            }
-          ]
-        }
-      },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED"
-    },
-    {
-      "fixture_id": "provider:brisbane-heat-vs-sydney-sixers-women|women big bash league 2026 3rd|2026-10-30",
-      "card_id": "brisbane-heat-women-vs-sydney-sixers-women",
-      "name": "Brisbane Heat Women vs Sydney Sixers Women",
-      "competition": "Womens Big Bash League 2026 - 3rd Match",
-      "kickoff": "2026-10-30T08:04:24+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "upstream_families": [
-        "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1543946",
-          "upstream_family": "ESPN",
-          "name": "Brisbane Heat Women vs Sydney Sixers Women",
-          "home": "Brisbane Heat Women",
-          "away": "Sydney Sixers Women",
-          "home_team_id": "896397",
-          "away_team_id": "896403",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-10-30T08:10:00+00:00",
-          "kickoff_delta_minutes": 5.6,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "3rd Match (D/N)",
-          "format": "",
-          "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-10-30T23:59:00Z",
-          "authority_uid": "s:200~e:1543946~c:1543946"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1813031",
-          "upstream_family": "LiveScore",
-          "name": "Brisbane Heat W vs Sydney Sixers W",
-          "home": "Brisbane Heat W",
-          "away": "Sydney Sixers W",
-          "home_team_id": "86302",
-          "away_team_id": "86301",
-          "competition": "Women's Big Bash League",
-          "competition_id": "25707",
-          "kickoff": "2026-10-30T08:10:00+00:00",
-          "kickoff_delta_minutes": 5.6,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "Match 3",
-          "format": "Womens Domestic Twenty20",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
-      ],
-      "authority_agreement": "DISAGREE",
-      "card_status_conflict": false,
-      "verdict": "CONFLICT"
     }
   ]
 }
