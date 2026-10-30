@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-30T17:04:28.310838+00:00",
+  "timestamp": "2026-10-30T17:24:18.787816+00:00",
   "mode": "today",
   "pipelined": true,
   "total_input_pool": 299,
@@ -12,7 +12,8 @@
   "browser_unreachable_hidden": 20,
   "unproven_hidden": 0,
   "status_counts": {
-    "verified_global": 79,
+    "verified_global": 78,
+    "retryable_pending": 1,
     "failed": 72,
     "unreachable_from_browser": 20,
     "metadata_only": 128
@@ -89,22 +90,6 @@
         "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
         "url": "https://bl.rutube.ru/livestream/7c13a51576b9ff2601f08f5d57dd5169/index.m3u8",
-        "verification_status": "verified_global",
-        "verification_mode": "global",
-        "publish_allowed": true,
-        "http_status": 200,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "",
-        "permanent_fail_count": 0
-      },
-      {
-        "id": "hong-kong-sixes",
-        "name": "Hong Kong SIXES",
-        "source_id": "sm-sports-data",
-        "source_pipeline": "upcoming",
-        "url": "http://tvsen5.aynascope.net/willowhd/index.m3u8",
         "verification_status": "verified_global",
         "verification_mode": "global",
         "publish_allowed": true,
@@ -1280,6 +1265,24 @@
         "proxy_name": "",
         "proxy_http_status": 0,
         "verification_error": "",
+        "verification_note": "",
+        "permanent_fail_count": 0
+      }
+    ],
+    "retryable_pending": [
+      {
+        "id": "hong-kong-sixes",
+        "name": "Hong Kong SIXES",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "upcoming",
+        "url": "http://tvsen5.aynascope.net/willowhd/index.m3u8",
+        "verification_status": "retryable_pending",
+        "verification_mode": "transient_rescue",
+        "publish_allowed": true,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "timeout: timed out",
         "verification_note": "",
         "permanent_fail_count": 0
       }
