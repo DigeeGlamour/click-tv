@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-30T21:05:08.593836+00:00",
-  "today_match_count": 12,
+  "generated_at": "2026-10-30T21:25:18.843074+00:00",
+  "today_match_count": 10,
   "upcoming_count": 64,
   "today_missing_logo": [],
   "upcoming_missing_logo": [],
@@ -8,7 +8,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 226,
+  "provider_fixture": 225,
   "provider_rejected": 90,
   "provider_rejected_reasons": {
     "provider_dead_status": 59,
@@ -554,8 +554,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 226,
-    "discarded": 68,
+    "total": 225,
+    "discarded": 67,
     "examples": [
       {
         "name": "A Zverev vs A Fery",
@@ -662,14 +662,6 @@
         "evidence": "ptt"
       },
       {
-        "name": "Oct 30 UTR PTT Philadelphia Men",
-        "source": "srhady-primevideo-sports",
-        "competition": "",
-        "sport_type": "",
-        "reason": "table tennis / pickleball gazetteer",
-        "evidence": "ptt"
-      },
-      {
         "name": "Olympiacos BC Vs EA7 Emporio Armani Milano",
         "source": "sm-sports-data",
         "competition": "Euroleague",
@@ -735,7 +727,7 @@
       },
       {
         "name": "Day 2 vs Sepang (2026)",
-        "source": "sportlive-fancode-backup, sayanpal-fancode-mirror, drmlive-f",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, sayanpal-f",
         "competition": "PETRONAS GRAND PRIX OF MALAYSIA 2026",
         "sport_type": "",
         "reason": "league map: motorsport",
@@ -743,7 +735,7 @@
       },
       {
         "name": "Fiji Vs France",
-        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, sayanp",
+        "source": "sm-sports-data, sm-fancode, drmlive-fancode-mirror, vk1817-f",
         "competition": "World Cup, Women",
         "sport_type": "",
         "reason": "rugby gazetteer",
@@ -791,7 +783,7 @@
       },
       {
         "name": "Practice 2 vs Autodromo Hermanos Rodriguez (2026)",
-        "source": "sm-fancode, sportlive-fancode-backup, sayanpal-fancode-mirro",
+        "source": "sm-fancode, drmlive-fancode-mirror, sportlive-fancode-backup",
         "competition": "F1 GRAN PREMIO DE LA CUIDAD DE MEXICO 2026",
         "sport_type": "",
         "reason": "league map: motorsport",
@@ -1036,6 +1028,14 @@
         "sport_type": "",
         "reason": "wrestling / mma / boxing gazetteer",
         "evidence": "boxing"
+      },
+      {
+        "name": "TENNIS | EVENTO",
+        "source": "sm-sports-data",
+        "competition": "TENNIS | EVENTO",
+        "sport_type": "",
+        "reason": "tennis gazetteer",
+        "evidence": "tennis"
       }
     ]
   },
@@ -1043,8 +1043,8 @@
   "authority_status": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 0,
-    "recorded": 46,
+    "live": 1,
+    "recorded": 45,
     "conflict": 0,
     "unmatched": 25,
     "start_window": 0,
@@ -1052,7 +1052,8 @@
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 46
+      "UPCOMING": 45,
+      "LIVE": 1
     },
     "by_confidence": {
       "LOW": 14,
@@ -1062,40 +1063,87 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 0,
+    "applied": 3,
     "pending_confirmation": 0,
-    "live": 0,
-    "recorded": 3,
-    "conflict": 4,
+    "live": 1,
+    "recorded": 2,
+    "conflict": 0,
     "unmatched": 6,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 3
+      "FINISHED": 3,
+      "LIVE": 1,
+      "UPCOMING": 2
     },
     "by_confidence": {
-      "CONFLICT": 4,
+      "HIGH": 3,
       "LOW": 3
     },
-    "applied_fixtures": [],
-    "conflicts": [
+    "applied_fixtures": [
       {
-        "name": "Energie Cottbus Vs VfL Bochum 1848",
-        "reason": "independent authorities disagree: ESPN espn-header=90'+5' (STATUS_SECOND_HALF, event 401885066); LiveScore livescore=FT (6, event 1813387)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "name": "Le Havre Vs Paris Saint Germain",
+        "fixture_id": "provider:le-havre-vs-paris-saint-germain|ligue 1|2026-10-30",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
-        ]
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876421)",
+          "LiveScore livescore=FT (6, event 1794721)"
+        ],
+        "authority_finished_seen_at": "2026-10-30T20:52:05.526893+00:00",
+        "remove_after": "2026-10-30T21:12:05.526893+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
       },
       {
+        "name": "Nice Vs Stade Rennais",
+        "fixture_id": "provider:nice-vs-stade-rennais|ligue 1|2026-10-30",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876416)",
+          "LiveScore livescore=FT (6, event 1794729)"
+        ],
+        "authority_finished_seen_at": "2026-10-30T20:52:05.526893+00:00",
+        "remove_after": "2026-10-30T21:12:05.526893+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "END_PENDING"
+      },
+      {
+        "name": "Al Shabab FC vs Al Ahli Saudi FC",
+        "fixture_id": "provider:al-shabab-fc-vs-al-ahli-saudi-fc|roshn saudi league 2026 2027|2026-10-30",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401900879)",
+          "LiveScore livescore=FT (6, event 1845691)"
+        ],
+        "authority_finished_seen_at": "2026-10-30T20:52:05.526893+00:00",
+        "remove_after": "2026-10-30T21:12:05.526893+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
+    "conflicts": [
+      {
         "name": "Le Havre Vs Paris Saint Germain",
-        "reason": "independent authorities disagree: ESPN espn-header=65' (STATUS_SECOND_HALF, event 401876421); LiveScore livescore=FT (6, event 1794721)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1103,19 +1151,9 @@
       },
       {
         "name": "Nice Vs Stade Rennais",
-        "reason": "independent authorities disagree: ESPN espn-header=65' (STATUS_SECOND_HALF, event 401876416); LiveScore livescore=FT (6, event 1794729)",
-        "status": "",
-        "confidence": "CONFLICT",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
-        "name": "Al Shabab FC vs Al Ahli Saudi FC",
-        "reason": "independent authorities disagree: ESPN espn-header=62' (STATUS_SECOND_HALF, event 401900879); LiveScore livescore=FT (6, event 1845691)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1124,22 +1162,29 @@
     ]
   },
   "fixture_status_api": {
-    "asked": 4,
+    "asked": 3,
     "finished": 0,
     "unplayable": 0,
     "cache_hits": 0,
-    "no_verdict": 4
+    "no_verdict": 3
   },
   "live_protection": {
-    "carried_forward": 5,
-    "released_ended": 1,
+    "carried_forward": 3,
+    "released_ended": 2,
     "released_ended_ids": [
-      "energie-cottbus-vs-vfl-bochum-1848"
+      "le-havre-vs-paris-saint-germain",
+      "nice-vs-stade-rennais"
     ],
     "retired_terminal": [
       {
-        "id": "energie-cottbus-vs-vfl-bochum-1848",
-        "name": "Energie Cottbus Vs VfL Bochum 1848",
+        "id": "le-havre-vs-paris-saint-germain",
+        "name": "Le Havre Vs Paris Saint Germain",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      },
+      {
+        "id": "nice-vs-stade-rennais",
+        "name": "Nice Vs Stade Rennais",
         "provenance": "feed_strong_end",
         "reason": "authoritative finished status"
       }
@@ -1152,28 +1197,28 @@
     "probe_alive": 0,
     "probe_dead": 2,
     "probe_inconclusive": 0,
-    "end_pending": 3,
+    "end_pending": 2,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "END_PENDING": 3,
-      "ENDED": 1,
-      "LIVE": 2
+      "END_PENDING": 2,
+      "ENDED": 2,
+      "LIVE": 1
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 1,
-    "total": 1106,
+    "added": 2,
+    "total": 1108,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 1
+    "decided_this_scan": 2
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1207,19 +1252,19 @@
     "unmatched": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 71,
+    "attempted": 69,
     "poster_filled": 0,
-    "badge_filled": 26,
+    "badge_filled": 28,
     "badge_used_as_logo": 0,
     "cache_hits": 14,
-    "cached_entries": 1281,
+    "cached_entries": 1282,
     "provider": {
-      "requests": 8,
-      "hits": 6,
+      "requests": 18,
+      "hits": 16,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 75,
+      "skipped_rate_limited": 63,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1231,7 +1276,7 @@
   "fixture_titles_tidied": [
     {
       "was": "TBC",
-      "now": "Hong Kong Sixes 2026 - Plate Play-off"
+      "now": "Hong Kong Sixes 2026 - Bowl Play-off"
     }
   ],
   "duplicate_fixtures_folded": [],
@@ -1318,29 +1363,29 @@
           "rejected": 0,
           "published": 14
         },
-        "sportlive-fancode-backup": {
-          "total": 15,
-          "cricket": 8,
+        "drmlive-fancode-mirror": {
+          "total": 14,
+          "cricket": 7,
           "football": 7,
           "quarantined": 0,
           "rejected": 0,
-          "published": 15
+          "published": 14
+        },
+        "sportlive-fancode-backup": {
+          "total": 14,
+          "cricket": 7,
+          "football": 7,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 14
         },
         "sayanpal-fancode-mirror": {
-          "total": 15,
-          "cricket": 8,
+          "total": 14,
+          "cricket": 7,
           "football": 7,
           "quarantined": 0,
           "rejected": 0,
-          "published": 15
-        },
-        "drmlive-fancode-mirror": {
-          "total": 15,
-          "cricket": 8,
-          "football": 7,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 15
+          "published": 14
         },
         "srhady-willow-event": {
           "total": 3,
@@ -1456,22 +1501,22 @@
       "leaks": []
     },
     "today_match": {
-      "total": 12,
-      "published": 12,
+      "total": 10,
+      "published": 10,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 11,
+        "confirmed_football": 9,
         "confirmed_cricket": 1
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 6,
+          "total": 4,
           "cricket": 0,
-          "football": 6,
+          "football": 4,
           "quarantined": 0,
           "rejected": 0,
-          "published": 6
+          "published": 4
         },
         "srhady-primevideo-sports": {
           "total": 3,
@@ -1528,29 +1573,13 @@
           "rejected": 0,
           "published": 14
         },
-        "sportlive-fancode-backup": {
-          "total": 15,
-          "cricket": 8,
-          "football": 7,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 15
-        },
-        "sayanpal-fancode-mirror": {
-          "total": 15,
-          "cricket": 8,
-          "football": 7,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 15
-        },
         "drmlive-fancode-mirror": {
-          "total": 15,
-          "cricket": 8,
+          "total": 14,
+          "cricket": 7,
           "football": 7,
           "quarantined": 0,
           "rejected": 0,
-          "published": 15
+          "published": 14
         },
         "vk1817-fancode-mirror": {
           "total": 13,
@@ -1559,6 +1588,22 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 13
+        },
+        "sportlive-fancode-backup": {
+          "total": 14,
+          "cricket": 7,
+          "football": 7,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 14
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 14,
+          "cricket": 7,
+          "football": 7,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 14
         },
         "srhady-willow-event": {
           "total": 3,
@@ -1582,15 +1627,15 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 316,
+    "raw_events": 315,
     "cricket_kept": 14,
     "football_kept": 57,
-    "other_discarded": 75,
+    "other_discarded": 74,
     "unresolved": 6,
-    "today_final": 12,
+    "today_final": 10,
     "upcoming_final": 64,
     "published_states": {
-      "confirmed_football": 61,
+      "confirmed_football": 59,
       "confirmed_cricket": 15
     },
     "other_sport_leak": 0,
@@ -1617,50 +1662,50 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 3,
+      "provider_or_authority": 2,
       "estimate": 0,
-      "none": 9
+      "none": 8
     }
   },
   "fixture_stream_health": {
-    "fixtures": 88,
-    "published_fixtures": 76,
-    "fixtures_with_verified_stream": 20,
+    "fixtures": 86,
+    "published_fixtures": 74,
+    "fixtures_with_verified_stream": 18,
     "fixtures_with_zero_verified": 68,
     "published_without_stream": 68,
     "fallback_available": 5,
     "targeted_fixtures": 5,
     "targeted_attempts": 22,
     "fixtures_with_a_first_link_time": 2,
-    "candidate_routes": 82,
-    "verified_routes": 42,
-    "failed_routes": 40,
-    "fixtures_touched_by_a_route_failure": 22,
+    "candidate_routes": 73,
+    "verified_routes": 38,
+    "failed_routes": 35,
+    "fixtures_touched_by_a_route_failure": 20,
     "fixtures_left_with_nothing": 7,
     "distinct_failure_codes": 6,
-    "unrecognised_candidate_groups": 37,
-    "unrecognised_failed_routes": 66
+    "unrecognised_candidate_groups": 38,
+    "unrecognised_failed_routes": 72
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 76,
-    "verified": 44,
-    "partial_authority": 1,
+    "fixtures": 74,
+    "verified": 45,
+    "partial_authority": 2,
     "unverified": 26,
-    "conflict": 5,
-    "matched_by_two_independent_authorities": 38,
-    "authority_agreements": 32,
-    "authority_disagreements": 3,
-    "card_status_conflicts": 2,
+    "conflict": 1,
+    "matched_by_two_independent_authorities": 36,
+    "authority_agreements": 33,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 1
+    "not_published": 2
   },
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 76,
+    "published_fixtures": 74,
     "fixtures_with_stream": 6,
-    "fixtures_playable_via_catalogue": 2,
+    "fixtures_playable_via_catalogue": 0,
     "fixtures_with_fresh_stream": 6,
     "fixtures_with_carried_stream": 0,
     "today_with_stream": 6,
