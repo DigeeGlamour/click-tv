@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T04:44:13.440537+00:00",
+  "generated_at": "2026-10-31T05:04:21.365572+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,14 +12,16 @@
       "requests_ok": 6,
       "fixtures": 1944,
       "unknown_statuses": [
+        "10|HT",
         "135|Stumps - day 4",
-        "213|Rain delay",
-        "2|28'",
-        "2|42'",
-        "2|44'",
-        "3|69'",
-        "3|79'",
-        "3|81'"
+        "180|Tea - day 1",
+        "2|1'",
+        "2|2'",
+        "2|3'",
+        "2|4'",
+        "3|46'",
+        "3|48'",
+        "3|90'"
       ],
       "attempts": [
         {
@@ -111,26 +113,27 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 11,
-    "upcoming": 56,
-    "fixtures": 67,
+    "today_match": 12,
+    "upcoming": 58,
+    "fixtures": 70,
     "verdicts": {
-      "UNVERIFIED": 16,
+      "UNVERIFIED": 18,
       "CONFLICT": 4,
+      "PARTIAL_AUTHORITY": 1,
       "VERIFIED": 47
     },
     "verified": 47,
-    "partial_authority": 0,
-    "unverified": 16,
+    "partial_authority": 1,
+    "unverified": 18,
     "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 16,
+        "unmatched": 19,
         "matched": 51
       },
       "livescore": {
-        "unmatched": 21,
-        "matched": 46
+        "unmatched": 23,
+        "matched": 47
       }
     },
     "matched_by_two_independent_authorities": 42,
@@ -138,27 +141,28 @@
     "authority_disagreements": 1,
     "card_status_conflicts": 2,
     "conflict_reason_counts": {
+      "kickoff": 5,
       "authorities disagree": 1,
-      "card says LIVE, authority says UPCOMING": 1,
-      "kickoff": 3,
-      "card says LIVE, authority says FINISHED": 1
+      "card says LIVE, authority says FINISHED": 2
     },
     "identity_near_misses": 8,
     "independent_authority_count_distribution": {
-      "0": 16,
-      "1": 9,
+      "0": 18,
+      "1": 10,
       "2": 42
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "135|Stumps - day 4",
-        "213|Rain delay",
-        "2|28'",
-        "2|42'",
-        "2|44'",
-        "3|69'",
-        "3|79'",
-        "3|81'"
+        "180|Tea - day 1",
+        "2|1'",
+        "2|2'",
+        "2|3'",
+        "2|4'",
+        "3|46'",
+        "3|48'",
+        "3|90'"
       ],
       "espn-header": []
     }
@@ -272,7 +276,7 @@
       "card_id": "adelaide-strikers-women-vs-melbourne-stars-women",
       "name": "Adelaide Strikers Women vs Melbourne Stars Women",
       "competition": "Womens Big Bash League 2026 - 4th Match",
-      "kickoff": "2026-10-31T04:44:13+00:00",
+      "kickoff": "2026-10-31T05:04:21+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -303,7 +307,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "21284",
           "kickoff": "2026-10-31T04:40:00+00:00",
-          "kickoff_delta_minutes": -4.2,
+          "kickoff_delta_minutes": -24.4,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -333,7 +337,7 @@
           "competition": "Women's Big Bash League",
           "competition_id": "25707",
           "kickoff": "2026-10-31T04:40:00+00:00",
-          "kickoff_delta_minutes": -4.2,
+          "kickoff_delta_minutes": -24.4,
           "status_raw": "Play in progress",
           "status_code": "33",
           "status": "LIVE",
@@ -351,6 +355,8 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
+        "kickoff: ours 2026-10-31T05:04, espn-header 2026-10-31T04:40 (-24.4 min)",
+        "kickoff: ours 2026-10-31T05:04, livescore 2026-10-31T04:40 (-24.4 min)",
         "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
       ],
       "authority_agreement": "DISAGREE",
@@ -414,6 +420,43 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:bbl-women-s|women big bash league|2026-10-31",
+      "card_id": "bbl-womens",
+      "name": "BBL Women's",
+      "competition": "Women's Big Bash League",
+      "kickoff": "2026-10-31T04:40:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:club-puebla-vs-pumas-unam|liga mx apertura|2026-10-31",
       "card_id": "club-puebla-vs-pumas-unam",
       "name": "Club Puebla Vs Pumas UNAM",
@@ -448,17 +491,17 @@
           "competition_id": "760",
           "kickoff": "2026-10-31T03:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "31'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Fri, October 30th at 11:00 PM EDT",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "31'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:760~e:401876917~c:401876917"
@@ -478,7 +521,7 @@
           "competition_id": "759",
           "kickoff": "2026-10-31T03:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "69'",
+          "status_raw": "90'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -494,12 +537,47 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says UPCOMING"
-      ],
+      "conflict_reasons": [],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:strikers-vs-stars-4-match|2026-10-31",
+      "card_id": "cricket-wbbl-2026-strikers-vs-stars-4th-match",
+      "name": "Cricket WBBL 2026 Strikers vs Stars 4th Match",
+      "competition": "",
+      "kickoff": "2026-10-31T05:04:21+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "upstream_families": [
+        "PrimeVideo"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -509,7 +587,7 @@
       "competition": "Hong Kong Sixes, 2026",
       "kickoff": "2026-10-31T02:35:00+00:00",
       "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
+      "lifecycle_state": "LIVE",
       "card_status_normalized": "AWAITING_LINK",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
@@ -537,17 +615,17 @@
           "competition_id": "8768",
           "kickoff": "2026-10-31T02:35:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
+          "status_raw": "Live",
+          "status_code": "Live",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "Group C",
           "format": "ODI",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "Live",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-01T23:59:00Z",
           "authority_uid": "s:200~e:1559204~c:1559204"
@@ -573,7 +651,7 @@
       "card_id": "tbc",
       "name": "Hong Kong Sixes, 2026",
       "competition": "Hong Kong Sixes, 2026",
-      "kickoff": "2026-10-31T03:30:00+00:00",
+      "kickoff": "2026-10-31T05:20:00+00:00",
       "schedule_status": "LINK_UPDATING",
       "lifecycle_state": "STARTING",
       "card_status_normalized": "AWAITING_LINK",
@@ -582,7 +660,10 @@
       "provider_identity": "",
       "source_ids": [
         "sm-fancode",
-        "vk1817-fancode-mirror"
+        "sportlive-fancode-backup",
+        "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -710,17 +791,17 @@
           "competition_id": "8768",
           "kickoff": "2026-10-31T01:40:00+00:00",
           "kickoff_delta_minutes": 10.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
+          "status_raw": "Result",
+          "status_code": "Result",
+          "status": "FINISHED",
           "sport": "cricket",
           "round": "Group B",
           "format": "ODI",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "Final",
+          "espn_status_description": "Result",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-01T23:59:00Z",
           "authority_uid": "s:200~e:1559203~c:1559203"
@@ -735,10 +816,12 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -758,43 +841,6 @@
       ],
       "upstream_families": [
         "PrimeVideo"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:bbl-women-s|women big bash league|2026-10-31",
-      "card_id": "bbl-womens",
-      "name": "BBL Women's",
-      "competition": "Women's Big Bash League",
-      "kickoff": "2026-10-31T04:40:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
@@ -850,8 +896,8 @@
           "competition_id": "8043",
           "kickoff": "2026-10-31T00:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Lunch",
-          "status_code": "Lunch",
+          "status_raw": "Live",
+          "status_code": "Live",
           "status": "LIVE",
           "sport": "cricket",
           "round": "9th Match",
@@ -860,7 +906,7 @@
           "espn_state": "in",
           "espn_status": "in",
           "espn_status_detail": "Live",
-          "espn_status_description": "Lunch",
+          "espn_status_description": "Live",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-04T23:59:00Z",
           "authority_uid": "s:200~e:1544872~c:1544872"
@@ -880,9 +926,9 @@
           "competition_id": "25761",
           "kickoff": "2026-10-31T00:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Tea - day 1",
+          "status_code": "180",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "Match 9",
           "format": "Domestic First Class",
@@ -3154,6 +3200,104 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:melbourne-city-vs-sydney-fc|a league 2026 27|2026-10-31",
+      "card_id": "melbourne-city-vs-sydney-fc",
+      "name": "Melbourne City vs Sydney FC",
+      "competition": "A-League 2026-27",
+      "kickoff": "2026-10-31T06:00:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1843503",
+          "upstream_family": "LiveScore",
+          "name": "Melbourne City FC vs Sydney FC",
+          "home": "Melbourne City FC",
+          "away": "Sydney FC",
+          "home_team_id": "436",
+          "away_team_id": "349",
+          "competition": "A-League",
+          "competition_id": "128",
+          "kickoff": "2026-10-31T06:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:melbourne-stars-vs-perth-scorchers-women|women big bash league 2026 8th|2026-11-02",
+      "card_id": "melbourne-stars-women-vs-perth-scorchers-women",
+      "name": "Melbourne Stars Women vs Perth Scorchers Women",
+      "competition": "Womens Big Bash League 2026 - 8th Match",
+      "kickoff": "2026-11-02T08:10:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "Willow"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:melbourne-victory-vs-central-coast-mariners|a league men|2026-11-01",
       "card_id": "melbourne-victory-vs-central-coast-mariners",
       "name": "Melbourne Victory Vs Central Coast Mariners",
@@ -4020,18 +4164,19 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:perth-scorchers-vs-melbourne-renegades-women|women big bash league 2026|2026-10-31",
+      "fixture_id": "provider:perth-scorchers-vs-melbourne-renegades-women|women big bash league|2026-10-31",
       "card_id": "perth-scorchers-women-vs-melbourne-renegades-women",
-      "name": "Perth Scorchers Women vs Melbourne Renegades Women",
-      "competition": "Women's Big Bash League, 2026",
+      "name": "Perth Scorchers Women Vs Melbourne Renegades Women",
+      "competition": "Women's Big Bash League",
       "kickoff": "2026-10-31T08:10:00+00:00",
       "schedule_status": "UPCOMING",
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
         "vk1817-fancode-mirror",
@@ -4039,9 +4184,10 @@
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
-        "FanCode"
+        "FanCode",
+        "SM-Aggregate"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -4648,12 +4794,15 @@
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-willow-event"
+        "srhady-willow-event",
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
+        "FanCode",
         "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -4736,8 +4885,8 @@
       "provider_identity": "",
       "source_ids": [
         "srhady-willow-event",
-        "sm-fancode",
         "sportlive-fancode-backup",
+        "sm-fancode",
         "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
