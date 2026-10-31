@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-10-31T04:36:59.956389+00:00",
-  "count": 10,
+  "updated_at": "2026-10-31T04:44:37.428036+00:00",
+  "count": 11,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -78,7 +78,7 @@
           "host": "tvsen5.aynascope.net",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_45f2ff450e8dce209af17445d4453808"
+          "playback_id": "ctv_1183b4709f79648c3fd07eb2ef35821b"
         }
       ],
       "channels": [
@@ -212,7 +212,7 @@
       ],
       "start_time": "2026-10-31T00:00:00+00:00",
       "start_at": "2026-10-31T00:00:00+00:00",
-      "end_time": "2026-10-31T05:24:13+00:00",
+      "end_time": "2026-10-31T05:44:13+00:00",
       "end_time_source": "assumed",
       "competition": "Hong Kong SIXES",
       "fixture_id": "provider:hong-kong-sixes|hong kong sixes|2026-10-31",
@@ -229,7 +229,7 @@
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_38b1ea58855a9cc3bc3e7cc0937ff922"
+      "playback_id": "ctv_35d7ca6788df3efe013aa34202ee8a0a"
     },
     {
       "id": "queensland-vs-victoria",
@@ -298,8 +298,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 6,
-      "carried_forward_misses": 6,
+      "end_pending_confirmations": 7,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-31T02:44:27.854001+00:00",
       "authority_end_status": "LIVE",
@@ -638,17 +638,19 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
       "lifecycle_protections": [
-        "authority_live",
-        "primary_playable",
-        "backup_playable"
+        "authority_live"
       ],
-      "carried_forward_misses": 6,
-      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_misses": 7,
+      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
       "carried_forward_first_missed_at": "2026-10-31T02:44:27.854001+00:00",
-      "authority_status": "LIVE",
-      "authority_finished_confirmations": 2
+      "authority_status": "FINISHED",
+      "authority_finished_confirmations": 3,
+      "authority_finished_seen_at": "2026-10-31T04:44:13.440537+00:00",
+      "authority_remove_after": "2026-10-31T05:04:13.440537+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "contradicted_end_confirmations": 1
     },
     {
       "id": "scotland-vs-sri-lanka",
@@ -926,13 +928,13 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "FINISHED",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Result (Result, event 1559203)"
+        "ESPN espn-header=Live (Live, event 1559203)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -955,10 +957,89 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-10-31T02:44:27.854001+00:00",
-      "authority_finished_confirmations": 1
+      "carried_forward_first_missed_at": "2026-10-31T02:44:27.854001+00:00"
+    },
+    {
+      "id": "united-arab-emirates-vs-india",
+      "name": "United Arab Emirates vs India",
+      "primary_stream_key": "",
+      "sport_type": "cricket",
+      "sport_type_derived": true,
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4250318_53120_UAE_IND_fc-web.jpg",
+      "category": "today_match",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "media",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "none",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "vk1817-fancode-mirror",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 1,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        }
+      ],
+      "source_ids": [
+        "vk1817-fancode-mirror"
+      ],
+      "start_time": "2026-10-31T02:35:00+00:00",
+      "start_at": "2026-10-31T02:35:00+00:00",
+      "end_time": "2026-10-31T07:35:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Hong Kong Sixes, 2026",
+      "fixture_id": "provider:united-arab-emirates-vs-india|hong kong sixes 2026|2026-10-31",
+      "status": "LINK_UPDATING",
+      "original_status": "UPCOMING",
+      "schedule_status": "LINK_UPDATING",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json",
+      "source_start_time": "2026-10-31T02:35:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_cricket",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "cricket",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (Scheduled, event 1559204)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "1559204"
+      },
+      "allow_without_stream": true,
+      "route_failed_while_live": true,
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "STARTING",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tua6w31713725676.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kgpver1597857601.png"
     },
     {
       "id": "bangladesh-vs-west-indies",
@@ -1151,6 +1232,134 @@
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING",
       "name_from_source": "TBC"
+    },
+    {
+      "id": "bbl-womens",
+      "name": "BBL Women's",
+      "primary_stream_key": "dff2baf2bacd8ac2b7e4f6d3f8402220369ad17b2503ea14138610b9dcf5e6e5",
+      "sport_type": "cricket",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/unique-tournament/11163/image/dark",
+      "category": "today_match",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "channels": [
+        {
+          "id": "bbl-womens--euro-sports",
+          "name": "EURO SPORTS",
+          "normalized_name": "euro-sports",
+          "logo": "https://img.sofascore.com/api/v1/unique-tournament/11163/image/dark",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "bbl-womens--euro-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "bbl-womens--euro-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_05ac207629de8368bdbd1ee1",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_0c81740de91f15ec27fc6f9c8e2b0895",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "bbl-womens--euro-sports",
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-10-31T04:40:00+00:00",
+      "start_at": "2026-10-31T04:40:00+00:00",
+      "end_time": "2026-10-31T08:40:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Women's Big Bash League",
+      "fixture_id": "provider:bbl-women-s|women big bash league|2026-10-31",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-10-31T04:40:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "cricket",
+      "sport_class": "confirmed_cricket",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "cricket",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_0c81740de91f15ec27fc6f9c8e2b0895",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      },
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-10-31T04:44:32.030225+00:00"
     },
     {
       "id": "adelaide-strikers-women-vs-melbourne-stars-women",
@@ -1483,9 +1692,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-31T04:36:54+00:00",
-      "start_at": "2026-10-31T04:36:54+00:00",
-      "end_time": "2026-10-31T08:36:54+00:00",
+      "start_time": "2026-10-31T04:44:13+00:00",
+      "start_at": "2026-10-31T04:44:13+00:00",
+      "end_time": "2026-10-31T08:44:13+00:00",
       "end_time_source": "sport",
       "competition": "Womens Big Bash League 2026 - 4th Match",
       "fixture_id": "provider:adelaide-strikers-vs-melbourne-stars-women|women big bash league 2026 4th|2026-10-31",
@@ -1498,130 +1707,22 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (Scheduled, event 1543947)",
+        "LiveScore livescore=Play in progress (33, event 1813029)"
+      ],
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543947); LiveScore livescore=Play in progress (33, event 1813029)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/c36k301492606884.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/l0t7v31715269757.png",
       "playback_id": "ctv_15ffdd28afbab634541be6cd5c615e6b",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
-    },
-    {
-      "id": "bbl-womens",
-      "name": "BBL Women's",
-      "primary_stream_key": "dff2baf2bacd8ac2b7e4f6d3f8402220369ad17b2503ea14138610b9dcf5e6e5",
-      "sport_type": "cricket",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/unique-tournament/11163/image/dark",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "bbl-womens--euro-sports",
-          "name": "EURO SPORTS",
-          "normalized_name": "euro-sports",
-          "logo": "https://img.sofascore.com/api/v1/unique-tournament/11163/image/dark",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "bbl-womens--euro-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "bbl-womens--euro-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_05ac207629de8368bdbd1ee1",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_0c81740de91f15ec27fc6f9c8e2b0895",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "bbl-womens--euro-sports",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-10-31T04:40:00+00:00",
-      "start_at": "2026-10-31T04:40:00+00:00",
-      "end_time": "2026-10-31T08:40:00+00:00",
-      "end_time_source": "sport",
-      "competition": "Women's Big Bash League",
-      "fixture_id": "provider:bbl-women-s|women big bash league|2026-10-31",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-10-31T04:40:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "cricket",
-      "sport_class": "confirmed_cricket",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "cricket",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_0c81740de91f15ec27fc6f9c8e2b0895",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1877,14 +1978,14 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-31T01:44:25.560482+00:00"
     },
     {
       "id": "club-puebla-vs-pumas-unam",
       "name": "Club Puebla Vs Pumas UNAM",
-      "primary_stream_key": "911718ecdfe9cedf3b4d0085e304760f68d9f8a2e0e5a3c085f334e1859920dd",
+      "primary_stream_key": "af60f94526b25225b29aaac87dd03c49c46b7f94a4081cfd4aa21e484c526913",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/1941/image",
@@ -1905,75 +2006,9 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_a25161210dce50a9cbb6ea5639fc9d9c",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
+      "available_link_count": 1,
+      "backups": [],
       "channels": [
-        {
-          "id": "club-puebla-vs-pumas-unam--tudn-mexico",
-          "name": "TUDN MEXICO",
-          "normalized_name": "tudn-mexico",
-          "logo": "https://img.sofascore.com/api/v1/team/1941/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "club-puebla-vs-pumas-unam--tudn-mexico--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "club-puebla-vs-pumas-unam--tudn-mexico--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_e864728f2380365e99136c6b",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_dc1591b229a21c0c9b17e5ed3378c8a1",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "club-puebla-vs-pumas-unam--canal5",
           "name": "CANAL5",
@@ -2011,14 +2046,14 @@
           ]
         }
       ],
-      "channel_count": 2,
-      "default_channel_id": "club-puebla-vs-pumas-unam--tudn-mexico",
+      "channel_count": 1,
+      "default_channel_id": "club-puebla-vs-pumas-unam--canal5",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 1,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 1,
+        "variants": 1,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -2040,8 +2075,8 @@
       "resolution_height": 1080,
       "start_time": "2026-10-31T03:00:00+00:00",
       "start_at": "2026-10-31T03:00:00+00:00",
-      "end_time": "2026-10-31T05:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-10-31T05:44:13+00:00",
+      "end_time_source": "assumed",
       "competition": "Liga MX, Apertura",
       "fixture_id": "provider:club-puebla-vs-pumas-unam|liga mx apertura|2026-10-31",
       "status": "LIVE_NOW",
@@ -2055,24 +2090,23 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
+      "authority_end_status": "UPCOMING",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=11' (STATUS_FIRST_HALF, event 401876917)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876917)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401876917"
       },
-      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/h0jgg51593451845.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/o01nvl1695734937.png",
-      "playback_id": "ctv_dc1591b229a21c0c9b17e5ed3378c8a1",
+      "playback_id": "ctv_a25161210dce50a9cbb6ea5639fc9d9c",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
