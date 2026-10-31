@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-31T01:31:48.574621+00:00",
+  "generated_at": "2026-10-31T01:36:59.430229+00:00",
   "today_match_count": 8,
   "upcoming_count": 58,
   "today_missing_logo": [],
@@ -8,20 +8,15 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 3,
-  "provider_rejected": 1,
+  "provider_fixture": 11,
+  "provider_rejected": 0,
   "provider_rejected_reasons": {
     "provider_dead_status": 0,
     "status_neither_live_nor_upcoming": 0,
-    "kickoff_missing_and_not_live": 1,
+    "kickoff_missing_and_not_live": 0,
     "upcoming_kickoff_already_passed": 0
   },
-  "provider_rejected_by_source": {
-    "srhady-willow-event": {
-      "kickoff_missing_and_not_live": 1,
-      "total": 1
-    }
-  },
+  "provider_rejected_by_source": {},
   "provider_rejected_fixtures": [],
   "ambiguous_suppressed": 0,
   "unverified_suppressed": 0,
@@ -33,9 +28,26 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 3,
-    "discarded": 0,
-    "examples": []
+    "total": 11,
+    "discarded": 2,
+    "examples": [
+      {
+        "name": "Golden State Warriors Vs Los Angeles Lakers",
+        "source": "sm-sports-data",
+        "competition": "NBA",
+        "sport_type": "",
+        "reason": "league map: basketball",
+        "evidence": "NBA"
+      },
+      {
+        "name": "Phoenix Suns Vs Denver Nuggets",
+        "source": "sm-sports-data",
+        "competition": "NBA",
+        "sport_type": "",
+        "reason": "league map: basketball",
+        "evidence": "NBA"
+      }
+    ]
   },
   "reused_event_ids": 0,
   "authority_status": {
@@ -59,7 +71,7 @@
     "refused": 0,
     "skipped": "nothing already-decided to record",
     "from": "targeted carry of already-decided ends",
-    "absence_only_refused": 1
+    "absence_only_refused": 0
   },
   "source_outage": {
     "skipped": "targeted scan"
@@ -116,32 +128,40 @@
   "sport_filter": {
     "at_merge": {
       "total": 1,
-      "published": 1,
+      "published": 0,
       "rejected": 0,
-      "quarantined": 0,
+      "quarantined": 1,
       "states": {
-        "confirmed_cricket": 1
+        "unknown": 1
       },
       "by_source": {
-        "sm-fancode": {
+        "srhady-primevideo-sports": {
           "total": 1,
-          "cricket": 1,
+          "cricket": 0,
           "football": 0,
-          "quarantined": 0,
+          "quarantined": 1,
           "rejected": 0,
-          "published": 1
+          "published": 0
         },
-        "vk1817-fancode-mirror": {
+        "srhady-willow-event": {
           "total": 1,
-          "cricket": 1,
+          "cricket": 0,
           "football": 0,
-          "quarantined": 0,
+          "quarantined": 1,
           "rejected": 0,
-          "published": 1
+          "published": 0
         }
       },
       "rejected_examples": [],
-      "quarantined_events": [],
+      "quarantined_events": [
+        {
+          "name": "Scotland vs Sri Lanka",
+          "source": "srhady-primevideo-sports, srhady-willow-event",
+          "competition": "Hong Kong Sixes 2026 - 11th Match",
+          "sport_type": "other",
+          "reason": "fixture lookup: no provider answered"
+        }
+      ],
       "leaks": []
     },
     "today_match": {
@@ -267,15 +287,15 @@
   "sport_quarantined": [],
   "sport_leaks": [],
   "sport_never_dropped": {
-    "refused": 0,
+    "refused": 2,
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 4,
-    "cricket_kept": 1,
+    "raw_events": 11,
+    "cricket_kept": 0,
     "football_kept": 0,
-    "other_discarded": 0,
-    "unresolved": 0,
+    "other_discarded": 2,
+    "unresolved": 1,
     "today_final": 8,
     "upcoming_final": 58,
     "published_states": {
@@ -301,7 +321,7 @@
   "end_decisions": {
     "authority_finished": 0,
     "estimate_expired": 0,
-    "stale_or_aged": 1,
+    "stale_or_aged": 0,
     "unplayable": 0,
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
@@ -314,21 +334,21 @@
   "fixture_stream_health": {
     "fixtures": 66,
     "published_fixtures": 66,
-    "fixtures_with_verified_stream": 0,
-    "fixtures_with_zero_verified": 66,
+    "fixtures_with_verified_stream": 1,
+    "fixtures_with_zero_verified": 65,
     "published_without_stream": 61,
     "fallback_available": 4,
     "targeted_fixtures": 5,
-    "targeted_attempts": 13,
+    "targeted_attempts": 14,
     "fixtures_with_a_first_link_time": 3,
-    "candidate_routes": 1,
-    "verified_routes": 0,
+    "candidate_routes": 7,
+    "verified_routes": 6,
     "failed_routes": 1,
     "fixtures_touched_by_a_route_failure": 1,
     "fixtures_left_with_nothing": 0,
     "distinct_failure_codes": 1,
-    "unrecognised_candidate_groups": 0,
-    "unrecognised_failed_routes": 0
+    "unrecognised_candidate_groups": 2,
+    "unrecognised_failed_routes": 2
   },
   "fixture_authority_shadow": {
     "skipped": "targeted scan"
