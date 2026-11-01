@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T21:24:23.368224+00:00",
+  "generated_at": "2026-11-01T21:44:19.927103+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -15,21 +15,23 @@
         "10|HT",
         "12|Int.",
         "133|Stumps - day 2",
-        "2|18'",
-        "2|19'",
-        "2|22'",
-        "2|24'",
-        "2|45'",
-        "2|8'",
-        "2|9'",
+        "2|1'",
+        "2|12'",
+        "2|13'",
+        "2|14'",
+        "2|15'",
+        "2|28'",
+        "2|38'",
+        "2|39'",
+        "2|4'",
+        "2|41'",
+        "2|44'",
+        "3|55'",
         "3|58'",
-        "3|63'",
-        "3|64'",
-        "3|67'",
-        "3|80'",
-        "3|81'",
-        "3|90+5'",
-        "8|105'"
+        "3|79'",
+        "3|83'",
+        "3|86'",
+        "9|120+1'"
       ],
       "attempts": [
         {
@@ -108,13 +110,13 @@
           "sport": "football",
           "date": "2026-11-01",
           "result": "ok",
-          "fixtures": 291
+          "fixtures": 292
         },
         {
           "sport": "football",
           "date": "2026-11-02",
           "result": "ok",
-          "fixtures": 60
+          "fixtures": 59
         }
       ]
     }
@@ -122,35 +124,40 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 10,
-    "upcoming": 71,
-    "fixtures": 81,
+    "upcoming": 72,
+    "fixtures": 82,
     "verdicts": {
-      "PARTIAL_AUTHORITY": 4,
-      "UNVERIFIED": 45,
-      "VERIFIED": 32
+      "CONFLICT": 4,
+      "UNVERIFIED": 46,
+      "PARTIAL_AUTHORITY": 2,
+      "VERIFIED": 30
     },
-    "verified": 32,
-    "partial_authority": 4,
-    "unverified": 45,
-    "conflict": 0,
+    "verified": 30,
+    "partial_authority": 2,
+    "unverified": 46,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
-        "matched": 29,
+        "matched": 30,
         "unmatched": 52
       },
       "livescore": {
         "matched": 31,
-        "unmatched": 50
+        "unmatched": 51
       }
     },
     "matched_by_two_independent_authorities": 24,
-    "authority_agreements": 21,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 0,
-    "conflict_reason_counts": {},
-    "identity_near_misses": 10,
+    "authority_agreements": 20,
+    "authority_disagreements": 2,
+    "card_status_conflicts": 1,
+    "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
+      "authorities disagree": 2,
+      "kickoff": 1
+    },
+    "identity_near_misses": 12,
     "independent_authority_count_distribution": {
-      "0": 45,
+      "0": 46,
       "1": 12,
       "2": 24
     },
@@ -159,26 +166,44 @@
         "10|HT",
         "12|Int.",
         "133|Stumps - day 2",
-        "2|18'",
-        "2|19'",
-        "2|22'",
-        "2|24'",
-        "2|45'",
-        "2|8'",
-        "2|9'",
+        "2|1'",
+        "2|12'",
+        "2|13'",
+        "2|14'",
+        "2|15'",
+        "2|28'",
+        "2|38'",
+        "2|39'",
+        "2|4'",
+        "2|41'",
+        "2|44'",
+        "3|55'",
         "3|58'",
-        "3|63'",
-        "3|64'",
-        "3|67'",
-        "3|80'",
-        "3|81'",
-        "3|90+5'",
-        "8|105'"
+        "3|79'",
+        "3|83'",
+        "3|86'",
+        "9|120+1'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Grêmio Vs Atlético Mineiro",
+      "authority": "espn-header",
+      "authority_name": "Grêmio vs Atlético-MG",
+      "agreed_side": "gremio",
+      "ours": "atletico mineiro",
+      "theirs": "atletico mg"
+    },
+    {
+      "fixture": "Grêmio Vs Atlético Mineiro",
+      "authority": "livescore",
+      "authority_name": "Gremio vs Atletico MG",
+      "agreed_side": "gremio",
+      "ours": "atletico mineiro",
+      "theirs": "atletico mg"
+    },
     {
       "fixture": "Nashville SC Vs New York Red Bulls",
       "authority": "espn-header",
@@ -296,17 +321,17 @@
           "competition_id": "740",
           "kickoff": "2026-11-01T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "40'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "40'",
-          "espn_status_description": "First Half",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, November 1st at 3:00 PM EST",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:740~e:401882826~c:401882826"
@@ -326,7 +351,7 @@
           "competition_id": "75",
           "kickoff": "2026-11-01T20:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "58'",
+          "status_raw": "79'",
           "status_code": "3",
           "status": "UNKNOWN",
           "sport": "football",
@@ -342,10 +367,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -383,17 +410,17 @@
           "competition_id": "710",
           "kickoff": "2026-11-01T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "HT",
-          "status_code": "STATUS_HALFTIME",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "HT",
-          "espn_status_description": "Halftime",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, November 1st at 2:45 PM EST",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:710~e:401876417~c:401876417"
@@ -413,9 +440,9 @@
           "competition_id": "68",
           "kickoff": "2026-11-01T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "80'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "Regular Season",
           "format": "",
@@ -429,10 +456,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -470,17 +499,17 @@
           "competition_id": "730",
           "kickoff": "2026-11-01T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "HT",
-          "status_code": "STATUS_HALFTIME",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "HT",
-          "espn_status_description": "Halftime",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, November 1st at 2:45 PM EST",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:730~e:401874949~c:401874949"
@@ -500,9 +529,9 @@
           "competition_id": "77",
           "kickoff": "2026-11-01T19:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "81'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "10",
           "format": "",
@@ -516,10 +545,67 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:grêmio-vs-atlético-mineiro|copa do brasil|2026-11-01",
+      "card_id": "grêmio-vs-atlético-mineiro",
+      "name": "Grêmio Vs Atlético Mineiro",
+      "competition": "Copa do Brasil",
+      "kickoff": "2026-11-01T21:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Grêmio vs Atlético-MG",
+              "event_id": "401913109",
+              "agreed_side": "gremio",
+              "ours": "atletico mineiro",
+              "theirs": "atletico mg"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Gremio vs Atletico MG",
+              "event_id": "1888557",
+              "agreed_side": "gremio",
+              "ours": "atletico mineiro",
+              "theirs": "atletico mg"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -527,7 +613,7 @@
       "card_id": "mlp-nations-cup-2026-day-3",
       "name": "MLP Nations Cup 2026 Day 3",
       "competition": "",
-      "kickoff": "2026-11-01T21:24:23+00:00",
+      "kickoff": "2026-11-01T21:44:19+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -597,65 +683,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:fc-supra-du-quebec-vs-cavalry-fc|canadian premier league|2026-11-01",
-      "card_id": "fc-supra-du-quebec-vs-cavalry-fc",
-      "name": "FC Supra Du Quebec Vs Cavalry FC",
-      "competition": "Canadian Premier League",
-      "kickoff": "2026-11-01T21:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1911957",
-          "upstream_family": "LiveScore",
-          "name": "Supra du Quebec vs Cavalry FC",
-          "home": "Supra du Quebec",
-          "away": "Cavalry FC",
-          "home_team_id": "392852",
-          "away_team_id": "9959",
-          "competition": "Premier League: Play-off",
-          "competition_id": "26689",
-          "kickoff": "2026-11-01T21:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "8'",
-          "status_code": "2",
-          "status": "UNKNOWN",
-          "sport": "football",
-          "round": "Semi Finals",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "LiveScore"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:atlanta-united-vs-toronto-fc|mls|2026-11-01",
       "card_id": "atlanta-united-vs-toronto-fc",
       "name": "Atlanta United Vs Toronto FC",
@@ -720,9 +747,9 @@
           "competition_id": "145",
           "kickoff": "2026-11-01T21:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "4'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "33",
           "format": "",
@@ -737,9 +764,9 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -789,9 +816,9 @@
           "competition_id": "145",
           "kickoff": "2026-11-01T21:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "4'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "33",
           "format": "",
@@ -805,9 +832,9 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "PARTIAL_AUTHORITY",
       "tab": "today_match"
     },
     {
@@ -1108,11 +1135,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1201,9 +1228,9 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1630,9 +1657,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1802,8 +1829,8 @@
       "authorities": {
         "espn-header": {
           "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
+          "matched_by": "kickoff_lifted",
+          "verified": false,
           "event_id": "401883144",
           "upstream_family": "ESPN",
           "name": "Tenerife vs FC Andorra",
@@ -1813,19 +1840,19 @@
           "away_team_id": "20179",
           "competition": "Spanish LALIGA 2",
           "competition_id": "3921",
-          "kickoff": "2026-11-02T13:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "kickoff": "2026-11-01T20:00:00+00:00",
+          "kickoff_delta_minutes": -1020.0,
+          "status_raw": "Postponed",
+          "status_code": "STATUS_POSTPONED",
+          "status": "POSTPONED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Mon, November 2nd at 8:00 AM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "Postponed",
+          "espn_status_description": "Postponed",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3921~e:401883144~c:401883144"
@@ -1855,16 +1882,19 @@
         }
       },
       "authority_upstreams": [
-        "ESPN",
         "LiveScore"
       ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [
+        "ESPN"
+      ],
+      "near_miss_count": 1,
+      "conflict_reasons": [
+        "kickoff: ours 2026-11-02T13:00, espn-header 2026-11-01T20:00 (-1020.0 min)"
+      ],
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "upcoming"
     },
     {
@@ -2557,9 +2587,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2598,9 +2628,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2639,9 +2669,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2680,9 +2710,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2721,9 +2751,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2762,9 +2792,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3542,9 +3572,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3651,9 +3681,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3913,6 +3943,93 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:new-mexico-united-vs-phoenix-rising-fc|usl championship|2026-11-01",
+      "card_id": "new-mexico-united-vs-phoenix-rising-fc",
+      "name": "New Mexico United Vs Phoenix Rising FC",
+      "competition": "USL Championship",
+      "kickoff": "2026-11-01T23:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401931657",
+          "upstream_family": "ESPN",
+          "name": "New Mexico United vs Phoenix Rising FC",
+          "home": "New Mexico United",
+          "away": "Phoenix Rising FC",
+          "home_team_id": "19408",
+          "away_team_id": "17850",
+          "competition": "USL Championship",
+          "competition_id": "4002",
+          "kickoff": "2026-11-01T23:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, November 1st at 6:00 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:4002~e:401931657~c:401931657"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1911640",
+          "upstream_family": "LiveScore",
+          "name": "New Mexico United vs Phoenix Rising FC",
+          "home": "New Mexico United",
+          "away": "Phoenix Rising FC",
+          "home_team_id": "10559",
+          "away_team_id": "10016",
+          "competition": "USL Championship: Play-off",
+          "competition_id": "26684",
+          "kickoff": "2026-11-01T23:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "1/8",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:new-zealand-vs-india|one day international|2026-11-04",
       "card_id": "new-zealand-vs-india",
       "name": "New Zealand Vs India",
@@ -3966,9 +4083,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4044,9 +4161,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4143,11 +4260,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4237,9 +4354,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4706,9 +4823,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4783,11 +4900,11 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
         "sm-fancode",
-        "vk1817-fancode-mirror",
+        "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -4940,9 +5057,9 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -4964,94 +5081,6 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:river-plate-vs-boca-juniors|liga profesional de f tbol|2026-11-01",
-      "card_id": "river-plate-vs-boca-juniors",
-      "name": "River Plate Vs Boca Juniors",
-      "competition": "Liga Profesional de Fútbol",
-      "kickoff": "2026-11-01T18:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401841658",
-          "upstream_family": "ESPN",
-          "name": "Boca Juniors vs River Plate",
-          "home": "Boca Juniors",
-          "away": "River Plate",
-          "home_team_id": "5",
-          "away_team_id": "16",
-          "competition": "Argentine Liga Profesional de Fútbol",
-          "competition_id": "745",
-          "kickoff": "2026-11-01T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:745~e:401841658~c:401841658"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1715209",
-          "upstream_family": "LiveScore",
-          "name": "Boca Juniors vs River Plate",
-          "home": "Boca Juniors",
-          "away": "River Plate",
-          "home_team_id": "4572",
-          "away_team_id": "4802",
-          "competition": "Primera Division: Clausura",
-          "competition_id": "154",
-          "kickoff": "2026-11-01T18:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "15",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
     }
   ]
 }
