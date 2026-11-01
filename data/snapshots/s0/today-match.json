@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-01T14:52:06.993734+00:00",
-  "count": 22,
+  "updated_at": "2026-11-01T15:25:03.497394+00:00",
+  "count": 23,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -214,7 +214,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 13,
+      "carried_forward_misses": 15,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-01T11:04:47.519557+00:00"
     },
@@ -287,7 +287,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 8,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-01T13:04:52.272742+00:00"
     },
@@ -421,15 +421,15 @@
         "query_parameters": [],
         "drm": true
       },
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=44' (STATUS_FIRST_HALF, event 401902878); LiveScore livescore=FT (6, event 1850325)",
       "lifecycle_reason": "still live: primary_playable, backup_playable",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-01T14:44:34.165823+00:00"
+      "carried_forward_first_missed_at": "2026-11-01T14:44:34.165823+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=44' (STATUS_FIRST_HALF, event 401902878); LiveScore livescore=FT (6, event 1850325)"
     },
     {
       "id": "djurgårdens-if-vs-degerfors-if",
@@ -546,7 +546,15 @@
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_b50b3459e63d4a61746a1473ac39c7d1"
+      "playback_id": "ctv_b50b3459e63d4a61746a1473ac39c7d1",
+      "authority_status": "LIVE",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-01T15:04:52.843774+00:00"
     },
     {
       "id": "malmö-ff-vs-hammarby-if",
@@ -649,13 +657,15 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401842868)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401842868)",
+        "LiveScore livescore=FT (6, event 1710485)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -663,38 +673,106 @@
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_6a42ec92818b1eb2a4893bf94c962dfc"
+      "playback_id": "ctv_6a42ec92818b1eb2a4893bf94c962dfc",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-01T15:04:52.843774+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401842868); LiveScore livescore=FT (6, event 1710485)"
     },
     {
-      "id": "getafe-vs-sevilla",
-      "name": "Getafe Vs Sevilla",
-      "primary_stream_key": "08184478f9c080ba9031ad1b19686d0d1150fd3ad100765b541e3897e7844904",
+      "id": "getafe-cf-vs-sevilla-fc",
+      "name": "Getafe CF vs Sevilla FC",
+      "primary_stream_key": "",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/2859/image",
+      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4247669_53004_GEF_SEV_FC-Web.png",
       "category": "today_match",
-      "url": "https://chatgpt.hereisman.net/playlist/59026/load-playlist?&.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
+      "proxy_mode": "direct_first",
       "stream_type": "media",
-      "requires_headers": true,
+      "requires_headers": false,
       "inherit_manifest_query": false,
-      "verification_mode": "global",
+      "verification_mode": "none",
       "verification_status": "verified_global",
-      "verification_badge": "Verified",
+      "verification_badge": "",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
       "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "sm-sports-data",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "sm-fancode",
       "metadata_only": false,
       "available_link_count": 1,
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-fancode",
+          "source_name": "SM FanCode Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
+        },
+        {
+          "source_id": "vk1817-fancode-mirror",
+          "source_name": "FanCode Auto Update (Vk1817)",
+          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        }
+      ],
+      "source_ids": [
+        "sm-fancode",
+        "vk1817-fancode-mirror"
+      ],
+      "start_time": "2026-11-01T13:00:00+00:00",
+      "start_at": "2026-11-01T13:00:00+00:00",
+      "end_time": "2026-11-01T15:30:00+00:00",
+      "end_time_source": "sport",
+      "competition": "LALIGA 2026-27",
+      "fixture_id": "provider:getafe-cf-vs-sevilla-fc|laliga 2026 27|2026-11-01",
+      "status": "LINK_UPDATING",
+      "original_status": "UPCOMING",
+      "schedule_status": "LINK_UPDATING",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "source_start_time": "2026-11-01T13:00:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "league map",
+      "sport_class_evidence": "LALIGA",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882821)",
+        "LiveScore livescore=FT (6, event 1810767)"
+      ],
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882821); LiveScore livescore=FT (6, event 1810767)",
+      "allow_without_stream": true,
+      "route_failed_while_live": true,
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "STARTING",
       "backups": [],
+      "playback_id": "ctv_8f6ac062a68d684491ad20b5c7276393",
+      "resolution": "HD",
+      "resolution_height": 720,
+      "promoted_from_absorbed_backup": true,
       "channels": [
         {
-          "id": "getafe-vs-sevilla--espn-deportes",
+          "id": "getafe-cf-vs-sevilla-fc--espn-deportes",
           "name": "ESPN DEPORTES",
           "normalized_name": "espn-deportes",
           "logo": "https://img.sofascore.com/api/v1/team/2859/image",
@@ -704,7 +782,7 @@
           "source_ids": [
             "sm-sports-data"
           ],
-          "primary_stream_id": "getafe-vs-sevilla--espn-deportes--1",
+          "primary_stream_id": "getafe-cf-vs-sevilla-fc--espn-deportes--1",
           "stream_count": 1,
           "backup_count": 0,
           "verified": true,
@@ -715,7 +793,7 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "getafe-vs-sevilla--espn-deportes--1",
+              "id": "getafe-cf-vs-sevilla-fc--espn-deportes--1",
               "role": "primary",
               "playback_type": "native",
               "variant_key": "sv_f99cfa641ad16f9830e14f8d",
@@ -727,66 +805,18 @@
               "resolution_height": 720,
               "stream_type": "media"
             }
-          ]
+          ],
+          "absorbed_from_event_id": "getafe-vs-sevilla"
         }
       ],
       "channel_count": 1,
-      "default_channel_id": "getafe-vs-sevilla--espn-deportes",
-      "channel_stats": {
-        "streams_in": 2,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
+      "default_channel_id": "",
+      "absorbed_event_ids": [
+        "getafe-vs-sevilla"
       ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "start_time": "2026-11-01T13:00:00+00:00",
-      "start_at": "2026-11-01T13:00:00+00:00",
-      "end_time": "2026-11-01T15:44:16+00:00",
-      "end_time_source": "assumed",
-      "competition": "LaLiga",
-      "fixture_id": "provider:getafe-vs-sevilla|laliga|2026-11-01",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-01T13:00:00+00:00",
-      "time_verification": "provider_feed",
-      "source_category": "football",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "league map",
-      "sport_class_evidence": "LaLiga",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882821)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401882821"
-      },
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "reconciled_duplicate_count": 1,
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/eyh2891655594452.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vpsqqx1473502977.png",
-      "playback_id": "ctv_463a6b3cb7e63b6531849cf8e0ef8e1b"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vpsqqx1473502977.png"
     },
     {
       "id": "falkirk-fc-vs-celtic",
@@ -889,13 +919,15 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "Scottish Premiership",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401878349)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401878349)",
+        "LiveScore livescore=FT (6, event 1792835)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -905,20 +937,27 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/w37ucy1685023169.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/3uv1641758780002.png",
-      "playback_id": "ctv_6902b2d81f9692fd11a338294d79a278"
+      "playback_id": "ctv_6902b2d81f9692fd11a338294d79a278",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-01T15:04:52.843774+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401878349); LiveScore livescore=FT (6, event 1792835)"
     },
     {
       "id": "trabzonspor-vs-gaziantep-fk",
       "name": "Trabzonspor Vs Gaziantep FK",
-      "primary_stream_key": "b1bd0fd5a335bbb29113f3e194543b901c74dd5517275e579269af4779aaf96e",
+      "primary_stream_key": "0ea66fcc93e3a56aa66b8e87ca7fae60e30bc83df8650bafa623a84ed5e989fa",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/3051/image",
       "category": "today_match",
-      "url": "https://www.rtmpcdn.com/live/dbecb79b-56d4-454d-9416-a62e6d37c596.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
@@ -932,73 +971,9 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_bca13f088db0b4637860ab6703134d5d",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
+      "available_link_count": 1,
+      "backups": [],
       "channels": [
-        {
-          "id": "trabzonspor-vs-gaziantep-fk--stream-tv",
-          "name": "STREAM TV",
-          "normalized_name": "stream-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/3051/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "trabzonspor-vs-gaziantep-fk--stream-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "trabzonspor-vs-gaziantep-fk--stream-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_e21b1212af10e44e37a4a7e0",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_29da102b4e50d0c92ffd274ad0616021",
-              "stream_type": "hls"
-            }
-          ]
-        },
         {
           "id": "trabzonspor-vs-gaziantep-fk--bein-sports",
           "name": "beIN SPORTS",
@@ -1036,14 +1011,14 @@
           ]
         }
       ],
-      "channel_count": 2,
-      "default_channel_id": "trabzonspor-vs-gaziantep-fk--stream-tv",
+      "channel_count": 1,
+      "default_channel_id": "trabzonspor-vs-gaziantep-fk--bein-sports",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 1,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 2,
-        "variants": 2,
+        "channels": 1,
+        "variants": 1,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1057,9 +1032,15 @@
       "source_ids": [
         "sm-sports-data"
       ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "start_time": "2026-11-01T13:00:00+00:00",
       "start_at": "2026-11-01T13:00:00+00:00",
-      "end_time": "2026-11-01T15:44:16+00:00",
+      "end_time": "2026-11-01T16:24:24+00:00",
       "end_time_source": "assumed",
       "competition": "Trendyol Süper Lig",
       "fixture_id": "provider:trabzonspor-vs-gaziantep-fk|trendyol s per lig|2026-11-01",
@@ -1074,23 +1055,29 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401888263)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401888263)",
+        "LiveScore livescore=FT (6, event 1821039)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401888263"
-      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401888263); LiveScore livescore=FT (6, event 1821039)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/43oobe1672951178.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/54j6ik1579458093.png",
-      "playback_id": "ctv_319b92ae0a4ea583e54fa1a806029f97"
+      "playback_id": "ctv_bca13f088db0b4637860ab6703134d5d",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
     },
     {
       "id": "excelsior-vs-fc-twente",
@@ -1178,8 +1165,8 @@
       ],
       "start_time": "2026-11-01T13:30:00+00:00",
       "start_at": "2026-11-01T13:30:00+00:00",
-      "end_time": "2026-11-01T16:00:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-01T16:24:24+00:00",
+      "end_time_source": "assumed",
       "competition": "VriendenLoterij Eredivisie",
       "fixture_id": "provider:excelsior-vs-fc-twente|vriendenloterij eredivisie|2026-11-01",
       "status": "LIVE_NOW",
@@ -1193,23 +1180,22 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401875559)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401875559)",
+        "LiveScore livescore=FT (6, event 1790255)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401875559"
-      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401875559); LiveScore livescore=FT (6, event 1790255)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_4d05be9b316ff142faf61fb56320c03e",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bmbn9v1625172555.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rsrxrt1473534783.png"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rsrxrt1473534783.png",
+      "playback_id": "ctv_9a82374dfcd7fbb62ab24b02a08cedc1"
     },
     {
       "id": "sc-telstar-vs-fc-utrecht",
@@ -1297,8 +1283,8 @@
       ],
       "start_time": "2026-11-01T13:30:00+00:00",
       "start_at": "2026-11-01T13:30:00+00:00",
-      "end_time": "2026-11-01T16:00:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-01T16:24:24+00:00",
+      "end_time_source": "assumed",
       "competition": "VriendenLoterij Eredivisie",
       "fixture_id": "provider:sc-telstar-vs-fc-utrecht|vriendenloterij eredivisie|2026-11-01",
       "status": "LIVE_NOW",
@@ -1312,23 +1298,22 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401875558)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401875558)",
+        "LiveScore livescore=FT (6, event 1790251)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401875558"
-      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401875558); LiveScore livescore=FT (6, event 1790251)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xg1ss31579463659.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yuhha71625167104.png",
-      "playback_id": "ctv_81d25be4d920d67d27ef94cfd173393e"
+      "playback_id": "ctv_a4ad1083ef6189050e621aff22b6a13a"
     },
     {
       "id": "inter-kashi-fc-vs-fc-goa",
@@ -1452,6 +1437,8 @@
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/0fnldv1730217291.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/7z8ueq1583254723.png",
       "playback_id": "ctv_6fc9a04c49efc1641e586df49e36a571",
       "protected_source": true,
       "requires_credentials": true,
@@ -1459,9 +1446,7 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      },
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/0fnldv1730217291.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/7z8ueq1583254723.png"
+      }
     },
     {
       "id": "frosinone-vs-torino",
@@ -1716,6 +1701,8 @@
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/a7xa151603170120.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xxprty1448806802.png",
       "competition_from_source": "Serie A",
       "playback_id": "ctv_0b58ce8ca3c0a8b1a8f15d7383204915",
       "protected_source": true,
@@ -1724,9 +1711,7 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      },
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/a7xa151603170120.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xxprty1448806802.png"
+      }
     },
     {
       "id": "lazio-vs-cagliari",
@@ -2162,7 +2147,7 @@
       "sport_class_evidence": "Ligue 1",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_338bb3af2bb3e4c4db8fa707359172e2"
+      "playback_id": "ctv_b0bff68071ed86e1d26c17096e155271"
     },
     {
       "id": "birmingham-city-w-f-c-vs-tottenham-fc",
@@ -2550,16 +2535,17 @@
       }
     },
     {
-      "id": "london-city-lionesses-vs-manchester-city",
-      "name": "London City Lionesses vs Manchester City",
-      "primary_stream_key": "2378f87b47c1a3e10af1ae6459f418022cf30673af524ac85342d124e21826b3",
+      "id": "1-fc-union-berlin-vs-1-fc-köln",
+      "name": "1 FC Union Berlin Vs 1 FC Köln",
+      "primary_stream_key": "4aa12ff0114705d93f203b93ded1be9d652fe8f0342d18a87fc38eddc9dcd1e8",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.a354d0e9-11d7-460b-a126-692236dbbada/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+      "logo": "https://img.sofascore.com/api/v1/team/2547/image",
       "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
+      "url": "https://www.rtmpcdn.com/live/7f25ea19-5ab7-4e0f-977d-c420c02b2000.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
@@ -2571,41 +2557,12 @@
       "original_source_pipeline": "today_match",
       "content_kind": "event",
       "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-primevideo-sports",
+      "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 4,
+      "available_link_count": 2,
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -2616,44 +2573,15 @@
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+          "playback_id": "ctv_2a7dfdd878b5d0a7f661e99b81fefa63",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2665,19 +2593,19 @@
       ],
       "channels": [
         {
-          "id": "london-city-lionesses-vs-manchester-city--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.a354d0e9-11d7-460b-a126-692236dbbada/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "id": "1-fc-union-berlin-vs-1-fc-k-ln--quality",
+          "name": "QUALITY",
+          "normalized_name": "quality",
+          "logo": "https://img.sofascore.com/api/v1/team/2547/image",
           "name_confidence": "explicit",
           "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
+          "provider": "sm-sports-data",
           "source_ids": [
-            "srhady-primevideo-sports"
+            "sm-sports-data"
           ],
-          "primary_stream_id": "london-city-lionesses-vs-manchester-city--prime-video--1",
-          "stream_count": 4,
-          "backup_count": 3,
+          "primary_stream_id": "1-fc-union-berlin-vs-1-fc-k-ln--quality--1",
+          "stream_count": 1,
+          "backup_count": 0,
           "verified": true,
           "verification_status": "verified_global",
           "playback_types": [
@@ -2686,250 +2614,32 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "london-city-lionesses-vs-manchester-city--prime-video--1",
+              "id": "1-fc-union-berlin-vs-1-fc-k-ln--quality--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_0e638de706138f746f0f4bb0",
-              "provider": "srhady-primevideo-sports",
+              "variant_key": "sv_e95def5dd30ab79dfca998c4",
+              "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "london-city-lionesses-vs-manchester-city--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_5458cc437e60a57ab38df02d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "london-city-lionesses-vs-manchester-city--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "london-city-lionesses-vs-manchester-city--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_b9a4754dd8779c45821c460d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
+              "playback_id": "ctv_3c63b981c0f5d8647b1b0c3329a72b84",
+              "stream_type": "hls"
             }
           ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "london-city-lionesses-vs-manchester-city--prime-video",
-      "channel_stats": {
-        "streams_in": 4,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 4,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-01T14:24:24+00:00",
-      "start_at": "2026-11-01T14:24:24+00:00",
-      "end_time": "2026-11-01T16:54:24+00:00",
-      "end_time_source": "sport",
-      "fixture_id": "provider:london-city-lionesses-vs-manchester-city|2026-11-01",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "END_PENDING",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/524gpk1761707917.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/g5yrwh1599650049.png",
-      "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      },
-      "lifecycle_reason": "finished, holding for the post-match grace",
-      "end_pending": true,
-      "end_pending_confirmations": 0,
-      "ended_seen_at": "2026-11-01T14:44:34.165823+00:00",
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "finished, holding for the post-match grace",
-      "carried_forward_first_missed_at": "2026-11-01T14:44:34.165823+00:00"
-    },
-    {
-      "id": "charlton-athletic-vs-chelsea",
-      "name": "Charlton Athletic vs Chelsea",
-      "primary_stream_key": "2378f87b47c1a3e10af1ae6459f418022cf30673af524ac85342d124e21826b3",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.0c90a2c8-ab70-4fb9-be64-f63976bf80d4/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
-      "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-primevideo-sports",
-      "metadata_only": false,
-      "available_link_count": 4,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
         },
         {
-          "name": "Backup-2",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
-      "channels": [
-        {
-          "id": "charlton-athletic-vs-chelsea--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.0c90a2c8-ab70-4fb9-be64-f63976bf80d4/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "id": "1-fc-union-berlin-vs-1-fc-k-ln--dazn-sports",
+          "name": "DAZN SPORTS",
+          "normalized_name": "dazn-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2547/image",
           "name_confidence": "explicit",
           "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
+          "provider": "sm-sports-data",
           "source_ids": [
-            "srhady-primevideo-sports"
+            "sm-sports-data"
           ],
-          "primary_stream_id": "charlton-athletic-vs-chelsea--prime-video--1",
-          "stream_count": 4,
-          "backup_count": 3,
+          "primary_stream_id": "1-fc-union-berlin-vs-1-fc-k-ln--dazn-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
           "verified": true,
           "verification_status": "verified_global",
           "playback_types": [
@@ -2938,53 +2648,14 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "charlton-athletic-vs-chelsea--prime-video--1",
+              "id": "1-fc-union-berlin-vs-1-fc-k-ln--dazn-sports--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_0e638de706138f746f0f4bb0",
-              "provider": "srhady-primevideo-sports",
+              "variant_key": "sv_ddf11111c2f45e558a4ce64b",
+              "provider": "sm-sports-data",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "charlton-athletic-vs-chelsea--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_b9a4754dd8779c45821c460d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "charlton-athletic-vs-chelsea--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_5458cc437e60a57ab38df02d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "charlton-athletic-vs-chelsea--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+              "playback_id": "ctv_2a7dfdd878b5d0a7f661e99b81fefa63",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -2992,57 +2663,60 @@
           ]
         }
       ],
-      "channel_count": 1,
-      "default_channel_id": "charlton-athletic-vs-chelsea--prime-video",
+      "channel_count": 2,
+      "default_channel_id": "1-fc-union-berlin-vs-1-fc-k-ln--quality",
       "channel_stats": {
-        "streams_in": 4,
+        "streams_in": 2,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 4,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
       "source_provenance": [
         {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
         }
       ],
       "source_ids": [
-        "srhady-primevideo-sports"
+        "sm-sports-data"
       ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-01T14:44:16+00:00",
-      "start_at": "2026-11-01T14:44:16+00:00",
-      "end_time": "2026-11-01T17:14:16+00:00",
+      "start_time": "2026-11-01T14:30:00+00:00",
+      "start_at": "2026-11-01T14:30:00+00:00",
+      "end_time": "2026-11-01T17:00:00+00:00",
       "end_time_source": "sport",
-      "fixture_id": "provider:charlton-athletic-vs-chelsea|2026-11-01",
+      "competition": "German Bundesliga",
+      "fixture_id": "provider:1-fc-union-berlin-vs-1-fc-köln|bundesliga|2026-11-01",
       "status": "LIVE_NOW",
       "original_status": "LIVE",
       "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-01T14:30:00+00:00",
       "time_verification": "provider_feed",
+      "source_category": "football",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401884750)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401884750"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "competition_from_source": "Bundesliga",
+      "playback_id": "ctv_3c63b981c0f5d8647b1b0c3329a72b84"
     },
     {
       "id": "real-madrid-vs-real-racing-club",
@@ -3207,9 +2881,9 @@
       "end_time_source": "sport",
       "competition": "LaLiga",
       "fixture_id": "provider:real-madrid-vs-real-racing-club|laliga|2026-11-01",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-01T15:15:00+00:00",
@@ -3218,6 +2892,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882819)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401882819"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
@@ -3228,6 +2914,340 @@
         "query_parameters": [],
         "drm": true
       }
+    },
+    {
+      "id": "charlton-athletic-vs-chelsea",
+      "name": "Charlton Athletic vs Chelsea",
+      "primary_stream_key": "99fce3a348ae3c8199624a218047c8dc3315a59ac920dae15206ce1ae74d2e72",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.0c90a2c8-ab70-4fb9-be64-f63976bf80d4/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "srhady-primevideo-sports",
+      "metadata_only": false,
+      "available_link_count": 4,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "charlton-athletic-vs-chelsea--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.0c90a2c8-ab70-4fb9-be64-f63976bf80d4/3/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "charlton-athletic-vs-chelsea--prime-video--1",
+          "stream_count": 4,
+          "backup_count": 3,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "charlton-athletic-vs-chelsea--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "charlton-athletic-vs-chelsea--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_0e638de706138f746f0f4bb0",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "charlton-athletic-vs-chelsea--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_5458cc437e60a57ab38df02d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "charlton-athletic-vs-chelsea--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b9a4754dd8779c45821c460d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 1,
+      "default_channel_id": "charlton-athletic-vs-chelsea--prime-video",
+      "channel_stats": {
+        "streams_in": 4,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 4,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "srhady-primevideo-sports",
+          "source_name": "Prime Video Free Sports",
+          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+        }
+      ],
+      "source_ids": [
+        "srhady-primevideo-sports"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-01T15:24:24+00:00",
+      "start_at": "2026-11-01T15:24:24+00:00",
+      "end_time": "2026-11-01T17:54:24+00:00",
+      "end_time_source": "sport",
+      "fixture_id": "provider:charlton-athletic-vs-chelsea|2026-11-01",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/o08wvi1635872307.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/pbf4ul1782638263.png",
+      "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "fc-groningen-vs-sparta-rotterdam",
+      "name": "FC Groningen Vs Sparta Rotterdam",
+      "primary_stream_key": "",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/2951/image",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "media",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "none",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "sm-sports-data",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 1,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "start_time": "2026-11-01T15:45:00+00:00",
+      "start_at": "2026-11-01T15:45:00+00:00",
+      "end_time": "2026-11-01T18:15:00+00:00",
+      "end_time_source": "sport",
+      "competition": "VriendenLoterij Eredivisie",
+      "fixture_id": "provider:fc-groningen-vs-sparta-rotterdam|vriendenloterij eredivisie|2026-11-01",
+      "status": "STARTING_SOON",
+      "original_status": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-01T15:45:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401875557)",
+        "LiveScore livescore=NS (1, event 1790258)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401875557",
+        "livescore": "1790258"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "allow_without_stream": true,
+      "routing_changed_from": "upcoming",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-01T15:24:51.982957+00:00"
     }
   ]
 }
