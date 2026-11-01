@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-01T09:22:15.595250+00:00",
+  "generated_at": "2026-11-01T09:25:54.483606+00:00",
   "today_match_count": 11,
   "upcoming_count": 56,
   "today_missing_logo": [],
@@ -8,7 +8,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 197,
+  "provider_fixture": 193,
   "provider_rejected": 111,
   "provider_rejected_reasons": {
     "provider_dead_status": 79,
@@ -596,7 +596,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 197,
+    "total": 193,
     "discarded": 36,
     "examples": [
       {
@@ -785,7 +785,7 @@
       },
       {
         "name": "Horse Racing",
-        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, sayanp",
+        "source": "sm-sports-data, sportlive-fancode-backup, sm-fancode, drmliv",
         "competition": "Horse Racing",
         "sport_type": "",
         "reason": "horse racing gazetteer",
@@ -891,11 +891,11 @@
   },
   "reused_event_ids": 0,
   "authority_status": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
-    "live": 0,
-    "recorded": 35,
-    "conflict": 3,
+    "live": 2,
+    "recorded": 34,
+    "conflict": 1,
     "unmatched": 26,
     "start_window": 0,
     "start_window_fixtures": [],
@@ -925,38 +925,39 @@
       }
     ],
     "by_status": {
-      "UPCOMING": 37
+      "LIVE": 2,
+      "UPCOMING": 36,
+      "FINISHED": 1
     },
     "by_confidence": {
       "LOW": 10,
-      "CONFLICT": 3,
-      "HIGH": 27
+      "CONFLICT": 1,
+      "HIGH": 29
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "England vs South Africa",
+        "fixture_id": "provider:england-vs-south-africa|hong kong sixes 2026|2026-11-01",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1559214)",
+          "LiveScore livescore=FT (6, event 1913730)"
+        ],
+        "authority_finished_seen_at": "2026-11-01T09:24:57.245845+00:00",
+        "remove_after": "2026-11-01T09:44:57.245845+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": ""
+      }
+    ],
     "conflicts": [
       {
         "name": "Sydney Thunder Women Vs Brisbane Heat Women",
         "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543949); LiveScore livescore=FT (6, event 1813033)",
-        "status": "",
-        "confidence": "CONFLICT",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
-        "name": "Namibia vs Ireland",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558235); LiveScore livescore=Play in progress (33, event 1907919)",
-        "status": "",
-        "confidence": "CONFLICT",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
-        "name": "England vs South Africa",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1559214); LiveScore livescore=FT (6, event 1913730)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -969,36 +970,28 @@
   "authority_status_carried": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 0,
-    "recorded": 2,
-    "conflict": 2,
+    "live": 2,
+    "recorded": 1,
+    "conflict": 1,
     "unmatched": 5,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 2
+      "UPCOMING": 1,
+      "LIVE": 2
     },
     "by_confidence": {
-      "CONFLICT": 2,
-      "LOW": 2
+      "CONFLICT": 1,
+      "LOW": 2,
+      "HIGH": 1
     },
     "applied_fixtures": [],
     "conflicts": [
       {
         "name": "Sydney Thunder Women Vs Brisbane Heat Women",
         "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543949); LiveScore livescore=FT (6, event 1813033)",
-        "status": "",
-        "confidence": "CONFLICT",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
-        "name": "Namibia vs Ireland",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558235); LiveScore livescore=Play in progress (33, event 1907919)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1158,6 +1151,14 @@
           "rejected": 0,
           "published": 18
         },
+        "srhady-willow-event": {
+          "total": 15,
+          "cricket": 15,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 15
+        },
         "srhady-primevideo-sports": {
           "total": 4,
           "cricket": 3,
@@ -1165,22 +1166,6 @@
           "quarantined": 1,
           "rejected": 0,
           "published": 3
-        },
-        "srhady-willow-event": {
-          "total": 16,
-          "cricket": 16,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 16
-        },
-        "sm-fancode": {
-          "total": 17,
-          "cricket": 7,
-          "football": 10,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 17
         },
         "sportlive-fancode-backup": {
           "total": 17,
@@ -1190,7 +1175,7 @@
           "rejected": 0,
           "published": 17
         },
-        "sayanpal-fancode-mirror": {
+        "sm-fancode": {
           "total": 17,
           "cricket": 7,
           "football": 10,
@@ -1199,6 +1184,14 @@
           "published": 17
         },
         "drmlive-fancode-mirror": {
+          "total": 17,
+          "cricket": 7,
+          "football": 10,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 17
+        },
+        "sayanpal-fancode-mirror": {
           "total": 17,
           "cricket": 7,
           "football": 10,
@@ -1284,6 +1277,14 @@
           "rejected": 0,
           "published": 5
         },
+        "srhady-willow-event": {
+          "total": 1,
+          "cricket": 1,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
+        },
         "srhady-primevideo-sports": {
           "total": 4,
           "cricket": 3,
@@ -1291,14 +1292,6 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 4
-        },
-        "srhady-willow-event": {
-          "total": 2,
-          "cricket": 2,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 2
         },
         "sm-fancode": {
           "total": 1,
@@ -1339,14 +1332,6 @@
           "rejected": 0,
           "published": 37
         },
-        "sm-fancode": {
-          "total": 17,
-          "cricket": 7,
-          "football": 10,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 17
-        },
         "sportlive-fancode-backup": {
           "total": 17,
           "cricket": 7,
@@ -1355,7 +1340,7 @@
           "rejected": 0,
           "published": 17
         },
-        "sayanpal-fancode-mirror": {
+        "sm-fancode": {
           "total": 17,
           "cricket": 7,
           "football": 10,
@@ -1378,6 +1363,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 12
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 17,
+          "cricket": 7,
+          "football": 10,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 17
         }
       },
       "rejected_examples": [],
@@ -1393,7 +1386,7 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 308,
+    "raw_events": 304,
     "cricket_kept": 29,
     "football_kept": 37,
     "other_discarded": 39,
@@ -1443,9 +1436,9 @@
     "targeted_fixtures": 10,
     "targeted_attempts": 62,
     "fixtures_with_a_first_link_time": 0,
-    "candidate_routes": 94,
+    "candidate_routes": 90,
     "verified_routes": 53,
-    "failed_routes": 41,
+    "failed_routes": 37,
     "fixtures_touched_by_a_route_failure": 21,
     "fixtures_left_with_nothing": 14,
     "distinct_failure_codes": 4,
@@ -1455,13 +1448,13 @@
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 67,
-    "verified": 37,
+    "verified": 38,
     "partial_authority": 1,
     "unverified": 27,
-    "conflict": 2,
+    "conflict": 1,
     "matched_by_two_independent_authorities": 29,
-    "authority_agreements": 27,
-    "authority_disagreements": 2,
+    "authority_agreements": 28,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
