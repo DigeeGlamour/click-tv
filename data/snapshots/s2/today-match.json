@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-01T00:04:16.267346+00:00",
-  "count": 5,
+  "updated_at": "2026-11-01T00:44:20.609937+00:00",
+  "count": 6,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -239,7 +239,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_e3b9806dd2bed0655bf2c11a8b4f635f",
       "protected_source": true,
       "requires_credentials": true,
@@ -248,13 +248,13 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 18,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 20,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-10-31T18:44:48.097701+00:00",
       "authority_near_misses": [
         {
@@ -279,7 +279,9 @@
           "kickoff_delta_minutes": -624.1,
           "status": "FINISHED"
         }
-      ]
+      ],
+      "end_pending": true,
+      "end_pending_confirmations": 20
     },
     {
       "id": "individual-world-championship-stuttgart",
@@ -528,7 +530,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-10-31T21:44:41.708531+00:00"
     },
@@ -625,7 +627,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-31T22:15:00+00:00",
       "start_at": "2026-10-31T22:15:00+00:00",
-      "end_time": "2026-11-01T01:03:58+00:00",
+      "end_time": "2026-11-01T01:43:57+00:00",
       "end_time_source": "assumed",
       "competition": "Liga Profesional de Fútbol",
       "fixture_id": "provider:vélez-sarsfield-vs-san-lorenzo|liga profesional de f tbol|2026-10-31",
@@ -640,31 +642,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_near_misses": [
-        {
-          "authority": "livescore",
-          "matched_by": "ambiguous",
-          "event_id": "1715220",
-          "upstream_family": "LiveScore",
-          "name": "Velez Sarsfield vs San Lorenzo de Almagro",
-          "competition": "Primera Division: Clausura",
-          "kickoff": "2026-10-31T22:15:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status": "UNKNOWN"
-        }
-      ],
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841646)"
+        "ESPN espn-header=89' (STATUS_SECOND_HALF, event 401841646)",
+        "LiveScore livescore=FT (6, event 1715220)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401841646"
-      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=89' (STATUS_SECOND_HALF, event 401841646); LiveScore livescore=FT (6, event 1715220)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/jo98m71517769587.png",
@@ -837,7 +825,7 @@
       "resolution_height": 1080,
       "start_time": "2026-10-31T22:30:00+00:00",
       "start_at": "2026-10-31T22:30:00+00:00",
-      "end_time": "2026-11-01T01:03:58+00:00",
+      "end_time": "2026-11-01T01:43:57+00:00",
       "end_time_source": "assumed",
       "competition": "Brasileirão Série B",
       "fixture_id": "provider:náutico-vs-avaí|brasileir o s rie b|2026-10-31",
@@ -852,31 +840,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_near_misses": [
-        {
-          "authority": "livescore",
-          "matched_by": "ambiguous",
-          "event_id": "1741425",
-          "upstream_family": "LiveScore",
-          "name": "Nautico vs Avai FC",
-          "competition": "Serie B",
-          "kickoff": "2026-10-31T22:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status": "UNKNOWN"
-        }
-      ],
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401860421)"
+        "ESPN espn-header=63' (STATUS_SECOND_HALF, event 401860421)",
+        "LiveScore livescore=FT (6, event 1741425)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401860421"
-      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=63' (STATUS_SECOND_HALF, event 401860421); LiveScore livescore=FT (6, event 1741425)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wywuwv1464886832.png",
@@ -958,14 +932,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_f4affe7351bd4a1a3a50c583feb9bec2",
+          "playback_id": "ctv_330199cfee4a8525ea95ae9d5f78ab84",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -987,14 +961,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_330199cfee4a8525ea95ae9d5f78ab84",
+          "playback_id": "ctv_f4affe7351bd4a1a3a50c583feb9bec2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1056,11 +1030,11 @@
               "id": "mlp-nations-cup--prime-video--3",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_883444f1c5b28e7f82b7489c",
+              "variant_key": "sv_d1135d6f2b0c99af4eda6235",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_f4affe7351bd4a1a3a50c583feb9bec2",
+              "playback_id": "ctv_330199cfee4a8525ea95ae9d5f78ab84",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1069,11 +1043,11 @@
               "id": "mlp-nations-cup--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_d1135d6f2b0c99af4eda6235",
+              "variant_key": "sv_883444f1c5b28e7f82b7489c",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_330199cfee4a8525ea95ae9d5f78ab84",
+              "playback_id": "ctv_f4affe7351bd4a1a3a50c583feb9bec2",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1108,11 +1082,11 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-10-31T23:44:09+00:00",
-      "start_at": "2026-10-31T23:44:09+00:00",
-      "end_time": "2026-11-01T03:44:09+00:00",
+      "start_time": "2026-11-01T00:43:57+00:00",
+      "start_at": "2026-11-01T00:43:57+00:00",
+      "end_time": "2026-11-01T04:43:57+00:00",
       "end_time_source": "assumed",
-      "fixture_id": "provider:mlp-nations-cup|2026-10-31",
+      "fixture_id": "provider:mlp-nations-cup|2026-11-01",
       "status": "LIVE_NOW",
       "original_status": "LIVE",
       "schedule_status": "LIVE_NOW",
@@ -1131,15 +1105,98 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
+      }
+    },
+    {
+      "id": "cf-monterrey-vs-club-tijuana",
+      "name": "CF Monterrey Vs Club Tijuana",
+      "primary_stream_key": "",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/1932/image",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "media",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "none",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "sm-sports-data",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 1,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "start_time": "2026-11-01T01:05:00+00:00",
+      "start_at": "2026-11-01T01:05:00+00:00",
+      "end_time": "2026-11-01T03:35:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Liga MX, Apertura",
+      "fixture_id": "provider:cf-monterrey-vs-club-tijuana|liga mx apertura|2026-11-01",
+      "status": "STARTING_SOON",
+      "original_status": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-01T01:05:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876914)",
+        "LiveScore livescore=NS (1, event 1799064)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401876914",
+        "livescore": "1799064"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "allow_without_stream": true,
+      "routing_changed_from": "upcoming",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yglj911721542561.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/b0mky81779772352.png",
+      "lifecycle_reason": "still live: authority_live",
       "lifecycle_protections": [
-        "primary_playable",
-        "backup_playable"
+        "authority_live"
       ],
       "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-01T00:04:09.908158+00:00"
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-01T00:44:13.184654+00:00"
     }
   ]
 }
