@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-01T20:11:52.367174+00:00",
-  "count": 12,
-  "filtered_stale": 1,
+  "updated_at": "2026-11-01T20:24:56.170822+00:00",
+  "count": 14,
+  "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -69,7 +69,14 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-01T20:24:48.284163+00:00"
     },
     {
       "id": "west-indies-a-vs-england-lions",
@@ -148,7 +155,14 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE"
+      "lifecycle_state": "LIVE",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-01T20:24:48.284163+00:00"
     },
     {
       "id": "olympique-lyonnais-vs-angers",
@@ -273,7 +287,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-01T19:05:03.811280+00:00"
     },
@@ -476,7 +490,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-01T19:05:03.811280+00:00",
       "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90' (STATUS_SECOND_HALF, event 401876415); LiveScore livescore=FT (6, event 1794723)"
@@ -780,7 +794,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-01T19:05:03.811280+00:00",
       "authority_end_conflict": "independent authorities disagree: ESPN espn-header=75' (STATUS_SECOND_HALF, event 401879246); LiveScore livescore=FT (6, event 1793615)"
@@ -919,7 +933,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-01T19:05:03.811280+00:00",
       "authority_end_conflict": "independent authorities disagree: ESPN espn-header=74' (STATUS_SECOND_HALF, event 401884752); LiveScore livescore=FT (6, event 1812767)"
@@ -1045,18 +1059,21 @@
       },
       "authority_status": "LIVE",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/e4vaw51655594332.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/dm8l6o1655594864.png",
       "playback_id": "ctv_5a0093aa73f6b73704281a0545e16443",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=31' (STATUS_FIRST_HALF, event 401882823); LiveScore livescore=FT (6, event 1810760)",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-01T20:04:59.344448+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-01T20:04:59.344448+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=31' (STATUS_FIRST_HALF, event 401882823); LiveScore livescore=FT (6, event 1810760)",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-01T20:24:48.284163+00:00"
     },
     {
       "id": "river-plate-vs-boca-juniors",
@@ -1159,13 +1176,15 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=3' (STATUS_FIRST_HALF, event 401841658)"
+        "ESPN espn-header=3' (STATUS_FIRST_HALF, event 401841658)",
+        "LiveScore livescore=FT (6, event 1715209)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1176,7 +1195,588 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/03dmi31645539717.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/bm7krb1775741582.png",
-      "playback_id": "ctv_6f24cb778f20a1bccf11605a9cbff88e"
+      "playback_id": "ctv_6f24cb778f20a1bccf11605a9cbff88e",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=3' (STATUS_FIRST_HALF, event 401841658); LiveScore livescore=FT (6, event 1715209)",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-01T20:24:48.284163+00:00"
+    },
+    {
+      "id": "ssc-napoli-vs-juventus",
+      "name": "SSC Napoli Vs Juventus",
+      "primary_stream_key": "6af535d7f4aa5f174da49cb224449aa0aae9df98ef0e75fe8cdcd9b505fe7a99",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/2714/image",
+      "category": "today_match",
+      "url": "https://chatgpt.hereisman.net/playlist/59067/load-playlist?&.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "media",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 5,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "https://www.rtmpcdn.com/live/faafe427-f082-4a44-a5df-ea87e871fde0.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "www.rtmpcdn.com",
+          "playback_id": "ctv_9ab70e56dc87a80e7b1669043b7641ca"
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_33be1f17dc698018793b6bedd0e1cec8",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_76d858047dfeec76d367e530359f3d69",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_a169d7a225d58c6a6fb52133abb485de",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "ssc-napoli-vs-juventus--paramount",
+          "name": "PARAMOUNT+",
+          "normalized_name": "paramount",
+          "logo": "https://img.sofascore.com/api/v1/team/2714/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "ssc-napoli-vs-juventus--paramount--1",
+          "stream_count": 2,
+          "backup_count": 1,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "ssc-napoli-vs-juventus--paramount--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_e31c6ca8b514a04285c41a0b",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_a169d7a225d58c6a6fb52133abb485de",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "ssc-napoli-vs-juventus--paramount--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_ffe18f07cb119ee5635aecf6",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_506355a015933a13e07b67a96f0d5f80",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "media"
+            }
+          ]
+        },
+        {
+          "id": "ssc-napoli-vs-juventus--peacock-tv",
+          "name": "PEACOCK TV",
+          "normalized_name": "peacock-tv",
+          "logo": "https://img.sofascore.com/api/v1/team/2714/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "ssc-napoli-vs-juventus--peacock-tv--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "ssc-napoli-vs-juventus--peacock-tv--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_ba7269e2d23592514c4a9e76",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_33be1f17dc698018793b6bedd0e1cec8",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "ssc-napoli-vs-juventus--fubo-sports",
+          "name": "FUBO SPORTS",
+          "normalized_name": "fubo-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2714/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "ssc-napoli-vs-juventus--fubo-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "ssc-napoli-vs-juventus--fubo-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_f61df56c520356647d37c028",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_76d858047dfeec76d367e530359f3d69",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "ssc-napoli-vs-juventus--quality-4",
+          "name": "QUALITY 4",
+          "normalized_name": "quality-4",
+          "logo": "https://img.sofascore.com/api/v1/team/2714/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "ssc-napoli-vs-juventus--quality-4--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "ssc-napoli-vs-juventus--quality-4--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_5d6dc4a2453d32c4937368f7",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_9ab70e56dc87a80e7b1669043b7641ca",
+              "stream_type": "hls"
+            }
+          ]
+        }
+      ],
+      "channel_count": 4,
+      "default_channel_id": "ssc-napoli-vs-juventus--paramount",
+      "channel_stats": {
+        "streams_in": 5,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 4,
+        "variants": 5,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "resolution": "HD",
+      "resolution_height": 720,
+      "start_time": "2026-11-01T19:45:00+00:00",
+      "start_at": "2026-11-01T19:45:00+00:00",
+      "end_time": "2026-11-01T22:15:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Italian Serie A",
+      "fixture_id": "provider:ssc-napoli-vs-juventus|serie a|2026-11-01",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-01T19:45:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401874949)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401874949"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/l8qyxv1742982541.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/uxf0gr1742983727.png",
+      "competition_from_source": "Serie A",
+      "playback_id": "ctv_506355a015933a13e07b67a96f0d5f80"
+    },
+    {
+      "id": "olympique-de-marseille-vs-toulouse",
+      "name": "Olympique de Marseille Vs Toulouse",
+      "primary_stream_key": "362835091d9b41b43a3be49bba72aca6c75bb143abfdc8af7b247e85d5fd0a8b",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/1641/image",
+      "category": "today_match",
+      "url": "https://www.rtmpcdn.com/live/92e0e587-95ef-4062-8529-7aba997d5b81.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 3,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_2c7e77512615e82d232a667cbb0cd1e6",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_53a27080e1a8afafa4e83f60a815bf00",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "olympique-de-marseille-vs-toulouse--quality-3",
+          "name": "QUALITY 3",
+          "normalized_name": "quality-3",
+          "logo": "https://img.sofascore.com/api/v1/team/1641/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "olympique-de-marseille-vs-toulouse--quality-3--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "olympique-de-marseille-vs-toulouse--quality-3--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_6399a94a791486e236ea76f1",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_78634ebd5b6f47643b8d238d02855aca",
+              "stream_type": "hls"
+            }
+          ]
+        },
+        {
+          "id": "olympique-de-marseille-vs-toulouse--bein-sports",
+          "name": "beIN SPORTS",
+          "normalized_name": "bein-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/1641/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "olympique-de-marseille-vs-toulouse--bein-sports--1",
+          "stream_count": 2,
+          "backup_count": 1,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "olympique-de-marseille-vs-toulouse--bein-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_a59fab2a54cb70ab15eedf8e",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_2c7e77512615e82d232a667cbb0cd1e6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "olympique-de-marseille-vs-toulouse--bein-sports--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_8c53f2f8e7abc47219144ab5",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_53a27080e1a8afafa4e83f60a815bf00",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 2,
+      "default_channel_id": "olympique-de-marseille-vs-toulouse--quality-3",
+      "channel_stats": {
+        "streams_in": 3,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 2,
+        "variants": 3,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "start_time": "2026-11-01T19:45:00+00:00",
+      "start_at": "2026-11-01T19:45:00+00:00",
+      "end_time": "2026-11-01T22:15:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Ligue 1",
+      "fixture_id": "provider:olympique-de-marseille-vs-toulouse|ligue 1|2026-11-01",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-01T19:45:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "league map",
+      "sport_class_evidence": "Ligue 1",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876417)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401876417"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_78634ebd5b6f47643b8d238d02855aca"
     },
     {
       "id": "athletic-club-vs-real-sociedad",
@@ -1284,33 +1884,30 @@
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882826)",
-        "LiveScore livescore=NS (1, event 1810759)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882826)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "401882826",
-        "livescore": "1810759"
+        "espn-header": "401882826"
       },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_337bc809d0882913be335321f5945289"
+      "playback_id": "ctv_f77e902e56e4affc313b4f455f47920e"
     },
     {
       "id": "mlp-nations-cup-2026-day-3",
       "name": "MLP Nations Cup 2026 Day 3",
-      "primary_stream_key": "0045ef1a0c22a2d8114bdb8afe6c89aa812a986c74ebf0f37116153ad7ddd2af",
+      "primary_stream_key": "321a90ad12c8092a0eec2a7549bcd2f8047c663a0c1ea358c1bb0138d1899f81",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.c1d56fc6-fd0e-4a79-9f6a-c03c6b8fa8fa/2/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
       "category": "today_match",
-      "header_profile": "android_tv",
+      "header_profile": "android_chrome",
       "proxy_mode": "proxy_only",
       "stream_type": "dash",
       "requires_headers": false,
@@ -1330,7 +1927,7 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -1341,14 +1938,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_239ff9634495087ad640ab8721a873c8",
+          "playback_id": "ctv_f4affe7351bd4a1a3a50c583feb9bec2",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1399,14 +1996,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_f4affe7351bd4a1a3a50c583feb9bec2",
+          "playback_id": "ctv_330199cfee4a8525ea95ae9d5f78ab84",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1442,11 +2039,11 @@
               "id": "mlp-nations-cup-2026-day-3--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_d1135d6f2b0c99af4eda6235",
+              "variant_key": "sv_66d2142d0eb6a25e644f76e2",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_330199cfee4a8525ea95ae9d5f78ab84",
+              "playback_id": "ctv_239ff9634495087ad640ab8721a873c8",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1455,11 +2052,11 @@
               "id": "mlp-nations-cup-2026-day-3--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_66d2142d0eb6a25e644f76e2",
+              "variant_key": "sv_883444f1c5b28e7f82b7489c",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_239ff9634495087ad640ab8721a873c8",
+              "playback_id": "ctv_f4affe7351bd4a1a3a50c583feb9bec2",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1481,11 +2078,11 @@
               "id": "mlp-nations-cup-2026-day-3--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_883444f1c5b28e7f82b7489c",
+              "variant_key": "sv_d1135d6f2b0c99af4eda6235",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_f4affe7351bd4a1a3a50c583feb9bec2",
+              "playback_id": "ctv_330199cfee4a8525ea95ae9d5f78ab84",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1520,9 +2117,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-01T20:04:24+00:00",
-      "start_at": "2026-11-01T20:04:24+00:00",
-      "end_time": "2026-11-02T00:04:24+00:00",
+      "start_time": "2026-11-01T20:24:21+00:00",
+      "start_at": "2026-11-01T20:24:21+00:00",
+      "end_time": "2026-11-02T00:24:21+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:mlp-nations-cup-2026",
       "status": "LIVE_NOW",
@@ -1536,7 +2133,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_330199cfee4a8525ea95ae9d5f78ab84",
+      "playback_id": "ctv_239ff9634495087ad640ab8721a873c8",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1548,7 +2145,7 @@
     {
       "id": "stony-brook-vs-hofstra-womens-soccer",
       "name": "Stony Brook vs Hofstra Women's Soccer",
-      "primary_stream_key": "07c9e71fcac4b098994dbba2c17784239cde5aeb51e28631d40bbc5ea77674bd",
+      "primary_stream_key": "677b4ee8402316633bf615579cdca5f721ccf57e5eb539bdf6d87f1c33989246",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.f0863f63-b7c7-4f31-804a-d97c45b1104a/8/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
@@ -1642,14 +2239,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_5e022ad6b2dc091c0d8c441de033a5e7",
+          "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1685,11 +2282,11 @@
               "id": "stony-brook-vs-hofstra-womens-soccer--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_ea63e494f67b40f1a47957d6",
+              "variant_key": "sv_2d64a69c5e7ff40087da8cd5",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
+              "playback_id": "ctv_5e022ad6b2dc091c0d8c441de033a5e7",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1724,11 +2321,11 @@
               "id": "stony-brook-vs-hofstra-womens-soccer--prime-video--4",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_2d64a69c5e7ff40087da8cd5",
+              "variant_key": "sv_ea63e494f67b40f1a47957d6",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
               "verified": true,
-              "playback_id": "ctv_5e022ad6b2dc091c0d8c441de033a5e7",
+              "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1763,9 +2360,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-01T20:04:24+00:00",
-      "start_at": "2026-11-01T20:04:24+00:00",
-      "end_time": "2026-11-01T22:34:24+00:00",
+      "start_time": "2026-11-01T20:24:21+00:00",
+      "start_at": "2026-11-01T20:24:21+00:00",
+      "end_time": "2026-11-01T22:54:21+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:stony-brook-vs-hofstra-soccer-women|2026-11-01",
       "status": "LIVE_NOW",
@@ -1786,7 +2383,7 @@
           "name": "Hofstra vs Stony Brook",
           "competition": "NCAA Women's Soccer",
           "kickoff": "2026-11-01T18:00:00+00:00",
-          "kickoff_delta_minutes": -124.4,
+          "kickoff_delta_minutes": -144.3,
           "status": "UPCOMING"
         }
       ],
@@ -1794,7 +2391,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/1ncmkn1642722759.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/oehh511641185172.png",
-      "playback_id": "ctv_310fb85ee379cccc9de79c93d79d42bc",
+      "playback_id": "ctv_5e022ad6b2dc091c0d8c441de033a5e7",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -1881,11 +2478,18 @@
         "livescore": "1696763"
       },
       "event_type": "today_match",
-      "lifecycle_state": "UPCOMING",
+      "lifecycle_state": "LIVE",
       "allow_without_stream": true,
       "routing_changed_from": "upcoming",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tpwxpy1473536521.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/2dy5cx1706711036.png"
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/2dy5cx1706711036.png",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-01T20:24:48.284163+00:00"
     }
   ]
 }
