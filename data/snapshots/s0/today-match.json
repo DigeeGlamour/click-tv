@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-02T09:25:08.107487+00:00",
+  "updated_at": "2026-11-02T10:24:53.296183+00:00",
   "count": 7,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -65,24 +65,11 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "LiveScore livescore=Play in progress (33, event 1904010)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "livescore": "1904010"
-      },
-      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE"
+      "lifecycle_state": "STARTING"
     },
     {
       "id": "npl",
@@ -721,17 +708,22 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1543951)",
+        "ESPN espn-header=Live (Live, event 1543951)",
         "LiveScore livescore=Play in progress (33, event 1813041)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543951); LiveScore livescore=Play in progress (33, event 1813041)",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1543951",
+        "livescore": "1813041"
+      },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_ef23facc8d5669f4ef537d20e141fa22"
@@ -983,7 +975,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-02T08:44:34.011182+00:00"
     },
@@ -1093,7 +1085,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_6c4fd29251dffe2c733dc247c7857723",
       "protected_source": true,
       "requires_credentials": true,
@@ -1102,14 +1094,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-02T06:44:42.856452+00:00"
+      "carried_forward_misses": 12,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-02T06:44:42.856452+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 12,
+      "ended_seen_at": "2026-11-02T10:24:46.557234+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "mls-wrap-up",
@@ -1217,7 +1213,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_feef2f8f2a97d2054eda2b7ccee601dd",
       "protected_source": true,
       "requires_credentials": true,
@@ -1226,14 +1222,18 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-02T06:44:42.856452+00:00"
+      "carried_forward_misses": 12,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-02T06:44:42.856452+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 12,
+      "ended_seen_at": "2026-11-02T10:24:46.557234+00:00",
+      "lifecycle_end_basis": "estimate"
     }
   ]
 }
