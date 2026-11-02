@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-02T20:44:29.240537+00:00",
+  "updated_at": "2026-11-02T21:44:56.079936+00:00",
   "count": 13,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -69,7 +69,14 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-02T21:44:51.549536+00:00"
     },
     {
       "id": "tractor-vs-pfc-neftchi",
@@ -140,7 +147,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-02T18:44:47.695258+00:00"
     },
@@ -210,22 +217,40 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=69' (STATUS_SECOND_HALF, event 401912629)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401912629)",
         "LiveScore livescore=FT (6, event 1873576)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=69' (STATUS_SECOND_HALF, event 401912629); LiveScore livescore=FT (6, event 1873576)",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-02T21:04:48.738116+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401912629",
+        "livescore": "1873576"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-02T21:44:33.018029+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-02T22:04:33.018029+00:00",
+      "ended_seen_at": "2026-11-02T21:44:51.549536+00:00"
     },
     {
       "id": "atalanta-vs-parma",
@@ -256,25 +281,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "url": "https://live.vivo155.com/live/hd-en-1-4549095.m3u8?txSecret=ae30515d7eb51e070ef3d9953be8358e&txTime=6AE8FC4F",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_first",
-          "stream_type": "hls",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "live.vivo155.com",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_0712d397607781c9fa553611f0d96b40"
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -303,7 +309,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -332,7 +338,7 @@
           }
         },
         {
-          "name": "Backup-4",
+          "name": "Backup-3",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -361,7 +367,7 @@
           }
         },
         {
-          "name": "Backup-5",
+          "name": "Backup-4",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -388,9 +394,113 @@
             "query_parameters": [],
             "drm": true
           }
+        },
+        {
+          "name": "Backup-5",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
         }
       ],
       "channels": [
+        {
+          "id": "atalanta-vs-parma--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.9749d0eb-e5d3-4ae2-a5c6-bdfb07f24044/5/BOXART-16X9/en-US/1920x1080._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMpng_.png",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "atalanta-vs-parma--prime-video--1",
+          "stream_count": 4,
+          "backup_count": 3,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "atalanta-vs-parma--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_0e638de706138f746f0f4bb0",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "atalanta-vs-parma--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "atalanta-vs-parma--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b9a4754dd8779c45821c460d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "atalanta-vs-parma--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_5458cc437e60a57ab38df02d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
         {
           "id": "atalanta-vs-parma--tnt1uk-sports",
           "name": "TNT1UK SPORTS",
@@ -421,81 +531,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_3ddf34745777e2e6f9784f9dd634e082",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "atalanta-vs-parma--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.9749d0eb-e5d3-4ae2-a5c6-bdfb07f24044/5/BOXART-16X9/en-US/1920x1080._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMpng_.png",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
-          "source_ids": [
-            "srhady-primevideo-sports"
-          ],
-          "primary_stream_id": "atalanta-vs-parma--prime-video--1",
-          "stream_count": 4,
-          "backup_count": 3,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "atalanta-vs-parma--prime-video--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_c2976ef28b75526dffdfcc0a",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4ab22fcc4544a61c348165bad460ead2",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "atalanta-vs-parma--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_0e638de706138f746f0f4bb0",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_bf3b78725f4f61359e1922ef278f7e75",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "atalanta-vs-parma--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_b9a4754dd8779c45821c460d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "atalanta-vs-parma--prime-video--4",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_5458cc437e60a57ab38df02d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -575,42 +610,6 @@
           ]
         },
         {
-          "id": "atalanta-vs-parma--server",
-          "name": "SERVER",
-          "normalized_name": "server",
-          "logo": "https://img.sofascore.com/api/v1/team/2686/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "atalanta-vs-parma--server--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "atalanta-vs-parma--server--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_38dbeed2e69cb653761523bb",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_0712d397607781c9fa553611f0d96b40",
-              "resolution": "HD",
-              "resolution_height": 720,
-              "stream_type": "hls"
-            }
-          ]
-        },
-        {
           "id": "atalanta-vs-parma--server-1",
           "name": "Server-1",
           "normalized_name": "server-1",
@@ -647,18 +646,18 @@
           ]
         }
       ],
-      "channel_count": 6,
+      "channel_count": 5,
       "default_channel_id": "atalanta-vs-parma--server-1",
       "channel_stats": {
-        "streams_in": 9,
+        "streams_in": 8,
         "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 6,
-        "variants": 9,
+        "channels": 5,
+        "variants": 8,
         "embed_variants": 0,
         "generic_server_channels": 1
       },
-      "standby_link_count": 3,
+      "standby_link_count": 2,
       "standby": [
         {
           "name": "Standby-1",
@@ -721,37 +720,6 @@
             "query_parameters": [],
             "drm": true
           }
-        },
-        {
-          "name": "Standby-3",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "requires_headers": false,
-          "verification_status": "verified_global",
-          "verified": true,
-          "source_id": "srhady-primevideo-sports",
-          "source_provenance": [
-            {
-              "source_id": "srhady-primevideo-sports",
-              "source_name": "Prime Video Free Sports",
-              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-            }
-          ],
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_2720983afb64da043a5c0f2f36f0cef3",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
         }
       ],
       "source_provenance": [
@@ -768,8 +736,8 @@
       "resolution_height": 1080,
       "start_time": "2026-11-02T19:45:00+00:00",
       "start_at": "2026-11-02T19:45:00+00:00",
-      "end_time": "2026-11-02T22:15:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-02T22:44:33+00:00",
+      "end_time_source": "assumed",
       "competition": "Italian Serie A",
       "fixture_id": "provider:atalanta-vs-parma|serie a|2026-11-02",
       "status": "LIVE_NOW",
@@ -783,18 +751,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401874971)"
+        "ESPN espn-header=61' (STATUS_SECOND_HALF, event 401874971)",
+        "LiveScore livescore=FT (6, event 1785383)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401874971"
-      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=61' (STATUS_SECOND_HALF, event 401874971); LiveScore livescore=FT (6, event 1785383)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/qix5ku1780561327.png",
@@ -827,29 +794,10 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 4,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
-          "url": "https://live.vivo155.com/live/hd-en-1-4550916.m3u8?txSecret=a0f538997a0ba40f33eaa75930b538ee&txTime=6AE8FC7E",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_first",
-          "stream_type": "hls",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "live.vivo155.com",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_4c68c927a792b097121478cc658b510d"
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -878,7 +826,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -941,42 +889,6 @@
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "lorient-vs-stade-brestois--server",
-          "name": "SERVER",
-          "normalized_name": "server",
-          "logo": "https://img.sofascore.com/api/v1/team/1656/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "lorient-vs-stade-brestois--server--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "lorient-vs-stade-brestois--server--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_a7b4e698d288feff80681283",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4c68c927a792b097121478cc658b510d",
-              "resolution": "HD",
-              "resolution_height": 720,
-              "stream_type": "hls"
             }
           ]
         },
@@ -1053,14 +965,14 @@
           ]
         }
       ],
-      "channel_count": 4,
+      "channel_count": 3,
       "default_channel_id": "lorient-vs-stade-brestois--server-2",
       "channel_stats": {
-        "streams_in": 4,
+        "streams_in": 3,
         "unresolved_channel_streams": 2,
         "exact_duplicates_removed": 0,
-        "channels": 4,
-        "variants": 4,
+        "channels": 3,
+        "variants": 3,
         "embed_variants": 0,
         "generic_server_channels": 2
       },
@@ -1078,8 +990,8 @@
       "resolution_height": 1080,
       "start_time": "2026-11-02T19:45:00+00:00",
       "start_at": "2026-11-02T19:45:00+00:00",
-      "end_time": "2026-11-02T22:15:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-02T22:44:33+00:00",
+      "end_time_source": "assumed",
       "competition": "Ligue 1",
       "fixture_id": "provider:lorient-vs-stade-brestois|ligue 1|2026-11-02",
       "status": "LIVE_NOW",
@@ -1414,8 +1326,8 @@
       "resolution_height": 1080,
       "start_time": "2026-11-02T20:00:00+00:00",
       "start_at": "2026-11-02T20:00:00+00:00",
-      "end_time": "2026-11-02T22:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-02T22:44:33+00:00",
+      "end_time_source": "assumed",
       "competition": "English Premier League",
       "fixture_id": "provider:everton-vs-newcastle-united|premier league|2026-11-02",
       "status": "LIVE_NOW",
@@ -1429,18 +1341,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401878762)"
+        "ESPN espn-header=46' (STATUS_SECOND_HALF, event 401878762)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401878762"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/eqayrf1523184794.png",
@@ -1518,35 +1431,6 @@
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_b35c9b10ef2375937f74d6c31abc57a3",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-4",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
           "requires_headers": true,
           "inherit_manifest_query": false,
           "verification_mode": "global",
@@ -1563,6 +1447,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_ef370a347f15b9c10a7f92107cc07471",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-4",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_b35c9b10ef2375937f74d6c31abc57a3",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1639,42 +1552,6 @@
           ]
         },
         {
-          "id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports",
-          "name": "PREMIER1 SPORTS",
-          "normalized_name": "premier1-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/2832/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_bec8eeb6ba63a3d9d249df4e",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_b35c9b10ef2375937f74d6c31abc57a3",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
           "id": "deportivo-de-a-coru-a-vs-osasuna--fancode1",
           "name": "FANCODE1",
           "normalized_name": "fancode1",
@@ -1704,6 +1581,42 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_ef370a347f15b9c10a7f92107cc07471",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports",
+          "name": "PREMIER1 SPORTS",
+          "normalized_name": "premier1-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2832/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_bec8eeb6ba63a3d9d249df4e",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_b35c9b10ef2375937f74d6c31abc57a3",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1844,8 +1757,8 @@
       "resolution_height": 720,
       "start_time": "2026-11-02T20:00:00+00:00",
       "start_at": "2026-11-02T20:00:00+00:00",
-      "end_time": "2026-11-02T22:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-02T22:44:33+00:00",
+      "end_time_source": "assumed",
       "competition": "LaLiga",
       "fixture_id": "provider:deportivo-de-a-coruña-vs-osasuna|laliga|2026-11-02",
       "status": "LIVE_NOW",
@@ -1859,18 +1772,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882824)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401882824)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401882824"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/62bvwv1783013156.png",
@@ -1970,8 +1884,8 @@
       "resolution_height": 1080,
       "start_time": "2026-11-02T20:00:00+00:00",
       "start_at": "2026-11-02T20:00:00+00:00",
-      "end_time": "2026-11-02T22:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-02T22:44:33+00:00",
+      "end_time_source": "assumed",
       "competition": "LaLiga 2",
       "fixture_id": "provider:mallorca-vs-cádiz|laliga 2|2026-11-02",
       "status": "LIVE_NOW",
@@ -1985,18 +1899,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401883147)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401883147)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401883147"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ssptsx1473503730.png",
@@ -2076,28 +1991,29 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LALIGA",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882824)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401882824)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401882824"
       },
+      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE"
     },
     {
       "id": "benfica-vs-fc-alverca",
       "name": "Benfica Vs FC Alverca",
-      "primary_stream_key": "e17a47f25d3e5268fc854ca58223b7d1f677612b1589c89472aca7943fd4f241",
+      "primary_stream_key": "4013208d8df819e093432c9ea63508ab46bbbc8943ea38e2d1589e282ac07acb",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/3006/image",
@@ -2133,14 +2049,14 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "host": "otte.cache.aiv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_a060d592399d52e6a791db61a307a41c",
+          "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -2151,42 +2067,6 @@
         }
       ],
       "channels": [
-        {
-          "id": "benfica-vs-fc-alverca--d-sports",
-          "name": "D SPORTS",
-          "normalized_name": "d-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/3006/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "benfica-vs-fc-alverca--d-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "benfica-vs-fc-alverca--d-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_6bac94a0667f74ed186dca6a",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
         {
           "id": "benfica-vs-fc-alverca--bein-english",
           "name": "beIN ENGLISH",
@@ -2222,10 +2102,46 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "benfica-vs-fc-alverca--d-sports",
+          "name": "D SPORTS",
+          "normalized_name": "d-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/3006/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "benfica-vs-fc-alverca--d-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "benfica-vs-fc-alverca--d-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_6bac94a0667f74ed186dca6a",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
       "channel_count": 2,
-      "default_channel_id": "benfica-vs-fc-alverca--d-sports",
+      "default_channel_id": "benfica-vs-fc-alverca--bein-english",
       "channel_stats": {
         "streams_in": 2,
         "unresolved_channel_streams": 0,
@@ -2268,23 +2184,24 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401885403)"
+        "ESPN espn-header=45'+2' (STATUS_FIRST_HALF, event 401885403)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401885403"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hj4kyc1781152436.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/6ljryf1691990098.png",
-      "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
+      "playback_id": "ctv_a060d592399d52e6a791db61a307a41c",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -2357,13 +2274,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401885407)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401885407)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2379,9 +2296,10 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-02T20:04:50.647658+00:00"
+      "carried_forward_first_missed_at": "2026-11-02T20:04:50.647658+00:00",
+      "authority_status": "LIVE"
     },
     {
       "id": "club-sporting-cristal-vs-fc-cajamarca",
@@ -2445,13 +2363,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401886125)"
+        "ESPN espn-header=30' (STATUS_FIRST_HALF, event 401886125)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2467,9 +2385,10 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-02T20:24:40.341893+00:00"
+      "carried_forward_first_missed_at": "2026-11-02T20:24:40.341893+00:00",
+      "authority_status": "LIVE"
     },
     {
       "id": "primera-a",
