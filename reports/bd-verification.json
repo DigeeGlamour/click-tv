@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-02T21:04:29.050511+00:00",
+  "timestamp": "2026-11-02T21:24:29.965419+00:00",
   "mode": "today",
   "pipelined": true,
   "total_input_pool": 295,
@@ -8,14 +8,14 @@
   "total_proxy_checked": 26,
   "total_processed": 295,
   "total_publishable": 82,
-  "strict_player_hidden": 97,
-  "browser_unreachable_hidden": 40,
+  "strict_player_hidden": 96,
+  "browser_unreachable_hidden": 41,
   "unproven_hidden": 0,
   "status_counts": {
     "verified_global": 82,
     "failed": 76,
-    "unreachable_from_browser": 40,
-    "metadata_only": 97
+    "unreachable_from_browser": 41,
+    "metadata_only": 96
   },
   "groups": {
     "verified_global": [
@@ -1558,8 +1558,8 @@
         "permanent_fail_count": 0
       },
       {
-        "id": "darts-pdc",
-        "name": "DARTS PDC",
+        "id": "defensa-y-justicia-vs-ca-independiente",
+        "name": "Defensa y Justicia Vs CA Independiente",
         "source_id": "sm-sports-data",
         "source_pipeline": "today_match",
         "url": "",
@@ -2270,10 +2270,10 @@
         "verification_status": "failed",
         "verification_mode": "global",
         "publish_allowed": false,
-        "http_status": 200,
+        "http_status": 0,
         "proxy_name": "",
         "proxy_http_status": 0,
-        "verification_error": "HLS media playlist has no playable segment",
+        "verification_error": "timeout: _ssl.c:993: The handshake operation timed out",
         "verification_note": "",
         "permanent_fail_count": 0
       },
@@ -2564,6 +2564,22 @@
         "proxy_name": "",
         "proxy_http_status": 0,
         "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.44): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "darts-pdc",
+        "name": "DARTS PDC",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://193.47.62.41/hls/JRRRAAAA.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (193.47.62.41): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
         "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
         "permanent_fail_count": 0
       },
@@ -3533,22 +3549,6 @@
         "id": "dallas-lions-vs-washington-eagles",
         "name": "Dallas Lions vs Washington Eagles",
         "source_id": "srhady-willow-event",
-        "source_pipeline": "upcoming",
-        "url": "",
-        "verification_status": "metadata_only",
-        "verification_mode": "none",
-        "publish_allowed": false,
-        "http_status": 0,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "",
-        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
-        "permanent_fail_count": 0
-      },
-      {
-        "id": "defensa-y-justicia-vs-ca-independiente",
-        "name": "Defensa y Justicia Vs CA Independiente",
-        "source_id": "sm-sports-data",
         "source_pipeline": "upcoming",
         "url": "",
         "verification_status": "metadata_only",
