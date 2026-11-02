@@ -1,21 +1,21 @@
 {
-  "timestamp": "2026-11-02T18:24:15.037086+00:00",
+  "timestamp": "2026-11-02T18:44:28.257271+00:00",
   "mode": "today",
   "pipelined": true,
-  "total_input_pool": 285,
-  "total_global_network_checked": 285,
+  "total_input_pool": 286,
+  "total_global_network_checked": 286,
   "total_proxy_selected": 27,
   "total_proxy_checked": 27,
-  "total_processed": 285,
+  "total_processed": 286,
   "total_publishable": 70,
-  "strict_player_hidden": 100,
-  "browser_unreachable_hidden": 38,
+  "strict_player_hidden": 101,
+  "browser_unreachable_hidden": 39,
   "unproven_hidden": 0,
   "status_counts": {
     "verified_global": 70,
-    "failed": 77,
-    "unreachable_from_browser": 38,
-    "metadata_only": 100
+    "failed": 76,
+    "unreachable_from_browser": 39,
+    "metadata_only": 101
   },
   "groups": {
     "verified_global": [
@@ -1174,22 +1174,6 @@
         "permanent_fail_count": 0
       },
       {
-        "id": "al-gharafa-vs-al-qadsiah",
-        "name": "Al Gharafa Vs Al Qadsiah",
-        "source_id": "sm-sports-data",
-        "source_pipeline": "today_match",
-        "url": "",
-        "verification_status": "failed",
-        "verification_mode": "same_run_cloud_second_pass",
-        "publish_allowed": false,
-        "http_status": 0,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "Stream URL is empty",
-        "verification_note": "",
-        "permanent_fail_count": 0
-      },
-      {
         "id": "al-ittihad-vs-al-ain",
         "name": "Al Ittihad vs Al Ain",
         "source_id": "sportlive-fancode-backup",
@@ -1560,7 +1544,7 @@
       {
         "id": "tractor-vs-pfc-neftchi",
         "name": "Tractor vs PFC Neftchi",
-        "source_id": "sportlive-fancode-backup",
+        "source_id": "vk1817-fancode-mirror",
         "source_pipeline": "today_match",
         "url": "https://in-mc-flive.fancode.com/mumbai/4248729_english_hls_3c976e05a48496_1ta-di_h264/1080p.m3u8",
         "verification_status": "failed",
@@ -1571,6 +1555,22 @@
         "proxy_http_status": 403,
         "verification_error": "HTTP 403: Forbidden",
         "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "universidad-técnica-de-cajamarca-vs-deportivo-garcilaso",
+        "name": "Universidad Técnica de Cajamarca Vs Deportivo Garcilaso",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "",
+        "verification_status": "failed",
+        "verification_mode": "same_run_cloud_second_pass",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "Stream URL is empty",
+        "verification_note": "",
         "permanent_fail_count": 0
       },
       {
@@ -1747,22 +1747,6 @@
         "proxy_http_status": 403,
         "verification_error": "HTTP 403: Forbidden",
         "verification_note": "Retained in verification reports but hidden from Click TV: neither the browser-style direct retry nor the configured proxy proved playable media in this run.",
-        "permanent_fail_count": 0
-      },
-      {
-        "id": "tractor-vs-pfc-neftchi",
-        "name": "Tractor vs PFC Neftchi",
-        "source_id": "sayanpal-fancode-mirror",
-        "source_pipeline": "today_match",
-        "url": "",
-        "verification_status": "failed",
-        "verification_mode": "same_run_cloud_second_pass",
-        "publish_allowed": false,
-        "http_status": 0,
-        "proxy_name": "",
-        "proxy_http_status": 0,
-        "verification_error": "Stream URL is empty",
-        "verification_note": "",
         "permanent_fail_count": 0
       },
       {
@@ -2078,10 +2062,10 @@
         "verification_status": "failed",
         "verification_mode": "global",
         "publish_allowed": false,
-        "http_status": 0,
+        "http_status": 200,
         "proxy_name": "",
         "proxy_http_status": 0,
-        "verification_error": "timeout: _ssl.c:993: The handshake operation timed out",
+        "verification_error": "HLS media playlist has no playable segment",
         "verification_note": "",
         "permanent_fail_count": 0
       },
@@ -2375,6 +2359,22 @@
       }
     ],
     "unreachable_from_browser": [
+      {
+        "id": "al-gharafa-vs-al-qadsiah",
+        "name": "Al Gharafa Vs Al Qadsiah",
+        "source_id": "sm-sports-data",
+        "source_pipeline": "today_match",
+        "url": "http://162.251.160.53:8089/1296/index.m3u8",
+        "verification_status": "unreachable_from_browser",
+        "verification_mode": "undeliverable_bare_ip",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+        "verification_note": "Hidden from Click TV: an http:// link on a bare IP address has no viewer route. The browser blocks it as mixed content and the Cloudflare playback proxy cannot fetch a raw IP host (error code 1003).",
+        "permanent_fail_count": 0
+      },
       {
         "id": "al-sadd-vs-al-ahli",
         "name": "Al Sadd Vs Al Ahli",
@@ -3133,6 +3133,22 @@
         "id": "arsenal-women-vs-benfica-women",
         "name": "Arsenal Women vs Benfica Women",
         "source_id": "dartv-fancode-mirror",
+        "source_pipeline": "upcoming",
+        "url": "",
+        "verification_status": "metadata_only",
+        "verification_mode": "none",
+        "publish_allowed": false,
+        "http_status": 0,
+        "proxy_name": "",
+        "proxy_http_status": 0,
+        "verification_error": "",
+        "verification_note": "Hidden from Click TV because same-run playable media was not proven.",
+        "permanent_fail_count": 0
+      },
+      {
+        "id": "atp-rolex-paris-masters-2026-vs-paris-france",
+        "name": "ATP Rolex Paris Masters 2026 vs Paris, France",
+        "source_id": "sportlive-fancode-backup",
         "source_pipeline": "upcoming",
         "url": "",
         "verification_status": "metadata_only",
