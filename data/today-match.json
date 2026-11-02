@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-02T22:37:03.248122+00:00",
+  "updated_at": "2026-11-02T22:44:39.358472+00:00",
   "count": 11,
-  "filtered_stale": 2,
+  "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -74,7 +74,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-02T21:44:51.549536+00:00"
     },
@@ -147,7 +147,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 12,
+      "carried_forward_misses": 13,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-02T18:44:47.695258+00:00"
     },
@@ -593,12 +593,11 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=81' (STATUS_SECOND_HALF, event 401874971)",
+        "ESPN espn-header=84' (STATUS_SECOND_HALF, event 401874971)",
         "LiveScore livescore=FT (6, event 1785383)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=81' (STATUS_SECOND_HALF, event 401874971); LiveScore livescore=FT (6, event 1785383)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/qix5ku1780561327.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/6yiaxs1627406063.png",
       "competition_from_source": "Serie A",
@@ -609,7 +608,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=84' (STATUS_SECOND_HALF, event 401874971); LiveScore livescore=FT (6, event 1785383)",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-02T22:44:35.360118+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-02T22:44:35.360118+00:00"
     },
     {
       "id": "lorient-vs-stade-brestois",
@@ -794,7 +801,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-02T22:44:35.360118+00:00"
     },
     {
       "id": "everton-vs-newcastle-united",
@@ -821,7 +836,7 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 4,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
@@ -840,27 +855,10 @@
           "host": "bl.rutube.ru",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_5e3223c5db571aef540b0ffbb20fd084"
+          "playback_id": "ctv_2330751924f6e4d60c8310f25b5126c7"
         },
         {
           "name": "Backup-2",
-          "url": "https://live-cdn.ryazanslah3.space/hls/bein1.m3u8?",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_first",
-          "stream_type": "hls",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "live-cdn.ryazanslah3.space",
-          "playback_id": "ctv_0b65ae2ec909a538d4f9643bf95daaff"
-        },
-        {
-          "name": "Backup-3",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -997,50 +995,16 @@
               "stream_type": "dash"
             }
           ]
-        },
-        {
-          "id": "everton-vs-newcastle-united--bein-arabic",
-          "name": "beIN ARABIC",
-          "normalized_name": "bein-arabic",
-          "logo": "https://img.sofascore.com/api/v1/team/48/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "everton-vs-newcastle-united--bein-arabic--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "everton-vs-newcastle-united--bein-arabic--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_e8d4818d05f384d6350cae91",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_32db29f5c4514968634d9be71eabc9bd",
-              "stream_type": "hls"
-            }
-          ]
         }
       ],
-      "channel_count": 4,
+      "channel_count": 3,
       "default_channel_id": "everton-vs-newcastle-united--sky-sports-action",
       "channel_stats": {
-        "streams_in": 4,
+        "streams_in": 3,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 4,
-        "variants": 4,
+        "channels": 3,
+        "variants": 3,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1058,7 +1022,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-02T20:00:00+00:00",
       "start_at": "2026-11-02T20:00:00+00:00",
-      "end_time": "2026-11-02T23:24:30+00:00",
+      "end_time": "2026-11-02T23:44:18+00:00",
       "end_time_source": "assumed",
       "competition": "English Premier League",
       "fixture_id": "provider:everton-vs-newcastle-united|premier league|2026-11-02",
@@ -1080,16 +1044,16 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=66' (STATUS_SECOND_HALF, event 401878762)",
+        "ESPN espn-header=69' (STATUS_SECOND_HALF, event 401878762)",
         "LiveScore livescore=FT (6, event 1793617)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=66' (STATUS_SECOND_HALF, event 401878762); LiveScore livescore=FT (6, event 1793617)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=69' (STATUS_SECOND_HALF, event 401878762); LiveScore livescore=FT (6, event 1793617)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/eqayrf1523184794.png",
       "away_badge_url": "https://www.thesportsdb.com/images/media/team/badge/kwaz8w1793219401.png",
       "competition_from_source": "Premier League",
-      "playback_id": "ctv_8d92968083e9273de720db677bc83288"
+      "playback_id": "ctv_ec965794b4a72897288d2dc2ecb6e307"
     },
     {
       "id": "deportivo-de-a-coruña-vs-osasuna",
@@ -1336,7 +1300,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=64' (STATUS_SECOND_HALF, event 401882824)"
+        "ESPN espn-header=67' (STATUS_SECOND_HALF, event 401882824)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1344,7 +1308,7 @@
       },
       "authority_status": "LIVE",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/62bvwv1783013156.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rvspvt1473502960.png",
       "playback_id": "ctv_ef370a347f15b9c10a7f92107cc07471",
@@ -1354,7 +1318,14 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-02T22:44:35.360118+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-02T22:44:35.360118+00:00"
     },
     {
       "id": "mallorca-vs-cádiz",
@@ -1471,12 +1442,11 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=64' (STATUS_SECOND_HALF, event 401883147)",
+        "ESPN espn-header=67' (STATUS_SECOND_HALF, event 401883147)",
         "LiveScore livescore=FT (6, event 1811182)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=64' (STATUS_SECOND_HALF, event 401883147); LiveScore livescore=FT (6, event 1811182)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ssptsx1473503730.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/e2phzp1639408503.png",
       "playback_id": "ctv_376adb6b05836b1c254c9c13eefeb6b4",
@@ -1486,7 +1456,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=67' (STATUS_SECOND_HALF, event 401883147); LiveScore livescore=FT (6, event 1811182)",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-02T22:44:35.360118+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-02T22:44:35.360118+00:00"
     },
     {
       "id": "deportivo-de-la-coruna-vs-ca-osasuna",
@@ -1560,7 +1538,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=64' (STATUS_SECOND_HALF, event 401882824)"
+        "ESPN espn-header=67' (STATUS_SECOND_HALF, event 401882824)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1571,7 +1549,13 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-02T22:44:35.360118+00:00"
     },
     {
       "id": "benfica-vs-fc-alverca",
@@ -1732,7 +1716,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-02T20:15:00+00:00",
       "start_at": "2026-11-02T20:15:00+00:00",
-      "end_time": "2026-11-02T23:24:30+00:00",
+      "end_time": "2026-11-02T23:44:18+00:00",
       "end_time_source": "assumed",
       "competition": "Liga Portugal Betclic",
       "fixture_id": "provider:benfica-vs-fc-alverca|liga portugal betclic|2026-11-02",
@@ -1754,10 +1738,10 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=47' (STATUS_SECOND_HALF, event 401885403)",
+        "ESPN espn-header=50' (STATUS_SECOND_HALF, event 401885403)",
         "LiveScore livescore=FT (6, event 1816466)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=47' (STATUS_SECOND_HALF, event 401885403); LiveScore livescore=FT (6, event 1816466)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=50' (STATUS_SECOND_HALF, event 401885403); LiveScore livescore=FT (6, event 1816466)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hj4kyc1781152436.png",
@@ -1864,8 +1848,8 @@
       "resolution_height": 720,
       "start_time": "2026-11-02T21:00:00+00:00",
       "start_at": "2026-11-02T21:00:00+00:00",
-      "end_time": "2026-11-02T23:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-02T23:44:18+00:00",
+      "end_time_source": "assumed",
       "competition": "Primera A",
       "fixture_id": "provider:primera-a|primera a|2026-11-02",
       "status": "LIVE_NOW",
@@ -2064,6 +2048,20 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841299)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401841299"
+      },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN and our own schedule both put kickoff 15 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_dba2eb5537be6cf056ceb35ef20457a6",
