@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T05:44:26.053443+00:00",
+  "generated_at": "2026-11-02T06:04:24.113709+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -128,11 +128,11 @@
       }
     },
     "matched_by_two_independent_authorities": 21,
-    "authority_agreements": 21,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "authority_agreements": 20,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "card says LIVE, authority says FINISHED": 1,
+      "authorities disagree": 1,
       "kickoff": 1
     },
     "identity_near_misses": 8,
@@ -221,7 +221,7 @@
       "card_id": "mls-el-resumen",
       "name": "MLS El Resumen⁩",
       "competition": "",
-      "kickoff": "2026-11-02T05:44:26+00:00",
+      "kickoff": "2026-11-02T06:04:24+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -258,7 +258,7 @@
       "card_id": "mls-wrap-up",
       "name": "MLS Wrap Up⁩",
       "competition": "",
-      "kickoff": "2026-11-02T05:44:26+00:00",
+      "kickoff": "2026-11-02T06:04:24+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -385,18 +385,18 @@
           "competition_id": "770",
           "kickoff": "2026-11-02T02:45:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
+          "status_raw": "68'",
+          "status_code": "STATUS_SECOND_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "68'",
+          "espn_status_description": "Second Half",
+          "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:770~e:761933~c:761933"
         },
@@ -432,10 +432,10 @@
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
+        "authorities disagree: espn-header=LIVE, livescore=FINISHED"
       ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
+      "authority_agreement": "DISAGREE",
+      "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
     },
@@ -849,10 +849,12 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
-        "drmlive-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2438,15 +2440,12 @@
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-sports-data",
-        "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "FanCode",
         "SM-Aggregate"
       ],
-      "independent_witness_count": 2,
+      "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
           "result": "matched",
@@ -3145,10 +3144,12 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
-        "drmlive-fancode-mirror"
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -3382,8 +3383,8 @@
       "name": "NPL",
       "competition": "Nepal Premier League",
       "kickoff": "2026-11-02T06:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
@@ -3648,7 +3649,9 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sportlive-fancode-backup",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
