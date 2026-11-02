@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-02T09:44:48.712803+00:00",
-  "count": 7,
+  "updated_at": "2026-11-02T10:44:56.482236+00:00",
+  "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -65,6 +65,11 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
+      "allow_without_stream": true,
+      "route_failed_while_live": true,
+      "event_type": "today_match",
+      "routing_changed_from": "upcoming",
+      "lifecycle_state": "LIVE",
       "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
@@ -78,11 +83,13 @@
         "livescore": "1904010"
       },
       "authority_status": "LIVE",
-      "allow_without_stream": true,
-      "route_failed_while_live": true,
-      "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE"
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-02T10:44:48.939890+00:00"
     },
     {
       "id": "npl",
@@ -341,6 +348,35 @@
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_812cd00ebf2ebbe2bc5d72b78599f59d",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -369,7 +405,7 @@
           }
         },
         {
-          "name": "Backup-2",
+          "name": "Backup-3",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -389,35 +425,6 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_2ef561da826019ed2d2028898cfd3799",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-3",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "hls-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_812cd00ebf2ebbe2bc5d72b78599f59d",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -547,6 +554,19 @@
               "id": "melbourne-stars-women-vs-perth-scorchers-women--prime-video--1",
               "role": "primary",
               "playback_type": "native",
+              "variant_key": "sv_7865a417e697a69475183f27",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_812cd00ebf2ebbe2bc5d72b78599f59d",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "melbourne-stars-women-vs-perth-scorchers-women--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
               "variant_key": "sv_da9395036fe444773eb5d8f5",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -557,7 +577,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "melbourne-stars-women-vs-perth-scorchers-women--prime-video--2",
+              "id": "melbourne-stars-women-vs-perth-scorchers-women--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_1e30f0bbd54c834c23fab05e",
@@ -565,19 +585,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_2ef561da826019ed2d2028898cfd3799",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "melbourne-stars-women-vs-perth-scorchers-women--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_7865a417e697a69475183f27",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_812cd00ebf2ebbe2bc5d72b78599f59d",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -721,22 +728,17 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1543951)",
-        "LiveScore livescore=Between innings (157, event 1813041)"
+        "ESPN espn-header=Scheduled (Scheduled, event 1543951)",
+        "LiveScore livescore=Play in progress (33, event 1813041)"
       ],
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "1543951",
-        "livescore": "1813041"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543951); LiveScore livescore=Play in progress (33, event 1813041)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_ef23facc8d5669f4ef537d20e141fa22"
@@ -988,257 +990,9 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-02T08:44:34.011182+00:00"
-    },
-    {
-      "id": "mls-el-resumen",
-      "name": "MLS El Resumen⁩",
-      "primary_stream_key": "83223040c7c0ba4fbdc6807beb70fc436cf13dda65c159e01468a9ee2b91175e",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.0f2d2559-ce90-49ad-89a4-12838ad8ecbd/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-primevideo-sports",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "mls-el-resumen--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.0f2d2559-ce90-49ad-89a4-12838ad8ecbd/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
-          "source_ids": [
-            "srhady-primevideo-sports"
-          ],
-          "primary_stream_id": "mls-el-resumen--prime-video--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "mls-el-resumen--prime-video--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_7a7e1bbb8da89061522060c5",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_6c4fd29251dffe2c733dc247c7857723",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "mls-el-resumen--prime-video",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-02T06:24:14+00:00",
-      "start_at": "2026-11-02T06:24:14+00:00",
-      "end_time": "2026-11-02T08:54:14+00:00",
-      "end_time_source": "sport",
-      "fixture_id": "provider:mls-el-resumen|2026-11-02",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_6c4fd29251dffe2c733dc247c7857723",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
-      "lifecycle_protections": [
-        "primary_playable",
-        "backup_playable"
-      ],
-      "carried_forward_misses": 10,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-02T06:44:42.856452+00:00"
-    },
-    {
-      "id": "mls-wrap-up",
-      "name": "MLS Wrap Up⁩",
-      "primary_stream_key": "8ac62edc65791e633aed702bb816fcceeeeb254e8d417cf76bb298b14471ee8d",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.e0421fb1-33d5-467b-ad88-54ec067891f8/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
-      "category": "today_match",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "today_match",
-      "content_kind": "event",
-      "routing_reason": "configured_event_pipeline",
-      "source_id": "srhady-primevideo-sports",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "channels": [
-        {
-          "id": "mls-wrap-up--prime-video",
-          "name": "Prime Video",
-          "normalized_name": "prime-video",
-          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.e0421fb1-33d5-467b-ad88-54ec067891f8/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/appletvus/logos/channels-logo-white-stacked.png%7C0,0,1920,1080+0,0,1920,1080+1607,885,234,117_kv6e4ed7a60d36179896a92487d4bec652_SX624_FMjpg_.jpeg",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "srhady-primevideo-sports",
-          "source_ids": [
-            "srhady-primevideo-sports"
-          ],
-          "primary_stream_id": "mls-wrap-up--prime-video--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "mls-wrap-up--prime-video--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_2b78394fcc0ad68980302aac",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_feef2f8f2a97d2054eda2b7ccee601dd",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "mls-wrap-up--prime-video",
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "srhady-primevideo-sports",
-          "source_name": "Prime Video Free Sports",
-          "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
-        }
-      ],
-      "source_ids": [
-        "srhady-primevideo-sports"
-      ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "start_time": "2026-11-02T06:24:14+00:00",
-      "start_at": "2026-11-02T06:24:14+00:00",
-      "end_time": "2026-11-02T08:54:14+00:00",
-      "end_time_source": "sport",
-      "fixture_id": "provider:mls-wrap-up|2026-11-02",
-      "status": "LIVE_NOW",
-      "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "playback_id": "ctv_feef2f8f2a97d2054eda2b7ccee601dd",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
-      "lifecycle_protections": [
-        "primary_playable",
-        "backup_playable"
-      ],
-      "carried_forward_misses": 10,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-02T06:44:42.856452+00:00"
     }
   ]
 }
