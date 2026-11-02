@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-02T03:44:49.561502+00:00",
+  "updated_at": "2026-11-02T04:00:32.960062+00:00",
   "count": 4,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -252,7 +252,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 15,
+      "carried_forward_misses": 16,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-01T23:25:06.578182+00:00"
     },
@@ -364,18 +364,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=90'+1' (STATUS_IN_PROGRESS, event 401876911)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876911)",
         "LiveScore livescore=FT (6, event 1799058)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_dc1591b229a21c0c9b17e5ed3378c8a1",
       "protected_source": true,
       "requires_credentials": true,
@@ -384,15 +384,27 @@
         "query_parameters": [],
         "drm": true
       },
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90'+1' (STATUS_IN_PROGRESS, event 401876911); LiveScore livescore=FT (6, event 1799058)",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-02T03:44:43.547074+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-02T03:44:43.547074+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401876911",
+        "livescore": "1799058"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-02T04:00:16.220709+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-02T04:20:16.220709+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-02T04:00:28.227119+00:00"
     },
     {
       "id": "los-angeles-fc-vs-minnesota-united",
@@ -511,12 +523,19 @@
       "authority_event_ids": {
         "livescore": "1696766"
       },
-      "authority_finished_confirmations": 1,
+      "authority_finished_confirmations": 2,
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/7nbj2a1602103638.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/8ak3ub1791019866.png",
-      "playback_id": "ctv_0d3749fb176fecc7a934bd002a656f44"
+      "playback_id": "ctv_063c0a5c115e082e98000931893aadf4",
+      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_protections": [
+        "authority_live"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live",
+      "carried_forward_first_missed_at": "2026-11-02T04:00:28.227119+00:00"
     },
     {
       "id": "portland-timbers-vs-houston-dynamo",
@@ -695,7 +714,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=9' (STATUS_FIRST_HALF, event 761933)"
+        "ESPN espn-header=29' (STATUS_FIRST_HALF, event 761933)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
