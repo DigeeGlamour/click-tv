@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T01:44:31.171148+00:00",
+  "generated_at": "2026-11-02T02:04:15.166791+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,17 +12,15 @@
       "requests_ok": 6,
       "fixtures": 1063,
       "unknown_statuses": [
+        "10|HT",
         "12|Int.",
-        "220|Drinks",
-        "2|11'",
-        "2|15'",
-        "2|29'",
-        "2|34'",
-        "2|38'",
-        "2|4'",
-        "3|61'",
-        "3|78'",
-        "3|80'"
+        "172|Lunch - day 3",
+        "2|1'",
+        "2|24'",
+        "2|32'",
+        "2|35'",
+        "3|81'",
+        "3|90+10'"
       ],
       "attempts": [
         {
@@ -69,8 +67,8 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 6,
-      "fixtures": 537,
+      "requests_ok": 5,
+      "fixtures": 504,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -88,8 +86,8 @@
         {
           "sport": "cricket",
           "date": "2026-11-03",
-          "result": "ok",
-          "fixtures": 33
+          "result": "INCONCLUSIVE",
+          "reason": "http 502"
         },
         {
           "sport": "football",
@@ -114,60 +112,67 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 2,
+    "today_match": 4,
     "upcoming": 70,
-    "fixtures": 72,
+    "fixtures": 74,
     "verdicts": {
-      "CONFLICT": 1,
-      "UNVERIFIED": 36,
-      "VERIFIED": 35
+      "CONFLICT": 2,
+      "PARTIAL_AUTHORITY": 1,
+      "UNVERIFIED": 37,
+      "VERIFIED": 34
     },
-    "verified": 35,
-    "partial_authority": 0,
-    "unverified": 36,
-    "conflict": 1,
+    "verified": 34,
+    "partial_authority": 1,
+    "unverified": 37,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
         "matched": 30,
-        "unmatched": 42
+        "unmatched": 44
       },
       "livescore": {
-        "matched": 31,
+        "matched": 33,
         "unmatched": 41
       }
     },
-    "matched_by_two_independent_authorities": 24,
+    "matched_by_two_independent_authorities": 25,
     "authority_agreements": 23,
     "authority_disagreements": 0,
-    "card_status_conflicts": 1,
+    "card_status_conflicts": 2,
     "conflict_reason_counts": {
-      "card says LIVE, authority says UPCOMING": 1,
+      "card says LIVE, authority says UPCOMING": 2,
       "kickoff": 1
     },
-    "identity_near_misses": 11,
+    "identity_near_misses": 12,
     "independent_authority_count_distribution": {
-      "0": 36,
+      "0": 37,
       "1": 12,
-      "2": 24
+      "2": 25
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "12|Int.",
-        "220|Drinks",
-        "2|11'",
-        "2|15'",
-        "2|29'",
-        "2|34'",
-        "2|38'",
-        "2|4'",
-        "3|61'",
-        "3|78'",
-        "3|80'"
+        "172|Lunch - day 3",
+        "2|1'",
+        "2|24'",
+        "2|32'",
+        "2|35'",
+        "3|81'",
+        "3|90+10'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Los Angeles FC Vs Minnesota United",
+      "authority": "espn-header",
+      "authority_name": "LAFC vs Minnesota United FC",
+      "agreed_side": "minnesota united",
+      "ours": "los angeles",
+      "theirs": "lafc"
+    },
     {
       "fixture": "Atlético Bucaramanga Vs Atlético Nacional",
       "authority": "livescore",
@@ -323,11 +328,168 @@
           "competition_id": "759",
           "kickoff": "2026-11-02T01:10:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "34'",
-          "status_code": "2",
+          "status_raw": "HT",
+          "status_code": "10",
           "status": "UNKNOWN",
           "sport": "football",
           "round": "15",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:los-angeles-fc-vs-minnesota-united|mls|2026-11-02",
+      "card_id": "los-angeles-fc-vs-minnesota-united",
+      "name": "Los Angeles FC Vs Minnesota United",
+      "competition": "MLS",
+      "kickoff": "2026-11-02T01:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "LAFC vs Minnesota United FC",
+              "event_id": "761921",
+              "agreed_side": "minnesota united",
+              "ours": "los angeles",
+              "theirs": "lafc"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1696766",
+          "upstream_family": "LiveScore",
+          "name": "Los Angeles FC vs Minnesota United",
+          "home": "Los Angeles FC",
+          "away": "Minnesota United",
+          "home_team_id": "7911",
+          "away_team_id": "8976",
+          "competition": "MLS",
+          "competition_id": "145",
+          "kickoff": "2026-11-02T01:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "24'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "33",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:new-england-revolution-vs-inter-miami-cf|mls|2026-11-02",
+      "card_id": "new-england-revolution-vs-inter-miami-cf",
+      "name": "New England Revolution Vs Inter Miami CF",
+      "competition": "MLS",
+      "kickoff": "2026-11-02T00:00:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "761932",
+          "upstream_family": "ESPN",
+          "name": "New England Revolution vs Inter Miami CF",
+          "home": "New England Revolution",
+          "away": "Inter Miami CF",
+          "home_team_id": "189",
+          "away_team_id": "20232",
+          "competition": "MLS",
+          "competition_id": "770",
+          "kickoff": "2026-11-02T00:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, November 1st at 7:00 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:770~e:761932~c:761932"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1696768",
+          "upstream_family": "LiveScore",
+          "name": "New England Revolution vs Inter Miami CF",
+          "home": "New England Revolution",
+          "away": "Inter Miami CF",
+          "home_team_id": "8888",
+          "away_team_id": "9001",
+          "competition": "MLS",
+          "competition_id": "145",
+          "kickoff": "2026-11-02T00:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "81'",
+          "status_code": "3",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "33",
           "format": "",
           "gender": ""
         }
@@ -456,6 +618,93 @@
           "round": "Match 8",
           "format": "Womens Domestic Twenty20",
           "gender": "women"
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "AGREE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
+      "fixture_id": "provider:portland-timbers-vs-houston-dynamo|mls|2026-11-02",
+      "card_id": "portland-timbers-vs-houston-dynamo",
+      "name": "Portland Timbers Vs Houston Dynamo",
+      "competition": "MLS",
+      "kickoff": "2026-11-02T02:45:00+00:00",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "761933",
+          "upstream_family": "ESPN",
+          "name": "Portland Timbers vs Houston Dynamo FC",
+          "home": "Portland Timbers",
+          "away": "Houston Dynamo FC",
+          "home_team_id": "9723",
+          "away_team_id": "6077",
+          "competition": "MLS",
+          "competition_id": "770",
+          "kickoff": "2026-11-02T02:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Sun, November 1st at 9:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:770~e:761933~c:761933"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1696749",
+          "upstream_family": "LiveScore",
+          "name": "Portland Timbers vs Houston Dynamo",
+          "home": "Portland Timbers",
+          "away": "Houston Dynamo",
+          "home_team_id": "8975",
+          "away_team_id": "8899",
+          "competition": "MLS",
+          "competition_id": "145",
+          "kickoff": "2026-11-02T02:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "33",
+          "format": "",
+          "gender": ""
         }
       },
       "authority_upstreams": [
@@ -3889,93 +4138,6 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:portland-timbers-vs-houston-dynamo|mls|2026-11-02",
-      "card_id": "portland-timbers-vs-houston-dynamo",
-      "name": "Portland Timbers Vs Houston Dynamo",
-      "competition": "MLS",
-      "kickoff": "2026-11-02T02:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
-      "card_status_normalized": "UPCOMING",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "761933",
-          "upstream_family": "ESPN",
-          "name": "Portland Timbers vs Houston Dynamo FC",
-          "home": "Portland Timbers",
-          "away": "Houston Dynamo FC",
-          "home_team_id": "9723",
-          "away_team_id": "6077",
-          "competition": "MLS",
-          "competition_id": "770",
-          "kickoff": "2026-11-02T02:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Sun, November 1st at 9:45 PM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:770~e:761933~c:761933"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1696749",
-          "upstream_family": "LiveScore",
-          "name": "Portland Timbers vs Houston Dynamo",
-          "home": "Portland Timbers",
-          "away": "Houston Dynamo",
-          "home_team_id": "8975",
-          "away_team_id": "8899",
-          "competition": "MLS",
-          "competition_id": "145",
-          "kickoff": "2026-11-02T02:45:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "33",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
-      "tab": "upcoming"
-    },
-    {
       "fixture_id": "provider:real-oviedo-vs-ud-las-palmas|laliga 2|2026-11-02",
       "card_id": "real-oviedo-vs-ud-las-palmas",
       "name": "Real Oviedo Vs UD Las Palmas",
@@ -4600,49 +4762,20 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1558810",
-          "upstream_family": "ESPN",
-          "name": "West Indies A vs England Lions",
-          "home": "West Indies A",
-          "away": "England Lions",
-          "home_team_id": "3800",
-          "away_team_id": "952",
-          "competition": "England Lions tour of West Indies 2026/27",
-          "competition_id": "24841",
-          "kickoff": "2026-11-03T17:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "2nd unofficial T20I",
-          "format": "T20",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-05T23:59:00Z",
-          "authority_uid": "s:200~e:1558810~c:1558810"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "unmatched"
         }
       },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "UNVERIFIED",
       "tab": "upcoming"
     }
   ]
