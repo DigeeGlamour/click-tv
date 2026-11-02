@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-02T19:37:06.769849+00:00",
-  "count": 10,
+  "updated_at": "2026-11-02T19:52:03.836011+00:00",
+  "count": 12,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -140,7 +140,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 3,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-02T18:44:47.695258+00:00"
     },
@@ -245,113 +245,219 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401888260)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401888260)",
         "LiveScore livescore=FT (6, event 1821041)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/5hnd1c1639569938.png",
       "away_badge_url": "https://www.thesportsdb.com/images/media/team/badge/8r4d531792772765.png",
       "playback_id": "ctv_81a99ca1a644fae60e10e9921f815f63",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401888260); LiveScore livescore=FT (6, event 1821041)",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-02T19:24:47.911980+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-02T19:24:47.911980+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401888260",
+        "livescore": "1821041"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-02T19:44:23.385635+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-02T20:04:23.385635+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-02T19:44:42.089685+00:00"
     },
     {
       "id": "al-ittihad-vs-al-ain",
-      "name": "Al Ittihad vs Al Ain",
-      "primary_stream_key": "",
+      "name": "Al Ittihad Vs Al Ain",
+      "primary_stream_key": "1ab412177338b824149ce3377731ee1b14c8fdd09fd0a7cb2b9b1d642533c31d",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4248732_53053_ITT_AAI_fc-web.jpg",
+      "logo": "https://img.sofascore.com/api/v1/team/34315/image",
       "category": "today_match",
+      "url": "https://live.uu1pp.com/sport/202_5710485_1.m3u8?txSecret=8507750be91826be3c1e21c3bc714fab&txTime=6AE91A33",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
-      "stream_type": "media",
+      "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
+      "original_source_pipeline": "today_match",
       "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
-      "metadata_only": true,
-      "available_link_count": 0,
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "https://live.vivo155.com/live/hd-en-1-4621483.m3u8?txSecret=3bb191e8baea49c82a5ef71d0457e4c3&txTime=6AE8E625",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "live.vivo155.com",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_beb07c3a48cd727bf70dcabb950a7735"
+        }
+      ],
+      "channels": [
+        {
+          "id": "al-ittihad-vs-al-ain--quality-2",
+          "name": "QUALITY 2",
+          "normalized_name": "quality-2",
+          "logo": "https://img.sofascore.com/api/v1/team/34315/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "al-ittihad-vs-al-ain--quality-2--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "al-ittihad-vs-al-ain--quality-2--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_7f6a2db10c76dc5a222333f8",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_61270ccb59bf2e3f95c37b0904ea6268",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "hls"
+            }
+          ]
+        },
+        {
+          "id": "al-ittihad-vs-al-ain--quality",
+          "name": "QUALITY",
+          "normalized_name": "quality",
+          "logo": "https://img.sofascore.com/api/v1/team/34315/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "al-ittihad-vs-al-ain--quality--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "al-ittihad-vs-al-ain--quality--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_90fd6bc4916a556088c8673d",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_cf3046ca8fae07ea233235e34687f85b",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "hls"
+            }
+          ]
+        }
+      ],
+      "channel_count": 2,
+      "default_channel_id": "al-ittihad-vs-al-ain--quality-2",
       "channel_stats": {
-        "streams_in": 1,
+        "streams_in": 2,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
       "source_provenance": [
         {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
+        "sm-sports-data"
       ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "start_time": "2026-11-02T18:15:00+00:00",
       "start_at": "2026-11-02T18:15:00+00:00",
       "end_time": "2026-11-02T20:45:00+00:00",
       "end_time_source": "sport",
-      "competition": "AFC Champions League Elite 2026-27",
-      "fixture_id": "provider:al-ittihad-vs-al-ain|afc champions league elite 2026 27|2026-11-02",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
+      "competition": "AFC Champions League Elite",
+      "fixture_id": "provider:al-ittihad-vs-al-ain|afc champions league elite|2026-11-02",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-02T18:15:00+00:00",
       "time_verification": "provider_feed",
+      "source_category": "football",
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912629)"
+        "ESPN espn-header=55' (STATUS_SECOND_HALF, event 401912629)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401912629"
       },
-      "allow_without_stream": true,
-      "route_failed_while_live": true,
+      "authority_status": "LIVE",
       "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_037ceb7683c939af08e07d03d3ccda66"
     },
     {
       "id": "sassuolo-vs-fiorentina",
@@ -381,35 +487,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -438,7 +515,7 @@
           }
         },
         {
-          "name": "Backup-3",
+          "name": "Backup-2",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -458,6 +535,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-3",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -506,19 +612,6 @@
               "id": "sassuolo-vs-fiorentina--prime-video--2",
               "role": "backup",
               "playback_type": "native",
-              "variant_key": "sv_b9a4754dd8779c45821c460d",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "sassuolo-vs-fiorentina--prime-video--3",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_c2976ef28b75526dffdfcc0a",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -529,7 +622,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "sassuolo-vs-fiorentina--prime-video--4",
+              "id": "sassuolo-vs-fiorentina--prime-video--3",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_5458cc437e60a57ab38df02d",
@@ -537,6 +630,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_ac3792e29cacb02687085875e0fd2294",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "sassuolo-vs-fiorentina--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_b9a4754dd8779c45821c460d",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4a174f6dd52c0d5b5b16143b7b65d632",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -571,9 +677,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-02T19:24:29+00:00",
-      "start_at": "2026-11-02T19:24:29+00:00",
-      "end_time": "2026-11-02T23:24:29+00:00",
+      "start_time": "2026-11-02T19:44:23+00:00",
+      "start_at": "2026-11-02T19:44:23+00:00",
+      "end_time": "2026-11-02T23:44:23+00:00",
       "end_time_source": "assumed",
       "fixture_id": "provider:sassuolo-vs-fiorentina|2026-11-02",
       "status": "LIVE_NOW",
@@ -595,8 +701,8 @@
           "name": "Sassuolo vs Fiorentina",
           "competition": "Italian Serie A",
           "kickoff": "2026-11-02T17:30:00+00:00",
-          "kickoff_delta_minutes": -114.5,
-          "status": "UPCOMING"
+          "kickoff_delta_minutes": -134.4,
+          "status": "FINISHED"
         },
         {
           "authority": "livescore",
@@ -606,8 +712,8 @@
           "name": "Sassuolo vs Fiorentina",
           "competition": "Serie A",
           "kickoff": "2026-11-02T17:30:00+00:00",
-          "kickoff_delta_minutes": -114.5,
-          "status": "UNKNOWN"
+          "kickoff_delta_minutes": -134.4,
+          "status": "FINISHED"
         }
       ],
       "event_type": "today_match",
@@ -647,8 +753,38 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_4bfd5aec04d5711e20db11e84cee1a59",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
       "channels": [
         {
           "id": "atalanta-vs-parma--tnt1uk-sports",
@@ -685,16 +821,52 @@
               "stream_type": "dash"
             }
           ]
+        },
+        {
+          "id": "atalanta-vs-parma--cbs-sports",
+          "name": "CBS SPORTS",
+          "normalized_name": "cbs-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2686/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "atalanta-vs-parma--cbs-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "atalanta-vs-parma--cbs-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_17654540ec6759a7e68d3504",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_4bfd5aec04d5711e20db11e84cee1a59",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
         }
       ],
-      "channel_count": 1,
+      "channel_count": 2,
       "default_channel_id": "atalanta-vs-parma--tnt1uk-sports",
       "channel_stats": {
-        "streams_in": 1,
+        "streams_in": 2,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -746,6 +918,8 @@
         "espn-header": "401874971",
         "livescore": "1785383"
       },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 0 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/qix5ku1780561327.png",
@@ -763,7 +937,7 @@
     {
       "id": "lorient-vs-stade-brestois",
       "name": "Lorient Vs Stade Brestois",
-      "primary_stream_key": "11c5c966307c0709d5c8fcffbca0968cdbd91796eb046da1765b7b76b182fccc",
+      "primary_stream_key": "8f206eaf4b141b3b01faa9c171d1f3a69538fddb016de4085b1a848ebad2cefb",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/1656/image",
@@ -784,9 +958,75 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_10d06ef1158fb74ed8b20993637ab692",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
       "channels": [
+        {
+          "id": "lorient-vs-stade-brestois--bein-english-fhd3",
+          "name": "beIN ENGLISH FHD3",
+          "normalized_name": "bein-english-fhd3",
+          "logo": "https://img.sofascore.com/api/v1/team/1656/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "lorient-vs-stade-brestois--bein-english-fhd3--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "lorient-vs-stade-brestois--bein-english-fhd3--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_a59fab2a54cb70ab15eedf8e",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_2c7e77512615e82d232a667cbb0cd1e6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
         {
           "id": "lorient-vs-stade-brestois--server-1",
           "name": "Server-1",
@@ -824,14 +1064,14 @@
           ]
         }
       ],
-      "channel_count": 1,
-      "default_channel_id": "lorient-vs-stade-brestois--server-1",
+      "channel_count": 2,
+      "default_channel_id": "lorient-vs-stade-brestois--bein-english-fhd3",
       "channel_stats": {
-        "streams_in": 1,
+        "streams_in": 2,
         "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 1
       },
@@ -857,9 +1097,9 @@
       "end_time_source": "sport",
       "competition": "Ligue 1",
       "fixture_id": "provider:lorient-vs-stade-brestois|ligue 1|2026-11-02",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-02T19:45:00+00:00",
@@ -870,7 +1110,7 @@
       "sport_class_evidence": "Ligue 1",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_10d06ef1158fb74ed8b20993637ab692",
+      "playback_id": "ctv_2c7e77512615e82d232a667cbb0cd1e6",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
@@ -908,10 +1148,10 @@
       "backups": [
         {
           "name": "Backup-1",
-          "url": "https://chatgpt.hereisman.net/playlist/59121/load-playlist?&.m3u8",
+          "url": "https://bl.rutube.ru/livestream/e5bacac3b8e730791d4cab20ae81cd8f/index.m3u8?s=Dxx13S3dlOjavbRFqRtQ6g&e=2075285630&scheme=",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
-          "stream_type": "media",
+          "stream_type": "hls",
           "requires_headers": true,
           "inherit_manifest_query": false,
           "verification_mode": "global",
@@ -920,13 +1160,34 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
-          "host": "chatgpt.hereisman.net",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_538611de04d3b5317d2c28adf32224ce"
+          "host": "bl.rutube.ru",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_5e3223c5db571aef540b0ffbb20fd084"
         },
         {
           "name": "Backup-2",
+          "url": "https://chatgpt.hereisman.net/playlist/59121/load-playlist?&.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "media",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Playback Unproven",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "chatgpt.hereisman.net",
+          "playback_unproven": true,
+          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_eb754b0efacea8f62d9b63b216a30b84"
+        },
+        {
+          "name": "Backup-3",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -953,25 +1214,6 @@
             "query_parameters": [],
             "drm": true
           }
-        },
-        {
-          "name": "Backup-3",
-          "url": "https://bl.rutube.ru/livestream/e5bacac3b8e730791d4cab20ae81cd8f/index.m3u8?s=Dxx13S3dlOjavbRFqRtQ6g&e=2075285630&scheme=",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_first",
-          "stream_type": "hls",
-          "requires_headers": true,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "bl.rutube.ru",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_2330751924f6e4d60c8310f25b5126c7"
         }
       ],
       "channels": [
@@ -1160,12 +1402,29 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401878762)",
+        "LiveScore livescore=NS (1, event 1793617)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401878762",
+        "livescore": "1793617"
+      },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 15 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/eqayrf1523184794.png",
       "away_badge_url": "https://www.thesportsdb.com/images/media/team/badge/kwaz8w1793219401.png",
       "competition_from_source": "Premier League",
-      "playback_id": "ctv_ec965794b4a72897288d2dc2ecb6e307"
+      "playback_id": "ctv_8d92968083e9273de720db677bc83288"
     },
     {
       "id": "deportivo-de-a-coruña-vs-osasuna",
@@ -1183,7 +1442,7 @@
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "Verified",
+      "verification_badge": "Playback Unproven",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
@@ -1196,35 +1455,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_b35c9b10ef2375937f74d6c31abc57a3",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -1244,6 +1474,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_ef370a347f15b9c10a7f92107cc07471",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_b35c9b10ef2375937f74d6c31abc57a3",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1320,42 +1579,6 @@
           ]
         },
         {
-          "id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports",
-          "name": "PREMIER1 SPORTS",
-          "normalized_name": "premier1-sports",
-          "logo": "https://img.sofascore.com/api/v1/team/2832/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_bec8eeb6ba63a3d9d249df4e",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_b35c9b10ef2375937f74d6c31abc57a3",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
           "id": "deportivo-de-a-coru-a-vs-osasuna--fancode1",
           "name": "FANCODE1",
           "normalized_name": "fancode1",
@@ -1385,6 +1608,42 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_ef370a347f15b9c10a7f92107cc07471",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports",
+          "name": "PREMIER1 SPORTS",
+          "normalized_name": "premier1-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/2832/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "deportivo-de-a-coru-a-vs-osasuna--premier1-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_bec8eeb6ba63a3d9d249df4e",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_b35c9b10ef2375937f74d6c31abc57a3",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1451,6 +1710,8 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
+      "playback_unproven": true,
+      "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
       "start_time": "2026-11-02T20:00:00+00:00",
       "start_at": "2026-11-02T20:00:00+00:00",
       "end_time": "2026-11-02T22:30:00+00:00",
@@ -1468,11 +1729,25 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "LaLiga",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401882824)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401882824"
+      },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN and our own schedule both put kickoff 15 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/62bvwv1783013156.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rvspvt1473502960.png",
-      "playback_id": "ctv_47f0b56821b275ff93c65f9f64d7aa25"
+      "playback_id": "ctv_f82f4e39534ac92a2d80e0051c70fbe9"
     },
     {
       "id": "deportivo-de-la-coruna-vs-ca-osasuna",
@@ -1517,32 +1792,14 @@
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
         },
         {
-          "source_id": "sportlive-fancode-backup",
-          "source_name": "SportLive18 FanCode Backup",
-          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
-        },
-        {
-          "source_id": "drmlive-fancode-mirror",
-          "source_name": "FanCode Live Events (drmlive)",
-          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        },
-        {
-          "source_id": "sayanpal-fancode-mirror",
-          "source_name": "FanCode Auto Updated (sayanpal)",
-          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
         }
       ],
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "start_time": "2026-11-02T20:00:00+00:00",
       "start_at": "2026-11-02T20:00:00+00:00",
@@ -1550,9 +1807,9 @@
       "end_time_source": "sport",
       "competition": "LALIGA 2026-27",
       "fixture_id": "provider:deportivo-de-la-coruna-vs-ca-osasuna|laliga 2026 27|2026-11-02",
-      "status": "STARTING_SOON",
+      "status": "LINK_UPDATING",
       "original_status": "UPCOMING",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LINK_UPDATING",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "source_start_time": "2026-11-02T20:00:00+00:00",
@@ -1564,6 +1821,279 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING"
+    },
+    {
+      "id": "benfica-vs-fc-alverca",
+      "name": "Benfica Vs FC Alverca",
+      "primary_stream_key": "4013208d8df819e093432c9ea63508ab46bbbc8943ea38e2d1589e282ac07acb",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/3006/image",
+      "category": "today_match",
+      "header_profile": "android_chrome",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": true,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "today_match",
+      "content_kind": "event",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
+      "metadata_only": false,
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
+      "channels": [
+        {
+          "id": "benfica-vs-fc-alverca--bein-english",
+          "name": "beIN ENGLISH",
+          "normalized_name": "bein-english",
+          "logo": "https://img.sofascore.com/api/v1/team/3006/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "benfica-vs-fc-alverca--bein-english--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "benfica-vs-fc-alverca--bein-english--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_71a3c182e2f198df56443040",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_a060d592399d52e6a791db61a307a41c",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "benfica-vs-fc-alverca--d-sports",
+          "name": "D SPORTS",
+          "normalized_name": "d-sports",
+          "logo": "https://img.sofascore.com/api/v1/team/3006/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "benfica-vs-fc-alverca--d-sports--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "benfica-vs-fc-alverca--d-sports--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_6bac94a0667f74ed186dca6a",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_28f00597c8b421d2008e03ac4dc65ba6",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        }
+      ],
+      "channel_count": 2,
+      "default_channel_id": "benfica-vs-fc-alverca--bein-english",
+      "channel_stats": {
+        "streams_in": 2,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 2,
+        "variants": 2,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "start_time": "2026-11-02T20:15:00+00:00",
+      "start_at": "2026-11-02T20:15:00+00:00",
+      "end_time": "2026-11-02T22:45:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Liga Portugal Betclic",
+      "fixture_id": "provider:benfica-vs-fc-alverca|liga portugal betclic|2026-11-02",
+      "status": "STARTING_SOON",
+      "original_status": "LIVE",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-02T20:15:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/hj4kyc1781152436.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/6ljryf1691990098.png",
+      "playback_id": "ctv_a060d592399d52e6a791db61a307a41c",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "gil-vicente-vs-vitória-sc",
+      "name": "Gil Vicente Vs Vitória SC",
+      "primary_stream_key": "",
+      "sport_type": "football",
+      "sport_type_derived": true,
+      "logo": "https://img.sofascore.com/api/v1/team/3010/image",
+      "category": "today_match",
+      "url": "",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "undeliverable_bare_ip",
+      "verification_status": "metadata_only",
+      "verification_badge": "",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "today_match",
+      "original_source_pipeline": "upcoming",
+      "content_kind": "event",
+      "routing_reason": "schedule_status_routing",
+      "source_id": "sm-sports-data",
+      "metadata_only": true,
+      "available_link_count": 0,
+      "backups": [],
+      "channel_stats": {
+        "streams_in": 1,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 0,
+        "variants": 0,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
+      ],
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "playback_unproven": true,
+      "playback_unproven_reason": "the playback proxy cannot fetch a bare IP host (162.251.160.53): Cloudflare refuses a direct-IP fetch with error code: 1003, and an HTTPS page cannot load an http:// stream directly, so no route to the viewer exists",
+      "start_time": "2026-11-02T20:15:00+00:00",
+      "start_at": "2026-11-02T20:15:00+00:00",
+      "end_time": "2026-11-02T22:45:00+00:00",
+      "end_time_source": "sport",
+      "competition": "Liga Portugal Betclic",
+      "fixture_id": "provider:gil-vicente-vs-vitória-sc|liga portugal betclic|2026-11-02",
+      "status": "STARTING_SOON",
+      "original_status": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-02T20:15:00+00:00",
+      "time_verification": "provider_feed",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "HIGH",
+      "authority_end_families": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401885407)",
+        "LiveScore livescore=NS (1, event 1816463)"
+      ],
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401885407",
+        "livescore": "1816463"
+      },
+      "event_type": "today_match",
+      "lifecycle_state": "STARTING",
+      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/88bsg41626201503.png",
+      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/af52z61628855707.png",
+      "allow_without_stream": true,
+      "routing_changed_from": "upcoming"
     }
   ]
 }
