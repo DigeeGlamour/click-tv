@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-11-02T17:05:18.658591+00:00",
-  "today_match_count": 8,
-  "upcoming_count": 54,
+  "generated_at": "2026-11-02T17:24:56.945200+00:00",
+  "today_match_count": 7,
+  "upcoming_count": 53,
   "today_missing_logo": [],
   "upcoming_missing_logo": [],
   "timezone": "Asia/Dhaka",
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 169,
+  "provider_fixture": 170,
   "provider_rejected": 108,
   "provider_rejected_reasons": {
     "provider_dead_status": 78,
@@ -538,8 +538,8 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 169,
-    "discarded": 50,
+    "total": 170,
+    "discarded": 51,
     "examples": [
       {
         "name": "Court 1",
@@ -604,6 +604,14 @@
         "sport_type": "",
         "reason": "league map: hockey",
         "evidence": "NHL"
+      },
+      {
+        "name": "Court Central vs Paris, France (2026)",
+        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
+        "competition": "ATP Masters - Rolex Paris Masters 2026",
+        "sport_type": "",
+        "reason": "tennis gazetteer",
+        "evidence": "tennis"
       },
       {
         "name": "England Wheelchair Vs USA Wheelchair",
@@ -695,7 +703,7 @@
       },
       {
         "name": "Court 1",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
+        "source": "sportlive-fancode-backup, vk1817-fancode-mirror, drmlive-fan",
         "competition": "ATP Masters - Rolex Paris Masters 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -735,7 +743,7 @@
       },
       {
         "name": "World Feed",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, vk1817-fan",
+        "source": "sportlive-fancode-backup, vk1817-fancode-mirror, drmlive-fan",
         "competition": "ATP Masters - Rolex Paris Masters 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -947,31 +955,42 @@
   "authority_status": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 1,
-    "recorded": 23,
-    "conflict": 0,
+    "live": 0,
+    "recorded": 22,
+    "conflict": 1,
     "unmatched": 34,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 23,
-      "LIVE": 1
+      "UPCOMING": 22
     },
     "by_confidence": {
-      "LOW": 8,
-      "HIGH": 16
+      "LOW": 7,
+      "CONFLICT": 1,
+      "HIGH": 15
     },
     "applied_fixtures": [],
-    "conflicts": []
+    "conflicts": [
+      {
+        "name": "Real Oviedo vs Las Palmas",
+        "reason": "independent authorities disagree: ESPN espn-header=67' (STATUS_SECOND_HALF, event 401883146); LiveScore livescore=FT (6, event 1811177)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "authority_status_carried": {
     "applied": 1,
     "pending_confirmation": 0,
-    "live": 1,
+    "live": 0,
     "recorded": 1,
-    "conflict": 0,
+    "conflict": 1,
     "unmatched": 5,
     "start_window": 0,
     "start_window_fixtures": [],
@@ -979,12 +998,12 @@
     "kickoff_corrections": [],
     "by_status": {
       "FINISHED": 1,
-      "LIVE": 1,
       "UPCOMING": 1
     },
     "by_confidence": {
       "HIGH": 1,
-      "LOW": 2
+      "CONFLICT": 1,
+      "LOW": 1
     },
     "applied_fixtures": [
       {
@@ -1006,7 +1025,18 @@
         "lifecycle_state_before": "END_PENDING"
       }
     ],
-    "conflicts": []
+    "conflicts": [
+      {
+        "name": "Real Oviedo vs Las Palmas",
+        "reason": "independent authorities disagree: ESPN espn-header=67' (STATUS_SECOND_HALF, event 401883146); LiveScore livescore=FT (6, event 1811177)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "fixture_status_api": {
     "asked": 3,
@@ -1016,10 +1046,19 @@
     "no_verdict": 3
   },
   "live_protection": {
-    "carried_forward": 4,
-    "released_ended": 0,
-    "released_ended_ids": [],
-    "retired_terminal": [],
+    "carried_forward": 3,
+    "released_ended": 1,
+    "released_ended_ids": [
+      "pakhtakor-tashkent-vs-al-nassr-fc"
+    ],
+    "retired_terminal": [
+      {
+        "id": "pakhtakor-tashkent-vs-al-nassr-fc",
+        "name": "Pakhtakor Tashkent vs Al Nassr FC",
+        "provenance": "feed_strong_end",
+        "reason": "authoritative finished status"
+      }
+    ],
     "released_listing_expired": 0,
     "released_dead_link": 0,
     "released_stale": 0,
@@ -1028,27 +1067,28 @@
     "probe_alive": 2,
     "probe_dead": 1,
     "probe_inconclusive": 0,
-    "end_pending": 2,
+    "end_pending": 1,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
       "LIVE": 2,
-      "END_PENDING": 2
+      "END_PENDING": 1,
+      "ENDED": 1
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 0,
-    "total": 1247,
+    "added": 1,
+    "total": 1248,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 0
+    "decided_this_scan": 1
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1082,19 +1122,19 @@
     "unmatched": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 59,
+    "attempted": 57,
     "poster_filled": 0,
     "badge_filled": 32,
     "badge_used_as_logo": 0,
-    "cache_hits": 18,
+    "cache_hits": 19,
     "cached_entries": 1378,
     "provider": {
-      "requests": 23,
-      "hits": 21,
+      "requests": 9,
+      "hits": 7,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 26,
+      "skipped_rate_limited": 35,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1120,32 +1160,32 @@
   ],
   "sport_filter": {
     "at_merge": {
-      "total": 68,
-      "published": 58,
+      "total": 67,
+      "published": 57,
       "rejected": 9,
       "quarantined": 1,
       "states": {
-        "confirmed_football": 31,
+        "confirmed_football": 30,
         "confirmed_cricket": 27,
         "confirmed_other": 9,
         "unknown": 1
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 31,
+          "total": 30,
           "cricket": 3,
-          "football": 19,
+          "football": 18,
           "quarantined": 0,
           "rejected": 9,
-          "published": 22
+          "published": 21
         },
         "sm-fancode": {
-          "total": 19,
+          "total": 18,
           "cricket": 8,
-          "football": 11,
+          "football": 10,
           "quarantined": 0,
           "rejected": 0,
-          "published": 19
+          "published": 18
         },
         "srhady-primevideo-sports": {
           "total": 1,
@@ -1164,22 +1204,22 @@
           "published": 19
         },
         "sportlive-fancode-backup": {
-          "total": 19,
+          "total": 18,
           "cricket": 7,
-          "football": 12,
+          "football": 11,
           "quarantined": 0,
           "rejected": 0,
-          "published": 19
-        },
-        "drmlive-fancode-mirror": {
-          "total": 19,
-          "cricket": 7,
-          "football": 12,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
+          "published": 18
         },
         "vk1817-fancode-mirror": {
+          "total": 17,
+          "cricket": 7,
+          "football": 10,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 17
+        },
+        "drmlive-fancode-mirror": {
           "total": 18,
           "cricket": 7,
           "football": 11,
@@ -1188,12 +1228,12 @@
           "published": 18
         },
         "sayanpal-fancode-mirror": {
-          "total": 19,
+          "total": 18,
           "cricket": 7,
-          "football": 12,
+          "football": 11,
           "quarantined": 0,
           "rejected": 0,
-          "published": 19
+          "published": 18
         }
       },
       "rejected_examples": [
@@ -1282,12 +1322,12 @@
       "leaks": []
     },
     "today_match": {
-      "total": 8,
-      "published": 8,
+      "total": 7,
+      "published": 7,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 4,
+        "confirmed_football": 3,
         "confirmed_cricket": 4
       },
       "by_source": {
@@ -1300,12 +1340,12 @@
           "published": 2
         },
         "sm-fancode": {
-          "total": 4,
+          "total": 3,
           "cricket": 1,
-          "football": 3,
+          "football": 2,
           "quarantined": 0,
           "rejected": 0,
-          "published": 4
+          "published": 3
         },
         "srhady-primevideo-sports": {
           "total": 1,
@@ -1324,12 +1364,12 @@
           "published": 1
         },
         "vk1817-fancode-mirror": {
-          "total": 2,
+          "total": 1,
           "cricket": 1,
-          "football": 1,
+          "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 2
+          "published": 1
         }
       },
       "rejected_examples": [],
@@ -1337,13 +1377,13 @@
       "leaks": []
     },
     "upcoming": {
-      "total": 54,
-      "published": 54,
+      "total": 53,
+      "published": 53,
       "rejected": 0,
       "quarantined": 0,
       "states": {
         "confirmed_cricket": 26,
-        "confirmed_football": 28
+        "confirmed_football": 27
       },
       "by_source": {
         "srhady-willow-event": {
@@ -1355,38 +1395,38 @@
           "published": 19
         },
         "sm-sports-data": {
-          "total": 21,
+          "total": 20,
           "cricket": 3,
-          "football": 18,
+          "football": 17,
           "quarantined": 0,
           "rejected": 0,
-          "published": 21
+          "published": 20
         },
         "sm-fancode": {
-          "total": 16,
+          "total": 15,
           "cricket": 7,
-          "football": 9,
+          "football": 8,
           "quarantined": 0,
           "rejected": 0,
-          "published": 16
+          "published": 15
         },
         "sportlive-fancode-backup": {
-          "total": 19,
+          "total": 18,
           "cricket": 7,
-          "football": 12,
+          "football": 11,
           "quarantined": 0,
           "rejected": 0,
-          "published": 19
-        },
-        "drmlive-fancode-mirror": {
-          "total": 19,
-          "cricket": 7,
-          "football": 12,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 19
+          "published": 18
         },
         "vk1817-fancode-mirror": {
+          "total": 17,
+          "cricket": 7,
+          "football": 10,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 17
+        },
+        "drmlive-fancode-mirror": {
           "total": 18,
           "cricket": 7,
           "football": 11,
@@ -1395,12 +1435,12 @@
           "published": 18
         },
         "sayanpal-fancode-mirror": {
-          "total": 19,
+          "total": 18,
           "cricket": 7,
-          "football": 12,
+          "football": 11,
           "quarantined": 0,
           "rejected": 0,
-          "published": 19
+          "published": 18
         }
       },
       "rejected_examples": [],
@@ -1412,19 +1452,19 @@
   "sport_quarantined": [],
   "sport_leaks": [],
   "sport_never_dropped": {
-    "refused": 59,
+    "refused": 60,
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 277,
+    "raw_events": 278,
     "cricket_kept": 27,
-    "football_kept": 31,
-    "other_discarded": 59,
+    "football_kept": 30,
+    "other_discarded": 60,
     "unresolved": 1,
-    "today_final": 8,
-    "upcoming_final": 54,
+    "today_final": 7,
+    "upcoming_final": 53,
     "published_states": {
-      "confirmed_football": 32,
+      "confirmed_football": 30,
       "confirmed_cricket": 30
     },
     "other_sport_leak": 0,
@@ -1451,17 +1491,17 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 2,
+      "provider_or_authority": 1,
       "estimate": 0,
       "none": 6
     }
   },
   "fixture_stream_health": {
-    "fixtures": 79,
-    "published_fixtures": 62,
+    "fixtures": 77,
+    "published_fixtures": 60,
     "fixtures_with_verified_stream": 14,
-    "fixtures_with_zero_verified": 65,
-    "published_without_stream": 59,
+    "fixtures_with_zero_verified": 63,
+    "published_without_stream": 57,
     "fallback_available": 2,
     "targeted_fixtures": 6,
     "targeted_attempts": 32,
@@ -1477,22 +1517,22 @@
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 62,
-    "verified": 23,
-    "partial_authority": 1,
+    "fixtures": 60,
+    "verified": 21,
+    "partial_authority": 0,
     "unverified": 37,
-    "conflict": 1,
-    "matched_by_two_independent_authorities": 19,
-    "authority_agreements": 17,
-    "authority_disagreements": 0,
+    "conflict": 2,
+    "matched_by_two_independent_authorities": 17,
+    "authority_agreements": 15,
+    "authority_disagreements": 1,
     "card_status_conflicts": 1,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 0
+    "not_published": 1
   },
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 62,
+    "published_fixtures": 60,
     "fixtures_with_stream": 1,
     "fixtures_playable_via_catalogue": 2,
     "fixtures_with_fresh_stream": 1,
