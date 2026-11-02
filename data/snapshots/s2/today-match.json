@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-02T02:21:58.606101+00:00",
+  "updated_at": "2026-11-02T03:04:41.353805+00:00",
   "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -252,7 +252,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 10,
+      "carried_forward_misses": 13,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-01T23:25:06.578182+00:00"
     },
@@ -272,7 +272,7 @@
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "Verified",
+      "verification_badge": "Playback Unproven",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
@@ -344,9 +344,11 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
+      "playback_unproven": true,
+      "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
       "start_time": "2026-11-02T00:00:00+00:00",
       "start_at": "2026-11-02T00:00:00+00:00",
-      "end_time": "2026-11-02T03:04:15+00:00",
+      "end_time": "2026-11-02T03:24:25+00:00",
       "end_time_source": "assumed",
       "competition": "MLS",
       "fixture_id": "provider:new-england-revolution-vs-inter-miami-cf|mls|2026-11-02",
@@ -361,23 +363,28 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "MLS",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761932)"
+        "ESPN espn-header=80' (STATUS_SECOND_HALF, event 761932)",
+        "LiveScore livescore=FT (6, event 1696768)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "761932"
-      },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/1ula2l1639493143.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/m4it3e1602103647.png",
-      "playback_id": "ctv_a499372139ae52e9d78effdd44172887"
+      "playback_id": "ctv_a499372139ae52e9d78effdd44172887",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 2,
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-02T02:45:02.293128+00:00",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=80' (STATUS_SECOND_HALF, event 761932); LiveScore livescore=FT (6, event 1696768)"
     },
     {
       "id": "cruz-azul-vs-club-león",
@@ -472,8 +479,8 @@
       "resolution_height": 1080,
       "start_time": "2026-11-02T01:10:00+00:00",
       "start_at": "2026-11-02T01:10:00+00:00",
-      "end_time": "2026-11-02T03:40:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-02T04:04:20+00:00",
+      "end_time_source": "assumed",
       "competition": "Liga MX, Apertura",
       "fixture_id": "provider:cruz-azul-vs-club-león|liga mx apertura|2026-11-02",
       "status": "LIVE_NOW",
@@ -487,18 +494,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876911)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 401876911)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401876911"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_dc1591b229a21c0c9b17e5ed3378c8a1",
@@ -600,8 +608,8 @@
       "resolution_height": 720,
       "start_time": "2026-11-02T01:30:00+00:00",
       "start_at": "2026-11-02T01:30:00+00:00",
-      "end_time": "2026-11-02T04:00:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-02T04:04:20+00:00",
+      "end_time_source": "assumed",
       "competition": "MLS",
       "fixture_id": "provider:los-angeles-fc-vs-minnesota-united|mls|2026-11-02",
       "status": "LIVE_NOW",
@@ -619,7 +627,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/7nbj2a1602103638.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/8ak3ub1791019866.png",
-      "playback_id": "ctv_063c0a5c115e082e98000931893aadf4"
+      "playback_id": "ctv_0d3749fb176fecc7a934bd002a656f44"
     },
     {
       "id": "portland-timbers-vs-houston-dynamo",
@@ -646,39 +654,10 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 3,
+      "available_link_count": 2,
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.cache.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_8070a2ce5760068df10ed58b08afb7ee",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -745,42 +724,6 @@
           ]
         },
         {
-          "id": "portland-timbers-vs-houston-dynamo--fox-deportes",
-          "name": "FOX DEPORTES",
-          "normalized_name": "fox-deportes",
-          "logo": "https://img.sofascore.com/api/v1/team/22007/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "portland-timbers-vs-houston-dynamo--fox-deportes--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "portland-timbers-vs-houston-dynamo--fox-deportes--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_f735739a3a8dd38feba6b45a",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_8070a2ce5760068df10ed58b08afb7ee",
-              "resolution": "HD",
-              "resolution_height": 720,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
           "id": "portland-timbers-vs-houston-dynamo--fox1-sports",
           "name": "FOX1 SPORTS",
           "normalized_name": "fox1-sports",
@@ -817,14 +760,14 @@
           ]
         }
       ],
-      "channel_count": 3,
+      "channel_count": 2,
       "default_channel_id": "portland-timbers-vs-houston-dynamo--quality",
       "channel_stats": {
-        "streams_in": 3,
+        "streams_in": 2,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 3,
-        "variants": 3,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -846,9 +789,9 @@
       "end_time_source": "sport",
       "competition": "MLS",
       "fixture_id": "provider:portland-timbers-vs-houston-dynamo|mls|2026-11-02",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-02T02:45:00+00:00",
@@ -857,6 +800,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "MLS",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 761933)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "761933"
+      },
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/skm30j1557953559.png",
