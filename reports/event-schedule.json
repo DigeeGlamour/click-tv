@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T08:05:04.736284+00:00",
+  "generated_at": "2026-11-02T08:25:09.854259+00:00",
   "today_match_count": 7,
   "upcoming_count": 63,
   "today_missing_logo": [],
@@ -8,7 +8,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 168,
+  "provider_fixture": 169,
   "provider_rejected": 89,
   "provider_rejected_reasons": {
     "provider_dead_status": 60,
@@ -402,7 +402,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 168,
+    "total": 169,
     "discarded": 50,
     "examples": [
       {
@@ -471,7 +471,7 @@
       },
       {
         "name": "Court 2 vs Paris, France (2026)",
-        "source": "sportlive-fancode-backup, sayanpal-fancode-mirror, drmlive-f",
+        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, sayanpal-f",
         "competition": "ATP Masters - Rolex Paris Masters 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -813,56 +813,66 @@
     "pending_confirmation": 0,
     "live": 1,
     "recorded": 30,
-    "conflict": 0,
+    "conflict": 1,
     "unmatched": 36,
-    "start_window": 1,
-    "start_window_fixtures": [
-      {
-        "id": "melbourne-stars-women-vs-perth-scorchers-women",
-        "name": "Melbourne Stars Women Vs Perth Scorchers Women",
-        "claimed": "LIVE_NOW",
-        "now_says": "STARTING_SOON",
-        "conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      }
-    ],
-    "kickoff_corrected": 0,
-    "kickoff_corrections": [],
-    "by_status": {
-      "UPCOMING": 31,
-      "LIVE": 1
-    },
-    "by_confidence": {
-      "HIGH": 21,
-      "LOW": 11
-    },
-    "applied_fixtures": [],
-    "conflicts": []
-  },
-  "authority_status_carried": {
-    "applied": 0,
-    "pending_confirmation": 0,
-    "live": 1,
-    "recorded": 1,
-    "conflict": 0,
-    "unmatched": 4,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
       "LIVE": 1,
-      "UPCOMING": 1
+      "UPCOMING": 30
+    },
+    "by_confidence": {
+      "CONFLICT": 1,
+      "LOW": 11,
+      "HIGH": 20
+    },
+    "applied_fixtures": [],
+    "conflicts": [
+      {
+        "name": "Melbourne Stars Women Vs Perth Scorchers Women",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543951); LiveScore livescore=Play in progress (33, event 1813041)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
+  },
+  "authority_status_carried": {
+    "applied": 0,
+    "pending_confirmation": 0,
+    "live": 1,
+    "recorded": 0,
+    "conflict": 1,
+    "unmatched": 5,
+    "start_window": 0,
+    "start_window_fixtures": [],
+    "kickoff_corrected": 0,
+    "kickoff_corrections": [],
+    "by_status": {
+      "LIVE": 1
     },
     "by_confidence": {
       "LOW": 1,
-      "HIGH": 1
+      "CONFLICT": 1
     },
     "applied_fixtures": [],
-    "conflicts": []
+    "conflicts": [
+      {
+        "name": "Melbourne Stars Women Vs Perth Scorchers Women",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543951); LiveScore livescore=Play in progress (33, event 1813041)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "fixture_status_api": {
     "asked": 1,
@@ -915,7 +925,7 @@
   },
   "channel_names": {
     "stamped": 0,
-    "unresolved": 85,
+    "unresolved": 86,
     "names": {}
   },
   "streamed_provider": {
@@ -944,12 +954,12 @@
     "cache_hits": 15,
     "cached_entries": 1374,
     "provider": {
-      "requests": 17,
-      "hits": 15,
+      "requests": 11,
+      "hits": 9,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 46,
+      "skipped_rate_limited": 52,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1020,7 +1030,7 @@
           "rejected": 0,
           "published": 19
         },
-        "sayanpal-fancode-mirror": {
+        "drmlive-fancode-mirror": {
           "total": 19,
           "cricket": 8,
           "football": 11,
@@ -1028,7 +1038,7 @@
           "rejected": 0,
           "published": 19
         },
-        "drmlive-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 19,
           "cricket": 8,
           "football": 11,
@@ -1203,7 +1213,7 @@
           "rejected": 0,
           "published": 19
         },
-        "sayanpal-fancode-mirror": {
+        "drmlive-fancode-mirror": {
           "total": 19,
           "cricket": 8,
           "football": 11,
@@ -1211,7 +1221,7 @@
           "rejected": 0,
           "published": 19
         },
-        "drmlive-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 19,
           "cricket": 8,
           "football": 11,
@@ -1248,7 +1258,7 @@
     ]
   },
   "sport_pipeline": {
-    "raw_events": 257,
+    "raw_events": 258,
     "cricket_kept": 33,
     "football_kept": 35,
     "other_discarded": 59,
@@ -1310,13 +1320,13 @@
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 70,
-    "verified": 32,
+    "verified": 31,
     "partial_authority": 0,
     "unverified": 38,
-    "conflict": 0,
+    "conflict": 1,
     "matched_by_two_independent_authorities": 21,
-    "authority_agreements": 21,
-    "authority_disagreements": 0,
+    "authority_agreements": 20,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
