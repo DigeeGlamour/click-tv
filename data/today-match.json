@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-03T18:04:00.986228+00:00",
-  "count": 11,
-  "filtered_stale": 0,
+  "updated_at": "2026-11-03T18:12:57.933519+00:00",
+  "count": 10,
+  "filtered_stale": 1,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -171,7 +171,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 7,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-03T16:04:50.122301+00:00"
     },
@@ -246,11 +246,11 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "END_PENDING",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
       "end_pending": true,
-      "end_pending_confirmations": 2,
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
       "carried_forward_first_missed_at": "2026-11-03T17:44:56.795203+00:00"
     },
     {
@@ -435,22 +435,17 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "HIGH",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Live (Live, event 1558810)",
+        "ESPN espn-header=Scheduled (Scheduled, event 1558810)",
         "LiveScore livescore=Play in progress (33, event 1914828)"
       ],
-      "authority_independent_count": 2,
-      "authority_event_ids": {
-        "espn-header": "1558810",
-        "livescore": "1914828"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558810); LiveScore livescore=Play in progress (33, event 1914828)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "playback_id": "ctv_978ece99309b290f1aa3162cad7dfe2f",
@@ -531,98 +526,40 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 19,
+      "carried_forward_misses": 18,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-03T12:04:35.299906+00:00"
     },
     {
-      "id": "esteghlal-fc-vs-al-shamal",
-      "name": "Esteghlal FC vs Al Shamal",
-      "primary_stream_key": "",
+      "id": "esteghlal-fc-vs-al-shamal-sc",
+      "name": "Esteghlal FC Vs Al Shamal SC",
+      "primary_stream_key": "82e514be39cf11496408a89d7b8a53a59e730416ca950794e9d35f762cc2e9f3",
       "sport_type": "football",
       "sport_type_derived": true,
-      "logo": "https://www.fancode.com/skillup-uploads/cms-media/4248734_53053_ESG_ALS_fc-web.jpg",
+      "logo": "https://img.sofascore.com/api/v1/team/34316/image",
       "category": "today_match",
+      "url": "https://live2.jorvakstreamcache.com/live/channel2.m3u8?",
       "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
+      "proxy_mode": "proxy_first",
       "stream_type": "hls",
-      "requires_headers": false,
+      "requires_headers": true,
       "inherit_manifest_query": false,
-      "verification_mode": "none",
+      "verification_mode": "global",
       "verification_status": "verified_global",
-      "verification_badge": "",
+      "verification_badge": "Verified",
       "verified": true,
       "publish_allowed": true,
       "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
+      "original_source_pipeline": "today_match",
       "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-fancode",
+      "routing_reason": "configured_event_pipeline",
+      "source_id": "sm-sports-data",
       "metadata_only": false,
       "available_link_count": 1,
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 0,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-fancode",
-          "source_name": "SM FanCode Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        }
-      ],
-      "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
-      ],
-      "start_time": "2026-11-03T16:00:00+00:00",
-      "start_at": "2026-11-03T16:00:00+00:00",
-      "end_time": "2026-11-03T18:30:00+00:00",
-      "end_time_source": "sport",
-      "competition": "AFC Champions League Elite 2026-27",
-      "fixture_id": "provider:esteghlal-fc-vs-al-shamal|afc champions league elite 2026 27|2026-11-03",
-      "status": "LINK_UPDATING",
-      "original_status": "UPCOMING",
-      "schedule_status": "LINK_UPDATING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "source_start_time": "2026-11-03T16:00:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
-      "authority_end_families": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=67' (STATUS_SECOND_HALF, event 401912607)",
-        "LiveScore livescore=FT (6, event 1873585)"
-      ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=67' (STATUS_SECOND_HALF, event 401912607); LiveScore livescore=FT (6, event 1873585)",
-      "allow_without_stream": true,
-      "route_failed_while_live": true,
-      "event_type": "today_match",
-      "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING",
       "backups": [],
-      "playback_id": "ctv_32ed5eba57b863f577c6932fbddb3a73",
-      "promoted_from_absorbed_backup": true,
       "channels": [
         {
-          "id": "esteghlal-fc-vs-al-shamal--stream-tv",
+          "id": "esteghlal-fc-vs-al-shamal-sc--stream-tv",
           "name": "STREAM TV",
           "normalized_name": "stream-tv",
           "logo": "https://img.sofascore.com/api/v1/team/34316/image",
@@ -632,7 +569,7 @@
           "source_ids": [
             "sm-sports-data"
           ],
-          "primary_stream_id": "esteghlal-fc-vs-al-shamal--stream-tv--1",
+          "primary_stream_id": "esteghlal-fc-vs-al-shamal-sc--stream-tv--1",
           "stream_count": 1,
           "backup_count": 0,
           "verified": true,
@@ -643,7 +580,7 @@
           "renderer": "native",
           "streams": [
             {
-              "id": "esteghlal-fc-vs-al-shamal--stream-tv--1",
+              "id": "esteghlal-fc-vs-al-shamal-sc--stream-tv--1",
               "role": "primary",
               "playback_type": "native",
               "variant_key": "sv_c8524e406775eda9ccaca4ce",
@@ -653,16 +590,63 @@
               "playback_id": "ctv_32ed5eba57b863f577c6932fbddb3a73",
               "stream_type": "hls"
             }
-          ],
-          "absorbed_from_event_id": "esteghlal-fc-vs-al-shamal-sc"
+          ]
         }
       ],
       "channel_count": 1,
-      "default_channel_id": "",
-      "absorbed_event_ids": [
-        "esteghlal-fc-vs-al-shamal-sc"
+      "default_channel_id": "esteghlal-fc-vs-al-shamal-sc--stream-tv",
+      "channel_stats": {
+        "streams_in": 2,
+        "unresolved_channel_streams": 0,
+        "exact_duplicates_removed": 0,
+        "channels": 1,
+        "variants": 1,
+        "embed_variants": 0,
+        "generic_server_channels": 0
+      },
+      "source_provenance": [
+        {
+          "source_id": "sm-sports-data",
+          "source_name": "SM Live and Upcoming Sports Data",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+        }
       ],
-      "reconciled_duplicate_count": 1
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "start_time": "2026-11-03T16:00:00+00:00",
+      "start_at": "2026-11-03T16:00:00+00:00",
+      "end_time": "2026-11-03T18:44:48+00:00",
+      "end_time_source": "assumed",
+      "competition": "AFC Champions League Elite",
+      "fixture_id": "provider:esteghlal-fc-vs-al-shamal-sc|afc champions league elite|2026-11-03",
+      "status": "LIVE_NOW",
+      "original_status": "LIVE",
+      "schedule_status": "LIVE_NOW",
+      "schedule_verified": true,
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "source_start_time": "2026-11-03T16:00:00+00:00",
+      "time_verification": "provider_feed",
+      "source_category": "football",
+      "sport_class": "confirmed_football",
+      "sport_class_reason": "source sport field",
+      "sport_class_evidence": "football",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=48' (STATUS_SECOND_HALF, event 401912607)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401912607"
+      },
+      "authority_status": "LIVE",
+      "event_type": "today_match",
+      "lifecycle_state": "LIVE",
+      "playback_id": "ctv_392fd016cbebc767881a4fa61f499e10"
     },
     {
       "id": "al-hussein-irbid-vs-al-shorta",
@@ -823,15 +807,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=68' (STATUS_SECOND_HALF, event 401912770)",
-        "LiveScore livescore=FT (6, event 1873888)"
+        "ESPN espn-header=48' (STATUS_SECOND_HALF, event 401912770)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -840,15 +822,7 @@
       "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_32331ebb0296788c86f7338573807081",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=68' (STATUS_SECOND_HALF, event 401912770); LiveScore livescore=FT (6, event 1873888)",
-      "lifecycle_reason": "still live: authority_live",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-03T18:03:31.234587+00:00"
+      "playback_id": "ctv_32331ebb0296788c86f7338573807081"
     },
     {
       "id": "galatasaray-vs-vfb-stuttgart",
@@ -947,9 +921,9 @@
       "end_time_source": "sport",
       "competition": "UEFA Champions League",
       "fixture_id": "provider:galatasaray-vs-vfb-stuttgart|uefa champions league|2026-11-03",
-      "status": "LIVE_NOW",
+      "status": "STARTING_SOON",
       "original_status": "LIVE",
-      "schedule_status": "LIVE_NOW",
+      "schedule_status": "STARTING_SOON",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-03T17:45:00+00:00",
@@ -959,17 +933,22 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915311)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915311)",
+        "LiveScore livescore=NS (1, event 1882843)"
       ],
-      "authority_independent_count": 1,
+      "authority_independent_count": 2,
       "authority_event_ids": {
-        "espn-header": "401915311"
+        "espn-header": "401915311",
+        "livescore": "1882843"
       },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 0 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/io7jk21767941298.png",
@@ -982,94 +961,6 @@
         "query_parameters": [],
         "drm": true
       }
-    },
-    {
-      "id": "shakhtar-donetsk-vs-sporting-cp",
-      "name": "Shakhtar Donetsk Vs Sporting CP",
-      "primary_stream_key": "",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/3313/image",
-      "category": "today_match",
-      "url": "",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-sports-data",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "backups": [],
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 1,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "start_time": "2026-11-03T17:45:00+00:00",
-      "start_at": "2026-11-03T17:45:00+00:00",
-      "end_time": "2026-11-03T20:15:00+00:00",
-      "end_time_source": "sport",
-      "competition": "UEFA Champions League",
-      "fixture_id": "provider:shakhtar-donetsk-vs-sporting-cp|uefa champions league|2026-11-03",
-      "status": "UPCOMING",
-      "original_status": "UPCOMING",
-      "schedule_status": "UPCOMING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-03T17:45:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915310)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401915310"
-      },
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/sqrxsr1421791799.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/5hiuk71783137875.png",
-      "allow_without_stream": true,
-      "routing_changed_from": "upcoming",
-      "lifecycle_reason": "still live: authority_live",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-03T17:25:06.991401+00:00"
     },
     {
       "id": "al-hilal-vs-shabab-al-ahli-dubai",
@@ -1179,16 +1070,9 @@
         "livescore": "1873581"
       },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "STARTING",
       "allow_without_stream": true,
-      "routing_changed_from": "upcoming",
-      "lifecycle_reason": "still live: authority_live",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-03T18:03:31.234587+00:00"
+      "routing_changed_from": "upcoming"
     },
     {
       "id": "al-hilal-sfc-vs-shabab-al-ahli",
@@ -1238,27 +1122,15 @@
           "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
         },
         {
-          "source_id": "drmlive-fancode-mirror",
-          "source_name": "FanCode Live Events (drmlive)",
-          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
-        },
-        {
-          "source_id": "sayanpal-fancode-mirror",
-          "source_name": "FanCode Auto Updated (sayanpal)",
-          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
         }
       ],
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "start_time": "2026-11-03T18:15:00+00:00",
       "start_at": "2026-11-03T18:15:00+00:00",
@@ -1276,18 +1148,6 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912603)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401912603"
-      },
       "allow_without_stream": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
