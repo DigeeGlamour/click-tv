@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T02:24:11.459513+00:00",
+  "generated_at": "2026-11-03T02:44:27.666927+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,10 +12,11 @@
       "requests_ok": 6,
       "fixtures": 471,
       "unknown_statuses": [
-        "173|Lunch - day 4",
-        "2|19'",
-        "3|47'",
-        "3|59'"
+        "183|Tea - day 4",
+        "213|Rain delay",
+        "2|39'",
+        "3|67'",
+        "3|79'"
       ],
       "attempts": [
         {
@@ -112,13 +113,13 @@
     "fixtures": 45,
     "verdicts": {
       "UNVERIFIED": 27,
-      "VERIFIED": 17,
-      "CONFLICT": 1
+      "CONFLICT": 2,
+      "VERIFIED": 16
     },
-    "verified": 17,
+    "verified": 16,
     "partial_authority": 0,
     "unverified": 27,
-    "conflict": 1,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
         "unmatched": 32,
@@ -132,8 +133,9 @@
     "matched_by_two_independent_authorities": 10,
     "authority_agreements": 10,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says FINISHED": 1,
       "kickoff": 1
     },
     "identity_near_misses": 4,
@@ -144,10 +146,11 @@
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "173|Lunch - day 4",
-        "2|19'",
-        "3|47'",
-        "3|59'"
+        "183|Tea - day 4",
+        "213|Rain delay",
+        "2|39'",
+        "3|67'",
+        "3|79'"
       ],
       "espn-header": []
     }
@@ -259,18 +262,18 @@
           "competition_id": "630",
           "kickoff": "2026-11-02T23:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "80'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
+          "status_raw": "FT",
+          "status_code": "STATUS_FULL_TIME",
+          "status": "FINISHED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "80'",
-          "espn_status_description": "Second Half",
-          "espn_completed": false,
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "FT",
+          "espn_status_description": "Full Time",
+          "espn_completed": true,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841299~c:401841299"
         },
@@ -293,10 +296,12 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says FINISHED"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
