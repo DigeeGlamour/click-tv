@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-03T18:29:56.199966+00:00",
+  "updated_at": "2026-11-03T18:45:05.903566+00:00",
   "count": 10,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -171,11 +171,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-03T16:04:50.122301+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 8,
+      "end_pending_confirmations": 9,
       "ended_seen_at": "2026-11-03T18:29:47.442094+00:00",
       "lifecycle_end_basis": "estimate"
     },
@@ -252,8 +252,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 3,
-      "carried_forward_misses": 3,
+      "end_pending_confirmations": 4,
+      "carried_forward_misses": 4,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-03T17:44:56.795203+00:00"
     },
@@ -296,16 +296,10 @@
           "source_id": "sm-fancode",
           "source_name": "SM FanCode Auto Update",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
+        "sm-fancode"
       ],
       "start_time": "2026-11-03T16:30:00+00:00",
       "start_at": "2026-11-03T16:30:00+00:00",
@@ -368,16 +362,10 @@
           "source_id": "sm-fancode",
           "source_name": "SM FanCode Auto Update",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
+        "sm-fancode"
       ],
       "start_time": "2026-11-03T17:00:00+00:00",
       "start_at": "2026-11-03T17:00:00+00:00",
@@ -486,7 +474,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 20,
+      "carried_forward_misses": 21,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-03T12:04:35.299906+00:00"
     },
@@ -666,20 +654,22 @@
       },
       "authority_status": "FINISHED",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_32331ebb0296788c86f7338573807081",
       "authority_finished_confirmations": 1,
       "authority_finished_seen_at": "2026-11-03T18:29:38.587215+00:00",
       "authority_remove_after": "2026-11-03T18:49:38.587215+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
-      "lifecycle_reason": "an end signal is disputed by a trusted authority still calling this live",
-      "contradicted_end_confirmations": 1,
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "an end signal is disputed by a trusted authority still calling this live",
-      "carried_forward_first_missed_at": "2026-11-03T18:03:31.234587+00:00"
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-03T18:03:31.234587+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-03T18:45:01.731314+00:00"
     },
     {
       "id": "galatasaray-vs-vfb-stuttgart",
@@ -734,11 +724,13 @@
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
-          "verification_badge": "Verified",
+          "verification_badge": "Playback Unproven",
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
           "host": "otte.live.fly.ww.aiv-cdn.net",
+          "playback_unproven": true,
+          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
           "drm": {
             "type": "clearkey",
             "protected": true
@@ -785,7 +777,7 @@
         },
         {
           "name": "Backup-4",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -795,15 +787,15 @@
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "source_id": "srhady-primevideo-sports",
+          "host": "dash-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_81f4fbfe457361405eab93b1ff5484f9",
+          "playback_id": "ctv_d3678092693a1546e3867467a6206c5c",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -814,7 +806,7 @@
         },
         {
           "name": "Backup-5",
-          "header_profile": "android_chrome",
+          "header_profile": "android_tv",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
           "requires_headers": false,
@@ -824,15 +816,15 @@
           "verification_badge": "Verified",
           "verified": true,
           "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
           "drm": {
             "type": "clearkey",
             "protected": true
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_ca94f2ee3315ebe71ae6364330522a8a",
+          "playback_id": "ctv_be8fe2b9c73bc491bad8f43bd3108b0d",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -916,42 +908,6 @@
           ]
         },
         {
-          "id": "galatasaray-vs-vfb-stuttgart--dazn",
-          "name": "DAZN",
-          "normalized_name": "dazn",
-          "logo": "https://img.sofascore.com/api/v1/team/3061/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "galatasaray-vs-vfb-stuttgart--dazn--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "galatasaray-vs-vfb-stuttgart--dazn--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_f219ae976696fe2cb8b053de",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_81f4fbfe457361405eab93b1ff5484f9",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
           "id": "galatasaray-vs-vfb-stuttgart--sonyliv-prime",
           "name": "SonyLiv PRIME",
           "normalized_name": "sonyliv-prime",
@@ -981,6 +937,117 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_ca94f2ee3315ebe71ae6364330522a8a",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "galatasaray-vs-vfb-stuttgart--prime-video",
+          "name": "Prime Video",
+          "normalized_name": "prime-video",
+          "logo": "https://images-na.ssl-images-amazon.com/images/S/le-target-images-prod/amzn1.dv.gti.cadba7f0-fc51-46da-8534-e17bcad0bc0a/7/BOXART-16X9/en-US/1920x1080._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMpng_.png",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "srhady-primevideo-sports",
+          "source_ids": [
+            "srhady-primevideo-sports"
+          ],
+          "primary_stream_id": "galatasaray-vs-vfb-stuttgart--prime-video--1",
+          "stream_count": 4,
+          "backup_count": 3,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "galatasaray-vs-vfb-stuttgart--prime-video--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_c19db2f9976327a3d04f8ab4",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ffff7bbf8a6f5bcceb0ef76e4e9440db",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "galatasaray-vs-vfb-stuttgart--prime-video--2",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_3ea20d5527a6f439d61dde03",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_e3c91619d0b217a9eda8d5b6e3d180e1",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "galatasaray-vs-vfb-stuttgart--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_e5eb256a925b376d6368a5b0",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_d3678092693a1546e3867467a6206c5c",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "galatasaray-vs-vfb-stuttgart--prime-video--4",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_fa29eb90742ca0eabf30e8ac",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_be8fe2b9c73bc491bad8f43bd3108b0d",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
+          "id": "galatasaray-vs-vfb-stuttgart--dazn",
+          "name": "DAZN",
+          "normalized_name": "dazn",
+          "logo": "https://img.sofascore.com/api/v1/team/3061/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "galatasaray-vs-vfb-stuttgart--dazn--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "galatasaray-vs-vfb-stuttgart--dazn--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_f219ae976696fe2cb8b053de",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_81f4fbfe457361405eab93b1ff5484f9",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1094,18 +1161,18 @@
           ]
         }
       ],
-      "channel_count": 7,
+      "channel_count": 8,
       "default_channel_id": "galatasaray-vs-vfb-stuttgart--faster-quality",
       "channel_stats": {
-        "streams_in": 7,
+        "streams_in": 11,
         "unresolved_channel_streams": 1,
         "exact_duplicates_removed": 0,
-        "channels": 7,
-        "variants": 7,
+        "channels": 8,
+        "variants": 11,
         "embed_variants": 0,
         "generic_server_channels": 1
       },
-      "standby_link_count": 1,
+      "standby_link_count": 5,
       "standby": [
         {
           "name": "Standby-1",
@@ -1129,7 +1196,131 @@
           "host": "otte.live.fly.ww.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
+          "playback_id": "ctv_42c75578624fd15ec8d1bab0203c3602",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Standby-2",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "sm-sports-data",
+          "source_provenance": [
+            {
+              "source_id": "sm-sports-data",
+              "source_name": "SM Live and Upcoming Sports Data",
+              "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+            }
+          ],
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_3eb1663f6b07de716e0225b768d0b98a",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Standby-3",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "sm-sports-data",
+          "source_provenance": [
+            {
+              "source_id": "sm-sports-data",
+              "source_name": "SM Live and Upcoming Sports Data",
+              "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
+            }
+          ],
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
           "playback_id": "ctv_11a90e1c12eb406a492cc73425cc0aa1",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Standby-4",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "srhady-primevideo-sports",
+          "source_provenance": [
+            {
+              "source_id": "srhady-primevideo-sports",
+              "source_name": "Prime Video Free Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+            }
+          ],
+          "host": "otte.live.fly.ww.aiv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_8cb44e2b19a23ee3cdb9caf7618dca23",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Standby-5",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "requires_headers": false,
+          "verification_status": "verified_global",
+          "verified": true,
+          "source_id": "srhady-primevideo-sports",
+          "source_provenance": [
+            {
+              "source_id": "srhady-primevideo-sports",
+              "source_name": "Prime Video Free Sports",
+              "source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json"
+            }
+          ],
+          "host": "otte.cache.aiv-cdn.net",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_bc6cf503296e74567b2b9801e8412b23",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1174,7 +1365,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=16' (STATUS_FIRST_HALF, event 401915311)"
+        "ESPN espn-header=28' (STATUS_FIRST_HALF, event 401915311)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1240,11 +1431,13 @@
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
-          "verification_badge": "Verified",
+          "verification_badge": "Playback Unproven",
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
           "host": "otte.live.fly.ww.aiv-cdn.net",
+          "playback_unproven": true,
+          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
           "drm": {
             "type": "clearkey",
             "protected": true
@@ -1309,7 +1502,7 @@
           },
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_ca2f53b771af3b554199ca21169e8c63",
+          "playback_id": "ctv_0af91dd569a91eb06b282a852c736a71",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1327,11 +1520,13 @@
           "inherit_manifest_query": false,
           "verification_mode": "global",
           "verification_status": "verified_global",
-          "verification_badge": "Verified",
+          "verification_badge": "Playback Unproven",
           "verified": true,
           "publish_allowed": true,
           "source_id": "sm-sports-data",
           "host": "otte.live.fly.ww.aiv-cdn.net",
+          "playback_unproven": true,
+          "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it",
           "drm": {
             "type": "clearkey",
             "protected": true
@@ -1422,6 +1617,42 @@
           ]
         },
         {
+          "id": "shakhtar-donetsk-vs-sporting-cp--dazn",
+          "name": "DAZN",
+          "normalized_name": "dazn",
+          "logo": "https://img.sofascore.com/api/v1/team/3313/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "shakhtar-donetsk-vs-sporting-cp--dazn--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "shakhtar-donetsk-vs-sporting-cp--dazn--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_53125f76e8cf4ba23c70d3ee",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_0af91dd569a91eb06b282a852c736a71",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            }
+          ]
+        },
+        {
           "id": "shakhtar-donetsk-vs-sporting-cp--sonyliv-prime",
           "name": "SonyLiv PRIME",
           "normalized_name": "sonyliv-prime",
@@ -1487,42 +1718,6 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_fbd661890ea6f5423701bfde92dabc7b",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            }
-          ]
-        },
-        {
-          "id": "shakhtar-donetsk-vs-sporting-cp--dazn",
-          "name": "DAZN",
-          "normalized_name": "dazn",
-          "logo": "https://img.sofascore.com/api/v1/team/3313/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "shakhtar-donetsk-vs-sporting-cp--dazn--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "shakhtar-donetsk-vs-sporting-cp--dazn--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_53125f76e8cf4ba23c70d3ee",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_0af91dd569a91eb06b282a852c736a71",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -1635,7 +1830,7 @@
           "host": "otte.live.fly.ww.aiv-cdn.net",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_e2a19f76541eb78dceb6a1b2d59821c2",
+          "playback_id": "ctv_eb56ac40941c2f5b11eb43dd3e515b34",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -1680,7 +1875,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=18' (STATUS_FIRST_HALF, event 401915310)"
+        "ESPN espn-header=29' (STATUS_FIRST_HALF, event 401915310)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1805,7 +2000,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-03T18:03:31.234587+00:00"
     },
@@ -1817,7 +2012,6 @@
       "sport_type_derived": true,
       "logo": "https://www.fancode.com/skillup-uploads/cms-media/4248735_53053_AHS_SAA_fc-web.jpg",
       "category": "today_match",
-      "url": "",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "media",
@@ -1835,7 +2029,6 @@
       "source_id": "sm-fancode",
       "metadata_only": true,
       "available_link_count": 0,
-      "backups": [],
       "channel_stats": {
         "streams_in": 1,
         "unresolved_channel_streams": 0,
@@ -1850,16 +2043,10 @@
           "source_id": "sm-fancode",
           "source_name": "SM FanCode Auto Update",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
-        },
-        {
-          "source_id": "vk1817-fancode-mirror",
-          "source_name": "FanCode Auto Update (Vk1817)",
-          "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
         }
       ],
       "source_ids": [
-        "sm-fancode",
-        "vk1817-fancode-mirror"
+        "sm-fancode"
       ],
       "start_time": "2026-11-03T18:15:00+00:00",
       "start_at": "2026-11-03T18:15:00+00:00",
@@ -1890,6 +2077,7 @@
         "espn-header": "401912603"
       },
       "allow_without_stream": true,
+      "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "STARTING"
