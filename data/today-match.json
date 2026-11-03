@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-03T21:04:58.593221+00:00",
+  "updated_at": "2026-11-03T21:25:10.030334+00:00",
   "count": 17,
   "filtered_stale": 8,
   "filtered_unplayable": 0,
@@ -74,7 +74,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-03T19:25:18.965329+00:00"
     },
@@ -145,7 +145,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1558810)",
+        "ESPN espn-header=Live (Live, event 1558810)",
         "LiveScore livescore=FT (6, event 1914828)"
       ],
       "allow_without_stream": true,
@@ -161,11 +161,11 @@
       "authority_status": "LIVE",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 6,
-      "carried_forward_misses": 6,
+      "end_pending_confirmations": 7,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-03T19:25:18.965329+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558810); LiveScore livescore=FT (6, event 1914828)"
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Live (Live, event 1558810); LiveScore livescore=FT (6, event 1914828)"
     },
     {
       "id": "al-hilal-vs-shabab-al-ahli-dubai",
@@ -268,28 +268,40 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912603)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401912603)",
         "LiveScore livescore=FT (6, event 1873581)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_a8885822760fe8e7a4287ba52c249e41",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912603); LiveScore livescore=FT (6, event 1873581)",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 1,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
-      "carried_forward_first_missed_at": "2026-11-03T21:04:49.984825+00:00"
+      "carried_forward_misses": 2,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-03T21:04:49.984825+00:00",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401912603",
+        "livescore": "1873581"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-03T21:24:53.451739+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-03T21:44:53.451739+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-03T21:25:01.791916+00:00"
     },
     {
       "id": "al-hilal-sfc-vs-shabab-al-ahli",
@@ -351,13 +363,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "FINISHED",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912603)"
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401912603)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -373,9 +385,10 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-03T19:25:18.965329+00:00"
+      "carried_forward_first_missed_at": "2026-11-03T19:25:18.965329+00:00",
+      "authority_finished_confirmations": 1
     },
     {
       "id": "preston-north-end-vs-sheffield-united",
@@ -439,13 +452,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401880180)"
+        "ESPN espn-header=77' (STATUS_SECOND_HALF, event 401880180)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -462,7 +475,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-03T19:25:18.965329+00:00",
       "authority_status": "LIVE"
@@ -560,8 +573,8 @@
       "resolution_height": 1080,
       "start_time": "2026-11-03T19:45:00+00:00",
       "start_at": "2026-11-03T19:45:00+00:00",
-      "end_time": "2026-11-03T22:15:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-03T22:24:53+00:00",
+      "end_time_source": "assumed",
       "competition": "EFL Championship",
       "fixture_id": "provider:queens-park-rangers-vs-burnley|championship|2026-11-03",
       "status": "LIVE_NOW",
@@ -575,18 +588,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401880179)"
+        "ESPN espn-header=81' (STATUS_SECOND_HALF, event 401880179)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401880179"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/l4qscx1601721022.png",
@@ -725,7 +739,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-03T19:45:27.530811+00:00"
     },
@@ -837,18 +851,19 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401880184)"
+        "ESPN espn-header=65' (STATUS_SECOND_HALF, event 401880184)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
         "espn-header": "401880184"
       },
+      "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wufs551672950865.png",
@@ -1002,18 +1017,19 @@
           "sport_class": "confirmed_football",
           "sport_class_reason": "source sport field",
           "sport_class_evidence": "football",
-          "authority_end_status": "UPCOMING",
+          "authority_end_status": "LIVE",
           "authority_end_confidence": "LOW",
           "authority_end_families": [
             "ESPN"
           ],
           "authority_end_evidence": [
-            "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401880177)"
+            "ESPN espn-header=63' (STATUS_SECOND_HALF, event 401880177)"
           ],
           "authority_independent_count": 1,
           "authority_event_ids": {
             "espn-header": "401880177"
           },
+          "authority_status": "LIVE",
           "event_type": "today_match",
           "lifecycle_state": "LIVE",
           "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/rsvuxw1448813527.png",
@@ -1345,13 +1361,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915386)"
+        "ESPN espn-header=63' (STATUS_SECOND_HALF, event 401915386)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1367,7 +1383,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-03T20:45:07.359682+00:00"
     },
@@ -1610,13 +1626,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915384)"
+        "ESPN espn-header=66' (STATUS_SECOND_HALF, event 401915384)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1639,7 +1655,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-03T20:45:07.359682+00:00"
     },
@@ -1924,13 +1940,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915387)"
+        "ESPN espn-header=62' (STATUS_SECOND_HALF, event 401915387)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1955,7 +1971,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-03T20:45:07.359682+00:00"
     },
@@ -2412,7 +2428,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-03T20:45:07.359682+00:00"
     },
@@ -2655,13 +2671,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915385)"
+        "ESPN espn-header=63' (STATUS_SECOND_HALF, event 401915385)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2684,7 +2700,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-03T20:45:07.359682+00:00"
     },
@@ -2927,13 +2943,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915308)"
+        "ESPN espn-header=63' (STATUS_SECOND_HALF, event 401915308)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2958,7 +2974,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-03T20:45:07.359682+00:00"
     },
@@ -3136,13 +3152,13 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
+      "authority_end_status": "LIVE",
       "authority_end_confidence": "LOW",
       "authority_end_families": [
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915309)"
+        "ESPN espn-header=63' (STATUS_SECOND_HALF, event 401915309)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -3165,7 +3181,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-03T20:45:07.359682+00:00"
     },

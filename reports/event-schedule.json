@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T21:05:01.828570+00:00",
+  "generated_at": "2026-11-03T21:25:13.201281+00:00",
   "today_match_count": 17,
   "upcoming_count": 45,
   "today_missing_logo": [],
@@ -1005,8 +1005,8 @@
   "authority_status": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 0,
-    "recorded": 25,
+    "live": 3,
+    "recorded": 22,
     "conflict": 0,
     "unmatched": 33,
     "start_window": 0,
@@ -1026,7 +1026,8 @@
       }
     ],
     "by_status": {
-      "UPCOMING": 26
+      "LIVE": 3,
+      "UPCOMING": 23
     },
     "by_confidence": {
       "LOW": 8,
@@ -1036,28 +1037,49 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 0,
-    "pending_confirmation": 0,
-    "live": 0,
-    "recorded": 10,
-    "conflict": 2,
+    "applied": 1,
+    "pending_confirmation": 1,
+    "live": 9,
+    "recorded": 0,
+    "conflict": 1,
     "unmatched": 5,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "UPCOMING": 10
+      "FINISHED": 2,
+      "LIVE": 9
     },
     "by_confidence": {
-      "CONFLICT": 2,
+      "CONFLICT": 1,
+      "HIGH": 1,
       "LOW": 10
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "Al Hilal Vs Shabab Al Ahli Dubai",
+        "fixture_id": "provider:al-hilal-vs-shabab-al-ahli-dubai|afc champions league elite|2026-11-03",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401912603)",
+          "LiveScore livescore=FT (6, event 1873581)"
+        ],
+        "authority_finished_seen_at": "2026-11-03T21:24:53.451739+00:00",
+        "remove_after": "2026-11-03T21:44:53.451739+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
     "conflicts": [
       {
         "name": "West Indies A vs England Lions",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558810); LiveScore livescore=FT (6, event 1914828)",
+        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1558810); LiveScore livescore=FT (6, event 1914828)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1067,9 +1089,9 @@
       },
       {
         "name": "Al Hilal Vs Shabab Al Ahli Dubai",
-        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912603); LiveScore livescore=FT (6, event 1873581)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1094,15 +1116,15 @@
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 9,
+    "probe_alive": 8,
     "probe_dead": 4,
     "probe_inconclusive": 0,
-    "end_pending": 1,
+    "end_pending": 2,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 12,
-      "END_PENDING": 1
+      "LIVE": 11,
+      "END_PENDING": 2
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -1158,12 +1180,12 @@
     "cache_hits": 18,
     "cached_entries": 1403,
     "provider": {
-      "requests": 11,
-      "hits": 9,
+      "requests": 10,
+      "hits": 8,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 38,
+      "skipped_rate_limited": 39,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1595,9 +1617,9 @@
     ],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 1,
+      "provider_or_authority": 2,
       "estimate": 0,
-      "none": 16
+      "none": 15
     }
   },
   "fixture_stream_health": {
@@ -1622,14 +1644,14 @@
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 62,
-    "verified": 23,
-    "partial_authority": 2,
+    "verified": 24,
+    "partial_authority": 8,
     "unverified": 27,
-    "conflict": 10,
+    "conflict": 3,
     "matched_by_two_independent_authorities": 27,
-    "authority_agreements": 17,
-    "authority_disagreements": 2,
-    "card_status_conflicts": 8,
+    "authority_agreements": 18,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 2,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 10
