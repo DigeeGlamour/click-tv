@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T03:06:53.524793+00:00",
+  "generated_at": "2026-11-03T03:24:54.085815+00:00",
   "today_match_count": 2,
   "upcoming_count": 43,
   "today_missing_logo": [],
@@ -8,12 +8,12 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 169,
-  "provider_rejected": 164,
+  "provider_fixture": 168,
+  "provider_rejected": 163,
   "provider_rejected_reasons": {
     "provider_dead_status": 134,
     "status_neither_live_nor_upcoming": 2,
-    "kickoff_missing_and_not_live": 2,
+    "kickoff_missing_and_not_live": 1,
     "upcoming_kickoff_already_passed": 26
   },
   "provider_rejected_by_source": {
@@ -26,8 +26,8 @@
       "total": 5
     },
     "kajju-sonyliv-backup": {
-      "kickoff_missing_and_not_live": 2,
-      "total": 2
+      "kickoff_missing_and_not_live": 1,
+      "total": 1
     },
     "dartv-fancode-mirror": {
       "upcoming_kickoff_already_passed": 21,
@@ -592,7 +592,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 169,
+    "total": 168,
     "discarded": 96,
     "examples": [
       {
@@ -861,7 +861,7 @@
       },
       {
         "name": "ATP Rolex Paris Masters 2026 vs Paris, France",
-        "source": "sm-fancode, drmlive-fancode-mirror, sayanpal-fancode-mirror,",
+        "source": "sm-fancode, sportlive-fancode-backup, vk1817-fancode-mirror,",
         "competition": "ATP Masters - Rolex Paris Masters 2026",
         "sport_type": "",
         "reason": "tennis gazetteer",
@@ -1100,8 +1100,8 @@
     "conflicts": []
   },
   "authority_status_carried": {
-    "applied": 0,
-    "pending_confirmation": 1,
+    "applied": 1,
+    "pending_confirmation": 0,
     "live": 0,
     "recorded": 0,
     "conflict": 0,
@@ -1116,8 +1116,35 @@
     "by_confidence": {
       "LOW": 1
     },
-    "applied_fixtures": [],
-    "conflicts": []
+    "applied_fixtures": [
+      {
+        "name": "Red Bull Bragantino Vs Santos",
+        "fixture_id": "provider:red-bull-bragantino-vs-santos|campeonato brasileiro s rie a|2026-11-02",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
+          "ESPN"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401841299)"
+        ],
+        "authority_finished_seen_at": "2026-11-03T03:24:38.635047+00:00",
+        "remove_after": "2026-11-03T03:44:38.635047+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      }
+    ],
+    "conflicts": [
+      {
+        "name": "Red Bull Bragantino Vs Santos",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "LOW",
+        "upstream_families": [
+          "ESPN"
+        ]
+      }
+    ]
   },
   "fixture_status_api": {
     "asked": 1,
@@ -1136,14 +1163,14 @@
     "released_stale": 0,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 1,
+    "probe_alive": 0,
     "probe_dead": 0,
     "probe_inconclusive": 0,
-    "end_pending": 0,
+    "end_pending": 1,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
-      "LIVE": 1
+      "END_PENDING": 1
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -1199,12 +1226,12 @@
     "cache_hits": 14,
     "cached_entries": 1387,
     "provider": {
-      "requests": 19,
-      "hits": 17,
+      "requests": 11,
+      "hits": 9,
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 16,
+      "skipped_rate_limited": 24,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1258,22 +1285,6 @@
           "rejected": 0,
           "published": 20
         },
-        "drmlive-fancode-mirror": {
-          "total": 22,
-          "cricket": 8,
-          "football": 14,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 22
-        },
-        "sayanpal-fancode-mirror": {
-          "total": 22,
-          "cricket": 8,
-          "football": 14,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 22
-        },
         "sportlive-fancode-backup": {
           "total": 22,
           "cricket": 8,
@@ -1289,6 +1300,22 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 20
+        },
+        "drmlive-fancode-mirror": {
+          "total": 22,
+          "cricket": 8,
+          "football": 14,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 22
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 22,
+          "cricket": 8,
+          "football": 14,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 22
         }
       },
       "rejected_examples": [
@@ -1424,22 +1451,6 @@
           "rejected": 0,
           "published": 20
         },
-        "drmlive-fancode-mirror": {
-          "total": 22,
-          "cricket": 8,
-          "football": 14,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 22
-        },
-        "sayanpal-fancode-mirror": {
-          "total": 22,
-          "cricket": 8,
-          "football": 14,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 22
-        },
         "sportlive-fancode-backup": {
           "total": 22,
           "cricket": 8,
@@ -1455,6 +1466,22 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 20
+        },
+        "drmlive-fancode-mirror": {
+          "total": 22,
+          "cricket": 8,
+          "football": 14,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 22
+        },
+        "sayanpal-fancode-mirror": {
+          "total": 22,
+          "cricket": 8,
+          "football": 14,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 22
         }
       },
       "rejected_examples": [],
@@ -1470,7 +1497,7 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 333,
+    "raw_events": 331,
     "cricket_kept": 25,
     "football_kept": 19,
     "other_discarded": 105,
@@ -1505,9 +1532,9 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 0,
+      "provider_or_authority": 1,
       "estimate": 0,
-      "none": 2
+      "none": 1
     }
   },
   "fixture_stream_health": {
@@ -1520,14 +1547,14 @@
     "targeted_fixtures": 2,
     "targeted_attempts": 2,
     "fixtures_with_a_first_link_time": 2,
-    "candidate_routes": 23,
+    "candidate_routes": 21,
     "verified_routes": 11,
-    "failed_routes": 12,
+    "failed_routes": 10,
     "fixtures_touched_by_a_route_failure": 7,
     "fixtures_left_with_nothing": 5,
     "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 68,
-    "unrecognised_failed_routes": 126
+    "unrecognised_failed_routes": 138
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
