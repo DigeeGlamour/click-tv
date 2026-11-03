@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-02T23:52:03.840800+00:00",
+  "generated_at": "2026-11-03T00:04:14.532835+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,23 +10,16 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 1063,
+      "fixtures": 476,
       "unknown_statuses": [
         "10|HT",
         "219|Start delayed",
-        "2|14'",
-        "2|19'",
-        "2|42'",
-        "2|45+4'",
-        "3|88'"
+        "2|26'",
+        "2|27'",
+        "2|31'",
+        "2|32'"
       ],
       "attempts": [
-        {
-          "sport": "cricket",
-          "date": "2026-11-01",
-          "result": "ok",
-          "fixtures": 20
-        },
         {
           "sport": "cricket",
           "date": "2026-11-02",
@@ -40,10 +33,10 @@
           "fixtures": 5
         },
         {
-          "sport": "football",
-          "date": "2026-11-01",
+          "sport": "cricket",
+          "date": "2026-11-04",
           "result": "ok",
-          "fixtures": 685
+          "fixtures": 4
         },
         {
           "sport": "football",
@@ -55,7 +48,13 @@
           "sport": "football",
           "date": "2026-11-03",
           "result": "ok",
-          "fixtures": 185
+          "fixtures": 190
+        },
+        {
+          "sport": "football",
+          "date": "2026-11-04",
+          "result": "ok",
+          "fixtures": 109
         }
       ]
     },
@@ -65,16 +64,10 @@
       "shadow_only": true,
       "state": "ok",
       "requests": 6,
-      "requests_ok": 6,
-      "fixtures": 537,
+      "requests_ok": 5,
+      "fixtures": 328,
       "unknown_statuses": [],
       "attempts": [
-        {
-          "sport": "cricket",
-          "date": "2026-11-01",
-          "result": "ok",
-          "fixtures": 27
-        },
         {
           "sport": "cricket",
           "date": "2026-11-02",
@@ -88,10 +81,10 @@
           "fixtures": 33
         },
         {
-          "sport": "football",
-          "date": "2026-11-01",
-          "result": "ok",
-          "fixtures": 291
+          "sport": "cricket",
+          "date": "2026-11-04",
+          "result": "INCONCLUSIVE",
+          "reason": "http 502"
         },
         {
           "sport": "football",
@@ -104,6 +97,12 @@
           "date": "2026-11-03",
           "result": "ok",
           "fixtures": 96
+        },
+        {
+          "sport": "football",
+          "date": "2026-11-04",
+          "result": "ok",
+          "fixtures": 109
         }
       ]
     }
@@ -114,48 +113,59 @@
     "upcoming": 41,
     "fixtures": 45,
     "verdicts": {
-      "UNVERIFIED": 32,
-      "VERIFIED": 13
+      "UNVERIFIED": 26,
+      "CONFLICT": 2,
+      "VERIFIED": 17
     },
-    "verified": 13,
+    "verified": 17,
     "partial_authority": 0,
-    "unverified": 32,
-    "conflict": 0,
+    "unverified": 26,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 34,
-        "matched": 11
+        "unmatched": 31,
+        "matched": 14
       },
       "livescore": {
-        "unmatched": 35,
-        "matched": 10
+        "unmatched": 29,
+        "matched": 16
       }
     },
-    "matched_by_two_independent_authorities": 8,
-    "authority_agreements": 8,
+    "matched_by_two_independent_authorities": 10,
+    "authority_agreements": 10,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
-    "conflict_reason_counts": {},
-    "identity_near_misses": 5,
+    "card_status_conflicts": 1,
+    "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
+      "kickoff": 1
+    },
+    "identity_near_misses": 6,
     "independent_authority_count_distribution": {
-      "0": 32,
-      "1": 5,
-      "2": 8
+      "0": 26,
+      "1": 9,
+      "2": 10
     },
     "unknown_authority_statuses": {
       "livescore": [
         "10|HT",
         "219|Start delayed",
-        "2|14'",
-        "2|19'",
-        "2|42'",
-        "2|45+4'",
-        "3|88'"
+        "2|26'",
+        "2|27'",
+        "2|31'",
+        "2|32'"
       ],
       "espn-header": []
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Red Bull Bragantino Vs Santos",
+      "authority": "livescore",
+      "authority_name": "RB Bragantino vs Santos FC",
+      "agreed_side": "santos",
+      "ours": "red bull bragantino",
+      "theirs": "rb bragantino"
+    },
     {
       "fixture": "Red Bull Bragantino Vs Santos",
       "authority": "livescore",
@@ -270,17 +280,17 @@
           "competition_id": "630",
           "kickoff": "2026-11-02T23:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "1'",
-          "status_code": "STATUS_FIRST_HALF",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "1'",
-          "espn_status_description": "First Half",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Mon, November 2nd at 6:00 PM EST",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841299~c:401841299"
@@ -288,6 +298,13 @@
         "livescore": {
           "result": "unmatched",
           "near_misses": [
+            {
+              "authority_name": "RB Bragantino vs Santos FC",
+              "event_id": "1708742",
+              "agreed_side": "santos",
+              "ours": "red bull bragantino",
+              "theirs": "rb bragantino"
+            },
             {
               "authority_name": "RB Bragantino vs Santos FC",
               "event_id": "1708742",
@@ -304,10 +321,12 @@
       "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
       "authority_agreement": "SINGLE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -532,9 +551,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -602,9 +621,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -767,9 +786,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -845,9 +864,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -923,9 +942,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -933,20 +952,70 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401912613",
+          "upstream_family": "ESPN",
+          "name": "Buriram United vs Kashima Antlers",
+          "home": "Buriram United",
+          "away": "Kashima Antlers",
+          "home_team_id": "7138",
+          "away_team_id": "7115",
+          "competition": "AFC Champions League Elite",
+          "competition_id": "3902",
+          "kickoff": "2026-11-04T12:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, November 4th at 7:15 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3902~e:401912613~c:401912613"
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1873648",
+          "upstream_family": "LiveScore",
+          "name": "Buriram United vs Kashima Antlers",
+          "home": "Buriram United",
+          "away": "Kashima Antlers",
+          "home_team_id": "4848",
+          "away_team_id": "4842",
+          "competition": "AFC Champions League Elite: East",
+          "competition_id": "692",
+          "kickoff": "2026-11-04T12:15:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "4",
+          "format": "",
+          "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1075,9 +1144,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1116,9 +1185,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1207,9 +1276,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1248,9 +1317,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1427,9 +1496,9 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1441,17 +1510,39 @@
           "result": "unmatched"
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1813054",
+          "upstream_family": "LiveScore",
+          "name": "Hobart Hurricanes W vs Melbourne Renegades W",
+          "home": "Hobart Hurricanes W",
+          "away": "Melbourne Renegades W",
+          "home_team_id": "86309",
+          "away_team_id": "86305",
+          "competition": "Women's Big Bash League",
+          "competition_id": "25707",
+          "kickoff": "2026-11-04T08:10:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Match 9",
+          "format": "Womens Domestic Twenty20",
+          "gender": "women"
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1543,9 +1634,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1615,9 +1706,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1656,9 +1747,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1771,9 +1862,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1781,20 +1872,73 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401912769",
+          "upstream_family": "ESPN",
+          "name": "Melbourne Victory vs Persib Bandung",
+          "home": "Melbourne Victory",
+          "away": "Persib Bandung",
+          "home_team_id": "5328",
+          "away_team_id": "8293",
+          "competition": "AFC Champions League Two",
+          "competition_id": "2466",
+          "kickoff": "2026-11-04T07:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, November 3rd at 2:45 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:2466~e:401912769~c:401912769"
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "kickoff_lifted",
+          "verified": false,
+          "event_id": "1885204",
+          "upstream_family": "LiveScore",
+          "name": "Melbourne Victory vs Persib Bandung",
+          "home": "Melbourne Victory",
+          "away": "Persib Bandung",
+          "home_team_id": "3628",
+          "away_team_id": "6066",
+          "competition": "AFC Champions League Two: Group E",
+          "competition_id": "690",
+          "kickoff": "2026-11-04T08:45:00+00:00",
+          "kickoff_delta_minutes": 60.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "4",
+          "format": "",
+          "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [
+        "LiveScore"
+      ],
+      "near_miss_count": 1,
+      "conflict_reasons": [
+        "kickoff: ours 2026-11-04T07:45, livescore 2026-11-04T08:45 (+60.0 min)"
+      ],
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "CONFLICT",
       "tab": "upcoming"
     },
     {
@@ -1897,17 +2041,39 @@
           "result": "unmatched"
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1784537",
+          "upstream_family": "LiveScore",
+          "name": "New Zealand vs India",
+          "home": "New Zealand",
+          "away": "India",
+          "home_team_id": "86122",
+          "away_team_id": "86102",
+          "competition": "New Zealand v India",
+          "competition_id": "25450",
+          "kickoff": "2026-11-04T02:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "1st ODI",
+          "format": "ODI",
+          "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -1925,9 +2091,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2016,9 +2182,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2026,20 +2192,70 @@
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401912614",
+          "upstream_family": "ESPN",
+          "name": "Pohang Steelers vs Gamba Osaka",
+          "home": "Pohang Steelers",
+          "away": "Gamba Osaka",
+          "home_team_id": "9693",
+          "away_team_id": "7102",
+          "competition": "AFC Champions League Elite",
+          "competition_id": "3902",
+          "kickoff": "2026-11-04T10:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Wed, November 4th at 5:00 AM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:3902~e:401912614~c:401912614"
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1873634",
+          "upstream_family": "LiveScore",
+          "name": "Pohang Steelers vs Gamba Osaka",
+          "home": "Pohang Steelers",
+          "away": "Gamba Osaka",
+          "home_team_id": "8103",
+          "away_team_id": "7602",
+          "competition": "AFC Champions League Elite: East",
+          "competition_id": "692",
+          "kickoff": "2026-11-04T10:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "4",
+          "format": "",
+          "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "AGREE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2057,9 +2273,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2331,9 +2547,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2372,9 +2588,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2385,17 +2601,39 @@
           "result": "unmatched"
         },
         "livescore": {
-          "result": "unmatched"
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1904012",
+          "upstream_family": "LiveScore",
+          "name": "United Arab Emirates vs Oman",
+          "home": "United Arab Emirates",
+          "away": "Oman",
+          "home_team_id": "86127",
+          "away_team_id": "86151",
+          "competition": "World Cup League 2",
+          "competition_id": "16821",
+          "kickoff": "2026-11-04T05:30:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Match 144",
+          "format": "ODI",
+          "gender": ""
         }
       },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "NONE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
+      "verdict": "VERIFIED",
       "tab": "upcoming"
     },
     {
@@ -2450,9 +2688,9 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "vk1817-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2525,96 +2763,6 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
-    }
-  ],
-  "retired_or_unpublished": [
-    {
-      "fixture_id": "provider:benfica-vs-fc-alverca|liga portugal betclic|2026-11-02",
-      "card_id": "benfica-vs-fc-alverca",
-      "name": "Benfica Vs FC Alverca",
-      "competition": "Liga Portugal Betclic",
-      "kickoff": "2026-11-02T20:15:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401885403",
-          "upstream_family": "ESPN",
-          "name": "Benfica vs Alverca",
-          "home": "Benfica",
-          "away": "Alverca",
-          "home_team_id": "1929",
-          "away_team_id": "21613",
-          "competition": "Portuguese Primeira Liga",
-          "competition_id": "715",
-          "kickoff": "2026-11-02T20:15:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "STATUS_FULL_TIME",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "FT",
-          "espn_status_description": "Full Time",
-          "espn_completed": true,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:715~e:401885403~c:401885403"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1816466",
-          "upstream_family": "LiveScore",
-          "name": "Benfica vs Alverca",
-          "home": "Benfica",
-          "away": "Alverca",
-          "home_team_id": "304",
-          "away_team_id": "4057",
-          "competition": "Primeira Liga",
-          "competition_id": "79",
-          "kickoff": "2026-11-02T20:15:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "football",
-          "round": "10",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [
-        "card says LIVE, authority says FINISHED"
-      ],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": true,
-      "verdict": "CONFLICT"
     }
   ]
 }
