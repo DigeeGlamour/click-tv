@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-03T12:04:26.550898+00:00",
+  "generated_at": "2026-11-03T12:24:23.727331+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,9 +12,12 @@
       "requests_ok": 6,
       "fixtures": 473,
       "unknown_statuses": [
-        "10|HT",
-        "2|2'",
-        "2|3'"
+        "2|22'",
+        "2|23'",
+        "2|6'",
+        "2|8'",
+        "3|55'",
+        "3|65'"
       ],
       "attempts": [
         {
@@ -62,7 +65,7 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 359,
+      "fixtures": 371,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -75,13 +78,13 @@
           "sport": "cricket",
           "date": "2026-11-03",
           "result": "ok",
-          "fixtures": 33
+          "fixtures": 39
         },
         {
           "sport": "cricket",
           "date": "2026-11-04",
           "result": "ok",
-          "fixtures": 31
+          "fixtures": 37
         },
         {
           "sport": "football",
@@ -106,46 +109,50 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 9,
+    "today_match": 10,
     "upcoming": 45,
-    "fixtures": 54,
+    "fixtures": 55,
     "verdicts": {
-      "UNVERIFIED": 30,
-      "VERIFIED": 21,
-      "CONFLICT": 3
+      "CONFLICT": 4,
+      "UNVERIFIED": 31,
+      "VERIFIED": 20
     },
-    "verified": 21,
+    "verified": 20,
     "partial_authority": 0,
-    "unverified": 30,
-    "conflict": 3,
+    "unverified": 31,
+    "conflict": 4,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 33,
-        "matched": 21
+        "matched": 21,
+        "unmatched": 34
       },
       "livescore": {
-        "unmatched": 31,
-        "matched": 23
+        "matched": 23,
+        "unmatched": 32
       }
     },
     "matched_by_two_independent_authorities": 20,
-    "authority_agreements": 17,
+    "authority_agreements": 16,
     "authority_disagreements": 3,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
       "authorities disagree": 3
     },
     "identity_near_misses": 4,
     "independent_authority_count_distribution": {
-      "0": 30,
+      "0": 31,
       "1": 4,
       "2": 20
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "10|HT",
-        "2|2'",
-        "2|3'"
+        "2|22'",
+        "2|23'",
+        "2|6'",
+        "2|8'",
+        "3|55'",
+        "3|65'"
       ],
       "espn-header": []
     }
@@ -186,51 +193,14 @@
   ],
   "fixtures": [
     {
-      "fixture_id": "provider:npl|nepal premier league|2026-11-03",
-      "card_id": "npl",
-      "name": "NPL",
-      "competition": "Nepal Premier League",
-      "kickoff": "2026-11-03T06:40:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:port-fc-vs-beijing-guoan|afc champions league elite|2026-11-03",
       "card_id": "port-fc-vs-beijing-guoan",
       "name": "Port FC Vs Beijing Guoan",
       "competition": "AFC Champions League Elite",
       "kickoff": "2026-11-03T12:15:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -287,9 +257,9 @@
           "competition_id": "692",
           "kickoff": "2026-11-03T12:15:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "8'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
           "round": "4",
           "format": "",
@@ -303,10 +273,90 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:npl|nepal premier league|2026-11-03",
+      "card_id": "npl",
+      "name": "NPL",
+      "competition": "Nepal Premier League",
+      "kickoff": "2026-11-03T06:40:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
       "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:emirates-blues-vs-emirates-red|emirates d20 2026|2026-11-03",
+      "card_id": "emirates-blues-vs-emirates-red",
+      "name": "Emirates Blues vs Emirates Red",
+      "competition": "Emirates D20, 2026",
+      "kickoff": "2026-11-03T12:30:00+00:00",
+      "schedule_status": "LINK_UPDATING",
+      "lifecycle_state": "STARTING",
+      "card_status_normalized": "AWAITING_LINK",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-fancode",
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
+      ],
+      "upstream_families": [
+        "FanCode"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -344,8 +394,8 @@
           "competition_id": "3902",
           "kickoff": "2026-11-03T10:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "42'",
-          "status_code": "STATUS_FIRST_HALF",
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -353,8 +403,8 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "42'",
-          "espn_status_description": "First Half",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3902~e:401912604~c:401912604"
@@ -419,8 +469,8 @@
           "competition_id": "3902",
           "kickoff": "2026-11-03T10:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "42'",
-          "status_code": "STATUS_FIRST_HALF",
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -428,8 +478,8 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "42'",
-          "espn_status_description": "First Half",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3902~e:401912605~c:401912605"
@@ -508,8 +558,8 @@
           "competition_id": "3902",
           "kickoff": "2026-11-03T10:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "42'",
-          "status_code": "STATUS_FIRST_HALF",
+          "status_raw": "HT",
+          "status_code": "STATUS_HALFTIME",
           "status": "LIVE",
           "sport": "football",
           "round": "",
@@ -517,8 +567,8 @@
           "gender": "",
           "espn_state": "in",
           "espn_status": "in",
-          "espn_status_detail": "42'",
-          "espn_status_description": "First Half",
+          "espn_status_detail": "HT",
+          "espn_status_description": "Halftime",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3902~e:401912617~c:401912617"
@@ -1725,22 +1775,20 @@
       "tab": "upcoming"
     },
     {
-      "fixture_id": "provider:emirates-blues-vs-emirates-red|emirates d20 2026|2026-11-03",
-      "card_id": "emirates-blues-vs-emirates-red",
-      "name": "Emirates Blues vs Emirates Red",
-      "competition": "Emirates D20, 2026",
-      "kickoff": "2026-11-03T12:30:00+00:00",
-      "schedule_status": "STARTING_SOON",
-      "lifecycle_state": "STARTING",
+      "fixture_id": "provider:east-bengal-fc-vs-hwacheon-kspo-wfc-women|afc women champions league 2026 27|2026-11-04",
+      "card_id": "east-bengal-fc-women-vs-hwacheon-kspo-wfc",
+      "name": "East Bengal FC Women vs Hwacheon KSPO WFC",
+      "competition": "AFC Women's Champions League 2026-27",
+      "kickoff": "2026-11-04T14:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3393,98 +3441,6 @@
       "card_status_conflict": false,
       "verdict": "VERIFIED",
       "tab": "upcoming"
-    }
-  ],
-  "retired_or_unpublished": [
-    {
-      "fixture_id": "provider:port-fc-vs-beijing-guoan|afc champions league elite 2026 27|2026-11-03",
-      "card_id": "port-fc-vs-beijing-guoan",
-      "name": "Port FC vs Beijing Guoan",
-      "competition": "AFC Champions League Elite 2026-27",
-      "kickoff": "2026-11-03T12:15:00+00:00",
-      "schedule_status": "LINK_UPDATING",
-      "lifecycle_state": "STARTING",
-      "card_status_normalized": "AWAITING_LINK",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-fancode",
-        "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
-      ],
-      "upstream_families": [
-        "FanCode"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "401912616",
-          "upstream_family": "ESPN",
-          "name": "Port FC vs Beijing Guoan",
-          "home": "Port FC",
-          "away": "Beijing Guoan",
-          "home_team_id": "17757",
-          "away_team_id": "2052",
-          "competition": "AFC Champions League Elite",
-          "competition_id": "3902",
-          "kickoff": "2026-11-03T12:15:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "",
-          "format": "",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Tue, November 3rd at 7:15 AM EST",
-          "espn_status_description": "Scheduled",
-          "espn_completed": false,
-          "espn_end_date_raw": "",
-          "authority_uid": "s:600~l:3902~e:401912616~c:401912616"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1873646",
-          "upstream_family": "LiveScore",
-          "name": "Port FC vs Beijing Guoan",
-          "home": "Port FC",
-          "away": "Beijing Guoan",
-          "home_team_id": "4878",
-          "away_team_id": "7885",
-          "competition": "AFC Champions League Elite: East",
-          "competition_id": "692",
-          "kickoff": "2026-11-03T12:15:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "football",
-          "round": "4",
-          "format": "",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED"
     }
   ]
 }
