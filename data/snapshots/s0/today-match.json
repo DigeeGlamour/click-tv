@@ -1,8 +1,8 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-03T17:32:45.911865+00:00",
+  "updated_at": "2026-11-03T17:45:00.307618+00:00",
   "count": 9,
-  "filtered_stale": 1,
+  "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
     {
@@ -171,7 +171,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-03T16:04:50.122301+00:00"
     },
@@ -245,7 +245,13 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "END_PENDING",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "end_pending": true,
+      "end_pending_confirmations": 1,
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 1 of 3 confirming scans",
+      "carried_forward_first_missed_at": "2026-11-03T17:44:56.795203+00:00"
     },
     {
       "id": "dubai-vs-ajman",
@@ -520,7 +526,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 17,
+      "carried_forward_misses": 18,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-03T12:04:35.299906+00:00"
     },
@@ -610,8 +616,8 @@
       ],
       "start_time": "2026-11-03T16:00:00+00:00",
       "start_at": "2026-11-03T16:00:00+00:00",
-      "end_time": "2026-11-03T18:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-03T18:44:48+00:00",
+      "end_time_source": "assumed",
       "competition": "AFC Champions League Elite",
       "fixture_id": "provider:esteghlal-fc-vs-al-shamal-sc|afc champions league elite|2026-11-03",
       "status": "LIVE_NOW",
@@ -631,7 +637,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=44' (STATUS_FIRST_HALF, event 401912607)"
+        "ESPN espn-header=48' (STATUS_SECOND_HALF, event 401912607)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -640,7 +646,7 @@
       "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_392fd016cbebc767881a4fa61f499e10"
+      "playback_id": "ctv_32ed5eba57b863f577c6932fbddb3a73"
     },
     {
       "id": "al-hussein-irbid-vs-al-shorta",
@@ -688,7 +694,7 @@
           "playback_unproven_reason": "the playback proxy gets HTTP 404 for this route, so no viewer can reach it; and it refuses a direct fetch too",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_1781bd36245951d7ad1b87d67fefef9b"
+          "playback_id": "ctv_7de115e003d0cb224cd96852945d8963"
         }
       ],
       "channels": [
@@ -786,8 +792,8 @@
       ],
       "start_time": "2026-11-03T16:00:00+00:00",
       "start_at": "2026-11-03T16:00:00+00:00",
-      "end_time": "2026-11-03T18:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-03T18:44:48+00:00",
+      "end_time_source": "assumed",
       "competition": "AFC Champions League Two",
       "fixture_id": "provider:al-hussein-irbid-vs-al-shorta|afc champions league two|2026-11-03",
       "status": "LIVE_NOW",
@@ -807,7 +813,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=45' (STATUS_FIRST_HALF, event 401912770)"
+        "ESPN espn-header=48' (STATUS_SECOND_HALF, event 401912770)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -816,7 +822,7 @@
       "authority_status": "LIVE",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_32331ebb0296788c86f7338573807081"
+      "playback_id": "ctv_5740e4014fad19eb90354d21185b147e"
     },
     {
       "id": "galatasaray-vs-vfb-stuttgart",
@@ -941,6 +947,8 @@
         "espn-header": "401915311",
         "livescore": "1882843"
       },
+      "start_window_claimed": "LIVE_NOW",
+      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 0 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/io7jk21767941298.png",
@@ -1041,7 +1049,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-03T17:25:06.991401+00:00"
     }
