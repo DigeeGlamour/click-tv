@@ -1,7 +1,7 @@
 {
   "category": "Sports",
-  "updated_at": "2026-11-03T19:53:21.190057+00:00",
-  "count": 63,
+  "updated_at": "2026-11-04T05:11:55.246236+00:00",
+  "count": 64,
   "channels": [
     {
       "id": "t-sports",
@@ -200,14 +200,13 @@
     {
       "id": "a-sports",
       "name": "A Sports",
-      "primary_stream_key": "d14776ace80695d15b893d09d0e697754742dc78874382ecd9086ce3ffc543c2",
+      "primary_stream_key": "bd14eb7bf3ad77fb85d83c7bf2bef8201aff1ccd049dcc86b3e7738f772ae70e",
       "sport_type": "",
       "sport_type_derived": false,
       "logo": "https://s3.aynaott.com/storage/64de30d2df9b2a888cb73f17614a9a8b",
       "category": "Sports",
-      "url": "https://tvsen6.aynaott.com/zv68oqPDu7MZZwmHhRxt/index.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
+      "proxy_mode": "proxy_only",
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
@@ -226,8 +225,9 @@
       "backups": [
         {
           "name": "Backup-1",
+          "url": "https://tvsen6.aynaott.com/zv68oqPDu7MZZwmHhRxt/index.m3u8",
           "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
+          "proxy_mode": "direct_first",
           "stream_type": "hls",
           "requires_headers": false,
           "inherit_manifest_query": false,
@@ -240,16 +240,7 @@
           "host": "tvsen6.aynaott.com",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_64e2816d608c73ffbf041eb150e63aa9",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [
-              "token"
-            ],
-            "drm": false
-          }
+          "playback_id": "ctv_5287d96c383e14c448d4382b779e237a"
         },
         {
           "name": "Backup-2",
@@ -286,7 +277,7 @@
           "host": "tvsen6.aynaott.com",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_3b2732631b6acef2fcfcf33e477feffd",
+          "playback_id": "ctv_64e2816d608c73ffbf041eb150e63aa9",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -310,7 +301,16 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_5287d96c383e14c448d4382b779e237a"
+      "playback_id": "ctv_3b2732631b6acef2fcfcf33e477feffd",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [
+          "token"
+        ],
+        "drm": false
+      }
     },
     {
       "id": "bdix-sports-live",
@@ -514,7 +514,7 @@
     },
     {
       "id": "bein-sports",
-      "name": "BEIN SPORTS",
+      "name": "Bein Sports",
       "primary_stream_key": "3a0a562eef63062960cb7a48677054e0854e481565b49038767ce81ad646f59d",
       "sport_type": "",
       "sport_type_derived": false,
@@ -537,8 +537,28 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "manual-playlist-1",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "http://premiumtvs.space/live/YqXTywueEV/damp2purchase/6625.ts",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "mpegts",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-iptv-combined",
+          "host": "premiumtvs.space",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_281a7a5c9cb417d57520e482428003dd"
+        }
+      ],
       "source_provenance": [
         {
           "source_id": "manual-playlist-1",
@@ -678,7 +698,7 @@
           "source_id": "manual-playlist-1",
           "host": "foxbleu-cdn.com",
           "playback_unproven": true,
-          "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it",
+          "playback_unproven_reason": "the playback proxy refuses this route: error code: 1003",
           "resolution": "HD",
           "resolution_height": 720,
           "playback_id": "ctv_752fe283f36293b3aa7c0b17607a7a6b"
@@ -839,21 +859,21 @@
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
         "sm-iptv-combined",
-        "sm-aynaott-auto-update",
-        "sm-aynaott-json"
+        "sm-aynaott-json",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
@@ -1045,7 +1065,7 @@
           "source_id": "manual-playlist-1",
           "host": "foxbleu-cdn.com",
           "playback_unproven": true,
-          "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it",
+          "playback_unproven_reason": "the playback proxy refuses this route: error code: 1003",
           "resolution": "HD",
           "resolution_height": 720,
           "playback_id": "ctv_0a4940e34f82a5053cc96bcf53af5f7f"
@@ -1360,12 +1380,12 @@
     {
       "id": "dazn-1",
       "name": "Dazn 1",
-      "primary_stream_key": "277e2287b907681e4dfa512601256fb385c5733db1fb3480af1bfca013d9fa56",
+      "primary_stream_key": "73db5fc6092f0637b623cd681ce46dbf0b2c7604ccb0b133aa05c54088d67811",
       "sport_type": "",
       "sport_type_derived": false,
       "logo": "",
       "category": "Sports",
-      "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2531/index.m3u8",
+      "url": "http://wo0dyefk.dienalt.org/iptv/DV3AC2Q6YSR9XE/19158/index.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "proxy_first",
       "stream_type": "hls",
@@ -1386,7 +1406,7 @@
       "backups": [
         {
           "name": "Backup-1",
-          "url": "http://wo0dyefk.dienalt.org/iptv/DV3AC2Q6YSR9XE/19158/index.m3u8",
+          "url": "http://6zirt9yx.otttv.pw/iptv/HEGN4VXXQQSYCA/2531/index.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
           "stream_type": "hls",
@@ -1398,10 +1418,10 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "manual-playlist-1",
-          "host": "wo0dyefk.dienalt.org",
+          "host": "6zirt9yx.otttv.pw",
           "resolution": "FHD",
           "resolution_height": 1080,
-          "playback_id": "ctv_4239dffe81fd0612bbcd4d1f7409a24d"
+          "playback_id": "ctv_a50d0ac08c2509b7a3a351d85ba2bc88"
         },
         {
           "name": "Backup-2",
@@ -1435,12 +1455,12 @@
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
-      "playback_id": "ctv_a50d0ac08c2509b7a3a351d85ba2bc88"
+      "playback_id": "ctv_4239dffe81fd0612bbcd4d1f7409a24d"
     },
     {
       "id": "dazn-2",
       "name": "Dazn 2",
-      "primary_stream_key": "ba2b6d557bcafa706c6cb16ec9ead089a0aaec7aa6b59af10fb5c890be8dd10c",
+      "primary_stream_key": "e02bc6fc8d7ec5833c52298ffacd3f201835c84295def4fba4051e16ed001613",
       "sport_type": "",
       "sport_type_derived": false,
       "logo": "",
@@ -1465,24 +1485,17 @@
       "available_link_count": 2,
       "backups": [
         {
-          "name": "Backup-1",
           "url": "http://wo0dyefk.dienalt.org/iptv/DV3AC2Q6YSR9XE/2532/index.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
           "stream_type": "hls",
           "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
+          "resolution": "FHD",
+          "resolution_height": 1080,
           "verification_status": "verified_global",
           "verification_badge": "Playback Unproven",
           "verified": true,
-          "publish_allowed": true,
-          "source_id": "manual-playlist-1",
-          "host": "wo0dyefk.dienalt.org",
-          "playback_unproven": true,
-          "playback_unproven_reason": "playback never started within the window",
-          "resolution": "FHD",
-          "resolution_height": 1080,
+          "inherit_manifest_query": false,
           "playback_id": "ctv_92ddfcfb6fb8483eeed7d869213503b6"
         }
       ],
@@ -1498,6 +1511,9 @@
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
+      "playback_unproven": true,
+      "playback_unproven_reason": "playback never started within the window",
+      "primary_promoted_from_backup": true,
       "playback_id": "ctv_e57ba0bb6b7d6866cc570895c32b7ce2"
     },
     {
@@ -1627,7 +1643,7 @@
     {
       "id": "dazn-5",
       "name": "Dazn 5",
-      "primary_stream_key": "d6127b1c3095614a5d26eb2ee1c0ac28c4e0220e3f1820e0bb2212cfb716cf12",
+      "primary_stream_key": "8bf16e5c6cc1c728baf67f4cba5665d1c0c120b768d6596fba6a6bbd362bb57c",
       "sport_type": "",
       "sport_type_derived": false,
       "logo": "",
@@ -1652,24 +1668,17 @@
       "available_link_count": 2,
       "backups": [
         {
-          "name": "Backup-1",
           "url": "http://wo0dyefk.dienalt.org/iptv/DV3AC2Q6YSR9XE/2535/index.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
           "stream_type": "hls",
           "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
+          "resolution": "FHD",
+          "resolution_height": 1080,
           "verification_status": "verified_global",
           "verification_badge": "Playback Unproven",
           "verified": true,
-          "publish_allowed": true,
-          "source_id": "manual-playlist-1",
-          "host": "wo0dyefk.dienalt.org",
-          "playback_unproven": true,
-          "playback_unproven_reason": "playback never started within the window",
-          "resolution": "FHD",
-          "resolution_height": 1080,
+          "inherit_manifest_query": false,
           "playback_id": "ctv_295fa425c49a9f4f6917cbb1ca332a97"
         }
       ],
@@ -1685,6 +1694,9 @@
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
+      "playback_unproven": true,
+      "playback_unproven_reason": "playback never started within the window",
+      "primary_promoted_from_backup": true,
       "playback_id": "ctv_928ee77b8be82a8d3595e5b6bb9ae3ca"
     },
     {
@@ -1762,20 +1774,20 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
-        "sm-aynaott-json"
+        "sm-aynaott-json",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "HD",
       "resolution_height": 720,
@@ -1944,6 +1956,59 @@
       "resolution": "HD",
       "resolution_height": 720,
       "playback_id": "ctv_31106acc6f56fbc0b4e7961be66b51b9"
+    },
+    {
+      "id": "ktv-sport-plus",
+      "name": "KTV Sport Plus",
+      "primary_stream_key": "54d78ad8a74c1202642b94f01af9d4a60b890689e13bd4da95c1294f7a464d9f",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://s3.aynaott.com/storage/b54495ee3cdd53ddaa19d1f98120f488",
+      "category": "Sports",
+      "url": "https://kwtsplta.cdn.mangomolo.com/spl/smil:spl.stream.smil/chunklist.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "abusaeeidx-mrgify-bdix",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "abusaeeidx-mrgify-bdix",
+          "source_name": "Mrgify BDIX IPTV",
+          "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-json",
+          "source_name": "AynaOTT Auto Update (JSON)",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
+        }
+      ],
+      "source_ids": [
+        "abusaeeidx-mrgify-bdix",
+        "sm-aynaott-json",
+        "sm-aynaott-auto-update"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_faadfee50781096765e07b535d257030"
     },
     {
       "id": "mtrspt",
@@ -2572,20 +2637,20 @@
           "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
         },
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
           "source_id": "sm-aynaott-json",
           "source_name": "AynaOTT Auto Update (JSON)",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
         }
       ],
       "source_ids": [
         "abusaeeidx-mrgify-bdix",
-        "sm-aynaott-auto-update",
-        "sm-aynaott-json"
+        "sm-aynaott-json",
+        "sm-aynaott-auto-update"
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
@@ -3193,14 +3258,14 @@
       "playback_id": "ctv_141f7782be6314258aaa8b7abf2b6cae"
     },
     {
-      "id": "ktv-sport-plus",
-      "name": "KTV Sport Plus",
-      "primary_stream_key": "54d78ad8a74c1202642b94f01af9d4a60b890689e13bd4da95c1294f7a464d9f",
+      "id": "bahrain-sports-2",
+      "name": "Bahrain Sports 2",
+      "primary_stream_key": "f79386abcb9cd26a7c16ab1e49ac429a6f9c327863fdefc6ff21c12a6b532820",
       "sport_type": "",
       "sport_type_derived": false,
-      "logo": "https://s3.aynaott.com/storage/b54495ee3cdd53ddaa19d1f98120f488",
+      "logo": "https://web.aynaott.com/storage/019dd92f-107c-7056-9e79-e5233f6e51d9/uploads/images/2026-07-14/images_d0852f6f8708108efafbae1e1b32564f_playmist_bahrain_sports_1_400x400.jpg",
       "category": "Sports",
-      "url": "https://kwtsplta.cdn.mangomolo.com/spl/smil:spl.stream.smil/chunklist.m3u8",
+      "url": "https://tvsen6.aynaott.com/BahrainSports2/index.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "hls",
@@ -3215,16 +3280,11 @@
       "original_source_pipeline": "tv",
       "content_kind": "live_tv",
       "routing_reason": "configured_tv_pipeline",
-      "source_id": "abusaeeidx-mrgify-bdix",
+      "source_id": "sm-aynaott-auto-update",
       "metadata_only": false,
       "available_link_count": 1,
       "backups": [],
       "source_provenance": [
-        {
-          "source_id": "abusaeeidx-mrgify-bdix",
-          "source_name": "Mrgify BDIX IPTV",
-          "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
-        },
         {
           "source_id": "sm-aynaott-auto-update",
           "source_name": "AynaOTT Auto Update",
@@ -3237,13 +3297,12 @@
         }
       ],
       "source_ids": [
-        "abusaeeidx-mrgify-bdix",
         "sm-aynaott-auto-update",
         "sm-aynaott-json"
       ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "playback_id": "ctv_faadfee50781096765e07b535d257030"
+      "resolution": "HD",
+      "resolution_height": 720,
+      "playback_id": "ctv_1cd4d277ac73f73bca8488d7d42686fa"
     }
   ]
 }
