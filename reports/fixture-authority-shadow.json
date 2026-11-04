@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T06:44:29.384314+00:00",
+  "generated_at": "2026-11-04T07:04:33.982643+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -13,7 +13,7 @@
       "fixtures": 397,
       "unknown_statuses": [
         "12|Int.",
-        "3|81'"
+        "213|Rain delay"
       ],
       "attempts": [
         {
@@ -44,13 +44,13 @@
           "sport": "football",
           "date": "2026-11-04",
           "result": "ok",
-          "fixtures": 111
+          "fixtures": 110
         },
         {
           "sport": "football",
           "date": "2026-11-05",
           "result": "ok",
-          "fixtures": 94
+          "fixtures": 95
         }
       ]
     },
@@ -105,18 +105,18 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 3,
-    "upcoming": 57,
+    "today_match": 2,
+    "upcoming": 58,
     "fixtures": 60,
     "verdicts": {
-      "CONFLICT": 2,
-      "VERIFIED": 34,
+      "CONFLICT": 5,
+      "VERIFIED": 31,
       "UNVERIFIED": 24
     },
-    "verified": 34,
+    "verified": 31,
     "partial_authority": 0,
     "unverified": 24,
-    "conflict": 2,
+    "conflict": 5,
     "matched_by_authority": {
       "espn-header": {
         "matched": 33,
@@ -128,11 +128,12 @@
       }
     },
     "matched_by_two_independent_authorities": 28,
-    "authority_agreements": 28,
-    "authority_disagreements": 0,
+    "authority_agreements": 24,
+    "authority_disagreements": 3,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "kickoff": 5
+      "kickoff": 5,
+      "authorities disagree": 3
     },
     "identity_near_misses": 5,
     "independent_authority_count_distribution": {
@@ -143,7 +144,7 @@
     "unknown_authority_statuses": {
       "livescore": [
         "12|Int.",
-        "3|81'"
+        "213|Rain delay"
       ],
       "espn-header": []
     }
@@ -256,9 +257,9 @@
           "competition_id": "25450",
           "kickoff": "2026-11-04T02:00:00+00:00",
           "kickoff_delta_minutes": 30.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Rain delay",
+          "status_code": "213",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "1st ODI",
           "format": "ODI",
@@ -276,7 +277,7 @@
         "kickoff: ours 2026-11-04T01:30, espn-header 2026-11-04T02:00 (+30.0 min)",
         "kickoff: ours 2026-11-04T01:30, livescore 2026-11-04T02:00 (+30.0 min)"
       ],
-      "authority_agreement": "AGREE",
+      "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "CONFLICT",
       "tab": "today_match"
@@ -338,43 +339,6 @@
       "authority_agreement": "SINGLE",
       "card_status_conflict": false,
       "verdict": "VERIFIED",
-      "tab": "today_match"
-    },
-    {
-      "fixture_id": "provider:primera-a|primera a|2026-11-03",
-      "card_id": "primera-a",
-      "name": "Primera A",
-      "competition": "Primera A",
-      "kickoff": "2026-11-03T20:30:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
       "tab": "today_match"
     },
     {
@@ -446,9 +410,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -578,6 +543,7 @@
       "source_ids": [
         "sm-sports-data",
         "srhady-willow-event",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -798,6 +764,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -878,6 +845,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -991,17 +959,17 @@
           "competition_id": "3951",
           "kickoff": "2026-11-04T19:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "Postponed",
+          "status_code": "STATUS_POSTPONED",
+          "status": "POSTPONED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, November 4th at 2:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "Postponed",
+          "espn_status_description": "Postponed",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3951~e:401928519~c:401928519"
@@ -1037,10 +1005,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=POSTPONED, livescore=UPCOMING"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "upcoming"
     },
     {
@@ -1057,6 +1027,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -1269,9 +1240,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -1455,6 +1427,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -1726,6 +1699,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -1926,17 +1900,17 @@
           "competition_id": "3951",
           "kickoff": "2026-11-04T18:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "Postponed",
+          "status_code": "STATUS_POSTPONED",
+          "status": "POSTPONED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, November 4th at 1:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "Postponed",
+          "espn_status_description": "Postponed",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3951~e:401928518~c:401928518"
@@ -1972,10 +1946,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=POSTPONED, livescore=UPCOMING"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "upcoming"
     },
     {
@@ -2062,9 +2038,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -2102,9 +2079,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -2379,6 +2357,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -2607,9 +2586,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -2678,9 +2658,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -2722,6 +2703,7 @@
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -2810,9 +2792,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -2949,14 +2932,15 @@
       "name": "Melbourne Victory Vs Persib Bandung",
       "competition": "AFC Champions League Two",
       "kickoff": "2026-11-04T07:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
         "sm-sports-data",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -3323,6 +3307,43 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:primera-a|primera a|2026-11-04",
+      "card_id": "primera-a",
+      "name": "Primera A",
+      "competition": "Primera A",
+      "kickoff": "2026-11-04T23:30:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:sk-slavia-praha-vs-arsenal|uefa champions league|2026-11-04",
       "card_id": "sk-slavia-praha-vs-arsenal",
       "name": "SK Slavia Praha Vs Arsenal",
@@ -3548,6 +3569,7 @@
       "source_ids": [
         "sm-sports-data",
         "srhady-willow-event",
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -3724,9 +3746,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -3935,17 +3958,17 @@
           "competition_id": "3951",
           "kickoff": "2026-11-04T19:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "status_raw": "Postponed",
+          "status_code": "STATUS_POSTPONED",
+          "status": "POSTPONED",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Wed, November 4th at 2:30 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "post",
+          "espn_status": "post",
+          "espn_status_detail": "Postponed",
+          "espn_status_description": "Postponed",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:3951~e:401928497~c:401928497"
@@ -3981,10 +4004,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=POSTPONED, livescore=UPCOMING"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "upcoming"
     },
     {
@@ -4034,9 +4059,10 @@
       "lifecycle_state": "UPCOMING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
       "provider_identity": "",
       "source_ids": [
+        "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
@@ -4204,14 +4230,14 @@
   ],
   "retired_or_unpublished": [
     {
-      "fixture_id": "provider:primera-a|primera a|2026-11-04",
+      "fixture_id": "provider:primera-a|primera a|2026-11-03",
       "card_id": "primera-a",
       "name": "Primera A",
       "competition": "Primera A",
-      "kickoff": "2026-11-04T23:30:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "",
-      "card_status_normalized": "UPCOMING",
+      "kickoff": "2026-11-03T20:30:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "END_PENDING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
