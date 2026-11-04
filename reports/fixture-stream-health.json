@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T04:04:37.159424+00:00",
+  "generated_at": "2026-11-04T04:24:29.686100+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
     "fixtures": 59,
@@ -16,22 +16,24 @@
     "failed_routes": 20,
     "fixtures_touched_by_a_route_failure": 7,
     "fixtures_left_with_nothing": 3,
-    "distinct_failure_codes": 3,
+    "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 52,
-    "unrecognised_failed_routes": 142
+    "unrecognised_failed_routes": 140
   },
   "failure_codes": {
-    "http_404": 48,
-    "http_403": 42,
-    "verification_failed": 28,
+    "http_403": 47,
+    "http_404": 47,
     "browser_unreachable": 24,
-    "timeout": 16,
+    "verification_failed": 20,
+    "timeout": 17,
     "dns": 3,
+    "ssl": 1,
     "http_452": 1
   },
   "failure_code_fixtures": {
     "http_403": 4,
     "browser_unreachable": 2,
+    "ssl": 1,
     "dns": 1
   },
   "fixtures": [
@@ -139,7 +141,8 @@
       "failed_stream_count": 8,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_403"
+        "http_403",
+        "ssl"
       ],
       "fallback_available": false,
       "published": false,
@@ -149,63 +152,6 @@
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
-    },
-    {
-      "fixture_id": "bodo-glimt-vs-lille",
-      "fixture_key": "bodo-glimt-vs-lille",
-      "fixture_name": "Bodø Glimt Vs Lille",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 8,
-      "verified_stream_count": 0,
-      "failed_stream_count": 8,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404",
-        "http_403",
-        "verification_failed",
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "fc-barcelona-vs-aston-villa",
-      "fixture_key": "fc-barcelona-vs-aston-villa",
-      "fixture_name": "FC Barcelona Vs Aston Villa",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 10,
-      "verified_stream_count": 2,
-      "failed_stream_count": 8,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404",
-        "timeout",
-        "http_403",
-        "verification_failed",
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 1,
-      "last_attempt_bucket": "2026-11-03T19:35Z",
-      "first_link_at": "2026-11-03T19:37:09.023992+00:00",
-      "targeted": true
     },
     {
       "fixture_id": "feyenoord-vs-inter",
@@ -263,6 +209,63 @@
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
+    },
+    {
+      "fixture_id": "bodo-glimt-vs-lille",
+      "fixture_key": "bodo-glimt-vs-lille",
+      "fixture_name": "Bodø Glimt Vs Lille",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 8,
+      "verified_stream_count": 1,
+      "failed_stream_count": 7,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "http_403",
+        "verification_failed",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "fc-barcelona-vs-aston-villa",
+      "fixture_key": "fc-barcelona-vs-aston-villa",
+      "fixture_name": "FC Barcelona Vs Aston Villa",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 10,
+      "verified_stream_count": 3,
+      "failed_stream_count": 7,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "timeout",
+        "http_403",
+        "verification_failed",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 1,
+      "last_attempt_bucket": "2026-11-03T19:35Z",
+      "first_link_at": "2026-11-03T19:37:09.023992+00:00",
+      "targeted": true
     },
     {
       "fixture_id": "lask-vs-sk-slovan-bratislava",
@@ -508,31 +511,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "uefa-champions-league-vs-goals-show-xtra",
-      "fixture_key": "uefa-champions-league-vs-goals-show-xtra",
-      "fixture_name": "UEFA Champions League Vs Goals Show Xtra",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 4,
-      "verified_stream_count": 1,
-      "failed_stream_count": 3,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "verification_failed"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 1,
-      "last_attempt_bucket": "2026-11-03T19:25Z",
-      "first_link_at": "2026-11-03T19:26:49.782650+00:00",
-      "targeted": true
-    },
-    {
       "fixture_id": "aew-night-dynamite",
       "fixture_key": "aew-night-dynamite",
       "fixture_name": "AEW Night Dynamite",
@@ -546,7 +524,8 @@
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_404"
+        "http_404",
+        "timeout"
       ],
       "fallback_available": false,
       "published": false,
@@ -610,6 +589,32 @@
       "targeted": false
     },
     {
+      "fixture_id": "montreal-canadiens-vs-winnipeg-jets",
+      "fixture_key": "montreal-canadiens-vs-winnipeg-jets",
+      "fixture_name": "Montréal Canadiens Vs Winnipeg Jets",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "verification_failed",
+        "http_404"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "nascar",
       "fixture_key": "nascar",
       "fixture_name": "NASCAR",
@@ -650,6 +655,32 @@
       "unchecked_stream_count": 0,
       "failure_codes": [
         "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "new-york-rangers-vs-st-louis-blues",
+      "fixture_key": "new-york-rangers-vs-st-louis-blues",
+      "fixture_name": "New York Rangers Vs St Louis Blues",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 2,
+      "verified_stream_count": 0,
+      "failed_stream_count": 2,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "verification_failed",
+        "http_404"
       ],
       "fallback_available": false,
       "published": false,
@@ -1067,31 +1098,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "montreal-canadiens-vs-winnipeg-jets",
-      "fixture_key": "montreal-canadiens-vs-winnipeg-jets",
-      "fixture_name": "Montréal Canadiens Vs Winnipeg Jets",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 2,
-      "verified_stream_count": 1,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "motorgp",
       "fixture_key": "motorgp",
       "fixture_name": "MotorGP",
@@ -1120,31 +1126,6 @@
       "fixture_id": "new-jersey-devils-vs-edmonton-oilers",
       "fixture_key": "new-jersey-devils-vs-edmonton-oilers",
       "fixture_name": "New Jersey Devils Vs Edmonton Oilers",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 2,
-      "verified_stream_count": 1,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_404"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "new-york-rangers-vs-st-louis-blues",
-      "fixture_key": "new-york-rangers-vs-st-louis-blues",
-      "fixture_name": "New York Rangers Vs St Louis Blues",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
@@ -1240,6 +1221,31 @@
       "last_attempt_bucket": "",
       "first_link_at": "",
       "targeted": false
+    },
+    {
+      "fixture_id": "uefa-champions-league-vs-goals-show-xtra",
+      "fixture_key": "uefa-champions-league-vs-goals-show-xtra",
+      "fixture_name": "UEFA Champions League Vs Goals Show Xtra",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 4,
+      "verified_stream_count": 3,
+      "failed_stream_count": 1,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "verification_failed"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 1,
+      "last_attempt_bucket": "2026-11-03T19:25Z",
+      "first_link_at": "2026-11-03T19:26:49.782650+00:00",
+      "targeted": true
     },
     {
       "fixture_id": "virginia-cavaliers-vs-drexel-dragons",
@@ -1371,9 +1377,9 @@
       "source_ids": [
         "srhady-willow-event",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1444,9 +1450,9 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1471,9 +1477,9 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1521,9 +1527,9 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1571,9 +1577,9 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1597,9 +1603,9 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1693,9 +1699,9 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1857,9 +1863,9 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1883,9 +1889,9 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1955,9 +1961,9 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2073,9 +2079,9 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2099,9 +2105,9 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2126,9 +2132,9 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2152,9 +2158,9 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2225,9 +2231,9 @@
       "source_ids": [
         "sm-sports-data",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2552,9 +2558,9 @@
       "source_ids": [
         "srhady-willow-event",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2624,9 +2630,9 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2765,9 +2771,9 @@
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
+        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
