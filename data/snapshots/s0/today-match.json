@@ -1,7 +1,7 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-04T18:04:57.263174+00:00",
-  "count": 15,
+  "updated_at": "2026-11-04T18:22:08.403975+00:00",
+  "count": 14,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
   "items": [
@@ -298,11 +298,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 26,
+      "carried_forward_misses": 27,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-04T10:04:30.950542+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 26
+      "end_pending_confirmations": 27
     },
     {
       "id": "abu-dhabi-vs-ajman",
@@ -377,8 +377,8 @@
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 9,
-      "carried_forward_misses": 9,
+      "end_pending_confirmations": 10,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-04T15:24:30.954284+00:00"
     },
@@ -448,11 +448,11 @@
       "routing_changed_from": "upcoming",
       "lifecycle_state": "END_PENDING",
       "name_from_source": "TBC",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 2,
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "end_pending_confirmations": 3,
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-04T17:44:41.763522+00:00"
     },
     {
@@ -593,22 +593,27 @@
       "sport_class": "confirmed_cricket",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "cricket",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "LIVE",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (Scheduled, event 1558811)",
+        "ESPN espn-header=Live (Live, event 1558811)",
         "LiveScore livescore=Play in progress (33, event 1914827)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1558811); LiveScore livescore=Play in progress (33, event 1914827)",
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "1558811",
+        "livescore": "1914827"
+      },
+      "authority_status": "LIVE",
       "allow_without_stream": true,
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "STARTING"
+      "lifecycle_state": "LIVE"
     },
     {
       "id": "houston-saints-vs-seattle-moose",
@@ -1013,7 +1018,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-04T18:15:07.531612+00:00"
     },
     {
       "id": "fk-arkadag-vs-golgohar-sirjan-sc",
@@ -1084,7 +1098,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 6,
+      "carried_forward_misses": 7,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-04T16:24:31.490467+00:00"
     },
@@ -1157,7 +1171,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 4,
+      "carried_forward_misses": 5,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-04T17:04:55.633146+00:00"
     },
@@ -1419,7 +1433,6 @@
       "authority_finished_seen_at": "2026-11-04T18:04:25.608807+00:00",
       "authority_status": "FINISHED",
       "authority_remove_after": "2026-11-04T18:24:25.608807+00:00",
-      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
       "lifecycle_state": "END_PENDING",
       "lifecycle_reason": "finished, holding for the post-match grace",
       "end_pending": true,
@@ -1433,7 +1446,11 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-04T18:15:07.531612+00:00"
     },
     {
       "id": "al-kuwait-sc-vs-nasaf-qarshi",
@@ -1543,7 +1560,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 1,
+      "carried_forward_misses": 2,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-04T18:04:35.561093+00:00"
     },
@@ -1633,7 +1650,7 @@
       ],
       "start_time": "2026-11-04T16:00:00+00:00",
       "start_at": "2026-11-04T16:00:00+00:00",
-      "end_time": "2026-11-04T19:04:25+00:00",
+      "end_time": "2026-11-04T19:14:56+00:00",
       "end_time_source": "assumed",
       "competition": "AFC Champions League Two",
       "fixture_id": "provider:al-rayyan-vs-al-nahda-sc|afc champions league two|2026-11-04",
@@ -1655,13 +1672,13 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=65' (STATUS_SECOND_HALF, event 401912764)",
+        "ESPN espn-header=85' (STATUS_SECOND_HALF, event 401912764)",
         "LiveScore livescore=FT (6, event 1873865)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=65' (STATUS_SECOND_HALF, event 401912764); LiveScore livescore=FT (6, event 1873865)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=85' (STATUS_SECOND_HALF, event 401912764); LiveScore livescore=FT (6, event 1873865)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_86f5cdd0172cf2681117d2dd28bc2ac7"
+      "playback_id": "ctv_cb446279ce747810e01cae6edeb587fd"
     },
     {
       "id": "al-wahda-vs-al-khaldiya-sc",
@@ -1673,21 +1690,21 @@
       "category": "today_match",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
-      "stream_type": "hls",
+      "stream_type": "media",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "none",
-      "verification_status": "verified_global",
+      "verification_status": "metadata_only",
       "verification_badge": "",
-      "verified": true,
+      "verified": false,
       "publish_allowed": true,
       "source_pipeline": "today_match",
       "original_source_pipeline": "upcoming",
       "content_kind": "event",
       "routing_reason": "schedule_status_routing",
       "source_id": "sm-fancode",
-      "metadata_only": false,
-      "available_link_count": 1,
+      "metadata_only": true,
+      "available_link_count": 0,
       "channel_stats": {
         "streams_in": 1,
         "unresolved_channel_streams": 0,
@@ -1735,7 +1752,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=65' (STATUS_SECOND_HALF, event 401912766)"
+        "ESPN espn-header=84' (STATUS_SECOND_HALF, event 401912766)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -1746,141 +1763,7 @@
       "route_failed_while_live": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
-      "lifecycle_state": "LIVE",
-      "backups": [],
-      "playback_id": "ctv_02d63bbe7ba06a77faccb158214e1d6c",
-      "promoted_from_absorbed_backup": true,
-      "channels": [
-        {
-          "id": "al-wahda-vs-al-khaldiya-sc--stream-tv",
-          "name": "STREAM TV",
-          "normalized_name": "stream-tv",
-          "logo": "https://img.sofascore.com/api/v1/team/264115/image",
-          "name_confidence": "explicit",
-          "name_source": "channel_name",
-          "provider": "sm-sports-data",
-          "source_ids": [
-            "sm-sports-data"
-          ],
-          "primary_stream_id": "al-wahda-vs-al-khaldiya-sc--stream-tv--1",
-          "stream_count": 1,
-          "backup_count": 0,
-          "verified": true,
-          "verification_status": "verified_global",
-          "playback_types": [
-            "native"
-          ],
-          "renderer": "native",
-          "streams": [
-            {
-              "id": "al-wahda-vs-al-khaldiya-sc--stream-tv--1",
-              "role": "primary",
-              "playback_type": "native",
-              "variant_key": "sv_7033c9a605097008f97d51b5",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_02d63bbe7ba06a77faccb158214e1d6c",
-              "stream_type": "hls"
-            }
-          ],
-          "absorbed_from_event_id": "al-wahda-fc-vs-al-khaldiya"
-        }
-      ],
-      "channel_count": 1,
-      "default_channel_id": "",
-      "absorbed_event_ids": [
-        "al-wahda-fc-vs-al-khaldiya"
-      ],
-      "reconciled_duplicate_count": 1
-    },
-    {
-      "id": "fenerbahçe-vs-liverpool-fc",
-      "name": "Fenerbahçe Vs Liverpool FC",
-      "primary_stream_key": "",
-      "sport_type": "football",
-      "sport_type_derived": true,
-      "logo": "https://img.sofascore.com/api/v1/team/3052/image",
-      "category": "today_match",
-      "url": "",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "media",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "none",
-      "verification_status": "metadata_only",
-      "verification_badge": "",
-      "verified": false,
-      "publish_allowed": true,
-      "source_pipeline": "today_match",
-      "original_source_pipeline": "upcoming",
-      "content_kind": "event",
-      "routing_reason": "schedule_status_routing",
-      "source_id": "sm-sports-data",
-      "metadata_only": true,
-      "available_link_count": 0,
-      "backups": [],
-      "channel_stats": {
-        "streams_in": 1,
-        "unresolved_channel_streams": 1,
-        "exact_duplicates_removed": 0,
-        "channels": 0,
-        "variants": 0,
-        "embed_variants": 0,
-        "generic_server_channels": 0
-      },
-      "source_provenance": [
-        {
-          "source_id": "sm-sports-data",
-          "source_name": "SM Live and Upcoming Sports Data",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json"
-        }
-      ],
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "start_time": "2026-11-04T17:45:00+00:00",
-      "start_at": "2026-11-04T17:45:00+00:00",
-      "end_time": "2026-11-04T20:15:00+00:00",
-      "end_time_source": "sport",
-      "competition": "UEFA Champions League",
-      "fixture_id": "provider:fenerbahçe-vs-liverpool-fc|uefa champions league|2026-11-04",
-      "status": "UPCOMING",
-      "original_status": "UPCOMING",
-      "schedule_status": "UPCOMING",
-      "schedule_verified": true,
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "source_start_time": "2026-11-04T17:45:00+00:00",
-      "time_verification": "provider_feed",
-      "sport_class": "confirmed_football",
-      "sport_class_reason": "source sport field",
-      "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401915382)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401915382"
-      },
-      "event_type": "today_match",
-      "lifecycle_state": "LIVE",
-      "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/twxxvs1448199691.png",
-      "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/kfaher1737969724.png",
-      "allow_without_stream": true,
-      "routing_changed_from": "upcoming",
-      "lifecycle_reason": "still live: authority_live",
-      "lifecycle_protections": [
-        "authority_live"
-      ],
-      "carried_forward_misses": 3,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-04T17:24:40.703366+00:00"
+      "lifecycle_state": "LIVE"
     },
     {
       "id": "club-portugalete-vs-real-unión-club",
@@ -1960,18 +1843,20 @@
         "livescore": "1903172"
       },
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/g8utq11734747233.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/45alur1786122180.png",
       "allow_without_stream": true,
       "routing_changed_from": "upcoming",
-      "lifecycle_reason": "still live: authority_live",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: authority_live",
-      "carried_forward_first_missed_at": "2026-11-04T17:44:41.763522+00:00"
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
+      "carried_forward_first_missed_at": "2026-11-04T17:44:41.763522+00:00",
+      "end_pending": true,
+      "end_pending_confirmations": 3
     },
     {
       "id": "al-muharraq-vs-al-jazira",
@@ -2016,21 +1901,6 @@
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json"
         },
         {
-          "source_id": "sportlive-fancode-backup",
-          "source_name": "SportLive18 FanCode Backup",
-          "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
-        },
-        {
-          "source_id": "drmlive-fancode-mirror",
-          "source_name": "FanCode Live Events (drmlive)",
-          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
-        },
-        {
-          "source_id": "sayanpal-fancode-mirror",
-          "source_name": "FanCode Auto Updated (sayanpal)",
-          "source_url": "https://raw.githubusercontent.com/sayanpal514-hue/FANCODE-AUTO-UPDATED-PLAYLIST/refs/heads/main/fancode.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
@@ -2038,9 +1908,6 @@
       ],
       "source_ids": [
         "sm-fancode",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "start_time": "2026-11-04T18:15:00+00:00",
@@ -2059,18 +1926,6 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "LOW",
-      "authority_end_families": [
-        "ESPN"
-      ],
-      "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912763)"
-      ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401912763"
-      },
       "allow_without_stream": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
