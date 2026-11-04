@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-04T00:24:45.616406+00:00",
+  "updated_at": "2026-11-04T00:44:31.027828+00:00",
   "count": 4,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -74,7 +74,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 17,
+      "carried_forward_misses": 18,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-03T19:25:18.965329+00:00"
     },
@@ -171,7 +171,7 @@
       "resolution_height": 720,
       "start_time": "2026-11-03T20:30:00+00:00",
       "start_at": "2026-11-03T20:30:00+00:00",
-      "end_time": "2026-11-04T01:24:33+00:00",
+      "end_time": "2026-11-04T01:44:19+00:00",
       "end_time_source": "assumed",
       "competition": "Primera A",
       "fixture_id": "provider:primera-a|primera a|2026-11-03",
@@ -290,7 +290,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-03T22:30:00+00:00",
       "start_at": "2026-11-03T22:30:00+00:00",
-      "end_time": "2026-11-04T01:24:33+00:00",
+      "end_time": "2026-11-04T01:44:19+00:00",
       "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:chapecoense-vs-mirassol|campeonato brasileiro s rie a|2026-11-03",
@@ -305,32 +305,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_near_misses": [
-        {
-          "authority": "livescore",
-          "matched_by": "ambiguous",
-          "event_id": "1708747",
-          "upstream_family": "LiveScore",
-          "name": "Chapecoense AF vs Mirassol",
-          "competition": "Serie A",
-          "kickoff": "2026-11-03T22:30:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status": "UNKNOWN"
-        }
-      ],
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=12' (STATUS_FIRST_HALF, event 401841304)"
+        "ESPN espn-header=32' (STATUS_FIRST_HALF, event 401841304)",
+        "LiveScore livescore=FT (6, event 1708747)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401841304"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=32' (STATUS_FIRST_HALF, event 401841304); LiveScore livescore=FT (6, event 1708747)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/wy0e1i1765900601.png",
@@ -441,9 +426,9 @@
       "end_time_source": "sport",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:internacional-vs-coritiba|campeonato brasileiro s rie a|2026-11-04",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-04T00:30:00+00:00",
@@ -453,22 +438,17 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841301)",
-        "LiveScore livescore=NS (1, event 1708744)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841301)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "401841301",
-        "livescore": "1708744"
+        "espn-header": "401841301"
       },
-      "start_window_claimed": "LIVE_NOW",
-      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yprvxx1473538097.png",
