@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-04T16:12:15.405969+00:00",
+  "updated_at": "2026-11-04T16:13:00.717885+00:00",
   "count": 8,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -298,11 +298,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 19,
+      "carried_forward_misses": 20,
       "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-04T10:04:30.950542+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 19
+      "end_pending_confirmations": 20
     },
     {
       "id": "abu-dhabi-vs-ajman",
@@ -375,11 +375,11 @@
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
       "lifecycle_state": "END_PENDING",
-      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "lifecycle_reason": "END_PENDING, not ENDED: estimated end not passed",
       "end_pending": true,
-      "end_pending_confirmations": 2,
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed; only 2 of 3 confirming scans",
+      "end_pending_confirmations": 3,
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "END_PENDING, not ENDED: estimated end not passed",
       "carried_forward_first_missed_at": "2026-11-04T15:24:30.954284+00:00"
     },
     {
@@ -958,7 +958,16 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: authority_live, primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "authority_live",
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-04T16:12:54.810255+00:00"
     },
     {
       "id": "emirates-blues-vs-dubai",
@@ -1008,14 +1017,14 @@
           "source_url": "https://raw.githubusercontent.com/sportlive18/Fancode-New-Auto-Update/main/fancode.json"
         },
         {
-          "source_id": "drmlive-fancode-mirror",
-          "source_name": "FanCode Live Events (drmlive)",
-          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
-        },
-        {
           "source_id": "vk1817-fancode-mirror",
           "source_name": "FanCode Auto Update (Vk1817)",
           "source_url": "https://raw.githubusercontent.com/Vk1817/Fancode_autoupdate/refs/heads/main/pranav.json"
+        },
+        {
+          "source_id": "drmlive-fancode-mirror",
+          "source_name": "FanCode Live Events (drmlive)",
+          "source_url": "https://raw.githubusercontent.com/drmlive/fancode-live-events/refs/heads/main/fancode.json"
         },
         {
           "source_id": "sayanpal-fancode-mirror",
@@ -1026,8 +1035,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "start_time": "2026-11-04T16:30:00+00:00",
@@ -1251,6 +1260,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
+      "authority_end_status": "UPCOMING",
+      "authority_end_confidence": "LOW",
+      "authority_end_families": [
+        "ESPN"
+      ],
+      "authority_end_evidence": [
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401912766)"
+      ],
+      "authority_independent_count": 1,
+      "authority_event_ids": {
+        "espn-header": "401912766"
+      },
       "allow_without_stream": true,
       "event_type": "today_match",
       "routing_changed_from": "upcoming",
