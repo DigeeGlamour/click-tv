@@ -1,43 +1,78 @@
 {
-  "generated_at": "2026-11-04T21:44:42.924577+00:00",
+  "generated_at": "2026-11-04T22:04:33.842161+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
     "fixtures": 65,
     "published_fixtures": 54,
-    "fixtures_with_verified_stream": 22,
-    "fixtures_with_zero_verified": 43,
+    "fixtures_with_verified_stream": 21,
+    "fixtures_with_zero_verified": 44,
     "published_without_stream": 43,
-    "fallback_available": 11,
+    "fallback_available": 10,
     "targeted_fixtures": 5,
     "targeted_attempts": 29,
     "fixtures_with_a_first_link_time": 1,
     "candidate_routes": 139,
-    "verified_routes": 70,
-    "failed_routes": 69,
+    "verified_routes": 58,
+    "failed_routes": 81,
     "fixtures_touched_by_a_route_failure": 25,
     "fixtures_left_with_nothing": 6,
-    "distinct_failure_codes": 5,
+    "distinct_failure_codes": 7,
     "unrecognised_candidate_groups": 45,
-    "unrecognised_failed_routes": 88
+    "unrecognised_failed_routes": 91
   },
   "failure_codes": {
-    "http_403": 63,
+    "http_403": 61,
     "browser_unreachable": 57,
-    "http_404": 18,
-    "timeout": 12,
+    "http_404": 29,
+    "timeout": 15,
     "dns": 3,
     "http_400": 2,
-    "verification_failed": 1,
+    "ssl": 2,
+    "verification_failed": 2,
     "http_452": 1
   },
   "failure_code_fixtures": {
     "browser_unreachable": 14,
     "http_403": 14,
-    "http_404": 3,
+    "http_404": 11,
+    "ssl": 2,
+    "dns": 1,
     "http_400": 1,
-    "dns": 1
+    "timeout": 1
   },
   "fixtures": [
+    {
+      "fixture_id": "rb-leipzig-vs-manchester-city",
+      "fixture_key": "rb-leipzig-vs-manchester-city",
+      "fixture_name": "RB Leipzig Vs Manchester City",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data",
+        "kajju-sonyliv-backup",
+        "drmlive-sonyliv-backup",
+        "sportlive-sonyliv-backup",
+        "sayanpal-sonyliv-backup"
+      ],
+      "candidate_stream_count": 19,
+      "verified_stream_count": 3,
+      "failed_stream_count": 16,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "http_403",
+        "ssl",
+        "browser_unreachable"
+      ],
+      "fallback_available": true,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
     {
       "fixture_id": "smackdown",
       "fixture_key": "smackdown",
@@ -68,36 +103,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "rb-leipzig-vs-manchester-city",
-      "fixture_key": "rb-leipzig-vs-manchester-city",
-      "fixture_name": "RB Leipzig Vs Manchester City",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "kajju-sonyliv-backup",
-        "drmlive-sonyliv-backup",
-        "sportlive-sonyliv-backup",
-        "sayanpal-sonyliv-backup"
-      ],
-      "candidate_stream_count": 19,
-      "verified_stream_count": 5,
-      "failed_stream_count": 14,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403",
-        "browser_unreachable"
-      ],
-      "fallback_available": true,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "new-zealand-vs-india",
       "fixture_key": "new-zealand-vs-india",
       "fixture_name": "New Zealand Vs India",
@@ -111,7 +116,8 @@
       "failed_stream_count": 10,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_403"
+        "http_403",
+        "ssl"
       ],
       "fallback_available": false,
       "published": true,
@@ -187,12 +193,13 @@
         "sm-sports-data"
       ],
       "candidate_stream_count": 6,
-      "verified_stream_count": 1,
-      "failed_stream_count": 5,
+      "verified_stream_count": 0,
+      "failed_stream_count": 6,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_404",
+        "timeout",
         "http_403",
+        "http_404",
         "browser_unreachable"
       ],
       "fallback_available": false,
@@ -214,10 +221,11 @@
         "sm-sports-data"
       ],
       "candidate_stream_count": 6,
-      "verified_stream_count": 2,
-      "failed_stream_count": 4,
+      "verified_stream_count": 1,
+      "failed_stream_count": 5,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_404",
         "browser_unreachable"
       ],
       "fallback_available": false,
@@ -239,11 +247,38 @@
         "sm-sports-data"
       ],
       "candidate_stream_count": 6,
-      "verified_stream_count": 2,
-      "failed_stream_count": 4,
+      "verified_stream_count": 1,
+      "failed_stream_count": 5,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_404",
         "http_403",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "fc-porto-vs-ssc-napoli",
+      "fixture_key": "fc-porto-vs-ssc-napoli",
+      "fixture_name": "FC Porto Vs SSC Napoli",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 9,
+      "verified_stream_count": 4,
+      "failed_stream_count": 5,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
         "browser_unreachable"
       ],
       "fallback_available": true,
@@ -284,9 +319,87 @@
       "targeted": false
     },
     {
+      "fixture_id": "psv-eindhoven-vs-club-brugge-kv",
+      "fixture_key": "psv-eindhoven-vs-club-brugge-kv",
+      "fixture_name": "PSV Eindhoven Vs Club Brugge KV",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 8,
+      "verified_stream_count": 4,
+      "failed_stream_count": 4,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "browser_unreachable"
+      ],
+      "fallback_available": true,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "al-kuwait-sc-vs-nasaf-qarshi",
       "fixture_key": "al-kuwait-sc-vs-nasaf-qarshi",
       "fixture_name": "Al Kuwait SC Vs Nasaf Qarshi",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 0,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "timeout",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "al-rayyan-vs-al-nahda-sc",
+      "fixture_key": "al-rayyan-vs-al-nahda-sc",
+      "fixture_name": "Al Rayyan Vs Al Nahda SC",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 0,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "timeout",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "al-wahda-fc-vs-al-khaldiya",
+      "fixture_key": "al-wahda-fc-vs-al-khaldiya",
+      "fixture_name": "Al Wahda FC Vs Al Khaldiya",
       "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
@@ -336,19 +449,22 @@
       "targeted": false
     },
     {
-      "fixture_id": "fc-porto-vs-ssc-napoli",
-      "fixture_key": "fc-porto-vs-ssc-napoli",
-      "fixture_name": "FC Porto Vs SSC Napoli",
+      "fixture_id": "borussia-dortmund-vs-real-betis",
+      "fixture_key": "borussia-dortmund-vs-real-betis",
+      "fixture_name": "Borussia Dortmund Vs Real Betis",
       "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "kajju-sonyliv-backup"
       ],
       "candidate_stream_count": 9,
       "verified_stream_count": 6,
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_404",
+        "http_403",
         "browser_unreachable"
       ],
       "fallback_available": true,
@@ -494,24 +610,53 @@
       "targeted": false
     },
     {
-      "fixture_id": "psv-eindhoven-vs-club-brugge-kv",
-      "fixture_key": "psv-eindhoven-vs-club-brugge-kv",
-      "fixture_name": "PSV Eindhoven Vs Club Brugge KV",
+      "fixture_id": "sk-slavia-praha-vs-arsenal",
+      "fixture_key": "sk-slavia-praha-vs-arsenal",
+      "fixture_name": "SK Slavia Praha Vs Arsenal",
       "recognised_fixture": true,
       "source_id": "sm-sports-data",
       "source_ids": [
-        "sm-sports-data"
+        "sm-sports-data",
+        "srhady-primevideo-sports"
       ],
-      "candidate_stream_count": 8,
-      "verified_stream_count": 5,
+      "candidate_stream_count": 7,
+      "verified_stream_count": 4,
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
+        "http_404",
         "browser_unreachable"
       ],
       "fallback_available": true,
       "published": true,
       "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 1,
+      "last_attempt_bucket": "2026-11-04T19:35Z",
+      "first_link_at": "2026-11-04T19:36:39.858319+00:00",
+      "targeted": true
+    },
+    {
+      "fixture_id": "stade-rennais-vs-olympiacos-fc",
+      "fixture_key": "stade-rennais-vs-olympiacos-fc",
+      "fixture_name": "Stade Rennais Vs Olympiacos FC",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 6,
+      "verified_stream_count": 3,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403",
+        "verification_failed",
+        "browser_unreachable"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
       "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
@@ -571,6 +716,32 @@
       "targeted": false
     },
     {
+      "fixture_id": "viking-fk-vs-sabah-fk",
+      "fixture_key": "viking-fk-vs-sabah-fk",
+      "fixture_name": "Viking FK Vs Sabah FK",
+      "recognised_fixture": true,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 7,
+      "verified_stream_count": 4,
+      "failed_stream_count": 3,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_404",
+        "browser_unreachable"
+      ],
+      "fallback_available": true,
+      "published": true,
+      "published_tab": "today",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "aew-collision",
       "fixture_key": "aew-collision",
       "fixture_name": "AEW Collision",
@@ -615,83 +786,6 @@
       "fallback_available": false,
       "published": false,
       "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "al-rayyan-vs-al-nahda-sc",
-      "fixture_key": "al-rayyan-vs-al-nahda-sc",
-      "fixture_name": "Al Rayyan Vs Al Nahda SC",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 1,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "al-wahda-fc-vs-al-khaldiya",
-      "fixture_key": "al-wahda-fc-vs-al-khaldiya",
-      "fixture_name": "Al Wahda FC Vs Al Khaldiya",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 1,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "borussia-dortmund-vs-real-betis",
-      "fixture_key": "borussia-dortmund-vs-real-betis",
-      "fixture_name": "Borussia Dortmund Vs Real Betis",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "kajju-sonyliv-backup"
-      ],
-      "candidate_stream_count": 9,
-      "verified_stream_count": 7,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403",
-        "browser_unreachable"
-      ],
-      "fallback_available": true,
-      "published": true,
-      "published_tab": "today",
       "published_without_stream": false,
       "target_attempt_count": 0,
       "last_attempt_bucket": "",
@@ -843,57 +937,6 @@
       ],
       "candidate_stream_count": 6,
       "verified_stream_count": 4,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "browser_unreachable"
-      ],
-      "fallback_available": true,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "stade-rennais-vs-olympiacos-fc",
-      "fixture_key": "stade-rennais-vs-olympiacos-fc",
-      "fixture_name": "Stade Rennais Vs Olympiacos FC",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 6,
-      "verified_stream_count": 4,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403",
-        "browser_unreachable"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "viking-fk-vs-sabah-fk",
-      "fixture_key": "viking-fk-vs-sabah-fk",
-      "fixture_name": "Viking FK Vs Sabah FK",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 7,
-      "verified_stream_count": 5,
       "failed_stream_count": 2,
       "unchecked_stream_count": 0,
       "failure_codes": [
@@ -1465,32 +1508,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "sk-slavia-praha-vs-arsenal",
-      "fixture_key": "sk-slavia-praha-vs-arsenal",
-      "fixture_name": "SK Slavia Praha Vs Arsenal",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data",
-        "srhady-primevideo-sports"
-      ],
-      "candidate_stream_count": 7,
-      "verified_stream_count": 6,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "browser_unreachable"
-      ],
-      "fallback_available": true,
-      "published": true,
-      "published_tab": "today",
-      "published_without_stream": false,
-      "target_attempt_count": 1,
-      "last_attempt_bucket": "2026-11-04T19:35Z",
-      "first_link_at": "2026-11-04T19:36:39.858319+00:00",
-      "targeted": true
-    },
-    {
       "fixture_id": "slavia-praha-vs-arsenal",
       "fixture_key": "slavia-praha-vs-arsenal",
       "fixture_name": "Slavia Praha vs Arsenal",
@@ -1649,8 +1666,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1769,8 +1786,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -1911,8 +1928,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1937,8 +1954,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2010,8 +2027,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2199,8 +2216,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2227,8 +2244,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2254,8 +2271,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2282,8 +2299,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2309,8 +2326,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2568,8 +2585,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2617,8 +2634,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2645,8 +2662,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2673,8 +2690,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
