@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T12:57:15.660907+00:00",
+  "generated_at": "2026-11-04T13:04:36.233214+00:00",
   "today_match_count": 9,
   "upcoming_count": 55,
   "today_missing_logo": [],
@@ -9,12 +9,12 @@
   "corrected": 0,
   "catalogue": 0,
   "provider_fixture": 158,
-  "provider_rejected": 102,
+  "provider_rejected": 103,
   "provider_rejected_reasons": {
     "provider_dead_status": 67,
     "status_neither_live_nor_upcoming": 1,
     "kickoff_missing_and_not_live": 2,
-    "upcoming_kickoff_already_passed": 32
+    "upcoming_kickoff_already_passed": 33
   },
   "provider_rejected_by_source": {
     "sm-sports-data": {
@@ -35,8 +35,8 @@
       "total": 2
     },
     "sm-fancode": {
-      "upcoming_kickoff_already_passed": 4,
-      "total": 4
+      "upcoming_kickoff_already_passed": 5,
+      "total": 5
     },
     "srhady-willow-event": {
       "kickoff_missing_and_not_live": 1,
@@ -272,6 +272,15 @@
       "status": "UPCOMING",
       "reason": "upcoming_kickoff_already_passed",
       "start_time": "2026-10-28T10:00:00+00:00"
+    },
+    {
+      "name": "Kaya FC Iloilo Women vs Melbourne City Women",
+      "competition": "AFC Women's Champions League 2026-27",
+      "sport": "football",
+      "source_id": "sm-fancode",
+      "status": "UPCOMING",
+      "reason": "upcoming_kickoff_already_passed",
+      "start_time": "2026-11-04T10:30:00+00:00"
     },
     {
       "name": "Manchester City vs Brighton and Hove Albion",
@@ -690,7 +699,7 @@
       },
       {
         "name": "Day 1 vs Mission Hills, China (2026)",
-        "source": "sportlive-fancode-backup, drmlive-fancode-mirror, sayanpal-f",
+        "source": "sportlive-fancode-backup, sayanpal-fancode-mirror, vk1817-fa",
         "competition": "Aramco China Championship 2026",
         "sport_type": "",
         "reason": "golf gazetteer",
@@ -730,7 +739,7 @@
       },
       {
         "name": "Los Angeles Clippers Vs Miami Heat",
-        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, drmliv",
+        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, sayanp",
         "competition": "NBA",
         "sport_type": "",
         "reason": "league map: basketball",
@@ -738,7 +747,7 @@
       },
       {
         "name": "Memphis Grizzlies Vs Indiana Pacers",
-        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, drmliv",
+        "source": "sm-sports-data, sm-fancode, sportlive-fancode-backup, sayanp",
         "competition": "NBA",
         "sport_type": "",
         "reason": "league map: basketball",
@@ -948,11 +957,11 @@
   },
   "reused_event_ids": 0,
   "authority_status": {
-    "applied": 0,
+    "applied": 1,
     "pending_confirmation": 0,
-    "live": 0,
-    "recorded": 29,
-    "conflict": 1,
+    "live": 1,
+    "recorded": 27,
+    "conflict": 0,
     "unmatched": 28,
     "start_window": 0,
     "start_window_fixtures": [],
@@ -971,21 +980,41 @@
       }
     ],
     "by_status": {
-      "UPCOMING": 27,
+      "LIVE": 1,
+      "FINISHED": 1,
+      "UPCOMING": 25,
       "POSTPONED": 3
     },
     "by_confidence": {
       "LOW": 6,
-      "CONFLICT": 1,
       "HIGH": 24
     },
-    "applied_fixtures": [],
+    "applied_fixtures": [
+      {
+        "name": "Hobart Hurricanes Women Vs Melbourne Renegades Women",
+        "fixture_id": "provider:hobart-hurricanes-vs-melbourne-renegades-women|women big bash league|2026-11-04",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1543952)",
+          "LiveScore livescore=FT (6, event 1813054)"
+        ],
+        "authority_finished_seen_at": "2026-11-04T12:44:31.902800+00:00",
+        "remove_after": "2026-11-04T13:04:31.902800+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": ""
+      }
+    ],
     "conflicts": [
       {
         "name": "Hobart Hurricanes Women Vs Melbourne Renegades Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1543952); LiveScore livescore=FT (6, event 1813054)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -994,26 +1023,61 @@
     ]
   },
   "authority_status_carried": {
-    "applied": 1,
-    "pending_confirmation": 0,
-    "live": 2,
-    "recorded": 1,
-    "conflict": 2,
+    "applied": 3,
+    "pending_confirmation": 2,
+    "live": 1,
+    "recorded": 0,
+    "conflict": 0,
     "unmatched": 3,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 2,
-      "FINISHED": 1,
-      "UPCOMING": 1
+      "FINISHED": 5,
+      "LIVE": 1
     },
     "by_confidence": {
       "LOW": 4,
-      "CONFLICT": 2
+      "HIGH": 2
     },
     "applied_fixtures": [
+      {
+        "name": "Hobart Hurricanes Women Vs Melbourne Renegades Women",
+        "fixture_id": "provider:hobart-hurricanes-vs-melbourne-renegades-women|women big bash league|2026-11-04",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=Result (Result, event 1543952)",
+          "LiveScore livescore=FT (6, event 1813054)"
+        ],
+        "authority_finished_seen_at": "2026-11-04T12:44:31.902800+00:00",
+        "remove_after": "2026-11-04T13:04:31.902800+00:00",
+        "was_playable": true,
+        "lifecycle_state_before": "LIVE"
+      },
+      {
+        "name": "Pohang Steelers vs Gamba Osaka",
+        "fixture_id": "provider:pohang-steelers-vs-gamba-osaka|afc champions league elite 2026 27|2026-11-04",
+        "status": "FINISHED",
+        "confidence": "HIGH",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ],
+        "evidence": [
+          "ESPN espn-header=FT (STATUS_FULL_TIME, event 401912614)",
+          "LiveScore livescore=FT (6, event 1873634)"
+        ],
+        "authority_finished_seen_at": "2026-11-04T12:44:31.902800+00:00",
+        "remove_after": "2026-11-04T13:04:31.902800+00:00",
+        "was_playable": false,
+        "lifecycle_state_before": "END_PENDING"
+      },
       {
         "name": "AEK Athens U19 Vs Real Madrid U19",
         "fixture_id": "provider:aek-athens-u19-vs-real-madrid-u19|uefa youth league|2026-11-04",
@@ -1034,19 +1098,9 @@
     "conflicts": [
       {
         "name": "Hobart Hurricanes Women Vs Melbourne Renegades Women",
-        "reason": "independent authorities disagree: ESPN espn-header=Live (Live, event 1543952); LiveScore livescore=FT (6, event 1813054)",
-        "status": "",
-        "confidence": "CONFLICT",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
-        "name": "Pohang Steelers vs Gamba Osaka",
-        "reason": "independent authorities disagree: ESPN espn-header=48' (STATUS_SECOND_HALF, event 401912614); LiveScore livescore=FT (6, event 1873634)",
-        "status": "",
-        "confidence": "CONFLICT",
+        "reason": "authority says FINISHED while the card still carries a route",
+        "status": "FINISHED",
+        "confidence": "HIGH",
         "upstream_families": [
           "ESPN",
           "LiveScore"
@@ -1071,7 +1125,7 @@
     "no_verdict": 3
   },
   "live_protection": {
-    "carried_forward": 5,
+    "carried_forward": 6,
     "released_ended": 0,
     "released_ended_ids": [],
     "retired_terminal": [],
@@ -1081,14 +1135,14 @@
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
     "probe_alive": 0,
-    "probe_dead": 3,
+    "probe_dead": 4,
     "probe_inconclusive": 0,
-    "end_pending": 4,
+    "end_pending": 5,
     "released_confirmed": 0,
     "protected_playing": 0,
     "lifecycle_states": {
       "LIVE": 1,
-      "END_PENDING": 4
+      "END_PENDING": 5
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
@@ -1115,7 +1169,7 @@
   },
   "channel_names": {
     "stamped": 0,
-    "unresolved": 85,
+    "unresolved": 84,
     "names": {}
   },
   "streamed_provider": {
@@ -1139,9 +1193,9 @@
   "sports_poster_enrichment": {
     "attempted": 58,
     "poster_filled": 0,
-    "badge_filled": 22,
+    "badge_filled": 20,
     "badge_used_as_logo": 0,
-    "cache_hits": 13,
+    "cache_hits": 12,
     "cached_entries": 1408,
     "provider": {
       "requests": 9,
@@ -1149,7 +1203,7 @@
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 49,
+      "skipped_rate_limited": 51,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1175,32 +1229,32 @@
   ],
   "sport_filter": {
     "at_merge": {
-      "total": 66,
-      "published": 59,
+      "total": 65,
+      "published": 58,
       "rejected": 5,
       "quarantined": 2,
       "states": {
         "confirmed_cricket": 25,
-        "confirmed_football": 34,
+        "confirmed_football": 33,
         "unknown": 2,
         "confirmed_other": 5
       },
       "by_source": {
         "sm-fancode": {
-          "total": 16,
+          "total": 15,
           "cricket": 8,
-          "football": 8,
+          "football": 7,
           "quarantined": 0,
           "rejected": 0,
-          "published": 16
+          "published": 15
         },
         "vk1817-fancode-mirror": {
-          "total": 16,
+          "total": 15,
           "cricket": 8,
-          "football": 8,
+          "football": 7,
           "quarantined": 0,
           "rejected": 0,
-          "published": 16
+          "published": 15
         },
         "srhady-primevideo-sports": {
           "total": 2,
@@ -1211,12 +1265,12 @@
           "published": 0
         },
         "sm-sports-data": {
-          "total": 42,
+          "total": 41,
           "cricket": 6,
-          "football": 31,
+          "football": 30,
           "quarantined": 0,
           "rejected": 5,
-          "published": 37
+          "published": 36
         },
         "srhady-willow-event": {
           "total": 16,
@@ -1234,7 +1288,7 @@
           "rejected": 1,
           "published": 14
         },
-        "drmlive-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 15,
           "cricket": 8,
           "football": 6,
@@ -1242,7 +1296,7 @@
           "rejected": 1,
           "published": 14
         },
-        "sayanpal-fancode-mirror": {
+        "drmlive-fancode-mirror": {
           "total": 15,
           "cricket": 8,
           "football": 6,
@@ -1270,7 +1324,7 @@
         },
         {
           "name": "Howard Bison Vs South Carolina State Bulldogs",
-          "source": "sm-sports-data, sportlive-fancode-backup, drmlive-fancode-mi",
+          "source": "sm-sports-data, sportlive-fancode-backup, sayanpal-fancode-m",
           "competition": "NCAA Division FCS",
           "sport_type": "rugby",
           "reason": "rugby gazetteer",
@@ -1302,7 +1356,7 @@
           "reason": "no sport evidence in the record"
         },
         {
-          "name": "The Morning Drive",
+          "name": "Unknown Match",
           "source": "srhady-primevideo-sports",
           "competition": "",
           "sport_type": "other",
@@ -1385,12 +1439,12 @@
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 36,
+          "total": 35,
           "cricket": 5,
-          "football": 31,
+          "football": 30,
           "quarantined": 0,
           "rejected": 0,
-          "published": 36
+          "published": 35
         },
         "srhady-willow-event": {
           "total": 15,
@@ -1416,14 +1470,6 @@
           "rejected": 0,
           "published": 14
         },
-        "drmlive-fancode-mirror": {
-          "total": 14,
-          "cricket": 8,
-          "football": 6,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 14
-        },
         "sayanpal-fancode-mirror": {
           "total": 14,
           "cricket": 8,
@@ -1439,6 +1485,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 13
+        },
+        "drmlive-fancode-mirror": {
+          "total": 14,
+          "cricket": 8,
+          "football": 6,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 14
         }
       },
       "rejected_examples": [],
@@ -1454,9 +1508,9 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 260,
+    "raw_events": 261,
     "cricket_kept": 25,
-    "football_kept": 34,
+    "football_kept": 33,
     "other_discarded": 50,
     "unresolved": 2,
     "today_final": 9,
@@ -1489,26 +1543,26 @@
     "dropped_fixtures": [],
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
-      "provider_or_authority": 4,
+      "provider_or_authority": 6,
       "estimate": 0,
-      "none": 5
+      "none": 3
     }
   },
   "fixture_stream_health": {
-    "fixtures": 78,
+    "fixtures": 79,
     "published_fixtures": 64,
     "fixtures_with_verified_stream": 15,
-    "fixtures_with_zero_verified": 63,
+    "fixtures_with_zero_verified": 64,
     "published_without_stream": 60,
     "fallback_available": 2,
     "targeted_fixtures": 7,
     "targeted_attempts": 41,
     "fixtures_with_a_first_link_time": 1,
-    "candidate_routes": 59,
+    "candidate_routes": 60,
     "verified_routes": 26,
-    "failed_routes": 33,
+    "failed_routes": 34,
     "fixtures_touched_by_a_route_failure": 22,
-    "fixtures_left_with_nothing": 9,
+    "fixtures_left_with_nothing": 10,
     "distinct_failure_codes": 4,
     "unrecognised_candidate_groups": 24,
     "unrecognised_failed_routes": 55
@@ -1516,14 +1570,14 @@
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 64,
-    "verified": 27,
+    "verified": 26,
     "partial_authority": 1,
-    "unverified": 29,
+    "unverified": 30,
     "conflict": 7,
-    "matched_by_two_independent_authorities": 27,
-    "authority_agreements": 24,
-    "authority_disagreements": 2,
-    "card_status_conflicts": 4,
+    "matched_by_two_independent_authorities": 26,
+    "authority_agreements": 25,
+    "authority_disagreements": 0,
+    "card_status_conflicts": 6,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 0
