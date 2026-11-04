@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-04T22:24:44.359248+00:00",
+  "generated_at": "2026-11-04T22:36:12.732519+00:00",
   "today_match_count": 17,
   "upcoming_count": 36,
   "today_missing_logo": [],
@@ -8,13 +8,13 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 218,
-  "provider_rejected": 134,
+  "provider_fixture": 217,
+  "provider_rejected": 135,
   "provider_rejected_reasons": {
     "provider_dead_status": 106,
     "status_neither_live_nor_upcoming": 1,
     "kickoff_missing_and_not_live": 1,
-    "upcoming_kickoff_already_passed": 26
+    "upcoming_kickoff_already_passed": 27
   },
   "provider_rejected_by_source": {
     "sm-sports-data": {
@@ -32,6 +32,10 @@
     },
     "srhady-willow-event": {
       "kickoff_missing_and_not_live": 1,
+      "total": 1
+    },
+    "vk1817-fancode-mirror": {
+      "upcoming_kickoff_already_passed": 1,
       "total": 1
     }
   },
@@ -296,6 +300,15 @@
       "status": "UPCOMING",
       "reason": "kickoff_missing_and_not_live",
       "start_time": ""
+    },
+    {
+      "name": "Bristol City F C vs Wolverhampton Wanderers F C",
+      "competition": "EFL Championship 2026-27",
+      "sport": "football",
+      "source_id": "vk1817-fancode-mirror",
+      "status": "UPCOMING",
+      "reason": "upcoming_kickoff_already_passed",
+      "start_time": "2026-11-04T20:00:00+00:00"
     },
     {
       "name": "Chelsea F C Women vs Roma Women",
@@ -566,29 +579,20 @@
       "status": "ENDED",
       "reason": "provider_dead_status",
       "start_time": "2026-09-30T19:29:00+00:00"
-    },
-    {
-      "name": "AEK Athens Vs Real Madrid",
-      "competition": "UEFA Champions League",
-      "sport": "football",
-      "source_id": "sm-sports-data",
-      "status": "ENDED",
-      "reason": "provider_dead_status",
-      "start_time": "2026-11-02T17:45:00+00:00"
     }
   ],
   "ambiguous_suppressed": 0,
   "unverified_suppressed": 0,
   "direct_channel_kept": 0,
   "direct_channel_unusable": 0,
-  "provider_rejected_fixtures_truncated": 32,
+  "provider_rejected_fixtures_truncated": 33,
   "streams_attached": 0,
-  "fixtures_with_stream": 12,
+  "fixtures_with_stream": 13,
   "pool_offered": 0,
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 218,
+    "total": 217,
     "discarded": 52,
     "examples": [
       {
@@ -1014,34 +1018,11 @@
     "applied": 0,
     "pending_confirmation": 0,
     "live": 1,
-    "recorded": 14,
+    "recorded": 16,
     "conflict": 8,
     "unmatched": 25,
-    "start_window": 2,
-    "start_window_fixtures": [
-      {
-        "id": "athletico-vs-vasco-da-gama",
-        "name": "Athletico Vs Vasco da Gama",
-        "claimed": "LIVE_NOW",
-        "now_says": "STARTING_SOON",
-        "conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
-        "id": "flamengo-vs-grêmio",
-        "name": "Flamengo Vs Grêmio",
-        "claimed": "LIVE_NOW",
-        "now_says": "STARTING_SOON",
-        "conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      }
-    ],
+    "start_window": 0,
+    "start_window_fixtures": [],
     "kickoff_corrected": 1,
     "kickoff_corrections": [
       {
@@ -1062,14 +1043,14 @@
     },
     "by_confidence": {
       "CONFLICT": 8,
-      "HIGH": 14,
-      "LOW": 4
+      "LOW": 5,
+      "HIGH": 13
     },
     "applied_fixtures": [],
     "conflicts": [
       {
-        "name": "Borussia Dortmund Vs Real Betis",
-        "reason": "independent authorities disagree: ESPN espn-header=61' (STATUS_SECOND_HALF, event 401915304); LiveScore livescore=FT (6, event 1882769)",
+        "name": "Cardiff City Vs West Ham United",
+        "reason": "independent authorities disagree: ESPN espn-header=60' (STATUS_SECOND_HALF, event 401880175); LiveScore livescore=FT (6, event 1802471)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1078,8 +1059,8 @@
         ]
       },
       {
-        "name": "Cardiff City Vs West Ham United",
-        "reason": "independent authorities disagree: ESPN espn-header=80' (STATUS_SECOND_HALF, event 401880175); LiveScore livescore=FT (6, event 1802471)",
+        "name": "Borussia Dortmund Vs Real Betis",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401915304); LiveScore livescore=FT (6, event 1882769)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1089,7 +1070,7 @@
       },
       {
         "name": "FC Porto Vs SSC Napoli",
-        "reason": "independent authorities disagree: ESPN espn-header=64' (STATUS_SECOND_HALF, event 401915301); LiveScore livescore=FT (6, event 1882788)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401915301); LiveScore livescore=FT (6, event 1882788)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1099,7 +1080,7 @@
       },
       {
         "name": "PSV Eindhoven Vs Club Brugge KV",
-        "reason": "independent authorities disagree: ESPN espn-header=63' (STATUS_SECOND_HALF, event 401915303); LiveScore livescore=FT (6, event 1882804)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401915303); LiveScore livescore=FT (6, event 1882804)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1109,7 +1090,7 @@
       },
       {
         "name": "RB Leipzig Vs Manchester City",
-        "reason": "independent authorities disagree: ESPN espn-header=65' (STATUS_SECOND_HALF, event 401915306); LiveScore livescore=FT (6, event 1882826)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401915306); LiveScore livescore=FT (6, event 1882826)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1119,7 +1100,7 @@
       },
       {
         "name": "RC Lens Vs Como",
-        "reason": "independent authorities disagree: ESPN espn-header=63' (STATUS_SECOND_HALF, event 401915305); LiveScore livescore=FT (6, event 1882873)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401915305); LiveScore livescore=FT (6, event 1882873)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1129,7 +1110,7 @@
       },
       {
         "name": "SK Slavia Praha Vs Arsenal",
-        "reason": "independent authorities disagree: ESPN espn-header=66' (STATUS_SECOND_HALF, event 401915381); LiveScore livescore=FT (6, event 1882846)",
+        "reason": "independent authorities disagree: ESPN espn-header=47' (STATUS_SECOND_HALF, event 401915381); LiveScore livescore=FT (6, event 1882846)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1139,7 +1120,7 @@
       },
       {
         "name": "Viking FK Vs Sabah FK",
-        "reason": "independent authorities disagree: ESPN espn-header=65' (STATUS_SECOND_HALF, event 401915302); LiveScore livescore=FT (6, event 1882876)",
+        "reason": "independent authorities disagree: ESPN espn-header=46' (STATUS_SECOND_HALF, event 401915302); LiveScore livescore=FT (6, event 1882876)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1153,34 +1134,11 @@
     "applied": 0,
     "pending_confirmation": 1,
     "live": 0,
-    "recorded": 0,
+    "recorded": 2,
     "conflict": 9,
     "unmatched": 5,
-    "start_window": 2,
-    "start_window_fixtures": [
-      {
-        "id": "athletico-vs-vasco-da-gama",
-        "name": "Athletico Vs Vasco da Gama",
-        "claimed": "LIVE_NOW",
-        "now_says": "STARTING_SOON",
-        "conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      },
-      {
-        "id": "flamengo-vs-grêmio",
-        "name": "Flamengo Vs Grêmio",
-        "claimed": "LIVE_NOW",
-        "now_says": "STARTING_SOON",
-        "conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 5 minute(s) away",
-        "upstream_families": [
-          "ESPN",
-          "LiveScore"
-        ]
-      }
-    ],
+    "start_window": 0,
+    "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
@@ -1188,15 +1146,15 @@
       "UPCOMING": 2
     },
     "by_confidence": {
-      "LOW": 1,
+      "LOW": 2,
       "CONFLICT": 9,
-      "HIGH": 2
+      "HIGH": 1
     },
     "applied_fixtures": [],
     "conflicts": [
       {
         "name": "Borussia Dortmund Vs Real Betis",
-        "reason": "independent authorities disagree: ESPN espn-header=61' (STATUS_SECOND_HALF, event 401915304); LiveScore livescore=FT (6, event 1882769)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401915304); LiveScore livescore=FT (6, event 1882769)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1206,7 +1164,7 @@
       },
       {
         "name": "FC Porto Vs SSC Napoli",
-        "reason": "independent authorities disagree: ESPN espn-header=64' (STATUS_SECOND_HALF, event 401915301); LiveScore livescore=FT (6, event 1882788)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401915301); LiveScore livescore=FT (6, event 1882788)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1216,7 +1174,7 @@
       },
       {
         "name": "PSV Eindhoven Vs Club Brugge KV",
-        "reason": "independent authorities disagree: ESPN espn-header=63' (STATUS_SECOND_HALF, event 401915303); LiveScore livescore=FT (6, event 1882804)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401915303); LiveScore livescore=FT (6, event 1882804)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1226,7 +1184,7 @@
       },
       {
         "name": "RB Leipzig Vs Manchester City",
-        "reason": "independent authorities disagree: ESPN espn-header=65' (STATUS_SECOND_HALF, event 401915306); LiveScore livescore=FT (6, event 1882826)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401915306); LiveScore livescore=FT (6, event 1882826)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1236,7 +1194,7 @@
       },
       {
         "name": "RC Lens Vs Como",
-        "reason": "independent authorities disagree: ESPN espn-header=63' (STATUS_SECOND_HALF, event 401915305); LiveScore livescore=FT (6, event 1882873)",
+        "reason": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401915305); LiveScore livescore=FT (6, event 1882873)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1246,7 +1204,7 @@
       },
       {
         "name": "SK Slavia Praha Vs Arsenal",
-        "reason": "independent authorities disagree: ESPN espn-header=66' (STATUS_SECOND_HALF, event 401915381); LiveScore livescore=FT (6, event 1882846)",
+        "reason": "independent authorities disagree: ESPN espn-header=47' (STATUS_SECOND_HALF, event 401915381); LiveScore livescore=FT (6, event 1882846)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1256,7 +1214,7 @@
       },
       {
         "name": "Viking FK Vs Sabah FK",
-        "reason": "independent authorities disagree: ESPN espn-header=65' (STATUS_SECOND_HALF, event 401915302); LiveScore livescore=FT (6, event 1882876)",
+        "reason": "independent authorities disagree: ESPN espn-header=46' (STATUS_SECOND_HALF, event 401915302); LiveScore livescore=FT (6, event 1882876)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1266,7 +1224,7 @@
       },
       {
         "name": "Cardiff City Vs West Ham United",
-        "reason": "independent authorities disagree: ESPN espn-header=80' (STATUS_SECOND_HALF, event 401880175); LiveScore livescore=FT (6, event 1802471)",
+        "reason": "independent authorities disagree: ESPN espn-header=60' (STATUS_SECOND_HALF, event 401880175); LiveScore livescore=FT (6, event 1802471)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1276,7 +1234,7 @@
       },
       {
         "name": "Wrexham Vs Middlesbrough",
-        "reason": "independent authorities disagree: ESPN espn-header=81' (STATUS_SECOND_HALF, event 401880173); LiveScore livescore=FT (6, event 1802472)",
+        "reason": "independent authorities disagree: ESPN espn-header=61' (STATUS_SECOND_HALF, event 401880173); LiveScore livescore=FT (6, event 1802472)",
         "status": "",
         "confidence": "CONFLICT",
         "upstream_families": [
@@ -1412,15 +1370,14 @@
   ],
   "sport_filter": {
     "at_merge": {
-      "total": 57,
+      "total": 56,
       "published": 51,
       "rejected": 5,
-      "quarantined": 1,
+      "quarantined": 0,
       "states": {
-        "confirmed_football": 33,
-        "unknown": 1,
-        "confirmed_other": 5,
-        "confirmed_cricket": 18
+        "confirmed_football": 32,
+        "confirmed_cricket": 19,
+        "confirmed_other": 5
       },
       "by_source": {
         "sm-sports-data": {
@@ -1431,21 +1388,21 @@
           "rejected": 5,
           "published": 34
         },
-        "vk1817-fancode-mirror": {
-          "total": 13,
-          "cricket": 8,
-          "football": 4,
-          "quarantined": 0,
-          "rejected": 1,
-          "published": 12
-        },
         "srhady-primevideo-sports": {
           "total": 2,
-          "cricket": 0,
+          "cricket": 1,
           "football": 1,
-          "quarantined": 1,
+          "quarantined": 0,
           "rejected": 0,
-          "published": 1
+          "published": 2
+        },
+        "srhady-willow-event": {
+          "total": 11,
+          "cricket": 9,
+          "football": 1,
+          "quarantined": 0,
+          "rejected": 1,
+          "published": 10
         },
         "sm-fancode": {
           "total": 15,
@@ -1479,13 +1436,13 @@
           "rejected": 1,
           "published": 15
         },
-        "srhady-willow-event": {
-          "total": 10,
+        "vk1817-fancode-mirror": {
+          "total": 12,
           "cricket": 8,
-          "football": 1,
+          "football": 3,
           "quarantined": 0,
           "rejected": 1,
-          "published": 9
+          "published": 11
         }
       },
       "rejected_examples": [
@@ -1530,15 +1487,7 @@
           "evidence": "rugby"
         }
       ],
-      "quarantined_events": [
-        {
-          "name": "Mighty Dallas vs Chicago Cavaliers",
-          "source": "srhady-primevideo-sports",
-          "competition": "",
-          "sport_type": "other",
-          "reason": "fixture lookup: no provider answered"
-        }
-      ],
+      "quarantined_events": [],
       "leaks": []
     },
     "today_match": {
@@ -1559,14 +1508,6 @@
           "rejected": 0,
           "published": 13
         },
-        "vk1817-fancode-mirror": {
-          "total": 1,
-          "cricket": 0,
-          "football": 1,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 1
-        },
         "srhady-primevideo-sports": {
           "total": 3,
           "cricket": 2,
@@ -1582,6 +1523,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 2
+        },
+        "vk1817-fancode-mirror": {
+          "total": 1,
+          "cricket": 0,
+          "football": 1,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 1
         },
         "sm-fancode": {
           "total": 2,
@@ -1638,14 +1587,6 @@
           "rejected": 0,
           "published": 15
         },
-        "vk1817-fancode-mirror": {
-          "total": 11,
-          "cricket": 8,
-          "football": 3,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 11
-        },
         "sayanpal-fancode-mirror": {
           "total": 15,
           "cricket": 10,
@@ -1653,6 +1594,14 @@
           "quarantined": 0,
           "rejected": 0,
           "published": 15
+        },
+        "vk1817-fancode-mirror": {
+          "total": 11,
+          "cricket": 8,
+          "football": 3,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 11
         },
         "srhady-willow-event": {
           "total": 9,
@@ -1677,10 +1626,10 @@
   },
   "sport_pipeline": {
     "raw_events": 352,
-    "cricket_kept": 18,
-    "football_kept": 33,
+    "cricket_kept": 19,
+    "football_kept": 32,
     "other_discarded": 57,
-    "unresolved": 1,
+    "unresolved": 0,
     "today_final": 17,
     "upcoming_final": 36,
     "published_states": {
@@ -1752,14 +1701,14 @@
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 53,
-    "verified": 17,
+    "verified": 15,
     "partial_authority": 0,
     "unverified": 26,
-    "conflict": 10,
+    "conflict": 12,
     "matched_by_two_independent_authorities": 23,
-    "authority_agreements": 14,
+    "authority_agreements": 13,
     "authority_disagreements": 9,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 2,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
     "not_published": 3
@@ -1767,11 +1716,11 @@
   "stream_health": {
     "sources_in_outage": [],
     "published_fixtures": 53,
-    "fixtures_with_stream": 12,
-    "fixtures_playable_via_catalogue": 2,
-    "fixtures_with_fresh_stream": 11,
+    "fixtures_with_stream": 13,
+    "fixtures_playable_via_catalogue": 1,
+    "fixtures_with_fresh_stream": 12,
     "fixtures_with_carried_stream": 1,
-    "today_with_stream": 12,
+    "today_with_stream": 13,
     "upcoming_with_stream": 0,
     "streams_attached": 0,
     "state": "ok",
