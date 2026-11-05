@@ -1,21 +1,21 @@
 {
-  "generated_at": "2026-11-05T13:44:32.569446+00:00",
+  "generated_at": "2026-11-05T14:04:33.369838+00:00",
   "note": "One row per fixture. A route is not a match: a fixture carried by three feeds with backups is a dozen routes, and most of them can fail while the match plays. Route failures are counted here against the fixtures they belong to.",
   "totals": {
-    "fixtures": 62,
+    "fixtures": 61,
     "published_fixtures": 47,
     "fixtures_with_verified_stream": 13,
-    "fixtures_with_zero_verified": 49,
+    "fixtures_with_zero_verified": 48,
     "published_without_stream": 35,
     "fallback_available": 8,
     "targeted_fixtures": 9,
     "targeted_attempts": 21,
     "fixtures_with_a_first_link_time": 7,
-    "candidate_routes": 94,
+    "candidate_routes": 95,
     "verified_routes": 32,
-    "failed_routes": 62,
-    "fixtures_touched_by_a_route_failure": 22,
-    "fixtures_left_with_nothing": 11,
+    "failed_routes": 63,
+    "fixtures_touched_by_a_route_failure": 21,
+    "fixtures_left_with_nothing": 10,
     "distinct_failure_codes": 7,
     "unrecognised_candidate_groups": 45,
     "unrecognised_failed_routes": 119
@@ -28,16 +28,17 @@
     "verification_failed": 5,
     "dns": 3,
     "http_400": 2,
-    "http_401": 1,
-    "http_452": 1
+    "ssl": 1,
+    "http_452": 1,
+    "invalid_content": 1
   },
   "failure_code_fixtures": {
-    "http_403": 13,
-    "browser_unreachable": 10,
+    "http_403": 12,
+    "browser_unreachable": 9,
     "http_404": 8,
-    "timeout": 4,
+    "timeout": 5,
+    "ssl": 1,
     "dns": 1,
-    "http_401": 1,
     "http_400": 1
   },
   "fixtures": [
@@ -123,6 +124,34 @@
       "targeted": false
     },
     {
+      "fixture_id": "mohun-bagan-super-giant-vs-ofc",
+      "fixture_key": "mohun-bagan-super-giant-vs-ofc",
+      "fixture_name": "Mohun Bagan Super Giant vs OFC",
+      "recognised_fixture": true,
+      "source_id": "drmlive-sonyliv-backup",
+      "source_ids": [
+        "drmlive-sonyliv-backup",
+        "sayanpal-sonyliv-backup",
+        "kajju-sonyliv-backup",
+        "sportlive-sonyliv-backup"
+      ],
+      "candidate_stream_count": 9,
+      "verified_stream_count": 0,
+      "failed_stream_count": 9,
+      "unchecked_stream_count": 0,
+      "failure_codes": [
+        "http_403"
+      ],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "fenerbahce-vs-liverpool-fc",
       "fixture_key": "fenerbahce-vs-liverpool-fc",
       "fixture_name": "Fenerbahçe Vs Liverpool FC",
@@ -150,34 +179,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "mohun-bagan-super-giant-vs-ofc",
-      "fixture_key": "mohun-bagan-super-giant-vs-ofc",
-      "fixture_name": "Mohun Bagan Super Giant vs OFC",
-      "recognised_fixture": true,
-      "source_id": "drmlive-sonyliv-backup",
-      "source_ids": [
-        "drmlive-sonyliv-backup",
-        "sportlive-sonyliv-backup",
-        "sayanpal-sonyliv-backup",
-        "kajju-sonyliv-backup"
-      ],
-      "candidate_stream_count": 6,
-      "verified_stream_count": 0,
-      "failed_stream_count": 6,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "hong-kong-sixes",
       "fixture_key": "hong-kong-sixes",
       "fixture_name": "Hong Kong SIXES",
@@ -187,13 +188,14 @@
         "sm-sports-data"
       ],
       "candidate_stream_count": 9,
-      "verified_stream_count": 4,
-      "failed_stream_count": 5,
-      "unchecked_stream_count": 0,
+      "verified_stream_count": 2,
+      "failed_stream_count": 6,
+      "unchecked_stream_count": 1,
       "failure_codes": [
         "http_403",
         "dns",
-        "http_452"
+        "http_452",
+        "invalid_content"
       ],
       "fallback_available": false,
       "published": false,
@@ -241,8 +243,6 @@
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data",
-        "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 5,
@@ -597,8 +597,8 @@
       "failed_stream_count": 3,
       "unchecked_stream_count": 0,
       "failure_codes": [
-        "http_403",
-        "http_401",
+        "ssl",
+        "timeout",
         "browser_unreachable"
       ],
       "fallback_available": false,
@@ -869,34 +869,6 @@
       "last_attempt_bucket": "2026-11-05T11:50Z",
       "first_link_at": "2026-11-05T11:51:53.989988+00:00",
       "targeted": true
-    },
-    {
-      "fixture_id": "churchill-brothers-fc-vs-northeast-united-fc",
-      "fixture_key": "churchill-brothers-fc-vs-northeast-united-fc",
-      "fixture_name": "Churchill Brothers FC vs NorthEast United FC",
-      "recognised_fixture": true,
-      "source_id": "drmlive-sonyliv-backup",
-      "source_ids": [
-        "drmlive-sonyliv-backup",
-        "sportlive-sonyliv-backup",
-        "sayanpal-sonyliv-backup",
-        "kajju-sonyliv-backup"
-      ],
-      "candidate_stream_count": 2,
-      "verified_stream_count": 0,
-      "failed_stream_count": 2,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "http_403"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
     },
     {
       "fixture_id": "kuching-city-vs-gangwon-fc",
@@ -1260,31 +1232,6 @@
       "targeted": false
     },
     {
-      "fixture_id": "cycling-evento",
-      "fixture_key": "cycling-evento",
-      "fixture_name": "CYCLING EVENTO",
-      "recognised_fixture": false,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "candidate_stream_count": 3,
-      "verified_stream_count": 2,
-      "failed_stream_count": 1,
-      "unchecked_stream_count": 0,
-      "failure_codes": [
-        "timeout"
-      ],
-      "fallback_available": false,
-      "published": false,
-      "published_tab": "",
-      "published_without_stream": false,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
       "fixture_id": "california-golden-bears-vs-radford-highlanders",
       "fixture_key": "california-golden-bears-vs-radford-highlanders",
       "fixture_name": "California Golden Bears Vs Radford Highlanders",
@@ -1313,7 +1260,7 @@
       "fixture_id": "churchill-brothers-sc-vs-northeast-united-fc",
       "fixture_key": "churchill-brothers-sc-vs-northeast-united-fc",
       "fixture_name": "Churchill Brothers SC Vs NorthEast United FC",
-      "recognised_fixture": true,
+      "recognised_fixture": false,
       "source_id": "sm-sports-data",
       "source_ids": [
         "sm-sports-data"
@@ -1593,7 +1540,7 @@
       "fixture_id": "world-feed",
       "fixture_key": "world-feed",
       "fixture_name": "World Feed",
-      "recognised_fixture": false,
+      "recognised_fixture": true,
       "source_id": "sportlive-fancode-backup",
       "source_ids": [
         "sportlive-fancode-backup",
@@ -1649,8 +1596,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1747,8 +1694,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1845,8 +1792,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1873,8 +1820,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1916,6 +1863,29 @@
       "targeted": false
     },
     {
+      "fixture_id": "cycling-evento",
+      "fixture_key": "cycling-evento",
+      "fixture_name": "CYCLING EVENTO",
+      "recognised_fixture": false,
+      "source_id": "sm-sports-data",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "candidate_stream_count": 3,
+      "verified_stream_count": 3,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": false,
+      "published_tab": "",
+      "published_without_stream": false,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
       "fixture_id": "provider:castellón-vs-eibar|laliga hypermotion 2026 27|2026-11-06",
       "fixture_key": "castellon-vs-eibar",
       "fixture_name": "Castellón vs Eibar",
@@ -1925,8 +1895,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -1952,8 +1922,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2139,7 +2109,32 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
+      ],
+      "candidate_stream_count": 0,
+      "verified_stream_count": 0,
+      "failed_stream_count": 0,
+      "unchecked_stream_count": 0,
+      "failure_codes": [],
+      "fallback_available": false,
+      "published": true,
+      "published_tab": "upcoming",
+      "published_without_stream": true,
+      "target_attempt_count": 0,
+      "last_attempt_bucket": "",
+      "first_link_at": "",
+      "targeted": false
+    },
+    {
+      "fixture_id": "provider:melbourne-city-vs-beijing-jingtan-fc-women|afc women champions league 2026 27|2026-11-07",
+      "fixture_key": "melbourne-city-women-vs-beijing-jingtan-fc-women",
+      "fixture_name": "Melbourne City Women vs Beijing Jingtan FC Women",
+      "recognised_fixture": true,
+      "source_id": "sportlive-fancode-backup",
+      "source_ids": [
+        "sportlive-fancode-backup",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "candidate_stream_count": 0,
@@ -2167,8 +2162,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2195,8 +2190,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2221,31 +2216,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
-      ],
-      "candidate_stream_count": 0,
-      "verified_stream_count": 0,
-      "failed_stream_count": 0,
-      "unchecked_stream_count": 0,
-      "failure_codes": [],
-      "fallback_available": false,
-      "published": true,
-      "published_tab": "upcoming",
-      "published_without_stream": true,
-      "target_attempt_count": 0,
-      "last_attempt_bucket": "",
-      "first_link_at": "",
-      "targeted": false
-    },
-    {
-      "fixture_id": "provider:national-bank-of-egypt-vs-port-fouad|egypt cup|2026-11-05",
-      "fixture_key": "national-bank-of-egypt-vs-port-fouad",
-      "fixture_name": "National Bank of Egypt Vs Port Fouad",
-      "recognised_fixture": true,
-      "source_id": "sm-sports-data",
-      "source_ids": [
-        "sm-sports-data"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2386,8 +2358,8 @@
       "source_ids": [
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2459,8 +2431,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2533,8 +2505,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2561,8 +2533,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
@@ -2634,8 +2606,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "vk1817-fancode-mirror",
-        "sayanpal-fancode-mirror"
+        "sayanpal-fancode-mirror",
+        "vk1817-fancode-mirror"
       ],
       "candidate_stream_count": 0,
       "verified_stream_count": 0,
