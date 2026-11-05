@@ -1,16 +1,16 @@
 {
-  "generated_at": "2026-11-05T06:47:27.779486+00:00",
+  "generated_at": "2026-11-05T06:52:19.650982+00:00",
   "configured_source_count": 22,
   "content_states": {
     "FRESH": 7,
-    "STALE": 6,
-    "EMPTY": 6,
+    "STALE": 7,
+    "EMPTY": 5,
     "UNREACHABLE": 3
   },
   "source_count": 22,
   "unconfigured_source_count": 0,
   "totals": {
-    "raw_items": 604,
+    "raw_items": 618,
     "parsed_events": 7,
     "sport_allowed_events": 7,
     "deduped_events": 3,
@@ -289,7 +289,7 @@
       "source_id": "sportlive-fancode-backup",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 40,
       "parsed_events": 1,
       "sport_allowed_events": 1,
@@ -312,7 +312,7 @@
       "source_id": "sportlive-sonyliv-backup",
       "configured": true,
       "fetch_status": "success",
-      "http_status": 200,
+      "http_status": 304,
       "raw_items": 13,
       "parsed_events": 0,
       "sport_allowed_events": 0,
@@ -337,7 +337,7 @@
       "configured": true,
       "fetch_status": "success",
       "http_status": 200,
-      "raw_items": 16,
+      "raw_items": 17,
       "parsed_events": 0,
       "sport_allowed_events": 0,
       "deduped_events": 0,
@@ -383,9 +383,9 @@
     {
       "source_id": "sayanpal-sonyliv-backup",
       "configured": true,
-      "fetch_status": "success_empty",
+      "fetch_status": "success",
       "http_status": 200,
-      "raw_items": 0,
+      "raw_items": 13,
       "parsed_events": 0,
       "sport_allowed_events": 0,
       "deduped_events": 0,
@@ -394,11 +394,12 @@
       "published_upcoming": 0,
       "dropped_count": 0,
       "drop_reasons": [
-        "nothing fetched from this source"
+        "fetched but no record reached the event pipeline",
+        "every fixture this source carries has already kicked off"
       ],
       "newest_fixture_start": "",
       "future_fixture_count": 0,
-      "content_state": "EMPTY",
+      "content_state": "STALE",
       "verified_streams": 0,
       "failed_streams": 0,
       "registry": "today_match"
@@ -545,7 +546,7 @@
   ],
   "unconfigured_sources": [],
   "invariants": {
-    "checked_at": "2026-11-05T06:47:27.780198+00:00",
+    "checked_at": "2026-11-05T06:52:19.651797+00:00",
     "passed": 10,
     "failed": 0,
     "failures": [],
@@ -568,7 +569,7 @@
       {
         "name": "a fetched configured source has a row even at raw_items 0",
         "passed": true,
-        "detail": "9 row(s) at zero, 0 without a reason"
+        "detail": "8 row(s) at zero, 0 without a reason"
       },
       {
         "name": "a candidate that is not published has an explicit drop reason",
