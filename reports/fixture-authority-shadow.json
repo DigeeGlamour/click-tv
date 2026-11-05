@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T18:24:27.125097+00:00",
+  "generated_at": "2026-11-05T18:44:35.929624+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,11 +12,10 @@
       "requests_ok": 6,
       "fixtures": 449,
       "unknown_statuses": [
+        "10|HT",
         "132|Stumps - day 1",
-        "2|25'",
-        "2|37'",
-        "2|38'",
-        "2|39'"
+        "2|45'",
+        "2|45+1'"
       ],
       "attempts": [
         {
@@ -110,47 +109,49 @@
   },
   "authority_unavailable": [],
   "totals": {
-    "today_match": 10,
+    "today_match": 25,
     "upcoming": 33,
-    "fixtures": 43,
+    "fixtures": 58,
     "verdicts": {
-      "UNVERIFIED": 36,
+      "CONFLICT": 11,
+      "UNVERIFIED": 39,
+      "PARTIAL_AUTHORITY": 1,
       "VERIFIED": 7
     },
     "verified": 7,
-    "partial_authority": 0,
-    "unverified": 36,
-    "conflict": 0,
+    "partial_authority": 1,
+    "unverified": 39,
+    "conflict": 11,
     "matched_by_authority": {
       "espn-header": {
-        "unmatched": 34,
-        "matched": 9
+        "matched": 20,
+        "unmatched": 38
       },
       "livescore": {
-        "unmatched": 35,
-        "matched": 8
+        "matched": 18,
+        "unmatched": 40
       }
     },
-    "matched_by_two_independent_authorities": 5,
+    "matched_by_two_independent_authorities": 14,
     "authority_agreements": 5,
     "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "card_status_conflicts": 11,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 11,
       "kickoff": 5
     },
-    "identity_near_misses": 4,
+    "identity_near_misses": 11,
     "independent_authority_count_distribution": {
-      "0": 36,
-      "1": 2,
-      "2": 5
+      "0": 39,
+      "1": 5,
+      "2": 14
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "132|Stumps - day 1",
-        "2|25'",
-        "2|37'",
-        "2|38'",
-        "2|39'"
+        "2|45'",
+        "2|45+1'"
       ],
       "espn-header": [
         "STATUS_FINAL_AGT|AGT"
@@ -158,6 +159,38 @@
     }
   },
   "identity_near_misses": [
+    {
+      "fixture": "Crystal Palace Vs TSG Hoffenheim",
+      "authority": "livescore",
+      "authority_name": "Crystal Palace vs Hoffenheim",
+      "agreed_side": "crystal palace",
+      "ours": "tsg hoffenheim",
+      "theirs": "hoffenheim"
+    },
+    {
+      "fixture": "FK Crvena zvezda Vs Inter Club d'Escaldes",
+      "authority": "espn-header",
+      "authority_name": "Red Star Belgrade vs Inter D'Escaldes",
+      "agreed_side": "inter descaldes",
+      "ours": "crvena zvezda",
+      "theirs": "red star belgrade"
+    },
+    {
+      "fixture": "Kuopion Palloseura Vs KAA Gent",
+      "authority": "espn-header",
+      "authority_name": "KuPS Kuopio vs KAA Gent",
+      "agreed_side": "kaa gent",
+      "ours": "kuopion palloseura",
+      "theirs": "kups kuopio"
+    },
+    {
+      "fixture": "Lillestrøm SK Vs FC Viktoria Plzeň",
+      "authority": "livescore",
+      "authority_name": "Lillestroem vs Viktoria Plzen",
+      "agreed_side": "viktoria plzen",
+      "ours": "lillestrom",
+      "theirs": "lillestroem"
+    },
     {
       "fixture": "Lincoln Red Imps Vs HNK Hajduk Split",
       "authority": "espn-header",
@@ -173,6 +206,30 @@
       "agreed_side": "lincoln red imps",
       "ours": "hnk hajduk split",
       "theirs": "hajduk split"
+    },
+    {
+      "fixture": "Real Sociedad Vs Olympique Lyonnais",
+      "authority": "espn-header",
+      "authority_name": "Real Sociedad vs Lyon",
+      "agreed_side": "real sociedad",
+      "ours": "olympique lyonnais",
+      "theirs": "lyon"
+    },
+    {
+      "fixture": "Real Sociedad Vs Olympique Lyonnais",
+      "authority": "livescore",
+      "authority_name": "Real Sociedad vs Lyon",
+      "agreed_side": "real sociedad",
+      "ours": "olympique lyonnais",
+      "theirs": "lyon"
+    },
+    {
+      "fixture": "RSC Anderlecht Vs Red Bull Salzburg",
+      "authority": "livescore",
+      "authority_name": "Anderlecht vs FC Salzburg",
+      "agreed_side": "salzburg",
+      "ours": "rsc anderlecht",
+      "theirs": "anderlecht"
     },
     {
       "fixture": "Bayer 04 Leverkusen Vs Olympique de Marseille",
@@ -193,11 +250,444 @@
   ],
   "fixtures": [
     {
+      "fixture_id": "provider:ac-milan-vs-ferencváros-tc|uefa europa league|2026-11-05",
+      "card_id": "ac-milan-vs-ferencváros-tc",
+      "name": "AC Milan Vs Ferencváros TC",
+      "competition": "UEFA Europa League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915534",
+          "upstream_family": "ESPN",
+          "name": "AC Milan vs Ferencvaros",
+          "home": "AC Milan",
+          "away": "Ferencvaros",
+          "home_team_id": "103",
+          "away_team_id": "622",
+          "competition": "UEFA Europa League",
+          "competition_id": "776",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:776~e:401915534~c:401915534"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1883478",
+          "upstream_family": "LiveScore",
+          "name": "AC Milan vs Ferencvaros",
+          "home": "AC Milan",
+          "away": "Ferencvaros",
+          "home_team_id": "2988",
+          "away_team_id": "380",
+          "competition": "League Stage",
+          "competition_id": "36",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "10",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "4",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:ac-sparta-praha-vs-bournemouth|uefa europa league|2026-11-05",
+      "card_id": "ac-sparta-praha-vs-bournemouth",
+      "name": "AC Sparta Praha Vs Bournemouth",
+      "competition": "UEFA Europa League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915528",
+          "upstream_family": "ESPN",
+          "name": "Sparta Prague vs AFC Bournemouth",
+          "home": "Sparta Prague",
+          "away": "AFC Bournemouth",
+          "home_team_id": "433",
+          "away_team_id": "349",
+          "competition": "UEFA Europa League",
+          "competition_id": "776",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:776~e:401915528~c:401915528"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1883524",
+          "upstream_family": "LiveScore",
+          "name": "Sparta Prague vs AFC Bournemouth",
+          "home": "Sparta Prague",
+          "away": "AFC Bournemouth",
+          "home_team_id": "6613",
+          "away_team_id": "3928",
+          "competition": "League Stage",
+          "competition_id": "36",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "10",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "League Stage",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:agf-vs-sporting-braga|uefa conference league|2026-11-05",
+      "card_id": "agf-vs-sporting-braga",
+      "name": "AGF Vs Sporting Braga",
+      "competition": "UEFA Conference League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915831",
+          "upstream_family": "ESPN",
+          "name": "AGF vs Braga",
+          "home": "AGF",
+          "away": "Braga",
+          "home_team_id": "7853",
+          "away_team_id": "2994",
+          "competition": "UEFA Conference League",
+          "competition_id": "20296",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:20296~e:401915831~c:401915831"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1883690",
+          "upstream_family": "LiveScore",
+          "name": "AGF vs SC Braga",
+          "home": "AGF",
+          "away": "SC Braga",
+          "home_team_id": "4583",
+          "away_team_id": "4270",
+          "competition": "League Stage",
+          "competition_id": "62",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "10",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:atalanta-vs-fc-kairat-almaty|uefa conference league|2026-11-05",
+      "card_id": "atalanta-vs-fc-kairat-almaty",
+      "name": "Atalanta Vs FC Kairat Almaty",
+      "competition": "UEFA Conference League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915830",
+          "upstream_family": "ESPN",
+          "name": "Atalanta vs Kairat Almaty",
+          "home": "Atalanta",
+          "away": "Kairat Almaty",
+          "home_team_id": "105",
+          "away_team_id": "2528",
+          "competition": "UEFA Conference League",
+          "competition_id": "20296",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:20296~e:401915830~c:401915830"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1883608",
+          "upstream_family": "LiveScore",
+          "name": "Atalanta vs Kairat Almaty",
+          "home": "Atalanta",
+          "away": "Kairat Almaty",
+          "home_team_id": "3416",
+          "away_team_id": "7366",
+          "competition": "League Stage",
+          "competition_id": "62",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "10",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:crystal-palace-vs-tsg-hoffenheim|uefa europa league|2026-11-05",
+      "card_id": "crystal-palace-vs-tsg-hoffenheim",
+      "name": "Crystal Palace Vs TSG Hoffenheim",
+      "competition": "UEFA Europa League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915526",
+          "upstream_family": "ESPN",
+          "name": "Crystal Palace vs TSG Hoffenheim",
+          "home": "Crystal Palace",
+          "away": "TSG Hoffenheim",
+          "home_team_id": "384",
+          "away_team_id": "7911",
+          "competition": "UEFA Europa League",
+          "competition_id": "776",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:776~e:401915526~c:401915526"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Crystal Palace vs Hoffenheim",
+              "event_id": "1883544",
+              "agreed_side": "crystal palace",
+              "ours": "tsg hoffenheim",
+              "theirs": "hoffenheim"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:extreme-fighting-championship-139",
       "card_id": "extreme-fighting-championship-139",
       "name": "Extreme Fighting Championship 139",
       "competition": "",
-      "kickoff": "2026-11-05T18:24:27+00:00",
+      "kickoff": "2026-11-05T18:44:35+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -227,6 +717,464 @@
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:fc-midtjylland-vs-afc-ajax|uefa conference league|2026-11-05",
+      "card_id": "fc-midtjylland-vs-afc-ajax",
+      "name": "FC Midtjylland Vs AFC Ajax",
+      "competition": "UEFA Conference League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915829",
+          "upstream_family": "ESPN",
+          "name": "FC Midtjylland vs Ajax Amsterdam",
+          "home": "FC Midtjylland",
+          "away": "Ajax Amsterdam",
+          "home_team_id": "572",
+          "away_team_id": "139",
+          "competition": "UEFA Conference League",
+          "competition_id": "20296",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:20296~e:401915829~c:401915829"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1883626",
+          "upstream_family": "LiveScore",
+          "name": "FC Midtjylland vs Ajax",
+          "home": "FC Midtjylland",
+          "away": "Ajax",
+          "home_team_id": "4580",
+          "away_team_id": "3476",
+          "competition": "League Stage",
+          "competition_id": "62",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "45+1'",
+          "status_code": "2",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:fc-thun-vs-heart-of-midlothian|uefa conference league|2026-11-05",
+      "card_id": "fc-thun-vs-heart-of-midlothian",
+      "name": "FC Thun Vs Heart of Midlothian",
+      "competition": "UEFA Conference League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915828",
+          "upstream_family": "ESPN",
+          "name": "FC Thun vs Heart of Midlothian",
+          "home": "FC Thun",
+          "away": "Heart of Midlothian",
+          "home_team_id": "3024",
+          "away_team_id": "262",
+          "competition": "UEFA Conference League",
+          "competition_id": "20296",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:20296~e:401915828~c:401915828"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1883699",
+          "upstream_family": "LiveScore",
+          "name": "Thun vs Hearts",
+          "home": "Thun",
+          "away": "Hearts",
+          "home_team_id": "2856",
+          "away_team_id": "4669",
+          "competition": "League Stage",
+          "competition_id": "62",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "10",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:fk-crvena-zvezda-vs-inter-club-d-escaldes|uefa conference league|2026-11-05",
+      "card_id": "fk-crvena-zvezda-vs-inter-club-descaldes",
+      "name": "FK Crvena zvezda Vs Inter Club d'Escaldes",
+      "competition": "UEFA Conference League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Red Star Belgrade vs Inter D'Escaldes",
+              "event_id": "401915827",
+              "agreed_side": "inter descaldes",
+              "ours": "crvena zvezda",
+              "theirs": "red star belgrade"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1883634",
+          "upstream_family": "LiveScore",
+          "name": "FK Crvena Zvezda vs Inter Club d'Escaldes",
+          "home": "FK Crvena Zvezda",
+          "away": "Inter Club d'Escaldes",
+          "home_team_id": "6492",
+          "away_team_id": "6292",
+          "competition": "League Stage",
+          "competition_id": "62",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "10",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "PARTIAL_AUTHORITY",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:kuopion-palloseura-vs-kaa-gent|uefa conference league|2026-11-05",
+      "card_id": "kuopion-palloseura-vs-kaa-gent",
+      "name": "Kuopion Palloseura Vs KAA Gent",
+      "competition": "UEFA Conference League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "KuPS Kuopio vs KAA Gent",
+              "event_id": "401915826",
+              "agreed_side": "kaa gent",
+              "ours": "kuopion palloseura",
+              "theirs": "kups kuopio"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:levski-sofia-vs-jagiellonia-białystok|uefa europa league|2026-11-05",
+      "card_id": "levski-sofia-vs-jagiellonia-białystok",
+      "name": "Levski Sofia Vs Jagiellonia Białystok",
+      "competition": "UEFA Europa League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915536",
+          "upstream_family": "ESPN",
+          "name": "Levski Sofia vs Jagiellonia Bialystok",
+          "home": "Levski Sofia",
+          "away": "Jagiellonia Bialystok",
+          "home_team_id": "490",
+          "away_team_id": "11505",
+          "competition": "UEFA Europa League",
+          "competition_id": "776",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:776~e:401915536~c:401915536"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1883600",
+          "upstream_family": "LiveScore",
+          "name": "Levski Sofia vs Jagiellonia Bialystok",
+          "home": "Levski Sofia",
+          "away": "Jagiellonia Bialystok",
+          "home_team_id": "6552",
+          "away_team_id": "6078",
+          "competition": "League Stage",
+          "competition_id": "36",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "10",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "League Stage",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:lillestrøm-sk-vs-fc-viktoria-plzeň|uefa europa league|2026-11-05",
+      "card_id": "lillestrøm-sk-vs-fc-viktoria-plzeň",
+      "name": "Lillestrøm SK Vs FC Viktoria Plzeň",
+      "competition": "UEFA Europa League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915527",
+          "upstream_family": "ESPN",
+          "name": "Lillestrom vs Viktoria Plzen",
+          "home": "Lillestrom",
+          "away": "Viktoria Plzen",
+          "home_team_id": "987",
+          "away_team_id": "11706",
+          "competition": "UEFA Europa League",
+          "competition_id": "776",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:776~e:401915527~c:401915527"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Lillestroem vs Viktoria Plzen",
+              "event_id": "1883592",
+              "agreed_side": "viktoria plzen",
+              "ours": "lillestrom",
+              "theirs": "lillestroem"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -285,11 +1233,327 @@
       "tab": "today_match"
     },
     {
+      "fixture_id": "provider:nec-nijmegen-vs-omonia-nicosia|uefa europa league|2026-11-05",
+      "card_id": "nec-nijmegen-vs-omonia-nicosia",
+      "name": "NEC Nijmegen Vs Omonia Nicosia",
+      "competition": "UEFA Europa League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915535",
+          "upstream_family": "ESPN",
+          "name": "NEC Nijmegen vs Omonia Nicosia",
+          "home": "NEC Nijmegen",
+          "away": "Omonia Nicosia",
+          "home_team_id": "147",
+          "away_team_id": "617",
+          "competition": "UEFA Europa League",
+          "competition_id": "776",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:776~e:401915535~c:401915535"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1883591",
+          "upstream_family": "LiveScore",
+          "name": "NEC Nijmegen vs Omonia Nicosia",
+          "home": "NEC Nijmegen",
+          "away": "Omonia Nicosia",
+          "home_team_id": "4202",
+          "away_team_id": "356",
+          "competition": "League Stage",
+          "competition_id": "36",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "10",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "4",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:real-sociedad-vs-olympique-lyonnais|uefa europa league|2026-11-05",
+      "card_id": "real-sociedad-vs-olympique-lyonnais",
+      "name": "Real Sociedad Vs Olympique Lyonnais",
+      "competition": "UEFA Europa League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Real Sociedad vs Lyon",
+              "event_id": "401915537",
+              "agreed_side": "real sociedad",
+              "ours": "olympique lyonnais",
+              "theirs": "lyon"
+            }
+          ]
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Real Sociedad vs Lyon",
+              "event_id": "1883491",
+              "agreed_side": "real sociedad",
+              "ours": "olympique lyonnais",
+              "theirs": "lyon"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:rsc-anderlecht-vs-red-bull-salzburg|uefa europa league|2026-11-05",
+      "card_id": "rsc-anderlecht-vs-red-bull-salzburg",
+      "name": "RSC Anderlecht Vs Red Bull Salzburg",
+      "competition": "UEFA Europa League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched",
+          "near_misses": [
+            {
+              "authority_name": "Anderlecht vs FC Salzburg",
+              "event_id": "1883534",
+              "agreed_side": "salzburg",
+              "ours": "rsc anderlecht",
+              "theirs": "anderlecht"
+            }
+          ]
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:the-golazo-show|uefa europa league simulcast|2026-11-05",
+      "card_id": "the-golazo-show",
+      "name": "The Golazo Show",
+      "competition": "UEFA Europa League Simulcast",
+      "kickoff": "2026-11-05T17:40:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "unmatched"
+        }
+      },
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
+      "card_status_conflict": false,
+      "verdict": "UNVERIFIED",
+      "tab": "today_match"
+    },
+    {
+      "fixture_id": "provider:trabzonspor-vs-sc-freiburg|uefa conference league|2026-11-05",
+      "card_id": "trabzonspor-vs-sc-freiburg",
+      "name": "Trabzonspor Vs SC Freiburg",
+      "competition": "UEFA Conference League",
+      "kickoff": "2026-11-05T17:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
+      "lifecycle_state": "LIVE",
+      "card_status_normalized": "LIVE",
+      "sport_type": "football",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
+      "provider_identity": "",
+      "source_ids": [
+        "sm-sports-data"
+      ],
+      "upstream_families": [
+        "SM-Aggregate"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "401915825",
+          "upstream_family": "ESPN",
+          "name": "Trabzonspor vs SC Freiburg",
+          "home": "Trabzonspor",
+          "away": "SC Freiburg",
+          "home_team_id": "997",
+          "away_team_id": "126",
+          "competition": "UEFA Conference League",
+          "competition_id": "20296",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
+          "sport": "football",
+          "round": "",
+          "format": "",
+          "gender": "",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Thu, November 5th at 12:45 PM EST",
+          "espn_status_description": "Scheduled",
+          "espn_completed": false,
+          "espn_end_date_raw": "",
+          "authority_uid": "s:600~l:20296~e:401915825~c:401915825"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1883672",
+          "upstream_family": "LiveScore",
+          "name": "Trabzonspor vs Freiburg",
+          "home": "Trabzonspor",
+          "away": "Freiburg",
+          "home_team_id": "378",
+          "away_team_id": "365",
+          "competition": "League Stage",
+          "competition_id": "62",
+          "kickoff": "2026-11-05T17:45:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "HT",
+          "status_code": "10",
+          "status": "UNKNOWN",
+          "sport": "football",
+          "round": "3",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "ESPN",
+        "LiveScore"
+      ],
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
+      "tab": "today_match"
+    },
+    {
       "fixture_id": "provider:william-mary-vs-elon-caa-soccer-championship-women",
       "card_id": "william-mary-vs-elon-caa-womens-soccer-championship",
       "name": "William Mary vs Elon CAA Women's Soccer Championship",
       "competition": "",
-      "kickoff": "2026-11-05T18:24:27+00:00",
+      "kickoff": "2026-11-05T18:44:35+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -318,18 +1582,18 @@
           "competition": "NCAA Women's Soccer",
           "competition_id": "5499",
           "kickoff": "2026-11-05T17:00:00+00:00",
-          "kickoff_delta_minutes": -84.5,
-          "status_raw": "Scheduled",
-          "status_code": "STATUS_SCHEDULED",
-          "status": "UPCOMING",
+          "kickoff_delta_minutes": -104.6,
+          "status_raw": "20'",
+          "status_code": "STATUS_FIRST_HALF",
+          "status": "LIVE",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "women",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Thu, November 5th at 12:00 PM EST",
-          "espn_status_description": "Scheduled",
+          "espn_state": "in",
+          "espn_status": "in",
+          "espn_status_detail": "20'",
+          "espn_status_description": "First Half",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:5499~e:401929921~c:401929921"
@@ -345,7 +1609,7 @@
       ],
       "near_miss_count": 1,
       "conflict_reasons": [
-        "kickoff: ours 2026-11-05T18:24, espn-header 2026-11-05T17:00 (-84.5 min)"
+        "kickoff: ours 2026-11-05T18:44, espn-header 2026-11-05T17:00 (-104.6 min)"
       ],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
@@ -683,43 +1947,6 @@
       "tab": "today_match"
     },
     {
-      "fixture_id": "provider:npl|nepal premier league|2026-11-05",
-      "card_id": "npl",
-      "name": "NPL",
-      "competition": "Nepal Premier League",
-      "kickoff": "2026-11-05T06:45:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "unmatched"
-        },
-        "livescore": {
-          "result": "unmatched"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED",
-      "tab": "today_match"
-    },
-    {
       "fixture_id": "provider:adelaide-united-vs-wellington-phoenix|a league women|2026-11-06",
       "card_id": "adelaide-united-vs-wellington-phoenix",
       "name": "Adelaide United Vs Wellington Phoenix",
@@ -859,8 +2086,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -938,8 +2165,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -999,8 +2226,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1041,8 +2268,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1172,8 +2399,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1324,8 +2551,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1446,8 +2673,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1488,8 +2715,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1579,8 +2806,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1840,8 +3067,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1918,8 +3145,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2009,8 +3236,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2051,8 +3278,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -2122,8 +3349,8 @@
         "sm-fancode",
         "sportlive-fancode-backup",
         "drmlive-fancode-mirror",
-        "sayanpal-fancode-mirror",
-        "vk1817-fancode-mirror"
+        "vk1817-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2341,71 +3568,40 @@
   ],
   "retired_or_unpublished": [
     {
-      "fixture_id": "provider:kathmandu-gorkhas-vs-biratnagar-kings|nepal premier league season 3 2026|2026-11-05",
-      "card_id": "kathmandu-gorkhas-vs-biratnagar-kings",
-      "name": "Kathmandu Gorkhas vs Biratnagar Kings",
-      "competition": "Nepal Premier League Season 3, 2026",
-      "kickoff": "2026-11-05T11:15:00+00:00",
-      "schedule_status": "LINK_UPDATING",
+      "fixture_id": "provider:npl|nepal premier league|2026-11-05",
+      "card_id": "npl",
+      "name": "NPL",
+      "competition": "Nepal Premier League",
+      "kickoff": "2026-11-05T06:45:00+00:00",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "AWAITING_LINK",
+      "card_status_normalized": "LIVE",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
       "source_ids": [
-        "sm-fancode"
+        "sm-sports-data"
       ],
       "upstream_families": [
-        "FanCode"
+        "SM-Aggregate"
       ],
       "independent_witness_count": 1,
       "authorities": {
         "espn-header": {
-          "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
-          "event_id": "1558596",
-          "upstream_family": "ESPN",
-          "name": "Biratnagar Kings (NPL) vs Kathmandu Gorkhas (NPL)",
-          "home": "Biratnagar Kings (NPL)",
-          "away": "Kathmandu Gorkhas (NPL)",
-          "home_team_id": "1462631",
-          "away_team_id": "1462632",
-          "competition": "Nepal Premier League",
-          "competition_id": "23081",
-          "kickoff": "2026-11-05T10:45:00+00:00",
-          "kickoff_delta_minutes": -30.0,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "15th Match (D/N)",
-          "format": "T20",
-          "gender": "",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-06T23:59:00Z",
-          "authority_uid": "s:200~e:1558596~c:1558596"
+          "result": "unmatched"
         },
         "livescore": {
           "result": "unmatched"
         }
       },
-      "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
+      "authority_upstreams": [],
+      "independent_authority_count": 0,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [
-        "kickoff: ours 2026-11-05T11:15, espn-header 2026-11-05T10:45 (-30.0 min)"
-      ],
-      "authority_agreement": "SINGLE",
+      "conflict_reasons": [],
+      "authority_agreement": "NONE",
       "card_status_conflict": false,
-      "verdict": "CONFLICT"
+      "verdict": "UNVERIFIED"
     }
   ]
 }
