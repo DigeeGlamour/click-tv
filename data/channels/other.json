@@ -1,7 +1,7 @@
 {
   "category": "Other",
-  "updated_at": "2026-11-05T16:36:03.553959+00:00",
-  "count": 131,
+  "updated_at": "2026-11-05T20:28:12.057437+00:00",
+  "count": 133,
   "channels": [
     {
       "id": "30a-music",
@@ -242,8 +242,8 @@
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
+      "verification_mode": "same_run_cloud_proxy",
+      "verification_status": "verified_proxy",
       "verification_badge": "Verified",
       "verified": true,
       "publish_allowed": true,
@@ -267,6 +267,8 @@
       ],
       "resolution": "FHD",
       "resolution_height": 1080,
+      "transient_rescue_count": 1,
+      "vantage_note": "HTTP 500 from this run's egress on a route the published catalogue was already carrying. Held for one more scan instead of being deleted; a second consecutive transient answer, or any permanent one, fails it.",
       "playback_id": "ctv_196810ffc7541de63eb43aa25d96b503"
     },
     {
@@ -737,10 +739,10 @@
       "stream_type": "hls",
       "requires_headers": false,
       "inherit_manifest_query": false,
-      "verification_mode": "transient_rescue",
-      "verification_status": "retryable_pending",
-      "verification_badge": "Temporary",
-      "verified": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
       "publish_allowed": true,
       "source_pipeline": "tv",
       "original_source_pipeline": "tv",
@@ -762,8 +764,6 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "transient_rescue_count": 1,
-      "vantage_note": "a timeout error from this run's egress on a route the published catalogue was already carrying. Held for one more scan instead of being deleted; a second consecutive transient answer, or any permanent one, fails it.",
       "playback_id": "ctv_d0ad4bdefa3bf97d432792cbfd546a7c"
     },
     {
@@ -890,6 +890,53 @@
       "playback_id": "ctv_6512184d8b267a4b5da4fccdc8458206"
     },
     {
+      "id": "ayna-tv",
+      "name": "Ayna TV",
+      "primary_stream_key": "5492845c18aece23b2d9e98fb5f167e9edaff0541e95b0ce4dcfc907a4811687",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBhxAik9rvkpRV33kdDl-2drT2X3Y2cU_-lrjlMpmIxzBAGCN50afZnqx8vvxgmbaTVZmYITeOyTW1Fg_CAItfNfgRwsrTcxaB1pecb0Z74oky6LcgXFGIAOz8w8IijqMpMo4dUJ8aMsAF4A0x9Xwt57UCZYxhtEpRfOdqTzmfwVjICILOqg9QPbOFww/s1080/1000021053.png",
+      "category": "Other",
+      "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/ayna.stream/tracks-v1a1/mono.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "sm-iptv-combined",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "tv-bd1-bestiptvpro",
+          "source_name": "tv-bd1 Best IPTV Pro",
+          "source_url": "https://raw.githubusercontent.com/tv-bd1/bestiptvpro/refs/heads/main/All.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-combined",
+        "tv-bd1-bestiptvpro"
+      ],
+      "resolution": "HD",
+      "resolution_height": 720,
+      "playback_id": "ctv_5a235c17828068d6ba83639135075d01"
+    },
+    {
       "id": "azteca-7a",
       "name": "Azteca 7a",
       "primary_stream_key": "d69b3f619ef1dcdbdd9246f1c19c871509adcb267bfcfed596f32153c65f9341",
@@ -1002,8 +1049,28 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "sm-iptv-combined",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "https://live-stream.utkalbongo.com/hls/livebanglatvstream.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "smartplaytv-worker-stream",
+          "host": "live-stream.utkalbongo.com",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_7e0f37b7c361114047452a8ab2ab9f42"
+        }
+      ],
       "source_provenance": [
         {
           "source_id": "sm-iptv-combined",
@@ -1020,50 +1087,9 @@
         "sm-iptv-combined",
         "tv-bd1-bestiptvpro"
       ],
-      "quality_unknown": true,
-      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
-      "playback_id": "ctv_65dbf08b8432d6546cc30551fbc92331"
-    },
-    {
-      "id": "banten-tv",
-      "name": "Banten TV",
-      "primary_stream_key": "5438c09ef091ffc74c5273ba49c845fbb30e4e9c855bfdc9b1c9f29efe8ffd04",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "",
-      "category": "Other",
-      "url": "https://5bf7b725107e5.streamlock.net/bantentv/bantentv/playlist.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1"
-      ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_3b774d35b98adc3cae2abc8e43cfb93f"
+      "playback_id": "ctv_65dbf08b8432d6546cc30551fbc92331"
     },
     {
       "id": "banyumas-tv",
@@ -1747,6 +1773,71 @@
       "playback_id": "ctv_4a3de98105062a64fc3e977b4d21739f"
     },
     {
+      "id": "hinde-movies-3",
+      "name": "Hinde Movies 3",
+      "primary_stream_key": "e1a884d1af066f5ead140cc81adbd3d8f215aded7fbeeec1b98b815d42866957",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "",
+      "category": "Other",
+      "url": "https://vods2.aynaott.com/hindimovies/index.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "manual-playlist-1",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        },
+        {
+          "source_id": "abusaeeidx-mrgify-bdix",
+          "source_name": "Mrgify BDIX IPTV",
+          "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
+        },
+        {
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-auto-update",
+          "source_name": "AynaOTT Auto Update",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
+        },
+        {
+          "source_id": "sm-aynaott-json",
+          "source_name": "AynaOTT Auto Update (JSON)",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
+        }
+      ],
+      "source_ids": [
+        "manual-playlist-1",
+        "abusaeeidx-mrgify-bdix",
+        "sm-iptv-combined",
+        "sm-aynaott-auto-update",
+        "sm-aynaott-json"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_b239838909e131a695ceff6d3ea77fdd"
+    },
+    {
       "id": "idmantv",
       "name": "IDMANTV 🇹🇷",
       "primary_stream_key": "b4445dceceb82134f92119a88cad327184b954eeeacbc2b471d5944ecdb2eb74",
@@ -2096,8 +2187,8 @@
       "source_ids": [
         "manual-playlist-1"
       ],
-      "quality_unknown": true,
-      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "playback_id": "ctv_6590b69600fa828aac2a0e01f4010af8"
     },
     {
@@ -2570,6 +2661,47 @@
       "playback_id": "ctv_ce759b6076d3d0f31dc252ce3d491f19"
     },
     {
+      "id": "rajdhani",
+      "name": "Rajdhani",
+      "primary_stream_key": "e5ca57ff1175b0a760fad21dddf70ab89437d8b84c8cf7b83df4050fb8be61fc",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "",
+      "category": "Other",
+      "url": "http://stream.shariarsuvo.com/hls5/rajdhanicable.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "manual-playlist-1",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        }
+      ],
+      "source_ids": [
+        "manual-playlist-1"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_a54672c49e78c045d76ee4863b49f15d"
+    },
+    {
       "id": "rakuten-movies",
       "name": "Rakuten Movies",
       "primary_stream_key": "acba6a551091c5234cf46b7fe8b0dfab9b04936143f9d30f50a5f85df7951d84",
@@ -2699,6 +2831,170 @@
       "playback_id": "ctv_c231fb483ea0fe9e4532f332b95d5662"
     },
     {
+      "id": "rs-premiere",
+      "name": "RS PREMIERE",
+      "primary_stream_key": "8f84124a8f04cb46b719b8d344b852c994be20e63cdb8bd9fd7f06c600e76828",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "",
+      "category": "Other",
+      "url": "https://video03.logicahost.com.br/rspremiere/rspremiere/playlist.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "manual-playlist-1",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        }
+      ],
+      "source_ids": [
+        "manual-playlist-1"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_fea99d8e30557c5b96504c0421f3d818"
+    },
+    {
+      "id": "rs-premiere-2",
+      "name": "RS PREMIERE 2",
+      "primary_stream_key": "8a6cdfc2af095466486c368969c37de3972bc2f26e7495d1f33ec96601e9e59e",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "",
+      "category": "Other",
+      "url": "https://video03.logicahost.com.br/rspremiere2/rspremiere2/playlist.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "manual-playlist-1",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        }
+      ],
+      "source_ids": [
+        "manual-playlist-1"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_c14e049a08c4a9c282e8bb6777a0023c"
+    },
+    {
+      "id": "rs-premiere-3",
+      "name": "RS PREMIERE 3",
+      "primary_stream_key": "29cb20effc073ce05e59ccad946561cc015a726f1e448c59f86773cd17b6b850",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "",
+      "category": "Other",
+      "url": "https://video03.logicahost.com.br/rspremiere3/rspremiere3/playlist.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "manual-playlist-1",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        }
+      ],
+      "source_ids": [
+        "manual-playlist-1"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_75676ce05d8968832e7f5b946bd62b8b"
+    },
+    {
+      "id": "rs-premiere-4",
+      "name": "RS PREMIERE 4",
+      "primary_stream_key": "11688cd0d6460280536e15877e07949969bfecebf3112406330357aca6b329a1",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "",
+      "category": "Other",
+      "url": "https://video03.logicahost.com.br/rspremiere4/rspremiere4/playlist.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "manual-playlist-1",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        }
+      ],
+      "source_ids": [
+        "manual-playlist-1"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_657357e86c2a71d5cae46442c93eda1c"
+    },
+    {
       "id": "rs-tv",
       "name": "RS TV",
       "primary_stream_key": "8ef67336a0ab6bb51c30088ab73460a52efefd9524038bacd046dba11056789d",
@@ -2820,6 +3116,47 @@
       "resolution": "FHD",
       "resolution_height": 1080,
       "playback_id": "ctv_a95a5691881f44f54db2169575fbd7ed"
+    },
+    {
+      "id": "saudia-radio",
+      "name": "Saudia Radio",
+      "primary_stream_key": "a19db939340eaad7139a589944acc537ee31046fc04c852f085f5977954f4d81",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://s3.aynaott.com/storage/76d7d7446ee57ec14ff67c1678725d19",
+      "category": "Other",
+      "url": "https://live.kwikmotion.com/sbrksasaudiaradiolive/srpksasaudiaradio/playlist.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "direct_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "abusaeeidx-mrgify-bdix",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "abusaeeidx-mrgify-bdix",
+          "source_name": "Mrgify BDIX IPTV",
+          "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
+        }
+      ],
+      "source_ids": [
+        "abusaeeidx-mrgify-bdix"
+      ],
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_9f4f6225636da8d79e32aee885393803"
     },
     {
       "id": "shalom",
@@ -3240,8 +3577,8 @@
         "manual-playlist-1",
         "tv-bd1-bestiptvpro"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "quality_unknown": true,
+      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
       "playback_id": "ctv_14f3f10a8a6c8ddeae92f455d76292d0"
     },
     {
@@ -4921,8 +5258,8 @@
       "source_ids": [
         "manual-playlist-1"
       ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
+      "quality_unknown": true,
+      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
       "playback_id": "ctv_7c35c57a2ec48c2878b5b3349bff0cae"
     },
     {
@@ -5145,17 +5482,17 @@
       }
     },
     {
-      "id": "ayna-tv",
-      "name": "Ayna TV",
-      "primary_stream_key": "5492845c18aece23b2d9e98fb5f167e9edaff0541e95b0ce4dcfc907a4811687",
+      "id": "big-magic",
+      "name": "Big Magic",
+      "primary_stream_key": "05d2506b09dd12f02977b7e128d23c716ce05d456c5c370b76546349700b4465",
       "sport_type": "",
       "sport_type_derived": false,
-      "logo": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBhxAik9rvkpRV33kdDl-2drT2X3Y2cU_-lrjlMpmIxzBAGCN50afZnqx8vvxgmbaTVZmYITeOyTW1Fg_CAItfNfgRwsrTcxaB1pecb0Z74oky6LcgXFGIAOz8w8IijqMpMo4dUJ8aMsAF4A0x9Xwt57UCZYxhtEpRfOdqTzmfwVjICILOqg9QPbOFww/s1080/1000021053.png",
+      "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRWZvoj7sQem7dOoLMmPtCzKgSxaHVEJi6L6uBRFeJ33gfyFug_Yh96Z1U&s=10",
       "category": "Other",
-      "url": "https://app24.jagobd.com.bd/c3VydmVyX8RpbEU9Mi8xNy8yMFDEEHGcfRgzQ6NTAgdEoaeFzbF92YWxIZTO0U0ezN1IzMyfvcEdsEfeDeKiNkVN3PTOmdFseWRtaW51aiPhnPTI2/ayna.stream/tracks-v1a1/mono.m3u8",
+      "url": "http://rgkkw.live:80/live/1Aoen7elp5/IgMJ60tmAa/355253.ts",
       "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
+      "proxy_mode": "proxy_first",
+      "stream_type": "mpegts",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
@@ -5176,33 +5513,26 @@
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
-        },
-        {
-          "source_id": "tv-bd1-bestiptvpro",
-          "source_name": "tv-bd1 Best IPTV Pro",
-          "source_url": "https://raw.githubusercontent.com/tv-bd1/bestiptvpro/refs/heads/main/All.m3u"
         }
       ],
       "source_ids": [
-        "sm-iptv-combined",
-        "tv-bd1-bestiptvpro"
+        "sm-iptv-combined"
       ],
       "resolution": "HD",
-      "resolution_height": 720,
-      "playback_id": "ctv_5a235c17828068d6ba83639135075d01"
+      "resolution_height": 944,
+      "playback_id": "ctv_439a4cf7dc174aea882e1e5a9af6640e"
     },
     {
-      "id": "bbc-news",
-      "name": "BBC News",
-      "primary_stream_key": "b7541e78dbf3966ffc9fdba0cf25d8dcd5c918507d409513aca45ef93923fd9d",
+      "id": "mn",
+      "name": "MN+",
+      "primary_stream_key": "b940dc0d5d6c22ca6bcc33b47399adfe03c2268225d3037a4df997693f24cc0d",
       "sport_type": "",
       "sport_type_derived": false,
-      "logo": "https://web.aynaott.com/storage/019dd92f-107c-7056-9e79-e5233f6e51d9/uploads/images/2026-07-16/images_bea6d56aa19a59e2bc272736880a97f3_playmist_bbc_news_400x400.jpg",
+      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/MNPLUS.png",
       "category": "Other",
-      "url": "https://tvsen1.aynaott.com/shn6jGTk/index.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
@@ -5214,94 +5544,85 @@
       "original_source_pipeline": "tv",
       "content_kind": "live_tv",
       "routing_reason": "configured_tv_pipeline",
-      "source_id": "sm-aynaott-auto-update",
+      "source_id": "sm-iptv-jiotv",
       "metadata_only": false,
       "available_link_count": 1,
       "backups": [],
       "source_provenance": [
         {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
-          "source_id": "sm-aynaott-json",
-          "source_name": "AynaOTT Auto Update (JSON)",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
+          "source_id": "sm-iptv-jiotv",
+          "source_name": "SM IPTV JioTV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
         }
       ],
       "source_ids": [
-        "sm-aynaott-auto-update",
-        "sm-aynaott-json"
+        "sm-iptv-jiotv"
       ],
-      "quality_unknown": true,
-      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
-      "playback_id": "ctv_e5e3c859c0c703178e0bb5bbd8856f42"
-    },
-    {
-      "id": "hinde-movies-3",
-      "name": "Hinde Movies 3",
-      "primary_stream_key": "e1a884d1af066f5ead140cc81adbd3d8f215aded7fbeeec1b98b815d42866957",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "",
-      "category": "Other",
-      "url": "https://vods2.aynaott.com/hindimovies/index.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        },
-        {
-          "source_id": "abusaeeidx-mrgify-bdix",
-          "source_name": "Mrgify BDIX IPTV",
-          "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
-        },
-        {
-          "source_id": "sm-iptv-combined",
-          "source_name": "SM IPTV Combined Live TV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
-        },
-        {
-          "source_id": "sm-aynaott-auto-update",
-          "source_name": "AynaOTT Auto Update",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott.m3u"
-        },
-        {
-          "source_id": "sm-aynaott-json",
-          "source_name": "AynaOTT Auto Update (JSON)",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/AynaOTT_Auto_Update_Playlist/refs/heads/main/aynaott_data.json"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1",
-        "abusaeeidx-mrgify-bdix",
-        "sm-iptv-combined",
-        "sm-aynaott-auto-update",
-        "sm-aynaott-json"
-      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "playback_id": "ctv_b239838909e131a695ceff6d3ea77fdd"
+      "playback_id": "ctv_de13d27ed1ee70677720b133c2f04b15",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
+    },
+    {
+      "id": "mnx",
+      "name": "MNX",
+      "primary_stream_key": "b4998101ade33ff917b9152870db4f5fa79df7c4da98b151a2d4bf997cae8375",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Movies_Now2_HD.png",
+      "category": "Other",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_only",
+      "stream_type": "dash",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "global",
+      "verification_status": "verified_global",
+      "verification_badge": "Verified",
+      "verified": true,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "sm-iptv-jiotv",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "sm-iptv-jiotv",
+          "source_name": "SM IPTV JioTV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
+        }
+      ],
+      "source_ids": [
+        "sm-iptv-jiotv"
+      ],
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_9598ec817733e85fc1ca2af6ce2c6644",
+      "protected_source": true,
+      "requires_credentials": true,
+      "credential_hints": {
+        "headers": [],
+        "query_parameters": [],
+        "drm": true
+      }
     },
     {
       "id": "movies-now",
@@ -5355,55 +5676,14 @@
       }
     },
     {
-      "id": "rajdhani",
-      "name": "Rajdhani",
-      "primary_stream_key": "e5ca57ff1175b0a760fad21dddf70ab89437d8b84c8cf7b83df4050fb8be61fc",
+      "id": "music-mastii",
+      "name": "Music Mastii",
+      "primary_stream_key": "7e8dba7b5541d9e0297cd0ec3f30f309487253b36a60bdab46c866dd8cec61be",
       "sport_type": "",
       "sport_type_derived": false,
-      "logo": "",
+      "logo": "https://yt3.ggpht.com/ytc/AKedOLRD92lTNDFEe1iA-zJLoFb-mu28rBgjGIqs3qFS_w=s900-c-k-c0x00ffffff-no-rj",
       "category": "Other",
-      "url": "http://stream.shariarsuvo.com/hls5/rajdhanicable.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1"
-      ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "playback_id": "ctv_a54672c49e78c045d76ee4863b49f15d"
-    },
-    {
-      "id": "rs-premiere",
-      "name": "RS PREMIERE",
-      "primary_stream_key": "8f84124a8f04cb46b719b8d344b852c994be20e63cdb8bd9fd7f06c600e76828",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "",
-      "category": "Other",
-      "url": "https://video03.logicahost.com.br/rspremiere/rspremiere/playlist.m3u8",
+      "url": "https://live20.bozztv.com/giatvplayout7/giatv-209592/tracks-v1a1/mono.ts.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "hls",
@@ -5418,158 +5698,35 @@
       "original_source_pipeline": "tv",
       "content_kind": "live_tv",
       "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
+      "source_id": "sm-iptv-combined",
       "metadata_only": false,
       "available_link_count": 1,
       "backups": [],
       "source_provenance": [
         {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
         }
       ],
       "source_ids": [
-        "manual-playlist-1"
+        "sm-iptv-combined"
       ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "playback_id": "ctv_fea99d8e30557c5b96504c0421f3d818"
+      "resolution": "HD",
+      "resolution_height": 720,
+      "playback_id": "ctv_4ea561af614a9c1d362d29f240c47c62"
     },
     {
-      "id": "rs-premiere-2",
-      "name": "RS PREMIERE 2",
-      "primary_stream_key": "8a6cdfc2af095466486c368969c37de3972bc2f26e7495d1f33ec96601e9e59e",
+      "id": "romedy-now",
+      "name": "Romedy Now",
+      "primary_stream_key": "4efe0b6912809aacf96f6645a433634e05b9418155a5c071d83c116f6a33ca3b",
       "sport_type": "",
       "sport_type_derived": false,
-      "logo": "",
-      "category": "Other",
-      "url": "https://video03.logicahost.com.br/rspremiere2/rspremiere2/playlist.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1"
-      ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "playback_id": "ctv_c14e049a08c4a9c282e8bb6777a0023c"
-    },
-    {
-      "id": "rs-premiere-3",
-      "name": "RS PREMIERE 3",
-      "primary_stream_key": "29cb20effc073ce05e59ccad946561cc015a726f1e448c59f86773cd17b6b850",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "",
-      "category": "Other",
-      "url": "https://video03.logicahost.com.br/rspremiere3/rspremiere3/playlist.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1"
-      ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "playback_id": "ctv_75676ce05d8968832e7f5b946bd62b8b"
-    },
-    {
-      "id": "rs-premiere-4",
-      "name": "RS PREMIERE 4",
-      "primary_stream_key": "11688cd0d6460280536e15877e07949969bfecebf3112406330357aca6b329a1",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "",
-      "category": "Other",
-      "url": "https://video03.logicahost.com.br/rspremiere4/rspremiere4/playlist.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1"
-      ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "playback_id": "ctv_657357e86c2a71d5cae46442c93eda1c"
-    },
-    {
-      "id": "sadhna-prime-news",
-      "name": "Sadhna Prime News",
-      "primary_stream_key": "1a934d80204bb99324eb6720f83876b3606fb9782513d2087d452c96ee407956",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "https://s3.aynaott.com/storage/80e4113d034ad20bcbea341dcb4ae27e",
+      "logo": "https://jiotv.catchup.cdn.jio.com/dare_images/images/Romedy_Now_HD.png",
       "category": "Other",
       "header_profile": "android_tv",
       "proxy_mode": "proxy_only",
-      "stream_type": "hls",
+      "stream_type": "dash",
       "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
@@ -5581,73 +5738,34 @@
       "original_source_pipeline": "tv",
       "content_kind": "live_tv",
       "routing_reason": "configured_tv_pipeline",
-      "source_id": "abusaeeidx-mrgify-bdix",
+      "source_id": "sm-iptv-jiotv",
       "metadata_only": false,
       "available_link_count": 1,
       "backups": [],
       "source_provenance": [
         {
-          "source_id": "abusaeeidx-mrgify-bdix",
-          "source_name": "Mrgify BDIX IPTV",
-          "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
+          "source_id": "sm-iptv-jiotv",
+          "source_name": "SM IPTV JioTV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/jio_tv.m3u"
         }
       ],
       "source_ids": [
-        "abusaeeidx-mrgify-bdix"
+        "sm-iptv-jiotv"
       ],
-      "quality_unknown": true,
-      "quality_policy_note": "Manifest/media verification succeeded; resolution metadata was unavailable",
-      "playback_id": "ctv_0ca4077769bd3fca50f365eb1e064c59",
+      "drm": {
+        "type": "clearkey",
+        "protected": true
+      },
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_dad7ed2b18d35ade64fed880c2ba08f1",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
         "headers": [],
-        "query_parameters": [
-          "token"
-        ],
-        "drm": false
+        "query_parameters": [],
+        "drm": true
       }
-    },
-    {
-      "id": "saudia-radio",
-      "name": "Saudia Radio",
-      "primary_stream_key": "a19db939340eaad7139a589944acc537ee31046fc04c852f085f5977954f4d81",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "https://s3.aynaott.com/storage/76d7d7446ee57ec14ff67c1678725d19",
-      "category": "Other",
-      "url": "https://live.kwikmotion.com/sbrksasaudiaradiolive/srpksasaudiaradio/playlist.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "abusaeeidx-mrgify-bdix",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "abusaeeidx-mrgify-bdix",
-          "source_name": "Mrgify BDIX IPTV",
-          "source_url": "https://raw.githubusercontent.com/abusaeeidx/Mrgify-BDIX-IPTV/refs/heads/main/playlist.m3u"
-        }
-      ],
-      "source_ids": [
-        "abusaeeidx-mrgify-bdix"
-      ],
-      "resolution": "FHD",
-      "resolution_height": 1080,
-      "playback_id": "ctv_9f4f6225636da8d79e32aee885393803"
     }
   ]
 }
