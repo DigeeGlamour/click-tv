@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T05:44:33.100400+00:00",
+  "generated_at": "2026-11-05T06:04:42.845628+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -60,7 +60,7 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 432,
+      "fixtures": 433,
       "unknown_statuses": [
         "STATUS_FINAL_AGT|AGT"
       ],
@@ -75,7 +75,7 @@
           "sport": "cricket",
           "date": "2026-11-05",
           "result": "ok",
-          "fixtures": 33
+          "fixtures": 34
         },
         {
           "sport": "cricket",
@@ -111,13 +111,13 @@
     "fixtures": 38,
     "verdicts": {
       "UNVERIFIED": 21,
-      "VERIFIED": 16,
-      "CONFLICT": 1
+      "CONFLICT": 2,
+      "VERIFIED": 15
     },
-    "verified": 16,
+    "verified": 15,
     "partial_authority": 0,
     "unverified": 21,
-    "conflict": 1,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
         "matched": 18,
@@ -129,11 +129,12 @@
       }
     },
     "matched_by_two_independent_authorities": 13,
-    "authority_agreements": 13,
-    "authority_disagreements": 0,
+    "authority_agreements": 12,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "conflict_reason_counts": {
-      "kickoff": 3
+      "kickoff": 5,
+      "authorities disagree": 1
     },
     "identity_near_misses": 2,
     "independent_authority_count_distribution": {
@@ -294,17 +295,17 @@
           "competition_id": "21284",
           "kickoff": "2026-11-05T04:40:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
           "sport": "cricket",
           "round": "10th Match",
           "format": "",
           "gender": "women",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-05T23:59:00Z",
           "authority_uid": "s:200~e:1543953~c:1543953"
@@ -324,8 +325,8 @@
           "competition_id": "25707",
           "kickoff": "2026-11-05T04:40:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
+          "status_raw": "Between innings",
+          "status_code": "157",
           "status": "LIVE",
           "sport": "cricket",
           "round": "Match 10",
@@ -340,10 +341,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -351,12 +354,12 @@
       "card_id": "afghanistan-vs-zimbabwe",
       "name": "Afghanistan vs Zimbabwe",
       "competition": "Afghanistan vs Zimbabwe in UAE 2026 - 1st Test",
-      "kickoff": "2026-11-05T05:44:33+00:00",
+      "kickoff": "2026-11-05T05:30:00+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
       "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
       "provider_identity": "",
       "source_ids": [
         "srhady-primevideo-sports",
@@ -382,7 +385,7 @@
           "competition": "Zimbabwe tour of United Arab Emirates 2026/27",
           "competition_id": "24799",
           "kickoff": "2026-11-05T06:00:00+00:00",
-          "kickoff_delta_minutes": 15.4,
+          "kickoff_delta_minutes": 30.0,
           "status_raw": "Scheduled",
           "status_code": "Scheduled",
           "status": "UPCOMING",
@@ -412,10 +415,10 @@
           "competition": "Afghanistan v Zimbabwe Test Series in UAE",
           "competition_id": "26358",
           "kickoff": "2026-11-05T06:00:00+00:00",
-          "kickoff_delta_minutes": 15.4,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "kickoff_delta_minutes": 30.0,
+          "status_raw": "Play in progress",
+          "status_code": "33",
+          "status": "LIVE",
           "sport": "cricket",
           "round": "1st Test",
           "format": "Test",
@@ -429,7 +432,10 @@
         "LiveScore"
       ],
       "near_miss_count": 2,
-      "conflict_reasons": [],
+      "conflict_reasons": [
+        "kickoff: ours 2026-11-05T05:30, espn-header 2026-11-05T06:00 (+30.0 min)",
+        "kickoff: ours 2026-11-05T05:30, livescore 2026-11-05T06:00 (+30.0 min)"
+      ],
       "authority_agreement": "NONE",
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
@@ -440,7 +446,7 @@
       "card_id": "bangladesh-u19-vs-afghanistan-u19",
       "name": "Bangladesh U19 vs Afghanistan U19",
       "competition": "ACC Mens U19 Asia Cup 2026 - 2nd Match",
-      "kickoff": "2026-11-05T05:44:33+00:00",
+      "kickoff": "2026-11-05T06:04:42+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -516,7 +522,7 @@
       "card_id": "sri-lanka-u19-vs-malaysia-u19",
       "name": "Sri Lanka U19 vs Malaysia U19",
       "competition": "ACC Mens U19 Asia Cup 2026 - 1st Match",
-      "kickoff": "2026-11-05T05:44:33+00:00",
+      "kickoff": "2026-11-05T06:04:42+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -524,12 +530,14 @@
       "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
       "provider_identity": "",
       "source_ids": [
-        "srhady-primevideo-sports"
+        "srhady-primevideo-sports",
+        "srhady-willow-event"
       ],
       "upstream_families": [
-        "PrimeVideo"
+        "PrimeVideo",
+        "Willow"
       ],
-      "independent_witness_count": 1,
+      "independent_witness_count": 2,
       "authorities": {
         "espn-header": {
           "result": "unmatched"
@@ -945,8 +953,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1125,8 +1133,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1167,8 +1175,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1295,8 +1303,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1534,8 +1542,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1607,8 +1615,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1690,8 +1698,8 @@
       "name": "Lumbini Lions vs Janakpur Bolts",
       "competition": "Nepal Premier League Season 3, 2026",
       "kickoff": "2026-11-05T06:45:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -1699,8 +1707,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1770,8 +1778,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1813,8 +1821,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2116,8 +2124,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2207,8 +2215,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2249,8 +2257,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2321,8 +2329,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2413,8 +2421,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "vk1817-fancode-mirror",
         "drmlive-fancode-mirror",
+        "vk1817-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2534,188 +2542,6 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "upcoming"
-    }
-  ],
-  "retired_or_unpublished": [
-    {
-      "fixture_id": "provider:afghanistan-vs-zimbabwe|test series|2026-11-05",
-      "card_id": "afghanistan-vs-zimbabwe",
-      "name": "Afghanistan Vs Zimbabwe",
-      "competition": "Test Series",
-      "kickoff": "2026-11-05T05:00:00+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
-      "provider_identity": "",
-      "source_ids": [
-        "sm-sports-data"
-      ],
-      "upstream_families": [
-        "SM-Aggregate"
-      ],
-      "independent_witness_count": 1,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "ambiguous_kickoff_lifted",
-          "verified": false,
-          "event_id": "1555123",
-          "upstream_family": "ESPN",
-          "name": "Afghanistan vs Zimbabwe",
-          "home": "Afghanistan",
-          "away": "Zimbabwe",
-          "home_team_id": "40",
-          "away_team_id": "9",
-          "competition": "Zimbabwe tour of United Arab Emirates 2026/27",
-          "competition_id": "24799",
-          "kickoff": "2026-11-05T06:00:00+00:00",
-          "kickoff_delta_minutes": 60.0,
-          "status_raw": "Scheduled",
-          "status_code": "Scheduled",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "1st Test",
-          "format": "Test",
-          "gender": "",
-          "espn_state": "pre",
-          "espn_status": "pre",
-          "espn_status_detail": "Scheduled",
-          "espn_status_description": "Scheduled",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-10T23:59:00Z",
-          "authority_uid": "s:200~e:1555123~c:1555123"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "ambiguous_kickoff_lifted",
-          "verified": false,
-          "event_id": "1889621",
-          "upstream_family": "LiveScore",
-          "name": "Afghanistan vs Zimbabwe",
-          "home": "Afghanistan",
-          "away": "Zimbabwe",
-          "home_team_id": "86113",
-          "away_team_id": "86126",
-          "competition": "Afghanistan v Zimbabwe Test Series in UAE",
-          "competition_id": "26358",
-          "kickoff": "2026-11-05T06:00:00+00:00",
-          "kickoff_delta_minutes": 60.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
-          "sport": "cricket",
-          "round": "1st Test",
-          "format": "Test",
-          "gender": ""
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "near_miss_count": 2,
-      "conflict_reasons": [
-        "kickoff: ours 2026-11-05T05:00, espn-header 2026-11-05T06:00 (+60.0 min)",
-        "kickoff: ours 2026-11-05T05:00, livescore 2026-11-05T06:00 (+60.0 min)"
-      ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
-    },
-    {
-      "fixture_id": "provider:adelaide-strikers-vs-brisbane-heat-women|women big bash league 2026 10th|2026-11-05",
-      "card_id": "adelaide-strikers-women-vs-brisbane-heat-women",
-      "name": "Adelaide Strikers Women vs Brisbane Heat Women",
-      "competition": "Womens Big Bash League 2026 - 10th Match",
-      "kickoff": "2026-11-05T05:32:08+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "LIVE",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
-      ],
-      "upstream_families": [
-        "PrimeVideo",
-        "Willow"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1543953",
-          "upstream_family": "ESPN",
-          "name": "Adelaide Strikers Women vs Brisbane Heat Women",
-          "home": "Adelaide Strikers Women",
-          "away": "Brisbane Heat Women",
-          "home_team_id": "896431",
-          "away_team_id": "896397",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-05T04:40:00+00:00",
-          "kickoff_delta_minutes": -52.1,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "10th Match",
-          "format": "",
-          "gender": "women",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-05T23:59:00Z",
-          "authority_uid": "s:200~e:1543953~c:1543953"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1813036",
-          "upstream_family": "LiveScore",
-          "name": "Adelaide Strikers W vs Brisbane Heat W",
-          "home": "Adelaide Strikers W",
-          "away": "Brisbane Heat W",
-          "home_team_id": "86304",
-          "away_team_id": "86302",
-          "competition": "Women's Big Bash League",
-          "competition_id": "25707",
-          "kickoff": "2026-11-05T04:40:00+00:00",
-          "kickoff_delta_minutes": -52.1,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
-          "sport": "cricket",
-          "round": "Match 10",
-          "format": "Womens Domestic Twenty20",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "near_miss_count": 2,
-      "conflict_reasons": [
-        "kickoff: ours 2026-11-05T05:32, espn-header 2026-11-05T04:40 (-52.1 min)",
-        "kickoff: ours 2026-11-05T05:32, livescore 2026-11-05T04:40 (-52.1 min)"
-      ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
     }
   ]
 }
