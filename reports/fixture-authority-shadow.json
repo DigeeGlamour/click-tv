@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-05T10:04:38.684368+00:00",
+  "generated_at": "2026-11-05T10:24:34.829330+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -12,10 +12,9 @@
       "requests_ok": 6,
       "fixtures": 450,
       "unknown_statuses": [
-        "2|1'",
-        "2|35'",
-        "2|4'",
-        "2|5'"
+        "10|HT",
+        "214|Bad light",
+        "2|24'"
       ],
       "attempts": [
         {
@@ -114,13 +113,13 @@
     "fixtures": 47,
     "verdicts": {
       "UNVERIFIED": 29,
-      "CONFLICT": 5,
-      "VERIFIED": 13
+      "CONFLICT": 6,
+      "VERIFIED": 12
     },
-    "verified": 13,
+    "verified": 12,
     "partial_authority": 0,
     "unverified": 29,
-    "conflict": 5,
+    "conflict": 6,
     "matched_by_authority": {
       "espn-header": {
         "matched": 20,
@@ -131,26 +130,26 @@
         "unmatched": 31
       }
     },
-    "matched_by_two_independent_authorities": 14,
-    "authority_agreements": 10,
-    "authority_disagreements": 0,
+    "matched_by_two_independent_authorities": 13,
+    "authority_agreements": 9,
+    "authority_disagreements": 1,
     "card_status_conflicts": 4,
     "conflict_reason_counts": {
-      "kickoff": 5,
-      "card says LIVE, authority says UPCOMING": 4
+      "kickoff": 6,
+      "card says LIVE, authority says UPCOMING": 4,
+      "authorities disagree": 1
     },
     "identity_near_misses": 5,
     "independent_authority_count_distribution": {
       "0": 29,
-      "1": 4,
-      "2": 14
+      "1": 5,
+      "2": 13
     },
     "unknown_authority_statuses": {
       "livescore": [
-        "2|1'",
-        "2|35'",
-        "2|4'",
-        "2|5'"
+        "10|HT",
+        "214|Bad light",
+        "2|24'"
       ],
       "espn-header": [
         "STATUS_FINAL_AGT|AGT"
@@ -265,9 +264,9 @@
           "competition_id": "26363",
           "kickoff": "2026-11-05T03:30:00+00:00",
           "kickoff_delta_minutes": -30.0,
-          "status_raw": "Play in progress",
-          "status_code": "33",
-          "status": "LIVE",
+          "status_raw": "Bad light",
+          "status_code": "214",
+          "status": "UNKNOWN",
           "sport": "cricket",
           "round": "2nd Test",
           "format": "Test",
@@ -355,7 +354,7 @@
           "competition_id": "690",
           "kickoff": "2026-11-05T10:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "5'",
+          "status_raw": "24'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -431,8 +430,8 @@
         },
         "livescore": {
           "result": "matched",
-          "matched_by": "same_fixture",
-          "verified": true,
+          "matched_by": "kickoff_lifted",
+          "verified": false,
           "event_id": "1873900",
           "upstream_family": "LiveScore",
           "name": "Lion City Sailors FC vs Adelaide United",
@@ -442,25 +441,27 @@
           "away_team_id": "410",
           "competition": "AFC Champions League Two: Group F",
           "competition_id": "690",
-          "kickoff": "2026-11-05T10:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status_raw": "1'",
-          "status_code": "2",
-          "status": "UNKNOWN",
+          "kickoff": "2026-11-05T11:00:00+00:00",
+          "kickoff_delta_minutes": 60.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
           "sport": "football",
-          "round": "Group Stage Group F",
+          "round": "4",
           "format": "",
           "gender": ""
         }
       },
       "authority_upstreams": [
-        "ESPN",
+        "ESPN"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [
         "LiveScore"
       ],
-      "independent_authority_count": 2,
-      "near_miss_upstreams": [],
-      "near_miss_count": 0,
+      "near_miss_count": 1,
       "conflict_reasons": [
+        "kickoff: ours 2026-11-05T10:00, livescore 2026-11-05T11:00 (+60.0 min)",
         "card says LIVE, authority says UPCOMING"
       ],
       "authority_agreement": "SINGLE",
@@ -533,7 +534,7 @@
           "competition_id": "690",
           "kickoff": "2026-11-05T10:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "4'",
+          "status_raw": "24'",
           "status_code": "2",
           "status": "UNKNOWN",
           "sport": "football",
@@ -622,8 +623,8 @@
           "competition_id": "14127",
           "kickoff": "2026-11-05T09:30:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "35'",
-          "status_code": "2",
+          "status_raw": "HT",
+          "status_code": "10",
           "status": "UNKNOWN",
           "sport": "football",
           "round": "1",
@@ -685,8 +686,8 @@
           "competition_id": "24799",
           "kickoff": "2026-11-05T06:00:00+00:00",
           "kickoff_delta_minutes": 60.0,
-          "status_raw": "Live",
-          "status_code": "Live",
+          "status_raw": "Lunch",
+          "status_code": "Lunch",
           "status": "LIVE",
           "sport": "cricket",
           "round": "1st Test",
@@ -695,7 +696,7 @@
           "espn_state": "in",
           "espn_status": "in",
           "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_status_description": "Lunch",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-10T23:59:00Z",
           "authority_uid": "s:200~e:1555123~c:1555123"
@@ -745,7 +746,7 @@
       "card_id": "bangladesh-u19-vs-afghanistan-u19",
       "name": "Bangladesh U19 vs Afghanistan U19",
       "competition": "ACC Mens U19 Asia Cup 2026 - 2nd Match",
-      "kickoff": "2026-11-05T10:04:38+00:00",
+      "kickoff": "2026-11-05T10:24:34+00:00",
       "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
       "card_status_normalized": "LIVE",
@@ -958,17 +959,17 @@
           "competition_id": "21284",
           "kickoff": "2026-11-05T08:10:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "Live",
-          "status_code": "Live",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "Scheduled",
+          "status": "UPCOMING",
           "sport": "cricket",
           "round": "11th Match (D/N)",
           "format": "",
           "gender": "women",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "Live",
-          "espn_status_description": "Live",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Scheduled",
+          "espn_status_description": "Scheduled",
           "espn_completed": null,
           "espn_end_date_raw": "2026-11-05T23:59:00Z",
           "authority_uid": "s:200~e:1543954~c:1543954"
@@ -1004,10 +1005,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=LIVE"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -1101,8 +1104,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1353,8 +1356,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -1431,8 +1434,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode",
@@ -1665,8 +1668,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1707,8 +1710,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -1835,8 +1838,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2065,8 +2068,8 @@
       "name": "Kathmandu Gorkhas vs Biratnagar Kings",
       "competition": "Nepal Premier League Season 3, 2026",
       "kickoff": "2026-11-05T11:15:00+00:00",
-      "schedule_status": "UPCOMING",
-      "lifecycle_state": "UPCOMING",
+      "schedule_status": "STARTING_SOON",
+      "lifecycle_state": "STARTING",
       "card_status_normalized": "UPCOMING",
       "sport_type": "cricket",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Fancode_Auto_Update_Playlist/refs/heads/main/fancode_data.json",
@@ -2074,8 +2077,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2145,8 +2148,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2261,8 +2264,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2304,8 +2307,8 @@
         "srhady-willow-event",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2574,8 +2577,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2651,8 +2654,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2742,8 +2745,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2784,8 +2787,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
         "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror",
         "vk1817-fancode-mirror"
       ],
       "upstream_families": [
@@ -2855,8 +2858,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "sayanpal-fancode-mirror",
-        "drmlive-fancode-mirror"
+        "drmlive-fancode-mirror",
+        "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
         "FanCode"
@@ -2990,99 +2993,6 @@
       "card_status_conflict": false,
       "verdict": "UNVERIFIED",
       "tab": "upcoming"
-    }
-  ],
-  "retired_or_unpublished": [
-    {
-      "fixture_id": "provider:adelaide-strikers-vs-brisbane-heat-women|women big bash league 2026 10th|2026-11-05",
-      "card_id": "adelaide-strikers-women-vs-brisbane-heat-women",
-      "name": "Adelaide Strikers Women vs Brisbane Heat Women",
-      "competition": "Womens Big Bash League 2026 - 10th Match",
-      "kickoff": "2026-11-05T09:24:32+00:00",
-      "schedule_status": "LIVE_NOW",
-      "lifecycle_state": "END_PENDING",
-      "card_status_normalized": "LIVE",
-      "sport_type": "cricket",
-      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/primevideo_sports.json",
-      "provider_identity": "",
-      "source_ids": [
-        "srhady-primevideo-sports",
-        "srhady-willow-event"
-      ],
-      "upstream_families": [
-        "PrimeVideo",
-        "Willow"
-      ],
-      "independent_witness_count": 2,
-      "authorities": {
-        "espn-header": {
-          "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1543953",
-          "upstream_family": "ESPN",
-          "name": "Adelaide Strikers Women vs Brisbane Heat Women",
-          "home": "Adelaide Strikers Women",
-          "away": "Brisbane Heat Women",
-          "home_team_id": "896431",
-          "away_team_id": "896397",
-          "competition": "Women's Big Bash League",
-          "competition_id": "21284",
-          "kickoff": "2026-11-05T04:40:00+00:00",
-          "kickoff_delta_minutes": -284.5,
-          "status_raw": "Result",
-          "status_code": "Result",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "10th Match",
-          "format": "",
-          "gender": "women",
-          "espn_state": "post",
-          "espn_status": "post",
-          "espn_status_detail": "Final",
-          "espn_status_description": "Result",
-          "espn_completed": null,
-          "espn_end_date_raw": "2026-11-05T23:59:00Z",
-          "authority_uid": "s:200~e:1543953~c:1543953"
-        },
-        "livescore": {
-          "result": "matched",
-          "matched_by": "kickoff_lifted",
-          "verified": false,
-          "event_id": "1813036",
-          "upstream_family": "LiveScore",
-          "name": "Adelaide Strikers W vs Brisbane Heat W",
-          "home": "Adelaide Strikers W",
-          "away": "Brisbane Heat W",
-          "home_team_id": "86304",
-          "away_team_id": "86302",
-          "competition": "Women's Big Bash League",
-          "competition_id": "25707",
-          "kickoff": "2026-11-05T04:40:00+00:00",
-          "kickoff_delta_minutes": -284.5,
-          "status_raw": "FT",
-          "status_code": "6",
-          "status": "FINISHED",
-          "sport": "cricket",
-          "round": "Match 10",
-          "format": "Womens Domestic Twenty20",
-          "gender": "women"
-        }
-      },
-      "authority_upstreams": [],
-      "independent_authority_count": 0,
-      "near_miss_upstreams": [
-        "ESPN",
-        "LiveScore"
-      ],
-      "near_miss_count": 2,
-      "conflict_reasons": [
-        "kickoff: ours 2026-11-05T09:24, espn-header 2026-11-05T04:40 (-284.5 min)",
-        "kickoff: ours 2026-11-05T09:24, livescore 2026-11-05T04:40 (-284.5 min)"
-      ],
-      "authority_agreement": "NONE",
-      "card_status_conflict": false,
-      "verdict": "UNVERIFIED"
     }
   ]
 }
