@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-11-05T07:24:57.230170+00:00",
-  "today_match_count": 10,
-  "upcoming_count": 29,
+  "generated_at": "2026-11-05T07:45:01.521297+00:00",
+  "today_match_count": 9,
+  "upcoming_count": 30,
   "today_missing_logo": [],
   "upcoming_missing_logo": [],
   "timezone": "Asia/Dhaka",
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 155,
+  "provider_fixture": 157,
   "provider_rejected": 151,
   "provider_rejected_reasons": {
     "provider_dead_status": 120,
@@ -365,6 +365,15 @@
       "start_time": ""
     },
     {
+      "name": "Sydney Thunder Women vs Perth Scorchers Women",
+      "competition": "Womens Big Bash League 2026 - 11th Match",
+      "sport": "cricket",
+      "source_id": "srhady-willow-event",
+      "status": "UPCOMING",
+      "reason": "kickoff_missing_and_not_live",
+      "start_time": ""
+    },
+    {
       "name": "United Arab Emirates vs Oman",
       "competition": "ICC CWC League 2 UAE, 2026",
       "sport": "cricket",
@@ -417,15 +426,6 @@
       "status": "ENDED",
       "reason": "provider_dead_status",
       "start_time": "2026-09-30T19:29:00+00:00"
-    },
-    {
-      "name": "Sydney Thunder Women vs Perth Scorchers Women",
-      "competition": "Womens Big Bash League 2026 - 11th Match",
-      "sport": "cricket",
-      "source_id": "srhady-willow-event",
-      "status": "UPCOMING",
-      "reason": "kickoff_missing_and_not_live",
-      "start_time": ""
     },
     {
       "name": "AEK Athens Vs Real Madrid",
@@ -592,7 +592,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 155,
+    "total": 157,
     "discarded": 39,
     "examples": [
       {
@@ -913,46 +913,67 @@
   "authority_status": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 1,
+    "live": 0,
     "recorded": 16,
-    "conflict": 0,
-    "unmatched": 21,
+    "conflict": 1,
+    "unmatched": 22,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 1,
       "UPCOMING": 16
     },
     "by_confidence": {
-      "HIGH": 13,
-      "LOW": 4
+      "CONFLICT": 1,
+      "LOW": 4,
+      "HIGH": 12
     },
     "applied_fixtures": [],
-    "conflicts": []
+    "conflicts": [
+      {
+        "name": "Adelaide Strikers Women Vs Brisbane Heat Women",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543953); LiveScore livescore=FT (6, event 1813036)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "authority_status_carried": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 1,
+    "live": 0,
     "recorded": 1,
-    "conflict": 0,
+    "conflict": 1,
     "unmatched": 8,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
     "by_status": {
-      "LIVE": 1,
       "UPCOMING": 1
     },
     "by_confidence": {
-      "HIGH": 1,
+      "CONFLICT": 1,
       "LOW": 1
     },
     "applied_fixtures": [],
-    "conflicts": []
+    "conflicts": [
+      {
+        "name": "Adelaide Strikers Women Vs Brisbane Heat Women",
+        "reason": "independent authorities disagree: ESPN espn-header=Scheduled (Scheduled, event 1543953); LiveScore livescore=FT (6, event 1813036)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "fixture_status_api": {
     "asked": 1,
@@ -962,38 +983,47 @@
     "no_verdict": 1
   },
   "live_protection": {
-    "carried_forward": 1,
+    "carried_forward": 0,
     "released_ended": 0,
-    "released_ended_ids": [],
-    "retired_terminal": [],
+    "released_ended_ids": [
+      "mighty-dallas-vs-chicago-cavaliers"
+    ],
+    "retired_terminal": [
+      {
+        "id": "mighty-dallas-vs-chicago-cavaliers",
+        "name": "Mighty Dallas vs Chicago Cavaliers",
+        "provenance": "post_match_grace_expired",
+        "reason": "multi-signal confirmation: estimated end passed, every link dead, and 22 consecutive scans with no live signal"
+      }
+    ],
     "released_listing_expired": 0,
     "released_dead_link": 0,
-    "released_stale": 0,
+    "released_stale": 1,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 1,
-    "probe_dead": 0,
+    "probe_alive": 0,
+    "probe_dead": 1,
     "probe_inconclusive": 0,
-    "end_pending": 1,
-    "released_confirmed": 0,
+    "end_pending": 0,
+    "released_confirmed": 1,
     "protected_playing": 0,
     "lifecycle_states": {
-      "END_PENDING": 1
+      "ENDED": 1
     },
     "reconciled_into_canonical": 0,
     "reconciled_streams": 0,
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 0,
-    "total": 1327,
+    "added": 1,
+    "total": 1328,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
     "absence_only_refused": 0,
     "never_archived_statuses": [],
-    "decided_this_scan": 0
+    "decided_this_scan": 1
   },
   "source_outage": {
     "sources_in_outage": [
@@ -1063,24 +1093,24 @@
   "competition_labels_clarified": [],
   "sport_filter": {
     "at_merge": {
-      "total": 44,
-      "published": 38,
+      "total": 45,
+      "published": 39,
       "rejected": 5,
       "quarantined": 1,
       "states": {
-        "confirmed_cricket": 25,
+        "confirmed_cricket": 26,
         "unknown": 1,
         "confirmed_other": 5,
         "confirmed_football": 13
       },
       "by_source": {
         "sm-sports-data": {
-          "total": 24,
-          "cricket": 8,
+          "total": 23,
+          "cricket": 7,
           "football": 11,
           "quarantined": 0,
           "rejected": 5,
-          "published": 19
+          "published": 18
         },
         "srhady-primevideo-sports": {
           "total": 5,
@@ -1115,28 +1145,28 @@
           "published": 14
         },
         "sportlive-fancode-backup": {
-          "total": 14,
-          "cricket": 8,
+          "total": 15,
+          "cricket": 9,
           "football": 5,
           "quarantined": 0,
           "rejected": 1,
-          "published": 13
+          "published": 14
         },
         "drmlive-fancode-mirror": {
-          "total": 14,
-          "cricket": 8,
+          "total": 15,
+          "cricket": 9,
           "football": 5,
           "quarantined": 0,
           "rejected": 1,
-          "published": 13
+          "published": 14
         },
         "sayanpal-fancode-mirror": {
-          "total": 14,
-          "cricket": 8,
+          "total": 15,
+          "cricket": 9,
           "football": 5,
           "quarantined": 0,
           "rejected": 1,
-          "published": 13
+          "published": 14
         }
       },
       "rejected_examples": [
@@ -1193,12 +1223,12 @@
       "leaks": []
     },
     "today_match": {
-      "total": 10,
-      "published": 10,
+      "total": 9,
+      "published": 9,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_cricket": 10
+        "confirmed_cricket": 9
       },
       "by_source": {
         "sm-sports-data": {
@@ -1210,20 +1240,20 @@
           "published": 6
         },
         "srhady-primevideo-sports": {
-          "total": 5,
-          "cricket": 5,
+          "total": 4,
+          "cricket": 4,
           "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 5
+          "published": 4
         },
         "srhady-willow-event": {
-          "total": 5,
-          "cricket": 5,
+          "total": 4,
+          "cricket": 4,
           "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 5
+          "published": 4
         },
         "sm-fancode": {
           "total": 1,
@@ -1247,31 +1277,15 @@
       "leaks": []
     },
     "upcoming": {
-      "total": 29,
-      "published": 29,
+      "total": 30,
+      "published": 30,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_football": 13,
-        "confirmed_cricket": 16
+        "confirmed_cricket": 17,
+        "confirmed_football": 13
       },
       "by_source": {
-        "sm-sports-data": {
-          "total": 13,
-          "cricket": 2,
-          "football": 11,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 13
-        },
-        "srhady-willow-event": {
-          "total": 10,
-          "cricket": 10,
-          "football": 0,
-          "quarantined": 0,
-          "rejected": 0,
-          "published": 10
-        },
         "sm-fancode": {
           "total": 13,
           "cricket": 8,
@@ -1281,20 +1295,20 @@
           "published": 13
         },
         "sportlive-fancode-backup": {
-          "total": 13,
-          "cricket": 8,
+          "total": 14,
+          "cricket": 9,
           "football": 5,
           "quarantined": 0,
           "rejected": 0,
-          "published": 13
+          "published": 14
         },
         "drmlive-fancode-mirror": {
-          "total": 13,
-          "cricket": 8,
+          "total": 14,
+          "cricket": 9,
           "football": 5,
           "quarantined": 0,
           "rejected": 0,
-          "published": 13
+          "published": 14
         },
         "vk1817-fancode-mirror": {
           "total": 13,
@@ -1305,12 +1319,28 @@
           "published": 13
         },
         "sayanpal-fancode-mirror": {
-          "total": 13,
-          "cricket": 8,
+          "total": 14,
+          "cricket": 9,
           "football": 5,
           "quarantined": 0,
           "rejected": 0,
-          "published": 13
+          "published": 14
+        },
+        "sm-sports-data": {
+          "total": 12,
+          "cricket": 1,
+          "football": 11,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 12
+        },
+        "srhady-willow-event": {
+          "total": 10,
+          "cricket": 10,
+          "football": 0,
+          "quarantined": 0,
+          "rejected": 0,
+          "published": 10
         }
       },
       "rejected_examples": [],
@@ -1326,13 +1356,13 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 306,
-    "cricket_kept": 25,
+    "raw_events": 308,
+    "cricket_kept": 26,
     "football_kept": 13,
     "other_discarded": 44,
     "unresolved": 1,
-    "today_final": 10,
-    "upcoming_final": 29,
+    "today_final": 9,
+    "upcoming_final": 30,
     "published_states": {
       "confirmed_cricket": 26,
       "confirmed_football": 13
@@ -1362,7 +1392,7 @@
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
       "provider_or_authority": 0,
-      "estimate": 1,
+      "estimate": 0,
       "none": 9
     }
   },
@@ -1371,8 +1401,8 @@
     "published_fixtures": 39,
     "fixtures_with_verified_stream": 12,
     "fixtures_with_zero_verified": 34,
-    "published_without_stream": 30,
-    "fallback_available": 8,
+    "published_without_stream": 31,
+    "fallback_available": 7,
     "targeted_fixtures": 4,
     "targeted_attempts": 14,
     "fixtures_with_a_first_link_time": 3,
@@ -1388,13 +1418,13 @@
   "fixture_authority_shadow": {
     "shadow_only": true,
     "fixtures": 39,
-    "verified": 16,
+    "verified": 15,
     "partial_authority": 0,
     "unverified": 22,
-    "conflict": 1,
+    "conflict": 2,
     "matched_by_two_independent_authorities": 13,
-    "authority_agreements": 13,
-    "authority_disagreements": 0,
+    "authority_agreements": 12,
+    "authority_disagreements": 1,
     "card_status_conflicts": 0,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
@@ -1408,7 +1438,7 @@
     ],
     "published_fixtures": 39,
     "fixtures_with_stream": 8,
-    "fixtures_playable_via_catalogue": 1,
+    "fixtures_playable_via_catalogue": 0,
     "fixtures_with_fresh_stream": 8,
     "fixtures_with_carried_stream": 0,
     "today_with_stream": 8,
