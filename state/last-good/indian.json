@@ -1,7 +1,7 @@
 {
   "category": "Indian",
-  "updated_at": "2026-11-06T16:35:33.231143+00:00",
-  "count": 41,
+  "updated_at": "2026-11-06T19:40:46.508245+00:00",
+  "count": 38,
   "channels": [
     {
       "id": "star-jalsha",
@@ -28,10 +28,39 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "smartplaytv-worker-stream",
       "metadata_only": false,
-      "available_link_count": 2,
+      "available_link_count": 3,
       "backups": [
         {
           "name": "Backup-1",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "media",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Playback Unproven",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "iptv-org-in-bangla",
+          "host": "cdn98.com",
+          "playback_unproven": true,
+          "playback_unproven_reason": "the playback proxy gets HTTP 403 for this route, so no viewer can reach it",
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_fc18bef6400d5dcb81b3877bb464e18d",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [
+              "play_token"
+            ],
+            "drm": false
+          }
+        },
+        {
+          "name": "Backup-2",
           "url": "http://rgkkw.live:80/live/1Aoen7elp5/IgMJ60tmAa/198.ts",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
@@ -89,7 +118,7 @@
       "routing_reason": "configured_tv_pipeline",
       "source_id": "sm-iptv-combined",
       "metadata_only": false,
-      "available_link_count": 3,
+      "available_link_count": 4,
       "backups": [
         {
           "name": "Backup-1",
@@ -130,6 +159,25 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_3068a9c4d768dc902385cf03cd10e5b9"
+        },
+        {
+          "name": "Backup-3",
+          "url": "http://flowutc.com/live/MAGTF8AV71/bUiJLEJKG5/78981.ts",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "mpegts",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "smartplaytv-worker-stream",
+          "host": "flowutc.com",
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_07532e1d44bf7bab1cc2410d8c2f9acc"
         }
       ],
       "source_provenance": [
@@ -324,12 +372,55 @@
     {
       "id": "sony-max",
       "name": "Sony MAX",
-      "primary_stream_key": "093e0e49e665dc99c46879d54cb98f78c94c8bc798d3603c14b05ee5e385bd5a",
+      "primary_stream_key": "10a6d0ee9f17dac148d8571c8bb54f992e511ee6213e9725ad24360ceee37d31",
       "sport_type": "",
       "sport_type_derived": false,
-      "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sony-max.png",
+      "logo": "https://assets-prod.services.toffeelive.com/f_png,w_300,q_85/Ai51-JQBv9knK3AH_jWs/posters/663e52a6-1a9f-4458-b4aa-7c03d84972f1.webp",
       "category": "Indian",
-      "url": "https://drk6xq0vhn.gpcdn.net/live/max_hd_abr/index.m3u8",
+      "url": "http://live.balajibroadband.com:3500/live/476.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "hls",
+      "requires_headers": false,
+      "inherit_manifest_query": false,
+      "verification_mode": "transient_rescue",
+      "verification_status": "retryable_pending",
+      "verification_badge": "Temporary",
+      "verified": false,
+      "publish_allowed": true,
+      "source_pipeline": "tv",
+      "original_source_pipeline": "tv",
+      "content_kind": "live_tv",
+      "routing_reason": "configured_tv_pipeline",
+      "source_id": "manual-playlist-1",
+      "metadata_only": false,
+      "available_link_count": 1,
+      "backups": [],
+      "source_provenance": [
+        {
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        }
+      ],
+      "source_ids": [
+        "manual-playlist-1"
+      ],
+      "resolution": "HD",
+      "resolution_height": 720,
+      "transient_rescue_count": 2,
+      "vantage_note": "HTTP 500 from this run's egress on a route the published catalogue was already carrying. Held for one more scan instead of being deleted; a second consecutive transient answer, or any permanent one, fails it.",
+      "playback_id": "ctv_5b9270e8ee3e286b439d37c34f56397a"
+    },
+    {
+      "id": "zee-cinema",
+      "name": "Zee Cinema",
+      "primary_stream_key": "6a4dcd4af01d74d1ba9866fb0edd9db20c3d5daaa900bec3f0e43b4021a0d0ba",
+      "sport_type": "",
+      "sport_type_derived": false,
+      "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/zee-cinema.png",
+      "category": "Indian",
+      "url": "https://raw.githubusercontent.com/amazeyourself/adaptive-streams/refs/heads/main/streams/sg/YuppTV/ZeeCinemaAPAC.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "hls",
@@ -350,160 +441,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "url": "http://live.balajibroadband.com:3500/live/476.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "transient_rescue",
-          "verification_status": "retryable_pending",
-          "verification_badge": "Temporary",
-          "verified": false,
-          "publish_allowed": true,
-          "source_id": "manual-playlist-1",
-          "host": "live.balajibroadband.com",
-          "transient_rescue_count": 1,
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_5b9270e8ee3e286b439d37c34f56397a"
-        }
-      ],
-      "source_provenance": [
-        {
-          "source_id": "sm-iptv-combined",
-          "source_name": "SM IPTV Combined Live TV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
-        },
-        {
-          "source_id": "tv-bd1-bestiptvpro",
-          "source_name": "tv-bd1 Best IPTV Pro",
-          "source_url": "https://raw.githubusercontent.com/tv-bd1/bestiptvpro/refs/heads/main/All.m3u"
-        }
-      ],
-      "source_ids": [
-        "sm-iptv-combined",
-        "tv-bd1-bestiptvpro"
-      ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "playback_id": "ctv_d22cc4666179f48822b752934eb3e381"
-    },
-    {
-      "id": "zee-bollywood",
-      "name": "Zee Bollywood",
-      "primary_stream_key": "4a5545835ba9d2bc66fa8ff3d27851a311c33fad07fd18d7a2484dc67d656919",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/zee-bollywood.png",
-      "category": "Indian",
-      "url": "https://stream.ottplus.live/live/zee_bollywood_abr/index.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "url": "https://drk6xq0vhn.gpcdn.net/live/zee_bollywood_abr/index.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-iptv-combined",
-          "host": "drk6xq0vhn.gpcdn.net",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_da57eb163e15913334b949c59ba0933b"
-        }
-      ],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        },
-        {
-          "source_id": "sm-iptv-combined",
-          "source_name": "SM IPTV Combined Live TV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1",
-        "sm-iptv-combined"
-      ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "playback_id": "ctv_1756636cb2b7db46a200c0bf837a27d4"
-    },
-    {
-      "id": "zee-cinema",
-      "name": "Zee Cinema",
-      "primary_stream_key": "6752601f20ddad0b5f0824dacfef6f5b9e4f902effaa84eab52cea0b258341d7",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/zee-cinema.png",
-      "category": "Indian",
-      "url": "https://stream.ottplus.live/live/zee_cinema_hd_abr/index.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 3,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "url": "https://raw.githubusercontent.com/amazeyourself/adaptive-streams/refs/heads/main/streams/sg/YuppTV/ZeeCinemaAPAC.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-iptv-combined",
-          "host": "raw.githubusercontent.com",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_226a393e26b01598232f323fd41a3451"
-        },
-        {
-          "name": "Backup-2",
           "url": "https://cdn.smartplaytv.bond/server7/zeecinema.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "proxy_first",
@@ -524,23 +461,17 @@
       ],
       "source_provenance": [
         {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        },
-        {
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
           "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
         }
       ],
       "source_ids": [
-        "manual-playlist-1",
         "sm-iptv-combined"
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_cd2bec3829f73dd217e62c27a298f23a"
+      "playback_id": "ctv_226a393e26b01598232f323fd41a3451"
     },
     {
       "id": "zb-cinema",
@@ -584,8 +515,8 @@
           "publish_allowed": true,
           "source_id": "smartplaytv-worker-stream",
           "host": "server.zillarbarta.com",
-          "resolution": "HD",
-          "resolution_height": 720,
+          "resolution": "FHD",
+          "resolution_height": 1080,
           "playback_id": "ctv_f1d0e941680fa0a9639ee23dcb025ba3"
         }
       ],
@@ -605,19 +536,19 @@
         "manual-playlist-1",
         "sm-iptv-combined"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
+      "resolution": "FHD",
+      "resolution_height": 1080,
       "playback_id": "ctv_3b7094a9e953147f399f12e9e779e2d4"
     },
     {
       "id": "zoom",
       "name": "Zoom",
-      "primary_stream_key": "6f0d91a758bbe85138257c7d783b7bd51f0fda6ac12073800d09ea9c2a07e24a",
+      "primary_stream_key": "81271231aec11fed8649d03995655309d5b1ad9ec9b6a9a0f8446baa5dc8ed93",
       "sport_type": "",
       "sport_type_derived": false,
       "logo": "https://static.wikia.nocookie.net/logopedia/images/b/b8/Zoom_2018_logo.jpg",
       "category": "Indian",
-      "url": "https://dai.google.com/linear/hls/event/JCAm25qkRXiKcK1AJMlvKQ/master.m3u8",
+      "url": "https://pubads.g.doubleclick.net/ssai/event/JCAm25qkRXiKcK1AJMlvKQ/master.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "hls",
@@ -638,7 +569,7 @@
       "backups": [
         {
           "name": "Backup-1",
-          "url": "https://pubads.g.doubleclick.net/ssai/event/JCAm25qkRXiKcK1AJMlvKQ/master.m3u8",
+          "url": "https://dai.google.com/linear/hls/event/JCAm25qkRXiKcK1AJMlvKQ/master.m3u8",
           "header_profile": "android_tv",
           "proxy_mode": "direct_first",
           "stream_type": "hls",
@@ -650,10 +581,10 @@
           "verified": true,
           "publish_allowed": true,
           "source_id": "manual-playlist-1",
-          "host": "pubads.g.doubleclick.net",
+          "host": "dai.google.com",
           "resolution": "HD",
           "resolution_height": 720,
-          "playback_id": "ctv_aa022b375779b799768549fd8b7ef38c"
+          "playback_id": "ctv_534017ba91e117381b1990d50d6d57a1"
         },
         {
           "name": "Backup-2",
@@ -693,7 +624,7 @@
       ],
       "resolution": "HD",
       "resolution_height": 720,
-      "playback_id": "ctv_534017ba91e117381b1990d50d6d57a1"
+      "playback_id": "ctv_aa022b375779b799768549fd8b7ef38c"
     },
     {
       "id": "joo-music",
@@ -907,17 +838,17 @@
     },
     {
       "id": "balle-balle",
-      "name": "BALLE BALLE",
-      "primary_stream_key": "df0003dcc4030e3afc27d302426dcf7f11a9b79cbf2431816724c064d8c2f6bb",
+      "name": "Balle Balle",
+      "primary_stream_key": "ec43d0018de2bd4494105492030c15c4bb4c4e2609ee6323969c3af299d29c03",
       "sport_type": "",
       "sport_type_derived": false,
       "logo": "https://i.ibb.co/pjFfdDjM/logo-e1568618159543.png",
       "category": "Indian",
-      "url": "https://cdn.smartplaytv.bond/server7/balleballe.m3u8",
+      "url": "https://mcncdndigital.com/balleballetv/index.m3u8",
       "header_profile": "android_tv",
-      "proxy_mode": "proxy_first",
+      "proxy_mode": "direct_first",
       "stream_type": "hls",
-      "requires_headers": true,
+      "requires_headers": false,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -928,23 +859,49 @@
       "original_source_pipeline": "tv",
       "content_kind": "live_tv",
       "routing_reason": "configured_tv_pipeline",
-      "source_id": "smartplaytv-worker-stream",
+      "source_id": "manual-playlist-1",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "url": "https://cdn.smartplaytv.bond/server7/balleballe.m3u8",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_first",
+          "stream_type": "hls",
+          "requires_headers": true,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "smartplaytv-worker-stream",
+          "host": "cdn.smartplaytv.bond",
+          "resolution": "2K",
+          "resolution_height": 1510,
+          "playback_id": "ctv_c73f5038779bdcb242e68918fa6817a8"
+        }
+      ],
       "source_provenance": [
         {
-          "source_id": "smartplaytv-worker-stream",
-          "source_name": "SmartPlay TV Worker Stream",
-          "source_url": "https://cloud.smartplaytv.workers.dev/?u=admin&s=5&p=4545&f=.m3u8"
+          "source_id": "manual-playlist-1",
+          "source_name": "manual.m3u",
+          "source_url": "manual/manual.m3u"
+        },
+        {
+          "source_id": "sm-iptv-combined",
+          "source_name": "SM IPTV Combined Live TV",
+          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
         }
       ],
       "source_ids": [
-        "smartplaytv-worker-stream"
+        "manual-playlist-1",
+        "sm-iptv-combined"
       ],
-      "resolution": "2K",
-      "resolution_height": 1510,
-      "playback_id": "ctv_c73f5038779bdcb242e68918fa6817a8"
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_020e04a38392eef0caa8a1e14e5468c2"
     },
     {
       "id": "sheemaroo-bollywood",
@@ -1061,7 +1018,7 @@
           "publish_allowed": true,
           "source_id": "manual-playlist-1",
           "host": "live.balajibroadband.com",
-          "transient_rescue_count": 1,
+          "transient_rescue_count": 2,
           "resolution": "HD",
           "resolution_height": 720,
           "playback_id": "ctv_824f4cc830bdb71a3d4fb955a9948b30"
@@ -1127,67 +1084,6 @@
       "resolution": "HD",
       "resolution_height": 720,
       "playback_id": "ctv_28098cbdc4d4f101ccb7e9bde63a9e2e"
-    },
-    {
-      "id": "sony-television",
-      "name": "Sony Television",
-      "primary_stream_key": "4f3d84483f49225401125f11162d9d7fd9c760433e567ca2736cef243b8b1868",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "",
-      "category": "Indian",
-      "url": "https://stream.ottplus.live/live/sony_ent_sd_abr/index.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "url": "https://stream.ottplus.live/live/sony_ent_hd_abr/index.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "manual-playlist-1",
-          "host": "stream.ottplus.live",
-          "resolution": "HD",
-          "resolution_height": 720,
-          "playback_id": "ctv_1cb3c0fa5ec35d60e6efc661d5eb63c1"
-        }
-      ],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1"
-      ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "playback_id": "ctv_ed286b728a6e9fddc068dc6cdb8d4f04"
     },
     {
       "id": "sony-sab",
@@ -1650,12 +1546,12 @@
     {
       "id": "tv",
       "name": "&TV",
-      "primary_stream_key": "3f0b3dd09efd0a61ffa7a2ad1f20bae50187ac6f99594729324e1939b0c940d9",
+      "primary_stream_key": "f4c130759a13733f44993b6ae1cdc6c07bff3afc326547b7e0e379b048ee8a20",
       "sport_type": "",
       "sport_type_derived": false,
       "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tv.png",
       "category": "Indian",
-      "url": "https://stream.ottplus.live/live/and_tv_hd_abr/index.m3u8",
+      "url": "https://3f56f997.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/U2Ftc3VuZy1nYl9BbmRUVl9ITFM/playlist.m3u8",
       "header_profile": "android_tv",
       "proxy_mode": "direct_first",
       "stream_type": "hls",
@@ -1670,36 +1566,11 @@
       "original_source_pipeline": "tv",
       "content_kind": "live_tv",
       "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
+      "source_id": "sm-iptv-combined",
       "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "url": "https://3f56f997.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/U2Ftc3VuZy1nYl9BbmRUVl9ITFM/playlist.m3u8",
-          "header_profile": "android_tv",
-          "proxy_mode": "direct_first",
-          "stream_type": "hls",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-iptv-combined",
-          "host": "3f56f997.wurl.com",
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_857f4564235806620b9dbeecfe1dcd4e"
-        }
-      ],
+      "available_link_count": 1,
+      "backups": [],
       "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        },
         {
           "source_id": "sm-iptv-combined",
           "source_name": "SM IPTV Combined Live TV",
@@ -1707,12 +1578,11 @@
         }
       ],
       "source_ids": [
-        "manual-playlist-1",
         "sm-iptv-combined"
       ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "playback_id": "ctv_43871c01bde13a06976b4be055a04590"
+      "resolution": "FHD",
+      "resolution_height": 1080,
+      "playback_id": "ctv_857f4564235806620b9dbeecfe1dcd4e"
     },
     {
       "id": "dangal-tv",
@@ -1760,53 +1630,6 @@
       "resolution": "HD",
       "resolution_height": 720,
       "playback_id": "ctv_78c1ad945ce9bb4d4887a6b0c313a18b"
-    },
-    {
-      "id": "zee-tv",
-      "name": "Zee Tv",
-      "primary_stream_key": "30c4b60f024641fe3011629acf937e1fbf91e5d6d00d0bea56c11e41ecd53d04",
-      "sport_type": "",
-      "sport_type_derived": false,
-      "logo": "https://assets-prod.services.toffeelive.com/f_png,w_300,q_85/ltPQX5UBm1RY_In7b3F1/posters/d039d9df-9877-4969-a0b6-56888ebe2385.png",
-      "category": "Indian",
-      "url": "https://stream.ottplus.live/live/zee_tv_hd_abr/index.m3u8",
-      "header_profile": "android_tv",
-      "proxy_mode": "direct_first",
-      "stream_type": "hls",
-      "requires_headers": false,
-      "inherit_manifest_query": false,
-      "verification_mode": "global",
-      "verification_status": "verified_global",
-      "verification_badge": "Verified",
-      "verified": true,
-      "publish_allowed": true,
-      "source_pipeline": "tv",
-      "original_source_pipeline": "tv",
-      "content_kind": "live_tv",
-      "routing_reason": "configured_tv_pipeline",
-      "source_id": "manual-playlist-1",
-      "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
-      "source_provenance": [
-        {
-          "source_id": "manual-playlist-1",
-          "source_name": "manual.m3u",
-          "source_url": "manual/manual.m3u"
-        },
-        {
-          "source_id": "sm-iptv-combined",
-          "source_name": "SM IPTV Combined Live TV",
-          "source_url": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u"
-        }
-      ],
-      "source_ids": [
-        "manual-playlist-1",
-        "sm-iptv-combined"
-      ],
-      "resolution": "HD",
-      "resolution_height": 720,
-      "playback_id": "ctv_baadd0049e1ea7d4096b339862d93b21"
     },
     {
       "id": "zee-24-kalak",
