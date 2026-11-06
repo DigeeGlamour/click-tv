@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-11-06T02:24:35.608538+00:00",
-  "today_match_count": 7,
+  "generated_at": "2026-11-06T02:44:38.540044+00:00",
+  "today_match_count": 5,
   "upcoming_count": 31,
   "today_missing_logo": [],
   "upcoming_missing_logo": [],
@@ -8,7 +8,7 @@
   "matched": 0,
   "corrected": 0,
   "catalogue": 0,
-  "provider_fixture": 151,
+  "provider_fixture": 150,
   "provider_rejected": 107,
   "provider_rejected_reasons": {
     "provider_dead_status": 77,
@@ -592,7 +592,7 @@
   "pool_attached": 0,
   "pool_unclaimed": 0,
   "sport_filter_early": {
-    "total": 151,
+    "total": 150,
     "discarded": 69,
     "examples": [
       {
@@ -1114,22 +1114,31 @@
   "authority_status_carried": {
     "applied": 0,
     "pending_confirmation": 0,
-    "live": 1,
+    "live": 0,
     "recorded": 0,
-    "conflict": 0,
+    "conflict": 1,
     "unmatched": 5,
     "start_window": 0,
     "start_window_fixtures": [],
     "kickoff_corrected": 0,
     "kickoff_corrections": [],
-    "by_status": {
-      "LIVE": 1
-    },
+    "by_status": {},
     "by_confidence": {
-      "LOW": 1
+      "CONFLICT": 1
     },
     "applied_fixtures": [],
-    "conflicts": []
+    "conflicts": [
+      {
+        "name": "Cruzeiro Vs Bahia",
+        "reason": "independent authorities disagree: ESPN espn-header=52' (STATUS_SECOND_HALF, event 401841303); LiveScore livescore=FT (6, event 1708743)",
+        "status": "",
+        "confidence": "CONFLICT",
+        "upstream_families": [
+          "ESPN",
+          "LiveScore"
+        ]
+      }
+    ]
   },
   "fixture_status_api": {
     "asked": 2,
@@ -1139,23 +1148,32 @@
     "no_verdict": 2
   },
   "live_protection": {
-    "carried_forward": 5,
+    "carried_forward": 3,
     "released_ended": 0,
-    "released_ended_ids": [],
-    "retired_terminal": [],
-    "released_listing_expired": 0,
+    "released_ended_ids": [
+      "mighty-dallas-vs-seattle-moose"
+    ],
+    "retired_terminal": [
+      {
+        "id": "mighty-dallas-vs-seattle-moose",
+        "name": "Mighty Dallas vs Seattle Moose",
+        "provenance": "post_match_grace_expired",
+        "reason": "multi-signal confirmation: estimated end passed, every link dead, and 21 consecutive scans with no live signal"
+      }
+    ],
+    "released_listing_expired": 1,
     "released_dead_link": 0,
-    "released_stale": 0,
+    "released_stale": 2,
     "released_unscheduled_expired": 0,
     "released_exhausted": 0,
-    "probe_alive": 5,
-    "probe_dead": 0,
+    "probe_alive": 4,
+    "probe_dead": 1,
     "probe_inconclusive": 0,
-    "end_pending": 2,
-    "released_confirmed": 0,
+    "end_pending": 0,
+    "released_confirmed": 2,
     "protected_playing": 0,
     "lifecycle_states": {
-      "END_PENDING": 2,
+      "ENDED": 2,
       "LIVE": 3
     },
     "reconciled_into_canonical": 0,
@@ -1163,15 +1181,15 @@
     "reconciled_playing_kept_separate": 0
   },
   "event_archive": {
-    "added": 0,
-    "total": 1373,
+    "added": 1,
+    "total": 1374,
     "refused": 0,
     "refused_names": [],
     "absence_only": 0,
     "absence_only_names": [],
-    "absence_only_refused": 0,
+    "absence_only_refused": 1,
     "never_archived_statuses": [],
-    "decided_this_scan": 0
+    "decided_this_scan": 1
   },
   "source_outage": {
     "sources_in_outage": [],
@@ -1183,7 +1201,7 @@
   },
   "channel_names": {
     "stamped": 0,
-    "unresolved": 38,
+    "unresolved": 37,
     "names": {}
   },
   "streamed_provider": {
@@ -1205,7 +1223,7 @@
     "unmatched": 0
   },
   "sports_poster_enrichment": {
-    "attempted": 34,
+    "attempted": 33,
     "poster_filled": 0,
     "badge_filled": 12,
     "badge_used_as_logo": 0,
@@ -1217,7 +1235,7 @@
       "empty": 0,
       "rate_limited": 2,
       "errors": 0,
-      "skipped_rate_limited": 22,
+      "skipped_rate_limited": 21,
       "thesportsdb_key": "public_test_key"
     }
   },
@@ -1231,7 +1249,7 @@
     {
       "kept": "Cricket Preview USA Seniors Cricket NPL 2026 Dallas Lions vs NY X Fact",
       "folded": "Dallas Lions vs NY X Factor",
-      "kickoff": "2026-11-06T02:24:09+00:00",
+      "kickoff": "2026-11-06T02:44:09+00:00",
       "home_away_corrected": "",
       "rule": "both clubs named more briefly, one candidate"
     }
@@ -1298,7 +1316,7 @@
           "rejected": 0,
           "published": 16
         },
-        "sayanpal-fancode-mirror": {
+        "vk1817-fancode-mirror": {
           "total": 16,
           "cricket": 9,
           "football": 7,
@@ -1306,7 +1324,7 @@
           "rejected": 0,
           "published": 16
         },
-        "vk1817-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 16,
           "cricket": 9,
           "football": 7,
@@ -1353,30 +1371,30 @@
       "leaks": []
     },
     "today_match": {
-      "total": 7,
-      "published": 7,
+      "total": 5,
+      "published": 5,
       "rejected": 0,
       "quarantined": 0,
       "states": {
-        "confirmed_cricket": 3,
-        "confirmed_football": 4
+        "confirmed_cricket": 2,
+        "confirmed_football": 3
       },
       "by_source": {
         "srhady-primevideo-sports": {
-          "total": 6,
-          "cricket": 3,
-          "football": 3,
+          "total": 4,
+          "cricket": 2,
+          "football": 2,
           "quarantined": 0,
           "rejected": 0,
-          "published": 6
+          "published": 4
         },
         "srhady-willow-event": {
-          "total": 3,
-          "cricket": 3,
+          "total": 2,
+          "cricket": 2,
           "football": 0,
           "quarantined": 0,
           "rejected": 0,
-          "published": 3
+          "published": 2
         },
         "sm-sports-data": {
           "total": 1,
@@ -1441,7 +1459,7 @@
           "rejected": 0,
           "published": 16
         },
-        "sayanpal-fancode-mirror": {
+        "vk1817-fancode-mirror": {
           "total": 16,
           "cricket": 9,
           "football": 7,
@@ -1449,7 +1467,7 @@
           "rejected": 0,
           "published": 16
         },
-        "vk1817-fancode-mirror": {
+        "sayanpal-fancode-mirror": {
           "total": 16,
           "cricket": 9,
           "football": 7,
@@ -1471,16 +1489,16 @@
     "wrongly_refused": []
   },
   "sport_pipeline": {
-    "raw_events": 258,
+    "raw_events": 257,
     "cricket_kept": 24,
     "football_kept": 10,
     "other_discarded": 73,
     "unresolved": 0,
-    "today_final": 7,
+    "today_final": 5,
     "upcoming_final": 31,
     "published_states": {
-      "confirmed_cricket": 25,
-      "confirmed_football": 13
+      "confirmed_cricket": 24,
+      "confirmed_football": 12
     },
     "other_sport_leak": 0,
     "ball_sport_wrongly_refused": 0
@@ -1493,7 +1511,7 @@
     "future": 0,
     "newest_kickoff": "2026-08-27T23:00:00+00:00",
     "oldest_kickoff": "2026-07-21T13:45:00+00:00",
-    "days_since_newest": 70.1,
+    "days_since_newest": 70.2,
     "schedulable_now": 0
   },
   "undeliverable_routes_dropped": 0,
@@ -1507,17 +1525,17 @@
     "dropped_fixtures_limit": 40,
     "published_retiring_by_basis": {
       "provider_or_authority": 0,
-      "estimate": 2,
+      "estimate": 0,
       "none": 5
     }
   },
   "fixture_stream_health": {
-    "fixtures": 47,
-    "published_fixtures": 38,
+    "fixtures": 45,
+    "published_fixtures": 36,
     "fixtures_with_verified_stream": 11,
-    "fixtures_with_zero_verified": 36,
+    "fixtures_with_zero_verified": 34,
     "published_without_stream": 31,
-    "fallback_available": 6,
+    "fallback_available": 4,
     "targeted_fixtures": 0,
     "targeted_attempts": 0,
     "fixtures_with_a_first_link_time": 0,
@@ -1528,28 +1546,28 @@
     "fixtures_left_with_nothing": 2,
     "distinct_failure_codes": 6,
     "unrecognised_candidate_groups": 41,
-    "unrecognised_failed_routes": 74
+    "unrecognised_failed_routes": 76
   },
   "fixture_authority_shadow": {
     "shadow_only": true,
-    "fixtures": 38,
+    "fixtures": 36,
     "verified": 11,
-    "partial_authority": 1,
-    "unverified": 25,
-    "conflict": 1,
+    "partial_authority": 0,
+    "unverified": 23,
+    "conflict": 2,
     "matched_by_two_independent_authorities": 9,
     "authority_agreements": 7,
-    "authority_disagreements": 1,
+    "authority_disagreements": 2,
     "card_status_conflicts": 0,
     "authority_unavailable": [],
     "report": "reports/fixture-authority-shadow.json",
-    "not_published": 1
+    "not_published": 3
   },
   "stream_health": {
     "sources_in_outage": [],
-    "published_fixtures": 38,
+    "published_fixtures": 36,
     "fixtures_with_stream": 3,
-    "fixtures_playable_via_catalogue": 4,
+    "fixtures_playable_via_catalogue": 2,
     "fixtures_with_fresh_stream": 2,
     "fixtures_with_carried_stream": 1,
     "today_with_stream": 3,
