@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-07T01:24:27.498243+00:00",
+  "updated_at": "2026-11-07T01:44:14.848558+00:00",
   "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -259,7 +259,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 18,
+      "carried_forward_misses": 19,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-06T20:04:40.301252+00:00"
     },
@@ -624,7 +624,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
+      "carried_forward_misses": 3,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T01:04:26.989462+00:00"
     },
@@ -875,7 +875,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 16,
+      "carried_forward_misses": 17,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-06T20:44:38.145998+00:00"
     },
@@ -1060,12 +1060,11 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=3' (STATUS_FIRST_HALF, event 401841302)",
+        "ESPN espn-header=84' (STATUS_SECOND_HALF, event 401841302)",
         "LiveScore livescore=FT (6, event 1708746)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=3' (STATUS_FIRST_HALF, event 401841302); LiveScore livescore=FT (6, event 1708746)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tysrrx1473538156.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/stvvwp1473538082.png",
       "playback_id": "ctv_dba2eb5537be6cf056ceb35ef20457a6",
@@ -1075,20 +1074,29 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=84' (STATUS_SECOND_HALF, event 401841302); LiveScore livescore=FT (6, event 1708746)",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-07T01:44:09.356058+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-07T01:44:09.356058+00:00"
     },
     {
       "id": "club-necaxa-vs-club-tijuana",
       "name": "Club Necaxa Vs Club Tijuana",
-      "primary_stream_key": "6ec1dbbda0a82b9cff81cd8bee28e82636665e2e9c3a6b449299bee010532dc9",
+      "primary_stream_key": "a040a838ac95f6ec65f85de5743f9f550d41379d4229780a6c5cb85281254d7f",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://img.sofascore.com/api/v1/team/1944/image",
       "category": "today_match",
-      "header_profile": "android_chrome",
-      "proxy_mode": "proxy_only",
-      "stream_type": "dash",
-      "requires_headers": false,
+      "url": "https://chatgpt.hereisman.net/playlist/59421/load-playlist?&.m3u8",
+      "header_profile": "android_tv",
+      "proxy_mode": "proxy_first",
+      "stream_type": "media",
+      "requires_headers": true,
       "inherit_manifest_query": false,
       "verification_mode": "global",
       "verification_status": "verified_global",
@@ -1101,9 +1109,75 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 1,
-      "backups": [],
+      "available_link_count": 2,
+      "backups": [
+        {
+          "name": "Backup-1",
+          "header_profile": "android_chrome",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "sm-sports-data",
+          "host": "otte.cache.aiv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "HD",
+          "resolution_height": 720,
+          "playback_id": "ctv_8070a2ce5760068df10ed58b08afb7ee",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        }
+      ],
       "channels": [
+        {
+          "id": "club-necaxa-vs-club-tijuana--quality",
+          "name": "QUALITY",
+          "normalized_name": "quality",
+          "logo": "https://img.sofascore.com/api/v1/team/1944/image",
+          "name_confidence": "explicit",
+          "name_source": "channel_name",
+          "provider": "sm-sports-data",
+          "source_ids": [
+            "sm-sports-data"
+          ],
+          "primary_stream_id": "club-necaxa-vs-club-tijuana--quality--1",
+          "stream_count": 1,
+          "backup_count": 0,
+          "verified": true,
+          "verification_status": "verified_global",
+          "playback_types": [
+            "native"
+          ],
+          "renderer": "native",
+          "streams": [
+            {
+              "id": "club-necaxa-vs-club-tijuana--quality--1",
+              "role": "primary",
+              "playback_type": "native",
+              "variant_key": "sv_7a3ef5cf10a117b98c9b0b94",
+              "provider": "sm-sports-data",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_8d62da544d9200c57547ec8e711c5689",
+              "resolution": "HD",
+              "resolution_height": 720,
+              "stream_type": "media"
+            }
+          ]
+        },
         {
           "id": "club-necaxa-vs-club-tijuana--fox-deportes",
           "name": "FOX DEPORTES",
@@ -1141,14 +1215,14 @@
           ]
         }
       ],
-      "channel_count": 1,
-      "default_channel_id": "club-necaxa-vs-club-tijuana--fox-deportes",
+      "channel_count": 2,
+      "default_channel_id": "club-necaxa-vs-club-tijuana--quality",
       "channel_stats": {
-        "streams_in": 1,
+        "streams_in": 2,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
-        "channels": 1,
-        "variants": 1,
+        "channels": 2,
+        "variants": 2,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1162,10 +1236,6 @@
       "source_ids": [
         "sm-sports-data"
       ],
-      "drm": {
-        "type": "clearkey",
-        "protected": true
-      },
       "resolution": "HD",
       "resolution_height": 720,
       "start_time": "2026-11-07T01:00:00+00:00",
@@ -1201,14 +1271,7 @@
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tqdk9e1779772432.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/b0mky81779772352.png",
-      "playback_id": "ctv_8070a2ce5760068df10ed58b08afb7ee",
-      "protected_source": true,
-      "requires_credentials": true,
-      "credential_hints": {
-        "headers": [],
-        "query_parameters": [],
-        "drm": true
-      }
+      "playback_id": "ctv_8d62da544d9200c57547ec8e711c5689"
     }
   ]
 }
