@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T00:48:25.931151+00:00",
+  "generated_at": "2026-11-07T01:04:00.667176+00:00",
   "note": "Shadow mode. Every verdict here is an observation: no card was added, removed, re-timed, re-badged or re-identified because of it, and no fixture_id changed. An authority that could not be read is INCONCLUSIVE - authority unavailable - which is never evidence that a fixture ended or never existed. A status that has not been seen in a real response is UNKNOWN rather than guessed; football half-time is the standing example.",
   "shadow_only": true,
   "authorities": {
@@ -10,13 +10,13 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 6,
-      "fixtures": 1832,
+      "fixtures": 1827,
       "unknown_statuses": [
+        "10|HT",
         "133|Stumps - day 2",
-        "2|42'",
-        "3|84'",
-        "3|89'",
-        "3|90+1'"
+        "2|1'",
+        "2|3'",
+        "2|4'"
       ],
       "attempts": [
         {
@@ -47,7 +47,7 @@
           "sport": "football",
           "date": "2026-11-07",
           "result": "ok",
-          "fixtures": 872
+          "fixtures": 867
         },
         {
           "sport": "football",
@@ -64,7 +64,7 @@
       "state": "ok",
       "requests": 6,
       "requests_ok": 5,
-      "fixtures": 639,
+      "fixtures": 640,
       "unknown_statuses": [],
       "attempts": [
         {
@@ -101,7 +101,7 @@
           "sport": "football",
           "date": "2026-11-08",
           "result": "ok",
-          "fixtures": 235
+          "fixtures": 236
         }
       ]
     }
@@ -109,47 +109,49 @@
   "authority_unavailable": [],
   "totals": {
     "today_match": 5,
-    "upcoming": 57,
-    "fixtures": 62,
+    "upcoming": 58,
+    "fixtures": 63,
     "verdicts": {
-      "VERIFIED": 41,
-      "PARTIAL_AUTHORITY": 1,
-      "UNVERIFIED": 20
+      "CONFLICT": 2,
+      "UNVERIFIED": 20,
+      "VERIFIED": 41
     },
     "verified": 41,
-    "partial_authority": 1,
+    "partial_authority": 0,
     "unverified": 20,
-    "conflict": 0,
+    "conflict": 2,
     "matched_by_authority": {
       "espn-header": {
         "matched": 35,
-        "unmatched": 27
+        "unmatched": 28
       },
       "livescore": {
-        "matched": 36,
+        "matched": 37,
         "unmatched": 26
       }
     },
-    "matched_by_two_independent_authorities": 26,
-    "authority_agreements": 26,
-    "authority_disagreements": 0,
-    "card_status_conflicts": 0,
+    "matched_by_two_independent_authorities": 27,
+    "authority_agreements": 25,
+    "authority_disagreements": 1,
+    "card_status_conflicts": 1,
     "conflict_reason_counts": {
+      "card says LIVE, authority says UPCOMING": 1,
+      "authorities disagree": 1,
       "kickoff": 2
     },
     "identity_near_misses": 15,
     "independent_authority_count_distribution": {
       "0": 20,
       "1": 16,
-      "2": 26
+      "2": 27
     },
     "unknown_authority_statuses": {
       "livescore": [
+        "10|HT",
         "133|Stumps - day 2",
-        "2|42'",
-        "3|84'",
-        "3|89'",
-        "3|90+1'"
+        "2|1'",
+        "2|3'",
+        "2|4'"
       ],
       "espn-header": []
     }
@@ -283,9 +285,9 @@
       "name": "Club Necaxa Vs Club Tijuana",
       "competition": "Liga MX, Apertura",
       "kickoff": "2026-11-07T01:00:00+00:00",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "lifecycle_state": "LIVE",
-      "card_status_normalized": "UPCOMING",
+      "card_status_normalized": "LIVE",
       "sport_type": "football",
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "provider_identity": "",
@@ -342,11 +344,11 @@
           "competition_id": "759",
           "kickoff": "2026-11-07T01:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "NS",
-          "status_code": "1",
-          "status": "UPCOMING",
+          "status_raw": "4'",
+          "status_code": "2",
+          "status": "UNKNOWN",
           "sport": "football",
-          "round": "16",
+          "round": "Apertura",
           "format": "",
           "gender": ""
         }
@@ -358,10 +360,12 @@
       "independent_authority_count": 2,
       "near_miss_upstreams": [],
       "near_miss_count": 0,
-      "conflict_reasons": [],
-      "authority_agreement": "AGREE",
-      "card_status_conflict": false,
-      "verdict": "VERIFIED",
+      "conflict_reasons": [
+        "card says LIVE, authority says UPCOMING"
+      ],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": true,
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -399,25 +403,25 @@
           "competition_id": "630",
           "kickoff": "2026-11-06T23:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "64'",
-          "status_code": "STATUS_SECOND_HALF",
-          "status": "LIVE",
+          "status_raw": "Scheduled",
+          "status_code": "STATUS_SCHEDULED",
+          "status": "UPCOMING",
           "sport": "football",
           "round": "",
           "format": "",
           "gender": "",
-          "espn_state": "in",
-          "espn_status": "in",
-          "espn_status_detail": "64'",
-          "espn_status_description": "Second Half",
+          "espn_state": "pre",
+          "espn_status": "pre",
+          "espn_status_detail": "Fri, November 6th at 6:00 PM EST",
+          "espn_status_description": "Scheduled",
           "espn_completed": false,
           "espn_end_date_raw": "",
           "authority_uid": "s:600~l:630~e:401841302~c:401841302"
         },
         "livescore": {
           "result": "matched",
-          "matched_by": "ambiguous",
-          "verified": false,
+          "matched_by": "same_fixture",
+          "verified": true,
           "event_id": "1708746",
           "upstream_family": "LiveScore",
           "name": "Vitoria vs Fluminense",
@@ -429,9 +433,9 @@
           "competition_id": "155",
           "kickoff": "2026-11-06T23:00:00+00:00",
           "kickoff_delta_minutes": 0.0,
-          "status_raw": "89'",
-          "status_code": "3",
-          "status": "UNKNOWN",
+          "status_raw": "FT",
+          "status_code": "6",
+          "status": "FINISHED",
           "sport": "football",
           "round": "Regular Season",
           "format": "",
@@ -439,17 +443,18 @@
         }
       },
       "authority_upstreams": [
-        "ESPN"
-      ],
-      "independent_authority_count": 1,
-      "near_miss_upstreams": [
+        "ESPN",
         "LiveScore"
       ],
-      "near_miss_count": 1,
-      "conflict_reasons": [],
-      "authority_agreement": "SINGLE",
+      "independent_authority_count": 2,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [
+        "authorities disagree: espn-header=UPCOMING, livescore=FINISHED"
+      ],
+      "authority_agreement": "DISAGREE",
       "card_status_conflict": false,
-      "verdict": "PARTIAL_AUTHORITY",
+      "verdict": "CONFLICT",
       "tab": "today_match"
     },
     {
@@ -620,8 +625,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -934,6 +939,65 @@
       "tab": "upcoming"
     },
     {
+      "fixture_id": "provider:arabian-aces-vs-royal-desert-champions|abu dhabi t10 league 2026 6th|2026-11-08",
+      "card_id": "arabian-aces-vs-royal-desert-champions",
+      "name": "Arabian Aces vs Royal Desert Champions",
+      "competition": "Abu Dhabi T10 League 2026 - 6th Match",
+      "kickoff": "2026-11-08T16:00:00+00:00",
+      "schedule_status": "UPCOMING",
+      "lifecycle_state": "UPCOMING",
+      "card_status_normalized": "UPCOMING",
+      "sport_type": "cricket",
+      "schedule_source_url": "https://raw.githubusercontent.com/srhady/willow-event/refs/heads/main/live_sports.json",
+      "provider_identity": "",
+      "source_ids": [
+        "srhady-willow-event"
+      ],
+      "upstream_families": [
+        "Willow"
+      ],
+      "independent_witness_count": 1,
+      "authorities": {
+        "espn-header": {
+          "result": "unmatched"
+        },
+        "livescore": {
+          "result": "matched",
+          "matched_by": "same_fixture",
+          "verified": true,
+          "event_id": "1906330",
+          "upstream_family": "LiveScore",
+          "name": "Arabian Aces vs Royal Desert Champions",
+          "home": "Arabian Aces",
+          "away": "Royal Desert Champions",
+          "home_team_id": "418567",
+          "away_team_id": "418564",
+          "competition": "Abu Dhabi T10 League",
+          "competition_id": "26618",
+          "kickoff": "2026-11-08T16:00:00+00:00",
+          "kickoff_delta_minutes": 0.0,
+          "status_raw": "NS",
+          "status_code": "1",
+          "status": "UPCOMING",
+          "sport": "cricket",
+          "round": "Match 6",
+          "format": "",
+          "gender": ""
+        }
+      },
+      "authority_upstreams": [
+        "LiveScore"
+      ],
+      "independent_authority_count": 1,
+      "near_miss_upstreams": [],
+      "near_miss_count": 0,
+      "conflict_reasons": [],
+      "authority_agreement": "SINGLE",
+      "card_status_conflict": false,
+      "verdict": "VERIFIED",
+      "tab": "upcoming"
+    },
+    {
       "fixture_id": "provider:as-roma-vs-sassuolo|serie a|2026-11-07",
       "card_id": "as-roma-vs-sassuolo",
       "name": "AS Roma Vs Sassuolo",
@@ -1123,8 +1187,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1356,8 +1420,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1863,8 +1927,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -1992,8 +2056,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2073,8 +2137,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2367,8 +2431,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2432,8 +2496,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2838,8 +2902,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -2929,8 +2993,8 @@
       "provider_identity": "",
       "source_ids": [
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3201,8 +3265,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3253,8 +3317,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3401,8 +3465,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -3493,8 +3557,8 @@
       "source_ids": [
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [
@@ -4265,8 +4329,8 @@
         "sm-sports-data",
         "sm-fancode",
         "sportlive-fancode-backup",
-        "drmlive-fancode-mirror",
         "vk1817-fancode-mirror",
+        "drmlive-fancode-mirror",
         "sayanpal-fancode-mirror"
       ],
       "upstream_families": [

@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-07T00:48:45.094260+00:00",
+  "updated_at": "2026-11-07T01:04:32.889363+00:00",
   "count": 5,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -259,7 +259,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 16,
+      "carried_forward_misses": 17,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-06T20:04:40.301252+00:00"
     },
@@ -618,7 +618,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-07T01:04:26.989462+00:00"
     },
     {
       "id": "bassmaster-redfish-cup-at-port-aransas",
@@ -867,7 +875,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 14,
+      "carried_forward_misses": 15,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-06T20:44:38.145998+00:00"
     },
@@ -1030,7 +1038,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-06T23:00:00+00:00",
       "start_at": "2026-11-06T23:00:00+00:00",
-      "end_time": "2026-11-07T01:48:25+00:00",
+      "end_time": "2026-11-07T02:04:00+00:00",
       "end_time_source": "assumed",
       "competition": "Campeonato Brasileiro Série A",
       "fixture_id": "provider:vitória-vs-fluminense|campeonato brasileiro s rie a|2026-11-06",
@@ -1045,32 +1053,17 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_near_misses": [
-        {
-          "authority": "livescore",
-          "matched_by": "ambiguous",
-          "event_id": "1708746",
-          "upstream_family": "LiveScore",
-          "name": "Vitoria vs Fluminense",
-          "competition": "Serie A",
-          "kickoff": "2026-11-06T23:00:00+00:00",
-          "kickoff_delta_minutes": 0.0,
-          "status": "UNKNOWN"
-        }
-      ],
-      "authority_end_status": "LIVE",
-      "authority_end_confidence": "LOW",
+      "authority_end_status": "",
+      "authority_end_confidence": "CONFLICT",
       "authority_end_families": [
-        "ESPN"
+        "ESPN",
+        "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=64' (STATUS_SECOND_HALF, event 401841302)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841302)",
+        "LiveScore livescore=FT (6, event 1708746)"
       ],
-      "authority_independent_count": 1,
-      "authority_event_ids": {
-        "espn-header": "401841302"
-      },
-      "authority_status": "LIVE",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401841302); LiveScore livescore=FT (6, event 1708746)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tysrrx1473538156.png",
@@ -1181,9 +1174,9 @@
       "end_time_source": "sport",
       "competition": "Liga MX, Apertura",
       "fixture_id": "provider:club-necaxa-vs-club-tijuana|liga mx apertura|2026-11-07",
-      "status": "STARTING_SOON",
+      "status": "LIVE_NOW",
       "original_status": "LIVE",
-      "schedule_status": "STARTING_SOON",
+      "schedule_status": "LIVE_NOW",
       "schedule_verified": true,
       "schedule_source_url": "https://raw.githubusercontent.com/sm-monirulislam/Upcoming-and-Live-Sports-Data/refs/heads/main/Sports_data.json",
       "source_start_time": "2026-11-07T01:00:00+00:00",
@@ -1193,22 +1186,17 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "authority_end_status": "UPCOMING",
-      "authority_end_confidence": "HIGH",
+      "authority_end_confidence": "LOW",
       "authority_end_families": [
-        "ESPN",
-        "LiveScore"
+        "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876909)",
-        "LiveScore livescore=NS (1, event 1799083)"
+        "ESPN espn-header=Scheduled (STATUS_SCHEDULED, event 401876909)"
       ],
-      "authority_independent_count": 2,
+      "authority_independent_count": 1,
       "authority_event_ids": {
-        "espn-header": "401876909",
-        "livescore": "1799083"
+        "espn-header": "401876909"
       },
-      "start_window_claimed": "LIVE_NOW",
-      "authority_start_conflict": "a source called this LIVE_NOW while ESPN/LiveScore and our own schedule both put kickoff 11 minute(s) away",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/tqdk9e1779772432.png",
