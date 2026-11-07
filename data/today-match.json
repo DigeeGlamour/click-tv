@@ -1,6 +1,6 @@
 {
   "type": "today_match",
-  "updated_at": "2026-11-07T22:24:50.030769+00:00",
+  "updated_at": "2026-11-07T22:44:28.226002+00:00",
   "count": 25,
   "filtered_stale": 0,
   "filtered_unplayable": 0,
@@ -161,11 +161,11 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 10,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-07T20:04:41.942463+00:00",
       "end_pending": true,
-      "end_pending_confirmations": 10,
+      "end_pending_confirmations": 11,
       "ended_seen_at": "2026-11-07T22:24:39.003806+00:00",
       "lifecycle_end_basis": "estimate"
     },
@@ -256,7 +256,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00",
       "authority_status": "LIVE"
@@ -515,7 +515,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 13,
+      "carried_forward_misses": 14,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T19:04:37.727368+00:00"
     },
@@ -766,7 +766,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 10,
+      "carried_forward_misses": 11,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T20:04:41.942463+00:00"
     },
@@ -968,7 +968,7 @@
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_ba011d47fa90775592e325db8c110aea",
       "protected_source": true,
       "requires_credentials": true,
@@ -977,13 +977,13 @@
         "query_parameters": [],
         "drm": true
       },
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 13,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 14,
+      "carried_forward_reason": "no source lists this any more and its estimated end long passed - holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-07T19:04:37.727368+00:00",
       "authority_near_misses": [
         {
@@ -1008,7 +1008,11 @@
           "kickoff_delta_minutes": -163.9,
           "status": "FINISHED"
         }
-      ]
+      ],
+      "end_pending": true,
+      "end_pending_confirmations": 14,
+      "ended_seen_at": "2026-11-07T22:44:19.340105+00:00",
+      "lifecycle_end_basis": "estimate"
     },
     {
       "id": "hertha-bsc-vs-vfl-wolfsburg",
@@ -1242,30 +1246,42 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=90'+3' (STATUS_SECOND_HALF, event 401885064)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401885064)",
         "LiveScore livescore=FT (6, event 1813395)"
       ],
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/8okmtm1621593943.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/ci9trv1778399557.png",
       "playback_id": "ctv_36bf63a50d3ed93e7e82346347af9814",
-      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_reason": "finished, holding for the post-match grace",
       "lifecycle_protections": [
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 2,
-      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_misses": 3,
+      "carried_forward_reason": "finished, holding for the post-match grace",
       "carried_forward_first_missed_at": "2026-11-07T22:04:21.655427+00:00",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90'+3' (STATUS_SECOND_HALF, event 401885064); LiveScore livescore=FT (6, event 1813395)"
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401885064",
+        "livescore": "1813395"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-07T22:43:57.915900+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-07T23:03:57.915900+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-07T22:44:19.340105+00:00"
     },
     {
       "id": "as-roma-vs-sassuolo",
@@ -1704,19 +1720,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "source sport field",
       "sport_class_evidence": "football",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=81' (STATUS_SECOND_HALF, event 401874803)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401874803)",
         "LiveScore livescore=FT (6, event 1785433)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=81' (STATUS_SECOND_HALF, event 401874803); LiveScore livescore=FT (6, event 1785433)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/jwro2s1760820674.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/xystvp1448806138.png",
       "competition_from_source": "Serie A",
@@ -1727,7 +1742,24 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401874803",
+        "livescore": "1785433"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-07T22:43:57.915900+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-07T23:03:57.915900+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-07T22:44:19.340105+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-07T22:44:19.340105+00:00"
     },
     {
       "id": "real-madrid-vs-valencia",
@@ -1753,38 +1785,8 @@
       "routing_reason": "configured_event_pipeline",
       "source_id": "sm-sports-data",
       "metadata_only": false,
-      "available_link_count": 2,
-      "backups": [
-        {
-          "name": "Backup-1",
-          "header_profile": "android_chrome",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "sm-sports-data",
-          "host": "otte.live.fly.ww.aiv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_70fb0f969a769b7b355c216264644113",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        }
-      ],
+      "available_link_count": 1,
+      "backups": [],
       "channels": [
         {
           "id": "real-madrid-vs-valencia--dazn-sports",
@@ -1798,8 +1800,8 @@
             "sm-sports-data"
           ],
           "primary_stream_id": "real-madrid-vs-valencia--dazn-sports--1",
-          "stream_count": 2,
-          "backup_count": 1,
+          "stream_count": 1,
+          "backup_count": 0,
           "verified": true,
           "verification_status": "verified_global",
           "playback_types": [
@@ -1819,19 +1821,6 @@
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
-            },
-            {
-              "id": "real-madrid-vs-valencia--dazn-sports--2",
-              "role": "backup",
-              "playback_type": "native",
-              "variant_key": "sv_9c8cb18db4fd271dbc08327b",
-              "provider": "sm-sports-data",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_70fb0f969a769b7b355c216264644113",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
             }
           ]
         }
@@ -1839,11 +1828,11 @@
       "channel_count": 1,
       "default_channel_id": "real-madrid-vs-valencia--dazn-sports",
       "channel_stats": {
-        "streams_in": 2,
+        "streams_in": 1,
         "unresolved_channel_streams": 0,
         "exact_duplicates_removed": 0,
         "channels": 1,
-        "variants": 2,
+        "variants": 1,
         "embed_variants": 0,
         "generic_server_channels": 0
       },
@@ -1865,7 +1854,7 @@
       "resolution_height": 1080,
       "start_time": "2026-11-07T20:00:00+00:00",
       "start_at": "2026-11-07T20:00:00+00:00",
-      "end_time": "2026-11-07T23:24:10+00:00",
+      "end_time": "2026-11-07T23:43:57+00:00",
       "end_time_source": "assumed",
       "competition": "LaLiga",
       "fixture_id": "provider:real-madrid-vs-valencia|laliga|2026-11-07",
@@ -1887,10 +1876,10 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=61' (STATUS_SECOND_HALF, event 401882808)",
+        "ESPN espn-header=90'+4' (STATUS_SECOND_HALF, event 401882808)",
         "LiveScore livescore=FT (6, event 1810752)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=61' (STATUS_SECOND_HALF, event 401882808); LiveScore livescore=FT (6, event 1810752)",
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=90'+4' (STATUS_SECOND_HALF, event 401882808); LiveScore livescore=FT (6, event 1810752)",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vwvwrw1473502969.png",
@@ -2035,7 +2024,15 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "lifecycle_reason": "still live: primary_playable, backup_playable",
+      "lifecycle_protections": [
+        "primary_playable",
+        "backup_playable"
+      ],
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "still live: primary_playable, backup_playable",
+      "carried_forward_first_missed_at": "2026-11-07T22:44:19.340105+00:00"
     },
     {
       "id": "paris-saint-germain-vs-troyes",
@@ -2211,19 +2208,18 @@
       "sport_class": "confirmed_football",
       "sport_class_reason": "league map",
       "sport_class_evidence": "Ligue 1",
-      "authority_end_status": "",
-      "authority_end_confidence": "CONFLICT",
+      "authority_end_status": "FINISHED",
+      "authority_end_confidence": "HIGH",
       "authority_end_families": [
         "ESPN",
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=62' (STATUS_SECOND_HALF, event 401876407)",
+        "ESPN espn-header=FT (STATUS_FULL_TIME, event 401876407)",
         "LiveScore livescore=FT (6, event 1794713)"
       ],
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=62' (STATUS_SECOND_HALF, event 401876407); LiveScore livescore=FT (6, event 1794713)",
       "event_type": "today_match",
-      "lifecycle_state": "LIVE",
+      "lifecycle_state": "END_PENDING",
       "playback_id": "ctv_2c7e77512615e82d232a667cbb0cd1e6",
       "protected_source": true,
       "requires_credentials": true,
@@ -2231,7 +2227,24 @@
         "headers": [],
         "query_parameters": [],
         "drm": true
-      }
+      },
+      "authority_independent_count": 2,
+      "authority_event_ids": {
+        "espn-header": "401876407",
+        "livescore": "1794713"
+      },
+      "authority_finished_confirmations": 1,
+      "authority_finished_seen_at": "2026-11-07T22:43:57.915900+00:00",
+      "authority_status": "FINISHED",
+      "authority_remove_after": "2026-11-07T23:03:57.915900+00:00",
+      "authority_end_conflict": "authority says FINISHED while the card still carries a route",
+      "lifecycle_reason": "finished, holding for the post-match grace",
+      "end_pending": true,
+      "end_pending_confirmations": 0,
+      "ended_seen_at": "2026-11-07T22:44:19.340105+00:00",
+      "carried_forward_misses": 1,
+      "carried_forward_reason": "finished, holding for the post-match grace",
+      "carried_forward_first_missed_at": "2026-11-07T22:44:19.340105+00:00"
     },
     {
       "id": "bassmaster-redfish-cup-at-port-aransas",
@@ -2480,7 +2493,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00"
     },
@@ -2609,7 +2622,7 @@
         "LiveScore"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=HT (STATUS_HALFTIME, event 401885395)",
+        "ESPN espn-header=71' (STATUS_SECOND_HALF, event 401885395)",
         "LiveScore livescore=FT (6, event 1816467)"
       ],
       "authority_independent_count": 1,
@@ -2622,13 +2635,13 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 9,
+      "carried_forward_misses": 10,
       "carried_forward_reason": "still live: authority_live, primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T20:24:49.858406+00:00",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/5hiuk71783137875.png",
       "away_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/yrquxu1471878153.png",
       "authority_status": "LIVE",
-      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=HT (STATUS_HALFTIME, event 401885395); LiveScore livescore=FT (6, event 1816467)"
+      "authority_end_conflict": "independent authorities disagree: ESPN espn-header=71' (STATUS_SECOND_HALF, event 401885395); LiveScore livescore=FT (6, event 1816467)"
     },
     {
       "id": "atlético-mineiro-vs-grêmio",
@@ -2723,8 +2736,8 @@
       "resolution_height": 1080,
       "start_time": "2026-11-07T21:00:00+00:00",
       "start_at": "2026-11-07T21:00:00+00:00",
-      "end_time": "2026-11-07T23:30:00+00:00",
-      "end_time_source": "sport",
+      "end_time": "2026-11-07T23:43:57+00:00",
+      "end_time_source": "assumed",
       "competition": "Copa do Brasil",
       "fixture_id": "provider:atlético-mineiro-vs-grêmio|copa do brasil|2026-11-07",
       "status": "LIVE_NOW",
@@ -2821,7 +2834,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=14' (STATUS_FIRST_HALF, event 761934)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 761934)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2835,7 +2848,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/livdl31679344925.png",
@@ -2912,7 +2925,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=14' (STATUS_FIRST_HALF, event 761935)"
+        "ESPN espn-header=45'+2' (STATUS_FIRST_HALF, event 761935)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -2926,7 +2939,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/8xuc781639493166.png",
@@ -3017,7 +3030,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/uwvsyt1467462609.png",
@@ -3093,7 +3106,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=14' (STATUS_FIRST_HALF, event 761937)"
+        "ESPN espn-header=45'+3' (STATUS_FIRST_HALF, event 761937)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -3107,7 +3120,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/vvhsqc1707631046.png",
@@ -3184,7 +3197,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=14' (STATUS_FIRST_HALF, event 761938)"
+        "ESPN espn-header=45'+2' (STATUS_FIRST_HALF, event 761938)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -3198,7 +3211,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/m4it3e1602103647.png",
@@ -3289,7 +3302,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/suytvy1473536462.png",
@@ -3365,7 +3378,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=14' (STATUS_FIRST_HALF, event 761940)"
+        "ESPN espn-header=HT (STATUS_HALFTIME, event 761940)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -3379,7 +3392,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/qyppxw1423832326.png",
@@ -3456,7 +3469,7 @@
         "ESPN"
       ],
       "authority_end_evidence": [
-        "ESPN espn-header=14' (STATUS_FIRST_HALF, event 761941)"
+        "ESPN espn-header=45'+2' (STATUS_FIRST_HALF, event 761941)"
       ],
       "authority_independent_count": 1,
       "authority_event_ids": {
@@ -3470,7 +3483,7 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00",
       "home_badge_url": "https://r2.thesportsdb.com/images/media/team/badge/gyznyo1602103682.png",
@@ -3597,7 +3610,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T21:24:14.020180+00:00"
     },
@@ -3721,7 +3734,7 @@
         "primary_playable",
         "backup_playable"
       ],
-      "carried_forward_misses": 5,
+      "carried_forward_misses": 6,
       "carried_forward_reason": "still live: primary_playable, backup_playable",
       "carried_forward_first_missed_at": "2026-11-07T21:24:14.020180+00:00"
     },
@@ -3795,14 +3808,14 @@
       "lifecycle_protections": [
         "authority_live"
       ],
-      "carried_forward_misses": 8,
+      "carried_forward_misses": 9,
       "carried_forward_reason": "still live: authority_live",
       "carried_forward_first_missed_at": "2026-11-07T20:44:31.883089+00:00"
     },
     {
       "id": "baldwin-wallace-vs-mount-union-football",
       "name": "Baldwin Wallace vs Mount Union Football",
-      "primary_stream_key": "d3f8bc986a1650b48b0894d05c9b576abe7ce8fb62cf663b0543ecda5d83923c",
+      "primary_stream_key": "702eb2766b8b05614091067a75d9e9eedc5a04cda45655bfa6d8b82efd8b6e98",
       "sport_type": "football",
       "sport_type_derived": true,
       "logo": "https://images-na.ssl-images-amazon.com/images/W/BW_MEDIAX_AVIF_MEASUREMENT_1306696-T4/images/S/le-target-images-prod/amzn1.dv.gti.736cb0fa-d800-4f04-a9a1-0fbe85c562a1/4/BOXART-16X9/en-US._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/freewithads/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1578,847,263,156_kv053498f62d21803ffcbf28da234cfe9f_SX624_FMjpg_.jpeg",
@@ -3827,35 +3840,6 @@
       "backups": [
         {
           "name": "Backup-1",
-          "header_profile": "android_tv",
-          "proxy_mode": "proxy_only",
-          "stream_type": "dash",
-          "requires_headers": false,
-          "inherit_manifest_query": false,
-          "verification_mode": "global",
-          "verification_status": "verified_global",
-          "verification_badge": "Verified",
-          "verified": true,
-          "publish_allowed": true,
-          "source_id": "srhady-primevideo-sports",
-          "host": "dash-ott.bia-cf.live.pv-cdn.net",
-          "drm": {
-            "type": "clearkey",
-            "protected": true
-          },
-          "resolution": "FHD",
-          "resolution_height": 1080,
-          "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
-          "protected_source": true,
-          "requires_credentials": true,
-          "credential_hints": {
-            "headers": [],
-            "query_parameters": [],
-            "drm": true
-          }
-        },
-        {
-          "name": "Backup-2",
           "header_profile": "android_chrome",
           "proxy_mode": "proxy_only",
           "stream_type": "dash",
@@ -3875,6 +3859,35 @@
           "resolution": "FHD",
           "resolution_height": 1080,
           "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
+          "protected_source": true,
+          "requires_credentials": true,
+          "credential_hints": {
+            "headers": [],
+            "query_parameters": [],
+            "drm": true
+          }
+        },
+        {
+          "name": "Backup-2",
+          "header_profile": "android_tv",
+          "proxy_mode": "proxy_only",
+          "stream_type": "dash",
+          "requires_headers": false,
+          "inherit_manifest_query": false,
+          "verification_mode": "global",
+          "verification_status": "verified_global",
+          "verification_badge": "Verified",
+          "verified": true,
+          "publish_allowed": true,
+          "source_id": "srhady-primevideo-sports",
+          "host": "hls-ott.bia-cf.live.pv-cdn.net",
+          "drm": {
+            "type": "clearkey",
+            "protected": true
+          },
+          "resolution": "FHD",
+          "resolution_height": 1080,
+          "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
           "protected_source": true,
           "requires_credentials": true,
           "credential_hints": {
@@ -3939,19 +3952,6 @@
               "id": "baldwin-wallace-vs-mount-union-football--prime-video--1",
               "role": "primary",
               "playback_type": "native",
-              "variant_key": "sv_01b11c32d050778527634c31",
-              "provider": "srhady-primevideo-sports",
-              "verification_status": "verified_global",
-              "verified": true,
-              "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
-              "resolution": "FHD",
-              "resolution_height": 1080,
-              "stream_type": "dash"
-            },
-            {
-              "id": "baldwin-wallace-vs-mount-union-football--prime-video--2",
-              "role": "backup",
-              "playback_type": "native",
               "variant_key": "sv_b7f37c054f02157af5afadd6",
               "provider": "srhady-primevideo-sports",
               "verification_status": "verified_global",
@@ -3962,7 +3962,7 @@
               "stream_type": "dash"
             },
             {
-              "id": "baldwin-wallace-vs-mount-union-football--prime-video--3",
+              "id": "baldwin-wallace-vs-mount-union-football--prime-video--2",
               "role": "backup",
               "playback_type": "native",
               "variant_key": "sv_c1e02be4d063e0566b724069",
@@ -3970,6 +3970,19 @@
               "verification_status": "verified_global",
               "verified": true,
               "playback_id": "ctv_87fddc72896fac4ac3a728535e5a1d9b",
+              "resolution": "FHD",
+              "resolution_height": 1080,
+              "stream_type": "dash"
+            },
+            {
+              "id": "baldwin-wallace-vs-mount-union-football--prime-video--3",
+              "role": "backup",
+              "playback_type": "native",
+              "variant_key": "sv_01b11c32d050778527634c31",
+              "provider": "srhady-primevideo-sports",
+              "verification_status": "verified_global",
+              "verified": true,
+              "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
               "resolution": "FHD",
               "resolution_height": 1080,
               "stream_type": "dash"
@@ -4017,9 +4030,9 @@
       },
       "resolution": "FHD",
       "resolution_height": 1080,
-      "start_time": "2026-11-07T22:24:10+00:00",
-      "start_at": "2026-11-07T22:24:10+00:00",
-      "end_time": "2026-11-08T00:54:10+00:00",
+      "start_time": "2026-11-07T22:43:57+00:00",
+      "start_at": "2026-11-07T22:43:57+00:00",
+      "end_time": "2026-11-08T01:13:57+00:00",
       "end_time_source": "sport",
       "fixture_id": "provider:baldwin-wallace-vs-mount-union-football|2026-11-07",
       "status": "LIVE_NOW",
@@ -4033,7 +4046,7 @@
       "sport_class_evidence": "football",
       "event_type": "today_match",
       "lifecycle_state": "LIVE",
-      "playback_id": "ctv_ec8c5782e2324d7d0db0db5d224ed9d0",
+      "playback_id": "ctv_ddf048113ac4903633f2b8681b6603cc",
       "protected_source": true,
       "requires_credentials": true,
       "credential_hints": {
